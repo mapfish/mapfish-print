@@ -2,7 +2,6 @@ package org.mapfish.print.processor;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.parser.ParserUtils;
@@ -12,16 +11,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
-
 import javax.annotation.Nonnull;
 
 /**
  * Basic functionality of a processor.  Mostly utility methods.
  *
  * @param <In> A Java bean input parameter object of the execute method. Object is populated from the
- *      {@link org.mapfish.print.output.Values} object.
- * @param <Out> A Java bean output/return object from the execute method. properties will be put into the
- *      {@link org.mapfish.print.output.Values} object so other processor can access the values.
+ *         {@link org.mapfish.print.output.Values} object.
+ * @param <Out> A Java bean output/return object from the execute method. properties will be put into
+ *         the {@link org.mapfish.print.output.Values} object so other processor can access the values.
  */
 public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     private final BiMap<String, String> inputMapper = HashBiMap.create();
@@ -35,7 +33,8 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     /**
      * Constructor.
      *
-     * @param outputType the type of the output of this processor.  Used to calculate processor dependencies.
+     * @param outputType the type of the output of this processor.  Used to calculate processor
+     *         dependencies.
      */
     protected AbstractProcessor(final Class<Out> outputType) {
         this.outputType = outputType;
@@ -53,37 +52,43 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     }
 
     /**
-     * The prefix to apply to each value.  This provides a simple way to make all output values have unique values.
+     * The prefix to apply to each value.  This provides a simple way to make all output values have unique
+     * values.
+     *
      * @param prefix the new prefix
      */
     public final void setPrefix(final String prefix) {
-       this.prefix = prefix;
-    }
-
-    /**
-     * The prefix to apply to each input value.  This provides a simple way to make all output values have unique values.
-     * @param inputPrefix the new prefix
-     */
-    public final void setInputPrefix(final String inputPrefix) {
-       this.inputPrefix = inputPrefix;
+        this.prefix = prefix;
     }
 
     @Override
     public final String getInputPrefix() {
-       return this.inputPrefix == null ? this.prefix : this.inputPrefix;
+        return this.inputPrefix == null ? this.prefix : this.inputPrefix;
     }
 
     /**
-     * The prefix to apply to each output value.  This provides a simple way to make all output values have unique values.
-     * @param outputPrefix the new prefix
+     * The prefix to apply to each input value.  This provides a simple way to make all output values have
+     * unique values.
+     *
+     * @param inputPrefix the new prefix
      */
-    public final void setOutputPrefix(final String outputPrefix) {
-       this.outputPrefix = outputPrefix;
+    public final void setInputPrefix(final String inputPrefix) {
+        this.inputPrefix = inputPrefix;
     }
 
     @Override
     public final String getOutputPrefix() {
         return this.outputPrefix == null ? this.prefix : this.outputPrefix;
+    }
+
+    /**
+     * The prefix to apply to each output value.  This provides a simple way to make all output values have
+     * unique values.
+     *
+     * @param outputPrefix the new prefix
+     */
+    public final void setOutputPrefix(final String outputPrefix) {
+        this.outputPrefix = outputPrefix;
     }
 
     @Override
@@ -132,19 +137,22 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
         } else {
             allInputAttributeNames = Collections.emptySet();
         }
-        for (String inputAttributeName : this.inputMapper.values()) {
+        for (String inputAttributeName: this.inputMapper.values()) {
             if (!allInputAttributeNames.contains(inputAttributeName)) {
                 errors.add(new ConfigurationException(inputAttributeName + " is not defined in processor '"
-                        + this + "'.  Check for typos. Options are " + allInputAttributeNames));
+                                                              + this + "'.  Check for typos. Options are " +
+                                                              allInputAttributeNames));
             }
         }
 
         Set<String> allOutputAttributeNames = ParserUtils.getAllAttributeNames(getOutputType());
-        for (String outputAttributeName : this.outputMapper.keySet()) {
+        for (String outputAttributeName: this.outputMapper.keySet()) {
             if (!allOutputAttributeNames.contains(outputAttributeName)) {
                 errors.add(new ConfigurationException(outputAttributeName + " is not defined in processor " +
-                        "'" + this + "' as an output attribute.  Check for typos. Options are " +
-                        allOutputAttributeNames));
+                                                              "'" + this +
+                                                              "' as an output attribute.  Check for typos. " +
+                                                              "Options are " +
+                                                              allOutputAttributeNames));
             }
         }
 
@@ -153,14 +161,16 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
 
     /**
      * Perform any extra validation a subclass may need to perform.
-     * @param validationErrors a list to add errors to so that all validation errors are reported as one.
+     *
+     * @param validationErrors a list to add errors to so that all validation errors are reported as
+     *         one.
      * @param configuration the containing configuration
      */
-    protected abstract void extraValidation(final List<Throwable> validationErrors, final Configuration configuration);
+    protected abstract void extraValidation(
+            List<Throwable> validationErrors, Configuration configuration);
 
     /**
-     * Checks if the print was canceled and throws a
-     * {@link CancellationException} if so.
+     * Checks if the print was canceled and throws a {@link CancellationException} if so.
      *
      * @param context the execution context
      * @throws CancellationException

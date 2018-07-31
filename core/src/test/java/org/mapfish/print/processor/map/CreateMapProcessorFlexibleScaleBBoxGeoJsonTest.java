@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
  * Created by Jesse on 3/26/14.
  */
 public class CreateMapProcessorFlexibleScaleBBoxGeoJsonTest extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR ="bbox_geojson_flexible_scale/";
+    public static final String BASE_DIR = "bbox_geojson_flexible_scale/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
@@ -36,6 +36,11 @@ public class CreateMapProcessorFlexibleScaleBBoxGeoJsonTest extends AbstractMapf
     private MfClientHttpRequestFactoryImpl httpRequestFactory;
     @Autowired
     private ForkJoinPool forkJoinPool;
+
+    public static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
 
     @Test
     public void testExecute() throws Exception {
@@ -51,13 +56,12 @@ public class CreateMapProcessorFlexibleScaleBBoxGeoJsonTest extends AbstractMapf
         doTest(requestData);
     }
 
-
     private void doTest(PJsonObject requestData) throws IOException, JSONException, ExecutionException,
             InterruptedException {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.httpRequestFactory, new File("."));
+                                   this.httpRequestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -69,10 +73,5 @@ public class CreateMapProcessorFlexibleScaleBBoxGeoJsonTest extends AbstractMapf
 
         new ImageSimilarity(new File(layerGraphics.get(0))).assertSimilarity(getFile(
                 BASE_DIR + "expectedSimpleImage.png"), 30);
-    }
-
-    public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class,
-                BASE_DIR + "requestData.json");
     }
 }

@@ -23,7 +23,7 @@ public class BBoxMapBoundsTest {
     }
 
     @Test
-    public void testToReferencedEnvelope() throws Exception {
+    public void testToReferencedEnvelope() {
         final BBoxMapBounds bboxMapBounds = new BBoxMapBounds(WGS84, -180, -90, 180, 90);
 
         final ReferencedEnvelope envelope = bboxMapBounds.toReferencedEnvelope(new Rectangle(10, 5));
@@ -37,7 +37,7 @@ public class BBoxMapBoundsTest {
     }
 
     @Test
-    public void testAdjustedEnvelope() throws Exception {
+    public void testAdjustedEnvelope() {
         final BBoxMapBounds bboxMapBounds = new BBoxMapBounds(WGS84, -10, -90, 10, 90);
         final MapBounds mapBounds = bboxMapBounds.adjustedEnvelope(new Rectangle(5, 5));
         final ReferencedEnvelope envelope = mapBounds.toReferencedEnvelope(new Rectangle(5, 5));
@@ -50,22 +50,23 @@ public class BBoxMapBoundsTest {
     }
 
     @Test
-    public void testAdjustToScale() throws Exception {
+    public void testAdjustToScale() {
         int scaleDenominator = 24000;
         double dpi = 100;
         Rectangle screen = new Rectangle(100, 100);
         ZoomLevels zoomLevels = new ZoomLevels(15000, 20000, 25000, 30000, 350000);
 
         final CenterScaleMapBounds mapBounds = new CenterScaleMapBounds(CH1903, 50000, 50000,
-                scaleDenominator);
+                                                                        scaleDenominator);
         final ReferencedEnvelope originalBBox = mapBounds.toReferencedEnvelope(screen);
 
         BBoxMapBounds linear = new BBoxMapBounds(CH1903,
-                originalBBox.getMinX(), originalBBox.getMinY(),
-                originalBBox.getMaxX(), originalBBox.getMaxY());
+                                                 originalBBox.getMinX(), originalBBox.getMinY(),
+                                                 originalBBox.getMaxX(), originalBBox.getMaxY());
 
         final MapBounds newMapBounds = linear.adjustBoundsToNearestScale(zoomLevels, 0.05,
-                ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE, false, screen, dpi);
+                                                                         ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE,
+                                                                         false, screen, dpi);
         ReferencedEnvelope newBBox = newMapBounds.toReferencedEnvelope(screen);
 
         final double delta = 0.00001;
@@ -74,12 +75,14 @@ public class BBoxMapBoundsTest {
 
         double expectedScale = 25000;
         CenterScaleMapBounds expectedMapBounds = new CenterScaleMapBounds(CH1903,
-                originalBBox.centre().x, originalBBox.centre().y, expectedScale);
+                                                                          originalBBox.centre().x,
+                                                                          originalBBox.centre().y,
+                                                                          expectedScale);
         assertEquals(expectedMapBounds.toReferencedEnvelope(screen), newBBox);
     }
 
     @Test
-    public void testAdjustToScaleLatLong() throws Exception {
+    public void testAdjustToScaleLatLong() {
         int scaleDenominator = 24000;
         double dpi = 100;
         Rectangle screen = new Rectangle(100, 100);
@@ -87,16 +90,17 @@ public class BBoxMapBoundsTest {
 
 
         final CenterScaleMapBounds mapBounds = new CenterScaleMapBounds(SPHERICAL_MERCATOR, 5, 5,
-                scaleDenominator);
+                                                                        scaleDenominator);
         final ReferencedEnvelope originalBBox = mapBounds.toReferencedEnvelope(screen);
 
         BBoxMapBounds linear = new BBoxMapBounds(SPHERICAL_MERCATOR,
-                originalBBox.getMinX(), originalBBox.getMinY(),
-                originalBBox.getMaxX(), originalBBox.getMaxY());
+                                                 originalBBox.getMinX(), originalBBox.getMinY(),
+                                                 originalBBox.getMaxX(), originalBBox.getMaxY());
 
         final MapBounds newMapBounds = linear.adjustBoundsToNearestScale(zoomLevels, 0.05,
-                ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE, false,
-                screen, dpi);
+                                                                         ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE,
+                                                                         false,
+                                                                         screen, dpi);
         ReferencedEnvelope newBBox = newMapBounds.toReferencedEnvelope(screen);
 
         final double delta = 0.00001;
@@ -105,14 +109,16 @@ public class BBoxMapBoundsTest {
 
         double expectedScale = 25000;
         CenterScaleMapBounds expectedMapBounds = new CenterScaleMapBounds(SPHERICAL_MERCATOR,
-                originalBBox.centre().x, originalBBox.centre().y, expectedScale);
+                                                                          originalBBox.centre().x,
+                                                                          originalBBox.centre().y,
+                                                                          expectedScale);
         assertEquals(expectedMapBounds.getScale(screen, dpi), newMapBounds.getScale(screen, dpi));
         assertEquals(expectedMapBounds.getCenter(), newMapBounds.getCenter());
         assertEquals(expectedMapBounds.toReferencedEnvelope(screen), newBBox);
     }
 
     @Test
-    public void testZoomOut() throws Exception {
+    public void testZoomOut() {
         BBoxMapBounds bboxMapBounds = new BBoxMapBounds(WGS84, -10, -10, 10, 10);
         MapBounds bounds = bboxMapBounds.zoomOut(1);
         assertEquals(bboxMapBounds, bounds);
@@ -141,22 +147,23 @@ public class BBoxMapBoundsTest {
     }
 
     @Test
-    public void testAdjustToGeodeticScale() throws Exception {
+    public void testAdjustToGeodeticScale() {
         int scaleDenominator = 24000;
         double dpi = 100;
         Rectangle screen = new Rectangle(100, 100);
         ZoomLevels zoomLevels = new ZoomLevels(15000, 20000, 25000, 30000, 350000);
 
         final CenterScaleMapBounds mapBounds = new CenterScaleMapBounds(SPHERICAL_MERCATOR,
-                400000, 5000000, scaleDenominator);
+                                                                        400000, 5000000, scaleDenominator);
         final ReferencedEnvelope originalBBox = mapBounds.toReferencedEnvelope(screen);
 
         BBoxMapBounds linear = new BBoxMapBounds(SPHERICAL_MERCATOR,
-                originalBBox.getMinX(), originalBBox.getMinY(),
-                originalBBox.getMaxX(), originalBBox.getMaxY());
+                                                 originalBBox.getMinX(), originalBBox.getMinY(),
+                                                 originalBBox.getMaxX(), originalBBox.getMaxY());
 
         final MapBounds newMapBounds = linear.adjustBoundsToNearestScale(zoomLevels, 0.005,
-                ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE, true, screen, dpi);
+                                                                         ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE,
+                                                                         true, screen, dpi);
         ReferencedEnvelope newBBox = newMapBounds.toReferencedEnvelope(screen);
 
         final double delta = 0.00001;
@@ -164,9 +171,9 @@ public class BBoxMapBoundsTest {
         assertEquals(originalBBox.getMedian(1), newBBox.getMedian(1), delta);
 
         assertEquals(20000,
-                newMapBounds.getScale(screen, dpi).getGeodeticDenominator(
-                        SPHERICAL_MERCATOR, dpi, newBBox.centre()),
-                1);
+                     newMapBounds.getScale(screen, dpi).getGeodeticDenominator(
+                             SPHERICAL_MERCATOR, dpi, newBBox.centre()),
+                     1);
         assertEquals(26428, newMapBounds.getScale(screen, dpi).getDenominator(dpi), 1);
         assertEquals(399664, newBBox.getMinX(), 1);
         assertEquals(4999664, newBBox.getMinY(), 1);
@@ -187,19 +194,19 @@ public class BBoxMapBoundsTest {
 
 
         assertEquals(bounds.toReferencedEnvelope(null).getWidth() * 2.0,
-                expandedBounds.toReferencedEnvelope(null).getWidth(), 0.01);
+                     expandedBounds.toReferencedEnvelope(null).getWidth(), 0.01);
 
         assertEquals(bounds.toReferencedEnvelope(null).getHeight() * 2.0,
-                expandedBounds.toReferencedEnvelope(null).getHeight(), 0.01);
+                     expandedBounds.toReferencedEnvelope(null).getHeight(), 0.01);
 
         final BBoxMapBounds adjusted = (BBoxMapBounds) expandedBounds.adjustedEnvelope(paintArea);
 
         assertEquals(expandedBounds.toReferencedEnvelope(paintArea).getWidth(),
-                adjusted.toReferencedEnvelope(paintArea).getWidth(), 0.01);
+                     adjusted.toReferencedEnvelope(paintArea).getWidth(), 0.01);
 
         assertEquals(adjusted.toReferencedEnvelope(paintArea).getWidth() /
-                        adjusted.toReferencedEnvelope(paintArea).getHeight(),
-                paintArea.getWidth() / paintArea.getHeight(), 0.01);
+                             adjusted.toReferencedEnvelope(paintArea).getHeight(),
+                     paintArea.getWidth() / paintArea.getHeight(), 0.01);
     }
 
     @Test
@@ -214,19 +221,19 @@ public class BBoxMapBoundsTest {
                 expandedBounds.toReferencedEnvelope(null).getHeight(), 0.01);
 
         assertEquals(bounds.toReferencedEnvelope(null).getWidth() * 2.0,
-                expandedBounds.toReferencedEnvelope(null).getWidth(), 0.01);
+                     expandedBounds.toReferencedEnvelope(null).getWidth(), 0.01);
 
         assertEquals(bounds.toReferencedEnvelope(null).getHeight() * 2.0,
-                expandedBounds.toReferencedEnvelope(null).getHeight(), 0.01);
+                     expandedBounds.toReferencedEnvelope(null).getHeight(), 0.01);
 
         final BBoxMapBounds adjusted = (BBoxMapBounds) expandedBounds.adjustedEnvelope(paintArea);
 
         assertEquals(expandedBounds.toReferencedEnvelope(paintArea).getHeight(),
-                adjusted.toReferencedEnvelope(paintArea).getHeight(), 0.01);
+                     adjusted.toReferencedEnvelope(paintArea).getHeight(), 0.01);
 
         assertEquals(adjusted.toReferencedEnvelope(paintArea).getWidth() /
-                        adjusted.toReferencedEnvelope(paintArea).getHeight(),
-                paintArea.getWidth() / paintArea.getHeight(), 0.01);
+                             adjusted.toReferencedEnvelope(paintArea).getHeight(),
+                     paintArea.getWidth() / paintArea.getHeight(), 0.01);
     }
 
     @Test

@@ -36,43 +36,6 @@ public final class MapfishJsonStyleVersion2 {
     private static final String JSON_MIN_SCALE = "minScale";
     private static final String JSON_MAX_SCALE = "maxScale";
     private static final String JSON_FILTER_INCLUDE = "*";
-
-    enum SymbolizerType {
-        POINT {
-            @Override
-            protected Symbolizer parseJson(
-                    final JsonStyleParserHelper parser,
-                    final PJsonObject symbolizerJson) {
-                return parser.createPointSymbolizer(symbolizerJson);
-            }
-        }, LINE {
-            @Override
-            protected Symbolizer parseJson(
-                    final JsonStyleParserHelper parser,
-                    final PJsonObject symbolizerJson) {
-                return parser.createLineSymbolizer(symbolizerJson);
-            }
-        }, POLYGON {
-            @Override
-            protected Symbolizer parseJson(
-                    final JsonStyleParserHelper parser,
-                    final PJsonObject symbolizerJson) {
-                return parser.createPolygonSymbolizer(symbolizerJson);
-            }
-        }, TEXT {
-            @Override
-            protected Symbolizer parseJson(
-                    final JsonStyleParserHelper parser,
-                    final PJsonObject symbolizerJson) {
-                return parser.createTextSymbolizer(symbolizerJson);
-            }
-        };
-
-        protected abstract Symbolizer parseJson(
-                final JsonStyleParserHelper parser,
-                final PJsonObject symbolizerJson);
-        }
-
     private final PJsonObject json;
     private final StyleBuilder styleBuilder;
     private final JsonStyleParserHelper parserHelper;
@@ -85,7 +48,57 @@ public final class MapfishJsonStyleVersion2 {
         this.json = json;
         this.styleBuilder = styleBuilder;
         this.parserHelper = new JsonStyleParserHelper(configuration, requestFactory, styleBuilder,
-                false);
+                                                      false);
+    }
+
+    @VisibleForTesting
+    static Map<String, String> resolveAllValues(final Map<String, String> values) {
+        Map<String, String> toResolve = Maps.newHashMap(values);
+        Map<String, String> resolved = Maps.newHashMapWithExpectedSize(values.size());
+        while (!toResolve.isEmpty()) {
+            Iterator<Map.Entry<String, String>> entries = toResolve.entrySet().iterator();
+            while (entries.hasNext()) {
+                Map.Entry<String, String> next = entries.next();
+                String value = next.getValue();
+                final String resolve = resolve(values, value);
+                if (resolve == null) {
+                    resolved.put(next.getKey(), value);
+                    entries.remove();
+                } else {
+                    next.setValue(resolve);
+                }
+
+            }
+        }
+
+        return resolved;
+    }
+
+    private static String resolve(final Map<String, String> values, final String value) {
+        int lastEnd = 0;
+        final Matcher matcher = VALUE_EXPR_PATTERN.matcher(value);
+        boolean changed = false;
+        StringBuilder updatedValue = new StringBuilder();
+        while (matcher.find()) {
+            final String valName = matcher.group(1);
+            String replacement;
+            if (values.containsKey(valName)) {
+                changed = true;
+                replacement = values.get(valName);
+            } else {
+                replacement = matcher.group(0);
+            }
+            updatedValue.append(value, lastEnd, matcher.start());
+            updatedValue.append(replacement);
+            lastEnd = matcher.end();
+        }
+
+        if (changed) {
+            updatedValue.append(value.substring(lastEnd));
+            return updatedValue.toString();
+        } else {
+            return null;
+        }
     }
 
     Style parseStyle() {
@@ -129,7 +142,9 @@ public final class MapfishJsonStyleVersion2 {
             SymbolizerType type = SymbolizerType.valueOf(symbolizerJson.getString(JSON_TYPE).toUpperCase());
             symbolizers[i] = type.parseJson(this.parserHelper, symbolizerJson);
             if (symbolizers[i] == null) {
-                throw new RuntimeException("Error creating symbolizer " + symbolizerJson.getString(JSON_TYPE) + " in rule " + jsonKey);
+                throw new RuntimeException(
+                        "Error creating symbolizer " + symbolizerJson.getString(JSON_TYPE) + " in rule " +
+                                jsonKey);
             }
         }
 
@@ -143,7 +158,7 @@ public final class MapfishJsonStyleVersion2 {
 
     private void updateSymbolizerProperties(final PJsonObject ruleJson, final PJsonObject symbolizerJson) {
         Map<String, String> values = buildValuesMap(ruleJson, symbolizerJson);
-        for (Map.Entry<String, String> entry : values.entrySet()) {
+        for (Map.Entry<String, String> entry: values.entrySet()) {
             try {
                 symbolizerJson.getInternalObj().put(entry.getKey(), entry.getValue());
             } catch (JSONException e) {
@@ -152,7 +167,8 @@ public final class MapfishJsonStyleVersion2 {
         }
     }
 
-    private double getScaleDenominator(final Map<String, String> ruleValues, final String keyName, final double defaultValue) {
+    private double getScaleDenominator(
+            final Map<String, String> ruleValues, final String keyName, final double defaultValue) {
         String scaleString = ruleValues.get(keyName);
         if (scaleString != null) {
             return Double.parseDouble(scaleString);
@@ -160,8 +176,9 @@ public final class MapfishJsonStyleVersion2 {
         return defaultValue;
     }
 
-    private Map<String, String> buildValuesMap(final PJsonObject ruleJson,
-                                               final PJsonObject symbolizerJson) {
+    private Map<String, String> buildValuesMap(
+            final PJsonObject ruleJson,
+            final PJsonObject symbolizerJson) {
         Map<String, String> values = Maps.newHashMap();
 
         Iterator<String> keys = this.json.keys();
@@ -190,57 +207,43 @@ public final class MapfishJsonStyleVersion2 {
         return resolveAllValues(values);
     }
 
-    @VisibleForTesting
-    static Map<String, String> resolveAllValues(final Map<String, String> values) {
-        Map<String, String> toResolve = Maps.newHashMap(values);
-        Map<String, String> resolved = Maps.newHashMapWithExpectedSize(values.size());
-        while (!toResolve.isEmpty()) {
-            Iterator<Map.Entry<String, String>> entries = toResolve.entrySet().iterator();
-            while (entries.hasNext()) {
-                Map.Entry<String, String> next = entries.next();
-                String value = next.getValue();
-                final String resolve = resolve(values, value);
-                if (resolve == null) {
-                    resolved.put(next.getKey(), value);
-                    entries.remove();
-                } else {
-                    next.setValue(resolve);
-                }
-
-            }
-        }
-
-        return resolved;
-    }
-
-    private static String resolve(final Map<String, String> values, final String value) {
-        int lastEnd = 0;
-        final Matcher matcher = VALUE_EXPR_PATTERN.matcher(value);
-        boolean changed = false;
-        StringBuilder updatedValue = new StringBuilder();
-        while (matcher.find()) {
-            final String valName = matcher.group(1);
-            String replacement;
-            if (values.containsKey(valName)) {
-                changed = true;
-                replacement = values.get(valName);
-            } else {
-                replacement = matcher.group(0);
-            }
-            updatedValue.append(value.substring(lastEnd, matcher.start()));
-            updatedValue.append(replacement);
-            lastEnd = matcher.end();
-        }
-
-        if (changed) {
-            updatedValue.append(value.substring(lastEnd));
-            return updatedValue.toString();
-        } else {
-            return null;
-        }
-    }
-
     private boolean isRule(final String jsonKey) {
         return this.json.optJSONObject(jsonKey) != null;
+    }
+
+    enum SymbolizerType {
+        POINT {
+            @Override
+            protected Symbolizer parseJson(
+                    final JsonStyleParserHelper parser,
+                    final PJsonObject symbolizerJson) {
+                return parser.createPointSymbolizer(symbolizerJson);
+            }
+        }, LINE {
+            @Override
+            protected Symbolizer parseJson(
+                    final JsonStyleParserHelper parser,
+                    final PJsonObject symbolizerJson) {
+                return parser.createLineSymbolizer(symbolizerJson);
+            }
+        }, POLYGON {
+            @Override
+            protected Symbolizer parseJson(
+                    final JsonStyleParserHelper parser,
+                    final PJsonObject symbolizerJson) {
+                return parser.createPolygonSymbolizer(symbolizerJson);
+            }
+        }, TEXT {
+            @Override
+            protected Symbolizer parseJson(
+                    final JsonStyleParserHelper parser,
+                    final PJsonObject symbolizerJson) {
+                return parser.createTextSymbolizer(symbolizerJson);
+            }
+        };
+
+        protected abstract Symbolizer parseJson(
+                JsonStyleParserHelper parser,
+                PJsonObject symbolizerJson);
     }
 }

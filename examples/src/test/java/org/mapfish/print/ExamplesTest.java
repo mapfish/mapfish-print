@@ -4,11 +4,9 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.JSONObject;
@@ -37,7 +35,6 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.regex.Pattern;
-
 import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
@@ -60,38 +57,36 @@ import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
         ExamplesTest.TEST_SPRING_XML
 })
 public class ExamplesTest {
-    static {
-        Handler.configureProtocolHandler();
-    }
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExamplesTest.class);
-
     public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";
-    public static final String TEST_SPRING_XML = "classpath:test-http-request-factory-application-context.xml";
-
+    public static final String TEST_SPRING_XML =
+            "classpath:test-http-request-factory-application-context.xml";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExamplesTest.class);
     private static final String REQUEST_DATA_FILE = "requestData(-.*)?.json";
     private static final String OLD_API_REQUEST_DATA_FILE = "oldApi-requestData(-.*)?.json";
     private static final String CONFIG_FILE = "config.yaml";
     /**
-     * If this system property is set then it will be interpreted as a regular expression and will be used
-     * to filter the examples that are run.
-     *
-     * For example:
-     * -Dexamples.filter=verbose.*
-     *
+     * If this system property is set then it will be interpreted as a regular expression and will be used to
+     * filter the examples that are run.
+     * <p>
+     * For example: -Dexamples.filter=verbose.*
+     * <p>
      * will run all examples starting with verbose.
      */
     private static final String FILTER_PROPERTY = "examples.filter";
     private static final Pattern REQUEST_MATCH_ALL = Pattern.compile(".*");
     private static final Pattern EXAMPLE_MATCH_ALL = Pattern.compile(".*");
-    @Autowired
-    MapPrinter mapPrinter;
-
     private static Pattern exampleFilter;
     private static Pattern requestFilter;
 
+    static {
+        Handler.configureProtocolHandler();
+    }
+
+    @Autowired
+    MapPrinter mapPrinter;
+
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         final ClassLoader classLoader = AbstractApiTest.class.getClassLoader();
         final URL logfile = classLoader.getResource("logback.xml");
         final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -125,35 +120,69 @@ public class ExamplesTest {
         }
     }
 
+    private static File getFile(Class<?> testClass, String fileName) {
+        final URL resource = testClass.getResource(fileName);
+        if (resource == null) {
+            throw new AssertionError("Unable to find test resource: " + fileName);
+        }
+
+        return new File(resource.getFile());
+    }
+
+    public static void main(String[] args) {
+        JUnitCore junit = new JUnitCore();
+        if (args.length < 1) {
+            System.err.println("This main is expected to have at least one parameter, it is a regular " +
+                                       "expression for selecting the examples to run");
+            System.exit(1);
+        }
+        if (args.length > 2) {
+            System.err.println("A maximum of 2 parameters are allowed.  param 1=example regex, param2 = " +
+                                       "configRegexp");
+            System.exit(1);
+        }
+
+        String filter = args[0];
+        if (args.length == 2) {
+            filter += "/" + args[1];
+        }
+        System.setProperty(FILTER_PROPERTY, filter);
+        RunListener textListener = new TextListener(System.out);
+        junit.addListener(textListener);
+        junit.run(ExamplesTest.class);
+    }
+
     @Test
-    public void testExampleDirectoryNames() throws Exception {
+    public void testExampleDirectoryNames() {
         final String namePattern = "[a-zA-Z0-9_]+";
         final File examplesDir = getFile(ExamplesTest.class, "/examples");
         StringBuilder errors = new StringBuilder();
-        for (File example : Files.fileTreeTraverser().children(examplesDir)) {
+        for (File example: Files.fileTreeTraverser().children(examplesDir)) {
             if (example.isDirectory() && !examplesDir.getName().matches(namePattern)) {
                 errors.append("\n    * ").append(examplesDir.getName());
             }
         }
 
         assertEquals(String.format("All example directory names must match the pattern: '%s'.  " +
-                "The following fail that test: %s", namePattern, errors), 0, errors.length());
+                                           "The following fail that test: %s", namePattern, errors), 0,
+                     errors.length());
     }
+
     @Test
-    public void testAllExamples() throws Exception {
+    public void testAllExamples() {
         Map<String, Throwable> errors = Maps.newHashMap();
 
         int testsRan = 0;
         final File examplesDir = getFile(ExamplesTest.class, "/examples");
 
-        for (File example : Files.fileTreeTraverser().children(examplesDir)) {
+        for (File example: Files.fileTreeTraverser().children(examplesDir)) {
             if (example.isDirectory() && exampleFilter.matcher(example.getName()).matches()) {
                 testsRan += runExample(example, errors);
             }
         }
 
         if (!errors.isEmpty()) {
-            for (Map.Entry<String, Throwable> error : errors.entrySet()) {
+            for (Map.Entry<String, Throwable> error: errors.entrySet()) {
                 System.err.println("\nExample: '" + error.getKey() + "' failed with the error:");
                 error.getValue().printStackTrace();
             }
@@ -165,7 +194,7 @@ public class ExamplesTest {
             errorReport.append(testsRan);
             errorReport.append(" examples.\n");
             errorReport.append("See Standard Error for the stack traces.  A summary is as follows...\n\n");
-            for (Map.Entry<String, Throwable> error : errors.entrySet()) {
+            for (Map.Entry<String, Throwable> error: errors.entrySet()) {
                 StringBuilder exampleName = new StringBuilder();
                 exampleName.append("The example ");
                 exampleName.append(error.getKey());
@@ -192,7 +221,7 @@ public class ExamplesTest {
                 throw new AssertionError(String.format(
                         "Example: '%s' does not have any request data files.", example.getName()));
             }
-            for (File requestFile : Files.fileTreeTraverser().children(example)) {
+            for (File requestFile: Files.fileTreeTraverser().children(example)) {
                 if (!requestFile.isFile() || !requestFilter.matcher(requestFile.getName()).matches()) {
                     continue;
                 }
@@ -201,13 +230,14 @@ public class ExamplesTest {
                         // WARN to be displayed in the Travis logs
                         LOGGER.warn("Run example '{}' ({})", example.getName(), requestFile.getName());
                         String requestData = Files.asCharSource(requestFile,
-                                Charset.forName(Constants.DEFAULT_ENCODING)).read();
+                                                                Charset.forName(Constants.DEFAULT_ENCODING))
+                                .read();
 
                         final PJsonObject jsonSpec;
                         if (requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE)) {
                             PJsonObject oldSpec = MapPrinterServlet.parseJson(requestData, null);
                             jsonSpec = OldAPIRequestConverter.convert(oldSpec,
-                                    this.mapPrinter.getConfiguration());
+                                                                      this.mapPrinter.getConfiguration());
                         } else {
                             jsonSpec = MapPrinter.parseSpec(requestData);
                         }
@@ -223,11 +253,12 @@ public class ExamplesTest {
                         JSONObject headers = new JSONObject();
                         headers.append("Cookie", "examplesTestCookie=value");
                         headers.append("Referer", "http://localhost:8080/print");
-                        headers.append("Host","localhost");
+                        headers.append("Host", "localhost");
                         headers.append("User-Agent",
-                                "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0");
+                                       "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:31.0) Gecko/20100101 " +
+                                               "Firefox/31.0");
                         headers.append("Accept",
-                                "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+                                       "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
                         headers.append("Accept-Language", "en-US,en;q=0.5");
                         headers.append("Accept-Encoding", "gzip, deflate");
                         headers.append("Connection", "keep-alive");
@@ -279,7 +310,7 @@ public class ExamplesTest {
         }
 
         final String imageName = requestFile.getName().replace(".json",
-                "." + outputFormat);
+                                                               "." + outputFormat);
         if (new File(platformSpecificDir, imageName).exists()) {
             return new File(platformSpecificDir, imageName);
         }
@@ -287,7 +318,7 @@ public class ExamplesTest {
     }
 
     private boolean hasRequestFile(File example) {
-        for (File file : Files.fileTreeTraverser().children(example)) {
+        for (File file: Files.fileTreeTraverser().children(example)) {
             if (isRequestDataFile(file)) {
                 return true;
             }
@@ -298,38 +329,5 @@ public class ExamplesTest {
     private boolean isRequestDataFile(File requestFile) {
         return requestFile.getName().matches(REQUEST_DATA_FILE) ||
                 requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE);
-    }
-
-
-    private static File getFile(Class<?> testClass, String fileName) {
-        final URL resource = testClass.getResource(fileName);
-        if (resource == null) {
-            throw new AssertionError("Unable to find test resource: " + fileName);
-        }
-
-        return new File(resource.getFile());
-    }
-
-    public static void main(String[] args) {
-        JUnitCore junit = new JUnitCore();
-        if (args.length < 1) {
-            System.err.println("This main is expected to have at least one parameter, it is a regular " +
-                    "expression for selecting the examples to run");
-            System.exit(1);
-        }
-        if (args.length > 2) {
-            System.err.println("A maximum of 2 parameters are allowed.  param 1=example regex, param2 = " +
-                    "configRegexp");
-            System.exit(1);
-        }
-
-        String filter = args[0];
-        if (args.length == 2) {
-            filter += "/" + args[1];
-        }
-        System.setProperty(FILTER_PROPERTY, filter);
-        RunListener textListener = new TextListener(System.out);
-        junit.addListener(textListener);
-        junit.run(ExamplesTest.class);
     }
 }

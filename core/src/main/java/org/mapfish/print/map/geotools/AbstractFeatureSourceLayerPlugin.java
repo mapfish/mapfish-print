@@ -2,7 +2,6 @@ package org.mapfish.print.map.geotools;
 
 import com.google.common.collect.Sets;
 import com.vividsolutions.jts.geom.Geometry;
-
 import org.geotools.data.FeatureSource;
 import org.geotools.styling.Style;
 import org.mapfish.print.config.Template;
@@ -21,25 +20,24 @@ import java.util.concurrent.ExecutorService;
  */
 public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFactoryPlugin<P> {
 
+    private final Set<String> typeNames;
     /**
      * A parser for parsing styles.
      */
     @Autowired
     protected StyleParser parser;
-
     /**
      * A fork join pool for running async tasks.
      */
     @Autowired
     protected ExecutorService forkJoinPool;
 
-    private final Set<String> typeNames;
-
     /**
      * Constructor.
      *
      * @param typeName at least one type name for identifying the plugin is required.
-     * @param typeNames additional strings used to identify if this plugin can handle the layer definition.
+     * @param typeNames additional strings used to identify if this plugin can handle the layer
+     *         definition.
      */
     public AbstractFeatureSourceLayerPlugin(final String typeName, final String... typeNames) {
         this.typeNames = Sets.newHashSet(typeNames);
@@ -52,24 +50,28 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
     }
 
     /**
-     * Create a function that will create the style on demand.  This is called later in a separate thread so any blocking calls
-     * will not block the parsing of the layer attributes.
+     * Create a function that will create the style on demand.  This is called later in a separate thread so
+     * any blocking calls will not block the parsing of the layer attributes.
+     *
      * @param template the template for this map
      * @param styleString a string that identifies a style.
      */
-    protected final StyleSupplier<FeatureSource> createStyleFunction(final Template template,
-                                                                       final String styleString) {
+    protected final StyleSupplier<FeatureSource> createStyleFunction(
+            final Template template,
+            final String styleString) {
         return new StyleSupplier<FeatureSource>() {
             @Override
-            public Style load(final MfClientHttpRequestFactory requestFactory,
-                              final FeatureSource featureSource) {
+            public Style load(
+                    final MfClientHttpRequestFactory requestFactory,
+                    final FeatureSource featureSource) {
                 if (featureSource == null) {
                     throw new IllegalArgumentException("Feature source cannot be null");
                 }
 
                 String geomType = Geometry.class.getSimpleName().toLowerCase();
                 if (featureSource.getSchema() != null) {
-                    geomType = featureSource.getSchema().getGeometryDescriptor().getType().getBinding().getSimpleName();
+                    geomType = featureSource.getSchema().getGeometryDescriptor().getType().getBinding()
+                            .getSimpleName();
                 }
                 String styleRef = styleString;
 

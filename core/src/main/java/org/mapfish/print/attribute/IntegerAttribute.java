@@ -20,6 +20,7 @@ public class IntegerAttribute extends PrimitiveAttribute<Integer> {
      *     attributes:
      *       title: !integer
      *         default: 42</code></pre>
+     *
      * @param value The default value.
      */
     public final void setDefault(final Integer value) {

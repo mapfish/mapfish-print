@@ -2,7 +2,6 @@ package org.mapfish.print.attribute;
 
 
 import com.google.common.base.Strings;
-
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
@@ -32,11 +31,13 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
     @Override
     public final void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.width == null || this.width < 1) {
-            validationErrors.add(new ConfigurationException("width field is not legal: " + this.width + " in " + getClass().getName()));
+            validationErrors.add(new ConfigurationException(
+                    "width field is not legal: " + this.width + " in " + getClass().getName()));
         }
 
         if (this.height == null || this.height < 1) {
-            validationErrors.add(new ConfigurationException("height field is not legal: " + this.height + " in " + getClass().getName()));
+            validationErrors.add(new ConfigurationException(
+                    "height field is not legal: " + this.height + " in " + getClass().getName()));
         }
     }
 
@@ -55,8 +56,9 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
     }
 
     /**
-     * The width of the scalebar in pixels. This value should match the width
-     * of the sub-report in the JasperReport template.
+     * The width of the scalebar in pixels. This value should match the width of the sub-report in the
+     * JasperReport template.
+     *
      * @param width Width
      */
     public final void setWidth(final Integer width) {
@@ -68,8 +70,9 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
     }
 
     /**
-     * The height of the scalebar in pixels. This value should match the height
-     * of the sub-report in the JasperReport template.
+     * The height of the scalebar in pixels. This value should match the height of the sub-report in the
+     * JasperReport template.
+     *
      * @param height Height
      */
     public final void setHeight(final Integer height) {
@@ -83,6 +86,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
 
     /**
      * Specifies whether a subreport should be created, or only a graphic.
+     *
      * @param createSubReport Create a sub-report?
      */
     public final void setCreateSubReport(final Boolean createSubReport) {
@@ -110,11 +114,11 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          *
          * <p>Available types:</p>
          * <ul>
-         *      <li>"line": A simple line with graduations.</li>
-         *      <li>"bar" (default): A thick bar with alternating black and white zones marking the intervals.
-         *          The colors can be customized by changing the properties `color` and `barBgColor`.
-         *      </li>
-         *      <li>"bar_sub": Like "bar", but with little ticks for the labels.</li>
+         * <li>"line": A simple line with graduations.</li>
+         * <li>"bar" (default): A thick bar with alternating black and white zones marking the intervals.
+         * The colors can be customized by changing the properties `color` and `barBgColor`.
+         * </li>
+         * <li>"bar_sub": Like "bar", but with little ticks for the labels.</li>
          * </ul>
          */
         @HasDefaultValue
@@ -125,14 +129,15 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          *
          * <p>The unit can be any of:</p>
          * <ul>
-         *      <li>m (mm, cm, m or km)</li>
-         *      <li>ft (in, ft, yd, mi)</li>
-         *      <li>degrees (min, sec, °)</li>
+         * <li>m (mm, cm, m or km)</li>
+         * <li>ft (in, ft, yd, mi)</li>
+         * <li>degrees (min, sec, °)</li>
          * </ul>
          *
          * <p>If the value is too big or too small, the module will switch to one of the unit in parenthesis
-         * (the same unit is used for every interval). If this behaviour is not desired, the `lockUnits` parameter
-         * will force the declared unit (or map unit if no unit is declared) to be used for the scalebar.</p>
+         * (the same unit is used for every interval). If this behaviour is not desired, the `lockUnits`
+         * parameter will force the declared unit (or map unit if no unit is declared) to be used for the
+         * scalebar.</p>
          */
         @HasDefaultValue
         public String unit = null;
@@ -144,17 +149,15 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         public boolean geodetic = false;
 
         /**
-         * Force that the given unit is used (default: false).
-         * For example if the unit is set to meters and `lockUnits` is enabled,
-         * then meters is always used, even when kilometers would create nicer
+         * Force that the given unit is used (default: false). For example if the unit is set to meters and
+         * `lockUnits` is enabled, then meters is always used, even when kilometers would create nicer
          * values.
          */
         @HasDefaultValue
         public Boolean lockUnits = false;
 
         /**
-         * The number of intervals (default: 3).
-         * There must be at least two intervals.
+         * The number of intervals (default: 3). There must be at least two intervals.
          */
         @HasDefaultValue
         public Integer intervals = DEFAULT_INTERVALS;
@@ -232,10 +235,11 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          *
          * <p>Available options:</p>
          * <ul>
-         *      <li>"horizontalLabelsBelow" (default): Horizontal scalebar and the labels are shown below the bar.</li>
-         *      <li>"horizontalLabelsAbove": Horizontal scalebar and the labels are shown above the bar.</li>
-         *      <li>"verticalLabelsLeft": Vertical scalebar and the labels are shown left of the bar.</li>
-         *      <li>"verticalLabelsRight": Vertical scalebar and the labels are shown right of the bar.</li>
+         * <li>"horizontalLabelsBelow" (default): Horizontal scalebar and the labels are shown below the
+         * bar.</li>
+         * <li>"horizontalLabelsAbove": Horizontal scalebar and the labels are shown above the bar.</li>
+         * <li>"verticalLabelsLeft": Vertical scalebar and the labels are shown left of the bar.</li>
+         * <li>"verticalLabelsRight": Vertical scalebar and the labels are shown right of the bar.</li>
          * </ul>
          */
         @HasDefaultValue
@@ -260,8 +264,8 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
         public String verticalAlign = VerticalAlign.BOTTOM.getLabel();
 
         /**
-         * Indicates if the scalebar graphic is rendered as SVG
-         * (will default to {@link org.mapfish.print.config.Configuration#defaultToSvg}).
+         * Indicates if the scalebar graphic is rendered as SVG (will default to {@link
+         * org.mapfish.print.config.Configuration#defaultToSvg}).
          */
         @HasDefaultValue
         public Boolean renderAsSvg = true;

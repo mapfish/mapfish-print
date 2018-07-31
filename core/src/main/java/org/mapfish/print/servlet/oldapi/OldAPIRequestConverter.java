@@ -41,18 +41,20 @@ public final class OldAPIRequestConverter {
             "units", "srs", "layout", "dpi", "layers", "pages", "legends",
             "geodetic", "outputFilename", "outputFormat", "app");
 
-    private OldAPIRequestConverter() { }
+    private OldAPIRequestConverter() {
+    }
 
     /**
      * Converts a print request of the old API into the new request format.
-     *
-     * Note that the converter does not support all features of the old API, for example
-     * only requests containing a single map are supported.
+     * <p>
+     * Note that the converter does not support all features of the old API, for example only requests
+     * containing a single map are supported.
      *
      * @param oldRequest the request in the format of the old API
      * @param configuration the configuration
      */
-    public static PJsonObject convert(final PJsonObject oldRequest, final Configuration configuration) throws JSONException {
+    public static PJsonObject convert(final PJsonObject oldRequest, final Configuration configuration)
+            throws JSONException {
         final String layout = oldRequest.getString(JSON_LAYOUT_KEY);
 
         if (configuration.getTemplate(layout) == null) {
@@ -67,12 +69,14 @@ public final class OldAPIRequestConverter {
         if (oldRequest.has(JSON_OUTPUT_FORMAT)) {
             request.put(JSON_OUTPUT_FORMAT, oldRequest.getString(JSON_OUTPUT_FORMAT));
         }
-        request.put(MapPrinterServlet.JSON_ATTRIBUTES, getAttributes(oldRequest, configuration.getTemplate(layout)));
+        request.put(MapPrinterServlet.JSON_ATTRIBUTES,
+                    getAttributes(oldRequest, configuration.getTemplate(layout)));
 
         return new PJsonObject(request, "spec");
     }
 
-    private static JSONObject getAttributes(final PJsonObject oldRequest, final Template template) throws JSONException {
+    private static JSONObject getAttributes(final PJsonObject oldRequest, final Template template)
+            throws JSONException {
         final JSONObject attributes = new JSONObject();
 
         setMapAttribute(attributes, oldRequest, template);
@@ -92,7 +96,8 @@ public final class OldAPIRequestConverter {
         return attributes;
     }
 
-    private static void setMapAttribute(final JSONObject attributes,
+    private static void setMapAttribute(
+            final JSONObject attributes,
             final PJsonObject oldRequest, final Template template) throws JSONException {
         final CreateMapProcessor mapProcessor = getMapProcessor(template);
         final PJsonObject oldMapPage = (PJsonObject) getOldMapPage(oldRequest);
@@ -102,13 +107,15 @@ public final class OldAPIRequestConverter {
                 // no map, no work
                 return;
             } else {
-                LOGGER.warn("The request json data has attribute information for creating the map but config does not have a" +
-                            "map attribute.  Check that the request and the config.yaml are correct.");
+                LOGGER.warn(
+                        "The request json data has attribute information for creating the map but config " +
+                                "does not have a" +
+                                "map attribute.  Check that the request and the config.yaml are correct.");
                 return;
             }
         } else if (oldMapPage == null) {
             LOGGER.warn("The request json data does not have attribute information for creating the map." +
-                        "  Check that the request and the config.yaml are correct.");
+                                "  Check that the request and the config.yaml are correct.");
             return;
         }
 
@@ -142,14 +149,16 @@ public final class OldAPIRequestConverter {
     private static CreateMapProcessor getMapProcessor(final Template template) {
         CreateMapProcessor mapProcessor = null;
 
-        for (Processor<?, ?> processor : template.getProcessors()) {
+        for (Processor<?, ?> processor: template.getProcessors()) {
             if (processor instanceof CreateMapProcessor) {
                 if (mapProcessor == null) {
                     mapProcessor = (CreateMapProcessor) processor;
                 } else {
                     throw new UnsupportedOperationException("Template contains "
-                            + "more than one map configuration. The legacy API "
-                            + "supports only one map per template.");
+                                                                    +
+                                                                    "more than one map configuration. The " +
+                                                                    "legacy API "
+                                                                    + "supports only one map per template.");
                 }
             }
         }
@@ -168,8 +177,10 @@ public final class OldAPIRequestConverter {
                     mapPage = page;
                 } else {
                     throw new UnsupportedOperationException("Request contains "
-                            + "more than one page with a map. The legacy API "
-                            + "supports only one map per report.");
+                                                                    +
+                                                                    "more than one page with a map. The " +
+                                                                    "legacy API "
+                                                                    + "supports only one map per report.");
                 }
             }
         }
@@ -183,7 +194,9 @@ public final class OldAPIRequestConverter {
         return false;
     }
 
-    private static void setMapLayers(final JSONObject map, final PJsonObject oldRequest, final OldApiConfig oldApi) throws JSONException {
+    private static void setMapLayers(
+            final JSONObject map, final PJsonObject oldRequest, final OldApiConfig oldApi)
+            throws JSONException {
         final JSONArray layers = new JSONArray();
         map.put("layers", layers);
 
@@ -207,36 +220,19 @@ public final class OldAPIRequestConverter {
     }
 
     /**
-     * Converts the old API legend requestData.
-     * "legends": [{
-     *   "name": "",
-     *   "classes": [{
-     *     "name": "test",
-     *     "icons": ["http://ref.geoview.bl.ch/print3/wsgi/mapserv_proxy?"]
-     *   }]
-     * }]
-     *
-     * to the new API:
-     * "legend": {
-     *   "name": "",
-     *   "classes": [{
-     *     "name": "Arbres",
-     *     "icons": ["http://localhost:9876/e2egeoserver/www/legends/arbres.png"]
-     *   }, {
-     *     "name": "Peturbations",
-     *     "icons": ["http://localhost:9876/e2egeoserver/www/legends/perturbations.png"]
-     *   }, {
-     *     "name": "Points de vente",
-     *     "icons": ["http://localhost:9876/e2egeoserver/www/legends/points-de-vente.png"]
-     *   }, {
-     *     "name": "Stationement",
-     *     "icons": ["http://localhost:9876/e2egeoserver/www/legends/stationement.png"]
-     *   }]
-     * },
+     * Converts the old API legend requestData. "legends": [{ "name": "", "classes": [{ "name": "test",
+     * "icons": ["http://ref.geoview.bl.ch/print3/wsgi/mapserv_proxy?"] }] }]
+     * <p>
+     * to the new API: "legend": { "name": "", "classes": [{ "name": "Arbres", "icons":
+     * ["http://localhost:9876/e2egeoserver/www/legends/arbres.png"] }, { "name": "Peturbations", "icons":
+     * ["http://localhost:9876/e2egeoserver/www/legends/perturbations.png"] }, { "name": "Points de vente",
+     * "icons": ["http://localhost:9876/e2egeoserver/www/legends/points-de-vente.png"] }, { "name":
+     * "Stationement", "icons": ["http://localhost:9876/e2egeoserver/www/legends/stationement.png"] }] },
      */
-    private static void setLegendAttribute(final JSONObject attributes,
-                                           final PJsonObject oldRequest,
-                                           final Template template) throws JSONException {
+    private static void setLegendAttribute(
+            final JSONObject attributes,
+            final PJsonObject oldRequest,
+            final Template template) throws JSONException {
         final List<LegendProcessor> legendProcessors = getLegendProcessor(template);
         PJsonArray oldLegendJson = getLegendJson(oldRequest);
 
@@ -245,8 +241,10 @@ public final class OldAPIRequestConverter {
                 // no table, no work
                 return;
             } else {
-                LOGGER.warn("The request json data has attribute information for creating the map but config does not have a" +
-                            "map attribute.  Check that the request and the config.yaml are correct.");
+                LOGGER.warn(
+                        "The request json data has attribute information for creating the map but config " +
+                                "does not have a" +
+                                "map attribute.  Check that the request and the config.yaml are correct.");
                 return;
             }
         } else if (oldLegendJson == null) {
@@ -255,8 +253,9 @@ public final class OldAPIRequestConverter {
         }
 
         if (legendProcessors.size() != oldLegendJson.size()) {
-            LOGGER.warn("Not all legends processors have request data.  There are " + legendProcessors.size() +
-                        " and there are " + oldLegendJson.size() + " legend request objects.");
+            LOGGER.warn(
+                    "Not all legends processors have request data.  There are " + legendProcessors.size() +
+                            " and there are " + oldLegendJson.size() + " legend request objects.");
         }
 
         String legendAttName = "legend";
@@ -297,7 +296,7 @@ public final class OldAPIRequestConverter {
     private static List<LegendProcessor> getLegendProcessor(final Template template) {
         List<LegendProcessor> processors = Lists.newArrayList();
 
-        for (Processor processor : template.getProcessors()) {
+        for (Processor processor: template.getProcessors()) {
             if (processor instanceof LegendProcessor) {
                 LegendProcessor legendProcessor = (LegendProcessor) processor;
                 processors.add(legendProcessor);
@@ -308,43 +307,17 @@ public final class OldAPIRequestConverter {
 
     /**
      * Converts a table definition from something like:
-     *
-     *   "table":{
-     *       "data":[
-     *          {
-     *             "col0":"a",
-     *             "col1":"b",
-     *             "col2":"c"
-     *          },
-     *          {
-     *             "col0":"d",
-     *             "col1":"e",
-     *             "col2":"f"
-     *          },
-     *          {},
-     *          {}
-     *       ],
-     *       "columns":[
-     *          "col0",
-     *          "col1",
-     *          "col2"
-     *       ]
-     *    },
-     *    "col0":"Column 1",
-     *    "col1":"Column 2",
-     *    "col2":"Column 3"
-     *
-     *    ... to ...:
-     *
-     *   "table": {
-     *       "columns": ["Column 1", "Column 2", "Column 3"],
-     *       "data": [
-     *           ["a", "b", "c"],
-     *           ["d", "e", "f"]
-     *       ]
-     *   },
+     * <p>
+     * "table":{ "data":[ { "col0":"a", "col1":"b", "col2":"c" }, { "col0":"d", "col1":"e", "col2":"f" }, {},
+     * {} ], "columns":[ "col0", "col1", "col2" ] }, "col0":"Column 1", "col1":"Column 2", "col2":"Column 3"
+     * <p>
+     * ... to ...:
+     * <p>
+     * "table": { "columns": ["Column 1", "Column 2", "Column 3"], "data": [ ["a", "b", "c"], ["d", "e", "f"]
+     * ] },
      */
-    private static void setTableAttribute(final JSONObject attributes,
+    private static void setTableAttribute(
+            final JSONObject attributes,
             final PJsonObject oldRequest, final Template template) throws JSONException {
         final TableProcessor tableProcessor = getTableProcessor(template);
         PJsonObject oldTablePage = (PJsonObject) getOldTablePage(oldRequest);
@@ -354,8 +327,10 @@ public final class OldAPIRequestConverter {
                 // no table, no work
                 return;
             } else {
-                LOGGER.warn("The request json data has attribute information for creating the map but config does not have a" +
-                            "map attribute.  Check that the request and the config.yaml are correct.");
+                LOGGER.warn(
+                        "The request json data has attribute information for creating the map but config " +
+                                "does not have a" +
+                                "map attribute.  Check that the request and the config.yaml are correct.");
                 return;
             }
         } else if (oldTablePage == null) {
@@ -382,14 +357,17 @@ public final class OldAPIRequestConverter {
     private static TableProcessor getTableProcessor(final Template template) {
         TableProcessor tableProcessor = null;
 
-        for (Processor<?, ?> processor : template.getProcessors()) {
+        for (Processor<?, ?> processor: template.getProcessors()) {
             if (processor instanceof TableProcessor) {
                 if (tableProcessor == null) {
                     tableProcessor = (TableProcessor) processor;
                 } else {
                     throw new UnsupportedOperationException("Template contains "
-                            + "more than one table configuration. The legacy API "
-                            + "supports only one table per template.");
+                                                                    +
+                                                                    "more than one table configuration. The" +
+                                                                    " legacy API "
+                                                                    +
+                                                                    "supports only one table per template.");
                 }
             }
         }
@@ -408,8 +386,10 @@ public final class OldAPIRequestConverter {
                     tablePage = page;
                 } else {
                     throw new UnsupportedOperationException("Request contains "
-                            + "more than one page with a table. The legacy API "
-                            + "supports only one table per report.");
+                                                                    +
+                                                                    "more than one page with a table. The " +
+                                                                    "legacy API "
+                                                                    + "supports only one table per report.");
                 }
             }
         }
@@ -444,9 +424,10 @@ public final class OldAPIRequestConverter {
 
     private static List<String> getTableColumnKeys(final PJsonObject oldTablePage) {
         final PJsonObject table = oldTablePage.optJSONObject("table");
-        final List<String> columnKeys = new LinkedList<String>();
+        final List<String> columnKeys = new LinkedList<>();
         if (table != null) {
-            final PArray columns = table.optArray("columns", new PJsonArray(table, new JSONArray(), "columns"));
+            final PArray columns =
+                    table.optArray("columns", new PJsonArray(table, new JSONArray(), "columns"));
 
             for (int i = 0; i < columns.size(); i++) {
                 columnKeys.add(columns.getString(i));
@@ -456,11 +437,12 @@ public final class OldAPIRequestConverter {
         return columnKeys;
     }
 
-    private static List<String> getTableColumnLabels(final List<String> columnKeys,
+    private static List<String> getTableColumnLabels(
+            final List<String> columnKeys,
             final PJsonObject oldTablePage) {
-        final List<String> columnLabels = new LinkedList<String>();
+        final List<String> columnLabels = new LinkedList<>();
 
-        for (String key : columnKeys) {
+        for (String key: columnKeys) {
             if (oldTablePage.has(key)) {
                 columnLabels.add(oldTablePage.getString(key));
             } else {
@@ -471,13 +453,15 @@ public final class OldAPIRequestConverter {
         return columnLabels;
     }
 
-    private static List<JSONArray> getTableData(final List<String> columnKeys,
+    private static List<JSONArray> getTableData(
+            final List<String> columnKeys,
             final PJsonObject oldTablePage) {
         final PJsonObject table = oldTablePage.optJSONObject("table");
 
-        final List<JSONArray> tableData = new LinkedList<JSONArray>();
+        final List<JSONArray> tableData = new LinkedList<>();
         if (table != null) {
-            final PArray oldTableRows = table.optArray("data", new PJsonArray(table, new JSONArray(), "data"));
+            final PArray oldTableRows =
+                    table.optArray("data", new PJsonArray(table, new JSONArray(), "data"));
 
             for (int i = 0; i < oldTableRows.size(); i++) {
                 final PObject oldRow = oldTableRows.getObject(i);
@@ -488,7 +472,7 @@ public final class OldAPIRequestConverter {
 
                 // copy the values for each column
                 final JSONArray row = new JSONArray();
-                for (String key : columnKeys) {
+                for (String key: columnKeys) {
                     row.put(oldRow.getString(key));
                 }
                 tableData.add(row);

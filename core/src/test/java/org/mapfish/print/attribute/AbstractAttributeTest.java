@@ -1,7 +1,6 @@
 package org.mapfish.print.attribute;
 
 import com.google.common.collect.Lists;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -22,15 +21,6 @@ import static org.mapfish.print.attribute.ReflectiveAttribute.JSON_NAME;
  */
 public abstract class AbstractAttributeTest {
 
-    @Test
-    public void testPrintClientConfig() throws Exception {
-        final Attribute attribute = createAttribute();
-        Template template = Mockito.mock(Template.class);
-        JSONObject capabilities = getClientConfig(attribute, template);
-        assertTrue("Missing " + JSON_NAME + " in: \n" + capabilities.toString(2), capabilities.has(JSON_NAME));
-        assertTrue("Missing " + JSON_ATTRIBUTE_TYPE + " in: \n" + capabilities.toString(2), capabilities.has(JSON_ATTRIBUTE_TYPE));
-    }
-
     public static JSONObject getClientConfig(Attribute attribute, Template template) throws JSONException {
         final StringWriter jsonOutput = new StringWriter();
         JSONWriter json = new JSONWriter(jsonOutput);
@@ -41,7 +31,18 @@ public abstract class AbstractAttributeTest {
     }
 
     @Test
-    public void testValidate() throws Exception {
+    public void testPrintClientConfig() {
+        final Attribute attribute = createAttribute();
+        Template template = Mockito.mock(Template.class);
+        JSONObject capabilities = getClientConfig(attribute, template);
+        assertTrue("Missing " + JSON_NAME + " in: \n" + capabilities.toString(2),
+                   capabilities.has(JSON_NAME));
+        assertTrue("Missing " + JSON_ATTRIBUTE_TYPE + " in: \n" + capabilities.toString(2),
+                   capabilities.has(JSON_ATTRIBUTE_TYPE));
+    }
+
+    @Test
+    public void testValidate() {
         List<Throwable> errors = Lists.newArrayList();
         Configuration configuration = new Configuration();
         createAttribute().validate(errors, configuration);

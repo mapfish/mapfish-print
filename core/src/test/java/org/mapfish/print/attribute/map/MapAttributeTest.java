@@ -1,7 +1,6 @@
 package org.mapfish.print.attribute.map;
 
 import com.google.common.collect.Lists;
-
 import org.geotools.referencing.CRS;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -27,6 +26,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.BASE_DIR;
 import static org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.loadJsonRequestData;
@@ -47,7 +47,8 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
     @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)
     public void testMaxDpi() throws Exception {
-        final File configFile = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "config.yaml");
+        final File configFile =
+                getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "config.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
 
@@ -57,7 +58,8 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         map.remove("dpi");
         map.accumulate("dpi", 1000);
 
-        final ReflectiveAttribute<MapAttribute.MapAttributeValues> mapAttribute = (ReflectiveAttribute<MapAttribute
+        final ReflectiveAttribute<MapAttribute.MapAttributeValues> mapAttribute =
+                (ReflectiveAttribute<MapAttribute
                         .MapAttributeValues>) template.getAttributes().get("map");
 
         final MapAttribute.MapAttributeValues value = mapAttribute.createValue(template);
@@ -82,10 +84,13 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final File configFile = getFile(MapAttributeTest.class, "map_attributes/config-json.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
-        final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
-        final Values values = new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
-                new File("."));
-        final MapAttribute.MapAttributeValues value = values.getObject("map", MapAttribute.MapAttributeValues.class);
+        final PJsonObject pJsonObject =
+                parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
+        final Values values =
+                new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
+                           new File("."));
+        final MapAttribute.MapAttributeValues value =
+                values.getObject("map", MapAttribute.MapAttributeValues.class);
 
         assertEquals(90.0, value.getDpi(), 0.1);
         assertNotNull(value.getLayers());
@@ -102,9 +107,13 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final File configFile = getFile(MapAttributeTest.class, "map_attributes/config-yaml.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
-        final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-yaml.json");
-        final Values values = new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory, new File("."));
-        final MapAttribute.MapAttributeValues value = values.getObject("map", MapAttribute.MapAttributeValues.class);
+        final PJsonObject pJsonObject =
+                parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-yaml.json");
+        final Values values =
+                new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
+                           new File("."));
+        final MapAttribute.MapAttributeValues value =
+                values.getObject("map", MapAttribute.MapAttributeValues.class);
 
         assertEquals(80.0, value.getDpi(), 0.1);
         assertNotNull(value.getLayers());
@@ -121,9 +130,13 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final File configFile = getFile(MapAttributeTest.class, "map_attributes/config-yaml.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
-        final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
-        final Values values = new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory, new File("."));
-        final MapAttribute.MapAttributeValues value = values.getObject("map", MapAttribute.MapAttributeValues.class);
+        final PJsonObject pJsonObject =
+                parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
+        final Values values =
+                new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
+                           new File("."));
+        final MapAttribute.MapAttributeValues value =
+                values.getObject("map", MapAttribute.MapAttributeValues.class);
 
         assertEquals(90.0, value.getDpi(), 0.1);
         assertNotNull(value.getLayers());
@@ -140,12 +153,15 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final File configFile = getFile(MapAttributeTest.class, "map_attributes/config-zoomTo.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
-        final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-zoomTo.json");
-        final Values values = new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
-                new File("."));
-        final MapAttribute.MapAttributeValues value = values.getObject("map", MapAttribute.MapAttributeValues.class);
+        final PJsonObject pJsonObject =
+                parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-zoomTo.json");
+        final Values values =
+                new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
+                           new File("."));
+        final MapAttribute.MapAttributeValues value =
+                values.getObject("map", MapAttribute.MapAttributeValues.class);
 
-        assertEquals(null, value.zoomToFeatures);
+        assertNull(value.zoomToFeatures);
     }
 
     @Test
@@ -153,10 +169,14 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final File configFile = getFile(MapAttributeTest.class, "map_attributes/config-zoomToCenter.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
-        final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-zoomToCenter.json");
-        final Values values = new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
-                new File("."));
-        final MapAttribute.MapAttributeValues value = values.getObject("map", MapAttribute.MapAttributeValues.class);
+        final PJsonObject pJsonObject = parseJSONObjectFromFile(MapAttributeTest.class,
+                                                                "map_attributes/requestData-zoomToCenter" +
+                                                                        ".json");
+        final Values values =
+                new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
+                           new File("."));
+        final MapAttribute.MapAttributeValues value =
+                values.getObject("map", MapAttribute.MapAttributeValues.class);
 
         assertNotNull(value.zoomToFeatures);
         assertEquals(ZoomType.CENTER, value.zoomToFeatures.zoomType);

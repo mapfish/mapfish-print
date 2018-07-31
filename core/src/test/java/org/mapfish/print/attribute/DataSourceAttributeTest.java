@@ -27,11 +27,13 @@ public class DataSourceAttributeTest extends AbstractMapfishSpringTest {
 
         final Map<String, Attribute> attributes = template.getAttributes();
 
-        PJsonObject jsonData = parseJSONObjectFromFile(DataSourceAttributeTest.class, "datasource/requestData.json");
+        PJsonObject jsonData =
+                parseJSONObjectFromFile(DataSourceAttributeTest.class, "datasource/requestData.json");
         final Values values = new Values();
         values.populateFromAttributes(template, attributes, jsonData);
 
-        final Class<DataSourceAttribute.DataSourceAttributeValue> type = DataSourceAttribute.DataSourceAttributeValue.class;
+        final Class<DataSourceAttribute.DataSourceAttributeValue> type =
+                DataSourceAttribute.DataSourceAttributeValue.class;
         final DataSourceAttribute.DataSourceAttributeValue value = values.getObject("datasource", type);
         assertNotNull(value);
 

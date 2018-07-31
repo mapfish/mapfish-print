@@ -5,8 +5,8 @@ import com.google.common.base.Optional;
 import java.util.List;
 
 /**
- * <p>A Configuration object for containing metadata that will be embedded in the PDF and parameters to use when encoding the
- * PDF.
+ * <p>A Configuration object for containing metadata that will be embedded in the PDF and parameters to use
+ * when encoding the PDF.
  * </p>
  * <p>Naturally this only applies to reports that are exported as PDFs.</p>
  * [[examples=config_aliases_defaults,verboseExample]]
@@ -42,7 +42,8 @@ public class PDFConfig implements ConfigurationObject {
     }
 
     /**
-     * If this property is set to true then the resulting PDF will be a compressed PDF. By default the PDF is not compressed.
+     * If this property is set to true then the resulting PDF will be a compressed PDF. By default the PDF is
+     * not compressed.
      *
      * @param compressed if the pdf should be compressed.
      */
@@ -100,7 +101,7 @@ public class PDFConfig implements ConfigurationObject {
      */
     public void setKeywords(final List<String> keywords) {
         StringBuilder builder = new StringBuilder();
-        for (String keyword : keywords) {
+        for (String keyword: keywords) {
             if (builder.length() > 0) {
                 builder.append(',');
             }

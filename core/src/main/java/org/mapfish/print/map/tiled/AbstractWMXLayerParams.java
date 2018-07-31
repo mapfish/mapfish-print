@@ -7,7 +7,6 @@ import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
@@ -17,11 +16,12 @@ import java.util.Iterator;
  */
 public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
 
+    private final Multimap<String, String> additionalCustomParam = HashMultimap.create();
     /**
-     * Custom query parameters to use when making http requests.  These are related to {@link #mergeableParams} except they
-     * are the parameters that will prevent two layers from the same server from being merged into a single request with both
-     * layers. See {@link #mergeableParams} for a more detailed example of the difference between {@link #mergeableParams} and
-     * {@link #customParams}.
+     * Custom query parameters to use when making http requests.  These are related to {@link
+     * #mergeableParams} except they are the parameters that will prevent two layers from the same server from
+     * being merged into a single request with both layers. See {@link #mergeableParams} for a more detailed
+     * example of the difference between {@link #mergeableParams} and {@link #customParams}.
      * <p></p>
      * The json should look something like:
      * <pre><code>
@@ -33,10 +33,9 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
      */
     @HasDefaultValue
     public PObject customParams;
-    private final Multimap<String, String> additionalCustomParam = HashMultimap.create();
-
     /**
-     * Custom query parameters that can be merged if multiple layers are merged together into a single request.
+     * Custom query parameters that can be merged if multiple layers are merged together into a single
+     * request.
      * <p></p>
      * The json should look something like:
      * <pre><code>
@@ -46,12 +45,13 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
      * }
      * </code></pre>
      * <p></p>
-     * For example in WMS the style parameter can be merged.  If there are several wms layers that can be merged
-     * except they have different style parameters they can be merged because the style parameter can be merged.
+     * For example in WMS the style parameter can be merged.  If there are several wms layers that can be
+     * merged except they have different style parameters they can be merged because the style parameter can
+     * be merged.
      * <p></p>
-     * Compare that to DPI parameter (for QGIS wms mapserver).  if two layers have different DPI then the layers
-     * cannot be merged.  In this case the DPI should <em>NOT</em> be one of the {@link #mergeableParams} it should
-     * be one of the {@link #customParams}.
+     * Compare that to DPI parameter (for QGIS wms mapserver).  if two layers have different DPI then the
+     * layers cannot be merged.  In this case the DPI should <em>NOT</em> be one of the {@link
+     * #mergeableParams} it should be one of the {@link #customParams}.
      */
     @HasDefaultValue
     public PJsonObject mergeableParams;
@@ -95,12 +95,13 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
 
     @Override
     public String createCommonUrl()
-            throws URISyntaxException, UnsupportedEncodingException {
+            throws URISyntaxException {
         return getBaseUrl();
     }
 
     /**
      * Set a custom parameter.
+     *
      * @param name the parameter name
      * @param value the parameter value
      */

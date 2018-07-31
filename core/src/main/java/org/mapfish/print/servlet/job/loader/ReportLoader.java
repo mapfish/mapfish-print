@@ -15,6 +15,7 @@ public interface ReportLoader {
      * @param reportURI the uri to test.
      */
     boolean accepts(URI reportURI);
+
     /**
      * Reads a report from the URI and writes it to the output stream.
      *

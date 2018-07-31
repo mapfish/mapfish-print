@@ -10,9 +10,7 @@ import java.io.OutputStream;
 /**
  * Interface for exporting the generated PDF from MapPrinter.
  * <p></p>
- * User: jeichar
- * Date: Oct 18, 2010
- * Time: 1:49:41 PM
+ * User: jeichar Date: Oct 18, 2010 Time: 1:49:41 PM
  */
 public interface OutputFormat {
     /**
@@ -27,14 +25,17 @@ public interface OutputFormat {
 
     /**
      * Performs the print and writes to the report in the correct format to the outputStream.
+     *
      * @param jobId the job ID
      * @param spec the data from the client, required for writing.
      * @param config the configuration object representing the server side configuration.
-     * @param configDir the directory that contains the configuration, used for resolving resources like images etc...
+     * @param configDir the directory that contains the configuration, used for resolving resources
+     *         like images etc...
      * @param taskDirectory the temporary directory for this printing task.
      * @param outputStream the stream to write the result to
      */
-    Processor.ExecutionContext print(String jobId, PJsonObject spec, Configuration config, File configDir, File taskDirectory,
-                                     OutputStream outputStream) throws Exception;
+    Processor.ExecutionContext print(
+            String jobId, PJsonObject spec, Configuration config, File configDir, File taskDirectory,
+            OutputStream outputStream) throws Exception;
 
 }

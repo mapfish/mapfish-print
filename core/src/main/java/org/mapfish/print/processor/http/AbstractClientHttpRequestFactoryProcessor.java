@@ -1,4 +1,3 @@
-
 package org.mapfish.print.processor.http;
 
 import org.mapfish.print.config.Configuration;
@@ -29,8 +28,7 @@ public abstract class AbstractClientHttpRequestFactoryProcessor
     }
 
     /**
-     * The matchers used to select the urls that are going to be modified by the processor.
-     * For example:
+     * The matchers used to select the urls that are going to be modified by the processor. For example:
      * <pre><code>
      * - !restrictUris
      *   matchers:
@@ -62,7 +60,8 @@ public abstract class AbstractClientHttpRequestFactoryProcessor
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
+    protected void extraValidation(
+            final List<Throwable> validationErrors, final Configuration configuration) {
         this.matchers.validate(validationErrors);
     }
 
@@ -76,7 +75,7 @@ public abstract class AbstractClientHttpRequestFactoryProcessor
     @Override
     public final Void execute(
             final ClientHttpFactoryProcessorParam values,
-            final ExecutionContext context) throws Exception {
+            final ExecutionContext context) {
         values.clientHttpRequestFactoryProvider.set(createFactoryWrapper(
                 values, values.clientHttpRequestFactoryProvider.get()));
         return null;

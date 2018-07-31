@@ -35,16 +35,19 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
      * Constructor.
      *
      * @param executorService the thread pool for doing the rendering.
-     * @param featureSourceSupplier a function that creates the feature source.  This will only be called once.
-     * @param styleSupplier a function that creates the style for styling the features. This will only be called once.
+     * @param featureSourceSupplier a function that creates the feature source.  This will only be
+     *         called once.
+     * @param styleSupplier a function that creates the style for styling the features. This will only
+     *         be called once.
      * @param renderAsSvg is the layer rendered as SVG?
      * @param params the parameters for this layer
      */
-    public GmlLayer(final ExecutorService executorService,
-                    final FeatureSourceSupplier featureSourceSupplier,
-                    final StyleSupplier<FeatureSource> styleSupplier,
-                    final boolean renderAsSvg,
-                    final AbstractLayerParams params) {
+    public GmlLayer(
+            final ExecutorService executorService,
+            final FeatureSourceSupplier featureSourceSupplier,
+            final StyleSupplier<FeatureSource> styleSupplier,
+            final boolean renderAsSvg,
+            final AbstractLayerParams params) {
         super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params);
     }
 
@@ -57,8 +60,10 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         private static final String TYPE = "gml";
 
         private static final GMLConfiguration GML_2_PARSER = new GMLConfiguration();
-        private static final org.geotools.gml3.GMLConfiguration GML_3_PARSER = new org.geotools.gml3.GMLConfiguration();
-        private static final org.geotools.gml3.v3_2.GMLConfiguration GML_32_PARSER = new org.geotools.gml3.v3_2.GMLConfiguration(true);
+        private static final org.geotools.gml3.GMLConfiguration GML_3_PARSER =
+                new org.geotools.gml3.GMLConfiguration();
+        private static final org.geotools.gml3.v3_2.GMLConfiguration GML_32_PARSER =
+                new org.geotools.gml3.v3_2.GMLConfiguration(true);
 
         @Autowired
         private URIHandler cachingUrihandler;
@@ -80,7 +85,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         @Override
         public GmlLayer parse(
                 @Nonnull final Template template,
-                @Nonnull final GmlParam param) throws IOException {
+                @Nonnull final GmlParam param) {
             return new GmlLayer(
                     this.forkJoinPool,
                     createFeatureSourceSupplier(template, param.url),
@@ -89,13 +94,15 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
                     param);
         }
 
-        private FeatureSourceSupplier createFeatureSourceSupplier(final Template template,
-                                                                    final String url) {
+        private FeatureSourceSupplier createFeatureSourceSupplier(
+                final Template template,
+                final String url) {
             return new FeatureSourceSupplier() {
                 @Nonnull
                 @Override
-                public FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
-                                          @Nonnull final MapfishMapContext mapContext) {
+                public FeatureSource load(
+                        @Nonnull final MfClientHttpRequestFactory requestFactory,
+                        @Nonnull final MapfishMapContext mapContext) {
                     SimpleFeatureCollection featureCollection;
                     try {
                         featureCollection = createFeatureSource(template, requestFactory, url);
@@ -110,9 +117,10 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
             };
         }
 
-        private SimpleFeatureCollection createFeatureSource(final Template template,
-                                                            final MfClientHttpRequestFactory httpRequestFactory,
-                                                            final String gmlString) throws IOException {
+        private SimpleFeatureCollection createFeatureSource(
+                final Template template,
+                final MfClientHttpRequestFactory httpRequestFactory,
+                final String gmlString) throws IOException {
             try {
                 URL url = new URL(gmlString);
                 FileUtils.testForLegalFileUrl(template.getConfiguration(), url);
@@ -191,7 +199,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
     /**
      * The parameters for creating a layer that renders Gml formatted data.
      */
-    public static class GmlParam extends AbstractVectorLayerParam  {
+    public static class GmlParam extends AbstractVectorLayerParam {
         /**
          * A url to the gml or the raw Gml data.
          * <p></p>

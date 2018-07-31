@@ -27,7 +27,7 @@ public class MfClientHttpRequestFactoryImpl_ResponseTest {
     }
 
     @AfterClass
-    public static void tearDown() throws Exception {
+    public static void tearDown() {
         targetServer.stop(0);
     }
 
@@ -46,7 +46,8 @@ public class MfClientHttpRequestFactoryImpl_ResponseTest {
 
         MfClientHttpRequestFactoryImpl factory = new MfClientHttpRequestFactoryImpl(20, 10);
         final ConfigurableRequest request = factory.createRequest(
-                new URI("http://" + HttpProxyTest.LOCALHOST + ":" + TARGET_PORT + "/request"), HttpMethod.GET);
+                new URI("http://" + HttpProxyTest.LOCALHOST + ":" + TARGET_PORT + "/request"),
+                HttpMethod.GET);
 
         final ClientHttpResponse response = request.execute();
         assertEquals("application/json; charset=utf8", response.getHeaders().getFirst("Content-Type"));

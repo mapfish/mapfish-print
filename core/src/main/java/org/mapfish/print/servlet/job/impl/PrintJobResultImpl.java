@@ -9,7 +9,6 @@ import org.mapfish.print.servlet.job.PrintJobStatus;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -20,7 +19,6 @@ import javax.persistence.Table;
 
 /**
  * Print Job Result.
- *
  */
 @Entity
 @Table(name = "print_job_results")
@@ -71,8 +69,9 @@ public class PrintJobResultImpl implements PrintJobResult {
      * @param mimeType the mime type
      * @param referenceId the reference ID
      */
-    public PrintJobResultImpl(final URI reportURI, final String fileName, final String fileExtension,
-                              final String mimeType, final String referenceId) {
+    public PrintJobResultImpl(
+            final URI reportURI, final String fileName, final String fileExtension,
+            final String mimeType, final String referenceId) {
         this.reportURI = reportURI.toString();
         this.mimeType = mimeType;
         this.fileName = fileName;

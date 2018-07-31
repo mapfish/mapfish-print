@@ -7,8 +7,8 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
 /**
-* Base class for drawing a scale bar.
-*/
+ * Base class for drawing a scale bar.
+ */
 public abstract class ScalebarDrawer {
     /**
      * The graphics context.
@@ -26,6 +26,7 @@ public abstract class ScalebarDrawer {
 
     /**
      * Constructor.
+     *
      * @param graphics2d The graphics context.
      * @param settings Parameters for rendering the scalebar.
      */
@@ -74,30 +75,32 @@ public abstract class ScalebarDrawer {
     private AffineTransform getAlignmentTransform() {
         final int offsetX;
         switch (this.settings.getParams().getAlign()) {
-        case LEFT:
-            offsetX = 0;
-            break;
-        case RIGHT:
-            offsetX = this.settings.getMaxSize().width - this.settings.getSize().width;
-            break;
-        case CENTER:
-        default:
-            offsetX = (int) Math.floor(this.settings.getMaxSize().width / 2.0 - this.settings.getSize().width / 2.0);
-            break;
+            case LEFT:
+                offsetX = 0;
+                break;
+            case RIGHT:
+                offsetX = this.settings.getMaxSize().width - this.settings.getSize().width;
+                break;
+            case CENTER:
+            default:
+                offsetX = (int) Math
+                        .floor(this.settings.getMaxSize().width / 2.0 - this.settings.getSize().width / 2.0);
+                break;
         }
 
         final int offsetY;
         switch (this.settings.getParams().getVerticalAlign()) {
-        case TOP:
-            offsetY = 0;
-            break;
-        case BOTTOM:
-            offsetY = this.settings.getMaxSize().height - this.settings.getSize().height;
-            break;
-        case MIDDLE:
-        default:
-            offsetY = (int) Math.floor(this.settings.getMaxSize().height / 2.0 - this.settings.getSize().height / 2.0);
-            break;
+            case TOP:
+                offsetY = 0;
+                break;
+            case BOTTOM:
+                offsetY = this.settings.getMaxSize().height - this.settings.getSize().height;
+                break;
+            case MIDDLE:
+            default:
+                offsetY = (int) Math.floor(this.settings.getMaxSize().height / 2.0 -
+                                                   this.settings.getSize().height / 2.0);
+                break;
         }
 
         return AffineTransform.getTranslateInstance(Math.round(offsetX), Math.round(offsetY));
@@ -150,12 +153,13 @@ public abstract class ScalebarDrawer {
     }
 
     /**
-     * Draws the bar itself. The transformation is setup in a manner where the
-     * bar should be drawn into the rectangle (0, 0) (intervals*intervalWidth, -barSize).
+     * Draws the bar itself. The transformation is setup in a manner where the bar should be drawn into the
+     * rectangle (0, 0) (intervals*intervalWidth, -barSize).
      */
     protected abstract void drawBar();
 
-    private void drawLabels(final AffineTransform transform, final Orientation orientation,
+    private void drawLabels(
+            final AffineTransform transform, final Orientation orientation,
             final float labelRotation) {
         float prevMargin = orientation.isHorizontal() ? this.settings.getMaxSize().width :
                 this.settings.getMaxSize().height;
@@ -176,13 +180,13 @@ public abstract class ScalebarDrawer {
                 centerTransform.concatenate(AffineTransform.getTranslateInstance(
                         Math.round(label.getGraphicOffset()),
                         Math.round(orientation == Orientation.HORIZONTAL_LABELS_BELOW ?
-                                halfRotatedHeight : -halfRotatedHeight)));
+                                           halfRotatedHeight : -halfRotatedHeight)));
                 shouldSkipLabel = label.getGraphicOffset() + halfRotatedWidth > prevMargin - 1;
                 newMargin = label.getGraphicOffset() - halfRotatedWidth;
             } else {
                 centerTransform.concatenate(AffineTransform.getTranslateInstance(
                         Math.round(orientation == Orientation.VERTICAL_LABELS_RIGHT ?
-                                halfRotatedWidth : -halfRotatedWidth),
+                                           halfRotatedWidth : -halfRotatedWidth),
                         Math.round(label.getGraphicOffset())));
                 shouldSkipLabel = label.getGraphicOffset() + halfRotatedHeight > prevMargin - 1;
                 newMargin = label.getGraphicOffset() - halfRotatedHeight;
@@ -195,7 +199,7 @@ public abstract class ScalebarDrawer {
                 this.graphics2d.setTransform(centerTransform);
                 // For some reason, we need to floor the coordinates for the text to be nicely centered
                 label.getLabelLayout().draw(this.graphics2d, (float) Math.floor(-label.getWidth() / 2.0f),
-                        (float) Math.floor(label.getHeight() / 2.0f));
+                                            (float) Math.floor(label.getHeight() / 2.0f));
                 prevMargin = newMargin;
             }
             // else: the label would be written over the previous one => ignore it

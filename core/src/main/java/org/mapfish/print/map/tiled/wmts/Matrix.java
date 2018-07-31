@@ -39,11 +39,13 @@ public class Matrix {
      */
     public final void postConstruct() {
         Assert.equals(2, this.tileSize.length, "tileSize must have exactly 2 elements to the array.  Was: " +
-                                               Arrays.toString(this.tileSize));
-        Assert.equals(2, this.topLeftCorner.length, "topLeftCorner must have exactly 2 elements to the array.  Was: " +
-                                                    Arrays.toString(this.topLeftCorner));
-        Assert.equals(2, this.matrixSize.length, "matrixSize must have exactly 2 elements to the array.  Was: " +
-                                                 Arrays.toString(this.matrixSize));
+                Arrays.toString(this.tileSize));
+        Assert.equals(2, this.topLeftCorner.length,
+                      "topLeftCorner must have exactly 2 elements to the array.  Was: " +
+                              Arrays.toString(this.topLeftCorner));
+        Assert.equals(2, this.matrixSize.length,
+                      "matrixSize must have exactly 2 elements to the array.  Was: " +
+                              Arrays.toString(this.matrixSize));
     }
 
     /**
@@ -62,6 +64,7 @@ public class Matrix {
 
     /**
      * Get the resolution.
+     *
      * @param projection The map projection
      */
     public final double getResolution(final CoordinateReferenceSystem projection) {

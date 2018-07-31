@@ -13,12 +13,13 @@ import java.util.Map;
 
 /**
  * Attribute representing the headers from the request.
- *
- * This is an internal attribute and is added to the system automatically.  It does not need to
- * be added in the config.yaml file.
+ * <p>
+ * This is an internal attribute and is added to the system automatically.  It does not need to be added in
+ * the config.yaml file.
  */
 @InternalAttribute
-public final class HttpRequestHeadersAttribute extends ReflectiveAttribute<HttpRequestHeadersAttribute.Value> {
+public final class HttpRequestHeadersAttribute
+        extends ReflectiveAttribute<HttpRequestHeadersAttribute.Value> {
     /**
      * Constructor that calls init.
      */

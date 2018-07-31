@@ -25,13 +25,14 @@ public class HibernatePrintJob extends PrintJob {
             this.data = out.toByteArray();
         }
         return new PrintResult(new URI("hibernate:" + getEntry().getReferenceId()),
-                this.data.length, executionContext);
+                               this.data.length, executionContext);
     }
 
     @Override
-    protected final PrintJobResult createResult(final URI reportURI, final String fileName,
+    protected final PrintJobResult createResult(
+            final URI reportURI, final String fileName,
             final String fileExtension, final String mimeType, final String referenceId) {
         return new PrintJobResultExtImpl(reportURI, fileName, fileExtension, mimeType, this.data,
-                referenceId);
+                                         referenceId);
     }
 }

@@ -16,7 +16,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 @ContextConfiguration(locations = {
-        "classpath:org/mapfish/print/processor/http/composite-client-http-request-factory/add-custom-processor-application-context.xml"
+        "classpath:org/mapfish/print/processor/http/composite-client-http-request-factory/add-custom" +
+                "-processor-application-context.xml"
 })
 public class CompositeClientHttpRequestFactoryProcessorTest extends AbstractHttpProcessorTest {
 
@@ -50,7 +51,7 @@ public class CompositeClientHttpRequestFactoryProcessorTest extends AbstractHttp
         public Void execute(TestParam values, ExecutionContext context) throws Exception {
             final URI uri = new URI("https://localhost:8443/path?query#fragment");
             final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(uri,
-                    HttpMethod.GET);
+                                                                                                          HttpMethod.GET);
             final URI finalUri = request.getURI();
 
             assertEquals("http", finalUri.getScheme());

@@ -59,7 +59,7 @@ public class Configuration implements ConfigurationObject {
     private static final Map<String, String> GEOMETRY_NAME_ALIASES;
 
     static {
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         map.put(Geometry.class.getSimpleName().toLowerCase(), Geometry.class.getSimpleName().toLowerCase());
         map.put("geom", Geometry.class.getSimpleName().toLowerCase());
         map.put("geometrycollection", Geometry.class.getSimpleName().toLowerCase());
@@ -85,8 +85,8 @@ public class Configuration implements ConfigurationObject {
 
     private Map<String, Template> templates;
     private File configurationFile;
-    private Map<String, String> styles = new HashMap<String, String>();
-    private Map<String, Style> defaultStyle = new HashMap<String, Style>();
+    private Map<String, String> styles = new HashMap<>();
+    private Map<String, Style> defaultStyle = new HashMap<>();
     private boolean throwErrorOnExtraParameters = true;
     private List<HttpProxy> proxies = Lists.newArrayList();
     private PDFConfig pdfConfig = new PDFConfig();
@@ -124,6 +124,15 @@ public class Configuration implements ConfigurationObject {
     }
 
     /**
+     * Configure various properties related to the reports generated as PDFs.
+     *
+     * @param pdfConfig the pdf configuration
+     */
+    public final void setPdfConfig(final PDFConfig pdfConfig) {
+        this.pdfConfig = pdfConfig;
+    }
+
+    /**
      * Initialize some optionally wired fields.
      */
     @PostConstruct
@@ -154,41 +163,6 @@ public class Configuration implements ConfigurationObject {
     }
 
     /**
-     * Configure various properties related to the reports generated as PDFs.
-     *
-     * @param pdfConfig the pdf configuration
-     */
-    public final void setPdfConfig(final PDFConfig pdfConfig) {
-        this.pdfConfig = pdfConfig;
-    }
-
-    /**
-     * The default output file name of the report.  This can be overridden by
-     * {@link org.mapfish.print.config.Template#setOutputFilename(String)} and the outputFilename parameter
-     * in the request JSON.
-     * <p>
-     * This can be a string and can also have a date section in the string that will be filled when the
-     * report is created for example a section with ${&lt;dateFormatString&gt;} will be replaced with the
-     * current date formatted in the way defined by the &lt;dateFormatString&gt; string.  The format rules
-     * are the rules in
-     * <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">java.text.SimpleDateFormat</a>
-     * (do a google search if the link above is broken).
-     * </p>
-     * <p>
-     * Example: <code>outputFilename: print-${dd-MM-yyyy}</code> should output:
-     * <code>print-22-11-2014.pdf</code>
-     * </p>
-     * <p>
-     * Note: the suffix will be appended to the end of the name.
-     * </p>
-     *
-     * @param outputFilename default output file name of the report.
-     */
-    public final void setOutputFilename(final String outputFilename) {
-        this.outputFilename = outputFilename;
-    }
-
-    /**
      * The configuration for locating a custom certificate store.
      */
     @Nullable
@@ -198,8 +172,8 @@ public class Configuration implements ConfigurationObject {
 
     /**
      * The configuration for locating a custom certificate store.  This is only required if the default
-     * certificate store which ships with all java installations does not contain the certificates needed
-     * by this server.  Usually it is to accept a self-signed certificate, for example on a test server.
+     * certificate store which ships with all java installations does not contain the certificates needed by
+     * this server.  Usually it is to accept a self-signed certificate, for example on a test server.
      *
      * @param certificateStore The configuration for locating a custom certificate store
      */
@@ -208,8 +182,8 @@ public class Configuration implements ConfigurationObject {
     }
 
     /**
-     * Get the http credentials.  Should also getProxies since {@link org.mapfish.print.http.HttpProxy} is
-     * a subclass of {@link org.mapfish.print.http.HttpCredential}.
+     * Get the http credentials.  Should also getProxies since {@link org.mapfish.print.http.HttpProxy} is a
+     * subclass of {@link org.mapfish.print.http.HttpCredential}.
      */
     public final List<HttpCredential> getCredentials() {
         return this.credentials;
@@ -218,8 +192,8 @@ public class Configuration implements ConfigurationObject {
     /**
      * Http credentials to be used when making http requests.
      * <p>
-     * If a proxy needs credentials you don't need to configure it here because the proxy configuration
-     * object also has options for declaring the credentials.
+     * If a proxy needs credentials you don't need to configure it here because the proxy configuration object
+     * also has options for declaring the credentials.
      * </p>
      *
      * @param credentials the credentials
@@ -238,8 +212,8 @@ public class Configuration implements ConfigurationObject {
     }
 
     /**
-     * Configuration for proxying http requests.  Each proxy can be configured with authentication
-     * and with the uris that they apply to.
+     * Configuration for proxying http requests.  Each proxy can be configured with authentication and with
+     * the uris that they apply to.
      * <p></p>
      * See {@link org.mapfish.print.http.HttpProxy} for details on how to configure them.
      *
@@ -259,7 +233,7 @@ public class Configuration implements ConfigurationObject {
         json.key("layouts");
         json.array();
         final Map<String, Template> accessibleTemplates = getTemplates();
-        for (String name : accessibleTemplates.keySet()) {
+        for (String name: accessibleTemplates.keySet()) {
             json.object();
             json.key("name").value(name);
             accessibleTemplates.get(name).printClientConfig(json);
@@ -272,6 +246,32 @@ public class Configuration implements ConfigurationObject {
         return this.outputFilename;
     }
 
+    /**
+     * The default output file name of the report.  This can be overridden by {@link
+     * org.mapfish.print.config.Template#setOutputFilename(String)} and the outputFilename parameter in the
+     * request JSON.
+     * <p>
+     * This can be a string and can also have a date section in the string that will be filled when the report
+     * is created for example a section with ${&lt;dateFormatString&gt;} will be replaced with the current
+     * date formatted in the way defined by the &lt;dateFormatString&gt; string.  The format rules are the
+     * rules in
+     * <a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">
+     * java.text.SimpleDateFormat</a> (do a google search if the link above is broken).
+     * </p>
+     * <p>
+     * Example: <code>outputFilename: print-${dd-MM-yyyy}</code> should output:
+     * <code>print-22-11-2014.pdf</code>
+     * </p>
+     * <p>
+     * Note: the suffix will be appended to the end of the name.
+     * </p>
+     *
+     * @param outputFilename default output file name of the report.
+     */
+    public final void setOutputFilename(final String outputFilename) {
+        this.outputFilename = outputFilename;
+    }
+
     public final Map<String, Template> getTemplates() {
         return Maps.filterEntries(this.templates, new Predicate<Map.Entry<String, Template>>() {
             @Override
@@ -281,16 +281,23 @@ public class Configuration implements ConfigurationObject {
                 }
                 try {
                     Configuration.this.accessAssertion.assertAccess("Configuration",
-                            this);
+                                                                    this);
                     input.getValue().assertAccessible(input.getKey());
                     return true;
-                } catch (AccessDeniedException e) {
-                    return false;
-                } catch (AuthenticationCredentialsNotFoundException e) {
+                } catch (AccessDeniedException | AuthenticationCredentialsNotFoundException e) {
                     return false;
                 }
             }
         });
+    }
+
+    /**
+     * Set the configuration of the named template.
+     *
+     * @param templates the templates;
+     */
+    public final void setTemplates(final Map<String, Template> templates) {
+        this.templates = templates;
     }
 
     /**
@@ -305,18 +312,9 @@ public class Configuration implements ConfigurationObject {
             template.assertAccessible(name);
         } else {
             throw new IllegalArgumentException(String.format("Template '%s' does not exist.  Options are: " +
-                            "%s", name, this.templates.keySet()));
+                                                                     "%s", name, this.templates.keySet()));
         }
         return template;
-    }
-
-    /**
-     * Set the configuration of the named template.
-     *
-     * @param templates the templates;
-     */
-    public final void setTemplates(final Map<String, Template> templates) {
-        this.templates = templates;
     }
 
     public final File getDirectory() {
@@ -410,8 +408,9 @@ public class Configuration implements ConfigurationObject {
                 || normalizedGeomName.equalsIgnoreCase(MultiPoint.class.getSimpleName());
     }
 
-    private Symbolizer createMapOverviewStyle(@Nonnull final String normalizedGeomName,
-                                              @Nonnull final StyleBuilder builder) {
+    private Symbolizer createMapOverviewStyle(
+            @Nonnull final String normalizedGeomName,
+            @Nonnull final StyleBuilder builder) {
         Stroke stroke = builder.createStroke(Color.blue, 2);
         final Fill fill = builder.createFill(Color.blue, 0.2);
         String overviewGeomType = Polygon.class.getSimpleName();
@@ -437,12 +436,12 @@ public class Configuration implements ConfigurationObject {
      * Set the default styles.  the case of the keys are not important.  The retrieval will be case
      * insensitive.
      *
-     * @param defaultStyle the mapping from geometry type name (point, polygon, etc...) to the style to use
-     *                    for that type.
+     * @param defaultStyle the mapping from geometry type name (point, polygon, etc...) to the style
+     *         to use for that type.
      */
     public final void setDefaultStyle(final Map<String, Style> defaultStyle) {
         this.defaultStyle = Maps.newHashMapWithExpectedSize(defaultStyle.size());
-        for (Map.Entry<String, Style> entry : defaultStyle.entrySet()) {
+        for (Map.Entry<String, Style> entry: defaultStyle.entrySet()) {
             String normalizedName = GEOMETRY_NAME_ALIASES.get(entry.getKey().toLowerCase());
 
             if (normalizedName == null) {
@@ -485,32 +484,32 @@ public class Configuration implements ConfigurationObject {
         List<Throwable> validationErrors = Lists.newArrayList();
         this.accessAssertion.validate(validationErrors, this);
 
-        for (String jdbcDriver : this.jdbcDrivers) {
+        for (String jdbcDriver: this.jdbcDrivers) {
             try {
                 Class.forName(jdbcDriver);
             } catch (ClassNotFoundException e) {
                 try {
                     Configuration.class.getClassLoader().loadClass(jdbcDriver);
                 } catch (ClassNotFoundException e1) {
-                    validationErrors.add(new ConfigurationException(String.format("Unable to load JDBC " +
-                            "driver: %s ensure that the web application has the jar on its classpath",
-                            jdbcDriver)));
+                    validationErrors.add(new ConfigurationException(String.format(
+                            "Unable to load JDBC driver: %s ensure that the web application has the jar " +
+                                    "on its classpath", jdbcDriver)));
                 }
             }
         }
 
         if (this.configurationFile == null) {
             validationErrors.add(new ConfigurationException("Configuration file is field on configuration " +
-                    "object is null"));
+                                                                    "object is null"));
         }
         if (this.templates.isEmpty()) {
             validationErrors.add(new ConfigurationException("There are not templates defined."));
         }
-        for (Template template : this.templates.values()) {
+        for (Template template: this.templates.values()) {
             template.validate(validationErrors, this);
         }
 
-        for (HttpProxy proxy : this.proxies) {
+        for (HttpProxy proxy: this.proxies) {
             proxy.validate(validationErrors, this);
         }
 
@@ -533,10 +532,9 @@ public class Configuration implements ConfigurationObject {
      * check if the file exists and can be accessed by the user/template/config/etc...
      *
      * @param pathToSubResource a string representing a file that is accessible for use in printing
-     *                          templates within the configuration file.  In the case of a file based URI
-     *                          the path could be a relative path (relative to the configuration file) or
-     *                          an absolute path, but it must be an allowed file (you can't allow access
-     *                          to any file on the file system).
+     *         templates within the configuration file.  In the case of a file based URI the path could be a
+     *         relative path (relative to the configuration file) or an absolute path, but it must be an
+     *         allowed file (you can't allow access to any file on the file system).
      */
     public final boolean isAccessible(final String pathToSubResource) throws IOException {
         return this.fileLoaderManager.isAccessible(this.configurationFile.toURI(), pathToSubResource);
@@ -546,10 +544,9 @@ public class Configuration implements ConfigurationObject {
      * Load the file related to the configuration file.
      *
      * @param pathToSubResource a string representing a file that is accessible for use in printing
-     *                          templates within the configuration file.  In the case of a file based URI
-     *                          the path could be a relative path (relative to the configuration file) or
-     *                          an absolute path, but it must be an allowed file (you can't allow access
-     *                          to any file on the file system).
+     *         templates within the configuration file.  In the case of a file based URI the path could be a
+     *         relative path (relative to the configuration file) or an absolute path, but it must be an
+     *         allowed file (you can't allow access to any file on the file system).
      */
     public final byte[] loadFile(final String pathToSubResource) throws IOException {
         return this.fileLoaderManager.loadFile(this.configurationFile.toURI(), pathToSubResource);
@@ -565,21 +562,21 @@ public class Configuration implements ConfigurationObject {
     }
 
     /**
-     * Set the JDBC drivers that are required to connect to the databases in the configuration.  JDBC
-     * drivers are needed (for example) when database sources are used in templates.  For example if in one
-     * of the template you have:
+     * Set the JDBC drivers that are required to connect to the databases in the configuration.  JDBC drivers
+     * are needed (for example) when database sources are used in templates.  For example if in one of the
+     * template you have:
      *
      * <pre><code>
      *     jdbcUrl: "jdbc:postgresql://localhost:5432/morges_dpfe"
      * </code></pre>
-     *
+     * <p>
      * then you need to add:
      *
      * <pre><code>
      *     jdbcDrivers: [org.postgresql.Driver]
      * </code>
      * </pre>
-     *
+     * <p>
      * or
      *
      * <pre><code>
@@ -587,8 +584,8 @@ public class Configuration implements ConfigurationObject {
      *       - org.postgresql.Driver
      * </code></pre>
      *
-     * @param jdbcDrivers the set of JDBC drivers to load before performing a print (this ensures they are
-     *                    registered with the JVM)
+     * @param jdbcDrivers the set of JDBC drivers to load before performing a print (this ensures they
+     *         are registered with the JVM)
      */
     public final void setJdbcDrivers(final Set<String> jdbcDrivers) {
         this.jdbcDrivers = jdbcDrivers;
@@ -602,8 +599,8 @@ public class Configuration implements ConfigurationObject {
      * The security (how authentication/authorization is done) is configured in the
      * /WEB-INF/classes/mapfish-spring-security.xml
      * <p>
-     * Any user without the required role will get an error when trying to access any of the templates and
-     * no templates will be listed in the capabilities requests.
+     * Any user without the required role will get an error when trying to access any of the templates and no
+     * templates will be listed in the capabilities requests.
      * </p>
      *
      * @param access the roles needed to access this
@@ -635,14 +632,6 @@ public class Configuration implements ConfigurationObject {
     }
 
     /**
-     * Color used for tiles in error on transparent layers.
-     * @param transparentTileErrorColor The color
-     */
-    public final void setTransparentTileErrorColor(final String transparentTileErrorColor) {
-        this.transparentTileErrorColor = transparentTileErrorColor;
-    }
-
-    /**
      * Get the color used to draw the WMS tiles error default: transparent pink.
      */
     public final String getTransparentTileErrorColor() {
@@ -650,11 +639,12 @@ public class Configuration implements ConfigurationObject {
     }
 
     /**
-     * Color used for tiles in error on opaque layers.
-     * @param opaqueTileErrorColor The color
+     * Color used for tiles in error on transparent layers.
+     *
+     * @param transparentTileErrorColor The color
      */
-    public final void setOpaqueTileErrorColor(final String opaqueTileErrorColor) {
-        this.opaqueTileErrorColor = opaqueTileErrorColor;
+    public final void setTransparentTileErrorColor(final String transparentTileErrorColor) {
+        this.transparentTileErrorColor = transparentTileErrorColor;
     }
 
     /**
@@ -662,6 +652,15 @@ public class Configuration implements ConfigurationObject {
      */
     public final String getOpaqueTileErrorColor() {
         return this.opaqueTileErrorColor;
+    }
+
+    /**
+     * Color used for tiles in error on opaque layers.
+     *
+     * @param opaqueTileErrorColor The color
+     */
+    public final void setOpaqueTileErrorColor(final String opaqueTileErrorColor) {
+        this.opaqueTileErrorColor = opaqueTileErrorColor;
     }
 
     /**
@@ -673,6 +672,7 @@ public class Configuration implements ConfigurationObject {
 
     /**
      * Set the resource bundle name.
+     *
      * @param resourceBundle the resource bundle name
      */
     public final void setResourceBundle(final String resourceBundle) {

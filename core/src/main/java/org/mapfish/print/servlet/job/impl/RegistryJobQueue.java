@@ -21,7 +21,6 @@ import java.util.List;
 
 /**
  * Job Queue that uses Registry.
- *
  */
 public class RegistryJobQueue implements JobQueue {
 
@@ -103,7 +102,8 @@ public class RegistryJobQueue implements JobQueue {
     }
 
     @Override
-    public final synchronized void done(final String referenceId, final PrintJobResult result) throws NoSuchReferenceException {
+    public final synchronized void done(final String referenceId, final PrintJobResult result)
+            throws NoSuchReferenceException {
         try {
             PrintJobStatusImpl status = load(referenceId);
             if (!status.isDone()) {
@@ -122,7 +122,8 @@ public class RegistryJobQueue implements JobQueue {
     }
 
     @Override
-    public final synchronized void cancel(final String referenceId, final String message, final boolean forceFinal)
+    public final synchronized void cancel(
+            final String referenceId, final String message, final boolean forceFinal)
             throws NoSuchReferenceException {
         try {
             PrintJobStatusImpl status = load(referenceId);
@@ -200,7 +201,8 @@ public class RegistryJobQueue implements JobQueue {
     }
 
     @Override
-    public final PrintJobStatusImpl get(final String referenceId, final boolean external) throws NoSuchReferenceException {
+    public final PrintJobStatusImpl get(final String referenceId, final boolean external)
+            throws NoSuchReferenceException {
         try {
             PrintJobStatusImpl status = load(referenceId);
             status.setStatusTime(System.currentTimeMillis());
@@ -219,8 +221,7 @@ public class RegistryJobQueue implements JobQueue {
     /**
      * Store the data of a print job in the registry.
      *
-     * @param registry the registry to writer to
-     * @param persister a persister for converting the access assertion to json
+     * @param printJobStatus the print job status
      */
     private void store(final PrintJobStatus printJobStatus) throws JSONException {
         JSONObject metadata = new JSONObject();
@@ -258,7 +259,8 @@ public class RegistryJobQueue implements JobQueue {
             final AccessAssertion accessAssertion = this.assertionPersister.unmarshal(accessJSON);
 
             PrintJobStatusImpl report = new PrintJobStatusImpl(
-                    new PrintJobEntryImpl(referenceId, requestData, startTime, accessAssertion), requestCount);
+                    new PrintJobEntryImpl(referenceId, requestData, startTime, accessAssertion),
+                    requestCount);
             report.setStatus(status);
 
             if (metadata.has(JSON_COMPLETION_DATE)) {
@@ -280,7 +282,8 @@ public class RegistryJobQueue implements JobQueue {
                 String fileExt = metadata.getString(JSON_FILE_EXT);
                 String mimeType = metadata.getString(JSON_MIME_TYPE);
 
-                PrintJobResult result = new PrintJobResultImpl(reportURI, fileName, fileExt, mimeType, referenceId);
+                PrintJobResult result =
+                        new PrintJobResultImpl(reportURI, fileName, fileExt, mimeType, referenceId);
                 report.setResult(result);
             }
 

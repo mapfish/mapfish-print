@@ -35,18 +35,21 @@ import static org.junit.Assert.assertEquals;
  */
 public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
     public static final String BASE_DIR = "paging_processor_test/";
-
+    @Autowired
+    ForkJoinPool forkJoinPool;
     @Autowired
     private ConfigurationFactory configurationFactory;
     @Autowired
     private TestHttpClientFactory requestFactory;
     @Autowired
     private Map<String, OutputFormat> outputFormat;
-    @Autowired
-    ForkJoinPool forkJoinPool;
+
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapPagesProcessorTest.class, BASE_DIR + "requestData.json");
+    }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         final String host = "paging_processor_test";
         requestFactory.registerHandler(
                 new Predicate<URI>() {
@@ -57,7 +60,8 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -112,7 +116,7 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
 
         getAreaOfInterest(requestData).put("display", "NONE");
         getPagingAttributes(requestData).put("aoiDisplay", "NONE");
-        getMapAttributes(requestData).put("dpi",254);
+        getMapAttributes(requestData).put("dpi", 254);
         testPrint(config, requestData, "higher-dpi", format, 40);
 
         config = configurationFactory.getConfig(getFile(BASE_DIR + "config-scalebar.yaml"));
@@ -139,21 +143,18 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
         return attributes.getInternalObj().optJSONObject("map");
     }
 
-    private void testPrint(Configuration config, PJsonObject requestData, String testName,
-                           AbstractJasperReportOutputFormat format, double tolerance) throws Exception {
+    private void testPrint(
+            Configuration config, PJsonObject requestData, String testName,
+            AbstractJasperReportOutputFormat format, double tolerance) throws Exception {
         JasperPrint print = format.getJasperPrint("test", requestData, config, config.getDirectory(),
-                getTaskDirectory()).print;
+                                                  getTaskDirectory()).print;
 
         assertEquals(7, print.getPages().size());
         for (int i = 0; i < print.getPages().size(); i++) {
             BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, i);
             new ImageSimilarity(getFile(String.format("%soutput/%s/expected-page-%s.png",
-                    BASE_DIR, testName, i)))
+                                                      BASE_DIR, testName, i)))
                     .assertSimilarity(reportImage, tolerance);
         }
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapPagesProcessorTest.class, BASE_DIR + "requestData.json");
     }
 }

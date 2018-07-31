@@ -26,7 +26,9 @@ public final class OldApiConfig implements ConfigurationObject {
 
     /**
      * If true then the first layer in the layers array in the JSON request is the bottom layer of the map.
-     * @param layersFirstIsBaseLayer If true then the first layer in the layers array in the JSON request is the bottom layer of the map.
+     *
+     * @param layersFirstIsBaseLayer If true then the first layer in the layers array in the JSON
+     *         request is the bottom layer of the map.
      */
     public void setLayersFirstIsBaseLayer(final boolean layersFirstIsBaseLayer) {
         this.layersFirstIsBaseLayer = layersFirstIsBaseLayer;
@@ -38,14 +40,16 @@ public final class OldApiConfig implements ConfigurationObject {
     }
 
     /**
-     * If true then the layer order coming from the old API client will be reversed for the layers within a WMS request.
+     * If true then the layer order coming from the old API client will be reversed for the layers within a
+     * WMS request.
      */
     public boolean isWmsReverseLayers() {
         return this.wmsReverseLayers;
     }
 
     /**
-     * Set if the layer order coming from the old API client will be reversed for the layers within a WMS request.
+     * Set if the layer order coming from the old API client will be reversed for the layers within a WMS
+     * request.
      *
      * @param wmsReverseLayers if true then the layer order will be reversed
      */

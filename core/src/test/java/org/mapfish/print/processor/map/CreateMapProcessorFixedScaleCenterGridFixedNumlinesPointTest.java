@@ -2,7 +2,6 @@ package org.mapfish.print.processor.map;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
-
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -41,6 +40,11 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest extend
     @Autowired
     private ForkJoinPool forkJoinPool;
 
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
@@ -54,7 +58,8 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest extend
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data/osm" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -69,7 +74,7 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest extend
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -83,10 +88,5 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest extend
         String imageName = getExpectedImageName("", BASE_DIR);
         new ImageSimilarity(getFile(BASE_DIR + imageName))
                 .assertSimilarity(layerGraphics, 780, 330, 10);
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest.class,
-                BASE_DIR + "requestData.json");
     }
 }

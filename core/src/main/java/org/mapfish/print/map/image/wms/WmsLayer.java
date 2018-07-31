@@ -66,28 +66,32 @@ public final class WmsLayer extends AbstractSingleImageLayer {
             @Nonnull final MfClientHttpRequestFactory requestFactory,
             @Nonnull final MapfishMapContext transformer) throws Throwable {
 
-        final Closer closer = Closer.create();
         final String baseMetricName = WmsLayer.class.getName() + ".read." +
                 this.imageRequest.getURI().getHost();
-        try {
+        try (Closer closer = Closer.create()) {
             final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
             LOGGER.info("Query the WMS image {}.", this.imageRequest.getURI());
             final ClientHttpResponse response = closer.register(this.imageRequest.execute());
 
             Assert.isTrue(response != null, "No response, see error above");
             Assert.equals(HttpStatus.OK, response.getStatusCode(), String.format("Http status code for %s " +
-                    "was not OK.  It was: %s. The response message was: '%s'",
-                    this.imageRequest.getURI(), response.getStatusCode(), response.getStatusText()));
+                                                                                         "was not OK.  It " +
+                                                                                         "was: %s. The " +
+                                                                                         "response message " +
+                                                                                         "was: '%s'",
+                                                                                 this.imageRequest.getURI(),
+                                                                                 response.getStatusCode(),
+                                                                                 response.getStatusText()));
 
             final List<String> contentType = response.getHeaders().get("Content-Type");
             if (contentType == null || contentType.size() != 1) {
                 LOGGER.debug("The WMS image {} don't return a valid content type header.",
-                        this.imageRequest.getURI());
+                             this.imageRequest.getURI());
             } else if (!contentType.get(0).startsWith("image/")) {
                 byte[] data = new byte[response.getBody().available()];
                 response.getBody().read(data);
                 LOGGER.debug("We get a wrong WMS image for {}, content type: {}\nresult:\n{}",
-                        this.imageRequest.getURI(), contentType.get(0), new String(data, "UTF-8"));
+                             this.imageRequest.getURI(), contentType.get(0), new String(data, "UTF-8"));
                 this.registry.counter(baseMetricName + ".error").inc();
                 return createErrorImage(transformer.getPaintArea());
             }
@@ -95,7 +99,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
             final BufferedImage image = ImageIO.read(response.getBody());
             if (image == null) {
                 LOGGER.warn("The WMS image {} is an image format that can be decoded",
-                        this.imageRequest.getURI());
+                            this.imageRequest.getURI());
                 this.registry.counter(baseMetricName + ".error").inc();
                 return createErrorImage(transformer.getPaintArea());
             } else {
@@ -105,8 +109,6 @@ public final class WmsLayer extends AbstractSingleImageLayer {
         } catch (Throwable e) {
             this.registry.counter(baseMetricName + ".error").inc();
             throw e;
-        } finally {
-            closer.close();
         }
     }
 
@@ -132,15 +134,14 @@ public final class WmsLayer extends AbstractSingleImageLayer {
     }
 
     /**
-     * If supported by the WMS server, a parameter "angle" can be set
-     * on "customParams" or "mergeableParams". In this case the rotation
-     * will be done natively by the WMS.
+     * If supported by the WMS server, a parameter "angle" can be set on "customParams" or "mergeableParams".
+     * In this case the rotation will be done natively by the WMS.
      */
     @Override
     public boolean supportsNativeRotation() {
         return this.params.useNativeAngle &&
                 (this.params.serverType == WmsLayerParam.ServerType.MAPSERVER ||
-                this.params.serverType == WmsLayerParam.ServerType.GEOSERVER);
+                        this.params.serverType == WmsLayerParam.ServerType.GEOSERVER);
     }
 
     @Override
@@ -162,7 +163,8 @@ public final class WmsLayer extends AbstractSingleImageLayer {
             final Rectangle paintArea = layerTransformer.getPaintArea();
             final ReferencedEnvelope envelope = layerTransformer.getBounds().toReferencedEnvelope(paintArea);
             URI uri = WmsUtilities.makeWmsGetLayerRequest(wmsLayerParam, commonUri, paintArea.getSize(),
-                    layerTransformer.getDPI(), layerTransformer.getRotation(), envelope);
+                                                          layerTransformer.getDPI(),
+                                                          layerTransformer.getRotation(), envelope);
 
             this.imageRequest = WmsUtilities.createWmsRequest(requestFactory, uri, this.params.method);
         } catch (Exception e) {

@@ -25,8 +25,9 @@ public final class AndAccessAssertion implements AccessAssertion {
     /**
      * Set all the Predicates/AccessAssertion that have to all pass in order for this assertion to pass.
      * <p>
-     *     An exception is thrown if this method is called more than once.
+     * An exception is thrown if this method is called more than once.
      * </p>
+     *
      * @param predicates the Predicates/AccessAssertion
      */
     public void setPredicates(@Nonnull final AccessAssertion... predicates) {
@@ -41,7 +42,7 @@ public final class AndAccessAssertion implements AccessAssertion {
 
     @Override
     public void assertAccess(final String resourceDescription, final Object protectedResource) {
-        for (AccessAssertion predicate : this.predicates) {
+        for (AccessAssertion predicate: this.predicates) {
             predicate.assertAccess(resourceDescription, protectedResource);
         }
     }
@@ -54,7 +55,7 @@ public final class AndAccessAssertion implements AccessAssertion {
             marshalData.put(JSON_ARRAY, array);
 
             if (this.predicates != null) {
-                for (AccessAssertion predicate : this.predicates) {
+                for (AccessAssertion predicate: this.predicates) {
                     final JSONObject predicateMarshalData = this.persister.marshal(predicate);
                     array.put(predicateMarshalData);
                 }
@@ -83,7 +84,7 @@ public final class AndAccessAssertion implements AccessAssertion {
 
     @Override
     public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
-        for (AccessAssertion predicate : this.predicates) {
+        for (AccessAssertion predicate: this.predicates) {
             predicate.validate(validationErrors, configuration);
         }
     }
@@ -104,7 +105,7 @@ public final class AndAccessAssertion implements AccessAssertion {
     @Override
     public AccessAssertion copy() {
         AndAccessAssertion assertion = new AndAccessAssertion();
-        assertion.predicates = new ArrayList<AccessAssertion>(this.predicates);
+        assertion.predicates = new ArrayList<>(this.predicates);
         assertion.persister = this.persister;
         return assertion;
     }

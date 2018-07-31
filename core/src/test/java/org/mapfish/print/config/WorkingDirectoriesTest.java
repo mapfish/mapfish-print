@@ -49,7 +49,7 @@ public class WorkingDirectoriesTest extends AbstractMapfishSpringTest {
         assertTrue(taskDir1.exists());
         assertTrue(taskDir2.exists());
 
-        int maxAgeInSeconds = 1000 ;
+        int maxAgeInSeconds = 1000;
         this.workingDirectories.new CleanUpTask(maxAgeInSeconds, maxAgeInSeconds).run();
 
         assertFalse(new File(reportDir, "1").exists());

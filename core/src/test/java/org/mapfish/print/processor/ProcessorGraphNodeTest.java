@@ -13,17 +13,18 @@ import javax.annotation.Nullable;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class ProcessorGraphNodeTest {
     final String iMappingName = "integer";
-    Integer intVal = 1;
     final String bMappingName = "bool";
+    Integer intVal = 1;
     String sVal = "sValue";
     ArrayList<String> lsVal = Lists.newArrayList("one", "two");
-    double[] daVal = new double[] {1.2, 2.3};
+    double[] daVal = new double[]{1.2, 2.3};
 
     @Test
-    public void testPopulateInputParameter() throws Exception {
+    public void testPopulateInputParameter() {
 
         Values values = new Values();
         values.put(iMappingName, intVal);
@@ -39,14 +40,14 @@ public class ProcessorGraphNodeTest {
 
         assertEquals(sVal, param.s);
         assertEquals(intVal.intValue(), param.i);
-        assertEquals(true, param.b);
+        assertTrue(param.b);
         assertEquals(new DataTransferObject().defaultI, param.defaultI);
         assertEquals(lsVal, param.ls);
         assertArrayEquals(daVal, param.da, 0.00001);
     }
 
-    @Test (expected = RuntimeException.class)
-    public void testNullableProperty() throws Exception {
+    @Test(expected = RuntimeException.class)
+    public void testNullableProperty() {
 
         Values values = new Values();
         values.put(iMappingName, intVal);
@@ -64,7 +65,7 @@ public class ProcessorGraphNodeTest {
     }
 
     @Test
-    public void testWriteProcessorOutputToValues() throws Exception {
+    public void testWriteProcessorOutputToValues() {
         Values values = new Values();
 
         final DataTransferObject dto = new DataTransferObject();
@@ -88,7 +89,7 @@ public class ProcessorGraphNodeTest {
     }
 
     @Test
-    public void testWritePrefixedOutputToValues() throws Exception {
+    public void testWritePrefixedOutputToValues() {
         Values values = new Values();
 
         final DataTransferObject dto = new DataTransferObject();
@@ -139,7 +140,7 @@ public class ProcessorGraphNodeTest {
 
         @Nullable
         @Override
-        public DataTransferObject execute(DataTransferObject values, ExecutionContext context) throws Exception {
+        public DataTransferObject execute(DataTransferObject values, ExecutionContext context) {
             return null;
         }
 

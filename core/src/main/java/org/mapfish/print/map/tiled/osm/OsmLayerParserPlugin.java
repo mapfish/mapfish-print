@@ -2,7 +2,6 @@ package org.mapfish.print.map.tiled.osm;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Sets;
-
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -45,7 +43,7 @@ public final class OsmLayerParserPlugin extends AbstractGridCoverageLayerPlugin
             @Nonnull final OsmLayerParam param) {
         String styleRef = param.rasterStyle;
         return new OsmLayer(this.forkJoinPool,
-                super.<GridCoverage2D>createStyleSupplier(template, styleRef),
-                param, this.registry, template.getConfiguration());
+                            super.<GridCoverage2D>createStyleSupplier(template, styleRef),
+                            param, this.registry, template.getConfiguration());
     }
 }

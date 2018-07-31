@@ -19,7 +19,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
- * Parse a style using all the available {@link StyleParserPlugin} registered with the spring application context.
+ * Parse a style using all the available {@link StyleParserPlugin} registered with the spring application
+ * context.
  */
 public final class StyleParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(StyleParser.class);
@@ -28,15 +29,17 @@ public final class StyleParser {
 
     /**
      * Load style using one of the plugins or return Optional.absent().
+     *
      * @param configuration the configuration for the current request.
      * @param clientHttpRequestFactory a factory for making http requests
      * @param styleString the style to load.
      */
-    public Optional<? extends Style> loadStyle(final Configuration configuration,
-                                               @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
-                                               final String styleString) {
+    public Optional<? extends Style> loadStyle(
+            final Configuration configuration,
+            @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
+            final String styleString) {
         if (styleString != null) {
-            for (StyleParserPlugin plugin : this.plugins) {
+            for (StyleParserPlugin plugin: this.plugins) {
                 try {
                     final Optional<? extends Style> style = plugin.parseStyle(
                             configuration, clientHttpRequestFactory, styleString);
@@ -51,11 +54,12 @@ public final class StyleParser {
                                 sld.addStyledLayer(userLayer);
                                 if (LOGGER.isDebugEnabled()) {
                                     LOGGER.debug("Loaded style from: \n\n '{}': \n\n{}",
-                                            styleString, transformer.transform(sld));
+                                                 styleString, transformer.transform(sld));
                                 }
                             } catch (Exception e) {
                                 LOGGER.debug(String.format("Loaded style from: \n\n '%s' \n\n<Unable to " +
-                                        "transform it to xml>: %s", styleString, e), e);
+                                                                   "transform it to xml>: %s", styleString,
+                                                           e), e);
                             }
                         }
                         return style;

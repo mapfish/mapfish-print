@@ -48,14 +48,14 @@ public class SetStyleProcessor extends
                     values.clientHttpRequestFactoryProvider.get(),
                     values.style.style
             ).get();
-            for (MapLayer layer : values.map.getLayers()) {
+            for (MapLayer layer: values.map.getLayers()) {
                 checkCancelState(context);
                 if (layer instanceof AbstractFeatureSourceLayer) {
                     ((AbstractFeatureSourceLayer) layer).setStyle(new StyleSupplier() {
                         @Override
                         public Style load(
                                 final MfClientHttpRequestFactory requestFactory,
-                                final Object featureSource) throws Exception {
+                                final Object featureSource) {
                             return style;
                         }
                     });

@@ -14,9 +14,6 @@ public class AttributeWithSpringInjection extends PrimitiveAttribute<Integer> {
     @Autowired
     private MetricRegistry registry;
 
-    public void assertInjected() {
-        assertNotNull(registry);
-    }
     /**
      * Constructor.
      */
@@ -24,8 +21,13 @@ public class AttributeWithSpringInjection extends PrimitiveAttribute<Integer> {
         super(Integer.class);
     }
 
+    public void assertInjected() {
+        assertNotNull(registry);
+    }
+
     /**
      * <p>A default value for this attribute.</p>
+     *
      * @param value The default value.
      */
     public final void setDefault(final Integer value) {

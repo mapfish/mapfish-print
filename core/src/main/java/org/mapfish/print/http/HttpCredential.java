@@ -16,11 +16,12 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /**
- * Represents a set of credentials to use for an http request.  These can be configured in the Configuration yaml file.
+ * Represents a set of credentials to use for an http request.  These can be configured in the Configuration
+ * yaml file.
  * <p></p>
  * <p>
- * <em>Note: proxies are also HttpCredentials and when searching for credentials, the proxies will also be searched
- * for credentials.</em>
+ * <em>Note: proxies are also HttpCredentials and when searching for credentials, the proxies will also be
+ * searched for credentials.</em>
  * </p>
  */
 public class HttpCredential implements ConfigurationObject {
@@ -31,13 +32,20 @@ public class HttpCredential implements ConfigurationObject {
     /**
      * Matchers are used to choose which requests the credentials apply to.
      *
+     * @param matchers the matchers to use to determine which requests the credentials can be used
+     *         for
      * @see org.mapfish.print.processor.http.matcher.URIMatcher
      * @see org.mapfish.print.processor.http.RestrictUrisProcessor
-     *
-     * @param matchers the matchers to use to determine which requests the credentials can be used for
      */
     public void setMatchers(final List<? extends URIMatcher> matchers) {
         this.matchers.setMatchers(matchers);
+    }
+
+    /**
+     * Get the username.
+     */
+    protected String getUsername() {
+        return this.username;
     }
 
     /**
@@ -53,12 +61,6 @@ public class HttpCredential implements ConfigurationObject {
     }
 
     /**
-     * Get the username.
-     */
-    protected String getUsername() {
-        return this.username;
-    }
-    /**
      * The password for authenticating with the credentials.
      * <p>
      * This is optional
@@ -66,11 +68,12 @@ public class HttpCredential implements ConfigurationObject {
      *
      * @param password the password for authenticating with the credentials
      */
-    public  void setPassword(final String password) {
+    public void setPassword(final String password) {
         if (password == null) {
-            throw new IllegalArgumentException("Do not set a null password, simply exclude it from configuration file.  " +
-                                               "If there is supposed to be a password perhaps it has illegal characters, " +
-                                               "surround password with quotes");
+            throw new IllegalArgumentException(
+                    "Do not set a null password, simply exclude it from configuration file.  " +
+                            "If there is supposed to be a password perhaps it has illegal characters, " +
+                            "surround password with quotes");
         }
         this.password = password.toCharArray();
     }
@@ -87,13 +90,14 @@ public class HttpCredential implements ConfigurationObject {
      *
      * @param matchInfo the information for making the patch
      */
-    public boolean matches(final MatchInfo matchInfo) throws SocketException, UnknownHostException, MalformedURLException {
+    public boolean matches(final MatchInfo matchInfo)
+            throws SocketException, UnknownHostException, MalformedURLException {
         return this.matchers.matches(matchInfo);
     }
 
     /**
-     * Check if this applies to the provided authorization scope and return the credentials for that scope or null if it
-     * doesn't apply to the scope.
+     * Check if this applies to the provided authorization scope and return the credentials for that scope or
+     * null if it doesn't apply to the scope.
      *
      * @param authscope the scope to test against.
      */

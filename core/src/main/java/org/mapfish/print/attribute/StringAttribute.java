@@ -22,10 +22,15 @@ public class StringAttribute extends PrimitiveAttribute<String> {
      *     attributes:
      *       title: !string
      *         default: The title</code></pre>
+     *
      * @param value The default value.
      */
     public final void setDefault(final String value) {
         this.defaultValue = value;
+    }
+
+    public final int getMaxLength() {
+        return this.maxLength;
     }
 
     /**
@@ -37,16 +42,13 @@ public class StringAttribute extends PrimitiveAttribute<String> {
         this.maxLength = maxLength;
     }
 
-    public final int getMaxLength() {
-        return this.maxLength;
-    }
-
     @Override
     public final void validateValue(final Object value) {
         if (this.maxLength >= 0 && value instanceof String) {
             String text = (String) value;
             if (text.length() > this.maxLength) {
-                throw new IllegalArgumentException("text contains more than " + this.maxLength + " characters");
+                throw new IllegalArgumentException(
+                        "text contains more than " + this.maxLength + " characters");
             }
         }
     }

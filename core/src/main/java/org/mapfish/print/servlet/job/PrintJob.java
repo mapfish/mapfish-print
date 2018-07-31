@@ -45,6 +45,32 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
 
     private SecurityContext securityContext;
 
+    /**
+     * Read filename from spec.
+     */
+    private static String getFileName(@Nullable final MapPrinter mapPrinter, final PJsonObject spec) {
+        String fileName = spec.optString(Constants.OUTPUT_FILENAME_KEY);
+        if (fileName != null) {
+            return fileName;
+        }
+
+        if (mapPrinter != null) {
+            final Configuration config = mapPrinter.getConfiguration();
+            final String templateName = spec.getString(Constants.JSON_LAYOUT_KEY);
+
+            final Template template = config.getTemplate(templateName);
+
+            if (template.getOutputFilename() != null) {
+                return template.getOutputFilename();
+            }
+
+            if (config.getOutputFilename() != null) {
+                return config.getOutputFilename();
+            }
+        }
+        return "mapfish-print-report";
+    }
+
     public final PrintJobEntry getEntry() {
         return this.entry;
     }
@@ -71,9 +97,10 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
      * @return the job result
      */
     //CHECKSTYLE:OFF
-    protected PrintJobResult createResult(final URI reportURI, final String fileName, final String fileExtension,
+    protected PrintJobResult createResult(
+            final URI reportURI, final String fileName, final String fileExtension,
             final String mimeType, final String referenceId) {
-    //CHECKSTYLE:ON
+        //CHECKSTYLE:ON
         return new PrintJobResultImpl(reportURI, fileName, fileExtension, mimeType, referenceId);
     }
 
@@ -84,14 +111,15 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         MDC.put("job_id", this.entry.getReferenceId());
         LOGGER.info("Starting print job {}", this.entry.getReferenceId());
         final MapPrinter mapPrinter = PrintJob.this.mapPrinterFactory.create(this.entry.getAppId());
-        final Accounting.JobTracker jobTracker = this.accounting.startJob(this.entry, mapPrinter.getConfiguration());
+        final Accounting.JobTracker jobTracker =
+                this.accounting.startJob(this.entry, mapPrinter.getConfiguration());
         try {
             final PJsonObject spec = this.entry.getRequestData();
             PrintResult report = withOpenOutputStream(new PrintAction() {
                 @Override
                 public Processor.ExecutionContext run(final OutputStream outputStream) throws Exception {
                     return mapPrinter.print(PrintJob.this.entry.getReferenceId(),
-                            PrintJob.this.entry.getRequestData(), outputStream);
+                                            PrintJob.this.entry.getRequestData(), outputStream);
                 }
             });
 
@@ -119,7 +147,8 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
                 this.metricRegistry.counter(getClass().getName() + ".error").inc();
                 jobTracker.onJobError();
             }
-            LOGGER.info("Error executing print job " + canceledText + this.entry.getReferenceId() + "\n" + this.entry.getRequestData(), e);
+            LOGGER.info("Error executing print job " + canceledText + this.entry.getReferenceId() + "\n" +
+                                this.entry.getRequestData(), e);
             throw e;
         } finally {
             final long stop = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
@@ -128,34 +157,9 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     }
 
     /**
-     * Read filename from spec.
-     */
-    private static String getFileName(@Nullable final MapPrinter mapPrinter, final PJsonObject spec) {
-        String fileName = spec.optString(Constants.OUTPUT_FILENAME_KEY);
-        if (fileName != null) {
-            return fileName;
-        }
-
-        if (mapPrinter != null) {
-            final Configuration config = mapPrinter.getConfiguration();
-            final String templateName = spec.getString(Constants.JSON_LAYOUT_KEY);
-
-            final Template template = config.getTemplate(templateName);
-
-            if (template.getOutputFilename() != null) {
-                return template.getOutputFilename();
-            }
-
-            if (config.getOutputFilename() != null) {
-                return config.getOutputFilename();
-            }
-        }
-        return "mapfish-print-report";
-    }
-
-    /**
      * The security context that contains the information about the user that made the request.  This must be
-     * set on {@link org.springframework.security.core.context.SecurityContextHolder} when the thread starts executing.
+     * set on {@link org.springframework.security.core.context.SecurityContextHolder} when the thread starts
+     * executing.
      *
      * @param securityContext the conext object
      */
@@ -199,7 +203,8 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         /**
          * The URI to get the result.
          */
-        @Nonnull public final URI uri;
+        @Nonnull
+        public final URI uri;
 
         /**
          * The result size in bytes.
@@ -209,7 +214,8 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         /**
          * The execution context used during the computation.
          */
-        @Nonnull public final Processor.ExecutionContext executionContext;
+        @Nonnull
+        public final Processor.ExecutionContext executionContext;
 
         /**
          * Constructor.
@@ -218,8 +224,9 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
          * @param fileSize the
          * @param executionContext the
          */
-        public PrintResult(final URI uri, final long fileSize,
-                           final Processor.ExecutionContext executionContext) {
+        public PrintResult(
+                final URI uri, final long fileSize,
+                final Processor.ExecutionContext executionContext) {
             this.uri = uri;
             this.fileSize = fileSize;
             this.executionContext = executionContext;

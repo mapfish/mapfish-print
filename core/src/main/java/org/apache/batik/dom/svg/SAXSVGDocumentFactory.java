@@ -7,6 +7,7 @@ package org.apache.batik.dom.svg;
 public class SAXSVGDocumentFactory extends org.apache.batik.anim.dom.SAXSVGDocumentFactory {
     /**
      * Creates a new SVGDocumentFactory object.
+     *
      * @param parser The SAX2 parser classname.
      */
     public SAXSVGDocumentFactory(final String parser) {
@@ -15,6 +16,7 @@ public class SAXSVGDocumentFactory extends org.apache.batik.anim.dom.SAXSVGDocum
 
     /**
      * Creates a new SVGDocumentFactory object.
+     *
      * @param parser The SAX2 parser classname.
      * @param dd Whether a document descriptor must be generated.
      */

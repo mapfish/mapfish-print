@@ -20,23 +20,25 @@ import javax.annotation.Nullable;
 
 /**
  * <p>
- *     This attribute represents a collection of attributes which can be used as the data source of a Jasper report's
- *     table/detail section.
+ * This attribute represents a collection of attributes which can be used as the data source of a Jasper
+ * report's table/detail section.
  * </p>
  * <p>
- *     For example consider the case where the report should contain multiple tables or charts but the number of reports
- *     may change depending on the request.  In this case the client will post a datasource attribute json object containing an array
- *     of all the table attribute objects.  The {@link org.mapfish.print.processor.jasper.DataSourceProcessor} will process
- *     the datasource attribute and create a Jasper datasource that contains all the tables.
+ * For example consider the case where the report should contain multiple tables or charts but the number of
+ * reports may change depending on the request.  In this case the client will post a datasource attribute json
+ * object containing an array of all the table attribute objects.  The {@link
+ * org.mapfish.print.processor.jasper.DataSourceProcessor} will process the datasource attribute and create a
+ * Jasper datasource that contains all the tables.
  * </p>
  * <p>
- *     This datasource must be used in tandem with the {@link org.mapfish.print.processor.jasper.DataSourceProcessor} processor
- *     (see <a href="processors.html#!createDataSource">!createDataSource</a> processor).
+ * This datasource must be used in tandem with the
+ * {@link org.mapfish.print.processor.jasper.DataSourceProcessor}
+ * processor (see <a href="processors.html#!createDataSource">!createDataSource</a> processor).
  * </p>
  * <p>
- *     The json data of this attribute is special since it represents an array of attributes, each element in the array must
- *     contain all of the attributes required to satisfy the processors in the
- *     {@link org.mapfish.print.processor.jasper.DataSourceProcessor}.
+ * The json data of this attribute is special since it represents an array of attributes, each element in the
+ * array must contain all of the attributes required to satisfy the processors in the {@link
+ * org.mapfish.print.processor.jasper.DataSourceProcessor}.
  * </p>
  * <p>
  * Example configuration:
@@ -91,29 +93,11 @@ public final class DataSourceAttribute implements Attribute {
      *         default:
      *           - name: "name"
      *           - count: 3</code></pre>
+     *
      * @param defaultData The default values.
      */
     public void setDefault(final List<Object> defaultData) {
         this.defaults = new PYamlArray(null, defaultData, "dataSource");
-    }
-
-    /**
-     * The attributes that are acceptable by this dataSource.  The format is the same as the template attributes section.
-     *
-     * @param attributes the attributes
-     */
-    public void setAttributes(final Map<String, Attribute> attributes) {
-        for (Map.Entry<String, Attribute> entry : attributes.entrySet()) {
-            Object attribute = entry.getValue();
-            if (!(attribute instanceof Attribute)) {
-                final String msg = "Attribute: '" + entry.getKey() + "' is not an attribute. It is a: " + attribute;
-                LOGGER.error("Error setting the Attributes: {}", msg);
-                throw new IllegalArgumentException(msg);
-            } else {
-                ((Attribute) attribute).setConfigName(entry.getKey());
-            }
-        }
-        this.attributes = attributes;
     }
 
     /**
@@ -125,17 +109,39 @@ public final class DataSourceAttribute implements Attribute {
         return this.attributes;
     }
 
+    /**
+     * The attributes that are acceptable by this dataSource.  The format is the same as the template
+     * attributes section.
+     *
+     * @param attributes the attributes
+     */
+    public void setAttributes(final Map<String, Attribute> attributes) {
+        for (Map.Entry<String, Attribute> entry: attributes.entrySet()) {
+            Object attribute = entry.getValue();
+            if (!(attribute instanceof Attribute)) {
+                final String msg =
+                        "Attribute: '" + entry.getKey() + "' is not an attribute. It is a: " + attribute;
+                LOGGER.error("Error setting the Attributes: {}", msg);
+                throw new IllegalArgumentException(msg);
+            } else {
+                ((Attribute) attribute).setConfigName(entry.getKey());
+            }
+        }
+        this.attributes = attributes;
+    }
+
     @Override
     public void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
         try {
             json.key(ReflectiveAttribute.JSON_NAME).value(this.configName);
-            json.key(ReflectiveAttribute.JSON_ATTRIBUTE_TYPE).value(DataSourceAttributeValue.class.getSimpleName());
+            json.key(ReflectiveAttribute.JSON_ATTRIBUTE_TYPE)
+                    .value(DataSourceAttributeValue.class.getSimpleName());
 
             json.key(ReflectiveAttribute.JSON_CLIENT_PARAMS);
             json.object();
             json.key("attributes");
             json.array();
-            for (Map.Entry<String, Attribute> entry : this.attributes.entrySet()) {
+            for (Map.Entry<String, Attribute> entry: this.attributes.entrySet()) {
                 Attribute attribute = entry.getValue();
                 if (attribute.getClass().getAnnotation(InternalAttribute.class) == null) {
                     json.object();
@@ -168,8 +174,9 @@ public final class DataSourceAttribute implements Attribute {
      * @param jsonValue the json
      */
     @SuppressWarnings("unchecked")
-    public DataSourceAttributeValue parseAttribute(@Nonnull final Template template,
-                                                   @Nullable final PArray jsonValue) throws JSONException {
+    public DataSourceAttributeValue parseAttribute(
+            @Nonnull final Template template,
+            @Nullable final PArray jsonValue) throws JSONException {
         final PArray pValue;
 
         if (jsonValue != null) {
@@ -200,8 +207,9 @@ public final class DataSourceAttribute implements Attribute {
     }
 
     @Override
-    public Object getValue(@Nonnull final Template template,
-                           @Nonnull final String attributeName, @Nonnull final PObject requestJsonAttributes) {
+    public Object getValue(
+            @Nonnull final Template template,
+            @Nonnull final String attributeName, @Nonnull final PObject requestJsonAttributes) {
         return this.parseAttribute(template, requestJsonAttributes.optArray(attributeName));
     }
 
@@ -210,8 +218,9 @@ public final class DataSourceAttribute implements Attribute {
      */
     public static final class DataSourceAttributeValue {
         /**
-         * The array of attribute data.  Each element in the array is the attribute data for one row in the resulting
-         * datasource (as processed by {@link org.mapfish.print.processor.jasper.DataSourceProcessor})
+         * The array of attribute data.  Each element in the array is the attribute data for one row in the
+         * resulting datasource (as processed by
+         * {@link org.mapfish.print.processor.jasper.DataSourceProcessor})
          */
         public Map<String, Object>[] attributesValues;
     }

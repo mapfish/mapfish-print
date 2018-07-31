@@ -23,7 +23,8 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
     @Override
     public final void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.size == null || this.size < 1) {
-            validationErrors.add(new ConfigurationException("size field is not legal: " + this.size + " in " + getClass().getName()));
+            validationErrors.add(new ConfigurationException(
+                    "size field is not legal: " + this.size + " in " + getClass().getName()));
         }
     }
 
@@ -42,9 +43,9 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
     }
 
     /**
-     * The size (width and height) of the north-arrow graphic in the
-     * JasperReport template.
+     * The size (width and height) of the north-arrow graphic in the JasperReport template.
      * <p>The graphic is a square so that the arrow can be rotated properly.</p>
+     *
      * @param size The size (width and height).
      */
     public final void setSize(final Integer size) {
@@ -58,6 +59,7 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
 
     /**
      * Specifies whether a subreport should be created, or only a graphic.
+     *
      * @param createSubReport Create a sub-report?
      */
     public final void setCreateSubReport(final Boolean createSubReport) {
@@ -77,12 +79,11 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
         /**
          * The path to a graphic to use for the north-arrow.
          * <p>It can either be an URL ("http://xyx.com/img/north-arrow.png") or
-         * a file in the configuration folder ("file://NorthArrow.svg").
-         * Both SVG graphics and raster graphics (png, jpeg, tiff, ...) are
-         * supported.</p>
+         * a file in the configuration folder ("file://NorthArrow.svg"). Both SVG graphics and raster graphics
+         * (png, jpeg, tiff, ...) are supported.</p>
          * <p>While the resulting graphic used in the JasperReport template is
-         * a square, this graphic can have an arbitrary aspect ratio. The graphic
-         * will be scaled to the output size and rotated around its center.</p>
+         * a square, this graphic can have an arbitrary aspect ratio. The graphic will be scaled to the output
+         * size and rotated around its center.</p>
          * <p>If no graphic is given, a default north-arrow is used.</p>
          */
         @HasDefaultValue

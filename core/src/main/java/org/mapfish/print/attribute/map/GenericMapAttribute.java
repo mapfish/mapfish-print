@@ -2,7 +2,6 @@ package org.mapfish.print.attribute.map;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-
 import org.geotools.referencing.CRS;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,13 +27,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Generic attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor} and
- * {@link org.mapfish.print.processor.map.CreateOverviewMapProcessor}.
+ * Generic attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor} and {@link
+ * org.mapfish.print.processor.map.CreateOverviewMapProcessor}.
  */
 public abstract class GenericMapAttribute
         extends ReflectiveAttribute<GenericMapAttribute.GenericMapAttributeValues> {
 
-    private static final double[] DEFAULT_DPI_VALUES = {72, 120, 200, 254, 300, 600, 1200, 2400};
     /**
      * The json key for the suggested DPI values in the client config.
      */
@@ -60,7 +58,7 @@ public abstract class GenericMapAttribute
      */
     public static final String JSON_MAX_HEIGHT = "maxHeight";
     static final String JSON_ZOOM_LEVEL_SUGGESTIONS = "scales";
-
+    private static final double[] DEFAULT_DPI_VALUES = {72, 120, 200, 254, 300, 600, 1200, 2400};
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -76,6 +74,27 @@ public abstract class GenericMapAttribute
 
     private Integer maxWidth = null;
     private Integer maxHeight = null;
+
+    /**
+     * Parse the given projection.
+     *
+     * @param projection The projection string.
+     * @param longitudeFirst longitudeFirst
+     */
+    public static CoordinateReferenceSystem parseProjection(
+            final String projection, final Boolean longitudeFirst) {
+        try {
+            if (longitudeFirst == null) {
+                return CRS.decode(projection);
+            } else {
+                return CRS.decode(projection, longitudeFirst);
+            }
+        } catch (NoSuchAuthorityCodeException e) {
+            throw new RuntimeException(projection + " was not recognized as a crs code", e);
+        } catch (FactoryException e) {
+            throw new RuntimeException("Error occurred while parsing: " + projection, e);
+        }
+    }
 
     public final Double getMaxDpi() {
         return this.maxDpi;
@@ -93,7 +112,7 @@ public abstract class GenericMapAttribute
     public final double[] getDpiSuggestions() {
         if (this.dpiSuggestions == null) {
             List<Double> list = Lists.newArrayList();
-            for (double suggestion : DEFAULT_DPI_VALUES) {
+            for (double suggestion: DEFAULT_DPI_VALUES) {
                 if (suggestion <= this.maxDpi) {
                     list.add(suggestion);
                 }
@@ -121,8 +140,8 @@ public abstract class GenericMapAttribute
     }
 
     /**
-     * The width of the map in pixels. This value should match the width
-     * of the sub-report in the JasperReport template.
+     * The width of the map in pixels. This value should match the width of the sub-report in the JasperReport
+     * template.
      *
      * @param width Width
      */
@@ -135,8 +154,8 @@ public abstract class GenericMapAttribute
     }
 
     /**
-     * The height of the map in pixels. This value should match the height
-     * of the sub-report in the JasperReport template.
+     * The height of the map in pixels. This value should match the height of the sub-report in the
+     * JasperReport template.
      *
      * @param height Height
      */
@@ -180,40 +199,48 @@ public abstract class GenericMapAttribute
     public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
 
         if (this.width != null && this.maxWidth != null) {
-            validationErrors.add(new ConfigurationException("cannot set both width and maxWidth in " + getClass().getName()));
+            validationErrors.add(new ConfigurationException(
+                    "cannot set both width and maxWidth in " + getClass().getName()));
         }
 
         if (this.height != null && this.maxHeight != null) {
-            validationErrors.add(new ConfigurationException("cannot set both height and maxHeight in " + getClass().getName()));
+            validationErrors.add(new ConfigurationException(
+                    "cannot set both height and maxHeight in " + getClass().getName()));
         }
 
         if (this.width != null && this.width < 1) {
-            validationErrors.add(new ConfigurationException("width field is not legal: " + this.width + " in " + getClass().getName()));
+            validationErrors.add(new ConfigurationException(
+                    "width field is not legal: " + this.width + " in " + getClass().getName()));
         }
 
         if (this.height != null && this.height < 1) {
-            validationErrors.add(new ConfigurationException("height field is not legal: " + this.height + " in " + getClass().getName()));
+            validationErrors.add(new ConfigurationException(
+                    "height field is not legal: " + this.height + " in " + getClass().getName()));
         }
 
         if (this.maxWidth != null && this.maxWidth < 1) {
-            validationErrors.add(new ConfigurationException("max width field is not legal: " + this.width + " in " + getClass().getName()));
+            validationErrors.add(new ConfigurationException(
+                    "max width field is not legal: " + this.width + " in " + getClass().getName()));
         }
 
         if (this.maxHeight != null && this.maxHeight < 1) {
-            validationErrors.add(new ConfigurationException("max height field is not legal: " + this.height + " in " +
-                    getClass().getName()));
+            validationErrors
+                    .add(new ConfigurationException("max height field is not legal: " + this.height + " in " +
+                                                            getClass().getName()));
         }
 
         if (this.getMaxDpi() == null || this.getMaxDpi() < 1) {
             validationErrors.add(
-                    new ConfigurationException("maxDpi field is not legal: " + this.getMaxDpi() + " in " + getClass().getName()));
+                    new ConfigurationException("maxDpi field is not legal: " + this.getMaxDpi() + " in " +
+                                                       getClass().getName()));
         }
 
         if (this.getMaxDpi() != null && this.getDpiSuggestions() != null) {
-            for (double dpi : this.getDpiSuggestions()) {
+            for (double dpi: this.getDpiSuggestions()) {
                 if (dpi < 1 || dpi > this.getMaxDpi()) {
                     validationErrors.add(new ConfigurationException(
-                            "dpiSuggestions contains an invalid value: " + dpi + " in " + getClass().getName()));
+                            "dpiSuggestions contains an invalid value: " + dpi + " in " +
+                                    getClass().getName()));
 
                 }
             }
@@ -239,28 +266,22 @@ public abstract class GenericMapAttribute
      * The value of {@link GenericMapAttribute}.
      */
     public abstract class GenericMapAttributeValues {
-        private static final String TYPE = "type";
-
         /**
          * The default projection.
          */
         protected static final String DEFAULT_PROJECTION = "EPSG:3857";
-
+        private static final String TYPE = "type";
         private final Template template;
-        private List<MapLayer> mapLayers;
-
         /**
          * The width of the map.
          */
         @HasDefaultValue
         public Integer width = null;
-
         /**
          * The height of the map.
          */
         @HasDefaultValue
         public Integer height = null;
-
         /**
          * The projection of the map.
          */
@@ -272,14 +293,14 @@ public abstract class GenericMapAttribute
         @HasDefaultValue
         public Double rotation = null;
         /**
-         * Indicates if the map should adjust its scale/zoom level to be equal to one of those defined in the configuration file.
+         * Indicates if the map should adjust its scale/zoom level to be equal to one of those defined in the
+         * configuration file.
          * <p></p>
          *
          * @see #isUseNearestScale()
          */
         @HasDefaultValue
         public Boolean useNearestScale = null;
-
         /**
          * Indicates if the map should adjust its bounds.
          * <p></p>
@@ -288,25 +309,24 @@ public abstract class GenericMapAttribute
          */
         @HasDefaultValue
         public Boolean useAdjustBounds = null;
-
         /**
-         * By default the normal axis order as specified in EPSG code will be used when parsing projections.  However
-         * the requestor can override this by explicitly declaring that longitude axis is first.
+         * By default the normal axis order as specified in EPSG code will be used when parsing projections.
+         * However the requestor can override this by explicitly declaring that longitude axis is first.
          */
         @HasDefaultValue
         public Boolean longitudeFirst = null;
-
         /**
          * Should the vector style definitions be adapted to the target DPI resolution? (Default: true)
          * <p></p>
-         * The style definitions are often optimized for a use with OpenLayers (which uses
-         * a DPI value of 72). When these styles are used to print with a higher DPI value,
-         * lines often look too thin, label are too small, etc.
+         * The style definitions are often optimized for a use with OpenLayers (which uses a DPI value of 72).
+         * When these styles are used to print with a higher DPI value, lines often look too thin, label are
+         * too small, etc.
          * <p></p>
          * If this property is set to `true`, the style definitions will be scaled to the target DPI value.
          */
         @HasDefaultValue
         public boolean dpiSensitiveStyle = true;
+        private List<MapLayer> mapLayers;
 
         /**
          * Constructor.
@@ -345,12 +365,14 @@ public abstract class GenericMapAttribute
 
             //check maximum dimensions
             if (getMaxWidth() != null && this.width > getMaxWidth()) {
-                throw new IllegalArgumentException("width parameter was " + getWidth() + " must be limited to "
-                        + getMaxWidth() + ".");
+                throw new IllegalArgumentException(
+                        "width parameter was " + getWidth() + " must be limited to "
+                                + getMaxWidth() + ".");
             }
             if (getMaxHeight() != null && this.height > getMaxHeight()) {
-                throw new IllegalArgumentException("height parameter was " + getHeight() + " must be limited to "
-                        + getMaxHeight() + ".");
+                throw new IllegalArgumentException(
+                        "height parameter was " + getHeight() + " must be limited to "
+                                + getMaxHeight() + ".");
             }
 
             this.mapLayers = parseLayers();
@@ -375,19 +397,20 @@ public abstract class GenericMapAttribute
         }
 
         @SuppressWarnings("unchecked")
-        private void parseSingleLayer(final List<MapLayer> layerList,
-                                      final PObject layer) throws Throwable {
+        private void parseSingleLayer(
+                final List<MapLayer> layerList,
+                final PObject layer) throws Throwable {
 
             final Map<String, MapLayerFactoryPlugin> layerParsers =
                     GenericMapAttribute.this.applicationContext.getBeansOfType(MapLayerFactoryPlugin.class);
-            for (MapLayerFactoryPlugin layerParser : layerParsers.values()) {
+            for (MapLayerFactoryPlugin layerParser: layerParsers.values()) {
                 final boolean layerApplies = layerParser.getTypeNames().contains(layer.getString(TYPE).
                         toLowerCase());
                 if (layerApplies) {
                     Object param = layerParser.createParameter();
 
                     MapfishParser.parse(this.template.getConfiguration().isThrowErrorOnExtraParameters(),
-                            layer, param, TYPE);
+                                        layer, param, TYPE);
 
                     final MapLayer newLayer = layerParser.parse(this.template, param);
                     if (layerList.isEmpty()) {
@@ -408,9 +431,11 @@ public abstract class GenericMapAttribute
             }
 
             StringBuilder message = new StringBuilder(String.format("\nLayer with type: '%s' is not " +
-                    "currently supported.  Options include: ", layer.getString(TYPE)));
-            for (MapLayerFactoryPlugin<?> mapLayerFactoryPlugin : layerParsers.values()) {
-                for (Object name : mapLayerFactoryPlugin.getTypeNames()) {
+                                                                            "currently supported.  Options " +
+                                                                            "include: ",
+                                                                    layer.getString(TYPE)));
+            for (MapLayerFactoryPlugin<?> mapLayerFactoryPlugin: layerParsers.values()) {
+                for (Object name: mapLayerFactoryPlugin.getTypeNames()) {
                     message.append("\n");
                     message.append("\t* ").append(name);
                 }
@@ -429,21 +454,20 @@ public abstract class GenericMapAttribute
         }
 
         /**
-         * Return the DPI value for the map.
-         * This method is abstract because the dpi value is optional for the overview map,
-         * but must be given for the normal map. So, in the overview map the field is defined
+         * Return the DPI value for the map. This method is abstract because the dpi value is optional for the
+         * overview map, but must be given for the normal map. So, in the overview map the field is defined
          * with a @HasDefaultValue annotation.
          */
         public abstract Double getDpi();
 
         /**
-         * Return the JSON layer definition.
-         * This method is abstract for the same reasons as {@link #getDpi()}.
+         * Return the JSON layer definition. This method is abstract for the same reasons as {@link
+         * #getDpi()}.
          */
         public abstract PArray getRawLayers();
+
         /**
-         * Set the JSON layer definition.
-         * This method is abstract for the same reasons as {@link #getDpi()}.
+         * Set the JSON layer definition. This method is abstract for the same reasons as {@link #getDpi()}.
          *
          * @param layers the new layers
          */
@@ -534,26 +558,6 @@ public abstract class GenericMapAttribute
             } else {
                 return defaultValue;
             }
-        }
-    }
-
-    /**
-     * Parse the given projection.
-     *
-     * @param projection The projection string.
-     * @param longitudeFirst longitudeFirst
-     */
-    public static CoordinateReferenceSystem parseProjection(final String projection, final Boolean longitudeFirst) {
-        try {
-            if (longitudeFirst == null) {
-                return CRS.decode(projection);
-            } else {
-                return CRS.decode(projection, longitudeFirst);
-            }
-        } catch (NoSuchAuthorityCodeException e) {
-            throw new RuntimeException(projection + " was not recognized as a crs code", e);
-        } catch (FactoryException e) {
-            throw new RuntimeException("Error occurred while parsing: " + projection, e);
         }
     }
 }

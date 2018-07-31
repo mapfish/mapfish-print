@@ -15,6 +15,7 @@ public class ResourceBundleClassLoader extends ClassLoader {
 
     /**
      * Construct.
+     *
      * @param configDir the print application configuration directory.
      */
     public ResourceBundleClassLoader(final File configDir) {

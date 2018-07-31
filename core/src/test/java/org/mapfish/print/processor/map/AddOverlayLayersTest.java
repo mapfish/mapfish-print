@@ -41,6 +41,10 @@ public class AddOverlayLayersTest extends AbstractMapfishSpringTest {
     @Autowired
     private ForkJoinPool forkJoinPool;
 
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(AddOverlayLayersTest.class, BASE_DIR + "requestData.json");
+    }
+
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
@@ -54,7 +58,8 @@ public class AddOverlayLayersTest extends AbstractMapfishSpringTest {
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data/tiger-ny.png"));
                             return ok(uri, bytes, httpMethod);
@@ -73,7 +78,8 @@ public class AddOverlayLayersTest extends AbstractMapfishSpringTest {
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -87,16 +93,16 @@ public class AddOverlayLayersTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
         taskFuture.get();
 
         assertImage(values, 1, "layerGraphics",
-                "expectedSimpleImage.png", 630, 294, 100);
+                    "expectedSimpleImage.png", 630, 294, 100);
         assertImage(values, 1, "overviewMapLayerGraphics",
-                "expectedOverviewImage.png", 300, 200, 25);
+                    "expectedOverviewImage.png", 300, 200, 25);
     }
 
     private void assertImage(
@@ -108,9 +114,5 @@ public class AddOverlayLayersTest extends AbstractMapfishSpringTest {
 
         new ImageSimilarity(getFile(BASE_DIR + imageName))
                 .assertSimilarity(layerGraphics, width, height, tollerance);
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(AddOverlayLayersTest.class, BASE_DIR + "requestData.json");
     }
 }

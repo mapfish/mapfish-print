@@ -13,7 +13,8 @@ public enum GridType {
      */
     LINES(new LineGridStrategy()),
     /**
-     * Represents a Grid that consists of points where the lines would intersect if the grid was a set of lines.
+     * Represents a Grid that consists of points where the lines would intersect if the grid was a set of
+     * lines.
      */
     POINTS(new PointGridStrategy());
 
@@ -39,14 +40,15 @@ public enum GridType {
         Style defaultStyle(Template template, GridParam layerData);
 
         /**
-         * Return the features for the grid. During the creation of the features the grid labels should be added to the label
-         * collector for rendering at the end of the process.
+         * Return the features for the grid. During the creation of the features the grid labels should be
+         * added to the label collector for rendering at the end of the process.
          *
          * @param template The template the grid layer is part of
          * @param layerData the layer parameters
          * @param labels the collector for the labels.
          */
-        FeatureSourceSupplier createFeatureSource(Template template, GridParam layerData, LabelPositionCollector labels);
+        FeatureSourceSupplier createFeatureSource(
+                Template template, GridParam layerData, LabelPositionCollector labels);
     }
 
 }

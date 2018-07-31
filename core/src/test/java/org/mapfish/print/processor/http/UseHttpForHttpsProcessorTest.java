@@ -12,7 +12,8 @@ import javax.annotation.Nullable;
 import static org.junit.Assert.assertEquals;
 
 @ContextConfiguration(locations = {
-        "classpath:org/mapfish/print/processor/http/use-http-for-https/add-custom-processor-application-context.xml"
+        "classpath:org/mapfish/print/processor/http/use-http-for-https/add-custom-processor-application" +
+                "-context.xml"
 })
 public class UseHttpForHttpsProcessorTest extends AbstractHttpProcessorTest {
 
@@ -49,12 +50,13 @@ public class UseHttpForHttpsProcessorTest extends AbstractHttpProcessorTest {
             return null;
         }
 
-        private void testUriWithOnlyAuthoritySegment(TestParam values) throws URISyntaxException, IOException {
+        private void testUriWithOnlyAuthoritySegment(TestParam values)
+                throws URISyntaxException, IOException {
             String authHost = "center_wmts_fixedscale.com";
 
             URI uri = new URI("https://" + userinfo + "@" + authHost + ":8443/" + path);
             ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(uri,
-                    HttpMethod.GET);
+                                                                                                    HttpMethod.GET);
             assertEquals("http", request.getURI().getScheme());
             assertEquals(userinfo + "@" + authHost + ":9999", request.getURI().getAuthority());
             assertEquals("/" + path, request.getURI().getPath());
@@ -77,9 +79,11 @@ public class UseHttpForHttpsProcessorTest extends AbstractHttpProcessorTest {
         }
 
         private void testHttp(TestParam values) throws URISyntaxException, IOException {
-            String uriString = String.format("http://%s@%s:9999/%s?%s#%s", userinfo, host, path, query, fragment);
+            String uriString =
+                    String.format("http://%s@%s:9999/%s?%s#%s", userinfo, host, path, query, fragment);
             final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(new
-                    URI(uriString), HttpMethod.GET);
+                                                                                                                  URI(
+                    uriString), HttpMethod.GET);
             assertEquals("http", request.getURI().getScheme());
             assertEquals(userinfo, request.getURI().getUserInfo());
             assertEquals(host, request.getURI().getHost());
@@ -90,9 +94,11 @@ public class UseHttpForHttpsProcessorTest extends AbstractHttpProcessorTest {
         }
 
         private void testDefinedPortMapping(TestParam values) throws IOException, URISyntaxException {
-            String uriString = String.format("https://%s@%s:8443/%s?%s#%s", userinfo, host, path, query, fragment);
+            String uriString =
+                    String.format("https://%s@%s:8443/%s?%s#%s", userinfo, host, path, query, fragment);
             final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(new
-                    URI(uriString), HttpMethod.GET);
+                                                                                                                  URI(
+                    uriString), HttpMethod.GET);
             assertEquals("http", request.getURI().getScheme());
             assertEquals(userinfo, request.getURI().getUserInfo());
             assertEquals(host, request.getURI().getHost());
@@ -105,7 +111,8 @@ public class UseHttpForHttpsProcessorTest extends AbstractHttpProcessorTest {
         private void testImplicitPortMapping(TestParam values) throws IOException, URISyntaxException {
             String uriString = String.format("https://%s@%s/%s?%s#%s", userinfo, host, path, query, fragment);
             final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(new
-                    URI(uriString), HttpMethod.GET);
+                                                                                                                  URI(
+                    uriString), HttpMethod.GET);
             assertEquals("http", request.getURI().getScheme());
             assertEquals(userinfo, request.getURI().getUserInfo());
             assertEquals(host, request.getURI().getHost());

@@ -1,17 +1,7 @@
 package org.mapfish.print.processor.map;
 
-import static org.junit.Assert.assertEquals;
-import static org.mapfish.print.Constants.PDF_DPI;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-
+import com.google.common.base.Predicate;
+import com.google.common.io.Files;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -27,8 +17,17 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import com.google.common.base.Predicate;
-import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.junit.Assert.assertEquals;
+import static org.mapfish.print.Constants.PDF_DPI;
 
 /**
  * Basic test of the Map processor.
@@ -45,6 +44,11 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractM
     @Autowired
     private ForkJoinPool forkJoinPool;
 
+    public static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleAndCenterWMTSRestTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
@@ -57,7 +61,8 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractM
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         Pattern pattern = Pattern.compile(".*\\/([0-9]+)\\/([0-9]+).*");
                         Matcher matcher = pattern.matcher(uri.toString());
                         if (!matcher.matches()) {
@@ -84,7 +89,8 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractM
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -99,7 +105,7 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractM
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -114,10 +120,5 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractM
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
                 .assertSimilarity(layerGraphics, 630, 294, 40);
-    }
-
-    public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleAndCenterWMTSRestTest.class,
-                BASE_DIR + "requestData.json");
     }
 }

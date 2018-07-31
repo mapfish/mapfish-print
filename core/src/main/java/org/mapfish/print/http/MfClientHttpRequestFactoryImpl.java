@@ -47,18 +47,19 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     private static final Logger LOGGER = LoggerFactory.getLogger(MfClientHttpRequestFactoryImpl.class);
     private static final ThreadLocal<Configuration> CURRENT_CONFIGURATION = new InheritableThreadLocal<>();
 
-    @Nullable
-    static Configuration getCurrentConfiguration() {
-        return CURRENT_CONFIGURATION.get();
-    }
-
     /**
      * Constructor.
+     *
      * @param maxConnTotal Maximum total connections.
      * @param maxConnPerRoute Maximum connections per route.
      */
     public MfClientHttpRequestFactoryImpl(final int maxConnTotal, final int maxConnPerRoute) {
         super(createHttpClient(maxConnTotal, maxConnPerRoute));
+    }
+
+    @Nullable
+    static Configuration getCurrentConfiguration() {
+        return CURRENT_CONFIGURATION.get();
     }
 
     private static CloseableHttpClient createHttpClient(final int maxConnTotal, final int maxConnPerRoute) {
@@ -84,11 +85,11 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
 
     /**
      * Randomized order DnsResolver.
-     *
+     * <p>
      * The default DnsResolver is using the results of InetAddress.getAllByName which is cached and returns
      * the IP addresses always in the same order (think about DNS round robin). The callers always try the
-     * addresses in the order returned by the DnsResolver.
-     * This implementation adds randomizing to it's result.
+     * addresses in the order returned by the DnsResolver. This implementation adds randomizing to it's
+     * result.
      */
     private static final class RandomizingDnsResolver extends SystemDefaultDnsResolver {
         @Override
@@ -112,7 +113,8 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         private final ByteArrayOutputStream outputStream;
         private Configuration configuration;
 
-        Request(@Nonnull final HttpClient client,
+        Request(
+                @Nonnull final HttpClient client,
                 @Nonnull final HttpRequestBase request,
                 @Nullable final HttpContext context) {
             this.client = client;
@@ -155,18 +157,19 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             CURRENT_CONFIGURATION.set(this.configuration);
 
             LOGGER.debug("Preparing request " + this.getMethod() + " -- " + this.getURI());
-            for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+            for (Map.Entry<String, List<String>> entry: headers.entrySet()) {
                 String headerName = entry.getKey();
                 if (!headerName.equalsIgnoreCase(HTTP.CONTENT_LEN) &&
-                    !headerName.equalsIgnoreCase(HTTP.TRANSFER_ENCODING)) {
-                    for (String headerValue : entry.getValue()) {
+                        !headerName.equalsIgnoreCase(HTTP.TRANSFER_ENCODING)) {
+                    for (String headerValue: entry.getValue()) {
                         LOGGER.debug("Setting header: " + headerName + " : " + headerValue);
                         this.request.addHeader(headerName, headerValue);
                     }
                 }
             }
             if (this.request instanceof HttpEntityEnclosingRequest) {
-                final HttpEntityEnclosingRequest entityEnclosingRequest = (HttpEntityEnclosingRequest) this.request;
+                final HttpEntityEnclosingRequest entityEnclosingRequest =
+                        (HttpEntityEnclosingRequest) this.request;
                 final HttpEntity requestEntity = new ByteArrayEntity(this.outputStream.toByteArray());
                 entityEnclosingRequest.setEntity(requestEntity);
             }
@@ -186,7 +189,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         private InputStream inputStream;
 
 
-        public Response(@Nonnull final HttpResponse response) {
+        Response(@Nonnull final HttpResponse response) {
             this.response = response;
             LOGGER.trace("Creating Http Response object: " + this.id);
         }
@@ -213,7 +216,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
                 getBody();
             } catch (IOException e) {
                 LOGGER.error(String.format("Error occurred while trying to retrieve Http Response %s in " +
-                        "order to close it.", this.id), e);
+                                                   "order to close it.", this.id), e);
             } finally {
                 try {
                     this.closer.close();
@@ -245,8 +248,8 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         public HttpHeaders getHeaders() {
             final HttpHeaders translatedHeaders = new HttpHeaders();
             final Header[] allHeaders = this.response.getAllHeaders();
-            for (Header header : allHeaders) {
-                for (HeaderElement element : header.getElements()) {
+            for (Header header: allHeaders) {
+                for (HeaderElement element: header.getElements()) {
                     translatedHeaders.add(header.getName(), element.toString());
                 }
             }

@@ -11,8 +11,8 @@ public abstract class AbstractMatcher implements URIMatcher {
     }
 
     /**
-     * Reverses the matcher. Instead of accepting an URI when the URI matches,
-     * the URI is rejected.
+     * Reverses the matcher. Instead of accepting an URI when the URI matches, the URI is rejected.
+     *
      * @param reject Should reject?
      */
     public final void setReject(final boolean reject) {

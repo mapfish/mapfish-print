@@ -39,7 +39,8 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testLoadFromFile() throws Throwable {
-        final String rootFile = getFile("/test-http-request-factory-application-context.xml").getParentFile().getAbsolutePath();
+        final String rootFile = getFile("/test-http-request-factory-application-context.xml").getParentFile()
+                .getAbsolutePath();
         configFileLoader.setServletContext(new MockServletContext(rootFile));
 
         final String configFile = "/org/mapfish/print/map/style/json/requestData-style-json-v1-style.json";
@@ -69,7 +70,8 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
         }));
 
         final String configFile = "/org/mapfish/print/map/style/json/requestData-style-json-v1-style.json";
-        final String styleString = "servlet:///org/mapfish/print/map/style/json/v2-style-symbolizers-default-values.json";
+        final String styleString =
+                "servlet:///org/mapfish/print/map/style/json/v2-style-symbolizers-default-values.json";
         final Optional<Style> styleOptional = loadStyle(configFile, styleString);
 
         assertTrue(styleOptional.isPresent());
@@ -79,27 +81,30 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
     @Test
     @DirtiesContext
     public void testLoadFromURL() throws Throwable {
-        final String rootFile = getFile("/test-http-request-factory-application-context.xml").getParentFile().getAbsolutePath();
+        final String rootFile = getFile("/test-http-request-factory-application-context.xml").getParentFile()
+                .getAbsolutePath();
         configFileLoader.setServletContext(new MockServletContext(rootFile));
 
 
         final String host = "URLSLDParserPluginTest.com";
         httpClient.registerHandler(new Predicate<URI>() {
-                                                     @Override
-                                                     public boolean apply(URI input) {
-                                                         return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
-                                                     }
-                                                 }, new TestHttpClientFactory.Handler() {
-                                                     @Override
-                                                     public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
-                                                         try {
-                                                             byte[] bytes = Files.toByteArray(getFile(uri.getPath()));
-                                                             return ok(uri, bytes, httpMethod);
-                                                         } catch (AssertionError e) {
-                                                             return error404(uri, httpMethod);
-                                                         }
-                                                     }
-                                                 }
+                                       @Override
+                                       public boolean apply(URI input) {
+                                           return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
+                                       }
+                                   }, new TestHttpClientFactory.Handler() {
+                                       @Override
+                                       public MockClientHttpRequest handleRequest(
+                                               URI uri,
+                                               HttpMethod httpMethod) throws Exception {
+                                           try {
+                                               byte[] bytes = Files.toByteArray(getFile(uri.getPath()));
+                                               return ok(uri, bytes, httpMethod);
+                                           } catch (AssertionError e) {
+                                               return error404(uri, httpMethod);
+                                           }
+                                       }
+                                   }
         );
 
         Configuration configuration = new Configuration();
@@ -117,10 +122,12 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
     @Test
     public void testLoadFromClasspath() throws Throwable {
 
-        final String rootFile = getFile("/test-http-request-factory-application-context.xml").getParentFile().getAbsolutePath();
+        final String rootFile = getFile("/test-http-request-factory-application-context.xml").getParentFile()
+                .getAbsolutePath();
         configFileLoader.setServletContext(new MockServletContext(rootFile));
 
-        final String configFile = "/org/mapfish/print/map/style/json/v2-style-symbolizers-default-values.json";
+        final String configFile =
+                "/org/mapfish/print/map/style/json/v2-style-symbolizers-default-values.json";
         final String styleString = "classpath://" + configFile;
         final Optional<Style> styleOptional = loadStyle(configFile, styleString);
 
@@ -134,7 +141,8 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
         configuration.setFileLoaderManager(this.fileLoaderManager);
         configuration.setConfigurationFile(getFile(configFile));
 
-        ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(this.httpClient, configuration, "test");
+        ConfigFileResolvingHttpRequestFactory requestFactory =
+                new ConfigFileResolvingHttpRequestFactory(this.httpClient, configuration, "test");
 
         return parser.parseStyle(configuration, requestFactory, styleString);
     }

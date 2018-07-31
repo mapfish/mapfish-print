@@ -3,8 +3,7 @@ package org.mapfish.print;
 import java.util.Stack;
 
 /**
- * Used to convert an integer index to an alpha index.
- * Index in: A..Z,AA..ZZ,AAA...
+ * Used to convert an integer index to an alpha index. Index in: A..Z,AA..ZZ,AAA...
  */
 public class HumanAlphaSerie {
 
@@ -16,7 +15,7 @@ public class HumanAlphaSerie {
         // We want to start with A (1)
         number += 1;
 
-        Stack<Integer> stack = new Stack<Integer>();
+        Stack<Integer> stack = new Stack<>();
         while (number > 26) {
             int remain = number % 26;
             if (remain == 0) {
@@ -49,7 +48,7 @@ public class HumanAlphaSerie {
         if (number > 26 || number < 0) {
             return '\0';
         }
-        char c = (char)('A' + number - 1);
+        char c = (char) ('A' + number - 1);
         return c;
     }
 }

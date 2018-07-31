@@ -25,20 +25,21 @@ public class AllRegisteredReflectiveAttributeValidationTest extends AbstractMapf
     List<Attribute> allAttributes;
 
     @Test
-    public void testAllAttributesHaveLegalValues() throws Exception {
-        for (ReflectiveAttribute<?> attribute : allReflectiveAttributes) {
+    public void testAllAttributesHaveLegalValues() {
+        for (ReflectiveAttribute<?> attribute: allReflectiveAttributes) {
             attribute.init();
         }
 
         // no exception... good
     }
+
     @Test
-    public void testAllPrintClientConfig() throws Exception {
+    public void testAllPrintClientConfig() {
         Configuration configuration = new Configuration();
         configuration.setConfigurationFile(getFile("map/map_attributes/config-yaml.yaml"));
         Template template = new Template();
         template.setConfiguration(configuration);
-        for (Attribute attribute : allAttributes) {
+        for (Attribute attribute: allAttributes) {
             final String attName = "!" + attribute.getClass().getSimpleName();
 
             Map<String, Attribute> attMap = Maps.newHashMap();

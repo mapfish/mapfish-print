@@ -17,6 +17,7 @@ public class PrintException extends RuntimeException {
 
     /**
      * Constructor.
+     *
      * @param message message
      * @param cause the cause
      */

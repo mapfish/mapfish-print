@@ -39,8 +39,9 @@ public interface HandleReportLoadResult<R> {
      * @param reportURI the uri to the report
      * @param loader the loader for loading the report.
      */
-    R successfulPrint(PrintJobStatus successfulPrintResult, HttpServletResponse httpServletResponse, URI reportURI,
-                      ReportLoader loader) throws IOException, ServletException;
+    R successfulPrint(
+            PrintJobStatus successfulPrintResult, HttpServletResponse httpServletResponse, URI reportURI,
+            ReportLoader loader) throws IOException, ServletException;
 
     /**
      * Called when a print job failed.

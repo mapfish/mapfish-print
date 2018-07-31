@@ -55,11 +55,16 @@ public final class OsmLayer extends AbstractTiledLayer {
         return new OsmTileCacheInformation(bounds, paintArea, dpi);
     }
 
+    @Override
+    public RenderType getRenderType() {
+        return RenderType.fromFileExtension(this.param.imageExtension);
+    }
+
     private final class OsmTileCacheInformation extends TileCacheInformation {
         private final double resolution;
         private final int resolutionIndex;
 
-        public OsmTileCacheInformation(
+        private OsmTileCacheInformation(
                 final MapBounds bounds, final Rectangle paintArea, final double dpi) {
             super(bounds, paintArea, dpi, OsmLayer.this.param);
 
@@ -83,12 +88,13 @@ public final class OsmLayer extends AbstractTiledLayer {
 
         @Nonnull
         @Override
-        public ClientHttpRequest getTileRequest(final MfClientHttpRequestFactory httpRequestFactory,
-                                                final String commonUrl,
-                                                final ReferencedEnvelope tileBounds,
-                                                final Dimension tileSizeOnScreen,
-                                                final int column,
-                                                final int row)
+        public ClientHttpRequest getTileRequest(
+                final MfClientHttpRequestFactory httpRequestFactory,
+                final String commonUrl,
+                final ReferencedEnvelope tileBounds,
+                final Dimension tileSizeOnScreen,
+                final int column,
+                final int row)
                 throws IOException, URISyntaxException {
 
             final URI uri;
@@ -99,11 +105,12 @@ public final class OsmLayer extends AbstractTiledLayer {
                         .replace("{x}", Integer.toString(column))
                         .replace("{y}", Integer.toString(row));
                 if (commonUrl.contains("{-y}")) {
-                    // {-y} is for  OSGeo TMS layers, see also: https://josm.openstreetmap.de/wiki/Maps#TileMapServicesTMS
+                    // {-y} is for  OSGeo TMS layers, see also: https://josm.openstreetmap
+                    // .de/wiki/Maps#TileMapServicesTMS
                     url = url.replace("{-y}", Integer.toString(
                             (int) Math.pow(2, this.resolutionIndex) - 1 - row));
                 }
-                uri  = new URI(url);
+                uri = new URI(url);
             } else {
                 StringBuilder path = new StringBuilder();
                 if (!commonUrl.endsWith("/")) {
@@ -114,12 +121,12 @@ public final class OsmLayer extends AbstractTiledLayer {
                 path.append('/').append(row);
                 path.append('.').append(OsmLayer.this.param.imageExtension);
 
-                uri  = new URI(commonUrl + path.toString());
+                uri = new URI(commonUrl + path.toString());
             }
 
             return httpRequestFactory.createRequest(
                     URIUtils.addParams(uri, OsmLayerParam.convertToMultiMap(OsmLayer.this.param.customParams),
-                    URIUtils.getParameters(uri).keySet()), HttpMethod.GET);
+                                       URIUtils.getParameters(uri).keySet()), HttpMethod.GET);
         }
 
         @Override
@@ -142,10 +149,5 @@ public final class OsmLayer extends AbstractTiledLayer {
         protected ReferencedEnvelope getTileCacheBounds() {
             return new ReferencedEnvelope(OsmLayer.this.param.getMaxExtent(), this.bounds.getProjection());
         }
-    }
-
-    @Override
-    public RenderType getRenderType() {
-        return RenderType.fromFileExtension(this.param.imageExtension);
     }
 }

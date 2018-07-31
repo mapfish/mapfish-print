@@ -3,13 +3,11 @@ package org.mapfish.print.servlet.job.impl.hibernate;
 import org.mapfish.print.servlet.job.impl.PrintJobResultImpl;
 
 import java.net.URI;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
 /**
  * Extension of Print Job Result that holds data as BLOB.
- *
  */
 @Entity
 public class PrintJobResultExtImpl extends PrintJobResultImpl {
@@ -34,7 +32,8 @@ public class PrintJobResultExtImpl extends PrintJobResultImpl {
      * @param data the data
      * @param referenceId the reference ID
      */
-    public PrintJobResultExtImpl(final URI reportURI, final String fileName, final String fileExtension, final String mimeType,
+    public PrintJobResultExtImpl(
+            final URI reportURI, final String fileName, final String fileExtension, final String mimeType,
             final byte[] data, final String referenceId) {
         super(reportURI, fileName, fileExtension, mimeType, referenceId);
         this.data = data;

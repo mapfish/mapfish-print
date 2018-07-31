@@ -87,8 +87,9 @@ public class HibernateAccountingEntry {
      * @param status The status
      * @param configuration The configuration
      */
-    public HibernateAccountingEntry(final PrintJobEntry entry, final PrintJobStatus.Status status,
-                                    final Configuration configuration) {
+    public HibernateAccountingEntry(
+            final PrintJobEntry entry, final PrintJobStatus.Status status,
+            final Configuration configuration) {
         this.referenceId = entry.getReferenceId();
         this.appId = entry.getAppId();
         final PJsonObject specJson = entry.getRequestData();

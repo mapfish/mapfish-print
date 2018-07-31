@@ -42,6 +42,11 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSTest extends AbstractMapfi
     @Autowired
     private ForkJoinPool forkJoinPool;
 
+    public static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleAndCenterWMTSTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
@@ -54,7 +59,8 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSTest extends AbstractMapfi
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         final Multimap<String, String> parameters = URIUtils.getParameters(uri);
                         String column = parameters.get("TILECOL").iterator().next();
                         String row = parameters.get("TILEROW").iterator().next();
@@ -77,7 +83,8 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSTest extends AbstractMapfi
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -92,7 +99,7 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSTest extends AbstractMapfi
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -104,10 +111,5 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSTest extends AbstractMapfi
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
                 .assertSimilarity(layerGraphics, 630, 294, 40);
-    }
-
-    public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleAndCenterWMTSTest.class,
-                BASE_DIR + "requestData.json");
     }
 }

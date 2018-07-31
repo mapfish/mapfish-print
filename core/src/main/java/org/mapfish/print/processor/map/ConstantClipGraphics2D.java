@@ -26,8 +26,8 @@ import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
 /**
- * A graphics 2d implementation that delegates all calls to the wrapped graphics2d
- * except for the methods related to setting the clip.  These calls are ignored.
+ * A graphics 2d implementation that delegates all calls to the wrapped graphics2d except for the methods
+ * related to setting the clip.  These calls are ignored.
  */
 // CHECKSTYLE:OFF
 final class ConstantClipGraphics2D extends Graphics2D {
@@ -50,11 +50,6 @@ final class ConstantClipGraphics2D extends Graphics2D {
 
     @Override
     public void setClip(int x, int y, int width, int height) {
-        // do nothing clip methods are ignored.
-    }
-
-    @Override
-    public void setClip(Shape clip) {
         // do nothing clip methods are ignored.
     }
 
@@ -134,21 +129,6 @@ final class ConstantClipGraphics2D extends Graphics2D {
     }
 
     @Override
-    public void setComposite(Composite comp) {
-        wrapped.setComposite(comp);
-    }
-
-    @Override
-    public void setPaint(Paint paint) {
-        wrapped.setPaint(paint);
-    }
-
-    @Override
-    public void setStroke(Stroke s) {
-        wrapped.setStroke(s);
-    }
-
-    @Override
     public void setRenderingHint(RenderingHints.Key hintKey, Object hintValue) {
         wrapped.setRenderingHint(hintKey, hintValue);
     }
@@ -159,11 +139,6 @@ final class ConstantClipGraphics2D extends Graphics2D {
     }
 
     @Override
-    public void setRenderingHints(Map<?, ?> hints) {
-        wrapped.setRenderingHints(hints);
-    }
-
-    @Override
     public void addRenderingHints(Map<?, ?> hints) {
         wrapped.addRenderingHints(hints);
     }
@@ -171,6 +146,11 @@ final class ConstantClipGraphics2D extends Graphics2D {
     @Override
     public RenderingHints getRenderingHints() {
         return wrapped.getRenderingHints();
+    }
+
+    @Override
+    public void setRenderingHints(Map<?, ?> hints) {
+        wrapped.setRenderingHints(hints);
     }
 
     @Override
@@ -209,13 +189,13 @@ final class ConstantClipGraphics2D extends Graphics2D {
     }
 
     @Override
-    public void setTransform(AffineTransform Tx) {
-        wrapped.setTransform(Tx);
+    public AffineTransform getTransform() {
+        return wrapped.getTransform();
     }
 
     @Override
-    public AffineTransform getTransform() {
-        return wrapped.getTransform();
+    public void setTransform(AffineTransform Tx) {
+        wrapped.setTransform(Tx);
     }
 
     @Override
@@ -224,13 +204,18 @@ final class ConstantClipGraphics2D extends Graphics2D {
     }
 
     @Override
+    public void setPaint(Paint paint) {
+        wrapped.setPaint(paint);
+    }
+
+    @Override
     public Composite getComposite() {
         return wrapped.getComposite();
     }
 
     @Override
-    public void setBackground(Color color) {
-        wrapped.setBackground(color);
+    public void setComposite(Composite comp) {
+        wrapped.setComposite(comp);
     }
 
     @Override
@@ -239,8 +224,18 @@ final class ConstantClipGraphics2D extends Graphics2D {
     }
 
     @Override
+    public void setBackground(Color color) {
+        wrapped.setBackground(color);
+    }
+
+    @Override
     public Stroke getStroke() {
         return wrapped.getStroke();
+    }
+
+    @Override
+    public void setStroke(Stroke s) {
+        wrapped.setStroke(s);
     }
 
     @Override
@@ -306,6 +301,11 @@ final class ConstantClipGraphics2D extends Graphics2D {
     @Override
     public Shape getClip() {
         return wrapped.getClip();
+    }
+
+    @Override
+    public void setClip(Shape clip) {
+        // do nothing clip methods are ignored.
     }
 
     @Override
@@ -414,17 +414,22 @@ final class ConstantClipGraphics2D extends Graphics2D {
     }
 
     @Override
-    public boolean drawImage(Image img, int x, int y, int width, int height, Color bgcolor, ImageObserver observer) {
+    public boolean drawImage(
+            Image img, int x, int y, int width, int height, Color bgcolor, ImageObserver observer) {
         return wrapped.drawImage(img, x, y, width, height, bgcolor, observer);
     }
 
     @Override
-    public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, ImageObserver observer) {
+    public boolean drawImage(
+            Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2,
+            ImageObserver observer) {
         return wrapped.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer);
     }
 
     @Override
-    public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, Color bgcolor, ImageObserver observer) {
+    public boolean drawImage(
+            Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, Color bgcolor,
+            ImageObserver observer) {
         return wrapped.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, bgcolor, observer);
     }
 

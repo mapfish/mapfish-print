@@ -17,27 +17,27 @@ import static org.mapfish.print.config.access.AccessAssertionTestUtil.setCreds;
 public class RoleAccessAssertionTest {
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         SecurityContextHolder.clearContext();
     }
 
     @Test(expected = AssertionError.class)
-    public void testSetRequiredRoles() throws Exception {
+    public void testSetRequiredRoles() {
         final RoleAccessAssertion assertion = new RoleAccessAssertion();
         assertion.setRequiredRoles(Sets.newHashSet("ROLE_USER"));
         assertion.setRequiredRoles(Sets.newHashSet("ROLE_USER"));
     }
 
-    @Test (expected = AuthenticationCredentialsNotFoundException.class)
-    public void testAssertAccessNoCredentials() throws Exception {
+    @Test(expected = AuthenticationCredentialsNotFoundException.class)
+    public void testAssertAccessNoCredentials() {
         final RoleAccessAssertion assertion = new RoleAccessAssertion();
         assertion.setRequiredRoles(Sets.newHashSet("ROLE_USER"));
 
         assertion.assertAccess("", this);
     }
 
-    @Test (expected = AccessDeniedException.class)
-    public void testAssertAccessWrongCreds() throws Exception {
+    @Test(expected = AccessDeniedException.class)
+    public void testAssertAccessWrongCreds() {
         final RoleAccessAssertion assertion = new RoleAccessAssertion();
         assertion.setRequiredRoles(Sets.newHashSet("ROLE_USER"));
 
@@ -46,7 +46,7 @@ public class RoleAccessAssertionTest {
     }
 
     @Test
-    public void testAssertAccessAllowed() throws Exception {
+    public void testAssertAccessAllowed() {
         final RoleAccessAssertion assertion = new RoleAccessAssertion();
         assertion.setRequiredRoles(Sets.newHashSet("ROLE_USER"));
 
@@ -56,8 +56,9 @@ public class RoleAccessAssertionTest {
         setCreds("ROLE_USER", "ROLE_OTHER");
         assertion.assertAccess("", this);
     }
+
     @Test
-    public void testAssertAccessOneOf() throws Exception {
+    public void testAssertAccessOneOf() {
         final RoleAccessAssertion assertion = new RoleAccessAssertion();
         assertion.setRequiredRoles(Sets.newHashSet("ROLE_USER", "ROLE_USER2"));
 
@@ -72,8 +73,8 @@ public class RoleAccessAssertionTest {
 
     }
 
-    @Test (expected = AccessDeniedException.class)
-    public void testAssertAccessOneOfFailed() throws Exception {
+    @Test(expected = AccessDeniedException.class)
+    public void testAssertAccessOneOfFailed() {
         final RoleAccessAssertion assertion = new RoleAccessAssertion();
         assertion.setRequiredRoles(Sets.newHashSet("ROLE_USER", "ROLE_USER2"));
 
@@ -82,10 +83,10 @@ public class RoleAccessAssertionTest {
 
     }
 
-    @Test (expected = AuthenticationCredentialsNotFoundException.class)
-    public void testAssertNoRolesNoCreds() throws Exception {
+    @Test(expected = AuthenticationCredentialsNotFoundException.class)
+    public void testAssertNoRolesNoCreds() {
         final RoleAccessAssertion assertion = new RoleAccessAssertion();
-        assertion.setRequiredRoles(Sets.<String>newHashSet());
+        assertion.setRequiredRoles(Sets.newHashSet());
 
         assertion.assertAccess("", this);
         setCreds("ROLE_OTHER", "ROLE_USER2");
@@ -93,9 +94,9 @@ public class RoleAccessAssertionTest {
     }
 
     @Test
-    public void testAssertNoRolesSomeCreds() throws Exception {
+    public void testAssertNoRolesSomeCreds() {
         final RoleAccessAssertion assertion = new RoleAccessAssertion();
-        assertion.setRequiredRoles(Sets.<String>newHashSet());
+        assertion.setRequiredRoles(Sets.newHashSet());
 
         setCreds("ROLE_OTHER");
         assertion.assertAccess("", this);
@@ -104,8 +105,8 @@ public class RoleAccessAssertionTest {
         assertion.assertAccess("", this);
     }
 
-    @Test (expected = AuthenticationCredentialsNotFoundException.class)
-    public void testMarshalUnmarshalNoAuth() throws Exception {
+    @Test(expected = AuthenticationCredentialsNotFoundException.class)
+    public void testMarshalUnmarshalNoAuth() {
         final RoleAccessAssertion assertion = new RoleAccessAssertion();
         assertion.setRequiredRoles(Sets.newHashSet("ROLE_USER"));
         final JSONObject marshalData = assertion.marshal();
@@ -115,8 +116,8 @@ public class RoleAccessAssertionTest {
         newAssertion.assertAccess("", this);
     }
 
-    @Test (expected = AccessDeniedException.class)
-    public void testMarshalUnmarshalNotPermitted() throws Exception {
+    @Test(expected = AccessDeniedException.class)
+    public void testMarshalUnmarshalNotPermitted() {
         setCreds("ROLE_OTHER");
         final RoleAccessAssertion assertion = new RoleAccessAssertion();
         assertion.setRequiredRoles(Sets.newHashSet("ROLE_USER"));
@@ -129,7 +130,7 @@ public class RoleAccessAssertionTest {
 
 
     @Test
-    public void testMarshalUnmarshalAllowed() throws Exception {
+    public void testMarshalUnmarshalAllowed() {
         setCreds("ROLE_USER");
         final RoleAccessAssertion assertion = new RoleAccessAssertion();
         assertion.setRequiredRoles(Sets.newHashSet("ROLE_USER"));
@@ -142,7 +143,7 @@ public class RoleAccessAssertionTest {
 
 
     @Test
-    public void testValidate() throws Exception {
+    public void testValidate() {
         List<Throwable> errors = Lists.newArrayList();
         final RoleAccessAssertion assertion = new RoleAccessAssertion();
         assertion.validate(errors, null);

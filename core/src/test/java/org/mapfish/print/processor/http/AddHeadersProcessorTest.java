@@ -42,19 +42,20 @@ public class AddHeadersProcessorTest extends AbstractHttpProcessorTest {
         private void matching(TestParam values) throws Exception {
             final URI uri = new URI("http://localhost:8080/path?query#fragment");
             final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(uri,
-                    HttpMethod.GET);
+                                                                                                          HttpMethod.GET);
             final URI finalUri = request.getURI();
             assertEquals(uri, finalUri);
 
             assertEquals(2, request.getHeaders().size());
-            assertArrayEquals(new Object[]{"cookie-value", "cookie-value2"}, request.getHeaders().get("Cookie").toArray());
+            assertArrayEquals(new Object[]{"cookie-value", "cookie-value2"},
+                              request.getHeaders().get("Cookie").toArray());
             assertArrayEquals(new Object[]{"header2-value"}, request.getHeaders().get("Header2").toArray());
         }
 
         private void notMatching(TestParam values) throws Exception {
             final URI uri = new URI("http://195.176.255.226:8080/path?query#fragment");
             final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(uri,
-                    HttpMethod.GET);
+                                                                                                          HttpMethod.GET);
             final URI finalUri = request.getURI();
             assertEquals(uri, finalUri);
 

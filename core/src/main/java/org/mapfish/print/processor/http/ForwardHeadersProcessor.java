@@ -2,7 +2,6 @@ package org.mapfish.print.processor.http;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
@@ -14,13 +13,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.Nullable;
 
 /**
- * <p>This processor forwards all the headers from the print request (from the Mapfish Print client) to each http request made for
- * the particular print job. All headers can be forwarded (if forwardAll is set to true) or the specific headers to forward
- * can be specified.</p>
+ * <p>This processor forwards all the headers from the print request (from the Mapfish Print client) to each
+ * http request made for the particular print job. All headers can be forwarded (if forwardAll is set to true)
+ * or the specific headers to forward can be specified.</p>
  * <p>Example 1: Forward all headers from print request</p>
  * <pre><code>
  * - !forwardHeaders
@@ -33,16 +31,16 @@ import javax.annotation.Nullable;
  * </code></pre>
  *
  * <p>Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor}
- * (<a href="processors.html#!restrictUris">!restrictUris</a>).</p>
- * [[examples=http_processors,osm_custom_params]]
+ * (<a href="processors.html#!restrictUris">!restrictUris</a>
+ * ).</p> [[examples=http_processors,osm_custom_params]]
  */
 public final class ForwardHeadersProcessor
         extends AbstractProcessor<ForwardHeadersProcessor.Param, Void>
         implements HttpProcessor<ForwardHeadersProcessor.Param> {
 
+    private final UriMatchers matchers = new UriMatchers();
     private Set<String> headerNames = Sets.newHashSet();
     private boolean forwardAll = false;
-    private final UriMatchers matchers = new UriMatchers();
 
     /**
      * Constructor.
@@ -58,16 +56,15 @@ public final class ForwardHeadersProcessor
      */
     public void setHeaders(final Set<String> names) {
         // transform to lower-case because header names should be case-insensitive
-        Set<String> lowerCaseNames = new HashSet<String>();
-        for (String name : names) {
+        Set<String> lowerCaseNames = new HashSet<>();
+        for (String name: names) {
             lowerCaseNames.add(name.toLowerCase());
         }
         this.headerNames = lowerCaseNames;
     }
 
     /**
-     * The matchers used to select the urls that are going to be modified by the processor.
-     * For example:
+     * The matchers used to select the urls that are going to be modified by the processor. For example:
      * <pre><code>
      * - !restrictUris
      *   matchers:
@@ -108,12 +105,14 @@ public final class ForwardHeadersProcessor
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
+    protected void extraValidation(
+            final List<Throwable> validationErrors, final Configuration configuration) {
         if (!this.forwardAll && this.headerNames.isEmpty()) {
             validationErrors.add(new IllegalStateException("all is false and no headers are defined"));
         }
         if (this.forwardAll && !this.headerNames.isEmpty()) {
-            validationErrors.add(new IllegalStateException("all is true but headers is defined. Either all is true " +
+            validationErrors
+                    .add(new IllegalStateException("all is true but headers is defined. Either all is true " +
                                                            "OR headers is specified"));
         }
     }
@@ -124,7 +123,7 @@ public final class ForwardHeadersProcessor
             final MfClientHttpRequestFactory requestFactory) {
         Map<String, List<String>> headers = Maps.newHashMap();
 
-        for (Map.Entry<String, List<String>> entry : param.requestHeaders.getHeaders().entrySet()) {
+        for (Map.Entry<String, List<String>> entry: param.requestHeaders.getHeaders().entrySet()) {
             if (ForwardHeadersProcessor.this.forwardAll ||
                     ForwardHeadersProcessor.this.headerNames.contains(entry.getKey().toLowerCase())) {
                 headers.put(entry.getKey(), entry.getValue());
@@ -142,7 +141,7 @@ public final class ForwardHeadersProcessor
 
     @Nullable
     @Override
-    public Void execute(final Param values, final ExecutionContext context) throws Exception {
+    public Void execute(final Param values, final ExecutionContext context) {
         values.clientHttpRequestFactoryProvider.set(
                 createFactoryWrapper(values, values.clientHttpRequestFactoryProvider.get()));
         return null;

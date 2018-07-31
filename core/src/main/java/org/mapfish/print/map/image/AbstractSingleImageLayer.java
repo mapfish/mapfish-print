@@ -35,17 +35,19 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
      * @param styleSupplier the style to use when drawing the constructed grid coverage on the map.
      * @param params the parameters for this layer
      */
-    protected AbstractSingleImageLayer(final ExecutorService executorService,
-                                       final StyleSupplier<GridCoverage2D> styleSupplier,
-                                       final AbstractLayerParams params) {
+    protected AbstractSingleImageLayer(
+            final ExecutorService executorService,
+            final StyleSupplier<GridCoverage2D> styleSupplier,
+            final AbstractLayerParams params) {
         super(executorService, params);
         this.styleSupplier = styleSupplier;
     }
 
     @Override
-    protected final List<? extends Layer> getLayers(final MfClientHttpRequestFactory httpRequestFactory,
-                                                    final MapfishMapContext mapContext,
-                                                    final String jobId) throws Exception {
+    protected final List<? extends Layer> getLayers(
+            final MfClientHttpRequestFactory httpRequestFactory,
+            final MapfishMapContext mapContext,
+            final String jobId) throws Exception {
         BufferedImage image;
         try {
             image = loadImage(httpRequestFactory, mapContext);
@@ -59,10 +61,10 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
         GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
         GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapEnvelope.getCoordinateReferenceSystem());
         gridEnvelope.setEnvelope(mapEnvelope.getMinX(), mapEnvelope.getMinY(),
-                mapEnvelope.getMaxX(), mapEnvelope.getMaxY());
+                                 mapEnvelope.getMaxX(), mapEnvelope.getMaxY());
         final String coverageName = getClass().getSimpleName();
         final GridCoverage2D gridCoverage2D = factory.create(coverageName, image, gridEnvelope,
-                null, null, null);
+                                                             null, null, null);
 
         Style style = this.styleSupplier.load(httpRequestFactory, gridCoverage2D);
         return Collections.singletonList(new GridCoverageLayer(gridCoverage2D, style));
@@ -70,11 +72,13 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 
     /**
      * Load the image at the requested size for the provided map bounds.
+     *
      * @param requestFactory the factory to use for making http requests
      * @param transformer object containing map rendering information
      */
-    protected abstract BufferedImage loadImage(MfClientHttpRequestFactory requestFactory,
-                                               MapfishMapContext transformer) throws Throwable;
+    protected abstract BufferedImage loadImage(
+            MfClientHttpRequestFactory requestFactory,
+            MapfishMapContext transformer) throws Throwable;
 
     @Override
     public final double getImageBufferScaling() {

@@ -23,6 +23,7 @@ public class PYamlArray extends PElement implements PArray {
 
     /**
      * Constructor.
+     *
      * @param parent the parent object.
      * @param array the array to wrap
      * @param contextName the name of this object within the parent.

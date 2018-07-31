@@ -19,7 +19,8 @@ import static org.mapfish.print.Constants.PDF_DPI;
 /**
  * An PDF output format that uses Jasper reports to generate the result.
  */
-public final class JasperReportImageOutputFormat extends AbstractJasperReportOutputFormat implements OutputFormat {
+public final class JasperReportImageOutputFormat extends AbstractJasperReportOutputFormat
+        implements OutputFormat {
 
     private int imageType = BufferedImage.TYPE_INT_ARGB;
 
@@ -30,17 +31,18 @@ public final class JasperReportImageOutputFormat extends AbstractJasperReportOut
         return "image/" + this.fileSuffix;
     }
 
-    public void setFileSuffix(final String fileSuffix) {
-        this.fileSuffix = fileSuffix;
-    }
-
     @Override
     public String getFileSuffix() {
         return this.fileSuffix;
     }
 
+    public void setFileSuffix(final String fileSuffix) {
+        this.fileSuffix = fileSuffix;
+    }
+
     @Override
-    protected void doExport(final OutputStream outputStream, final Print print) throws JRException, IOException {
+    protected void doExport(final OutputStream outputStream, final Print print)
+            throws JRException, IOException {
         JasperPrint jasperPrint = print.print;
         final int numPages = jasperPrint.getPages().size();
 
@@ -62,10 +64,11 @@ public final class JasperReportImageOutputFormat extends AbstractJasperReportOut
                 Image pageImage = printManager.printToImage(jasperPrint, pageIndex, dpiRatio);
 
                 graphics2D.drawImage(pageImage,
-                        0, (pageHeightOnImage + separatorHeight) * pageIndex,
-                        pageWidthOnImage, (pageHeightOnImage + separatorHeight) * pageIndex + pageHeightOnImage,
-                        0, 0,
-                        pageWidthOnImage, pageHeightOnImage, null);
+                                     0, (pageHeightOnImage + separatorHeight) * pageIndex,
+                                     pageWidthOnImage,
+                                     (pageHeightOnImage + separatorHeight) * pageIndex + pageHeightOnImage,
+                                     0, 0,
+                                     pageWidthOnImage, pageHeightOnImage, null);
             }
 
             // draw separator line between the pages

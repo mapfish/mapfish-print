@@ -10,8 +10,8 @@ import javax.imageio.ImageIO;
  */
 public final class ImageIOPluginScanner implements ApplicationListener<ContextRefreshedEvent> {
     /**
-     * Ensure that extensions for ImageIO (like the reader and writer for TIFF) are registered.
-     * This is required for certain Windows systems.
+     * Ensure that extensions for ImageIO (like the reader and writer for TIFF) are registered. This is
+     * required for certain Windows systems.
      *
      * @param event the startup event.  Not needed here but required for API.
      */

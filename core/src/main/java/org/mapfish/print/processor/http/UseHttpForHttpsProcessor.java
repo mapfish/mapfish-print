@@ -1,4 +1,3 @@
-
 package org.mapfish.print.processor.http;
 
 import com.google.common.collect.Lists;
@@ -20,8 +19,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This processor maps https requests to http requests for certain hosts. The port number can also be mapped since that is usually
- * required.
+ * This processor maps https requests to http requests for certain hosts. The port number can also be mapped
+ * since that is usually required.
  * <p>Example: </p>
  * <pre><code>
  * - !useHttpForHttps
@@ -32,8 +31,8 @@ import java.util.regex.Pattern;
  * </code></pre>
  *
  * <p>Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor}
- * (<a href="processors.html#!restrictUris">!restrictUris</a>).</p>
- * [[examples=http_processors,osm_custom_params]]
+ * (<a href="processors.html#!restrictUris">!restrictUris</a>
+ * ).</p> [[examples=http_processors,osm_custom_params]]
  */
 public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFactoryProcessor {
     private static final int HTTPS_STANDARD_PORT = 443;
@@ -54,7 +53,8 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
+    protected void extraValidation(
+            final List<Throwable> validationErrors, final Configuration configuration) {
         super.extraValidation(validationErrors, configuration);
         if (this.hosts.isEmpty()) {
             validationErrors.add(new IllegalArgumentException("No hosts are registered"));
@@ -62,13 +62,15 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
     }
 
     @Override
-    public MfClientHttpRequestFactory createFactoryWrapper(final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
-                                                         final MfClientHttpRequestFactory requestFactory) {
+    public MfClientHttpRequestFactory createFactoryWrapper(
+            final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
+            final MfClientHttpRequestFactory requestFactory) {
         return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory, matchers, false) {
             @Override
-            protected ClientHttpRequest createRequest(final URI uri,
-                                                      final HttpMethod httpMethod,
-                                                      final MfClientHttpRequestFactory requestFactory) throws IOException {
+            protected ClientHttpRequest createRequest(
+                    final URI uri,
+                    final HttpMethod httpMethod,
+                    final MfClientHttpRequestFactory requestFactory) throws IOException {
                 if (uri.getScheme() != null && uri.getScheme().equals("https")) {
                     try {
                         URI httpUri = uri;
@@ -115,13 +117,13 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
      */
     public void setHosts(final List<String> hosts) {
         this.hosts.clear();
-        for (String host : hosts) {
+        for (String host: hosts) {
             this.hosts.add(RegexpUtil.compilePattern(host));
         }
     }
 
     private boolean matchingHost(final String host) {
-        for (Pattern hostPattern : UseHttpForHttpsProcessor.this.hosts) {
+        for (Pattern hostPattern: UseHttpForHttpsProcessor.this.hosts) {
             if (hostPattern.matcher(host).matches()) {
                 return true;
             }
@@ -137,8 +139,8 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
         }
 
         httpUri = new URI("http", uri.getUserInfo(), uri.getHost(), port,
-                uri.getPath(),
-                uri.getQuery(), uri.getFragment());
+                          uri.getPath(),
+                          uri.getQuery(), uri.getFragment());
         return httpUri;
     }
 
@@ -159,7 +161,7 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
         }
 
         httpUri = new URI("http", authority, uri.getPath(), uri.getQuery(),
-                uri.getFragment());
+                          uri.getFragment());
         return httpUri;
     }
 }

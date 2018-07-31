@@ -18,11 +18,11 @@ class GridLabel {
     @Override
     public String toString() {
         return "GridLabel{" +
-               "text='" + this.text + '\'' +
-               ", x=" + this.x +
-               ", y=" + this.y +
-               ", side=" + this.side +
-               '}';
+                "text='" + this.text + '\'' +
+                ", x=" + this.x +
+                ", y=" + this.y +
+                ", side=" + this.side +
+                '}';
     }
 
     enum Side {

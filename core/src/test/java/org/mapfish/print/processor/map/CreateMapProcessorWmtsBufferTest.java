@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
  * Created by Jesse on 3/26/14.
  */
 public class CreateMapProcessorWmtsBufferTest extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR ="wmts_buffer";
+    public static final String BASE_DIR = "wmts_buffer";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
@@ -40,6 +40,11 @@ public class CreateMapProcessorWmtsBufferTest extends AbstractMapfishSpringTest 
     private TestHttpClientFactory httpRequestFactory;
     @Autowired
     private ForkJoinPool forkJoinPool;
+
+    public static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest.class,
+                                       BASE_DIR + "/requestData.json");
+    }
 
     @Test
     public void testExecute() throws Exception {
@@ -52,7 +57,8 @@ public class CreateMapProcessorWmtsBufferTest extends AbstractMapfishSpringTest 
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         final Multimap<String, String> parameters = URIUtils.getParameters(uri);
                         String column = parameters.get("TILECOL").iterator().next();
                         String row = parameters.get("TILEROW").iterator().next();
@@ -71,7 +77,7 @@ public class CreateMapProcessorWmtsBufferTest extends AbstractMapfishSpringTest 
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.httpRequestFactory, new File("."));
+                                   this.httpRequestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -83,10 +89,5 @@ public class CreateMapProcessorWmtsBufferTest extends AbstractMapfishSpringTest 
 
         new ImageSimilarity(new File(layerGraphics.get(0))).assertSimilarity(
                 getFile(BASE_DIR + "/expectedSimpleImage.png"), 0);
-    }
-
-    public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest.class,
-                BASE_DIR + "/requestData.json");
     }
 }

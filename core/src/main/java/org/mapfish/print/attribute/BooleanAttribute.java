@@ -20,6 +20,7 @@ public class BooleanAttribute extends PrimitiveAttribute<Boolean> {
      *     attributes:
      *       title: !boolean
      *         default: True</code></pre>
+     *
      * @param value The default value.
      */
     public final void setDefault(final Boolean value) {

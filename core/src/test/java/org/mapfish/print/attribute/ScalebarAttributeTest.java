@@ -1,7 +1,6 @@
 package org.mapfish.print.attribute;
 
 import com.google.common.collect.Lists;
-
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -39,36 +38,36 @@ public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
     }
 
     @Test
-    public void testCreateValue() throws Exception {
+    public void testCreateValue() {
         ScalebarAttributeValues values = getValues();
         assertEquals(new Dimension(300, 120), values.getSize());
     }
 
     @Test
-    public void testPostConstruct() throws Exception {
+    public void testPostConstruct() {
         ScalebarAttributeValues values = getValues();
         values.postConstruct();
         // passes.. ok
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void testPostConstructInvalidColor() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void testPostConstructInvalidColor() {
         ScalebarAttributeValues values = getValues();
 
         values.backgroundColor = "sun-yellow";
         values.postConstruct();
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void testPostConstructInvalidUnit() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void testPostConstructInvalidUnit() {
         ScalebarAttributeValues values = getValues();
 
         values.unit = "light-years";
         values.postConstruct();
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void testPostConstructInvalidIntervals() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void testPostConstructInvalidIntervals() {
         ScalebarAttributeValues values = getValues();
 
         values.intervals = 0;
@@ -80,10 +79,13 @@ public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
         final File configFile = getFile(ScalebarAttributeTest.class, "scalebar/config.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
-        final PJsonObject pJsonObject = parseJSONObjectFromFile(ScalebarAttributeTest.class, "scalebar/requestData.json");
-        final Values values = new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
-                new File("."));
-        final ScalebarAttribute.ScalebarAttributeValues value = values.getObject("scalebar", ScalebarAttribute.ScalebarAttributeValues.class);
+        final PJsonObject pJsonObject =
+                parseJSONObjectFromFile(ScalebarAttributeTest.class, "scalebar/requestData.json");
+        final Values values =
+                new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
+                           new File("."));
+        final ScalebarAttribute.ScalebarAttributeValues value =
+                values.getObject("scalebar", ScalebarAttribute.ScalebarAttributeValues.class);
 
         assertEquals(Type.LINE.getLabel(), value.type);
         assertEquals("m", value.unit);

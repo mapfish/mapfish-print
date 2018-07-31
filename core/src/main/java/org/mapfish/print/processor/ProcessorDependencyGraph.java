@@ -15,15 +15,14 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.RecursiveTask;
-
 import javax.annotation.Nonnull;
 
 import static org.mapfish.print.parser.ParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES;
 import static org.mapfish.print.parser.ParserUtils.getAttributeNames;
 
 /**
- * Represents a graph of the processors dependencies.  The root nodes can execute in parallel but processors with
- * dependencies must wait for their dependencies to complete before execution.
+ * Represents a graph of the processors dependencies.  The root nodes can execute in parallel but processors
+ * with dependencies must wait for their dependencies to complete before execution.
  * <p></p>
  */
 public final class ProcessorDependencyGraph {
@@ -34,24 +33,58 @@ public final class ProcessorDependencyGraph {
         this.roots = new ArrayList<>();
     }
 
+    static void tryExecuteNodes(
+            final Collection<ProcessorGraphNode> dependencyNodes,
+            final ProcessorExecutionContext execContext,
+            final boolean notStartedIsOk) {
+        final List<ProcessorGraphNode.ProcessorNodeForkJoinTask<?, ?>> tasks =
+                new ArrayList<>(dependencyNodes.size());
+
+        // fork all but 1 dependencies (the first will be ran in current thread)
+        for (final ProcessorGraphNode<?, ?> depNode: dependencyNodes) {
+            final Optional<? extends ProcessorGraphNode.ProcessorNodeForkJoinTask<?, ?>> task =
+                    depNode.createTask(execContext);
+            if (task.isPresent()) {
+                tasks.add(task.get());
+                if (tasks.size() > 1) {
+                    task.get().fork();
+                }
+            } else if (!notStartedIsOk) {
+                LOGGER.error("Failed to start the processor {}", depNode.getProcessor());
+            }
+        }
+
+        if (!tasks.isEmpty()) {
+            // compute one task in current thread so as not to waste threads
+            tasks.get(0).compute();
+
+            for (ProcessorGraphNode.ProcessorNodeForkJoinTask task: tasks.subList(1, tasks.size())) {
+                task.join();
+            }
+        }
+    }
+
     /**
      * Create a ForkJoinTask for running in a fork join pool.
      *
-     * @param values the values to use for getting the required inputs of the processor and putting the output in.
+     * @param values the values to use for getting the required inputs of the processor and putting
+     *         the output in.
      * @return a task ready to be submitted to a fork join pool.
      */
     public ProcessorGraphForkJoinTask createTask(@Nonnull final Values values) {
         StringBuilder missingAttributes = new StringBuilder();
         final Multimap<String, Processor> requiredAttributes = getAllRequiredAttributes();
-        for (String attribute : requiredAttributes.keySet()) {
+        for (String attribute: requiredAttributes.keySet()) {
             if (!values.containsKey(attribute)) {
-                missingAttributes.append("\n\t* ").append(attribute).append(" <- ").append(requiredAttributes.get(attribute));
+                missingAttributes.append("\n\t* ").append(attribute).append(" <- ")
+                        .append(requiredAttributes.get(attribute));
             }
         }
 
         if (missingAttributes.length() > 0) {
             throw new IllegalArgumentException("It has been found that one or more required attributes are " +
-                    "missing from the values object:" + missingAttributes + "\n");
+                                                       "missing from the values object:" + missingAttributes +
+                                                       "\n");
         }
 
         return new ProcessorGraphForkJoinTask(values);
@@ -72,9 +105,9 @@ public final class ProcessorDependencyGraph {
     @SuppressWarnings("unchecked")
     public Multimap<String, Processor> getAllRequiredAttributes() {
         Multimap<String, Processor> requiredInputs = HashMultimap.create();
-        for (ProcessorGraphNode root : this.roots) {
+        for (ProcessorGraphNode root: this.roots) {
             final BiMap<String, String> inputMapper = root.getInputMapper();
-            for (String attr : inputMapper.keySet()) {
+            for (String attr: inputMapper.keySet()) {
                 requiredInputs.put(attr, root.getProcessor());
             }
             final Object inputParameter = root.getProcessor().createInputParameter();
@@ -82,9 +115,10 @@ public final class ProcessorDependencyGraph {
                 continue;
             } else if (inputParameter != null) {
                 final Class<?> inputParameterClass = inputParameter.getClass();
-                final Set<String> requiredAttributesDefinedInInputParameter = getAttributeNames(inputParameterClass,
-                        FILTER_ONLY_REQUIRED_ATTRIBUTES::test);
-                for (String attName : requiredAttributesDefinedInInputParameter) {
+                final Set<String> requiredAttributesDefinedInInputParameter =
+                        getAttributeNames(inputParameterClass,
+                                          FILTER_ONLY_REQUIRED_ATTRIBUTES::test);
+                for (String attName: requiredAttributesDefinedInInputParameter) {
                     try {
                         if (inputParameterClass.getField(attName).getType() == Values.class) {
                             continue;
@@ -111,8 +145,8 @@ public final class ProcessorDependencyGraph {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("strict digraph g {\n" +
-                "  rankdir=\"LR\";\n" +
-                "  node [shape=\"box\"];\n");
+                               "  rankdir=\"LR\";\n" +
+                               "  node [shape=\"box\"];\n");
         toString(builder, 0, "root");
         builder.append("}");
         return builder.toString();
@@ -126,7 +160,7 @@ public final class ProcessorDependencyGraph {
      * @param parent the parent node
      */
     public void toString(final StringBuilder builder, final int indent, final String parent) {
-        for (ProcessorGraphNode root : this.roots) {
+        for (ProcessorGraphNode root: this.roots) {
             root.toString(builder, indent, parent);
         }
     }
@@ -136,8 +170,8 @@ public final class ProcessorDependencyGraph {
      */
     public Set<Processor<?, ?>> getAllProcessors() {
         IdentityHashMap<Processor<?, ?>, Void> all = new IdentityHashMap<>();
-        for (ProcessorGraphNode<?, ?> root : this.roots) {
-            for (Processor p : root.getAllProcessors()) {
+        for (ProcessorGraphNode<?, ?> root: this.roots) {
+            for (Processor p: root.getAllProcessors()) {
                 all.put(p, null);
             }
         }
@@ -156,9 +190,9 @@ public final class ProcessorDependencyGraph {
 
         /**
          * Cancels the complete processor graph of a print task.
-         *
-         * This is achieved by setting the cancel flag of the execution
-         * context, so that every processor can stop its execution.
+         * <p>
+         * This is achieved by setting the cancel flag of the execution context, so that every processor can
+         * stop its execution.
          *
          * @param mayInterruptIfRunning is ignored
          */
@@ -183,36 +217,6 @@ public final class ProcessorDependencyGraph {
 
         public Processor.ExecutionContext getExecutionContext() {
             return this.execContext.getContext();
-        }
-    }
-
-    static void tryExecuteNodes(final Collection<ProcessorGraphNode> dependencyNodes,
-                                final ProcessorExecutionContext execContext,
-                                final boolean notStartedIsOk) {
-        final List<ProcessorGraphNode.ProcessorNodeForkJoinTask<?, ?>> tasks =
-                new ArrayList<ProcessorGraphNode.ProcessorNodeForkJoinTask<?, ?>>(dependencyNodes.size());
-
-        // fork all but 1 dependencies (the first will be ran in current thread)
-        for (final ProcessorGraphNode<?, ?> depNode : dependencyNodes) {
-            final Optional<? extends ProcessorGraphNode.ProcessorNodeForkJoinTask<?, ?>> task =
-                    depNode.createTask(execContext);
-            if (task.isPresent()) {
-                tasks.add(task.get());
-                if (tasks.size() > 1) {
-                    task.get().fork();
-                }
-            } else if (!notStartedIsOk) {
-                LOGGER.error("Failed to start the processor {}", depNode.getProcessor());
-            }
-        }
-
-        if (!tasks.isEmpty()) {
-            // compute one task in current thread so as not to waste threads
-            tasks.get(0).compute();
-
-            for (ProcessorGraphNode.ProcessorNodeForkJoinTask task : tasks.subList(1, tasks.size())) {
-                task.join();
-            }
         }
     }
 

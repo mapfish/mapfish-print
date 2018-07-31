@@ -17,13 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
-
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 
 /**
  * JobEntryDao.
- *
  */
 public class PrintJobDao {
 
@@ -43,7 +41,6 @@ public class PrintJobDao {
     }
 
     /**
-     *
      * Save Job Record.
      *
      * @param entry the entry
@@ -55,7 +52,6 @@ public class PrintJobDao {
     }
 
     /**
-     *
      * Get Job Record.
      *
      * @param id the id
@@ -71,7 +67,6 @@ public class PrintJobDao {
     }
 
     /**
-     *
      * Get Job Record.
      *
      * @param id the id
@@ -82,7 +77,8 @@ public class PrintJobDao {
     public final PrintJobStatusExtImpl get(final String id, final boolean lock) {
         Criteria c = getSession().createCriteria(PrintJobStatusExtImpl.class);
         c.add(Restrictions.idEq(id));
-        if (lock) { //LOCK means SELECT FOR UPDATE which prevents these records to be pulled by different instances
+        if (lock) { //LOCK means SELECT FOR UPDATE which prevents these records to be pulled by different
+            // instances
             c.setLockMode("pj", LockMode.PESSIMISTIC_READ);
             c.setFetchMode("result", FetchMode.SELECT);
         } else {
@@ -106,21 +102,19 @@ public class PrintJobDao {
     }
 
     /**
-     *
      * @param statuses the statuses to include (or none if all)
      * @return the total amount of jobs
      */
     public final int count(final PrintJobStatus.Status... statuses) {
         Criteria c = getSession().createCriteria(PrintJobStatusExtImpl.class);
         if (statuses.length > 0) {
-            c.add(Restrictions.in("status" , statuses));
+            c.add(Restrictions.in("status", statuses));
         }
         c.setProjection(Projections.rowCount());
         return ((Number) c.uniqueResult()).intValue();
     }
 
     /**
-     *
      * @param statuses the statuses to include (or none if all)
      * @return the jobs
      */
@@ -128,20 +122,19 @@ public class PrintJobDao {
     public final List<PrintJobStatusExtImpl> get(final PrintJobStatus.Status... statuses) {
         Criteria c = getSession().createCriteria(PrintJobStatusExtImpl.class);
         if (statuses.length > 0) {
-            c.add(Restrictions.in("status" , statuses));
+            c.add(Restrictions.in("status", statuses));
         }
         return (List<PrintJobStatusExtImpl>) c.list();
     }
 
     /**
-     *
      * @return total time spent printing
      */
     public final long getTotalTimeSpentPrinting() {
         Criteria c = getSession().createCriteria(PrintJobStatusExtImpl.class);
         c.add(Restrictions.isNotNull("completionTime"));
         c.setProjection(Projections.sqlProjection("sum(completionTime - startTime) as totalTime",
-                new String[] {"totalTime"}, new Type[] { LongType.INSTANCE }));
+                                                  new String[]{"totalTime"}, new Type[]{LongType.INSTANCE}));
         Number result = (Number) c.uniqueResult();
         return result == null ? 0 : result.longValue();
     }
@@ -153,10 +146,13 @@ public class PrintJobDao {
      * @param checkTimeThreshold threshold for last check time
      * @param message the error message
      */
-    public final void cancelOld(final long starttimeThreshold, final long checkTimeThreshold, final String message) {
-        Query query = getSession().createQuery("update PrintJobStatusExtImpl pj " + "set status=:newstatus, error=:msg "
-                + "where pj.status = :oldstatus " + "and (startTime < :starttimethreshold "
-                + "or lastCheckTime < :checktimethreshold)");
+    public final void cancelOld(
+            final long starttimeThreshold, final long checkTimeThreshold, final String message) {
+        Query query = getSession()
+                .createQuery("update PrintJobStatusExtImpl pj " + "set status=:newstatus, error=:msg "
+                                     + "where pj.status = :oldstatus " +
+                                     "and (startTime < :starttimethreshold "
+                                     + "or lastCheckTime < :checktimethreshold)");
         query.setParameter("oldstatus", PrintJobStatus.Status.WAITING);
         query.setParameter("newstatus", PrintJobStatus.Status.CANCELLED);
         query.setParameter("msg", message);
@@ -167,12 +163,14 @@ public class PrintJobDao {
 
     /**
      * Update the lastCheckTime of the given record.
+     *
      * @param id the id
      * @param lastCheckTime the new value
      */
     public final void updateLastCheckTime(final String id, final long lastCheckTime) {
-        Query query = getSession().createQuery("update PrintJobStatusExtImpl pj " + "set lastCheckTime=:lastCheckTime "
-                + "where pj.referenceId = :id");
+        Query query = getSession()
+                .createQuery("update PrintJobStatusExtImpl pj " + "set lastCheckTime=:lastCheckTime "
+                                     + "where pj.referenceId = :id");
         query.setParameter("id", id);
         query.setParameter("lastCheckTime", lastCheckTime);
         query.executeUpdate();
@@ -181,12 +179,12 @@ public class PrintJobDao {
     /**
      * Delete old jobs.
      *
-     * @param checkTimeThreshold
-     *            threshold for last check time
+     * @param checkTimeThreshold threshold for last check time
      */
     public final void deleteOld(final long checkTimeThreshold) {
         Query query = getSession()
-                .createQuery("delete from PrintJobStatusExtImpl " + "where lastCheckTime < :checktimethreshold)");
+                .createQuery(
+                        "delete from PrintJobStatusExtImpl " + "where lastCheckTime < :checktimethreshold)");
         query.setParameter("checktimethreshold", checkTimeThreshold);
         query.executeUpdate();
     }
@@ -200,7 +198,8 @@ public class PrintJobDao {
     @SuppressWarnings("unchecked")
     public final List<PrintJobStatusExtImpl> poll(final int size) {
         Query query = getSession()
-                .createQuery("from PrintJobStatusExtImpl pj " + "where status = :status " + "order by startTime");
+                .createQuery(
+                        "from PrintJobStatusExtImpl pj " + "where status = :status " + "order by startTime");
         query.setParameter("status", PrintJobStatus.Status.WAITING);
         query.setMaxResults(size);
         // LOCK but don't wait for release (since this is run continuously
@@ -217,8 +216,7 @@ public class PrintJobDao {
     /**
      * Get result report.
      *
-     * @param reportURI
-     *            the URI of the report
+     * @param reportURI the URI of the report
      * @return the result report.
      */
     public final PrintJobResultExtImpl getResult(final URI reportURI) {

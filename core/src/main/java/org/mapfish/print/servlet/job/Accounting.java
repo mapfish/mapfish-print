@@ -52,7 +52,8 @@ public class Accounting {
             this.entry = entry;
             this.configuration = configuration;
             this.successTimer = Accounting.this.metricRegistry.timer(getClass().getName() + "." +
-                    this.entry.getAppId() + ".success").time();
+                                                                             this.entry.getAppId() +
+                                                                             ".success").time();
         }
 
         /**
@@ -70,7 +71,7 @@ public class Accounting {
          */
         public void onJobCancel() {
             Accounting.this.metricRegistry.counter(getClass().getName() + "." +
-                    this.entry.getAppId() + ".cancel").inc();
+                                                           this.entry.getAppId() + ".cancel").inc();
         }
 
         /**
@@ -78,7 +79,7 @@ public class Accounting {
          */
         public void onJobError() {
             Accounting.this.metricRegistry.counter(getClass().getName() + "." +
-                    this.entry.getAppId() + ".error").inc();
+                                                           this.entry.getAppId() + ".error").inc();
         }
     }
 }

@@ -36,6 +36,7 @@ public final class CustomEPSGCodes extends FactoryUsingWKT {
 
     /**
      * Returns the URL to the property file that contains CRS definitions.     *
+     *
      * @return The URL to the epsg file containing custom EPSG codes
      */
     @Override

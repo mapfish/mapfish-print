@@ -1,7 +1,6 @@
 package org.mapfish.print.processor.map;
 
 import org.geotools.data.simple.SimpleFeatureCollection;
-
 import org.mapfish.print.attribute.FeaturesAttribute.FeaturesAttributeValues;
 import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;
@@ -35,7 +34,7 @@ public class SetFeaturesProcessor extends
 
     @Override
     public final Void execute(final Input values, final ExecutionContext context) throws Exception {
-        for (MapLayer layer : values.map.getLayers()) {
+        for (MapLayer layer: values.map.getLayers()) {
             checkCancelState(context);
             if (layer instanceof AbstractFeatureSourceLayer) {
                 final SimpleFeatureCollection features = values.features.getFeatures(
@@ -48,7 +47,8 @@ public class SetFeaturesProcessor extends
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
+    protected void extraValidation(
+            final List<Throwable> validationErrors, final Configuration configuration) {
         // no checks needed
     }
 

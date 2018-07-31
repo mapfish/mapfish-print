@@ -13,8 +13,8 @@ public final class RegexpUtil {
     /**
      * Convert a string to a Pattern object.
      * <ul>
-     *     <li>If the host starts and ends with / then it is compiled as a regular expression</li>
-     *     <li>Otherwise the hosts must exactly match</li>
+     * <li>If the host starts and ends with / then it is compiled as a regular expression</li>
+     * <li>Otherwise the hosts must exactly match</li>
      * </ul>
      *
      * @param expr the expression to compile

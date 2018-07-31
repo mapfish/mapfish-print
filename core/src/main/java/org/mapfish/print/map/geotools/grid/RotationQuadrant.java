@@ -7,9 +7,9 @@ import static java.lang.Math.PI;
 
 /**
  * The strategies for rotating and translating the  when the rotation is in a specific rotation.
- *
- * For example if the rotation is between 0 and 90 then the top and bottom text will be upside down.  In this case the
- * Quadrant 1 strategy will be used to ensure the  will be correctly oriented.
+ * <p>
+ * For example if the rotation is between 0 and 90 then the top and bottom text will be upside down.  In this
+ * case the Quadrant 1 strategy will be used to ensure the  will be correctly oriented.
  */
 enum RotationQuadrant {
     /**
@@ -17,8 +17,9 @@ enum RotationQuadrant {
      */
     QUADRANT_1 {
         @Override
-        void updateTransform(final AffineTransform baseTransform, final int indent, final GridLabel.Side side,
-                             final int halfCharHeight, final Rectangle2D textBounds) {
+        void updateTransform(
+                final AffineTransform baseTransform, final int indent, final GridLabel.Side side,
+                final int halfCharHeight, final Rectangle2D textBounds) {
             switch (side) {
                 case TOP:
                     baseTransform.rotate(Constants.MINUS_NINETY_RADIANS);
@@ -42,8 +43,9 @@ enum RotationQuadrant {
      */
     QUADRANT_2 {
         @Override
-        void updateTransform(final AffineTransform baseTransform, final int indent, final GridLabel.Side side,
-                             final int halfCharHeight, final Rectangle2D textBounds) {
+        void updateTransform(
+                final AffineTransform baseTransform, final int indent, final GridLabel.Side side,
+                final int halfCharHeight, final Rectangle2D textBounds) {
             switch (side) {
                 case TOP:
                     baseTransform.rotate(Constants.MINUS_NINETY_RADIANS);
@@ -69,8 +71,9 @@ enum RotationQuadrant {
      */
     QUADRANT_3 {
         @Override
-        void updateTransform(final AffineTransform baseTransform, final int indent, final GridLabel.Side side,
-                             final int halfCharHeight, final Rectangle2D textBounds) {
+        void updateTransform(
+                final AffineTransform baseTransform, final int indent, final GridLabel.Side side,
+                final int halfCharHeight, final Rectangle2D textBounds) {
             switch (side) {
                 case TOP:
                     baseTransform.rotate(Constants.NINETY_RADIANS);
@@ -96,8 +99,9 @@ enum RotationQuadrant {
      */
     QUADRANT_4 {
         @Override
-        void updateTransform(final AffineTransform baseTransform, final int indent, final GridLabel.Side side,
-                             final int halfCharHeight, final Rectangle2D textBounds) {
+        void updateTransform(
+                final AffineTransform baseTransform, final int indent, final GridLabel.Side side,
+                final int halfCharHeight, final Rectangle2D textBounds) {
             switch (side) {
                 case TOP:
                     baseTransform.rotate(Constants.NINETY_RADIANS);
@@ -118,9 +122,10 @@ enum RotationQuadrant {
     },
 
     NO_ROTATION {
-      @Override
-        void updateTransform(final AffineTransform baseTransform, final int indent, final GridLabel.Side side,
-                             final int halfCharHeight, final Rectangle2D textBounds) {
+        @Override
+        void updateTransform(
+                final AffineTransform baseTransform, final int indent, final GridLabel.Side side,
+                final int halfCharHeight, final Rectangle2D textBounds) {
             switch (side) {
                 case TOP:
                     baseTransform.translate(-textBounds.getWidth() / 2.0, indent + halfCharHeight * 2.0);
@@ -139,10 +144,6 @@ enum RotationQuadrant {
     };
 
     public static final double THREE_SIXTY_RADIANS = PI * 2;
-
-    abstract void updateTransform(
-            AffineTransform baseTransform, int indent, GridLabel.Side side,
-            int halfCharHeight, Rectangle2D textBounds);
 
     static RotationQuadrant getQuadrant(final double rotation, final boolean rotate) {
         if (!rotate) {
@@ -169,6 +170,10 @@ enum RotationQuadrant {
         }
         return QUADRANT_4;
     }
+
+    abstract void updateTransform(
+            AffineTransform baseTransform, int indent, GridLabel.Side side,
+            int halfCharHeight, Rectangle2D textBounds);
 
     private static class Constants {
         public static final double MINUS_NINETY_RADIANS = -PI / 2;

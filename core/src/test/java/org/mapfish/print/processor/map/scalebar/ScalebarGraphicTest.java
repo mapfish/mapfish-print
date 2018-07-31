@@ -1,11 +1,5 @@
 package org.mapfish.print.processor.map.scalebar;
 
-import static org.junit.Assert.assertEquals;
-
-import java.awt.Dimension;
-import java.io.File;
-import java.net.URI;
-
 import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,6 +16,12 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.test.util.ImageSimilarity;
 
+import java.awt.Dimension;
+import java.io.File;
+import java.net.URI;
+
+import static org.junit.Assert.assertEquals;
+
 
 public class ScalebarGraphicTest {
 
@@ -32,7 +32,7 @@ public class ScalebarGraphicTest {
     private Template template;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Configuration configuration = new Configuration();
         this.template = new Template();
         this.template.setConfiguration(configuration);
@@ -43,17 +43,17 @@ public class ScalebarGraphicTest {
     public void testGetNearestNiceValue() {
         ScalebarGraphic scalebar = new ScalebarGraphic();
         assertEquals(10.0, scalebar.getNearestNiceValue(10.0, DistanceUnit.M,
-                false), TOLERANCE);
+                                                        false), TOLERANCE);
         assertEquals(10.0, scalebar.getNearestNiceValue(13.0, DistanceUnit.M,
-                false), TOLERANCE);
+                                                        false), TOLERANCE);
         assertEquals(50.0, scalebar.getNearestNiceValue(67.66871, DistanceUnit.M,
-                false), TOLERANCE);
+                                                        false), TOLERANCE);
         assertEquals(0.02, scalebar.getNearestNiceValue(0.0315, DistanceUnit.M,
-                false), TOLERANCE);
+                                                        false), TOLERANCE);
         assertEquals(1000000000.0, scalebar.getNearestNiceValue(1240005466, DistanceUnit.M,
-                false), TOLERANCE);
+                                                                false), TOLERANCE);
         assertEquals(50.0, scalebar.getNearestNiceValue(98.66871, DistanceUnit.M,
-                false), TOLERANCE);
+                                                        false), TOLERANCE);
     }
 
     @Test
@@ -181,7 +181,7 @@ public class ScalebarGraphicTest {
         ScalebarGraphic scalebar = new ScalebarGraphic();
         URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
         new ImageSimilarity(getFile("expected-scalebar-graphic-svg.png"))
-            .assertSimilarity(file, 300, 40, 140);
+                .assertSimilarity(file, 300, 40, 140);
     }
 
     private File getFile(String fileName) {

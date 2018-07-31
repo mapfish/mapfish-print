@@ -19,6 +19,7 @@ public class StringArrayAttribute extends PrimitiveAttribute<String[]> {
      *     attributes:
      *       title: !stringArray
      *         default: [one, two, three]</code></pre>
+     *
      * @param value The default value.
      */
     public final void setDefault(final String[] value) {

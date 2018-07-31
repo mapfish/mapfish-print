@@ -43,8 +43,9 @@ public abstract class TileCacheInformation {
      * @param dpi the DPI to render at
      * @param params the params with the data for creating the layer.
      */
-    public TileCacheInformation(final MapBounds bounds, final Rectangle paintArea, final double dpi,
-                                final AbstractTiledLayerParams params) {
+    public TileCacheInformation(
+            final MapBounds bounds, final Rectangle paintArea, final double dpi,
+            final AbstractTiledLayerParams params) {
         this.bounds = bounds;
         this.paintArea = paintArea;
         this.dpi = dpi;
@@ -62,26 +63,30 @@ public abstract class TileCacheInformation {
      * @param row the row index of the tile from the origin of the tile cache.
      */
     @Nonnull
-    public abstract ClientHttpRequest getTileRequest(MfClientHttpRequestFactory httpRequestFactory,
-                                                     String commonUrl,
-                                                     ReferencedEnvelope tileBounds,
-                                                     Dimension tileSizeOnScreen,
-                                                     int column,
-                                                     int row)
+    public abstract ClientHttpRequest getTileRequest(
+            MfClientHttpRequestFactory httpRequestFactory,
+            String commonUrl,
+            ReferencedEnvelope tileBounds,
+            Dimension tileSizeOnScreen,
+            int column,
+            int row)
             throws Exception;
 
     /**
-     * Get the resolution that the layer uses for its calculations.  The map isn't always at a resolution that a tiled layer
-     * supports so a scale is chosen for the layer that is close to the map scale. This method returns the layer's scale.
+     * Get the resolution that the layer uses for its calculations.  The map isn't always at a resolution that
+     * a tiled layer supports so a scale is chosen for the layer that is close to the map scale. This method
+     * returns the layer's scale.
      * <p></p>
-     * This is used for calculating the bounds of tiles, the size number and indices of the tiles to be returned.
+     * This is used for calculating the bounds of tiles, the size number and indices of the tiles to be
+     * returned.
      */
     public abstract double getResolution();
 
     /**
-     * Get the DPI of the layer's images.  The server renders at a certain DPI that may or may not be the same DPI that the map
-     * requires.  Depending on the server and the protocol mapfish print might be able to request a certain DPI.  But since
-     * that might not be the case, then the layer must be able to report the correct DPI.
+     * Get the DPI of the layer's images.  The server renders at a certain DPI that may or may not be the same
+     * DPI that the map requires.  Depending on the server and the protocol mapfish print might be able to
+     * request a certain DPI.  But since that might not be the case, then the layer must be able to report the
+     * correct DPI.
      */
     public abstract Double getLayerDpi();
 
@@ -97,8 +102,8 @@ public abstract class TileCacheInformation {
     protected abstract ReferencedEnvelope getTileCacheBounds();
 
     /**
-     * Calculate the minx and miny coordinate of the tile that is the minx and miny tile.  It is the starting point of counting
-     * tiles to render.
+     * Calculate the minx and miny coordinate of the tile that is the minx and miny tile.  It is the starting
+     * point of counting tiles to render.
      * <p></p>
      * This equates to the minX and minY of the GridCoverage as well.
      *
@@ -111,9 +116,11 @@ public abstract class TileCacheInformation {
         final double tileCacheMinX = tileCacheBounds.getMinX();
         double minGeoX = envelope.getMinX();
         double minGeoY = envelope.getMinY();
-        double tileMinGeoX = (tileCacheMinX + (Math.floor((minGeoX - tileCacheMinX) / geoTileSize.x) * geoTileSize.x));
+        double tileMinGeoX =
+                (tileCacheMinX + (Math.floor((minGeoX - tileCacheMinX) / geoTileSize.x) * geoTileSize.x));
         final double tileCacheMinY = tileCacheBounds.getMinY();
-        double tileMinGeoY = (tileCacheMinY + (Math.floor((minGeoY - tileCacheMinY) / geoTileSize.y) * geoTileSize.y));
+        double tileMinGeoY =
+                (tileCacheMinY + (Math.floor((minGeoY - tileCacheMinY) / geoTileSize.y) * geoTileSize.y));
 
         return new Coordinate(tileMinGeoX, tileMinGeoY);
     }
@@ -130,9 +137,9 @@ public abstract class TileCacheInformation {
     }
 
     /**
-     * Create a URL that is common to all tiles for this layer.  It may have placeholder like ({matrixId}) if the layer desires.
-     * That is up to the layer implementation because the layer is responsible for taking the commonUrl and transforming it to
-     * a final tile URI.
+     * Create a URL that is common to all tiles for this layer.  It may have placeholder like ({matrixId}) if
+     * the layer desires. That is up to the layer implementation because the layer is responsible for taking
+     * the commonUrl and transforming it to a final tile URI.
      */
     protected String createCommonUrl() throws URISyntaxException, UnsupportedEncodingException {
         return this.params.createCommonUrl();

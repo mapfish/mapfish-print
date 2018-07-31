@@ -12,10 +12,13 @@ import javax.annotation.Nonnull;
 public interface FeatureSourceSupplier {
     /**
      * Load/create feature source.
+     *
      * @param requestFactory the factory to use for making http requests
-     * @param mapContext object containing the map information like bounds, map size, dpi, rotation, etc...
+     * @param mapContext object containing the map information like bounds, map size, dpi, rotation,
+     *         etc...
      */
     @Nonnull
-    FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
-                       @Nonnull MapfishMapContext mapContext);
+    FeatureSource load(
+            @Nonnull MfClientHttpRequestFactory requestFactory,
+            @Nonnull MapfishMapContext mapContext);
 }

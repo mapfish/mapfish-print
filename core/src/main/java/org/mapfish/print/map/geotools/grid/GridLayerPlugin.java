@@ -45,16 +45,17 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
         FeatureSourceSupplier featureSource = createFeatureSourceFunction(template, layerData, labels);
         final StyleSupplier<FeatureSource> styleFunction = createStyleSupplier(template, layerData);
         return new GridLayer(this.pool, featureSource, styleFunction,
-                template.getConfiguration().renderAsSvg(layerData.renderAsSvg),
-                layerData, labels);
+                             template.getConfiguration().renderAsSvg(layerData.renderAsSvg),
+                             layerData, labels);
     }
 
     private StyleSupplier<FeatureSource> createStyleSupplier(
             final Template template, final GridParam layerData) {
         return new StyleSupplier<FeatureSource>() {
             @Override
-            public Style load(final MfClientHttpRequestFactory requestFactory,
-                              final FeatureSource featureSource) {
+            public Style load(
+                    final MfClientHttpRequestFactory requestFactory,
+                    final FeatureSource featureSource) {
                 String styleRef = layerData.style;
                 return template.getStyle(styleRef)
                         .or(GridLayerPlugin.super.parser.loadStyle(

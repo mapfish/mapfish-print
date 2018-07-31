@@ -61,9 +61,14 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
         return new WmsTileCacheInformation(bounds, paintArea, dpi);
     }
 
+    @Override
+    public RenderType getRenderType() {
+        return RenderType.fromMimeType(this.param.imageFormat);
+    }
+
     private final class WmsTileCacheInformation extends TileCacheInformation {
 
-        public WmsTileCacheInformation(
+        private WmsTileCacheInformation(
                 final MapBounds bounds, final Rectangle paintArea, final double dpi) {
             super(bounds, paintArea, dpi, TiledWmsLayer.this.param);
         }
@@ -80,7 +85,7 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
                 throws IOException, URISyntaxException, FactoryException {
 
             final URI uri = WmsUtilities.makeWmsGetLayerRequest(TiledWmsLayer.this.param, new URI(commonUrl),
-                    tileSizeOnScreen, this.dpi, 0.0, tileBounds);
+                                                                tileSizeOnScreen, this.dpi, 0.0, tileBounds);
 
             return WmsUtilities.createWmsRequest(httpRequestFactory, uri, TiledWmsLayer.this.param.method);
         }
@@ -88,7 +93,7 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
         @Override
         public double getResolution() {
             return WmsTileCacheInformation.this.bounds.getScale(WmsTileCacheInformation.this.paintArea, dpi)
-                   .getResolution();
+                    .getResolution();
         }
 
         @Override
@@ -108,10 +113,5 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
                     this.bounds.toReferencedEnvelope(paintArea),
                     this.bounds.getProjection());
         }
-    }
-
-    @Override
-    public RenderType getRenderType() {
-        return RenderType.fromMimeType(this.param.imageFormat);
     }
 }

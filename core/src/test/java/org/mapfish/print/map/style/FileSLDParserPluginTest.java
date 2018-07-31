@@ -1,7 +1,6 @@
 package org.mapfish.print.map.style;
 
 import com.google.common.base.Optional;
-
 import org.geotools.styling.Style;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -33,7 +32,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         final String fileName = "singleStyle.sld";
         final Optional<Style> styleOptional = loadStyle(fileName, fileName);
 
-        assertTrue (styleOptional.isPresent());
+        assertTrue(styleOptional.isPresent());
         assertTrue(styleOptional.get() instanceof Style);
         assertEquals(1, styleOptional.get().featureTypeStyles().size());
         assertEquals(2, styleOptional.get().featureTypeStyles().get(0).rules().size());
@@ -45,7 +44,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     public void testParseStyle_SingleStyleRelativeToConfig_HasStyleIndex() throws Throwable {
         final String fileName = "singleStyle.sld";
         final Optional<Style> styleOptional = loadStyle(fileName, fileName + "##1");
-        assertTrue (styleOptional.isPresent());
+        assertTrue(styleOptional.isPresent());
         assertTrue(styleOptional.get() instanceof Style);
         assertEquals(1, styleOptional.get().featureTypeStyles().size());
         assertEquals(2, styleOptional.get().featureTypeStyles().get(0).rules().size());
@@ -58,7 +57,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         File file = getFile(FileSLDParserPluginTest.class, "singleStyle.sld");
         final Optional<Style> styleOptional = loadStyle(file.getName(), file.getAbsolutePath());
 
-        assertTrue (styleOptional.isPresent());
+        assertTrue(styleOptional.isPresent());
         assertTrue(styleOptional.get() instanceof Style);
         assertEquals(1, styleOptional.get().featureTypeStyles().size());
         assertEquals(2, styleOptional.get().featureTypeStyles().get(0).rules().size());
@@ -77,7 +76,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         final String fileName = "multipleStyles.sld";
         Optional<Style> styleOptional = loadStyle(fileName, fileName + "##1");
 
-        assertTrue (styleOptional.isPresent());
+        assertTrue(styleOptional.isPresent());
         assertTrue(styleOptional.get() instanceof Style);
         assertEquals(1, styleOptional.get().featureTypeStyles().size());
         assertEquals(2, styleOptional.get().featureTypeStyles().get(0).rules().size());
@@ -85,7 +84,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         assertEquals(1, styleOptional.get().featureTypeStyles().get(0).rules().get(1).symbolizers().size());
 
         styleOptional = loadStyle(fileName, fileName + "##2");
-        assertTrue (styleOptional.isPresent());
+        assertTrue(styleOptional.isPresent());
         assertTrue(styleOptional.get() instanceof Style);
         assertEquals(1, styleOptional.get().featureTypeStyles().size());
         assertEquals(1, styleOptional.get().featureTypeStyles().get(0).rules().size());

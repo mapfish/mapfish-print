@@ -4,7 +4,6 @@ import java.net.URI;
 
 /**
  * Print Job Result.
- *
  */
 public interface PrintJobResult {
 

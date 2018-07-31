@@ -13,23 +13,23 @@ import javax.annotation.Nullable;
 /**
  * <p>A processor that wraps several {@link AbstractClientHttpRequestFactoryProcessor}s.</p>
  * <p>
- *   This makes it more convenient to configure multiple processors that modify
- *   {@link org.mapfish.print.http.MfClientHttpRequestFactory} objects.
- *</p>
- * <p>
- *     Consider the case where you need to:
+ * This makes it more convenient to configure multiple processors that modify {@link
+ * org.mapfish.print.http.MfClientHttpRequestFactory} objects.
  * </p>
- *     <ul>
- *     <li>Restrict allowed URIS using the !restrictUris processor</li>
- *     <li>Forward all headers from print request to all requests using !forwardHeaders</li>
- *     <li>Change the url using the !mapUri processor</li>
- *     </ul>
  * <p>
- *     In this case the !mapUri processor must execute before the !restrictUris processor but it is difficult to enforce this, the
- *     inputMapping and outputMapping must be carefully designed in order to do it.  The following should work but compare it with
- *     the example below:
+ * Consider the case where you need to:
  * </p>
- *     <pre><code>
+ * <ul>
+ * <li>Restrict allowed URIS using the !restrictUris processor</li>
+ * <li>Forward all headers from print request to all requests using !forwardHeaders</li>
+ * <li>Change the url using the !mapUri processor</li>
+ * </ul>
+ * <p>
+ * In this case the !mapUri processor must execute before the !restrictUris processor but it is difficult to
+ * enforce this, the inputMapping and outputMapping must be carefully designed in order to do it.  The
+ * following should work but compare it with the example below:
+ * </p>
+ * <pre><code>
  * - !mapUri
  *   mapping:
  *     (http)://localhost(.*) : "$1://127.0.0.1$2"
@@ -44,7 +44,7 @@ import javax.annotation.Nullable;
  *     </code></pre>
  *
  * <p>
- *     The recommended way to write the above configuration is as follows:
+ * The recommended way to write the above configuration is as follows:
  * </p>
  * <pre><code>
  * - !configureHttpRequests
@@ -86,7 +86,8 @@ public final class CompositeClientHttpRequestFactoryProcessor
             final Input input,
             final MfClientHttpRequestFactory requestFactory) {
         MfClientHttpRequestFactory finalRequestFactory = requestFactory;
-        // apply the parts in reverse so that the last part is the inner most wrapper (will be last to be called)
+        // apply the parts in reverse so that the last part is the inner most wrapper (will be last to be
+        // called)
         for (int i = this.httpProcessors.size() - 1; i > -1; i--) {
             final HttpProcessor processor = this.httpProcessors.get(i);
             Object populatedInput = ProcessorUtils.populateInputParameter(processor, input.values);
@@ -101,9 +102,9 @@ public final class CompositeClientHttpRequestFactoryProcessor
             final Configuration configuration) {
         if (this.httpProcessors.isEmpty()) {
             validationErrors.add(new IllegalStateException("There are no composite elements for this " +
-                    "processor"));
+                                                                   "processor"));
         } else {
-            for (Object part : this.httpProcessors) {
+            for (Object part: this.httpProcessors) {
                 if (!(part instanceof HttpProcessor)) {
                     validationErrors.add(new IllegalStateException("One of the parts of " + getClass()
                             .getSimpleName() + " is not a " + HttpProcessor.class.getSimpleName()));
@@ -122,7 +123,7 @@ public final class CompositeClientHttpRequestFactoryProcessor
     @Override
     public Void execute(
             final Input values,
-            final ExecutionContext context) throws Exception {
+            final ExecutionContext context) {
         values.clientHttpRequestFactoryProvider.set(createFactoryWrapper(
                 values, values.clientHttpRequestFactoryProvider.get()));
         return null;

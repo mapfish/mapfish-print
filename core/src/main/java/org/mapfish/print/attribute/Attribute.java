@@ -9,7 +9,8 @@ import org.mapfish.print.wrapper.PObject;
 import javax.annotation.Nonnull;
 
 /**
- * Represents an attribute passed in from a web-client to be used to populate the report.  It reads a value from the request data
+ * Represents an attribute passed in from a web-client to be used to populate the report.  It reads a value
+ * from the request data
  * <p></p>
  */
 public interface Attribute extends ConfigurationObject {
@@ -22,6 +23,7 @@ public interface Attribute extends ConfigurationObject {
      * @throws JSONException
      */
     void printClientConfig(JSONWriter json, Template template) throws JSONException;
+
     /**
      * Set the name of the attribute as set in the configuration file.
      *
@@ -44,6 +46,7 @@ public interface Attribute extends ConfigurationObject {
      * @param requestJsonAttributes the json data for populating the attribute values
      * @return the value
      */
-    Object getValue(@Nonnull final Template template,
-                    @Nonnull String attributeName, @Nonnull final PObject requestJsonAttributes);
+    Object getValue(
+            @Nonnull Template template,
+            @Nonnull String attributeName, @Nonnull PObject requestJsonAttributes);
 }

@@ -5,7 +5,7 @@ import org.springframework.http.HttpMethod;
 
 import java.net.URI;
 
-import static org.mapfish.print.processor.http.matcher.MatcherTestUtils.*;
+import static org.mapfish.print.processor.http.matcher.MatcherTestUtils.assertMatch;
 
 public class AcceptAllMatcherTest {
 

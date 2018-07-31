@@ -2,7 +2,6 @@ package org.mapfish.print.processor.map;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
-import java.util.concurrent.ForkJoinPool;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -21,12 +20,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * Test for the CreateOverviewMap processor, where the overview map has its own
- * center/scale and where a style is set on these layers.
+ * Test for the CreateOverviewMap processor, where the overview map has its own center/scale and where a style
+ * is set on these layers.
  */
 public class CreateOverviewMapProcessorCustomBounds extends AbstractMapfishSpringTest {
     public static final String BASE_DIR = "overview_map_custom_bounds/";
@@ -37,6 +37,11 @@ public class CreateOverviewMapProcessorCustomBounds extends AbstractMapfishSprin
     private TestHttpClientFactory requestFactory;
     @Autowired
     private ForkJoinPool forkJoinPool;
+
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateOverviewMapProcessorCustomBounds.class,
+                                       BASE_DIR + "requestData.json");
+    }
 
     @Test
     @DirtiesContext
@@ -51,7 +56,8 @@ public class CreateOverviewMapProcessorCustomBounds extends AbstractMapfishSprin
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data/osm" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -70,7 +76,8 @@ public class CreateOverviewMapProcessorCustomBounds extends AbstractMapfishSprin
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -84,7 +91,7 @@ public class CreateOverviewMapProcessorCustomBounds extends AbstractMapfishSprin
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."));
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         @SuppressWarnings("unchecked")
@@ -94,10 +101,5 @@ public class CreateOverviewMapProcessorCustomBounds extends AbstractMapfishSprin
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
                 .assertSimilarity(layerGraphics, 300, 200, 10);
 
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateOverviewMapProcessorCustomBounds.class,
-                BASE_DIR + "requestData.json");
     }
 }

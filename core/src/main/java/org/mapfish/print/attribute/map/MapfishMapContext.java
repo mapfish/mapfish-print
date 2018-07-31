@@ -8,13 +8,12 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Utility class that adjusts the bounds and the map size in case a rotation
- * is set. Also it provides an {@link AffineTransform} to render the layer graphics.
+ * Utility class that adjusts the bounds and the map size in case a rotation is set. Also it provides an
+ * {@link AffineTransform} to render the layer graphics.
  */
 public final class MapfishMapContext {
 
@@ -28,6 +27,7 @@ public final class MapfishMapContext {
 
     /**
      * Constructor.
+     *
      * @param bounds the map bounds
      * @param mapSize the map size
      * @param dpi the dpi of the printed map
@@ -39,8 +39,10 @@ public final class MapfishMapContext {
             final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
         this(null, bounds, mapSize, dpi, forceLongitudeFirst, dpiSensitiveStyle);
     }
+
     /**
      * Constructor.
+     *
      * @param bounds the map bounds
      * @param mapSize the map size
      * @param rotation the rotation
@@ -56,6 +58,7 @@ public final class MapfishMapContext {
 
     /**
      * Constructor.
+     *
      * @param parent the context that this context is derived from
      * @param bounds the map bounds
      * @param mapSize the map size
@@ -73,6 +76,7 @@ public final class MapfishMapContext {
 
     /**
      * Constructor.
+     *
      * @param parent the context that this context is derived from
      * @param bounds the map bounds
      * @param mapSize the map size
@@ -97,6 +101,18 @@ public final class MapfishMapContext {
     }
 
     /**
+     * Round the size of a rectangle with double values.
+     *
+     * @param rectangle The rectangle.
+     * @return
+     */
+    public static Dimension rectangleDoubleToDimension(final Rectangle2D.Double rectangle) {
+        return new Dimension(
+                (int) Math.round(rectangle.width),
+                (int) Math.round(rectangle.height));
+    }
+
+    /**
      * @return The rotation in radians.
      */
     public double getRotation() {
@@ -116,6 +132,7 @@ public final class MapfishMapContext {
 
     /**
      * Return the map bounds rotated with the set rotation.
+     *
      * @return Rotated bounds.
      */
     public MapBounds getRotatedBounds() {
@@ -123,8 +140,9 @@ public final class MapfishMapContext {
     }
 
     /**
-     * Return the map bounds rotated with the set rotation. The bounds are adapted
-     * to rounding changes of the size of the paint area.
+     * Return the map bounds rotated with the set rotation. The bounds are adapted to rounding changes of the
+     * size of the paint area.
+     *
      * @param paintAreaPrecise The exact size of the paint area.
      * @param paintArea The rounded size of the paint area.
      * @return Rotated bounds.
@@ -154,8 +172,9 @@ public final class MapfishMapContext {
     }
 
     /**
-     * Return the map bounds rotated with the set rotation. The bounds are adapted
-     * to rounding changes of the size of the set paint area.
+     * Return the map bounds rotated with the set rotation. The bounds are adapted to rounding changes of the
+     * size of the set paint area.
+     *
      * @return Rotated bounds.
      */
     public MapBounds getRotatedBoundsAdjustedForPreciseRotatedMapSize() {
@@ -171,17 +190,19 @@ public final class MapfishMapContext {
     public Scale getScale() {
         return this.bounds.getScale(getPaintArea(), this.dpi);
     }
+
     public double getGeodeticScaleDenominator() {
-        return getScale().getGeodeticDenominator(this.bounds.getProjection(), this.dpi, getBounds().getCenter());
+        return getScale()
+                .getGeodeticDenominator(this.bounds.getProjection(), this.dpi, getBounds().getCenter());
     }
 
     /**
      * Get a nicely rounded scale for to use for displaying the map scale.
      * <p>
-     *     One of the output parameters of the {@link org.mapfish.print.processor.map.CreateMapProcessor}
-     *     is 'mapContext' which can be accessed in a template.  If the scale is required in the template
-     *     then it can be accessed via:
-     *     <code>$P{mapContext}.getRoundedScaleDenominator()</code>
+     * One of the output parameters of the {@link org.mapfish.print.processor.map.CreateMapProcessor} is
+     * 'mapContext' which can be accessed in a template.  If the scale is required in the template then it can
+     * be accessed via:
+     * <code>$P{mapContext}.getRoundedScaleDenominator()</code>
      * </p>
      */
     public double getRoundedScaleDenominator() {
@@ -191,10 +212,10 @@ public final class MapfishMapContext {
     /**
      * Get a nicely rounded scale for to use for displaying the map scale.
      * <p>
-     *     One of the output parameters of the {@link org.mapfish.print.processor.map.CreateMapProcessor}
-     *     is 'mapContext' which can be accessed in a template.  If the scale is required in the template
-     *     then it can be accessed via:
-     *     <code>$P{mapContext}.getRoundedScaleDenominato()</code>
+     * One of the output parameters of the {@link org.mapfish.print.processor.map.CreateMapProcessor} is
+     * 'mapContext' which can be accessed in a template.  If the scale is required in the template then it can
+     * be accessed via:
+     * <code>$P{mapContext}.getRoundedScaleDenominato()</code>
      * </p>
      *
      * @param geodetic Get geodetic scale
@@ -255,18 +276,6 @@ public final class MapfishMapContext {
         return new Rectangle2D.Double(0, 0, rotatedWidth, rotatedHeight);
     }
 
-
-    /**
-     * Round the size of a rectangle with double values.
-     * @param rectangle The rectangle.
-     * @return
-     */
-    public static Dimension rectangleDoubleToDimension(final Rectangle2D.Double rectangle) {
-        return new Dimension(
-                (int) Math.round(rectangle.width),
-                (int) Math.round(rectangle.height));
-    }
-
     /**
      * Returns an {@link AffineTransform} taking the rotation into account.
      *
@@ -314,7 +323,7 @@ public final class MapfishMapContext {
         if (!FloatingPointUtil.equals(this.rotation, 0.0)) {
             double width = this.mapSize.getWidth();
             height = Math.abs(height * Math.cos(this.rotation))
-                     + Math.abs(width * Math.sin(this.rotation));
+                    + Math.abs(width * Math.sin(this.rotation));
         }
         return height;
     }
@@ -342,12 +351,11 @@ public final class MapfishMapContext {
     }
 
     /**
-     * Get the parent context if there is one.  A parent context is the context that this context is
-     * derived from.
-     * Normally there are some parameters that have been changed for this context from the parent.  An
-     * example of when there might be a parent is when the child has been rotated and has a bounds to
-     * envelope the original bounds.  It can be useful in some cases to be able to access the parent (and
-     * original bounds).
+     * Get the parent context if there is one.  A parent context is the context that this context is derived
+     * from. Normally there are some parameters that have been changed for this context from the parent.  An
+     * example of when there might be a parent is when the child has been rotated and has a bounds to envelope
+     * the original bounds.  It can be useful in some cases to be able to access the parent (and original
+     * bounds).
      *
      * @return the parent context or null if there is no parent.
      */
@@ -359,6 +367,7 @@ public final class MapfishMapContext {
     /**
      * Return the root context which is this context or the context found by recursively calling
      * parent.getRootContext().
+     *
      * @return
      */
     @Nonnull

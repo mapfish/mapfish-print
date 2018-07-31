@@ -9,13 +9,14 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PYamlObjectTest {
     @Test
-    public void testToJson() throws Exception {
+    public void testToJson() {
         Map<String, Object> map = Maps.newHashMap();
         map.put("att1", 1);
-        map.put("att2", new Object[]{1,2});
+        map.put("att2", new Object[]{1, 2});
 
         Map<String, Object> embedded = Maps.newHashMap();
         embedded.put("embeddedAtt1", true);
@@ -36,7 +37,7 @@ public class PYamlObjectTest {
 
         PJsonObject embeddedJson = test.getJSONObject("att3");
         assertEquals(3, embeddedJson.size());
-        assertEquals(true, embeddedJson.has("embeddedAtt1"));
+        assertTrue(embeddedJson.has("embeddedAtt1"));
 
         PJsonObject embeddedEmbeddedJson = embeddedJson.getJSONObject("embeddedAtt2");
         assertEquals(1, embeddedEmbeddedJson.size());

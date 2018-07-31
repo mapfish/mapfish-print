@@ -22,11 +22,9 @@ import java.util.concurrent.ForkJoinTask;
 
 
 /**
- *
  * The MapExportOutputFormat class.
  *
  * @author Niels
- *
  */
 public class MapExportOutputFormat implements OutputFormat {
 
@@ -42,17 +40,13 @@ public class MapExportOutputFormat implements OutputFormat {
 
     private String contentType;
 
-    public final void setContentType(final String contentType) {
-        this.contentType = contentType;
-    }
-
     @Override
     public final String getContentType() {
         return this.contentType;
     }
 
-    public final void setFileSuffix(final String fileSuffix) {
-        this.fileSuffix = fileSuffix;
+    public final void setContentType(final String contentType) {
+        this.contentType = contentType;
     }
 
     @Override
@@ -60,10 +54,15 @@ public class MapExportOutputFormat implements OutputFormat {
         return this.fileSuffix;
     }
 
+    public final void setFileSuffix(final String fileSuffix) {
+        this.fileSuffix = fileSuffix;
+    }
+
     private String getMapSubReportVariable(final Template template) {
-        for (Processor<?, ?> processor : template.getProcessors()) {
+        for (Processor<?, ?> processor: template.getProcessors()) {
             if (processor instanceof CreateMapProcessor) {
-                String mapSubReport = ((CreateMapProcessor) processor).getOutputMapperBiMap().get(MAP_SUBREPORT);
+                String mapSubReport =
+                        ((CreateMapProcessor) processor).getOutputMapperBiMap().get(MAP_SUBREPORT);
                 if (mapSubReport == null) {
                     return MAP_SUBREPORT;
                 } else {
@@ -77,23 +76,25 @@ public class MapExportOutputFormat implements OutputFormat {
     }
 
     @Override
-    public final Processor.ExecutionContext print(final String jobId, final PJsonObject spec,
-                                                  final Configuration config, final File configDir,
-                                                  final File taskDirectory,
-                                                  final OutputStream outputStream) throws Exception {
+    public final Processor.ExecutionContext print(
+            final String jobId, final PJsonObject spec,
+            final Configuration config, final File configDir,
+            final File taskDirectory,
+            final OutputStream outputStream) throws Exception {
         final String templateName = spec.getString(Constants.JSON_LAYOUT_KEY);
 
         final Template template = config.getTemplate(templateName);
         if (template == null) {
             final String possibleTemplates = config.getTemplates().keySet().toString();
             throw new IllegalArgumentException("\nThere is no template with the name: " + templateName +
-            ".\nAvailable templates: " + possibleTemplates);
+                                                       ".\nAvailable templates: " + possibleTemplates);
         }
 
         final Values values = new Values(jobId, spec, template, taskDirectory, this.httpRequestFactory, null,
-                this.fileSuffix);
+                                         this.fileSuffix);
 
-        final ProcessorDependencyGraph.ProcessorGraphForkJoinTask task = template.getProcessorGraph().createTask(values);
+        final ProcessorDependencyGraph.ProcessorGraphForkJoinTask task =
+                template.getProcessorGraph().createTask(values);
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(task);
 
         try {
@@ -115,11 +116,8 @@ public class MapExportOutputFormat implements OutputFormat {
             throw new IllegalStateException(e); //can't really happen
         }
 
-        FileInputStream is = new FileInputStream(mapSubReport);
-        try {
+        try (FileInputStream is = new FileInputStream(mapSubReport)) {
             IOUtils.copy(is, outputStream);
-        } finally {
-            is.close();
         }
         return task.getExecutionContext();
     }

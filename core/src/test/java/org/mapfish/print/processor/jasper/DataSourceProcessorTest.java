@@ -38,7 +38,12 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
     @Autowired
     private Map<String, OutputFormat> outputFormat;
 
-    @Test @DirtiesContext
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(DataSourceProcessorTest.class, BASE_DIR + "requestData.json");
+    }
+
+    @Test
+    @DirtiesContext
     public void testValidate() throws Exception {
         final File configFile = getFile("incorrectly-configured-DataSourceProcessor/config.yaml");
         configurationFactory.setDoValidation(false);
@@ -54,10 +59,12 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values("test", requestData, template, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        Values values = new Values("test", requestData, template, getTaskDirectory(), this.httpRequestFactory,
+                                   new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
-        final DataSourceAttribute.DataSourceAttributeValue datasource = values.getObject("datasource", DataSourceAttribute.DataSourceAttributeValue.class);
+        final DataSourceAttribute.DataSourceAttributeValue datasource =
+                values.getObject("datasource", DataSourceAttribute.DataSourceAttributeValue.class);
 
         assertEquals(2, datasource.attributesValues.length);
     }
@@ -68,16 +75,14 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
 
         PJsonObject requestData = loadJsonRequestData();
 
-        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
-        JasperPrint print = format.getJasperPrint("test", requestData, config, config.getDirectory(), getTaskDirectory()).print;
+        final AbstractJasperReportOutputFormat format =
+                (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        JasperPrint print = format.getJasperPrint("test", requestData, config, config.getDirectory(),
+                                                  getTaskDirectory()).print;
 
         assertEquals(1, print.getPages().size());
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-page.png"))
                 .assertSimilarity(print, 0, 15);
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(DataSourceProcessorTest.class, BASE_DIR + "requestData.json");
     }
 }

@@ -8,9 +8,7 @@ import javax.persistence.Entity;
 
 
 /**
- *
  * Extension of PrintJob Status that holds last check time.
- *
  */
 @Entity
 public class PrintJobStatusExtImpl extends PrintJobStatusImpl {
@@ -21,7 +19,6 @@ public class PrintJobStatusExtImpl extends PrintJobStatusImpl {
 
     /**
      * Constructor.
-     *
      */
     public PrintJobStatusExtImpl() {
 

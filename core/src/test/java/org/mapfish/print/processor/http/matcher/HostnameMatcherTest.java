@@ -1,14 +1,14 @@
 package org.mapfish.print.processor.http.matcher;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.mapfish.print.processor.http.matcher.MatcherTestUtils.assertMatch;
-
-import java.net.URI;
-
 import org.apache.http.auth.AuthScope;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
+
+import java.net.URI;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mapfish.print.processor.http.matcher.MatcherTestUtils.assertMatch;
 
 /**
  * Test for {@link HostnameMatcher}
@@ -20,13 +20,17 @@ public class HostnameMatcherTest {
         HostnameMatcher hostnameHostMatcher = new HostnameMatcher();
         hostnameHostMatcher.setHost("localhost");
 
-        assertMatch(hostnameHostMatcher, false, new URI("http://127.0.0.1:8080/print-servlet"), HttpMethod.GET);
-        assertMatch(hostnameHostMatcher, true, new URI("http://localhost:8080/print-servlet"), HttpMethod.GET);
-        assertMatch(hostnameHostMatcher, true, new URI("http://localhost:8080/print-servlet"), HttpMethod.POST);
+        assertMatch(hostnameHostMatcher, false, new URI("http://127.0.0.1:8080/print-servlet"),
+                    HttpMethod.GET);
+        assertMatch(hostnameHostMatcher, true, new URI("http://localhost:8080/print-servlet"),
+                    HttpMethod.GET);
+        assertMatch(hostnameHostMatcher, true, new URI("http://localhost:8080/print-servlet"),
+                    HttpMethod.POST);
         assertMatch(hostnameHostMatcher, true, new URI("http://localhost:90/print-servlet"), HttpMethod.GET);
         assertMatch(hostnameHostMatcher, true, new URI("http://localhost/print-servlet"), HttpMethod.GET);
         assertMatch(hostnameHostMatcher, true, new URI("https://localhost/print-servlet"), HttpMethod.GET);
-        assertMatch(hostnameHostMatcher, false, new URI("https://www.camptocamp.com/print-servlet"), HttpMethod.GET);
+        assertMatch(hostnameHostMatcher, false, new URI("https://www.camptocamp.com/print-servlet"),
+                    HttpMethod.GET);
         assertMatch(hostnameHostMatcher, false, new URI("https://127.1.1.1/print-servlet"), HttpMethod.GET);
         assertTrue(hostnameHostMatcher.matches(MatchInfo.fromAuthScope(
                 new AuthScope(AuthScope.ANY_HOST, 80, AuthScope.ANY_REALM, "http"))));
@@ -37,23 +41,29 @@ public class HostnameMatcherTest {
 
         hostnameHostMatcher.setPort(8080);
 
-        assertMatch(hostnameHostMatcher, true, new URI("http://localhost:8080/print-servlet"), HttpMethod.GET);
-        assertMatch(hostnameHostMatcher, true, new URI("http://localhost:8080/print-servlet"), HttpMethod.POST);
+        assertMatch(hostnameHostMatcher, true, new URI("http://localhost:8080/print-servlet"),
+                    HttpMethod.GET);
+        assertMatch(hostnameHostMatcher, true, new URI("http://localhost:8080/print-servlet"),
+                    HttpMethod.POST);
         assertMatch(hostnameHostMatcher, false, new URI("http://localhost:90/print-servlet"), HttpMethod.GET);
         assertMatch(hostnameHostMatcher, false, new URI("http://localhost/print-servlet"), HttpMethod.GET);
         assertMatch(hostnameHostMatcher, false, new URI("https://localhost/print-servlet"), HttpMethod.GET);
-        assertMatch(hostnameHostMatcher, false, new URI("https://www.camptocamp.com:8080/print-servlet"), HttpMethod.GET);
+        assertMatch(hostnameHostMatcher, false, new URI("https://www.camptocamp.com:8080/print-servlet"),
+                    HttpMethod.GET);
 
         hostnameHostMatcher.setPort(-1);
         hostnameHostMatcher.setPathRegex("^/print.*");
 
-        assertMatch(hostnameHostMatcher, true, new URI("http://localhost:8080/print-servlet"), HttpMethod.GET);
+        assertMatch(hostnameHostMatcher, true, new URI("http://localhost:8080/print-servlet"),
+                    HttpMethod.GET);
         assertMatch(hostnameHostMatcher, true, new URI("http://localhost:80/print-servlet"), HttpMethod.GET);
         assertMatch(hostnameHostMatcher, true, new URI("http://localhost:80/print"), HttpMethod.GET);
-        assertMatch(hostnameHostMatcher, true, new URI("http://localhost:80/print/anotherpath"), HttpMethod.GET);
+        assertMatch(hostnameHostMatcher, true, new URI("http://localhost:80/print/anotherpath"),
+                    HttpMethod.GET);
         assertMatch(hostnameHostMatcher, false, new URI("http://localhost:80/pdf"), HttpMethod.GET);
         assertMatch(hostnameHostMatcher, false, new URI("http://localhost:80"), HttpMethod.GET);
-        assertMatch(hostnameHostMatcher, false, new URI("http://www.camptocamp.com:80/print"), HttpMethod.GET);
+        assertMatch(hostnameHostMatcher, false, new URI("http://www.camptocamp.com:80/print"),
+                    HttpMethod.GET);
         assertMatch(hostnameHostMatcher, false, new URI("http://www.camptocamp.com:80"), HttpMethod.GET);
 
         hostnameHostMatcher = new HostnameMatcher();

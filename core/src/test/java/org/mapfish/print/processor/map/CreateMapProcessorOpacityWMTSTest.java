@@ -43,6 +43,11 @@ public class CreateMapProcessorOpacityWMTSTest extends AbstractMapfishSpringTest
     @Autowired
     private ForkJoinPool forkJoinPool;
 
+    public static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorOpacityWMTSTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
@@ -55,7 +60,8 @@ public class CreateMapProcessorOpacityWMTSTest extends AbstractMapfishSpringTest
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         final Multimap<String, String> parameters = URIUtils.getParameters(uri);
                         String column = parameters.get("TILECOL").iterator().next();
                         String row = parameters.get("TILEROW").iterator().next();
@@ -78,7 +84,8 @@ public class CreateMapProcessorOpacityWMTSTest extends AbstractMapfishSpringTest
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -93,7 +100,7 @@ public class CreateMapProcessorOpacityWMTSTest extends AbstractMapfishSpringTest
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(), this.requestFactory,
-                new File("."));
+                                   new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -106,10 +113,5 @@ public class CreateMapProcessorOpacityWMTSTest extends AbstractMapfishSpringTest
         final BufferedImage referenceImage = ImageSimilarity.mergeImages(layerGraphics, 630, 294);
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
                 .assertSimilarity(referenceImage, 20);
-    }
-
-    public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorOpacityWMTSTest.class,
-                BASE_DIR + "requestData.json");
     }
 }

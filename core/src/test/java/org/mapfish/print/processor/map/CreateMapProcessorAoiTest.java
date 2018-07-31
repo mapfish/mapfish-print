@@ -3,7 +3,6 @@ package org.mapfish.print.processor.map;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
-
 import org.apache.batik.transcoder.TranscoderException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +29,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -54,6 +52,10 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
     @Autowired
     private ForkJoinPool forkJoinPool;
 
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorAoiTest.class, BASE_DIR + "requestData.json");
+    }
+
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
@@ -67,7 +69,8 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data/zoomed-in-ny-tiger.tif"));
                             return ok(uri, bytes, httpMethod);
@@ -86,7 +89,8 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -100,35 +104,41 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
 
         createMap(template, "expectedSimpleImage-default-transparent.png",
-                RENDER, null, false, null, 45);
-        /* jpeg */ createMap(template, "expectedSimpleImage-default.png",
-                RENDER, null, false, true, null, 50);
+                  RENDER, null, false, null, 45);
+        /* jpeg */
+        createMap(template, "expectedSimpleImage-default.png",
+                  RENDER, null, false, true, null, 50);
         createMap(template, "expectedSimpleImage-render-thinline-transparent.png",
-                RENDER, "file://thinline.sld", false, null, 45);
-        /* jpeg */ createMap(template, "expectedSimpleImage-render-thinline.png",
-                RENDER, "file://thinline.sld", false, true, null, 50);
+                  RENDER, "file://thinline.sld", false, null, 45);
+        /* jpeg */
+        createMap(template, "expectedSimpleImage-render-thinline.png",
+                  RENDER, "file://thinline.sld", false, true, null, 50);
         createMap(template, "expectedSimpleImage-render-jsonStyle.png",
-                RENDER, createJsonStyle().toString(), false, null, 45);
+                  RENDER, createJsonStyle().toString(), false, null, 45);
         createMap(template, "expectedSimpleImage-render-polygon.png",
-                RENDER, "polygon", false, null, 45);
+                  RENDER, "polygon", false, null, 45);
         createMap(template, "expectedSimpleImage-none-transparent.png",
-                AreaOfInterest.AoiDisplay.NONE, null, false, null, 45);
-        /* jpeg */ createMap(template, "expectedSimpleImage-none.png",
-                AreaOfInterest.AoiDisplay.NONE, null, false, true, null, 50);
+                  AreaOfInterest.AoiDisplay.NONE, null, false, null, 45);
+        /* jpeg */
+        createMap(template, "expectedSimpleImage-none.png",
+                  AreaOfInterest.AoiDisplay.NONE, null, false, true, null, 50);
         createMap(template, "expectedSimpleImage-clip-transparent.png",
-                CLIP, null, false, null, 10);
-        /* jpeg */ createMap(template, "expectedSimpleImage-clip.png",
-                CLIP, null, false, true, null, 10);
+                  CLIP, null, false, null, 10);
+        /* jpeg */
+        createMap(template, "expectedSimpleImage-clip.png",
+                  CLIP, null, false, true, null, 10);
 
         // Test when SVG is used for vector layers
         createMap(template, "expectedSimpleImage-render-polygon-svg-transparent.png",
-                RENDER, createJsonStyle().toString(), true, null, 45);
-        /* jpeg */ createMap(template, "expectedSimpleImage-render-polygon-svg.png",
-                RENDER, createJsonStyle().toString(), true, true, null, 50);
+                  RENDER, createJsonStyle().toString(), true, null, 45);
+        /* jpeg */
+        createMap(template, "expectedSimpleImage-render-polygon-svg.png",
+                  RENDER, createJsonStyle().toString(), true, true, null, 50);
         createMap(template, "expectedSimpleImage-clip-svg-transparent.png",
-                CLIP, null, true, null, 5);
-        /* jpeg */ createMap(template, "expectedSimpleImage-clip-svg.png",
-                CLIP, null, true, true, null, 10);
+                  CLIP, null, true, null, 5);
+        /* jpeg */
+        createMap(template, "expectedSimpleImage-clip-svg.png",
+                  CLIP, null, true, true, null, 10);
         Function<PJsonObject, Void> setRotationUpdater = new Function<PJsonObject, Void>() {
 
             @Nullable
@@ -143,9 +153,9 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
             }
         };
         createMap(template, "expectedSimpleImage-rotate-clip-svg.png",
-                CLIP, null, true, setRotationUpdater, 10);
+                  CLIP, null, true, setRotationUpdater, 10);
         createMap(template, "expectedSimpleImage-rotate-render-svg.png",
-                RENDER, null, true, setRotationUpdater, 75);
+                  RENDER, null, true, setRotationUpdater, 75);
     }
 
     private JSONObject createJsonStyle() throws JSONException {
@@ -170,12 +180,13 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
             String styleRef, boolean useSVG, Function<PJsonObject, Void> requestUpdater, double tolerance)
             throws IOException, JSONException, TranscoderException, ExecutionException, InterruptedException {
         createMap(template, expectedImageName, aoiDisplay, styleRef, useSVG, false,
-                requestUpdater, tolerance);
+                  requestUpdater, tolerance);
     }
 
-    private void createMap(Template template, String expectedImageName, AreaOfInterest.AoiDisplay
+    private void createMap(
+            Template template, String expectedImageName, AreaOfInterest.AoiDisplay
             aoiDisplay, String styleRef, boolean useSVG, boolean useJPEG, Function<PJsonObject, Void>
-            requestUpdater, double tolerance) throws IOException, JSONException, TranscoderException,
+                    requestUpdater, double tolerance) throws IOException, JSONException, TranscoderException,
             ExecutionException,
             InterruptedException {
         PJsonObject requestData = loadJsonRequestData();
@@ -195,7 +206,7 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
         }
 
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -215,9 +226,5 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
 
     private PJsonObject getMapAttributes(PJsonObject requestData) {
         return requestData.getJSONObject("attributes").getJSONObject("map");
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorAoiTest.class, BASE_DIR + "requestData.json");
     }
 }

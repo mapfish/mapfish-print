@@ -2,10 +2,8 @@ package org.mapfish.print.processor.jasper;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.Resources;
-
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
-
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -30,7 +28,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
-
 import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
@@ -53,6 +50,10 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
     @Autowired
     private Map<String, OutputFormat> outputFormat;
 
+    private static PJsonObject loadJsonRequestData(String baseDir) throws IOException {
+        return parseJSONObjectFromFile(TableProcessorTest.class, baseDir + "requestData.json");
+    }
+
     @Test
     public void testDefaultDynamicTableProperties() throws Exception {
         final String baseDir = DEFAULT_DYNAMIC_BASE_DIR;
@@ -63,7 +64,8 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat)
                 this.outputFormat.get("pngOutputFormat");
         final File file = getFile(TableProcessorTest.class, baseDir);
-        JasperPrint print = format.getJasperPrint("test", requestData, config, file, getTaskDirectory()).print;
+        JasperPrint print =
+                format.getJasperPrint("test", requestData, config, file, getTaskDirectory()).print;
 
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
@@ -79,7 +81,7 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData(baseDir);
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.httpRequestFactory, new File("."));
+                                   this.httpRequestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final JRMapCollectionDataSource tableDataSource = values.getObject(
@@ -102,7 +104,8 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat)
                 this.outputFormat.get("pngOutputFormat");
         final File file = getFile(TableProcessorTest.class, baseDir);
-        JasperPrint print = format.getJasperPrint("test", requestData, config, file, getTaskDirectory()).print;
+        JasperPrint print =
+                format.getJasperPrint("test", requestData, config, file, getTaskDirectory()).print;
 
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
@@ -119,7 +122,8 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat)
                 this.outputFormat.get("pngOutputFormat");
         final File file = getFile(TableProcessorTest.class, baseDir);
-        JasperPrint print = format.getJasperPrint("test", requestData, config, file, getTaskDirectory()).print;
+        JasperPrint print =
+                format.getJasperPrint("test", requestData, config, file, getTaskDirectory()).print;
 
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
@@ -152,7 +156,8 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat)
                 this.outputFormat.get("pngOutputFormat");
         final File file = getFile(TableProcessorTest.class, baseDir);
-        JasperPrint print = format.getJasperPrint("test", requestData, config, file, getTaskDirectory()).print;
+        JasperPrint print =
+                format.getJasperPrint("test", requestData, config, file, getTaskDirectory()).print;
 
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
@@ -186,7 +191,8 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat)
                 this.outputFormat.get("pngOutputFormat");
         final File file = getFile(TableProcessorTest.class, baseDir);
-        JasperPrint print = format.getJasperPrint("test", requestData, config, file, getTaskDirectory()).print;
+        JasperPrint print =
+                format.getJasperPrint("test", requestData, config, file, getTaskDirectory()).print;
 
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
@@ -203,15 +209,12 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat)
                 this.outputFormat.get("pngOutputFormat");
         final File file = getFile(TableProcessorTest.class, baseDir);
-        JasperPrint print = format.getJasperPrint("test", requestData, config, file, getTaskDirectory()).print;
+        JasperPrint print =
+                format.getJasperPrint("test", requestData, config, file, getTaskDirectory()).print;
 
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
         new ImageSimilarity(getFile(baseDir + "expectedImage.png"))
                 .assertSimilarity(print, 0, 10);
-    }
-
-    private static PJsonObject loadJsonRequestData(String baseDir) throws IOException {
-        return parseJSONObjectFromFile(TableProcessorTest.class, baseDir + "requestData.json");
     }
 }

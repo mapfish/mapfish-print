@@ -26,8 +26,8 @@ public final class ParserPluginUtils {
     }
 
     /**
-     * Load data using {@link org.mapfish.print.config.Configuration#loadFile(String)} and using http.  If data is able to be loaded
-     * it will be passed to the loadFunction to be turned into a style.
+     * Load data using {@link org.mapfish.print.config.Configuration#loadFile(String)} and using http.  If
+     * data is able to be loaded it will be passed to the loadFunction to be turned into a style.
      *
      * @param clientHttpRequestFactory the factory to use for http requests
      * @param styleRef the uri/file/else for attempting to load a style
@@ -39,8 +39,7 @@ public final class ParserPluginUtils {
         HttpStatus statusCode;
         final byte[] input;
 
-        Closer closer = Closer.create();
-        try {
+        try (Closer closer = Closer.create()) {
             URI uri;
             try {
                 uri = new URI(styleRef);
@@ -54,8 +53,6 @@ public final class ParserPluginUtils {
             input = ByteStreams.toByteArray(response.getBody());
         } catch (Exception e) {
             return Optional.absent();
-        } finally {
-            closer.close();
         }
         if (statusCode == HttpStatus.OK) {
             return loadFunction.apply(input);

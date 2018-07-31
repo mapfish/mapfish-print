@@ -2,7 +2,6 @@ package org.mapfish.print.attribute.map;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.FloatingPointUtil;
@@ -40,18 +39,20 @@ public final class BBoxMapBounds extends MapBounds {
      * @param maxX max X coordinate for the MapBounds
      * @param maxY max Y coordinate for the MapBounds
      */
-    public BBoxMapBounds(final CoordinateReferenceSystem projection, final double minX, final double minY,
-                         final double maxX, final double maxY) {
+    public BBoxMapBounds(
+            final CoordinateReferenceSystem projection, final double minX, final double minY,
+            final double maxX, final double maxY) {
         this(projection, new Envelope(minX, maxX, minY, maxY));
     }
 
     /**
      * Create from a bbox.
+     *
      * @param bbox the bounds.
      */
     public BBoxMapBounds(final ReferencedEnvelope bbox) {
         this(bbox.getCoordinateReferenceSystem(), bbox.getMinX(), bbox.getMinY(),
-                bbox.getMaxX(), bbox.getMaxY());
+             bbox.getMaxX(), bbox.getMaxY());
 
     }
 
@@ -67,18 +68,18 @@ public final class BBoxMapBounds extends MapBounds {
         if (paintAreaAspectRatio > bboxAspectRatio) {
             double centerX = (this.bbox.getMinX() + this.bbox.getMaxX()) / 2;
             double factor = paintAreaAspectRatio / bboxAspectRatio;
-            double finalDiff =  (this.bbox.getMaxX() - centerX) * factor;
+            double finalDiff = (this.bbox.getMaxX() - centerX) * factor;
 
             return new BBoxMapBounds(getProjection(),
-                    centerX - finalDiff, this.bbox.getMinY(),
-                    centerX + finalDiff, this.bbox.getMaxY());
+                                     centerX - finalDiff, this.bbox.getMinY(),
+                                     centerX + finalDiff, this.bbox.getMaxY());
         } else {
             double centerY = (this.bbox.getMinY() + this.bbox.getMaxY()) / 2;
             double factor = bboxAspectRatio / paintAreaAspectRatio;
-            double finalDiff =  (this.bbox.getMaxY() - centerY) * factor;
+            double finalDiff = (this.bbox.getMaxY() - centerY) * factor;
             return new BBoxMapBounds(getProjection(),
-                    this.bbox.getMinX(), centerY - finalDiff,
-                    this.bbox.getMaxX(), centerY + finalDiff);
+                                     this.bbox.getMinX(), centerY - finalDiff,
+                                     this.bbox.getMaxX(), centerY + finalDiff);
         }
     }
 
@@ -91,7 +92,7 @@ public final class BBoxMapBounds extends MapBounds {
             final double dpi) {
 
         final Scale newScale = getNearestScale(zoomLevels, tolerance, zoomLevelSnapStrategy,
-                geodetic, paintArea, dpi);
+                                               geodetic, paintArea, dpi);
 
         Coordinate center = this.bbox.centre();
         return new CenterScaleMapBounds(getProjection(), center.x, center.y, newScale);
@@ -110,7 +111,8 @@ public final class BBoxMapBounds extends MapBounds {
             calculator.setStartingGeographicPoint(bboxAdjustedToScreen.getMinX(), centerY);
             calculator.setDestinationGeographicPoint(bboxAdjustedToScreen.getMaxX(), centerY);
             double geoWidthInEllipsoidUnits = calculator.getOrthodromicDistance();
-            DistanceUnit ellipsoidUnit = DistanceUnit.fromString(calculator.getEllipsoid().getAxisUnit().toString());
+            DistanceUnit ellipsoidUnit =
+                    DistanceUnit.fromString(calculator.getEllipsoid().getAxisUnit().toString());
 
             geoWidthInInches = ellipsoidUnit.convertTo(geoWidthInEllipsoidUnits, DistanceUnit.IN);
         } else {
@@ -119,7 +121,7 @@ public final class BBoxMapBounds extends MapBounds {
         }
 
         return new Scale(geoWidthInInches * (dpi / paintArea.getWidth()),
-                projUnit, dpi);
+                         projUnit, dpi);
     }
 
     @Override
@@ -145,7 +147,7 @@ public final class BBoxMapBounds extends MapBounds {
         final double rotatedMaxY = this.bbox.getMaxY() + heightDifference;
 
         return new BBoxMapBounds(getProjection(),
-                rotatedMinX, rotatedMinY, rotatedMaxX, rotatedMaxY);
+                                 rotatedMinX, rotatedMinY, rotatedMaxX, rotatedMaxY);
     }
 
     private double getRotatedWidth(final double rotation) {
@@ -186,7 +188,7 @@ public final class BBoxMapBounds extends MapBounds {
         double maxGeoY = centerY + destHeight / 2.0f;
 
         return new BBoxMapBounds(getProjection(),
-                minGeoX, minGeoY, maxGeoX, maxGeoY);
+                                 minGeoX, minGeoY, maxGeoX, maxGeoY);
     }
 
     @Override
@@ -230,7 +232,7 @@ public final class BBoxMapBounds extends MapBounds {
         final double maxGeoY = centerY + destHeight / 2.0;
 
         return new BBoxMapBounds(getProjection(),
-                minGeoX, minGeoY, maxGeoX, maxGeoY);
+                                 minGeoX, minGeoY, maxGeoX, maxGeoY);
     }
 
     // CHECKSTYLE:OFF
@@ -262,8 +264,8 @@ public final class BBoxMapBounds extends MapBounds {
     @Override
     public String toString() {
         return "BBoxMapBounds{" +
-               "bbox=" + bbox +
-               '}';
+                "bbox=" + bbox +
+                '}';
     }
 // // CHECKSTYLE:ON
 

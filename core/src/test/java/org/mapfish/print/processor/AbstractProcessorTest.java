@@ -14,11 +14,9 @@ public class AbstractProcessorTest {
 
     /**
      * This test checks that all the inputMapper mappings have an associated property in the params object.
-     *
-     * @throws Exception
      */
     @Test
-    public void testExtraInputMapperMapping() throws Exception {
+    public void testExtraInputMapperMapping() {
         final TestProcessor testProcessor = new TestProcessor();
         testProcessor.getInputMapperBiMap().put("pqr", "prop");
 
@@ -35,14 +33,11 @@ public class AbstractProcessorTest {
     }
 
 
-
     /**
      * This test checks that all the outputMapper mappings have an associated property in the output object.
-     *
-     * @throws Exception
      */
     @Test
-    public void testExtraOutputMapperMapping() throws Exception {
+    public void testExtraOutputMapperMapping() {
         final TestProcessor testProcessor = new TestProcessor();
         testProcessor.getOutputMapperBiMap().put("prop", "oq");
 
@@ -61,9 +56,11 @@ public class AbstractProcessorTest {
     class TestIn {
         public String prop;
     }
+
     class TestOut {
         public String prop;
     }
+
     class TestProcessor extends AbstractProcessor<TestIn, TestOut> {
 
         protected TestProcessor() {
@@ -77,7 +74,7 @@ public class AbstractProcessorTest {
 
         @Nullable
         @Override
-        public TestOut execute(TestIn values, ExecutionContext context) throws Exception {
+        public TestOut execute(TestIn values, ExecutionContext context) {
             return new TestOut();
         }
 

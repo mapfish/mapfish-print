@@ -7,8 +7,8 @@ import org.mapfish.print.processor.InputOutputValue;
  */
 public class ClientHttpFactoryProcessorParam {
     /**
-     * The object for creating requests.  There should always be an instance in the values object
-     * so it does not need to be created.
+     * The object for creating requests.  There should always be an instance in the values object so it does
+     * not need to be created.
      */
     @InputOutputValue
     public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;

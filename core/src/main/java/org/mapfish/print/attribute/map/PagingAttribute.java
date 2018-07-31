@@ -41,34 +41,35 @@ public final class PagingAttribute extends ReflectiveAttribute<PagingAttribute.P
         /**
          * The amount that each page/sub-map should overlap each other.
          * <p>
-         *     For example if the value is 1 and the projection of the map is degrees then the overlap will be 1 degree.
+         * For example if the value is 1 and the projection of the map is degrees then the overlap will be 1
+         * degree.
          * </p>
          * <p>
-         *     The default is to not have any overlap.
+         * The default is to not have any overlap.
          * </p>
          */
         @HasDefaultValue
         public double overlap = 0;
 
         /**
-         * Indicates how to render the area of interest on this sub-map. This
-         * makes it easier to how the all the sub-maps fit together to for the complete map.  Also if the map is rendered as a whole
-         * in one part of the report one can easily see where in the complete map the sub-map fits, even without looking at the
-         * labelling.
+         * Indicates how to render the area of interest on this sub-map. This makes it easier to how the all
+         * the sub-maps fit together to for the complete map.  Also if the map is rendered as a whole in one
+         * part of the report one can easily see where in the complete map the sub-map fits, even without
+         * looking at the labelling.
          * <p>
-         *     For options see: {@link org.mapfish.print.attribute.map.AreaOfInterest.AoiDisplay}
+         * For options see: {@link org.mapfish.print.attribute.map.AreaOfInterest.AoiDisplay}
          * </p>
          * <p>
-         *     By default the rendering in the <a href="index.html#/attributes?location=!map">map attribute's</a>
-         *     area of interest will be used
+         * By default the rendering in the <a href="index.html#/attributes?location=!map">map attribute's</a>
+         * area of interest will be used
          * </p>
          */
         @HasDefaultValue
         public AreaOfInterest.AoiDisplay aoiDisplay;
 
         /**
-         * If this is defined it will override the style used for rendering the Area Of Interest in the
-         * main <a href="index.html#/attributes?location=!map">map attribute's</a> Area of Interest definition.
+         * If this is defined it will override the style used for rendering the Area Of Interest in the main
+         * <a href="index.html#/attributes?location=!map">map attribute's</a> Area of Interest definition.
          */
         @HasDefaultValue
         public String aoiStyle = null;

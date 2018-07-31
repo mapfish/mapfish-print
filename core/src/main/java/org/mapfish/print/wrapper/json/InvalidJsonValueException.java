@@ -29,7 +29,8 @@ public class InvalidJsonValueException extends PrintException {
      * @param value the illegal value obtained.
      * @param e the exception to wrap by this exception
      */
-    public InvalidJsonValueException(final PElement element, final String key, final Object value, final Throwable e) {
+    public InvalidJsonValueException(
+            final PElement element, final String key, final Object value, final Throwable e) {
         super(element.getPath(key) + " has an invalid value: " + value.toString(), e);
     }
 

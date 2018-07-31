@@ -16,6 +16,8 @@ import java.io.OutputStream;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class JasperReportPDFOutputFormatTest extends AbstractMapfishSpringTest {
     public static final String BASE_DIR = "pdf-config/";
@@ -24,9 +26,15 @@ public class JasperReportPDFOutputFormatTest extends AbstractMapfishSpringTest {
     @Autowired
     private Map<String, OutputFormat> outputFormat;
 
+    public static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(JasperReportOutputFormatSimpleMapTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     public void testPdfConfigDefaults() throws Exception {
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-defaults.yaml"));
+        final Configuration config =
+                configurationFactory.getConfig(getFile(BASE_DIR + "config-defaults.yaml"));
         final Template rawTemplate = config.getTemplate("main");
         final PDFConfig pdfConfigSpy = Mockito.spy(rawTemplate.getPdfConfig());
         Template templateSpy = Mockito.spy(rawTemplate);
@@ -40,10 +48,10 @@ public class JasperReportPDFOutputFormatTest extends AbstractMapfishSpringTest {
         OutputStream outputStream = new ByteArrayOutputStream();
         OutputFormat format = this.outputFormat.get("pdfOutputFormat");
         format.print("test", requestData, config,
-                getFile(JasperReportPDFOutputFormatTest.class, BASE_DIR), getTaskDirectory(),
-                outputStream);
+                     getFile(JasperReportPDFOutputFormatTest.class, BASE_DIR), getTaskDirectory(),
+                     outputStream);
         assertAllMethodsCalled(pdfConfigSpy);
-        assertEquals(false, pdfConfigSpy.isCompressed());
+        assertFalse(pdfConfigSpy.isCompressed());
         assertEquals("Mapfish Print", pdfConfigSpy.getAuthor());
         assertEquals("Mapfish Print", pdfConfigSpy.getCreator());
         assertEquals("Mapfish Print", pdfConfigSpy.getKeywordsAsString());
@@ -53,7 +61,8 @@ public class JasperReportPDFOutputFormatTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testPdfConfigValuesFromConfig() throws Exception {
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-settings-in-config.yaml"));
+        final Configuration config =
+                configurationFactory.getConfig(getFile(BASE_DIR + "config-settings-in-config.yaml"));
         final Template rawTemplate = config.getTemplate("main");
         final PDFConfig pdfConfigSpy = Mockito.spy(rawTemplate.getPdfConfig());
         Template templateSpy = Mockito.spy(rawTemplate);
@@ -67,10 +76,10 @@ public class JasperReportPDFOutputFormatTest extends AbstractMapfishSpringTest {
         OutputStream outputStream = new ByteArrayOutputStream();
         OutputFormat format = this.outputFormat.get("pdfOutputFormat");
         format.print("test", requestData, config,
-                getFile(JasperReportPDFOutputFormatTest.class, BASE_DIR), getTaskDirectory(),
-                outputStream);
+                     getFile(JasperReportPDFOutputFormatTest.class, BASE_DIR), getTaskDirectory(),
+                     outputStream);
         assertAllMethodsCalled(pdfConfigSpy);
-        assertEquals(true, pdfConfigSpy.isCompressed());
+        assertTrue(pdfConfigSpy.isCompressed());
         assertEquals("Config Author", pdfConfigSpy.getAuthor());
         assertEquals("Config Creator", pdfConfigSpy.getCreator());
         assertEquals("Config Keywords", pdfConfigSpy.getKeywordsAsString());
@@ -80,7 +89,8 @@ public class JasperReportPDFOutputFormatTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testPdfConfigValuesFromTemplate() throws Exception {
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-settings-in-template.yaml"));
+        final Configuration config =
+                configurationFactory.getConfig(getFile(BASE_DIR + "config-settings-in-template.yaml"));
         final Template rawTemplate = config.getTemplate("main");
         final PDFConfig pdfConfigSpy = Mockito.spy(rawTemplate.getPdfConfig());
         Template templateSpy = Mockito.spy(rawTemplate);
@@ -94,10 +104,10 @@ public class JasperReportPDFOutputFormatTest extends AbstractMapfishSpringTest {
         OutputStream outputStream = new ByteArrayOutputStream();
         OutputFormat format = this.outputFormat.get("pdfOutputFormat");
         format.print("test", requestData, config,
-                getFile(JasperReportPDFOutputFormatTest.class, BASE_DIR), getTaskDirectory(),
-                outputStream);
+                     getFile(JasperReportPDFOutputFormatTest.class, BASE_DIR), getTaskDirectory(),
+                     outputStream);
         assertAllMethodsCalled(pdfConfigSpy);
-        assertEquals(true, pdfConfigSpy.isCompressed());
+        assertTrue(pdfConfigSpy.isCompressed());
         assertEquals("Template Author", pdfConfigSpy.getAuthor());
         assertEquals("Template Creator", pdfConfigSpy.getCreator());
         assertEquals("Template Keywords", pdfConfigSpy.getKeywordsAsString());
@@ -107,7 +117,8 @@ public class JasperReportPDFOutputFormatTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testPdfConfigValuesInTemplateOverrideValuesInConfig() throws Exception {
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-template-override-config.yaml"));
+        final Configuration config =
+                configurationFactory.getConfig(getFile(BASE_DIR + "config-template-override-config.yaml"));
         final Template rawTemplate = config.getTemplate("main");
         final PDFConfig pdfConfigSpy = Mockito.spy(rawTemplate.getPdfConfig());
         Template templateSpy = Mockito.spy(rawTemplate);
@@ -121,10 +132,10 @@ public class JasperReportPDFOutputFormatTest extends AbstractMapfishSpringTest {
         OutputStream outputStream = new ByteArrayOutputStream();
         OutputFormat format = this.outputFormat.get("pdfOutputFormat");
         format.print("test", requestData, config,
-                getFile(JasperReportPDFOutputFormatTest.class, BASE_DIR), getTaskDirectory(),
-                outputStream);
+                     getFile(JasperReportPDFOutputFormatTest.class, BASE_DIR), getTaskDirectory(),
+                     outputStream);
         assertAllMethodsCalled(pdfConfigSpy);
-        assertEquals(false, pdfConfigSpy.isCompressed());
+        assertFalse(pdfConfigSpy.isCompressed());
         assertEquals("Template Author", pdfConfigSpy.getAuthor());
         assertEquals("Config Creator", pdfConfigSpy.getCreator());
         assertEquals("Config Keywords", pdfConfigSpy.getKeywordsAsString());
@@ -139,9 +150,5 @@ public class JasperReportPDFOutputFormatTest extends AbstractMapfishSpringTest {
         Mockito.verify(pdfConfigSpy).getKeywordsAsString();
         Mockito.verify(pdfConfigSpy).getTitle();
         Mockito.verify(pdfConfigSpy).getSubject();
-    }
-
-    public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR + "requestData.json");
     }
 }

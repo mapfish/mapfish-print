@@ -1,10 +1,10 @@
 package org.mapfish.print.map.geotools.grid;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import javax.measure.unit.NonSI;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 public class GridUtilsTest {
 
@@ -22,16 +22,19 @@ public class GridUtilsTest {
                 "100,000 m", GridUtils.createLabel(100000, "m", new GridLabelFormat.Simple("%,1.0f %s")));
         assertEquals(
                 "100,000 m",
-                GridUtils.createLabel(100000, "m", new GridLabelFormat.Detailed("###,###", null, null, null)));
+                GridUtils
+                        .createLabel(100000, "m", new GridLabelFormat.Detailed("###,###", null, null, null)));
         assertEquals(
                 "100'000 m",
                 GridUtils.createLabel(100000, "m", new GridLabelFormat.Detailed("###,###", null, null, "'")));
         assertEquals(
                 "100,000 m",
-                GridUtils.createLabel(100000.123, "m", new GridLabelFormat.Detailed("###,###", null, null, null)));
+                GridUtils.createLabel(100000.123, "m",
+                                      new GridLabelFormat.Detailed("###,###", null, null, null)));
         assertEquals(
                 "100'000,12 m",
-                GridUtils.createLabel(100000.123, "m", new GridLabelFormat.Detailed("###,###.##", null, ",", "'")));
+                GridUtils.createLabel(100000.123, "m",
+                                      new GridLabelFormat.Detailed("###,###.##", null, ",", "'")));
     }
 
 }

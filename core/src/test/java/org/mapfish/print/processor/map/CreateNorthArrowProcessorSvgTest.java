@@ -2,9 +2,6 @@ package org.mapfish.print.processor.map;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
-import java.io.File;
-import java.util.concurrent.ForkJoinPool;
-
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -16,11 +13,13 @@ import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-
 import org.springframework.mock.http.client.MockClientHttpRequest;
+import org.springframework.test.annotation.DirtiesContext;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import org.springframework.test.annotation.DirtiesContext;
+import java.util.concurrent.ForkJoinPool;
 
 public class CreateNorthArrowProcessorSvgTest extends AbstractMapfishSpringTest {
     public static final String BASE_DIR = "north_arrow_svg/";
@@ -31,6 +30,11 @@ public class CreateNorthArrowProcessorSvgTest extends AbstractMapfishSpringTest 
     private TestHttpClientFactory requestFactory;
     @Autowired
     private ForkJoinPool forkJoinPool;
+
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterOsmTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
 
     @Test
     @DirtiesContext
@@ -45,7 +49,8 @@ public class CreateNorthArrowProcessorSvgTest extends AbstractMapfishSpringTest 
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data/osm" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -60,17 +65,12 @@ public class CreateNorthArrowProcessorSvgTest extends AbstractMapfishSpringTest 
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."));
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         String northArrowGraphic = values.getObject("northArrowGraphic", String.class);
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedNorthArrow.png"))
                 .assertSimilarity(new URI(northArrowGraphic), 200, 200, 75);
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleCenterOsmTest.class,
-                BASE_DIR + "requestData.json");
     }
 }

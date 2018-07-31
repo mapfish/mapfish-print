@@ -8,6 +8,7 @@ public class ConfigurationException extends RuntimeException {
 
     /**
      * Constructor.
+     *
      * @param message the error message.
      */
     public ConfigurationException(final String message) {

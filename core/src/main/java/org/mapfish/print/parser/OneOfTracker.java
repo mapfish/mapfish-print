@@ -22,7 +22,8 @@ final class OneOfTracker {
     private Map<String, OneOfGroup> mapping = Maps.newHashMap();
 
     /**
-     * Check if a field is part of a  {@link org.mapfish.print.parser.OneOf} relationship and add if necessary.
+     * Check if a field is part of a  {@link org.mapfish.print.parser.OneOf} relationship and add if
+     * necessary.
      *
      * @param field the field to register.
      */
@@ -50,7 +51,8 @@ final class OneOfTracker {
     }
 
     /**
-     * Check if a field is part of a {@link org.mapfish.print.parser.OneOf} relationship and mark the group as satisfied.
+     * Check if a field is part of a {@link org.mapfish.print.parser.OneOf} relationship and mark the group as
+     * satisfied.
      *
      * @param field the field that is done.
      */
@@ -69,34 +71,41 @@ final class OneOfTracker {
 
     /**
      * Check that each group is satisfied by one and only one field.
+     *
      * @param currentPath the json path to the element being checked
      */
     public void checkAllGroupsSatisfied(final String currentPath) {
         StringBuilder errors = new StringBuilder();
 
-        for (OneOfGroup group : this.mapping.values()) {
+        for (OneOfGroup group: this.mapping.values()) {
 
             if (group.satisfiedBy.isEmpty()) {
                 errors.append("\n");
-                errors.append("\t* The OneOf choice: ").append(group.name).append(" was not satisfied.  One (and only one) of the ");
-                errors.append("following fields is required in the request data: ").append(toNames(group.choices));
+                errors.append("\t* The OneOf choice: ").append(group.name)
+                        .append(" was not satisfied.  One (and only one) of the ");
+                errors.append("following fields is required in the request data: ")
+                        .append(toNames(group.choices));
             }
 
-            Collection<OneOfSatisfier> oneOfSatisfiers = Collections2.filter(group.satisfiedBy, new Predicate<OneOfSatisfier>() {
-                @Override
-                public boolean apply(@Nonnull final OneOfSatisfier input) {
-                    return !input.isCanSatisfy;
-                }
-            });
+            Collection<OneOfSatisfier> oneOfSatisfiers =
+                    Collections2.filter(group.satisfiedBy, new Predicate<OneOfSatisfier>() {
+                        @Override
+                        public boolean apply(@Nonnull final OneOfSatisfier input) {
+                            return !input.isCanSatisfy;
+                        }
+                    });
             if (oneOfSatisfiers.size() > 1) {
                 errors.append("\n");
-                errors.append("\t* The OneOf choice: ").append(group.name).append(" was satisfied by too many fields.  Only one choice ");
-                errors.append("may be in the request data.  The fields found were: ").append(toNames(toFields(group.satisfiedBy)));
+                errors.append("\t* The OneOf choice: ").append(group.name)
+                        .append(" was satisfied by too many fields.  Only one choice ");
+                errors.append("may be in the request data.  The fields found were: ")
+                        .append(toNames(toFields(group.satisfiedBy)));
             }
         }
 
-        Assert.equals(0, errors.length(), "\nErrors were detected when analysing the @OneOf dependencies of '" + currentPath +
-                                          "': \n" + errors);
+        Assert.equals(0, errors.length(),
+                      "\nErrors were detected when analysing the @OneOf dependencies of '" + currentPath +
+                              "': \n" + errors);
     }
 
     private Collection<Field> toFields(final Set<OneOfSatisfier> satisfiedBy) {
@@ -111,7 +120,7 @@ final class OneOfTracker {
 
     private String toNames(final Collection<Field> choices) {
         StringBuilder names = new StringBuilder();
-        for (Field choice : choices) {
+        for (Field choice: choices) {
             if (names.length() > 0) {
                 names.append(", ");
             }
@@ -129,16 +138,18 @@ final class OneOfTracker {
         private Collection<Field> choices = Lists.newArrayList();
         private Set<OneOfSatisfier> satisfiedBy = Sets.newHashSet();
 
-        public OneOfGroup(final String name) {
+        private OneOfGroup(final String name) {
             this.name = name;
         }
     }
+
     private static final class OneOfSatisfier {
         private final Field field;
         private final boolean isCanSatisfy;
 
-        public OneOfSatisfier(@Nonnull final Field field,
-                              final boolean isCanSatisfy) {
+        private OneOfSatisfier(
+                @Nonnull final Field field,
+                final boolean isCanSatisfy) {
             this.field = field;
             this.isCanSatisfy = isCanSatisfy;
         }
@@ -146,12 +157,18 @@ final class OneOfTracker {
         // CHECKSTYLE:OFF
         @Override
         public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
 
             OneOfSatisfier that = (OneOfSatisfier) o;
 
-            if (!field.equals(that.field)) return false;
+            if (!field.equals(that.field)) {
+                return false;
+            }
 
             return true;
         }

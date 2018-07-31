@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 
 public class AccessAssertionPersisterTest extends AbstractMapfishSpringTest {
     @Autowired
@@ -17,19 +17,20 @@ public class AccessAssertionPersisterTest extends AbstractMapfishSpringTest {
     private List<AccessAssertion> accessAssertions;
 
     @Test
-    public void testMarshalUnmarshal() throws Exception {
-        for (AccessAssertion assertion : this.accessAssertions) {
+    public void testMarshalUnmarshal() {
+        for (AccessAssertion assertion: this.accessAssertions) {
             try {
                 final JSONObject marshalled = persister.marshal(assertion);
                 final AccessAssertion unmarshalled = persister.unmarshal(marshalled);
                 assertNotNull(unmarshalled);
 
-                assertTrue(assertion.getClass() == unmarshalled.getClass());
+                assertSame(assertion.getClass(), unmarshalled.getClass());
             } catch (AssertionError e) {
                 throw e;
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new AssertionError("Marshalling or unmarshalling access assertion: " + assertion.getClass() + " failed");
+                throw new AssertionError(
+                        "Marshalling or unmarshalling access assertion: " + assertion.getClass() + " failed");
             }
         }
     }

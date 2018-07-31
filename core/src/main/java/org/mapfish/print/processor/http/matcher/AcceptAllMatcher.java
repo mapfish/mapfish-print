@@ -2,14 +2,10 @@ package org.mapfish.print.processor.http.matcher;
 
 import org.mapfish.print.config.Configuration;
 
-import java.net.MalformedURLException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.List;
 
 /**
- * A matcher that always returns true.
- * [[examples=http_processors]]
+ * A matcher that always returns true. [[examples=http_processors]]
  */
 public final class AcceptAllMatcher extends AbstractMatcher {
     /**
@@ -28,7 +24,7 @@ public final class AcceptAllMatcher extends AbstractMatcher {
     }
 
     @Override
-    public boolean matches(final MatchInfo matchInfo) throws UnknownHostException, SocketException, MalformedURLException {
+    public boolean matches(final MatchInfo matchInfo) {
         return true;
     }
 }

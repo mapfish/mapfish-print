@@ -13,165 +13,194 @@ public interface PObject {
      *
      * @param key the key identifying the value to obtain.
      */
-    Object opt(final String key);
+    Object opt(String key);
 
     /**
      * Get a property as a string or throw an exception.
+     *
      * @param key the property name
      */
-    String getString(final String key);
+    String getString(String key);
 
     /**
      * Get a property as a string or null.
+     *
      * @param key the property name
      */
-    String optString(final String key);
+    String optString(String key);
 
     /**
      * Get a property as a string or defaultValue.
+     *
      * @param key the property name
      * @param defaultValue the default value
      */
-    String optString(final String key, final String defaultValue);
+    String optString(String key, String defaultValue);
 
     /**
      * Get a property as a int or throw an exception.
+     *
      * @param key the property name
      */
-    int getInt(final String key);
+    int getInt(String key);
 
     /**
      * Get a property as a int or MIN_VALUE.
+     *
      * @param key the property name
      */
-    Integer optInt(final String key);
+    Integer optInt(String key);
 
     /**
      * Get a property as a int or default value.
+     *
      * @param key the property name
      * @param defaultValue the default value
      */
-    Integer optInt(final String key, final Integer defaultValue);
+    Integer optInt(String key, Integer defaultValue);
+
     /**
      * Get a property as a long or throw an exception.
+     *
      * @param key the property name
      */
-     long getLong(String key);
+    long getLong(String key);
+
     /**
      * Get a property as a long or MIN_VALUE.
+     *
      * @param key the property name
      */
-    Long optLong(final String key);
+    Long optLong(String key);
 
     /**
      * Get a property as a long or default value.
+     *
      * @param key the property name
      * @param defaultValue the default value
      */
-    long optLong(final String key, final long defaultValue);
+    long optLong(String key, long defaultValue);
+
     /**
      * Get a property as a double or throw an exception.
+     *
      * @param key the property name
      */
-    double getDouble(final String key);
+    double getDouble(String key);
 
     /**
      * Get a property as a double or defaultValue.
+     *
      * @param key the property name
      */
-    Double optDouble(final String key);
+    Double optDouble(String key);
 
     /**
      * Get a property as a double or defaultValue.
+     *
      * @param key the property name
      * @param defaultValue the default value
      */
-    Double optDouble(final String key, final Double defaultValue);
+    Double optDouble(String key, Double defaultValue);
 
     /**
      * Get a property as a float or throw an exception.
+     *
      * @param key the property name
      */
-    float getFloat(final String key);
+    float getFloat(String key);
 
     /**
      * Get a property as a float or null.
+     *
      * @param key the property name
      */
-    Float optFloat(final String key);
+    Float optFloat(String key);
 
     /**
      * Get a property as a float or Default vaule.
+     *
      * @param key the property name
      * @param defaultValue default value
      */
-    Float optFloat(final String key, final Float defaultValue);
+    Float optFloat(String key, Float defaultValue);
 
     /**
      * Get a property as a boolean or throw exception.
+     *
      * @param key the property name
      */
-    boolean getBool(final String key);
+    boolean getBool(String key);
 
     /**
      * Get a property as a boolean or null.
+     *
      * @param key the property name
      */
-    Boolean optBool(final String key);
+    Boolean optBool(String key);
 
     /**
      * Get a property as a boolean or default value.
+     *
      * @param key the property name
      * @param defaultValue the default
      */
-    Boolean optBool(final String key, final Boolean defaultValue);
+    Boolean optBool(String key, Boolean defaultValue);
 
     /**
      * Get a property as a object or throw exception.
+     *
      * @param key the property name
      */
-    PObject getObject(final String key);
+    PObject getObject(String key);
 
     /**
      * Get a property as a object or null.
+     *
      * @param key the property name
      */
-    PObject optObject(final String key);
+    PObject optObject(String key);
 
     /**
      * Get a property as a object or null.
+     *
      * @param key the property name
      * @param defaultValue default
      */
-    PObject optObject(final String key, final PObject defaultValue);
+    PObject optObject(String key, PObject defaultValue);
 
     /**
      * Get a property as a array or throw exception.
+     *
      * @param key the property name
      */
-    PArray getArray(final String key);
+    PArray getArray(String key);
 
     /**
      * Get a property as a array or null.
+     *
      * @param key the property name
      */
-    PArray optArray(final String key);
+    PArray optArray(String key);
 
     /**
      * Is the property an array.
+     *
      * @param key the property name
      */
-    boolean isArray(final String key);
+    boolean isArray(String key);
 
     /**
      * Get a property as a array or default.
+     *
      * @param key the property name
      * @param defaultValue default
      */
-    PArray optArray(final String key, final PArray defaultValue);
+    PArray optArray(String key, PArray defaultValue);
 
     /**
      * Get an iterator of all keys in this objects.
+     *
      * @return The keys iterator
      */
     Iterator<String> keys();
@@ -183,16 +212,17 @@ public interface PObject {
 
     /**
      * Check if the object has a property with the key.
+     *
      * @param key key to check for.
      */
-    boolean has(final String key);
+    boolean has(String key);
 
     /**
      * Gets the string representation of the path to the current element.
      *
      * @param key the leaf key
      */
-    String getPath(final String key);
+    String getPath(String key);
 
     /**
      * Gets the string representation of the path to the current element.

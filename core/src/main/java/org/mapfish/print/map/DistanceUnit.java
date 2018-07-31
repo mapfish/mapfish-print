@@ -14,8 +14,7 @@ import static org.mapfish.print.Constants.INCH_TO_MM;
 
 
 /**
- * An enum for expressing distance units. Contains everything needed for
- * conversions and others.
+ * An enum for expressing distance units. Contains everything needed for conversions and others.
  */
 public enum DistanceUnit {
     /**
@@ -66,48 +65,47 @@ public enum DistanceUnit {
     SECOND(DistanceUnit.MINUTE, 1.0 / 60.0, new String[]{"sec", "second", "seconds"}),
 
     /**
-     * Represents the pixel unit.
-     * The conversion factor is the one used by JasperReports (1 inch = 72 pixel).
+     * Represents the pixel unit. The conversion factor is the one used by JasperReports (1 inch = 72 pixel).
      */
     PX(1 / 72.0 * (INCH_TO_MM / 1000.0), new String[]{"px", "pixel"}),
 
-    /** Represents the point unit. */
+    /**
+     * Represents the point unit.
+     */
     PT(DistanceUnit.IN, 1.0 / 72.0, new String[]{"pt", "point"}),
-    /** Represents the pica unit. */
+    /**
+     * Represents the pica unit.
+     */
     PC(DistanceUnit.PT, 12.0, new String[]{"pc", "pica"});
 
+    /**
+     * Global dictionary of every textual representations of every units.
+     */
+    private static Map<String, DistanceUnit> translations = null;
     /**
      * If null means that this is a base unit. Otherwise, point to the base unit.
      */
     private final DistanceUnit baseUnit;
-
     /**
      * Conversion factor to the base unit.
      */
     private final double baseFactor;
-
     /**
      * Conversion factor to meters.
      */
     private final double metersFactor;
-
     /**
      * All the ways to represent this unit as text.
      */
     private final String[] texts;
-
     /**
      * Cache all the units that share the same base unit.
      */
     private DistanceUnit[] allUnits = null;
 
     /**
-     * Global dictionary of every textual representations of every units.
-     */
-    private static Map<String, DistanceUnit> translations = null;
-
-    /**
      * Constructor.
+     *
      * @param factor the factor to meter.
      * @param texts unit representations.
      */
@@ -120,6 +118,7 @@ public enum DistanceUnit {
 
     /**
      * Constructor.
+     *
      * @param baseUnit the base unit.
      * @param factor the factor to the base unit.
      * @param texts unit representations.
@@ -130,6 +129,57 @@ public enum DistanceUnit {
         this.baseFactor = factor * baseUnit.baseFactor;
         this.metersFactor = baseUnit.metersFactor * factor;
         this.texts = texts;
+    }
+
+    /**
+     * Parse the value and return the identified unit object.
+     *
+     * @param val the string to parse.
+     * @return null if this unit is unknown
+     */
+    public static DistanceUnit fromString(final String val) {
+        return getTranslations().get(val.toLowerCase());
+    }
+
+    /**
+     * Return the first unit that would give a value &gt;=1.
+     *
+     * @param value the value
+     * @param unit the unit of the value
+     */
+    public static DistanceUnit getBestUnit(final double value, final DistanceUnit unit) {
+        DistanceUnit[] units = unit.getAllUnits();
+        for (int i = units.length - 1; i >= 0; --i) {
+            DistanceUnit cur = units[i];
+            final double converted = Math.abs(unit.convertTo(1.0, cur) * value);
+            if (converted >= 1.0) {
+                return cur;
+            }
+        }
+        return units[0];
+    }
+
+    private static synchronized Map<String, DistanceUnit> getTranslations() {
+        if (translations == null) {
+            translations = new HashMap<>();
+            final DistanceUnit[] values = DistanceUnit.values();
+            for (DistanceUnit cur: values) {
+                for (int j = 0; j < cur.texts.length; ++j) {
+                    translations.put(cur.texts[j], cur);
+                }
+            }
+        }
+        return translations;
+    }
+
+    /**
+     * Determine the unit of the given projection.
+     *
+     * @param projection the projection to determine
+     */
+    public static DistanceUnit fromProjection(final CoordinateReferenceSystem projection) {
+        final Unit<?> projectionUnit = projection.getCoordinateSystem().getAxis(0).getUnit();
+        return DistanceUnit.fromString(projectionUnit.toString());
     }
 
     public boolean isBase() {
@@ -157,7 +207,8 @@ public enum DistanceUnit {
     }
 
     /**
-     * Check if this unit and the target unit have the same "base" unit  IE inches and feet have same base unit.
+     * Check if this unit and the target unit have the same "base" unit  IE inches and feet have same base
+     * unit.
      *
      * @param target the unit to compare to this unit.
      */
@@ -171,21 +222,9 @@ public enum DistanceUnit {
     }
 
     /**
-     * Parse the value and return the identified unit object.
+     * Return the sorted list (from smallest to biggest) of units sharing the same base unit.
      *
-     * @param val the string to parse.
-     * @return null if this unit is unknown
-     */
-    public static DistanceUnit fromString(final String val) {
-        return getTranslations().get(val.toLowerCase());
-    }
-
-    /**
-     * Return the sorted list (from smallest to biggest) of units sharing the
-     * same base unit.
-     *
-     * @return the sorted list (from smallest to biggest) of units sharing the
-     * same base unit.
+     * @return the sorted list (from smallest to biggest) of units sharing the same base unit.
      */
     public final synchronized DistanceUnit[] getAllUnits() {
         if (this.allUnits == null) {
@@ -193,9 +232,8 @@ public enum DistanceUnit {
                 this.allUnits = this.baseUnit.getAllUnits();
             } else {
                 final DistanceUnit[] values = DistanceUnit.values();
-                final List<DistanceUnit> list = new ArrayList<DistanceUnit>(values.length);
-                for (int i = 0; i < values.length; ++i) {
-                    DistanceUnit value = values[i];
+                final List<DistanceUnit> list = new ArrayList<>(values.length);
+                for (DistanceUnit value: values) {
                     if (value.baseUnit == this) {
                         list.add(value);
                     }
@@ -212,46 +250,5 @@ public enum DistanceUnit {
         }
 
         return this.allUnits;
-    }
-
-    /**
-     * Return the first unit that would give a value &gt;=1.
-     *
-     * @param value the value
-     * @param unit the unit of the value
-     */
-    public static DistanceUnit getBestUnit(final double value, final DistanceUnit unit) {
-        DistanceUnit[] units = unit.getAllUnits();
-        for (int i = units.length - 1; i >= 0; --i) {
-            DistanceUnit cur = units[i];
-            final double converted = Math.abs(unit.convertTo(1.0, cur) * value);
-            if (converted >= 1.0) {
-                return cur;
-            }
-        }
-        return units[0];
-    }
-
-    private static synchronized Map<String, DistanceUnit> getTranslations() {
-        if (translations == null) {
-            translations = new HashMap<String, DistanceUnit>();
-            final DistanceUnit[] values = DistanceUnit.values();
-            for (DistanceUnit cur : values) {
-                for (int j = 0; j < cur.texts.length; ++j) {
-                    translations.put(cur.texts[j], cur);
-                }
-            }
-        }
-        return translations;
-    }
-
-    /**
-     * Determine the unit of the given projection.
-     *
-     * @param projection the projection to determine
-     */
-    public static DistanceUnit fromProjection(final CoordinateReferenceSystem projection) {
-        final Unit<?> projectionUnit = projection.getCoordinateSystem().getAxis(0).getUnit();
-        return DistanceUnit.fromString(projectionUnit.toString());
     }
 }

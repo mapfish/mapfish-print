@@ -5,14 +5,12 @@ import org.mapfish.print.config.Configuration;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
 /**
- * Allows to check that a given URL is served by one of the local network
- * interface or one of its aliases.
+ * Allows to check that a given URL is served by one of the local network interface or one of its aliases.
  * <p>Example 1: Accept any localhost url</p>
  * <pre><code>
  *     - localMatch {}
@@ -29,7 +27,8 @@ import java.util.List;
  * </code></pre>
  * <p>Example 4: Accept localhost urls with paths that start with /print/.</p>
  * <p>
- * If the regular expression given does not start with / then it will be added because all paths start with /.
+ * If the regular expression given does not start with / then it will be added because all paths start with
+ * /.
  * </p>
  * <pre><code>
  *     - localMatch
@@ -40,13 +39,13 @@ import java.util.List;
 public class LocalHostMatcher extends InetHostMatcher {
 
     @Override
-    protected final List<AddressMask> createAuthorizedIPs() throws UnknownHostException, SocketException {
-        List<AddressMask> authorizedIPs = new ArrayList<AddressMask>();
+    protected final List<AddressMask> createAuthorizedIPs() throws SocketException {
+        List<AddressMask> authorizedIPs = new ArrayList<>();
         Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
         while (ifaces.hasMoreElements()) {
             NetworkInterface networkInterface = ifaces.nextElement();
             final List<InterfaceAddress> addrs = networkInterface.getInterfaceAddresses();
-            for (InterfaceAddress netAddr : addrs) {
+            for (InterfaceAddress netAddr: addrs) {
                 authorizedIPs.add(new AddressMask(netAddr.getAddress()));
             }
         }

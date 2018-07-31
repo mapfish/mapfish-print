@@ -17,19 +17,20 @@ public class AndAccessAssertionTest extends AbstractMapfishSpringTest {
     ApplicationContext applicationContext;
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         SecurityContextHolder.clearContext();
     }
 
     @Test(expected = AssertionError.class)
-    public void testSetPredicates() throws Exception {
+    public void testSetPredicates() {
 
         final AndAccessAssertion andAssertion = applicationContext.getBean(AndAccessAssertion.class);
         andAssertion.setPredicates(AlwaysAllowAssertion.INSTANCE, AlwaysAllowAssertion.INSTANCE);
         andAssertion.setPredicates(AlwaysAllowAssertion.INSTANCE);
     }
+
     @Test(expected = AccessDeniedException.class)
-    public void testAssertAccessNotAllowed() throws Exception {
+    public void testAssertAccessNotAllowed() {
         final AndAccessAssertion andAssertion = applicationContext.getBean(AndAccessAssertion.class);
         AccessAssertion pred1 = new RoleAccessAssertion().setRequiredRoles(Sets.newHashSet("ROLE_USER"));
         AccessAssertion pred2 = new RoleAccessAssertion().setRequiredRoles(Sets.newHashSet("ROLE_OTHER"));
@@ -38,8 +39,9 @@ public class AndAccessAssertionTest extends AbstractMapfishSpringTest {
         AccessAssertionTestUtil.setCreds("ROLE_USER");
         andAssertion.assertAccess("", this);
     }
+
     @Test
-    public void testAssertAccessAllowed() throws Exception {
+    public void testAssertAccessAllowed() {
         final AndAccessAssertion andAssertion = applicationContext.getBean(AndAccessAssertion.class);
         AccessAssertion pred1 = new RoleAccessAssertion().setRequiredRoles(Sets.newHashSet("ROLE_USER"));
         AccessAssertion pred2 = new RoleAccessAssertion().setRequiredRoles(Sets.newHashSet("ROLE_OTHER"));
@@ -50,7 +52,7 @@ public class AndAccessAssertionTest extends AbstractMapfishSpringTest {
     }
 
     @Test
-    public void testMarshalUnmarshal() throws Exception {
+    public void testMarshalUnmarshal() {
         final AndAccessAssertion andAssertion = applicationContext.getBean(AndAccessAssertion.class);
         AccessAssertion pred1 = new RoleAccessAssertion().setRequiredRoles(Sets.newHashSet("ROLE_USER"));
         AccessAssertion pred2 = new RoleAccessAssertion().setRequiredRoles(Sets.newHashSet("ROLE_OTHER"));

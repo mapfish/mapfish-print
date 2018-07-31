@@ -35,8 +35,8 @@ public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomPa
     }
 
     @Override
-    public final Void execute(final Input values, final ExecutionContext context) throws Exception {
-        for (MapLayer layer : values.map.getLayers()) {
+    public final Void execute(final Input values, final ExecutionContext context) {
+        for (MapLayer layer: values.map.getLayers()) {
             checkCancelState(context);
             if (layer instanceof WmsLayer) {
                 ((WmsLayer) layer).getParams().setCustomParam(this.paramName, values.value);
@@ -48,10 +48,21 @@ public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomPa
     }
 
     @Override
-    protected final void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
+    protected final void extraValidation(
+            final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.paramName == null) {
-            validationErrors.add(new ConfigurationException("No paramName defined in " + getClass().getName()));
+            validationErrors
+                    .add(new ConfigurationException("No paramName defined in " + getClass().getName()));
         }
+    }
+
+    /**
+     * Set the parameter name.
+     *
+     * @param paramName the parameter name
+     */
+    public final void setParamName(final String paramName) {
+        this.paramName = paramName;
     }
 
     /**
@@ -69,13 +80,5 @@ public class SetWmsCustomParamProcessor extends AbstractProcessor<SetWmsCustomPa
          * The value.
          */
         public String value;
-    }
-
-    /**
-     * Set the parameter name.
-     * @param paramName the parameter name
-     */
-    public final void setParamName(final String paramName) {
-        this.paramName = paramName;
     }
 }

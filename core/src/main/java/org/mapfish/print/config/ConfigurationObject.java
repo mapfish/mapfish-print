@@ -13,5 +13,5 @@ public interface ConfigurationObject {
      * @param validationErrors a list to add any detected errors to.
      * @param configuration the containing configuration
      */
-    void validate(List<Throwable> validationErrors, final Configuration configuration);
+    void validate(List<Throwable> validationErrors, Configuration configuration);
 }

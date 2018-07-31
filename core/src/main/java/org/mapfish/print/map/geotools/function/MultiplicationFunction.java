@@ -15,9 +15,9 @@ public final class MultiplicationFunction extends FunctionExpressionImpl {
      * The name of this function.
      */
     public static final FunctionName NAME = new FunctionNameImpl("multiplication",
-            parameter("result", Double.class),
-            parameter("value1", Double.class),
-            parameter("value2", Double.class));
+                                                                 parameter("result", Double.class),
+                                                                 parameter("value1", Double.class),
+                                                                 parameter("value2", Double.class));
 
     /**
      * Default constructor.

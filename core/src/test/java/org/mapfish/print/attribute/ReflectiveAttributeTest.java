@@ -13,27 +13,27 @@ import java.util.List;
 
 public class ReflectiveAttributeTest {
     @Test(expected = AssertionFailedException.class)
-    public void testPJsonObjIllegal() throws Exception {
+    public void testPJsonObjIllegal() {
         new TestReflectiveAtt(PJsonObjParamIllegal.class).init();
     }
 
     @Test(expected = AssertionFailedException.class)
-    public void testPJsonArrayIllegal() throws Exception {
+    public void testPJsonArrayIllegal() {
         new TestReflectiveAtt(PJsonArrayParamIllegal.class).init();
     }
 
     @Test(expected = AssertionFailedException.class)
-    public void testJsonObjIllegal() throws Exception {
+    public void testJsonObjIllegal() {
         new TestReflectiveAtt(JsonObjParamIllegal.class).init();
     }
 
     @Test(expected = AssertionFailedException.class)
-    public void testJsonArrayIllegal() throws Exception {
+    public void testJsonArrayIllegal() {
         new TestReflectiveAtt(JsonArrayParamIllegal.class).init();
     }
 
     @Test(expected = AssertionFailedException.class)
-    public void testEmpty() throws Exception {
+    public void testEmpty() {
         new TestReflectiveAtt(Empty.class).init();
     }
 
@@ -76,6 +76,7 @@ public class ReflectiveAttributeTest {
     static class JsonArrayParamIllegal {
         public JSONArray p;
     }
+
     static class Empty {
     }
 }

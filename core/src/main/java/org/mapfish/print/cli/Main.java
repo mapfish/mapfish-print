@@ -4,11 +4,9 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.CharStreams;
 import com.sampullara.cli.Args;
-
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
@@ -34,30 +32,27 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 /**
- * A shell version of the MapPrinter. Can be used for testing or for calling
- * from other languages than Java.
+ * A shell version of the MapPrinter. Can be used for testing or for calling from other languages than Java.
  */
 public final class Main {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-    private static final int LOGLEVEL_QUIET = 0;
-    private static final int LOGLEVEL_INFO = 1;
-    private static final int LOGLEVEL_DEFAULT = 2;
-    private static final int LOGLEVEL_VERBOSE = 3;
 
     /**
      * Name of the default spring context file.
      */
     public static final String DEFAULT_SPRING_CONTEXT = "/mapfish-cli-spring-application-context.xml";
-
-    @Autowired
-    private MapPrinter mapPrinter;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private static final int LOGLEVEL_QUIET = 0;
+    private static final int LOGLEVEL_INFO = 1;
+    private static final int LOGLEVEL_DEFAULT = 2;
+    private static final int LOGLEVEL_VERBOSE = 3;
+    private static boolean exceptionOnFailure;
 
     static {
         Handler.configureProtocolHandler();
     }
 
-    private static boolean exceptionOnFailure;
+    @Autowired
+    private MapPrinter mapPrinter;
 
     private Main() {
         // intentionally empty
@@ -131,45 +126,6 @@ public final class Main {
         }
     }
 
-    private void run(final CliDefinition cli) throws Exception {
-        final File configFile = new File(cli.config);
-        this.mapPrinter.setConfiguration(configFile);
-        OutputStream outFile = null;
-        try {
-            if (cli.clientConfig) {
-                outFile = getOutputStream(cli.output, ".yaml");
-                final OutputStreamWriter writer = new OutputStreamWriter(outFile, Charset.forName(Constants.DEFAULT_ENCODING));
-
-                JSONWriter json = new JSONWriter(writer);
-                json.object();
-                this.mapPrinter.printClientConfig(json);
-                json.endObject();
-
-                writer.close();
-
-            } else {
-                final InputStream inFile = getInputStream(cli.spec);
-                final String jsonConfiguration = CharStreams.toString(new InputStreamReader(inFile, Constants.DEFAULT_ENCODING));
-                PJsonObject jsonSpec = MapPrinter.parseSpec(jsonConfiguration);
-
-                if (cli.v2Api) {
-                    PJsonObject oldApiSpec = jsonSpec;
-                    LOGGER.info("Converting request data from V2 API request data to V3 API");
-                    jsonSpec = OldAPIRequestConverter.convert(oldApiSpec, this.mapPrinter.getConfiguration());
-                }
-
-                outFile = getOutputStream(cli.output, this.mapPrinter.getOutputFormat(jsonSpec).getFileSuffix());
-                LOGGER.debug("Request Data: \n" + jsonSpec.getInternalObj().toString(2));
-                this.mapPrinter.print("main", jsonSpec, outFile);
-            }
-        } finally {
-            if (outFile != null) {
-                outFile.close();
-            }
-        }
-    }
-
-
     private static void configureLogs(final String verbose) {
         final ClassLoader classLoader = Main.class.getClassLoader();
         URL logfile;
@@ -206,7 +162,61 @@ public final class Main {
         StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
     }
 
-    private OutputStream getOutputStream(final String output, final String suffix) throws FileNotFoundException {
+    /**
+     * Instead of calling system.exit an exception will be thrown.  This is useful for testing so a test won't
+     * shutdown jvm.
+     *
+     * @param exceptionOnFailure if true then an exception will be thrown instead of system.exit being
+     *         called.
+     */
+    @VisibleForTesting
+    static void setExceptionOnFailure(final boolean exceptionOnFailure) {
+        Main.exceptionOnFailure = exceptionOnFailure;
+    }
+
+    private void run(final CliDefinition cli) throws Exception {
+        final File configFile = new File(cli.config);
+        this.mapPrinter.setConfiguration(configFile);
+        OutputStream outFile = null;
+        try {
+            if (cli.clientConfig) {
+                outFile = getOutputStream(cli.output, ".yaml");
+                final OutputStreamWriter writer =
+                        new OutputStreamWriter(outFile, Charset.forName(Constants.DEFAULT_ENCODING));
+
+                JSONWriter json = new JSONWriter(writer);
+                json.object();
+                this.mapPrinter.printClientConfig(json);
+                json.endObject();
+
+                writer.close();
+
+            } else {
+                final InputStream inFile = getInputStream(cli.spec);
+                final String jsonConfiguration =
+                        CharStreams.toString(new InputStreamReader(inFile, Constants.DEFAULT_ENCODING));
+                PJsonObject jsonSpec = MapPrinter.parseSpec(jsonConfiguration);
+
+                if (cli.v2Api) {
+                    PJsonObject oldApiSpec = jsonSpec;
+                    LOGGER.info("Converting request data from V2 API request data to V3 API");
+                    jsonSpec = OldAPIRequestConverter.convert(oldApiSpec, this.mapPrinter.getConfiguration());
+                }
+
+                outFile = getOutputStream(cli.output,
+                                          this.mapPrinter.getOutputFormat(jsonSpec).getFileSuffix());
+                LOGGER.debug("Request Data: \n" + jsonSpec.getInternalObj().toString(2));
+                this.mapPrinter.print("main", jsonSpec, outFile);
+            }
+        } finally {
+            if (outFile != null) {
+                outFile.close();
+            }
+        }
+    }
+
+    private OutputStream getOutputStream(final String output, final String suffix)
+            throws FileNotFoundException {
         String outputPath = output;
         final OutputStream outFile;
         if (outputPath != null) {
@@ -229,15 +239,5 @@ public final class Main {
             file = System.in;
         }
         return file;
-    }
-
-    /**
-     * Instead of calling system.exit an exception will be thrown.  This is useful for testing so a test won't shutdown jvm.
-     *
-     * @param exceptionOnFailure if true then an exception will be thrown instead of system.exit being called.
-     */
-    @VisibleForTesting
-    static void setExceptionOnFailure(final boolean exceptionOnFailure) {
-        Main.exceptionOnFailure = exceptionOnFailure;
     }
 }

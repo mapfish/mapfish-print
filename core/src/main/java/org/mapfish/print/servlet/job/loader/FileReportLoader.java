@@ -21,13 +21,10 @@ public class FileReportLoader implements ReportLoader {
 
     @Override
     public final void loadReport(final URI reportURI, final OutputStream out) throws IOException {
-        Closer closer = Closer.create();
-        try {
+        try (Closer closer = Closer.create()) {
             FileInputStream in = closer.register(new FileInputStream(reportURI.getPath()));
             FileChannel channel = closer.register(in.getChannel());
             channel.transferTo(0, Long.MAX_VALUE, Channels.newChannel(out));
-        } finally {
-            closer.close();
         }
     }
 }

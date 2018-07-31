@@ -7,20 +7,21 @@ import java.net.URI;
 /**
  * A variable store for sharing common values across all nodes in a cluster.
  * <p>
- * For example the PDF key and URI might be put in this registry.
- * Also queue length perhaps.
+ * For example the PDF key and URI might be put in this registry. Also queue length perhaps.
  * </p>
  */
 public interface Registry {
 
     /**
      * Check if something is registered for the key.
+     *
      * @param key key to check for
      */
     boolean containsKey(String key);
 
     /**
      * Put a URI in the registry.
+     *
      * @param key the key of the entry
      * @param value the value
      */
@@ -28,12 +29,14 @@ public interface Registry {
 
     /**
      * Get a URI from the registry.
+     *
      * @param key the key to use for lookup.
      */
     URI getURI(String key);
 
     /**
      * Put a string in the registry.
+     *
      * @param key the key of the entry
      * @param value the value
      */
@@ -41,12 +44,14 @@ public interface Registry {
 
     /**
      * Get string from the registry.
+     *
      * @param key the key to use for lookup.
      */
     String getString(String key);
 
     /**
      * Put a number in the registry.
+     *
      * @param key the key of the entry
      * @param value the value
      */
@@ -85,12 +90,10 @@ public interface Registry {
 
     /**
      * Increment the value currently stored in the registry by the amount.  This assumes it is an integer.
-     *
+     * <p>
      * If there is not value present in registry then a value will be registered as amount.
      *
-     *
      * @param key the key of the element to increment
-     *
      * @param amount th amount to increment
      * @return the new value
      */
@@ -98,22 +101,21 @@ public interface Registry {
 
     /**
      * Increment the value currently stored in the registry by the amount.  This assumes it is an long.
-     *
+     * <p>
      * If there is not value present in registry then a value will be registered as amount.
      *
-     *
      * @param key the key of the element to increment
-     *
      * @param amount the amount to increment
      * @return the new value
      */
     long incrementLong(String key, long amount);
 
     /**
-     * Return the amount of time the registry will keep an entry before purging the record.  This ability to purge old records
-     * prevents the registry from growing in size indefinitely.
+     * Return the amount of time the registry will keep an entry before purging the record.  This ability to
+     * purge old records prevents the registry from growing in size indefinitely.
      *
-     * @return the number of milliseconds between the last access of a record and the time when a record can be purged from the registry.
+     * @return the number of milliseconds between the last access of a record and the time when a record can
+     *         be purged from the registry.
      */
     long getTimeToKeepAfterAccessInMillis();
 }

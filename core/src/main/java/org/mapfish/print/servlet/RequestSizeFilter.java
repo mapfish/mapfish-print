@@ -15,10 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Filter which checks the content size of requests.
- *
- * This is to avoid that the server is flooded with overly
- * huge requests.
- *
+ * <p>
+ * This is to avoid that the server is flooded with overly huge requests.
+ * <p>
  * You can tune this filter by setting the mapfish.maxContentLength (bytes) system property before starting
  * the JVM.
  */
@@ -33,7 +32,8 @@ public class RequestSizeFilter implements Filter {
     private int maxContentLength = MAX_CONTENT_LENGTH;
 
     @Override
-    public final void doFilter(final ServletRequest request, final ServletResponse response,
+    public final void doFilter(
+            final ServletRequest request, final ServletResponse response,
             final FilterChain chain) throws IOException, ServletException {
         if (request.getContentLength() > this.maxContentLength) {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
@@ -45,7 +45,7 @@ public class RequestSizeFilter implements Filter {
     }
 
     @Override
-    public final void init(final FilterConfig config) throws ServletException {
+    public final void init(final FilterConfig config) {
         if (System.getProperty("mapfish.maxContentLength") != null) {
             this.maxContentLength = Integer.parseInt(System.getProperty("mapfish.maxContentLength"));
         } else if (config.getInitParameter("maxContentLength") != null) {
@@ -54,6 +54,7 @@ public class RequestSizeFilter implements Filter {
     }
 
     @Override
-    public void destroy() { }
+    public void destroy() {
+    }
 
 }

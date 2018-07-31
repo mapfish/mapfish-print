@@ -10,6 +10,7 @@ public abstract class GridLabelFormat {
 
     /**
      * Create an instance from the given config.
+     *
      * @param param Grid param from the request.
      */
     public static GridLabelFormat fromConfig(final GridParam param) {
@@ -25,10 +26,11 @@ public abstract class GridLabelFormat {
 
     /**
      * Format a label using the given value and unit.
+     *
      * @param value Value.
      * @param unit Unit.
      */
-    public abstract String format(final double value, final String unit);
+    public abstract String format(double value, String unit);
 
     /**
      * Label format where value and unit are formatted at once.
@@ -38,6 +40,7 @@ public abstract class GridLabelFormat {
 
         /**
          * Constructor.
+         *
          * @param labelFormat Label format.
          */
         public Simple(final String labelFormat) {
@@ -61,12 +64,14 @@ public abstract class GridLabelFormat {
 
         /**
          * Constructor.
+         *
          * @param valueFormat Value format.
          * @param unitFormat Unit format.
          * @param formatDecimalSeparator Decimal separator.
          * @param formatGroupingSeparator Grouping separator.
          */
-        public Detailed(final String valueFormat, final String unitFormat,
+        public Detailed(
+                final String valueFormat, final String unitFormat,
                 final String formatDecimalSeparator, final String formatGroupingSeparator) {
             this.valueFormat = valueFormat;
             this.unitFormat = (unitFormat == null) ? GridParam.DEFAULT_UNIT_FORMAT : unitFormat;

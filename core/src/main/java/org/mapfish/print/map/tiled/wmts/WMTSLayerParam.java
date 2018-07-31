@@ -1,4 +1,5 @@
 package org.mapfish.print.map.tiled.wmts;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -10,7 +11,6 @@ import org.mapfish.print.wrapper.PObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -34,13 +34,13 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
      * </code></pre>
      * The following URL template variables are replaced:
      * <ul>
-     *  <li>{Layer}</li>
-     *  <li>{style}</li>
-     *  <li>{TileMatrixSet}</li>
-     *  <li>{TileMatrix}</li>
-     *  <li>{TileRow}</li>
-     *  <li>{TileCol}</li>
-     *  <li>{[DIMENSION.IDENTIFIER]}</li>
+     * <li>{Layer}</li>
+     * <li>{style}</li>
+     * <li>{TileMatrixSet}</li>
+     * <li>{TileMatrix}</li>
+     * <li>{TileRow}</li>
+     * <li>{TileCol}</li>
+     * <li>{[DIMENSION.IDENTIFIER]}</li>
      * </ul>
      */
     public String baseURL;
@@ -66,8 +66,8 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
     /**
      * The "sample" dimensions or image color bands to retrieve.
      * <p></p>
-     * This can be null, if so then the default dimensions will be returned.
-     * If specified they must be dimensions supported by the server.
+     * This can be null, if so then the default dimensions will be returned. If specified they must be
+     * dimensions supported by the server.
      * <p></p>
      * These are keys to the {@link #dimensionParams}.
      */
@@ -119,7 +119,7 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
 
     @Override
     public String createCommonUrl()
-            throws URISyntaxException, UnsupportedEncodingException {
+            throws URISyntaxException {
         if (RequestEncoding.REST == this.requestEncoding) {
             return getBaseUrl();
         } else {
@@ -157,6 +157,6 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
     }
 
     private boolean containsVariables(final String url) {
-       return url.contains("{TileMatrix}") && url.contains("{TileRow}") && url.contains("{TileCol}");
+        return url.contains("{TileMatrix}") && url.contains("{TileRow}") && url.contains("{TileCol}");
     }
 }

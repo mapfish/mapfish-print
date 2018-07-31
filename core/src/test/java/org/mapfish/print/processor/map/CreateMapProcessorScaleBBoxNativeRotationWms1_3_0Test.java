@@ -43,6 +43,11 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test extends Abstr
     @Autowired
     private ForkJoinPool forkJoinPool;
 
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
@@ -56,29 +61,30 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test extends Abstr
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
 
                         final Multimap<String, String> uppercaseParams = HashMultimap.create();
-                        for (Map.Entry<String, String> entry : URIUtils.getParameters(uri).entries()) {
+                        for (Map.Entry<String, String> entry: URIUtils.getParameters(uri).entries()) {
                             uppercaseParams.put(entry.getKey().toUpperCase(), entry.getValue().toUpperCase());
                         }
 
                         assertTrue("SERVICE != WMS: " + uppercaseParams.get("WMS"),
-                                uppercaseParams.containsEntry("SERVICE", "WMS"));
+                                   uppercaseParams.containsEntry("SERVICE", "WMS"));
                         assertTrue("FORMAT != IMAGE/PNG: " + uppercaseParams.get("FORMAT"),
-                                uppercaseParams.containsEntry("FORMAT", "IMAGE/PNG"));
+                                   uppercaseParams.containsEntry("FORMAT", "IMAGE/PNG"));
                         assertTrue("REQUEST != GETMAP: " + uppercaseParams.get("REQUEST"),
-                                uppercaseParams.containsEntry("REQUEST", "GETMAP"));
+                                   uppercaseParams.containsEntry("REQUEST", "GETMAP"));
                         assertTrue("VERSION != 1.3.0: " + uppercaseParams.get("VERSION"),
-                                uppercaseParams.containsEntry("VERSION", "1.3.0"));
+                                   uppercaseParams.containsEntry("VERSION", "1.3.0"));
                         assertTrue("LAYERS != TOPP:STATES: " + uppercaseParams.get("LAYERS"),
-                                uppercaseParams.containsEntry("LAYERS", "TOPP:STATES"));
+                                   uppercaseParams.containsEntry("LAYERS", "TOPP:STATES"));
                         assertTrue("ANGLE != 90", uppercaseParams.containsEntry("ANGLE", "90.0"));
                         assertTrue("BBOX is missing", uppercaseParams.containsKey("BBOX"));
                         assertTrue("mapSize is not rotated (width)",
-                                uppercaseParams.containsEntry("WIDTH", "780"));
+                                   uppercaseParams.containsEntry("WIDTH", "780"));
                         assertTrue("mapSize is not rotated (height)",
-                                uppercaseParams.containsEntry("HEIGHT", "330"));
+                                   uppercaseParams.containsEntry("HEIGHT", "330"));
 
                         try {
                             byte[] bytes = Files.toByteArray(
@@ -94,7 +100,7 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test extends Abstr
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         @SuppressWarnings("unchecked")
@@ -104,10 +110,5 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test extends Abstr
         new ImageSimilarity(new File(layerGraphics.get(0)))
                 .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 1);
 
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test.class,
-                BASE_DIR + "requestData.json");
     }
 }

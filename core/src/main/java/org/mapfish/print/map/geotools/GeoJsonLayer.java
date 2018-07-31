@@ -24,26 +24,27 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
      * Constructor.
      *
      * @param executorService the thread pool for doing the rendering.
-     * @param featureSourceSupplier a function that creates the feature source.  This will only be called
-     *                              once.
-     * @param styleSupplier a function that creates the style for styling the features. This will only be
-     *                      called once.
+     * @param featureSourceSupplier a function that creates the feature source.  This will only be
+     *         called once.
+     * @param styleSupplier a function that creates the style for styling the features. This will only
+     *         be called once.
      * @param renderAsSvg is the layer rendered as SVG?
      * @param params the parameters for this layer
      */
-    public GeoJsonLayer(final ExecutorService executorService,
-                        final FeatureSourceSupplier featureSourceSupplier,
-                        final StyleSupplier<FeatureSource> styleSupplier,
-                        final boolean renderAsSvg,
-                        final AbstractLayerParams params) {
+    public GeoJsonLayer(
+            final ExecutorService executorService,
+            final FeatureSourceSupplier featureSourceSupplier,
+            final StyleSupplier<FeatureSource> styleSupplier,
+            final boolean renderAsSvg,
+            final AbstractLayerParams params) {
         super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params);
     }
 
     /**
-      * <p>Renders GeoJSON layers.</p>
-      * <p>Type: <code>geojson</code></p>
-      * [[examples=json_styling,datasource_multiple_maps,printwms_tyger_ny_EPSG_3857]]
-      */
+     * <p>Renders GeoJSON layers.</p>
+     * <p>Type: <code>geojson</code></p>
+     * [[examples=json_styling,datasource_multiple_maps,printwms_tyger_ny_EPSG_3857]]
+     */
     public static final class Plugin extends AbstractFeatureSourceLayerPlugin<GeoJsonParam> {
 
         private static final String TYPE = "geojson";
@@ -80,10 +81,11 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
             return new FeatureSourceSupplier() {
                 @Nonnull
                 @Override
-                public FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
-                                          @Nonnull final MapfishMapContext mapContext) {
+                public FeatureSource load(
+                        @Nonnull final MfClientHttpRequestFactory requestFactory,
+                        @Nonnull final MapfishMapContext mapContext) {
                     final FeaturesParser parser = new FeaturesParser(requestFactory,
-                            mapContext.isForceLongitudeFirst());
+                                                                     mapContext.isForceLongitudeFirst());
                     SimpleFeatureCollection featureCollection;
                     try {
                         featureCollection = parser.autoTreat(template, geoJsonString);

@@ -6,6 +6,7 @@ package org.mapfish.print;
 public class IllegalFileAccessException extends RuntimeException {
     /**
      * Constructor.
+     *
      * @param msg the error message
      */
     public IllegalFileAccessException(final String msg) {

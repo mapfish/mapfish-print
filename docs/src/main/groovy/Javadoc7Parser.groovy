@@ -25,12 +25,17 @@ class Javadoc7Parser {
         }
         findJavadocDescription(objectName, cls, method.name, Javadoc7Parser.&unableToFindMethodError)
     }
+
     String findJavadocDescription(String objectName, Class cls, String obj, Closure errorHandler) {
         try {
             def html = loadJavadocFile(cls)
 
-            def contentContainer = html.depthFirst().find { it.name() == 'div' && it.@class == 'contentContainer' }
-            def detailsEl = contentContainer.depthFirst().find { it.name() == 'div' && it.@class == 'details' }
+            def contentContainer = html.depthFirst().find {
+                it.name() == 'div' && it.@class == 'contentContainer'
+            }
+            def detailsEl = contentContainer.depthFirst().find {
+                it.name() == 'div' && it.@class == 'details'
+            }
 
             def descDiv = detailsEl.depthFirst().find {
 
@@ -66,11 +71,16 @@ class Javadoc7Parser {
     String findClassDescription(Class cls) {
         def html = loadJavadocFile(cls)
 
-        def contentContainer = html.depthFirst().find{it.name() == 'div' && it.@class == 'contentContainer'}
-        def descriptionEl = contentContainer.depthFirst().find{it.name() == 'div' && it.@class == 'description'}
+        def contentContainer = html.depthFirst().find {
+            it.name() == 'div' && it.@class == 'contentContainer'
+        }
+        def descriptionEl = contentContainer.depthFirst().find {
+            it.name() == 'div' && it.@class == 'description'
+        }
         return DocsXmlSupport.toXmlString(descriptionEl.ul.li.div[0])
     }
     def xmlCache = [:]
+
     def loadJavadocFile(Class cls) {
         if (xmlCache.containsKey(cls)) {
             return xmlCache.get(cls)

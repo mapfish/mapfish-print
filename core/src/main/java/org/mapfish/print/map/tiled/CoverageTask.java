@@ -24,7 +24,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.RecursiveTask;
-
 import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 
@@ -46,6 +45,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
     /**
      * Constructor.
+     *
      * @param tilePreparationInfo tileLoader Results.
      * @param failOnError fail on tile download error.
      * @param registry the metrics registry.
@@ -87,21 +87,21 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                     this.tilePreparationInfo.getImageHeight());
             Graphics2D graphics = coverageImage.createGraphics();
 
-            for (SingleTilePreparationInfo tileInfo : this.tilePreparationInfo.getSingleTiles()) {
+            for (SingleTilePreparationInfo tileInfo: this.tilePreparationInfo.getSingleTiles()) {
                 TileTask task;
                 if (tileInfo.getTileRequest() != null) {
                     task = new SingleTileLoaderTask(
-                                tileInfo.getTileRequest(), this.errorImage, tileInfo.getTileIndexX(),
-                                tileInfo.getTileIndexY(), this.failOnError, this.registry, this.jobId);
+                            tileInfo.getTileRequest(), this.errorImage, tileInfo.getTileIndexX(),
+                            tileInfo.getTileIndexY(), this.failOnError, this.registry, this.jobId);
                 } else {
                     task = new PlaceHolderImageTask(this.tiledLayer.getMissingTileImage(),
-                            tileInfo.getTileIndexX(), tileInfo.getTileIndexY());
+                                                    tileInfo.getTileIndexX(), tileInfo.getTileIndexY());
                 }
                 Tile tile = task.call();
                 if (tile.getImage() != null) {
                     graphics.drawImage(tile.getImage(),
-                            tile.getxIndex() * this.tiledLayer.getTileSize().width,
-                            tile.getyIndex() * this.tiledLayer.getTileSize().height, null);
+                                       tile.getxIndex() * this.tiledLayer.getTileSize().width,
+                                       tile.getyIndex() * this.tiledLayer.getTileSize().height, null);
                 }
             }
             graphics.dispose();
@@ -109,11 +109,11 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
             GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
             GeneralEnvelope gridEnvelope = new GeneralEnvelope(this.tilePreparationInfo.getMapProjection());
             gridEnvelope.setEnvelope(this.tilePreparationInfo.getGridCoverageOrigin().x,
-                    this.tilePreparationInfo.getGridCoverageOrigin().y,
-                    this.tilePreparationInfo.getGridCoverageMaxX(),
-                    this.tilePreparationInfo.getGridCoverageMaxY());
+                                     this.tilePreparationInfo.getGridCoverageOrigin().y,
+                                     this.tilePreparationInfo.getGridCoverageMaxX(),
+                                     this.tilePreparationInfo.getGridCoverageMaxY());
             return factory.create(this.tiledLayer.createCommonUrl(), coverageImage, gridEnvelope,
-                    null, null, null);
+                                  null, null, null);
         } catch (Exception e) {
             throw ExceptionUtils.getRuntimeException(e);
         }
@@ -121,9 +121,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
 
     /**
-     *
      * Tile Task.
-     *
      */
     public abstract static class TileTask extends RecursiveTask<Tile> implements Callable<Tile> {
         private final int tileIndexX;
@@ -149,16 +147,13 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
         }
 
         @Override
-        public final Tile call() throws Exception {
+        public final Tile call() {
             return this.compute();
         }
     }
 
     /**
-     *
      * Single Tile Loader Task.
-     *
-     *
      */
     public static final class SingleTileLoaderTask extends TileTask {
 
@@ -179,9 +174,10 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
          * @param registry registry
          * @param jobId the job ID
          */
-        public SingleTileLoaderTask(final ClientHttpRequest tileRequest, final BufferedImage errorImage,
-                                    final int tileIndexX, final int tileIndexY, final boolean failOnError,
-                                    final MetricRegistry registry, final String jobId) {
+        public SingleTileLoaderTask(
+                final ClientHttpRequest tileRequest, final BufferedImage errorImage,
+                final int tileIndexX, final int tileIndexY, final boolean failOnError,
+                final MetricRegistry registry, final String jobId) {
             super(tileIndexX, tileIndexY);
             this.tileRequest = tileRequest;
             this.errorImage = errorImage;
@@ -204,15 +200,16 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                 if (statusCode == HttpStatus.NO_CONTENT || statusCode == HttpStatus.NOT_FOUND) {
                     if (statusCode == HttpStatus.NOT_FOUND) {
                         LOGGER.info("The request {} returns a not found status code, we consider it as an " +
-                                "empty tile.", this.tileRequest.getURI());
+                                            "empty tile.", this.tileRequest.getURI());
                     }
                     // Empty response, nothing special to do
                     return new Tile(null, getTileIndexX(), getTileIndexY());
                 } else if (statusCode != HttpStatus.OK) {
                     String errorMessage = String.format("Error making tile request: %s\n\t" +
-                            "Status: %s\n" +
-                            "\toutMessage: %s",
-                            this.tileRequest.getURI(), statusCode, response.getStatusText());
+                                                                "Status: %s\n" +
+                                                                "\toutMessage: %s",
+                                                        this.tileRequest.getURI(), statusCode,
+                                                        response.getStatusText());
                     LOGGER.error(errorMessage);
                     this.registry.counter(baseMetricName + ".error").inc();
                     if (this.failOnError) {
@@ -224,7 +221,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                 BufferedImage image = ImageIO.read(response.getBody());
                 if (image == null) {
                     LOGGER.warn(String.format("The URL: %s is an image format that cannot be decoded",
-                            this.tileRequest.getURI()));
+                                              this.tileRequest.getURI()));
                     image = this.errorImage;
                     this.registry.counter(baseMetricName + ".error").inc();
                 } else {
@@ -245,7 +242,6 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
     /**
      * PlaceHolder Tile Loader Task.
-     *
      */
     public static class PlaceHolderImageTask extends TileTask {
 
@@ -258,7 +254,8 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
          * @param tileOriginX tile origin x
          * @param tileOriginY tile origin y
          */
-        public PlaceHolderImageTask(final BufferedImage placeholderImage, final int tileOriginX,
+        public PlaceHolderImageTask(
+                final BufferedImage placeholderImage, final int tileOriginX,
                 final int tileOriginY) {
             super(tileOriginX, tileOriginY);
             this.placeholderImage = placeholderImage;
@@ -272,7 +269,6 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
     /**
      * Tile.
-     *
      */
     public static final class Tile {
         /**
@@ -303,6 +299,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
         /**
          * Get image.
+         *
          * @return image
          */
         public BufferedImage getImage() {
@@ -311,6 +308,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
         /**
          * Get x index.
+         *
          * @return x index
          */
         public int getxIndex() {
@@ -319,6 +317,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
         /**
          * Get y index.
+         *
          * @return y index
          */
         public int getyIndex() {

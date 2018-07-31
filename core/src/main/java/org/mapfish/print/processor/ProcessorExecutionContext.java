@@ -14,8 +14,9 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public final class ProcessorExecutionContext {
     private final Values values;
-    private final IdentityHashMap<Processor, Void> runningProcessors = new IdentityHashMap<Processor, Void>();
-    private final IdentityHashMap<Processor, Void> executedProcessors = new IdentityHashMap<Processor, Void>();
+    private final IdentityHashMap<Processor, Void> runningProcessors = new IdentityHashMap<>();
+    private final IdentityHashMap<Processor, Void> executedProcessors =
+            new IdentityHashMap<>();
     private final Lock processorLock = new ReentrantLock();
     private final Context context;
 
@@ -35,11 +36,10 @@ public final class ProcessorExecutionContext {
 
     /**
      * Try to start the node of a processor.
-     *
-     * In case the processor is already running, has already finished or if not all
-     * requirements have finished, the processor can not start.
-     * If the above conditions are fulfilled, the processor is added to the list of
-     * running processors, and is expected to be started from the caller.
+     * <p>
+     * In case the processor is already running, has already finished or if not all requirements have
+     * finished, the processor can not start. If the above conditions are fulfilled, the processor is added to
+     * the list of running processors, and is expected to be started from the caller.
      *
      * @param processorGraphNode the node that should start.
      * @return if the node of the processor can be started.
@@ -49,7 +49,8 @@ public final class ProcessorExecutionContext {
         this.processorLock.lock();
         final boolean canStart;
         try {
-            if (isRunning(processorGraphNode) || isFinished(processorGraphNode) || !allAreFinished(processorGraphNode.getRequirements())) {
+            if (isRunning(processorGraphNode) || isFinished(processorGraphNode) ||
+                    !allAreFinished(processorGraphNode.getRequirements())) {
                 canStart = false;
             } else {
                 started(processorGraphNode);
@@ -120,15 +121,15 @@ public final class ProcessorExecutionContext {
     }
 
     /**
-     * Verify that all processors have finished executing atomically (within the same lock as {@link #finished(ProcessorGraphNode)}
-     * and {@link #isFinished(ProcessorGraphNode)} is within.
+     * Verify that all processors have finished executing atomically (within the same lock as {@link
+     * #finished(ProcessorGraphNode)} and {@link #isFinished(ProcessorGraphNode)} is within.
      *
      * @param processorNodes the node to check for completion.
      */
     public boolean allAreFinished(final Set<ProcessorGraphNode<?, ?>> processorNodes) {
         this.processorLock.lock();
         try {
-            for (ProcessorGraphNode<?, ?> node : processorNodes) {
+            for (ProcessorGraphNode<?, ?> node: processorNodes) {
                 if (!isFinished(node)) {
                     return false;
                 }
@@ -142,9 +143,8 @@ public final class ProcessorExecutionContext {
 
     /**
      * Set a {@code cancel} flag.
-     *
-     * All processors are supposed to check this flag frequently
-     * and terminate the execution if requested.
+     * <p>
+     * All processors are supposed to check this flag frequently and terminate the execution if requested.
      */
     public void cancel() {
         this.context.cancel();

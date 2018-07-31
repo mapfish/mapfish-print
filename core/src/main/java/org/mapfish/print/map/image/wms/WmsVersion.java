@@ -50,6 +50,26 @@ public enum WmsVersion {
     };
 
     /**
+     * Find the correct version enum object based on the version string.
+     *
+     * @param versionString the version string.
+     */
+    public static WmsVersion lookup(final String versionString) {
+        for (WmsVersion wmsVersion: values()) {
+            if (versionString.equals(wmsVersion.versionString())) {
+                return wmsVersion;
+            }
+        }
+
+        StringBuilder msg = new StringBuilder("\n'").append(versionString)
+                .append("' is not one of the supported WMS versions.  Supported versions include: ");
+        for (WmsVersion wmsVersion: values()) {
+            msg.append("\n\t* ").append(wmsVersion.versionString());
+        }
+        throw new IllegalArgumentException(msg.toString());
+    }
+
+    /**
      * Get the WMS version string usable in making WMS requests.
      */
     public String versionString() {
@@ -59,28 +79,8 @@ public enum WmsVersion {
     /**
      * Return a getMap request that is configured for the correct version.
      *
-     * @param baseURL the url to use as the basis for making the request. It has to have the host and full path but
-     *                query parameters are optional.
+     * @param baseURL the url to use as the basis for making the request. It has to have the host and
+     *         full path but query parameters are optional.
      */
     public abstract GetMapRequest getGetMapRequest(URL baseURL);
-
-    /**
-     * Find the correct version enum object based on the version string.
-     *
-     * @param versionString the version string.
-     */
-    public static WmsVersion lookup(final String versionString) {
-        for (WmsVersion wmsVersion : values()) {
-            if (versionString.equals(wmsVersion.versionString())) {
-                return wmsVersion;
-            }
-        }
-
-        StringBuilder msg = new StringBuilder("\n'").append(versionString)
-                .append("' is not one of the supported WMS versions.  Supported versions include: ");
-        for (WmsVersion wmsVersion : values()) {
-            msg.append("\n\t* ").append(wmsVersion.versionString());
-        }
-        throw new IllegalArgumentException(msg.toString());
-    }
 }

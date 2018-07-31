@@ -19,8 +19,8 @@ import java.net.URI;
 import java.util.List;
 
 /**
- * Creates a Jasper containing overlaid images, which is supposed to
- * be embedded into an another report as sub-report.
+ * Creates a Jasper containing overlaid images, which is supposed to be embedded into an another report as
+ * sub-report.
  */
 public class ImagesSubReport {
 
@@ -66,16 +66,18 @@ public class ImagesSubReport {
         return design;
     }
 
-    private void addGraphics(final List<URI> graphics, final JRDesignBand band,
+    private void addGraphics(
+            final List<URI> graphics, final JRDesignBand band,
             final Dimension size, final JasperDesign design) {
-        for (URI graphicFile : graphics) {
+        for (URI graphicFile: graphics) {
             final String fileName = new File(graphicFile).getAbsolutePath().replace('\\', '/');
             final String imageExpression = "\"" + fileName + "\"";
             band.addElement(getImage(imageExpression, size, design));
         }
     }
 
-    private JRDesignElement getImage(final String imageExpression, final Dimension mapSize,
+    private JRDesignElement getImage(
+            final String imageExpression, final Dimension mapSize,
             final JasperDesign design) {
         final JRDesignImage image = new JRDesignImage(design);
 

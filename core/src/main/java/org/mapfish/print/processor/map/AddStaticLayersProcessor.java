@@ -36,8 +36,8 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
     }
 
     /**
-     * Set the position enumeration which indicates where the layers should be added to the map:
-     * {@link org.mapfish.print.processor.map.AddStaticLayersProcessor.StaticLayerPosition}.
+     * Set the position enumeration which indicates where the layers should be added to the map: {@link
+     * org.mapfish.print.processor.map.AddStaticLayersProcessor.StaticLayerPosition}.
      *
      * @param position the position.
      */
@@ -46,10 +46,12 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
+    protected void extraValidation(
+            final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.position == null) {
-            validationErrors.add(new ConfigurationException("The addPosition field needs to be set to one of the allowed options: " +
-                                                            Arrays.toString(StaticLayerPosition.values())));
+            validationErrors.add(new ConfigurationException(
+                    "The addPosition field needs to be set to one of the allowed options: " +
+                            Arrays.toString(StaticLayerPosition.values())));
         }
     }
 
@@ -65,18 +67,36 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
         switch (this.position) {
             case BOTTOM:
                 values.map.setRawLayers(new PJoinedArray(new PArray[]{
-                        values.map.getRawLayers(), values.staticLayers.layers}));
+                        values.map.getRawLayers(), values.staticLayers.layers
+                }));
                 break;
             case TOP:
                 values.map.setRawLayers(new PJoinedArray(new PArray[]{
-                        values.staticLayers.layers, values.map.getRawLayers()}));
+                        values.staticLayers.layers, values.map.getRawLayers()
+                }));
                 break;
             default:
-                throw new Error("An enumeration value was added that does not have an implementation.  A Programmer must add "
+                throw new Error(
+                        "An enumeration value was added that does not have an implementation.  A Programmer" +
+                                " must add "
                                 + "this implementation to " + getClass().getName());
         }
         values.map.postConstruct();
         return null;
+    }
+
+    /**
+     * Indications where in the layer list to add the static layers.
+     */
+    public enum StaticLayerPosition {
+        /**
+         * Add Layers to the top of the map.  Essentially overlays.
+         */
+        TOP,
+        /**
+         * Add Layers to the bottom of the map, background layers.
+         */
+        BOTTOM
     }
 
     /**
@@ -94,19 +114,5 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
          * The attribute containing the static layers to add to the map.
          */
         public StaticLayersAttribute.StaticLayersAttributeValue staticLayers;
-    }
-
-    /**
-     * Indications where in the layer list to add the static layers.
-     */
-    public enum StaticLayerPosition {
-        /**
-         * Add Layers to the top of the map.  Essentially overlays.
-         */
-        TOP,
-        /**
-         * Add Layers to the bottom of the map, background layers.
-         */
-        BOTTOM
     }
 }

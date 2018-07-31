@@ -48,7 +48,8 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile(uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -61,7 +62,8 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
 
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
 
-        this.resolvingFactory = new ConfigFileResolvingHttpRequestFactory(this.requestFactory, config, "test");
+        this.resolvingFactory =
+                new ConfigFileResolvingHttpRequestFactory(this.requestFactory, config, "test");
     }
 
     @Test
@@ -76,7 +78,8 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String expected = Files.toString(getFile(path), Constants.DEFAULT_CHARSET);
-        final String actual = new String(ByteStreams.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
+        final String actual =
+                new String(ByteStreams.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
         assertEquals(expected, actual);
     }
 
@@ -85,7 +88,8 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
         final URI uri = new URI("http://" + HOST + ".test/logback.xml");
         final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
         final ClientHttpResponse response = request.execute();
-        final String actual = new String(ByteStreams.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
+        final String actual =
+                new String(ByteStreams.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
         String expected = Files.toString(logbackXml, Constants.DEFAULT_CHARSET);
         assertEquals(expected, actual);
     }
@@ -112,7 +116,7 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
 
         URI uri = new URI("http://" + HOST + ".test/logback.xml");
         ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
-        request.getBody().write(new byte[]{1,2,3});
+        request.getBody().write(new byte[]{1, 2, 3});
         ClientHttpResponse response = request.execute();
         String actual = new String(ByteStreams.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
         String expected = Files.toString(logbackXml, Constants.DEFAULT_CHARSET);
@@ -120,7 +124,7 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
 
         uri = logbackXml.toURI();
         request = resolvingFactory.createRequest(uri, HttpMethod.GET);
-        request.getBody().write(new byte[]{1,2,3});
+        request.getBody().write(new byte[]{1, 2, 3});
         response = request.execute();
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -137,7 +141,8 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String expected = Files.toString(getFile(path), Constants.DEFAULT_CHARSET);
-        final String actual = new String(ByteStreams.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
+        final String actual =
+                new String(ByteStreams.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
         assertEquals(expected, actual);
     }
 
@@ -153,7 +158,8 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String expected = Files.toString(getFile(path), Constants.DEFAULT_CHARSET);
-        final String actual = new String(ByteStreams.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
+        final String actual =
+                new String(ByteStreams.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
         assertEquals(expected, actual);
     }
 

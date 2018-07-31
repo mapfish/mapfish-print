@@ -1,10 +1,10 @@
 package org.mapfish.print.servlet.registry;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.junit.Assert.assertEquals;
 
 public class BasicRegistryTest extends AbstractMapfishSpringTest {
 

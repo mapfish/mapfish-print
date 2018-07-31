@@ -4,12 +4,13 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 /**
-* Draw a bar with alternating black and white zones marking the sub-intervals.
-*/
+ * Draw a bar with alternating black and white zones marking the sub-intervals.
+ */
 public class BarScalebarDrawer extends ScalebarDrawer {
 
     /**
      * Constructor.
+     *
      * @param graphics2d The graphics context.
      * @param settings Parameters for rendering the scalebar.
      */
@@ -21,7 +22,8 @@ public class BarScalebarDrawer extends ScalebarDrawer {
     protected void drawBar() {
         final int barSize = getSettings().getBarSize();
 
-        float subIntervalWidth = getSettings().getIntervalLengthInPixels() / getSettings().getNumSubIntervals();
+        float subIntervalWidth =
+                getSettings().getIntervalLengthInPixels() / getSettings().getNumSubIntervals();
         int intervalsTotal = getParams().intervals * getSettings().getNumSubIntervals();
         for (int i = 0; i < intervalsTotal; i++) {
             float pos = i * subIntervalWidth;

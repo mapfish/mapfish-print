@@ -69,7 +69,7 @@ public class MapfishStyleParserPluginTest {
     @Test
     public void testVersion1StyleParser() throws Throwable {
         PJsonObject layerJson = parseJSONObjectFromFile(MapfishStyleParserPluginTest.class,
-                "bug_cant_transform_to_xml.json");
+                                                        "bug_cant_transform_to_xml.json");
 
         Optional<Style> style = parser.parseStyle(
                 null, new TestHttpClientFactory(), layerJson.getString("style"));
@@ -77,10 +77,11 @@ public class MapfishStyleParserPluginTest {
 
         transformer.transform(style.get()); // assert it can be converted to SLD
     }
+
     @Test
     public void testVersion1() throws Throwable {
         PJsonObject layerJson = parseJSONObjectFromFile(MapfishStyleParserPluginTest.class,
-                REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON);
+                                                        REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON);
         Optional<Style> style = parser.parseStyle(
                 null, new TestHttpClientFactory(), layerJson.getString("style"));
         assertTrue(style.isPresent());
@@ -101,7 +102,7 @@ public class MapfishStyleParserPluginTest {
         PolygonSymbolizer polygon = null;
         TextSymbolizer text = null;
 
-        for (Rule rule : rules) {
+        for (Rule rule: rules) {
             Filter geomSelectFunction = null;
             if (!(rule.getSymbolizers()[0] instanceof TextSymbolizer)) {
                 assertTrue(rule.getFilter() instanceof And);
@@ -121,7 +122,7 @@ public class MapfishStyleParserPluginTest {
 
             assertEquals(1, symbolizers.size());
 
-            for (Symbolizer symbolizer : symbolizers) {
+            for (Symbolizer symbolizer: symbolizers) {
                 if (symbolizer instanceof PointSymbolizer) {
                     assertEquals("1_Point", rule.getName());
 
@@ -132,12 +133,14 @@ public class MapfishStyleParserPluginTest {
                     assertEquals("1_LineString", rule.getName());
                     assertNull(line);
                     line = (LineSymbolizer) symbolizer;
-                    assertFilter(geomSelectFunction, LineString.class, LinearRing.class, MultiLineString.class, GeometryCollection.class);
+                    assertFilter(geomSelectFunction, LineString.class, LinearRing.class,
+                                 MultiLineString.class, GeometryCollection.class);
                 } else if (symbolizer instanceof PolygonSymbolizer) {
                     assertEquals("1_Polygon", rule.getName());
                     assertNull(polygon);
                     polygon = (PolygonSymbolizer) symbolizer;
-                    assertFilter(geomSelectFunction, Polygon.class, MultiPolygon.class, GeometryCollection.class);
+                    assertFilter(geomSelectFunction, Polygon.class, MultiPolygon.class,
+                                 GeometryCollection.class);
                 } else if (symbolizer instanceof TextSymbolizer) {
                     assertEquals("1_Text", rule.getName());
                     assertNull(text);
@@ -158,12 +161,14 @@ public class MapfishStyleParserPluginTest {
 
         List<Class<? extends Geometry>> allowed = Arrays.asList(geomClasses);
 
-        final ArrayList<Class<? extends Geometry>> allGeomTypes = Lists.newArrayList(Point.class, MultiPoint.class, LineString.class,
-                LinearRing.class, MultiLineString.class,
-                Polygon.class, MultiPolygon.class, GeometryCollection.class);
+        final ArrayList<Class<? extends Geometry>> allGeomTypes =
+                Lists.newArrayList(Point.class, MultiPoint.class, LineString.class,
+                                   LinearRing.class, MultiLineString.class,
+                                   Polygon.class, MultiPolygon.class, GeometryCollection.class);
 
-        for (Class<? extends Geometry> geomType : allGeomTypes) {
-            final SimpleFeature feature = createFeature(geomType, MapfishJsonStyleVersion1.DEFAULT_GEOM_ATT_NAME);
+        for (Class<? extends Geometry> geomType: allGeomTypes) {
+            final SimpleFeature feature =
+                    createFeature(geomType, MapfishJsonStyleVersion1.DEFAULT_GEOM_ATT_NAME);
             assertEquals(allowed.contains(geomType), geomSelectFunction.evaluate(feature));
 
         }
@@ -188,7 +193,12 @@ public class MapfishStyleParserPluginTest {
         } else if (geomClass.equals(LineString.class)) {
             geom = factory.createLineString(new Coordinate[]{new Coordinate(2, 3), new Coordinate(1, 3)});
         } else if (geomClass.equals(LinearRing.class)) {
-            geom = factory.createLinearRing(new Coordinate[]{new Coordinate(2, 3), new Coordinate(2, 2), new Coordinate(1, 2), new Coordinate(2, 3)});
+            geom = factory.createLinearRing(new Coordinate[]{
+                    new Coordinate(2, 3),
+                    new Coordinate(2, 2),
+                    new Coordinate(1, 2),
+                    new Coordinate(2, 3)
+            });
         } else if (geomClass.equals(MultiLineString.class)) {
             geom = factory.createMultiLineString(new LineString[]{createGeometry(LineString.class, factory)});
         } else if (geomClass.equals(Polygon.class)) {

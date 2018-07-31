@@ -5,10 +5,9 @@ import javax.annotation.Nonnull;
 
 /**
  * Classes that implement this interface indicate what she dynamically depends on, for the "values" input.
- *
- * The test for this class will be part of
- * {@link org.mapfish.print.processor.jasper.MergeDataSourceProcessor} and
- * {@link org.mapfish.print.processor.jasper.DataSourceProcessor} tests .
+ * <p>
+ * The test for this class will be part of {@link org.mapfish.print.processor.jasper.MergeDataSourceProcessor}
+ * and {@link org.mapfish.print.processor.jasper.DataSourceProcessor} tests .
  */
 public interface CustomDependencies {
     /**

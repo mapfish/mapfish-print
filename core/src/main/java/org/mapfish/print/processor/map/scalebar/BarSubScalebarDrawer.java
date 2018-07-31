@@ -3,13 +3,14 @@ package org.mapfish.print.processor.map.scalebar;
 import java.awt.Graphics2D;
 
 /**
-* Draw a bar with alternating black and white zones marking the sub-intervals.
-* Intervals have small additional ticks.
-*/
+ * Draw a bar with alternating black and white zones marking the sub-intervals. Intervals have small
+ * additional ticks.
+ */
 public class BarSubScalebarDrawer extends BarScalebarDrawer {
 
     /**
      * Constructor.
+     *
      * @param graphics2d The graphics context.
      * @param settings Parameters for rendering the scalebar.
      */
@@ -25,7 +26,7 @@ public class BarSubScalebarDrawer extends BarScalebarDrawer {
             if (getSettings().getLabels().get(i).getLabelLayout().getCharacterCount() > 0) {
                 float pos = i * getSettings().getIntervalLengthInPixels();
                 getGraphics2d().drawLine(Math.round(pos), 0, Math.round(pos),
-                        Math.round(getSettings().getLineWidth() * 1.5f));
+                                         Math.round(getSettings().getLineWidth() * 1.5f));
             }
         }
     }

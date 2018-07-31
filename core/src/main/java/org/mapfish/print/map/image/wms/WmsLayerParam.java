@@ -1,7 +1,6 @@
 package org.mapfish.print.map.image.wms;
 
 import com.vividsolutions.jts.util.Assert;
-
 import org.mapfish.print.map.tiled.AbstractWMXLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.slf4j.Logger;
@@ -27,15 +26,14 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
      * will appear in the request.
      * <p></p>
      * As with the WMS specification, the first layer will be the first layer drawn on the map (the
-     * bottom/base layer) of the map.  This means that layer at position 0 in the array will covered by
-     * layer 1 (where not transparent) and so on.
+     * bottom/base layer) of the map.  This means that layer at position 0 in the array will covered by layer
+     * 1 (where not transparent) and so on.
      */
     public String[] layers;
 
     /**
      * The styles to apply to the layers.  If this is defined there should be the same number as the layers
-     * and the style are applied
-     * to the layer in the {@link #layers} field.
+     * and the style are applied to the layer in the {@link #layers} field.
      */
     @HasDefaultValue
     public String[] styles;
@@ -54,8 +52,8 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
     public boolean useNativeAngle = true;
 
     /**
-     * The server type ("mapserver", "geoserver" or "qgisserver"). By specifying the server type
-     * vendor specific parameters (like for the DPI value) can be used when making the request.
+     * The server type ("mapserver", "geoserver" or "qgisserver"). By specifying the server type vendor
+     * specific parameters (like for the DPI value) can be used when making the request.
      */
     @HasDefaultValue
     public ServerType serverType;
@@ -98,8 +96,10 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
             this.styles = null;
         } else {
             Assert.isTrue(this.styles == null || this.layers.length == this.styles.length,
-                    String.format("If styles are defined then there must be one for each layer.  Number of" +
-                            " layers: %s\nStyles: %s", this.layers.length, Arrays.toString(this.styles)));
+                          String.format(
+                                  "If styles are defined then there must be one for each layer.  Number of" +
+                                          " layers: %s\nStyles: %s", this.layers.length,
+                                  Arrays.toString(this.styles)));
         }
 
         if (this.imageFormat.indexOf('/') < 0) {
@@ -108,7 +108,7 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
         }
 
         Assert.isTrue(this.method == HttpMethod.GET || this.method == HttpMethod.POST,
-                String.format("Unsupported method %s for WMS layer", this.method.toString()));
+                      String.format("Unsupported method %s for WMS layer", this.method.toString()));
     }
 
     /**
