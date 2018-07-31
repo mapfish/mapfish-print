@@ -25,6 +25,8 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
+import org.mapfish.print.processor.Processor;
+import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -84,8 +86,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             throws JRException, IOException;
 
     @Override
-    public final void print(final String jobId, final PJsonObject requestData, final Configuration config,
-                            final File configDir, final File taskDirectory, final OutputStream outputStream)
+    public final Processor.ExecutionContext print(final String jobId, final PJsonObject requestData, final Configuration config,
+                                                  final File configDir, final File taskDirectory, final OutputStream outputStream)
             throws Exception {
         final Print print = getJasperPrint(jobId, requestData, config, configDir, taskDirectory);
 
@@ -94,6 +96,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         }
 
         doExport(outputStream, print);
+
+        return print.executionContext;
     }
 
     private JasperFillManager getJasperFillManager(
@@ -135,8 +139,9 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
 
         double maxDpi = maxDpi(values);
 
+        final ProcessorDependencyGraph.ProcessorGraphForkJoinTask task = template.getProcessorGraph().createTask(values);
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
-                template.getProcessorGraph().createTask(values));
+                task);
 
         try {
             taskFuture.get();
@@ -225,7 +230,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         return new Print(getLocalJasperReportsContext(
                 values.getObject(
                     Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, MfClientHttpRequestFactoryProvider.class)),
-                print, values, maxDpi);
+                print, values, maxDpi, task.getExecutionContext());
     }
 
     private void checkRequiredFields(
@@ -386,17 +391,20 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         // CHECKSTYLE:OFF
         @Nonnull public final JasperPrint print;
         @Nonnegative public final double dpi;
+        @Nonnull public final Processor.ExecutionContext executionContext;
         @Nonnull public final JasperReportsContext context;
         @Nonnull public final Values values;
 
         // CHECKSTYLE:ON
 
         private Print(@Nonnull final JasperReportsContext context, @Nonnull final JasperPrint print,
-                      @Nonnull final Values values, @Nonnegative final double dpi) {
+                      @Nonnull final Values values, @Nonnegative final double dpi,
+                      @Nonnull final Processor.ExecutionContext executionContext) {
             this.print = print;
             this.context = context;
             this.values = values;
             this.dpi = dpi;
+            this.executionContext = executionContext;
         }
     }
 

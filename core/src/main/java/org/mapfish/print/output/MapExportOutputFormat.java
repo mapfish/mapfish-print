@@ -6,6 +6,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.mapfish.print.processor.Processor;
+import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.map.CreateMapProcessor;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,8 +77,10 @@ public class MapExportOutputFormat implements OutputFormat {
     }
 
     @Override
-    public final void print(final String jobId, final PJsonObject spec, final Configuration config,
-                            final File configDir, final File taskDirectory, final OutputStream outputStream) throws Exception {
+    public final Processor.ExecutionContext print(final String jobId, final PJsonObject spec,
+                                                  final Configuration config, final File configDir,
+                                                  final File taskDirectory,
+                                                  final OutputStream outputStream) throws Exception {
         final String templateName = spec.getString(Constants.JSON_LAYOUT_KEY);
 
         final Template template = config.getTemplate(templateName);
@@ -90,7 +93,8 @@ public class MapExportOutputFormat implements OutputFormat {
         final Values values = new Values(jobId, spec, template, taskDirectory, this.httpRequestFactory, null,
                 this.fileSuffix);
 
-        final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
+        final ProcessorDependencyGraph.ProcessorGraphForkJoinTask task = template.getProcessorGraph().createTask(values);
+        final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(task);
 
         try {
             taskFuture.get();
@@ -117,6 +121,6 @@ public class MapExportOutputFormat implements OutputFormat {
         } finally {
             is.close();
         }
-
+        return task.getExecutionContext();
     }
 }

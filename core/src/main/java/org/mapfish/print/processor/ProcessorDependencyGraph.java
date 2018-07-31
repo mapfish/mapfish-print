@@ -180,6 +180,10 @@ public final class ProcessorDependencyGraph {
             }
             return this.execContext.getValues();
         }
+
+        public Processor.ExecutionContext getExecutionContext() {
+            return this.execContext.getContext();
+        }
     }
 
     static void tryExecuteNodes(final Collection<ProcessorGraphNode> dependencyNodes,
