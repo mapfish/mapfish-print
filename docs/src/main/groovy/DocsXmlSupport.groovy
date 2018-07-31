@@ -54,7 +54,7 @@ class DocsXmlSupport {
             children.each { child ->
                 if (child instanceof String) {
                     if (node.name() == 'code') {
-                        stringBuilder.append(child.replaceAll("\\r|\\n") {"<br>"})
+                        stringBuilder.append(child.replaceAll("\\r|\\n") { "<br>" })
                     } else {
                         stringBuilder.append(child)
                     }

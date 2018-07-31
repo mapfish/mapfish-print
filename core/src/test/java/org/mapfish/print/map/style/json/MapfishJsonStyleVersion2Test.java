@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 public class MapfishJsonStyleVersion2Test {
     @Test
-    public void testResolveAllValues() throws Exception {
+    public void testResolveAllValues() {
         Map<String, String> values = Maps.newHashMap();
         values.put("val1", "value");
         values.put("val2", "${val1}2");

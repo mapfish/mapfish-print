@@ -30,8 +30,8 @@ public final class RoleAccessAssertion implements AccessAssertion {
     private Set<String> requiredRoles;
 
     /**
-     * Set the roles required to allow access.  If not roles then the user must be logged in but does not have to have any particular
-     * role.
+     * Set the roles required to allow access.  If not roles then the user must be logged in but does not have
+     * to have any particular role.
      * <p>
      * This method may only be called once, any subsequent calls will result in errors.
      * </p>
@@ -41,10 +41,12 @@ public final class RoleAccessAssertion implements AccessAssertion {
     @SuppressWarnings("unchecked")
     public AccessAssertion setRequiredRoles(final Collection<String> assertionRequiredRoles) {
         if (this.requiredRoles != null) {
-            throw new AssertionError(getClass() + "#setRequiredRoles() may only be called once any further calls result in an exception");
+            throw new AssertionError(getClass() +
+                                             "#setRequiredRoles() may only be called once any further calls" +
+                                             " result in an exception");
         }
         if (assertionRequiredRoles == null) {
-            this.requiredRoles = Collections.unmodifiableSet(Collections.<String>emptySet());
+            this.requiredRoles = Collections.unmodifiableSet(Collections.emptySet());
         } else {
             if (assertionRequiredRoles instanceof Set) {
                 Set roles = (Set) assertionRequiredRoles;
@@ -61,29 +63,31 @@ public final class RoleAccessAssertion implements AccessAssertion {
         final SecurityContext context = SecurityContextHolder.getContext();
 
         if (context == null || context.getAuthentication() == null) {
-            throw new AuthenticationCredentialsNotFoundException(resourceDescription + " requires an authenticated user");
+            throw new AuthenticationCredentialsNotFoundException(
+                    resourceDescription + " requires an authenticated user");
         } else if (this.requiredRoles.isEmpty()) {
             if (!context.getAuthentication().getAuthorities().isEmpty()) {
                 return;
             }
         } else {
-            Collection<String> authorities = Collections2.transform(context.getAuthentication().getAuthorities(),
-                    new Function<GrantedAuthority, String>() {
-                        @Nullable
-                        @Override
-                        public String apply(@Nullable final GrantedAuthority input) {
-                            return input == null ? "" : input.toString();
-                        }
-                    });
-            for (String acc : this.requiredRoles) {
+            Collection<String> authorities =
+                    Collections2.transform(context.getAuthentication().getAuthorities(),
+                                           new Function<GrantedAuthority, String>() {
+                                               @Nullable
+                                               @Override
+                                               public String apply(@Nullable final GrantedAuthority input) {
+                                                   return input == null ? "" : input.toString();
+                                               }
+                                           });
+            for (String acc: this.requiredRoles) {
                 if (authorities.contains(acc)) {
                     return;
                 }
             }
         }
         throw new AccessDeniedException("User " + context.getAuthentication().getPrincipal() +
-                                        " does not have one of the required roles to access: " +
-                                        resourceDescription);
+                                                " does not have one of the required roles to access: " +
+                                                resourceDescription);
     }
 
     @Override
@@ -96,7 +100,7 @@ public final class RoleAccessAssertion implements AccessAssertion {
             throw new RuntimeException(e);
         }
         if (this.requiredRoles != null) {
-            for (String role : this.requiredRoles) {
+            for (String role: this.requiredRoles) {
                 roles.put(role);
             }
         }
@@ -139,7 +143,7 @@ public final class RoleAccessAssertion implements AccessAssertion {
     @Override
     public AccessAssertion copy() {
         RoleAccessAssertion assertion = new RoleAccessAssertion();
-        assertion.requiredRoles = Collections.unmodifiableSet(new HashSet<String>(this.requiredRoles));
+        assertion.requiredRoles = Collections.unmodifiableSet(new HashSet<>(this.requiredRoles));
         return assertion;
     }
 }

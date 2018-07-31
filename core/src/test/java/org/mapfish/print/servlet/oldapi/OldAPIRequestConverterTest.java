@@ -37,7 +37,9 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
     public void testConvert() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
         setUpConfigFiles();
         Configuration configuration = printerFactory.create("default").getConfiguration();
-        JSONObject request = OldAPIRequestConverter.convert(loadRequestDataAsJson("requestData-old-api-all.json"), configuration).getInternalObj();
+        JSONObject request = OldAPIRequestConverter
+                .convert(loadRequestDataAsJson("requestData-old-api-all.json"), configuration)
+                .getInternalObj();
 
         assertNotNull(request);
         assertEquals("A4 Portrait", request.getString(Constants.JSON_LAYOUT_KEY));
@@ -70,15 +72,14 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals("image/tiff", wmtsLayer.getString("imageFormat"));
         assertEquals("EPSG:900913", wmtsLayer.getString("matrixSet"));
         assertEquals("normal", wmtsLayer.getString("style"));
-        JSONArray matrices =  wmtsLayer.getJSONArray("matrices");
-        assertEquals(6,matrices.length());
+        JSONArray matrices = wmtsLayer.getJSONArray("matrices");
+        assertEquals(6, matrices.length());
         JSONObject matrix = matrices.getJSONObject(0);
-        assertEquals("EPSG:900913:12",matrix.getString("identifier"));
-        assertEquals(136494.69334738597,matrix.getDouble("scaleDenominator"),0.00001);
+        assertEquals("EPSG:900913:12", matrix.getString("identifier"));
+        assertEquals(136494.69334738597, matrix.getDouble("scaleDenominator"), 0.00001);
         assertEquals(256, matrix.getJSONArray("tileSize").getInt(0));
         assertEquals(4096, matrix.getJSONArray("matrixSize").getInt(0));
-        assertEquals(-2.003750834E7, matrix.getJSONArray("topLeftCorner").getDouble(0),0.00001);
-
+        assertEquals(-2.003750834E7, matrix.getJSONArray("topLeftCorner").getDouble(0), 0.00001);
 
 
         JSONObject osmLayer = layers.getJSONObject(1);
@@ -96,8 +97,8 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertEquals(1.0, wmsLayer.getDouble("opacity"), 0.1);
         assertEquals("image/png", wmsLayer.getString("imageFormat"));
         assertEquals("lines", wmsLayer.getJSONArray("styles").getString(0));
-        assertEquals(true, wmsLayer.getJSONObject("customParams").getBoolean("TRANSPARENT"));
-        assertEquals(false, wmsLayer.getJSONObject("customParams").has("version"));
+        assertTrue(wmsLayer.getJSONObject("customParams").getBoolean("TRANSPARENT"));
+        assertFalse(wmsLayer.getJSONObject("customParams").has("version"));
         assertEquals("1.1.1", wmsLayer.getString("version"));
 
         JSONObject geojsonLayer1 = layers.getJSONObject(3);
@@ -134,7 +135,8 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
         assertLegend(attributes, "legend2", "legend2", "legend3");
     }
 
-    private void assertLegend(JSONObject attributes, String legendAttName, String... rows) throws JSONException {
+    private void assertLegend(JSONObject attributes, String legendAttName, String... rows)
+            throws JSONException {
         assertTrue(attributes.has(legendAttName));
         final JSONObject legendJson = attributes.getJSONObject(legendAttName);
         if (rows.length == 1) {
@@ -164,7 +166,8 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
     }
 
     @Test
-    public void testConvertTableInConfigNotInRequest() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
+    public void testConvertTableInConfigNotInRequest()
+            throws IOException, JSONException, NoSuchAppException, URISyntaxException {
         setUpConfigFiles();
         Configuration configuration = printerFactory.create("default").getConfiguration();
         final PJsonObject v2ApiRequest = loadRequestDataAsJson("requestData-old-api-no-table-data.json");
@@ -192,11 +195,13 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
     @Test
     public void testWmsLayer() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
         setUpConfigFiles();
-        PJsonObject oldApiJSON = parseJSONObjectFromFile(OldAPIRequestConverterTest.class, "wms-layer-order.json");
+        PJsonObject oldApiJSON =
+                parseJSONObjectFromFile(OldAPIRequestConverterTest.class, "wms-layer-order.json");
         Configuration configuration = printerFactory.create("default").getConfiguration();
         PJsonObject jsonObject = OldAPIRequestConverter.convert(oldApiJSON, configuration);
 
-        PJsonArray layers = jsonObject.getJSONObject("attributes").getJSONObject("map").getJSONArray("layers");
+        PJsonArray layers =
+                jsonObject.getJSONObject("attributes").getJSONObject("map").getJSONArray("layers");
         assertEquals(2, layers.size());
         PJsonArray wmsLayer1 = layers.getJSONObject(0).getJSONArray("layers");
         assertEquals(2, wmsLayer1.size());
@@ -210,26 +215,29 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
     }
 
     @Test
-    public void testTiledWmsLayer() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
+    public void testTiledWmsLayer()
+            throws IOException, JSONException, NoSuchAppException, URISyntaxException {
         setUpConfigFiles();
         PJsonObject oldApiJSON = parseJSONObjectFromFile(OldAPIRequestConverterTest.class, "wms-tiled.json");
         Configuration configuration = printerFactory.create("default").getConfiguration();
         PJsonObject jsonObject = OldAPIRequestConverter.convert(oldApiJSON, configuration);
 
-        PJsonArray layers = jsonObject.getJSONObject("attributes").getJSONObject("map").getJSONArray("layers");
+        PJsonArray layers =
+                jsonObject.getJSONObject("attributes").getJSONObject("map").getJSONArray("layers");
         assertEquals(1, layers.size());
         PJsonObject wmsLayer = layers.getJSONObject(0);
         assertEquals("tiledwms", wmsLayer.getString("type"));
         assertEquals("http://localhost:9876/e2egeoserver/wms", wmsLayer.getString("baseURL"));
         assertEquals(1.0, wmsLayer.getDouble("opacity"), 0.1);
         assertEquals("image/png", wmsLayer.getString("imageFormat"));
-        assertEquals(2,wmsLayer.getJSONArray("tileSize").size());
-        assertEquals(256,wmsLayer.getJSONArray("tileSize").getInt(0));
+        assertEquals(2, wmsLayer.getJSONArray("tileSize").size());
+        assertEquals(256, wmsLayer.getJSONArray("tileSize").getInt(0));
 
     }
 
     @Test
-    public void testReverseLayerOrder() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
+    public void testReverseLayerOrder()
+            throws IOException, JSONException, NoSuchAppException, URISyntaxException {
         setUpConfigFiles();
         Configuration configuration = printerFactory.create("reverseLayers").getConfiguration();
         final PJsonObject v2ApiRequest = loadRequestDataAsJson("requestData-old-api-all.json");
@@ -249,7 +257,8 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testConvertInvalidTemplate() throws IOException, JSONException, NoSuchAppException, URISyntaxException {
+    public void testConvertInvalidTemplate()
+            throws IOException, JSONException, NoSuchAppException, URISyntaxException {
         setUpConfigFiles();
         Configuration configuration = printerFactory.create("wrong-layout").getConfiguration();
         // will trigger an exception, because the configuration uses a
@@ -259,9 +268,13 @@ public class OldAPIRequestConverterTest extends AbstractMapfishSpringTest {
 
     private void setUpConfigFiles() throws URISyntaxException {
         final HashMap<String, String> configFiles = Maps.newHashMap();
-        configFiles.put("default", getFile(OldAPIMapPrinterServletTest.class, "config-old-api.yaml").getAbsolutePath());
-        configFiles.put("reverseLayers", getFile(OldAPIMapPrinterServletTest.class, "config-old-api-reverse.yaml").getAbsolutePath());
-        configFiles.put("wrong-layout", getFile(MapPrinterServletTest.class, "config.yaml").getAbsolutePath());
+        configFiles.put("default",
+                        getFile(OldAPIMapPrinterServletTest.class, "config-old-api.yaml").getAbsolutePath());
+        configFiles.put("reverseLayers",
+                        getFile(OldAPIMapPrinterServletTest.class, "config-old-api-reverse.yaml")
+                                .getAbsolutePath());
+        configFiles
+                .put("wrong-layout", getFile(MapPrinterServletTest.class, "config.yaml").getAbsolutePath());
         printerFactory.setConfigurationFiles(configFiles);
     }
 

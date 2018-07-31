@@ -32,8 +32,8 @@ public final class CertificateStore implements ConfigurationObject, HasConfigura
     }
 
     /**
-     * The uri to the certificate store. It is a uri to a java jks keystore file along with the
-     * password for unlocking the store.
+     * The uri to the certificate store. It is a uri to a java jks keystore file along with the password for
+     * unlocking the store.
      *
      * @param uri the uri to use for loading the file
      */
@@ -60,7 +60,7 @@ public final class CertificateStore implements ConfigurationObject, HasConfigura
     /**
      * Lazily create and get the ssl context.
      */
-    public SSLContext getSSLContext()  {
+    public SSLContext getSSLContext() {
 
         if (this.sslContext == null) {
             synchronized (this) {

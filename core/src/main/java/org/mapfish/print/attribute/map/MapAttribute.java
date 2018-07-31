@@ -2,9 +2,7 @@ package org.mapfish.print.attribute.map;
 
 import com.google.common.base.Function;
 import com.vividsolutions.jts.geom.Envelope;
-
 import org.json.JSONArray;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues;
 import org.mapfish.print.attribute.map.ZoomToFeatures.ZoomType;
 import org.mapfish.print.config.Template;
@@ -29,7 +27,8 @@ import javax.annotation.Nonnull;
 public final class MapAttribute extends GenericMapAttribute {
 
     private static final double DEFAULT_SNAP_TOLERANCE = 0.05;
-    private static final ZoomLevelSnapStrategy DEFAULT_SNAP_STRATEGY = ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE;
+    private static final ZoomLevelSnapStrategy DEFAULT_SNAP_STRATEGY =
+            ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE;
     private static final boolean DEFAULT_SNAP_GEODETIC = false;
 
     @SuppressWarnings("unchecked")
@@ -50,9 +49,6 @@ public final class MapAttribute extends GenericMapAttribute {
 
         private static final boolean DEFAULT_ADJUST_BOUNDS = false;
         private static final double DEFAULT_ROTATION = 0.0;
-
-        private MapBounds mapBounds;
-
         /**
          * An array of 4 doubles, minX, minY, maxX, maxY.  The bounding box of the map.
          * <p></p>
@@ -79,27 +75,26 @@ public final class MapAttribute extends GenericMapAttribute {
          */
         @HasDefaultValue
         public Double scale;
-
         /**
          * Zoom the map to the features of a specific layer or all features of the map.
          */
         @OneOf("MapBounds")
         public ZoomToFeatures zoomToFeatures;
-
         /**
-         * The json with all the layer information.  This will be parsed in postConstruct into a list of layers and
-         * therefore this field should not normally be accessed.
-         *
-         * The first layer in the array will be the top layer in the map.  The last layer in the array will be the bottom
-         * layer in the map.  There for the last layer will be hidden by the first layer (where not transparent).
+         * The json with all the layer information.  This will be parsed in postConstruct into a list of
+         * layers and therefore this field should not normally be accessed.
+         * <p>
+         * The first layer in the array will be the top layer in the map.  The last layer in the array will be
+         * the bottom layer in the map.  There for the last layer will be hidden by the first layer (where not
+         * transparent).
          */
         @HasDefaultValue
         public PArray layers = new PJsonArray(null, new JSONArray(), null);
-
         /**
          * The output dpi of the printed map.
          */
         public double dpi;
+        private MapBounds mapBounds;
 
         /**
          * Constructor.
@@ -143,7 +138,7 @@ public final class MapAttribute extends GenericMapAttribute {
             if (getDpi() > getMaxDpi()) {
                 throw new IllegalArgumentException(
                         "dpi parameter was " + getDpi() + " must be limited to " + getMaxDpi()
-                        + ".  The path to the parameter is: " + getDpi());
+                                + ".  The path to the parameter is: " + getDpi());
             }
 
             if (this.zoomToFeatures != null) {
@@ -151,20 +146,20 @@ public final class MapAttribute extends GenericMapAttribute {
                     if (this.scale == null && this.zoomToFeatures.minScale == null) {
                         throw new IllegalArgumentException(
                                 "When using 'zoomToFeatures.zoom.Type: center' either 'scale' " +
-                                "or 'zoomToFeatures.minScale' has to be given.");
+                                        "or 'zoomToFeatures.minScale' has to be given.");
                     }
                 } else if (this.zoomToFeatures.zoomType == ZoomType.EXTENT
-                            && this.zoomToFeatures.minScale == null) {
+                        && this.zoomToFeatures.minScale == null) {
                     throw new IllegalArgumentException(
                             "When using 'zoomToFeatures.zoom.Type: extent' 'zoomToFeatures.minScale'" +
-                            "has to be given.");
+                                    "has to be given.");
                 }
             }
 
             this.mapBounds = parseBounds();
         }
 
-        private MapBounds parseBounds() throws FactoryException {
+        private MapBounds parseBounds() {
             final CoordinateReferenceSystem crs = parseProjection();
             if (this.center != null && this.bbox != null) {
                 throw new IllegalArgumentException("Cannot have both center and bbox defined");
@@ -189,7 +184,8 @@ public final class MapAttribute extends GenericMapAttribute {
                 bounds = new BBoxMapBounds(crs, 0, 0, 10, 10);
             } else {
                 throw new IllegalArgumentException("Expected either: center and scale, bbox, or an " +
-                        "areaOfInterest defined in order to calculate the map bounds");
+                                                           "areaOfInterest defined in order to calculate " +
+                                                           "the map bounds");
             }
             return bounds;
         }
@@ -206,11 +202,7 @@ public final class MapAttribute extends GenericMapAttribute {
          * Recalculate the bounds after center or bounds have changed.
          */
         public void recalculateBounds() {
-            try {
-                this.mapBounds = parseBounds();
-            } catch (FactoryException e) {
-                throw ExceptionUtils.getRuntimeException(e);
-            }
+            this.mapBounds = parseBounds();
         }
 
         @Override
@@ -241,7 +233,7 @@ public final class MapAttribute extends GenericMapAttribute {
         @Override
         public Boolean isUseNearestScale() {
             return (this.useNearestScale == null || this.useNearestScale)
-                        && getZoomLevels() != null;
+                    && getZoomLevels() != null;
         }
 
         @Override
@@ -250,11 +242,13 @@ public final class MapAttribute extends GenericMapAttribute {
         }
 
         /**
-         * Creates an {@link org.mapfish.print.attribute.map.MapAttribute.OverriddenMapAttributeValues} instance with the current object
-         * and a given {@link org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues} instance.
+         * Creates an {@link org.mapfish.print.attribute.map.MapAttribute.OverriddenMapAttributeValues}
+         * instance with the current object and a given
+         * {@link org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues}
+         * instance.
          *
-         * @param paramOverrides Attributes set in this instance will override attributes in
-         *  the current instance.
+         * @param paramOverrides Attributes set in this instance will override attributes in the
+         *         current instance.
          */
         public final OverriddenMapAttributeValues getWithOverrides(
                 final OverviewMapAttributeValues paramOverrides) {
@@ -263,13 +257,15 @@ public final class MapAttribute extends GenericMapAttribute {
 
         /**
          * Create a copy of this instance. Should be overridden for each subclass.
+         *
          * @param width the width of the new map attribute values to create
          * @param height the height of the new map attribute values to create
-         * @param updater a function which will be called after copy is made but before postConstruct is called in order
-         *                to do other configuration changes.
+         * @param updater a function which will be called after copy is made but before postConstruct
+         *         is called in order to do other configuration changes.
          */
-        public MapAttribute.MapAttributeValues copy(final int width, final int height,
-                                                    @Nonnull final Function<MapAttributeValues, Void> updater) {
+        public MapAttribute.MapAttributeValues copy(
+                final int width, final int height,
+                @Nonnull final Function<MapAttributeValues, Void> updater) {
             MapAttributeValues copy = new MapAttributeValues(getTemplate(), width, height);
             copy.areaOfInterest = this.areaOfInterest.copy();
             copy.bbox = this.bbox;
@@ -295,11 +291,12 @@ public final class MapAttribute extends GenericMapAttribute {
 
     /**
      * A wrapper around a {@link MapAttributeValues} instance and an
-     * {@link org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues} instance,
-     * which is used to render the overview map.
-     *
-     * If attributes on the {@link org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues} instance are set, those
-     * attributes will be returned, otherwise the ones on {@link MapAttributeValues}.
+     * {@link org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues}
+     * instance, which is used to render the overview map.
+     * <p>
+     * If attributes on the
+     * {@link org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues}
+     * instance are set, those attributes will be returned, otherwise the ones on {@link MapAttributeValues}.
      */
     public class OverriddenMapAttributeValues extends MapAttributeValues {
 
@@ -310,6 +307,7 @@ public final class MapAttribute extends GenericMapAttribute {
 
         /**
          * Constructor.
+         *
          * @param params The fallback parameters.
          * @param paramOverrides The parameters explicitly defined for the overview map.
          * @param template The template this map is part of.
@@ -361,7 +359,8 @@ public final class MapAttribute extends GenericMapAttribute {
 
         @Override
         public final ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
-            return getValueOr(this.paramOverrides.getZoomLevelSnapStrategy(), this.params.getZoomLevelSnapStrategy());
+            return getValueOr(this.paramOverrides.getZoomLevelSnapStrategy(),
+                              this.params.getZoomLevelSnapStrategy());
         }
 
         @Override
@@ -381,7 +380,8 @@ public final class MapAttribute extends GenericMapAttribute {
 
         @Override
         public final Boolean isUseNearestScale() {
-            final Boolean useNearestScale = getValueOr(this.paramOverrides.useNearestScale, this.params.useNearestScale);
+            final Boolean useNearestScale =
+                    getValueOr(this.paramOverrides.useNearestScale, this.params.useNearestScale);
             return (useNearestScale == null || useNearestScale)
                     && getZoomLevels() != null;
         }

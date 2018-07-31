@@ -3,7 +3,6 @@ package org.mapfish.print.map.geotools.grid;
 import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
-
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -62,11 +61,11 @@ public class LineGridStrategyTest {
 
         Map<String, SimpleFeature> idToFeature = idToFeatureMap(features);
         checkFeature(layerData, idToFeature.get("grid.y.1"),
-                new Coordinate(100, 110), new Coordinate(140, 110));
+                     new Coordinate(100, 110), new Coordinate(140, 110));
         checkFeature(layerData, idToFeature.get("grid.x.1"),
-                new Coordinate(110, 100), new Coordinate(110, 140));
+                     new Coordinate(110, 100), new Coordinate(110, 140));
         checkFeature(layerData, idToFeature.get("grid.x.2"),
-                new Coordinate(130, 100), new Coordinate(130, 140));
+                     new Coordinate(130, 100), new Coordinate(130, 140));
     }
 
     @Test
@@ -100,11 +99,16 @@ public class LineGridStrategyTest {
         assertEquals(5, features.size());
 
         Map<String, SimpleFeature> idToFeature = idToFeatureMap(features);
-        checkFeature(layerData, idToFeature.get("grid.x.1"), new Coordinate(120, 90), new Coordinate(120, 132));
-        checkFeature(layerData, idToFeature.get("grid.x.2"), new Coordinate(130, 90), new Coordinate(130, 132));
-        checkFeature(layerData, idToFeature.get("grid.x.3"), new Coordinate(140, 90), new Coordinate(140, 132));
-        checkFeature(layerData, idToFeature.get("grid.y.1"), new Coordinate(110, 104), new Coordinate(150, 104));
-        checkFeature(layerData, idToFeature.get("grid.y.2"), new Coordinate(110, 118), new Coordinate(150, 118));
+        checkFeature(layerData, idToFeature.get("grid.x.1"), new Coordinate(120, 90),
+                     new Coordinate(120, 132));
+        checkFeature(layerData, idToFeature.get("grid.x.2"), new Coordinate(130, 90),
+                     new Coordinate(130, 132));
+        checkFeature(layerData, idToFeature.get("grid.x.3"), new Coordinate(140, 90),
+                     new Coordinate(140, 132));
+        checkFeature(layerData, idToFeature.get("grid.y.1"), new Coordinate(110, 104),
+                     new Coordinate(150, 104));
+        checkFeature(layerData, idToFeature.get("grid.y.2"), new Coordinate(110, 118),
+                     new Coordinate(150, 118));
     }
 
     private Map<String, SimpleFeature> idToFeatureMap(SimpleFeatureCollection features) {
@@ -118,7 +122,8 @@ public class LineGridStrategyTest {
         return result;
     }
 
-    private void checkFeature(GridParam layerData, SimpleFeature f1, Coordinate minCoord, Coordinate maxCoord) {
+    private void checkFeature(
+            GridParam layerData, SimpleFeature f1, Coordinate minCoord, Coordinate maxCoord) {
         LineString defaultGeometry = (LineString) f1.getDefaultGeometry();
         assertEquals(layerData.pointsInLine + 1, defaultGeometry.getCoordinates().length);
         assertEquals(minCoord, defaultGeometry.getCoordinates()[0]);

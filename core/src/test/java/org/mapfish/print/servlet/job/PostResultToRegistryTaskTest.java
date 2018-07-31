@@ -16,7 +16,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.net.URI;
-import java.util.AbstractMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
@@ -32,7 +31,7 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
     JobQueue jobQueue;
 
     @Test
-    public void testRun() throws Exception {
+    public void testRun() {
 
         assertRegistryValues(0, 0, true);
         TestPrintJob printJob = new TestPrintJob();
@@ -84,7 +83,7 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
                 assertEquals(expectedRequestsMade, numberOfRequestsMade);
 
                 if (timeSpentIsZero) {
-                    assertTrue(0 == timeSpentPrinting);
+                    assertEquals(0, timeSpentPrinting);
                 } else {
                     assertTrue(0 < timeSpentPrinting);
                 }
@@ -103,7 +102,8 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
             try {
                 initForTesting(context);
                 PrintJobEntryImpl entry = (PrintJobEntryImpl) getEntry();
-                entry.setRequestData(new PJsonObject(new JSONObject("{\"" + MapPrinterServlet.JSON_APP + "\":\"default\"}"), "job"));
+                entry.setRequestData(new PJsonObject(
+                        new JSONObject("{\"" + MapPrinterServlet.JSON_APP + "\":\"default\"}"), "job"));
                 entry.setReferenceId("abc");
                 Template template = new Template();
                 Configuration configuration = new Configuration();

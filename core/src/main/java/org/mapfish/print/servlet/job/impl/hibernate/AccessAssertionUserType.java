@@ -20,7 +20,7 @@ import java.sql.Types;
  */
 public class AccessAssertionUserType implements UserType {
 
-    private static final int[] SQL_TYPES = { Types.LONGVARCHAR };
+    private static final int[] SQL_TYPES = {Types.LONGVARCHAR};
 
     @Override
     public final Object assemble(final Serializable cached, final Object owner) throws HibernateException {
@@ -60,7 +60,8 @@ public class AccessAssertionUserType implements UserType {
     }
 
     @Override
-    public final Object nullSafeGet(final ResultSet rs, final String[] names, final SessionImplementor session,
+    public final Object nullSafeGet(
+            final ResultSet rs, final String[] names, final SessionImplementor session,
             final Object owner) throws HibernateException, SQLException {
         String value = rs.getString(names[0]);
         if (value != null) {
@@ -77,7 +78,8 @@ public class AccessAssertionUserType implements UserType {
     }
 
     @Override
-    public final void nullSafeSet(final PreparedStatement st, final Object value, final int index,
+    public final void nullSafeSet(
+            final PreparedStatement st, final Object value, final int index,
             final SessionImplementor session) throws HibernateException, SQLException {
         if (value == null) {
             st.setNull(index, SQL_TYPES[0]);

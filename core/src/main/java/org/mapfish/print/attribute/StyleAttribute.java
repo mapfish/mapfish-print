@@ -9,8 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Attribute for GeoJson Styles collection.
- * [[examples=report]]
+ * Attribute for GeoJson Styles collection. [[examples=report]]
  */
 public final class StyleAttribute extends ReflectiveAttribute<StylesAttributeValues> {
 

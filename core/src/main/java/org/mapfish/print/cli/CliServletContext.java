@@ -1,17 +1,16 @@
 package org.mapfish.print.cli;
 
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Set;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 /**
- * An essentially non-functional servlet context that is used by the CLI application to satisfy the spring dependencies.
+ * An essentially non-functional servlet context that is used by the CLI application to satisfy the spring
+ * dependencies.
  */
 // CHECKSTYLE:OFF
 @SuppressWarnings("deprecation")
@@ -47,7 +46,7 @@ public final class CliServletContext implements ServletContext {
     }
 
     @Override
-    public URL getResource(String path) throws MalformedURLException {
+    public URL getResource(String path) {
         return null;
     }
 
@@ -67,7 +66,7 @@ public final class CliServletContext implements ServletContext {
     }
 
     @Override
-    public Servlet getServlet(String name) throws ServletException {
+    public Servlet getServlet(String name) {
         return null;
     }
 

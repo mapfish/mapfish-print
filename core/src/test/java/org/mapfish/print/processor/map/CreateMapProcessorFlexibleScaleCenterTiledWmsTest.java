@@ -40,6 +40,11 @@ public class CreateMapProcessorFlexibleScaleCenterTiledWmsTest extends AbstractM
     @Autowired
     private ForkJoinPool forkJoinPool;
 
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterTiledWmsTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
@@ -54,7 +59,8 @@ public class CreateMapProcessorFlexibleScaleCenterTiledWmsTest extends AbstractM
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -68,7 +74,7 @@ public class CreateMapProcessorFlexibleScaleCenterTiledWmsTest extends AbstractM
         final Template template = config.getTemplate("A4 landscape");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -81,10 +87,5 @@ public class CreateMapProcessorFlexibleScaleCenterTiledWmsTest extends AbstractM
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
                 .assertSimilarity(layerGraphics, 780, 330, 20);
 
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterTiledWmsTest.class,
-                BASE_DIR + "requestData.json");
     }
 }

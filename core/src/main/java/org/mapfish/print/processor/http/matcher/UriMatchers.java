@@ -20,6 +20,7 @@ public final class UriMatchers {
 
     /**
      * Set the matchers.
+     *
      * @param matchers the new list.
      */
     public void setMatchers(final List<? extends URIMatcher> matchers) {
@@ -43,7 +44,7 @@ public final class UriMatchers {
      */
     public boolean matches(final MatchInfo matchInfo)
             throws SocketException, UnknownHostException, MalformedURLException {
-        for (URIMatcher matcher : this.matchers) {
+        for (URIMatcher matcher: this.matchers) {
             if (matcher.matches(matchInfo)) {
                 if (matcher.isReject()) {
                     LOGGER.debug("Reject {} because of this rule: {}", matchInfo, matcher);
@@ -60,6 +61,7 @@ public final class UriMatchers {
 
     /**
      * Validate the configuration.
+     *
      * @param validationErrors where to put the errors.
      */
     public void validate(final List<Throwable> validationErrors) {
@@ -70,7 +72,7 @@ public final class UriMatchers {
         if (this.matchers != null && this.matchers.isEmpty()) {
             validationErrors.add(new IllegalArgumentException(
                     "There are no url matchers defined.  There should be at least a " +
-                    "!acceptAll matcher"));
+                            "!acceptAll matcher"));
         }
     }
 }

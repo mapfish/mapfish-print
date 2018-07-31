@@ -38,24 +38,30 @@ public class ValuesTest extends AbstractMapfishSpringTest {
 
         PJsonObject requestData = parseJSONObjectFromFile(ValuesTest.class, BASE_DIR + "requestData.json");
 
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
+        final Configuration config =
+                configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        final Values values = new Values("test", requestData, template, new File("tmp"), this.httpRequestFactory, new File("."));
+        final Values values =
+                new Values("test", requestData, template, new File("tmp"), this.httpRequestFactory,
+                           new File("."));
 
         assertTrue(values.containsKey("title"));
         assertEquals("title", values.getString("title"));
         assertEquals(134, values.getInteger("count").intValue());
         assertEquals(2.0, values.getObject("ratio", Double.class), 0.00001);
         assertTrue(values.containsKey("legend"));
-        assertEquals("legendName", values.getObject("legend", LegendAttribute.LegendAttributeValue.class).name);
+        assertEquals("legendName",
+                     values.getObject("legend", LegendAttribute.LegendAttributeValue.class).name);
 
         assertTrue(values.containsKey("datasource"));
-        final Map<String, Object>[] attributesValues = values.getObject("datasource", DataSourceAttribute.DataSourceAttributeValue.class)
-                .attributesValues;
+        final Map<String, Object>[] attributesValues =
+                values.getObject("datasource", DataSourceAttribute.DataSourceAttributeValue.class)
+                        .attributesValues;
         assertEquals(1, attributesValues.length);
         assertEquals("requestDataName", attributesValues[0].get("name"));
-        final TableAttribute.TableAttributeValue table = (TableAttribute.TableAttributeValue) attributesValues[0].get("table");
+        final TableAttribute.TableAttributeValue table =
+                (TableAttribute.TableAttributeValue) attributesValues[0].get("table");
         assertEquals("requestId", table.columns[0]);
     }
 
@@ -66,7 +72,8 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         PJsonObject requestData = new PJsonObject(obj, "");
         final JSONObject atts = new JSONObject();
         obj.put("attributes", atts);
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
+        final Configuration config =
+                configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
         new Values("test", requestData, template, new File("tmp"), this.httpRequestFactory, new File("."));
@@ -79,23 +86,29 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         PJsonObject requestData = new PJsonObject(obj, "");
         final JSONObject atts = new JSONObject();
         obj.put("attributes", atts);
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-defaults.yaml"));
+        final Configuration config =
+                configurationFactory.getConfig(getFile(BASE_DIR + "config-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        final Values values = new Values("test", requestData, template, new File("tmp"), this.httpRequestFactory, new File("."));
+        final Values values =
+                new Values("test", requestData, template, new File("tmp"), this.httpRequestFactory,
+                           new File("."));
 
         assertTrue(values.containsKey("title"));
         assertEquals("title", values.getString("title"));
         assertEquals(134, values.getInteger("count").intValue());
         assertEquals(2.0, values.getObject("ratio", Double.class), 0.00001);
         assertTrue(values.containsKey("legend"));
-        assertEquals("legendName", values.getObject("legend", LegendAttribute.LegendAttributeValue.class).name);
+        assertEquals("legendName",
+                     values.getObject("legend", LegendAttribute.LegendAttributeValue.class).name);
         assertTrue(values.containsKey("datasource"));
-        final Map<String, Object>[] attributesValues = values.getObject("datasource", DataSourceAttribute.DataSourceAttributeValue.class)
-                .attributesValues;
+        final Map<String, Object>[] attributesValues =
+                values.getObject("datasource", DataSourceAttribute.DataSourceAttributeValue.class)
+                        .attributesValues;
         assertEquals(1, attributesValues.length);
         assertEquals("name", attributesValues[0].get("name"));
-        final TableAttribute.TableAttributeValue table = (TableAttribute.TableAttributeValue) attributesValues[0].get("table");
+        final TableAttribute.TableAttributeValue table =
+                (TableAttribute.TableAttributeValue) attributesValues[0].get("table");
         assertEquals("id", table.columns[0]);
     }
 
@@ -104,15 +117,18 @@ public class ValuesTest extends AbstractMapfishSpringTest {
 
         PJsonObject requestData = parseJSONObjectFromFile(ValuesTest.class, BASE_DIR + "requestData.json");
         String badLegendConf = "[{\n"
-                               + "    \"name\": \"\",\n"
-                               + "    \"classes\": [{\n"
-                               + "        \"name\": \"osm\",\n"
-                               + "        \"icons\": [\"http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0"
-                               + ".0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states\"]\n"
-                               + "    }]\n"
-                               + "}]\n";
+                + "    \"name\": \"\",\n"
+                + "    \"classes\": [{\n"
+                + "        \"name\": \"osm\",\n"
+                +
+                "        \"icons\": [\"http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic" +
+                "&VERSION=1.0"
+                + ".0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states\"]\n"
+                + "    }]\n"
+                + "}]\n";
         requestData.getInternalObj().getJSONObject("attributes").put("legend", new JSONArray(badLegendConf));
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
+        final Configuration config =
+                configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
         new Values("test", requestData, template, new File("tmp"), this.httpRequestFactory, new File("."));

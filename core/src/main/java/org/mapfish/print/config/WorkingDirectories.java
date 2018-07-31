@@ -2,7 +2,6 @@ package org.mapfish.print.config;
 
 
 import com.google.common.annotations.VisibleForTesting;
-
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Date;
-
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 
@@ -35,9 +33,13 @@ public class WorkingDirectories {
     @Autowired
     private ServletContext servletContext;
 
+    public final File getWorking() {
+        return this.working;
+    }
+
     /**
      * Defines what is the root directory used to store every temporary files.
-     *
+     * <p>
      * The given path can contain the pattern "{WEBAPP}" and it will replaced by the webapp name.
      *
      * @param working The path
@@ -55,10 +57,6 @@ public class WorkingDirectories {
         LOGGER.debug("Working directory: {}", this.working);
     }
 
-    public final File getWorking() {
-        return this.working;
-    }
-
     public final void setMaxAgeReport(final int maxAgeReport) {
         this.maxAgeReport = maxAgeReport;
     }
@@ -74,8 +72,10 @@ public class WorkingDirectories {
     public final void init() {
         this.reports = new File(this.working, "reports");
     }
+
     /**
      * Get the directory where the compiled jasper reports should be put.
+     *
      * @param configuration the configuration for the current app.
      */
     public final File getJasperCompilation(final Configuration configuration) {
@@ -85,8 +85,8 @@ public class WorkingDirectories {
     }
 
     /**
-     * Get the directory where the reports are written to.  This may be a temporary location before sending the files to a
-     * central repository that can better handle clustering.
+     * Get the directory where the reports are written to.  This may be a temporary location before sending
+     * the files to a central repository that can better handle clustering.
      */
     public final File getReports() {
         createIfMissing(this.reports, "Reports");
@@ -121,7 +121,9 @@ public class WorkingDirectories {
     private void createIfMissing(final File directory, final String name) {
         if (!directory.exists() && !directory.mkdirs()) {
             if (!directory.exists()) {  // Maybe somebody else created it in the mean time
-                throw new AssertionError("Unable to create working directory: '" + directory + "' it is the '" + name + "' directory");
+                throw new AssertionError(
+                        "Unable to create working directory: '" + directory + "' it is the '" + name +
+                                "' directory");
             }
         }
     }
@@ -134,8 +136,9 @@ public class WorkingDirectories {
      * @param extension the extension of the compiled report template.
      * @param logger the logger to log errors to if an occur.
      */
-    public final File getBuildFileFor(final Configuration configuration, final File jasperFileXml,
-                                      final String extension, final Logger logger) {
+    public final File getBuildFileFor(
+            final Configuration configuration, final File jasperFileXml,
+            final String extension, final Logger logger) {
         final String configurationAbsolutePath = configuration.getDirectory().getPath();
         final int prefixToConfiguration = configurationAbsolutePath.length() + 1;
         final String parentDir = jasperFileXml.getAbsoluteFile().getParent();
@@ -145,13 +148,14 @@ public class WorkingDirectories {
         } else {
             final String relativePathToContainingDirectory = parentDir.substring(prefixToConfiguration);
             relativePathToFile = relativePathToContainingDirectory + File.separator +
-                                 getNameWithoutExtension(jasperFileXml.getName());
+                    getNameWithoutExtension(jasperFileXml.getName());
         }
 
         final File buildFile = new File(getJasperCompilation(configuration), relativePathToFile + extension);
 
         if (!buildFile.getParentFile().exists() && !buildFile.getParentFile().mkdirs()) {
-            logger.error("Unable to create directory for containing compiled jasper report templates: " + buildFile.getParentFile());
+            logger.error("Unable to create directory for containing compiled jasper report templates: " +
+                                 buildFile.getParentFile());
         }
         return buildFile;
     }
@@ -173,17 +177,15 @@ public class WorkingDirectories {
      * A task that deletes old reports and task directories.
      */
     @VisibleForTesting
-    class CleanUpTask implements Runnable {
+    final class CleanUpTask implements Runnable {
 
         /**
-         * The maximum age for a report in seconds. Files older
-         * than that age will be deleted.
+         * The maximum age for a report in seconds. Files older than that age will be deleted.
          */
         private final long maxAgeReport;
 
         /**
-         * The maximum age for a task directory in seconds. Directories older
-         * than that age will be deleted.
+         * The maximum age for a task directory in seconds. Directories older than that age will be deleted.
          */
         private final long maxAgeTaskDir;
 
@@ -191,7 +193,7 @@ public class WorkingDirectories {
          * @param maxAgeReport The maximum age for a report in seconds.
          * @param maxAgeTaskDir The maximum age for a task directory in seconds.
          */
-        public CleanUpTask(final long maxAgeReport, final long maxAgeTaskDir) {
+        CleanUpTask(final long maxAgeReport, final long maxAgeTaskDir) {
             this.maxAgeReport = maxAgeReport;
             this.maxAgeTaskDir = maxAgeTaskDir;
         }
@@ -213,7 +215,7 @@ public class WorkingDirectories {
 
             int deletedFiles = 0;
             if (dir.exists()) {
-                for (File file : dir.listFiles()) {
+                for (File file: dir.listFiles()) {
                     if ((prefix == null || file.getName().startsWith(prefix))
                             && file.lastModified() < ageThreshold) {
                         if (!FileUtils.deleteQuietly(file)) {

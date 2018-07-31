@@ -150,7 +150,7 @@ public class PYamlObject extends PAbstractObject {
     public final PJsonObject toJSON() {
         try {
             JSONObject json = new JSONObject();
-            for (String key : this.obj.keySet()) {
+            for (String key: this.obj.keySet()) {
                 Object opt = opt(key);
                 if (opt instanceof PYamlObject) {
                     opt = ((PYamlObject) opt).toJSON().getInternalObj();

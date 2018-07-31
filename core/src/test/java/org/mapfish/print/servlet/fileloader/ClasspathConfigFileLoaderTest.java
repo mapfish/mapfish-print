@@ -17,16 +17,19 @@ import static org.junit.Assert.assertTrue;
 
 public class ClasspathConfigFileLoaderTest extends AbstractMapfishSpringTest {
 
+    final String configFileUriString =
+            "classpath://" + FileConfigFileLoaderTest.class.getPackage().getName().replace('.',
+                                                                                           '/') +
+                    "/config.yaml";
     @Autowired
     private ClasspathConfigFileLoader loader;
-    final String configFileUriString = "classpath://" + FileConfigFileLoaderTest.class.getPackage().getName().replace('.',
-            '/') + "/config.yaml";
 
     @Test
     public void testToFile() throws Exception {
         assertFalse(loader.toFile(new URI("file://blahblahblah")).isPresent());
         assertTrue(loader.toFile(new URI(configFileUriString)).isPresent());
-        final URI fileUri = new URI("classpath://" + FileConfigFileLoaderTest.class.getPackage().getName().replace('.', '/'));
+        final URI fileUri = new URI("classpath://" + FileConfigFileLoaderTest.class.getPackage().getName()
+                .replace('.', '/'));
         assertTrue(loader.toFile(fileUri).isPresent());
     }
 
@@ -54,20 +57,31 @@ public class ClasspathConfigFileLoaderTest extends AbstractMapfishSpringTest {
     }
 
 
-
     @Test
     public void testAccessibleChildResource() throws Exception {
         final URI configFileUri = new URI(configFileUriString);
         final String resourceFileName = "resourceFile.txt";
-        assertTrue(this.loader.isAccessible(configFileUri, "classpath://org/mapfish/print/servlet/fileloader/" + resourceFileName));
+        assertTrue(this.loader.isAccessible(configFileUri,
+                                            "classpath://org/mapfish/print/servlet/fileloader/" +
+                                                    resourceFileName));
         assertTrue(this.loader.isAccessible(configFileUri, resourceFileName));
-        assertFalse(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).toURI().toString()));
-        assertFalse(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).getAbsolutePath()));
-        assertFalse(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).getPath()));
+        assertFalse(this.loader.isAccessible(configFileUri,
+                                             getFile(FileConfigFileLoader.class, resourceFileName).toURI()
+                                                     .toString()));
+        assertFalse(this.loader.isAccessible(configFileUri,
+                                             getFile(FileConfigFileLoader.class, resourceFileName)
+                                                     .getAbsolutePath()));
+        assertFalse(this.loader.isAccessible(configFileUri,
+                                             getFile(FileConfigFileLoader.class, resourceFileName)
+                                                     .getPath()));
 
-        assertFalse(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class, "/test-http-request-factory-application-context.xml")
+        assertFalse(this.loader.isAccessible(configFileUri, getFile(FileConfigFileLoader.class,
+                                                                    "/test-http-request-factory-application" +
+                                                                            "-context.xml")
                 .getAbsolutePath()));
-        assertFalse(this.loader.isAccessible(configFileUri, "classpath://test-http-request-factory-application-context.xml"));
+        assertFalse(this.loader.isAccessible(configFileUri,
+                                             "classpath://test-http-request-factory-application-context" +
+                                                     ".xml"));
     }
 
     @Test
@@ -77,8 +91,9 @@ public class ClasspathConfigFileLoaderTest extends AbstractMapfishSpringTest {
         final byte[] bytes = Files.toByteArray(getFile(FileConfigFileLoader.class, resourceFileName));
 
         assertArrayEquals(bytes, this.loader.loadFile(configFileUri, resourceFileName));
-        assertArrayEquals(bytes, this.loader.loadFile(configFileUri, "classpath://org/mapfish/print/servlet/fileloader/" +
-                                                                     resourceFileName));
+        assertArrayEquals(bytes, this.loader
+                .loadFile(configFileUri, "classpath://org/mapfish/print/servlet/fileloader/" +
+                        resourceFileName));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -102,21 +117,25 @@ public class ClasspathConfigFileLoaderTest extends AbstractMapfishSpringTest {
         final URI configFileUri = new URI(configFileUriString);
         final String resourceFileName = "resourceFile.txt";
 
-        final File file = new File(getFile(FileConfigFileLoader.class, resourceFileName).getParentFile(), "doesNotExist");
+        final File file = new File(getFile(FileConfigFileLoader.class, resourceFileName).getParentFile(),
+                                   "doesNotExist");
         this.loader.loadFile(configFileUri, file.getPath());
     }
+
     @Test(expected = NoSuchElementException.class)
     public void testLoadFileChildResource_DoesNotExist2() throws Exception {
         final URI configFileUri = new URI(configFileUriString);
 
         this.loader.loadFile(configFileUri, "doesNotExist");
     }
+
     @Test(expected = NoSuchElementException.class)
     public void testLoadFileChildResource_ConfigFileDoesNotExist() throws Exception {
         final URI configFileUri = new URI("classpath://xyz.yaml");
         final String resourceFileName = "resourceFile.txt";
 
-        this.loader.loadFile(configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).toURI().toString());
+        this.loader.loadFile(configFileUri,
+                             getFile(FileConfigFileLoader.class, resourceFileName).toURI().toString());
     }
 
 }

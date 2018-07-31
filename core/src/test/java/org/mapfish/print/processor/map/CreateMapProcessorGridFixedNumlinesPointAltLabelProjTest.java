@@ -36,6 +36,11 @@ public class CreateMapProcessorGridFixedNumlinesPointAltLabelProjTest extends Ab
     @Autowired
     private ForkJoinPool forkJoinPool;
 
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterTiledWmsTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
@@ -44,7 +49,8 @@ public class CreateMapProcessorGridFixedNumlinesPointAltLabelProjTest extends Ab
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("A4 landscape");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values("test", requestData, template, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values("test", requestData, template, getTaskDirectory(), this.requestFactory,
+                                   new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -57,9 +63,5 @@ public class CreateMapProcessorGridFixedNumlinesPointAltLabelProjTest extends Ab
         String imageName = getExpectedImageName("", BASE_DIR);
         new ImageSimilarity(getFile(BASE_DIR + imageName))
                 .assertSimilarity(layerGraphics, 780, 330, 20);
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterTiledWmsTest.class, BASE_DIR + "requestData.json");
     }
 }

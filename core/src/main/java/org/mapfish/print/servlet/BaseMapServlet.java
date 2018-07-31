@@ -59,7 +59,8 @@ public abstract class BaseMapServlet {
      * @param message the message to send
      * @param code the error code
      */
-    protected static final void error(final HttpServletResponse httpServletResponse, final String message, final HttpStatus code) {
+    protected static final void error(
+            final HttpServletResponse httpServletResponse, final String message, final HttpStatus code) {
         PrintWriter out = null;
         try {
             httpServletResponse.setContentType("text/plain");
@@ -91,8 +92,6 @@ public abstract class BaseMapServlet {
             httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             out = httpServletResponse.getWriter();
             out.println("Error while processing request:");
-            e.printStackTrace(out);
-
             BaseMapServlet.LOGGER.error("Error while processing request", e);
         } catch (IOException ex) {
             throw ExceptionUtils.getRuntimeException(ex);
@@ -121,6 +120,7 @@ public abstract class BaseMapServlet {
 
     /**
      * Set the cache duration for the queries that can be cached.
+     *
      * @param cacheDurationInSeconds the duration
      */
     public final void setCacheDuration(final int cacheDurationInSeconds) {
@@ -129,6 +129,7 @@ public abstract class BaseMapServlet {
 
     /**
      * Disable caching of the response.
+     *
      * @param response the response
      */
     protected void setNoCache(final HttpServletResponse response) {
@@ -137,6 +138,7 @@ public abstract class BaseMapServlet {
 
     /**
      * Enable caching of the response.
+     *
      * @param response the response
      */
     protected void setCache(final HttpServletResponse response) {

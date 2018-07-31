@@ -1,7 +1,6 @@
 package org.mapfish.print.attribute;
 
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.data.JsonDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
 import org.junit.Test;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -29,8 +27,9 @@ public class JsonDatasourceAttributeTest extends AbstractMapfishSpringTest {
     @Autowired
     private TestHttpClientFactory httpClientFactory;
 
-    private <T> T getValue(final JsonDataSource datasource, final String expression,
-                           final Class<T> type) throws JRException {
+    private <T> T getValue(
+            final JsonDataSource datasource, final String expression,
+            final Class<T> type) throws JRException {
         assertNotNull(datasource);
         JRDesignField field = new JRDesignField();
         field.setName(expression);
@@ -46,7 +45,7 @@ public class JsonDatasourceAttributeTest extends AbstractMapfishSpringTest {
 
         Template template = config.getTemplate("main");
         Values values = new Values("test", requestData, template, config.getDirectory(), httpClientFactory,
-                config.getDirectory());
+                                   config.getDirectory());
 
         assertEquals("s1", getValue(values.getObject("json", JsonDataSource.class), "a.b", String.class));
     }

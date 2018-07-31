@@ -22,7 +22,8 @@ public class ExecutionStats {
      * @param mapContext the
      * @param mapValues the
      */
-    public synchronized void addMapStats(final MapfishMapContext mapContext, final MapAttribute.MapAttributeValues mapValues) {
+    public synchronized void addMapStats(
+            final MapfishMapContext mapContext, final MapAttribute.MapAttributeValues mapValues) {
         this.mapStats.add(new MapStats(mapContext, mapValues));
     }
 
@@ -44,7 +45,8 @@ public class ExecutionStats {
         private final Dimension size;
         private final int nbLayers;
 
-        private MapStats(final MapfishMapContext mapContext, final MapAttribute.MapAttributeValues mapValues) {
+        private MapStats(
+                final MapfishMapContext mapContext, final MapAttribute.MapAttributeValues mapValues) {
             this.dpi = mapContext.getDPI();
             this.size = mapValues.getMapSize();
             this.nbLayers = mapValues.layers.size();

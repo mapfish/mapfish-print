@@ -1,6 +1,5 @@
 package org.mapfish.print.url.data;
 
-import java.io.IOException;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
@@ -17,7 +16,7 @@ public class Handler extends URLStreamHandler {
     public static void configureProtocolHandler() {
         final String pkgs = System.getProperty("java.protocol.handler.pkgs");
         String newValue = "org.mapfish.print.url";
-        if (pkgs != null && pkgs.indexOf(newValue) == -1) {
+        if (pkgs != null && !pkgs.contains(newValue)) {
             newValue = newValue + "|" + pkgs;
         } else if (pkgs != null) {
             newValue = pkgs;
@@ -26,7 +25,7 @@ public class Handler extends URLStreamHandler {
     }
 
     @Override
-    protected URLConnection openConnection(final URL url) throws IOException {
+    protected URLConnection openConnection(final URL url) {
         return new DataUrlConnection(url);
     }
 

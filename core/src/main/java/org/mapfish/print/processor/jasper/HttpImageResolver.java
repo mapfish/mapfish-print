@@ -13,7 +13,6 @@ import org.springframework.http.client.ClientHttpResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,8 +38,9 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
     }
 
     /**
-     * Sets the RegExp pattern to use for extracting the url from the text.  By default the whole string is used.
-     *
+     * Sets the RegExp pattern to use for extracting the url from the text.  By default the whole string is
+     * used.
+     * <p>
      * For example: <code>.*&amp;img src="([^"]+)".*</code>
      *
      * @param pattern The url extractor regular expression.  Default is <code>"(.*)"</code>
@@ -59,8 +59,9 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
     }
 
     @Override
-    public BufferedImage resolve(final MfClientHttpRequestFactory requestFactory,
-                                 final String text) throws URISyntaxException, IOException {
+    public BufferedImage resolve(
+            final MfClientHttpRequestFactory requestFactory,
+            final String text) {
         Matcher urlMatcher = this.urlExtractor.matcher(text);
 
         if (urlMatcher.matches() && urlMatcher.group(this.urlGroup) != null) {
@@ -81,8 +82,9 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
                         LOGGER.warn("Image loaded from '" + url + "'is not valid: " + e.getMessage());
                     }
                 } else {
-                    LOGGER.warn("Error loading the table row image: " + url + ".\nStatus Code: " + response.getStatusCode() +
-                                "\nStatus Text: " + response.getStatusText());
+                    LOGGER.warn("Error loading the table row image: " + url + ".\nStatus Code: " +
+                                        response.getStatusCode() +
+                                        "\nStatus Text: " + response.getStatusText());
                 }
             } catch (Throwable e) {
                 LOGGER.warn("Error loading table row image: " + uriString, e);

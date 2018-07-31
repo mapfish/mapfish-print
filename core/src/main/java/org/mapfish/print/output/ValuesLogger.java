@@ -16,8 +16,8 @@ import java.util.Map;
 public final class ValuesLogger {
     private static final Logger LOGGER = LoggerFactory.getLogger(ValuesLogger.class);
     private static final int STANDARD_INDENT_SIZE = 4;
-    private int indent = STANDARD_INDENT_SIZE;
     private final StringBuilder builder = new StringBuilder();
+    private int indent = STANDARD_INDENT_SIZE;
 
     private ValuesLogger() {
         // no public constructor
@@ -43,11 +43,12 @@ public final class ValuesLogger {
             this.builder.append("\n");
         }
 
-        this.builder.append("This log message details the parameters available for use in the Jasper templates ");
+        this.builder
+                .append("This log message details the parameters available for use in the Jasper templates ");
         this.builder.append("for\n  Mapfish Template: ").append(templateName).append("\n");
         this.builder.append("  Jasper Template name: ").append(template.getReportTemplate()).append('\n');
         this.builder.append("  The following parameters are available for use in the templates: \n");
-        for (Map.Entry<String, Object> parameter : values.asMap().entrySet()) {
+        for (Map.Entry<String, Object> parameter: values.asMap().entrySet()) {
             boolean isTableDataKey = parameter.getKey().equals(template.getTableDataKey());
             logValue(templateName, parameter, isTableDataKey);
         }
@@ -55,15 +56,19 @@ public final class ValuesLogger {
         LOGGER.info(this.builder.toString());
     }
 
-    private void logValue(final String templateName, final Map.Entry<String, ?> parameter, final boolean isTableDataKey) {
+    private void logValue(
+            final String templateName, final Map.Entry<String, ?> parameter, final boolean isTableDataKey) {
         addIndent().append("* ").append(parameter.getKey());
         if (isTableDataKey) {
             if (parameter.getValue() instanceof JRDataSource) {
                 this.builder.append(" <tableDataKey>");
             } else {
-                final String message = "The output value: '" + parameter.getKey() + "' is defined in the template: '" +
-                                       templateName + "' as the tableDataKey but is not a '" + JRDataSource.class.getName() +
-                                       "' object as was expected.  Instead it is " + parameter.getValue().getClass().getName();
+                final String message =
+                        "The output value: '" + parameter.getKey() + "' is defined in the template: '" +
+                                templateName + "' as the tableDataKey but is not a '" +
+                                JRDataSource.class.getName() +
+                                "' object as was expected.  Instead it is " +
+                                parameter.getValue().getClass().getName();
                 throw new PrintException(message);
             }
         }
@@ -77,22 +82,25 @@ public final class ValuesLogger {
             String section = isTableDataKey ? "'Top-level' template" : "sub-template";
 
             if (!isTableDataKey) {
-                addIndent().append("  - This value is a Jasper Reports DataSource and thus can be passed to a ").
+                addIndent()
+                        .append("  - This value is a Jasper Reports DataSource and thus can be passed to a ").
                         append("subtemplate as a DataSource and used in the subtemplate's detail band.\n");
             }
             if (parameter.getValue() instanceof JRMapCollectionDataSource) {
                 JRMapCollectionDataSource source = (JRMapCollectionDataSource) parameter.getValue();
 
                 addIndent().append("  - This DataSource contains the "
-                                   + "following columns (All rows are analyzed for their columns, thus each row may "
-                                   + "only have a subset of the columns)\n");
+                                           +
+                                           "following columns (All rows are analyzed for their columns, " +
+                                           "thus each row may "
+                                           + "only have a subset of the columns)\n");
 
                 this.indent += STANDARD_INDENT_SIZE;
                 Map<String, Object> columns = Maps.newHashMap();
 
                 // loop the source to get all columns of the table
-                for (Map<String, ?> row : source.getData()) {
-                    for (Map.Entry<String, ?> column : row.entrySet()) {
+                for (Map<String, ?> row: source.getData()) {
+                    for (Map.Entry<String, ?> column: row.entrySet()) {
                         if (!columns.containsKey(column.getKey())) {
                             columns.put(column.getKey(), column.getValue());
                         } else {
@@ -105,13 +113,15 @@ public final class ValuesLogger {
                     }
                 }
 
-                for (Map.Entry<String, ?> column : columns.entrySet()) {
+                for (Map.Entry<String, ?> column: columns.entrySet()) {
                     logValue(templateName, column, false);
                 }
                 this.indent -= STANDARD_INDENT_SIZE;
             } else {
-                addIndent().append("  - This datasource is not a type that can be introspected but it can be used in"
-                                   + " a detail section of ").
+                addIndent()
+                        .append("  - This datasource is not a type that can be introspected but it can be " +
+                                        "used in"
+                                        + " a detail section of ").
                         append(section).append(" if the structure is known.\n");
 
             }

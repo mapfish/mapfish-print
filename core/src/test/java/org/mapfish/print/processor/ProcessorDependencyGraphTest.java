@@ -21,8 +21,10 @@ public class ProcessorDependencyGraphTest {
         ProcessorGraphNode root2 = new ProcessorGraphNode(new TestProcessor("root2"), new MetricRegistry());
         ProcessorGraphNode dep11 = new ProcessorGraphNode(new TestProcessor("dep11"), new MetricRegistry());
         ProcessorGraphNode dep21 = new ProcessorGraphNode(new TestProcessor("dep21"), new MetricRegistry());
-        ProcessorGraphNode dep11_1 = new ProcessorGraphNode(new TestProcessor("dep11_1"), new MetricRegistry());
-        ProcessorGraphNode dep11_2 = new ProcessorGraphNode(new TestProcessor("dep11_2"), new MetricRegistry());
+        ProcessorGraphNode dep11_1 =
+                new ProcessorGraphNode(new TestProcessor("dep11_1"), new MetricRegistry());
+        ProcessorGraphNode dep11_2 =
+                new ProcessorGraphNode(new TestProcessor("dep11_2"), new MetricRegistry());
         graph.addRoot(root1);
         graph.addRoot(root2);
 
@@ -32,8 +34,11 @@ public class ProcessorDependencyGraphTest {
         dep11.addDependency(dep11_1);
         dep11.addDependency(dep11_2);
         assertEquals("\"?\" -> \"dep11_1\";\n", dep11_1.toString());
-        assertTrue(dep11.toString(), "\"?\" -> \"dep11\";\n  \"dep11\" -> \"dep11_1\";\n  \"dep11\" -> \"dep11_2\";\n".equals(dep11.toString()) ||
-                "\"?\" -> \"dep11\";\n  \"dep11\" -> \"dep11_2\";\n  \"dep11\" -> \"dep11_1\";\n".equals(dep11.toString()));
+        assertTrue(dep11.toString(),
+                   "\"?\" -> \"dep11\";\n  \"dep11\" -> \"dep11_1\";\n  \"dep11\" -> \"dep11_2\";\n"
+                           .equals(dep11.toString()) ||
+                           "\"?\" -> \"dep11\";\n  \"dep11\" -> \"dep11_2\";\n  \"dep11\" -> \"dep11_1\";\n"
+                                   .equals(dep11.toString()));
         assertEquals("\"?\" -> \"root2\";\n  \"root2\" -> \"dep21\";\n", root2.toString());
     }
 
@@ -80,6 +85,7 @@ public class ProcessorDependencyGraphTest {
         public String prop;
         public Values values;
     }
+
     private static class TestProcessor extends AbstractProcessor<TestIn, Void> {
         private final String name;
 

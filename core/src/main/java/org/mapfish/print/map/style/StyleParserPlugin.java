@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 
 /**
  * A plugin used for loading {@link org.geotools.styling.Style} objects from a string.
- *
+ * <p>
  * The string might be json, css, url, whatever.
  */
 public interface StyleParserPlugin {
@@ -22,10 +22,11 @@ public interface StyleParserPlugin {
      * @param configuration the configuration being used for the current print.
      * @param clientHttpRequestFactory an factory for making http requests.
      * @param styleString the string that provides the information for loading the style.
-     *
-     * @return if this plugin can create a style form the string then return the style otherwise Optional.absent().
+     * @return if this plugin can create a style form the string then return the style otherwise
+     *         Optional.absent().
      */
-    Optional<Style> parseStyle(@Nullable Configuration configuration,
-                               @Nonnull ClientHttpRequestFactory clientHttpRequestFactory,
-                               @Nullable String styleString) throws Throwable;
+    Optional<Style> parseStyle(
+            @Nullable Configuration configuration,
+            @Nonnull ClientHttpRequestFactory clientHttpRequestFactory,
+            @Nullable String styleString) throws Throwable;
 }

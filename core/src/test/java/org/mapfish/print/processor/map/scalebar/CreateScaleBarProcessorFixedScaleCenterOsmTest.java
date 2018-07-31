@@ -2,7 +2,6 @@ package org.mapfish.print.processor.map.scalebar;
 
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
-
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -41,6 +40,11 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
     @Autowired
     private TestHttpClientFactory requestFactory;
 
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateScaleBarProcessorFixedScaleCenterOsmTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
@@ -54,7 +58,8 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data/osm" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -73,7 +78,8 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -87,7 +93,7 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."));
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         @SuppressWarnings("unchecked")
@@ -110,14 +116,9 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
                 getFile(BASE_DIR + "config-no-report.yaml"));
         final Template template_noreport = config_noreport.getTemplate("main");
         Values values_noreport = new Values("test", requestData, template_noreport,
-                getTaskDirectory(), this.requestFactory, new File("."));
+                                            getTaskDirectory(), this.requestFactory, new File("."));
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values_noreport));
 
         assertNull(values_noreport.getObject("scalebarSubReport", String.class));
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateScaleBarProcessorFixedScaleCenterOsmTest.class,
-                BASE_DIR + "requestData.json");
     }
 }

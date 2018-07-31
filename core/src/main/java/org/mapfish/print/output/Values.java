@@ -38,7 +38,8 @@ public final class Values {
      */
     public static final String TASK_DIRECTORY_KEY = "tempTaskDirectory";
     /**
-     * The key that is used to store {@link org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider}.
+     * The key that is used to store
+     * {@link org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider}.
      */
     public static final String CLIENT_HTTP_REQUEST_FACTORY_KEY = "clientHttpRequestFactoryProvider";
     /**
@@ -86,6 +87,7 @@ public final class Values {
 
     /**
      * Construct from the json request body and the associated template.
+     *
      * @param jobId the job ID
      * @param requestData the json request data
      * @param template the template
@@ -93,17 +95,19 @@ public final class Values {
      * @param httpRequestFactory a factory for making http requests.
      * @param jasperTemplateBuild the directory where the jasper templates are compiled to
      */
-    public Values(final String jobId,
-                  final PJsonObject requestData,
-                  final Template template,
-                  final File taskDirectory,
-                  final MfClientHttpRequestFactoryImpl httpRequestFactory,
-                  final File jasperTemplateBuild) throws JSONException {
+    public Values(
+            final String jobId,
+            final PJsonObject requestData,
+            final Template template,
+            final File taskDirectory,
+            final MfClientHttpRequestFactoryImpl httpRequestFactory,
+            final File jasperTemplateBuild) throws JSONException {
         this(jobId, requestData, template, taskDirectory, httpRequestFactory, jasperTemplateBuild, null);
     }
 
     /**
      * Construct from the json request body and the associated template.
+     *
      * @param jobId the job ID
      * @param requestData the json request data
      * @param template the template
@@ -113,21 +117,22 @@ public final class Values {
      * @param outputFormat the output format
      */
     //CHECKSTYLE:OFF
-    public Values(final String jobId,
-                  final PJsonObject requestData,
-                  final Template template,
-                  final File taskDirectory,
-                  final MfClientHttpRequestFactoryImpl httpRequestFactory,
-                  final File jasperTemplateBuild,
-                  final String outputFormat) throws JSONException {
+    public Values(
+            final String jobId,
+            final PJsonObject requestData,
+            final Template template,
+            final File taskDirectory,
+            final MfClientHttpRequestFactoryImpl httpRequestFactory,
+            final File jasperTemplateBuild,
+            final String outputFormat) throws JSONException {
         //CHECKSTYLE:ON
         Assert.isTrue(!taskDirectory.mkdirs() || taskDirectory.exists());
 
         // add task dir. to values so that all processors can access it
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
         this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY,
-                new MfClientHttpRequestFactoryProvider(new ConfigFileResolvingHttpRequestFactory(
-                        httpRequestFactory, template.getConfiguration(), jobId)));
+                        new MfClientHttpRequestFactoryProvider(new ConfigFileResolvingHttpRequestFactory(
+                                httpRequestFactory, template.getConfiguration(), jobId)));
         this.values.put(TEMPLATE_KEY, template);
         this.values.put(PDF_CONFIG_KEY, template.getPdfConfig());
         if (jasperTemplateBuild != null) {
@@ -148,22 +153,34 @@ public final class Values {
     }
 
     /**
-     * Process the requestJsonAttributes using the attributes and the MapfishParser and add all resulting values to this values object.
+     * Create a new instance and copy the required elements from the other values object. (IE working
+     * directory, http client factory, etc...)
+     *
+     * @param values the values containing the required elements
+     */
+    public Values(@Nonnull final Values values) {
+        addRequiredValues(values);
+    }
+
+    /**
+     * Process the requestJsonAttributes using the attributes and the MapfishParser and add all resulting
+     * values to this values object.
      *
      * @param template the template of the current request.
      * @param attributes the attributes that will be used to add values to this values object
      * @param requestJsonAttributes the json data for populating the attribute values
      * @throws JSONException
      */
-    public void populateFromAttributes(@Nonnull final Template template,
-                                       @Nonnull final Map<String, Attribute> attributes,
-                                       @Nonnull final PObject requestJsonAttributes) throws JSONException {
+    public void populateFromAttributes(
+            @Nonnull final Template template,
+            @Nonnull final Map<String, Attribute> attributes,
+            @Nonnull final PObject requestJsonAttributes) throws JSONException {
         if (requestJsonAttributes.has(JSON_REQUEST_HEADERS) &&
                 requestJsonAttributes.getObject(JSON_REQUEST_HEADERS).has(JSON_REQUEST_HEADERS) &&
                 !attributes.containsKey(JSON_REQUEST_HEADERS)) {
             attributes.put(JSON_REQUEST_HEADERS, new HttpRequestHeadersAttribute());
         }
-        for (String attributeName : attributes.keySet()) {
+        for (String attributeName: attributes.keySet()) {
             final Attribute attribute = attributes.get(attributeName);
             try {
                 put(attributeName, attribute.getValue(template, attributeName, requestJsonAttributes));
@@ -171,7 +188,8 @@ public final class Values {
                 throw e;
             } catch (Throwable e) {
                 String templateName = "unknown";
-                for (Map.Entry<String, Template> entry : template.getConfiguration().getTemplates().entrySet()) {
+                for (Map.Entry<String, Template> entry: template.getConfiguration().getTemplates()
+                        .entrySet()) {
                     if (entry.getValue() == template) {
                         templateName = entry.getKey();
                     }
@@ -184,9 +202,11 @@ public final class Values {
                     defaults = "\n\n The attribute defaults are: " + reflectiveAttribute.getDefaultValue();
                 }
 
-                String errorMsg = "An error occurred when creating a value from the '" + attributeName + "' attribute for the '" +
-                                  templateName + "' template.\n\nThe JSON is: \n" + requestJsonAttributes + defaults + "\n" +
-                                  e.toString();
+                String errorMsg = "An error occurred when creating a value from the '" + attributeName +
+                        "' attribute for the '" +
+                        templateName + "' template.\n\nThe JSON is: \n" + requestJsonAttributes + defaults +
+                        "\n" +
+                        e.toString();
 
                 throw new AttributeParsingException(errorMsg, e);
             }
@@ -194,7 +214,7 @@ public final class Values {
 
         if (template.getConfiguration().isThrowErrorOnExtraParameters()) {
             final List<String> extraProperties = new ArrayList<>();
-            for (Iterator<String> it = requestJsonAttributes.keys(); it.hasNext();) {
+            for (Iterator<String> it = requestJsonAttributes.keys(); it.hasNext(); ) {
                 final String attributeName = it.next();
                 if (!attributes.containsKey(attributeName)) {
                     extraProperties.add(attributeName);
@@ -203,19 +223,9 @@ public final class Values {
 
             if (!extraProperties.isEmpty()) {
                 throw new ExtraPropertyException("Extra properties found in the request attributes",
-                        extraProperties, attributes.keySet());
+                                                 extraProperties, attributes.keySet());
             }
         }
-    }
-
-    /**
-     * Create a new instance and copy the required elements from the other values object.
-     * (IE working directory, http client factory, etc...)
-     *
-     * @param values the values containing the required elements
-     */
-    public Values(@Nonnull final Values values) {
-        addRequiredValues(values);
     }
 
     /**
@@ -225,8 +235,9 @@ public final class Values {
      */
     public void addRequiredValues(@Nonnull final Values sourceValues) {
         Object taskDirectory = sourceValues.getObject(TASK_DIRECTORY_KEY, Object.class);
-        MfClientHttpRequestFactoryProvider requestFactoryProvider = sourceValues.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY,
-                MfClientHttpRequestFactoryProvider.class);
+        MfClientHttpRequestFactoryProvider requestFactoryProvider =
+                sourceValues.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY,
+                                       MfClientHttpRequestFactoryProvider.class);
         Template template = sourceValues.getObject(TEMPLATE_KEY, Template.class);
         PDFConfig pdfConfig = sourceValues.getObject(PDF_CONFIG_KEY, PDFConfig.class);
         String subReportDir = sourceValues.getString(SUBREPORT_DIR_KEY);
@@ -253,7 +264,8 @@ public final class Values {
         }
 
         if (value == null) {
-            throw new IllegalArgumentException("A null value was attempted to be put into the values object under key: " + key);
+            throw new IllegalArgumentException(
+                    "A null value was attempted to be put into the values object under key: " + key);
         }
         this.values.put(key, value);
     }
@@ -342,7 +354,8 @@ public final class Values {
     @SuppressWarnings("unchecked")
     public <T> Map<String, T> find(final Class<T> valueTypeToFind) {
         final Map<String, Object> filtered = Maps.filterEntries(this.values,
-                input -> input != null && valueTypeToFind.isInstance(input.getValue()));
+                                                                input -> input != null && valueTypeToFind
+                                                                        .isInstance(input.getValue()));
 
         return (Map<String, T>) filtered;
     }

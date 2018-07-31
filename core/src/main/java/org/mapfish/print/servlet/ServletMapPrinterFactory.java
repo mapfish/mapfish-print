@@ -24,39 +24,36 @@ import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 
 /**
- * A {@link org.mapfish.print.MapPrinterFactory} that reads configuration from files and uses servlet's methods for resolving
- * the paths to the files.
+ * A {@link org.mapfish.print.MapPrinterFactory} that reads configuration from files and uses servlet's
+ * methods for resolving the paths to the files.
  * <p></p>
  */
 public class ServletMapPrinterFactory implements MapPrinterFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServletMapPrinterFactory.class);
     /**
      * The name of the default app.  This is always required to be one of the apps that are registered.
      */
     public static final String DEFAULT_CONFIGURATION_FILE_KEY = "default";
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServletMapPrinterFactory.class);
+    private final Map<String, MapPrinter> printers = Maps.newConcurrentMap();
+    private final HashMap<String, Long> configurationFileLastModifiedTimes = new HashMap<>();
     @Autowired
     private ApplicationContext applicationContext;
-
     @Autowired
     private ConfigFileLoaderManager configFileLoader;
-
-    private Map<String, URI> configurationFiles = new HashMap<String, URI>();
-
-    private final Map<String, MapPrinter> printers = Maps.newConcurrentMap();
-
-    private final HashMap<String, Long> configurationFileLastModifiedTimes = new HashMap<String, Long>();
+    private Map<String, URI> configurationFiles = new HashMap<>();
 
     @PostConstruct
     private void validateConfigurationFiles() {
         if (!this.configurationFiles.containsKey(DEFAULT_CONFIGURATION_FILE_KEY)) {
-            throw new BeanCreationException(getClass().getName() + " requires that one of the configurationFiles is called '" +
-                                            DEFAULT_CONFIGURATION_FILE_KEY + "'");
+            throw new BeanCreationException(
+                    getClass().getName() + " requires that one of the configurationFiles is called '" +
+                            DEFAULT_CONFIGURATION_FILE_KEY + "'");
         }
 
-        for (URI file : this.configurationFiles.values()) {
-            Assert.isTrue(this.configFileLoader.isAccessible(file), file + " does not exist or is not accessible.");
+        for (URI file: this.configurationFiles.values()) {
+            Assert.isTrue(this.configFileLoader.isAccessible(file),
+                          file + " does not exist or is not accessible.");
         }
     }
 
@@ -69,17 +66,14 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
         URI configFile = this.configurationFiles.get(finalApp);
 
         if (configFile == null) {
-            throw new NoSuchAppException("There is no configurationFile registered in the " + getClass().getName() + " bean with the " +
-                                         "id: " +
-                                         "'" + finalApp + "'");
+            throw new NoSuchAppException(
+                    "There is no configurationFile registered in the " + getClass().getName() +
+                            " bean with the " +
+                            "id: " +
+                            "'" + finalApp + "'");
         }
 
-        final long lastModified;
-        if (this.configurationFileLastModifiedTimes.containsKey(finalApp)) {
-            lastModified = this.configurationFileLastModifiedTimes.get(finalApp);
-        } else {
-            lastModified = 0L;
-        }
+        final long lastModified = this.configurationFileLastModifiedTimes.getOrDefault(finalApp, 0L);
 
         MapPrinter printer = this.printers.get(finalApp);
 
@@ -113,13 +107,13 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
                         "Error occurred while reading configuration file '%s'", configFile), e);
                 throw new RuntimeException(String.format(
                         "Error occurred while reading configuration file '%s': ", configFile),
-                        e);
+                                           e);
             } catch (Throwable e) {
                 LOGGER.error(String.format(
                         "Error occurred while reading configuration file '%s'", configFile), e);
                 throw new RuntimeException(String.format(
                         "Error occurred while reading configuration file '%s': ", configFile),
-                        e);
+                                           e);
             }
         }
 
@@ -136,10 +130,11 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
      *
      * @param configurationFiles the configuration file map.
      */
-    public final void setConfigurationFiles(final Map<String, String> configurationFiles) throws URISyntaxException {
+    public final void setConfigurationFiles(final Map<String, String> configurationFiles)
+            throws URISyntaxException {
         this.configurationFiles.clear();
         this.configurationFileLastModifiedTimes.clear();
-        for (Map.Entry<String, String> entry : configurationFiles.entrySet()) {
+        for (Map.Entry<String, String> entry: configurationFiles.entrySet()) {
             if (!entry.getValue().contains(":/")) {
                 // assume is a file
                 this.configurationFiles.put(entry.getKey(), new File(entry.getValue()).toURI());
@@ -154,14 +149,15 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
     }
 
     /**
-     * Set a single directory that contains one or more subdirectories, each one that contains a config.yaml file will
-     * be considered a print app.
+     * Set a single directory that contains one or more subdirectories, each one that contains a config.yaml
+     * file will be considered a print app.
+     * <p>
+     * This can be called multiple times and each directory will add to the apps found in the other
+     * directories.  However the appId is based on the directory names so if there are 2 directories with the
+     * same name the second will overwrite the first encounter.
      *
-     * This can be called multiple times and each directory will add to the apps found in the other directories.  However
-     * the appId is based on the directory names so if there are 2 directories with the same name the second will overwrite the
-     * first encounter.
-     *
-     * @param directory the root directory containing the sub-app-directories.  This must resolve to a file with the
+     * @param directory the root directory containing the sub-app-directories.  This must resolve to a
+     *         file with the
      */
     public final void setAppsRootDirectory(final String directory) throws URISyntaxException {
 
@@ -174,18 +170,20 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
             if (fileOptional.isPresent()) {
                 children = Files.fileTreeTraverser().children(fileOptional.get());
             } else {
-                throw new IllegalArgumentException(directory + " does not refer to a file on the current system.");
+                throw new IllegalArgumentException(
+                        directory + " does not refer to a file on the current system.");
             }
         }
-        for (File child : children) {
+        for (File child: children) {
             final File configFile = new File(child, "config.yaml");
             if (configFile.exists()) {
                 this.configurationFiles.put(child.getName(), configFile.toURI());
             }
         }
         if (this.configurationFiles.isEmpty()) {
-            throw new IllegalArgumentException(directory + " is an emptry directory.  There must be at least one subdirectory " +
-                                               "containing a config.yaml file");
+            throw new IllegalArgumentException(
+                    directory + " is an emptry directory.  There must be at least one subdirectory " +
+                            "containing a config.yaml file");
         }
 
         // ensure there is a "default" app

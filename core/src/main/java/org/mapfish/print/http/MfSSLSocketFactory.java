@@ -15,13 +15,15 @@ import javax.net.ssl.SSLContext;
  * A ssl socket factory that obtains the keystore from the current configuration.
  */
 public final class MfSSLSocketFactory implements LayeredConnectionSocketFactory {
-    private LayeredConnectionSocketFactory defaultFactory = SSLConnectionSocketFactory.getSystemSocketFactory();
+    private LayeredConnectionSocketFactory defaultFactory =
+            SSLConnectionSocketFactory.getSystemSocketFactory();
 
     @Override
-    public Socket createLayeredSocket(final Socket socket,
-                                      final String target,
-                                      final int port,
-                                      final HttpContext context) throws IOException {
+    public Socket createLayeredSocket(
+            final Socket socket,
+            final String target,
+            final int port,
+            final HttpContext context) throws IOException {
         LayeredConnectionSocketFactory factory = getSSLSocketFactory();
         return factory.createLayeredSocket(socket, target, port, context);
     }
@@ -34,12 +36,13 @@ public final class MfSSLSocketFactory implements LayeredConnectionSocketFactory 
     }
 
     @Override
-    public Socket connectSocket(final int connectTimeout,
-                                final Socket sock,
-                                final HttpHost host,
-                                final InetSocketAddress remoteAddress,
-                                final InetSocketAddress localAddress,
-                                final HttpContext context) throws IOException {
+    public Socket connectSocket(
+            final int connectTimeout,
+            final Socket sock,
+            final HttpHost host,
+            final InetSocketAddress remoteAddress,
+            final InetSocketAddress localAddress,
+            final HttpContext context) throws IOException {
         LayeredConnectionSocketFactory factory = getSSLSocketFactory();
         return factory.connectSocket(connectTimeout, sock, host, remoteAddress, localAddress, context);
     }

@@ -45,6 +45,11 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0Test extends AbstractM
     @Autowired
     private ForkJoinPool forkJoinPool;
 
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterWms1_0_0Test.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
@@ -58,25 +63,26 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0Test extends AbstractM
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
 
                         final Multimap<String, String> uppercaseParams = HashMultimap.create();
-                        for (Map.Entry<String, String> entry : URIUtils.getParameters(uri).entries()) {
+                        for (Map.Entry<String, String> entry: URIUtils.getParameters(uri).entries()) {
                             uppercaseParams.put(entry.getKey().toUpperCase(), entry.getValue().toUpperCase());
                         }
 
                         assertTrue("SERVICE != WMS: " + uppercaseParams.get("WMS"),
-                                uppercaseParams.containsEntry("SERVICE", "WMS"));
+                                   uppercaseParams.containsEntry("SERVICE", "WMS"));
                         assertTrue("FORMAT != IMAGE/TIFF: " + uppercaseParams.get("FORMAT"),
-                                uppercaseParams.containsEntry("FORMAT", "IMAGE/PNG"));
+                                   uppercaseParams.containsEntry("FORMAT", "IMAGE/PNG"));
                         assertTrue("REQUEST != MAP: " + uppercaseParams.get("REQUEST"),
-                                uppercaseParams.containsEntry("REQUEST", "MAP"));
+                                   uppercaseParams.containsEntry("REQUEST", "MAP"));
                         assertTrue("VERSION != 1.0.0: " + uppercaseParams.get("VERSION"),
-                                uppercaseParams.containsEntry("VERSION", "1.0.0"));
+                                   uppercaseParams.containsEntry("VERSION", "1.0.0"));
                         assertTrue("LAYERS != TIGER-NY: " + uppercaseParams.get("LAYERS"),
-                                uppercaseParams.containsEntry("LAYERS", "TIGER-NY"));
+                                   uppercaseParams.containsEntry("LAYERS", "TIGER-NY"));
                         assertTrue("STYLES != LINE: " + uppercaseParams.get("STYLES"),
-                                uppercaseParams.containsEntry("STYLES", "LINE"));
+                                   uppercaseParams.containsEntry("STYLES", "LINE"));
                         assertTrue("CUSTOMP1 != 1", uppercaseParams.containsEntry("CUSTOMP1", "1"));
                         assertTrue("CUSTOMP2 != 2", uppercaseParams.containsEntry("CUSTOMP2", "2"));
                         assertTrue("MERGEABLEP1 != 3", uppercaseParams.containsEntry("MERGEABLEP1", "3"));
@@ -101,7 +107,8 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0Test extends AbstractM
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -115,7 +122,7 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0Test extends AbstractM
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -127,10 +134,5 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0Test extends AbstractM
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
                 .assertSimilarity(layerGraphics, 630, 294, 40);
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterWms1_0_0Test.class,
-                BASE_DIR + "requestData.json");
     }
 }

@@ -6,7 +6,6 @@ import com.google.common.io.ByteSource;
 import com.google.common.io.CharSource;
 import com.google.common.io.Closeables;
 import com.vividsolutions.jts.util.Assert;
-
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.DefaultResourceLocator;
 import org.geotools.styling.SLDParser;
@@ -29,7 +28,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
@@ -41,9 +39,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 public class SLDParserPlugin implements StyleParserPlugin {
     /**
      * The separator between the path or url segment for loading the sld and an index of the style to obtain.
-     *
-     * SLDs can contains multiple styles.  Because of this there needs to be a way to indicate which style
-     * is referred to.  That is the purpose of the style index.
+     * <p>
+     * SLDs can contains multiple styles.  Because of this there needs to be a way to indicate which style is
+     * referred to.  That is the purpose of the style index.
      */
     public static final String STYLE_INDEX_REF_SEPARATOR = "##";
 
@@ -55,9 +53,10 @@ public class SLDParserPlugin implements StyleParserPlugin {
             @Nonnull final String styleString) throws Throwable {
 
         // try to load xml
-        final ByteSource straightByteSource = ByteSource.wrap(styleString.getBytes(Constants.DEFAULT_CHARSET));
+        final ByteSource straightByteSource =
+                ByteSource.wrap(styleString.getBytes(Constants.DEFAULT_CHARSET));
         final Optional<Style> styleOptional = tryLoadSLD(straightByteSource, null,
-                clientHttpRequestFactory);
+                                                         clientHttpRequestFactory);
 
         if (styleOptional.isPresent()) {
             return styleOptional;
@@ -78,7 +77,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
         };
 
         return ParserPluginUtils.loadStyleAsURI(clientHttpRequestFactory, styleStringWithoutIndexReference,
-                loadFunction);
+                                                loadFunction);
     }
 
     private String removeIndexReference(final String styleString) {
@@ -101,7 +100,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
             final ByteSource byteSource, final Integer styleIndex,
             final ClientHttpRequestFactory clientHttpRequestFactory) throws IOException {
         Assert.isTrue(styleIndex == null || styleIndex > -1,
-                "styleIndex must be > -1 but was: " + styleIndex);
+                      "styleIndex must be > -1 but was: " + styleIndex);
 
         final CharSource charSource = byteSource.asCharSource(Constants.DEFAULT_CHARSET);
         BufferedReader readerXML = null;
@@ -139,9 +138,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
                             return request.getURI().toURL();
                         }
                         return null;
-                    } catch (IOException e) {
-                        return null;
-                    } catch (URISyntaxException e) {
+                    } catch (IOException | URISyntaxException e) {
                         return null;
                     }
                 }
@@ -158,11 +155,15 @@ public class SLDParserPlugin implements StyleParserPlugin {
 
         if (styleIndex != null) {
             Assert.isTrue(styleIndex < styles.length, String.format("There where %s styles in file but " +
-                            "requested index was: %s", styles.length, styleIndex + 1));
+                                                                            "requested index was: %s",
+                                                                    styles.length, styleIndex + 1));
         } else {
             Assert.isTrue(styles.length < 2, String.format("There are %s therefore the styleRef must " +
-                    "contain an index identifying the style.  The index starts at 1 for the first style.\n" +
-                    "\tExample: thinline.sld##1", styles.length));
+                                                                   "contain an index identifying the style." +
+                                                                   "  The index starts at 1 for the first " +
+                                                                   "style.\n" +
+                                                                   "\tExample: thinline.sld##1",
+                                                           styles.length));
         }
 
         if (styleIndex == null) {
@@ -173,8 +174,8 @@ public class SLDParserPlugin implements StyleParserPlugin {
     }
 
     /**
-     * A default error handler to avoid that error messages like "[Fatal Error] :1:1: Content is not
-     * allowed in prolog." are directly printed to STDERR.
+     * A default error handler to avoid that error messages like "[Fatal Error] :1:1: Content is not allowed
+     * in prolog." are directly printed to STDERR.
      */
     public static class ErrorHandler extends DefaultHandler {
 
@@ -199,7 +200,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
         /**
          * @param e Exception
          */
-        public final void warning(final SAXParseException e) throws SAXException {
+        public final void warning(final SAXParseException e) {
             //ignore
         }
     }

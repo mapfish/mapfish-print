@@ -41,17 +41,23 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
      * @param executorService the thread pool for doing the rendering.
      * @param params the parameters for this layer
      */
-    public GeotiffLayer(final Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> reader,
-                        final StyleSupplier<AbstractGridCoverage2DReader> style,
-                        final ExecutorService executorService,
-                        final AbstractLayerParams params) {
+    public GeotiffLayer(
+            final Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> reader,
+            final StyleSupplier<AbstractGridCoverage2DReader> style,
+            final ExecutorService executorService,
+            final AbstractLayerParams params) {
         super(reader, style, executorService, params);
     }
 
+    @Override
+    public RenderType getRenderType() {
+        return RenderType.TIFF;
+    }
+
     /**
-      * <p>Renders a GeoTIFF image as layer.</p>
-      * <p>Type: <code>geotiff</code></p>
-      */
+     * <p>Renders a GeoTIFF image as layer.</p>
+     * <p>Type: <code>geotiff</code></p>
+     */
     public static final class Plugin extends AbstractGridCoverageLayerPlugin
             implements MapLayerFactoryPlugin<GeotiffParam> {
         @Autowired
@@ -80,9 +86,10 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
             String styleRef = param.style;
 
             return new GeotiffLayer(geotiffReader,
-                    super.<AbstractGridCoverage2DReader>createStyleSupplier(template, styleRef),
-                    this.forkJoinPool,
-                    param);
+                                    super.<AbstractGridCoverage2DReader>createStyleSupplier(template,
+                                                                                            styleRef),
+                                    this.forkJoinPool,
+                                    param);
         }
 
         private Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> getGeotiffReader(
@@ -99,16 +106,13 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
                             geotiffFile = new File(url.toURI());
                         } else {
                             geotiffFile = File.createTempFile("downloadedGeotiff", ".tiff");
-                            Closer closer = Closer.create();
 
-                            try {
-                                final ClientHttpRequest request = requestFactory.createRequest(url.toURI(),
-                                        HttpMethod.GET);
+                            try (Closer closer = Closer.create()) {
+                                final ClientHttpRequest request = requestFactory.createRequest(
+                                        url.toURI(), HttpMethod.GET);
                                 final ClientHttpResponse httpResponse = closer.register(request.execute());
                                 FileOutputStream output = closer.register(new FileOutputStream(geotiffFile));
                                 ByteStreams.copy(httpResponse.getBody(), output);
-                            } finally {
-                                closer.close();
                             }
                         }
 
@@ -127,8 +131,8 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
      */
     public static final class GeotiffParam extends AbstractLayerParams {
         /**
-         * The url of the geotiff.  It can be a file but if it is the file must be contained within the
-         * config directory.
+         * The url of the geotiff.  It can be a file but if it is the file must be contained within the config
+         * directory.
          */
         public String url;
         /**
@@ -136,10 +140,5 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
          */
         @HasDefaultValue
         public String style = Constants.Style.Raster.NAME;
-    }
-
-    @Override
-    public RenderType getRenderType() {
-        return RenderType.TIFF;
     }
 }

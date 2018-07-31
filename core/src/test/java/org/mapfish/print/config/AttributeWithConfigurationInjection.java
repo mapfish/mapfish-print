@@ -7,7 +7,8 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Attribute that needs the configuration object injected.
  */
-public class AttributeWithConfigurationInjection extends PrimitiveAttribute<Integer> implements HasConfiguration {
+public class AttributeWithConfigurationInjection extends PrimitiveAttribute<Integer>
+        implements HasConfiguration {
 
     private Configuration configuration;
 

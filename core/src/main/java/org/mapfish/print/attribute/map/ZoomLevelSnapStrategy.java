@@ -114,9 +114,9 @@ public enum ZoomLevelSnapStrategy {
      * Search the provided zoomLevels for the scale that is the closest according to the current strategy.
      *
      * @param scale the reference scale
-     * @param tolerance the amount from one of the zoomLevels to still be considered <em>at</em> the scale.
-     *      This is important for all strategies other than CLOSEST in order to prevent the scale from jumping
-     *      to a different version even when it is very close to one of the zoomLevels.
+     * @param tolerance the amount from one of the zoomLevels to still be considered <em>at</em> the
+     *         scale. This is important for all strategies other than CLOSEST in order to prevent the scale
+     *         from jumping to a different version even when it is very close to one of the zoomLevels.
      * @param zoomLevels the allowed zoomLevels.
      */
     protected abstract SearchResult search(
@@ -136,6 +136,7 @@ public enum ZoomLevelSnapStrategy {
 
         /**
          * Gets the zoom level.
+         *
          * @return the zoom level
          */
         public int getZoomLevel() {
@@ -144,6 +145,7 @@ public enum ZoomLevelSnapStrategy {
 
         /**
          * Gets the zoom levels.
+         *
          * @return the zoom levels
          */
         public ZoomLevels getZoomLevels() {
@@ -152,6 +154,7 @@ public enum ZoomLevelSnapStrategy {
 
         /**
          * Gets the scale.
+         *
          * @param unit the unit
          * @return the scale
          */
@@ -163,8 +166,12 @@ public enum ZoomLevelSnapStrategy {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
 
             SearchResult that = (SearchResult) o;
 
@@ -181,7 +188,7 @@ public enum ZoomLevelSnapStrategy {
         @Override
         public String toString() {
             return String.format("SearchResult{zoomLevel=%s, scale=%s, zoomLevels=%s}",
-                    zoomLevel, zoomLevels.get(zoomLevel, DistanceUnit.M), zoomLevels);
+                                 zoomLevel, zoomLevels.get(zoomLevel, DistanceUnit.M), zoomLevels);
         }
 
 // CHECKSTYLE:ON

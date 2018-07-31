@@ -4,13 +4,14 @@ package org.mapfish.print;
  * Util class to test equality of floating points.
  */
 public final class FloatingPointUtil {
-    private static final float EPSILON =  0.00000001F;
+    private static final float EPSILON = 0.00000001F;
 
     private FloatingPointUtil() {
     }
 
     /**
-     * Check the equality of two floats taking into consideration the precision issue of floating point arithmetic in Java.
+     * Check the equality of two floats taking into consideration the precision issue of floating point
+     * arithmetic in Java.
      *
      * @param f1 Float 1.
      * @param f2 Float 2.
@@ -21,7 +22,8 @@ public final class FloatingPointUtil {
     }
 
     /**
-     * Check the equality of two doubles taking into consideration the precision issue of floating point arithmetic in Java.
+     * Check the equality of two doubles taking into consideration the precision issue of floating point
+     * arithmetic in Java.
      *
      * @param d1 Double 1.
      * @param d2 Double 2.

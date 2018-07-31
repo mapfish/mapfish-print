@@ -17,11 +17,11 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 /**
- * A Route planner that obtains proxies from the configuration that is currently in
- * {@link org.mapfish.print.http.MfClientHttpRequestFactoryImpl#CURRENT_CONFIGURATION}.
- *
- * {@link MfClientHttpRequestFactoryImpl.Request} will set the correct configuration
- * before the request is executed so that correct proxies will be set.
+ * A Route planner that obtains proxies from the configuration that is currently in {@link
+ * org.mapfish.print.http.MfClientHttpRequestFactoryImpl#CURRENT_CONFIGURATION}.
+ * <p>
+ * {@link MfClientHttpRequestFactoryImpl.Request} will set the correct configuration before the request is
+ * executed so that correct proxies will be set.
  */
 public final class MfRoutePlanner extends DefaultRoutePlanner {
     /**
@@ -32,9 +32,10 @@ public final class MfRoutePlanner extends DefaultRoutePlanner {
     }
 
     @Override
-    protected HttpHost determineProxy(final HttpHost target,
-                                      final HttpRequest request,
-                                      final HttpContext context) throws HttpException {
+    protected HttpHost determineProxy(
+            final HttpHost target,
+            final HttpRequest request,
+            final HttpContext context) throws HttpException {
         Configuration config = MfClientHttpRequestFactoryImpl.getCurrentConfiguration();
         if (config == null) {
             return null;
@@ -48,7 +49,7 @@ public final class MfRoutePlanner extends DefaultRoutePlanner {
         HttpMethod method = HttpMethod.valueOf(request.getRequestLine().getMethod());
 
         final List<HttpProxy> proxies = config.getProxies();
-        for (HttpProxy proxy : proxies) {
+        for (HttpProxy proxy: proxies) {
             try {
                 if (proxy.matches(MatchInfo.fromUri(uri, method))) {
                     return proxy.getHttpHost();

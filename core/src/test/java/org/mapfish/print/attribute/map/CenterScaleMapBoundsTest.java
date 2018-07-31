@@ -14,10 +14,10 @@ import static org.junit.Assert.assertEquals;
  * Test bounds implementation.
  */
 public class CenterScaleMapBoundsTest {
-    static final double OPENLAYERS_2_DPI = 72;
     public static final CoordinateReferenceSystem SPHERICAL_MERCATOR;
     public static final CoordinateReferenceSystem CH1903;
     public static final CoordinateReferenceSystem LAMBERT;
+    static final double OPENLAYERS_2_DPI = 72;
 
     static {
         try {
@@ -30,13 +30,15 @@ public class CenterScaleMapBoundsTest {
     }
 
     @Test
-    public void testToReferencedEnvelopeCH1903Projection() throws Exception {
+    public void testToReferencedEnvelopeCH1903Projection() {
         final double startScaleDenominator = 18984.396150703426;
-        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(CH1903, 659596.5, 185610.5, startScaleDenominator);
+        final CenterScaleMapBounds bounds =
+                new CenterScaleMapBounds(CH1903, 659596.5, 185610.5, startScaleDenominator);
         final Rectangle paintArea = new Rectangle(521, 330);
         final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea);
 
-        // It would be nice to nail this down in the future to the exact value but the method I used for measurement was openlayers and
+        // It would be nice to nail this down in the future to the exact value but the method I used for
+        // measurement was openlayers and
         // I don't know what the DPI it was using and I don't know how accurate its calculation is either.
         assertEquals(657851, envelope.getMinX(), 1);
         assertEquals(661341, envelope.getMaxX(), 1);
@@ -46,13 +48,15 @@ public class CenterScaleMapBoundsTest {
     }
 
     @Test
-    public void testToReferencedEnvelopeLambertProjection() throws Exception {
+    public void testToReferencedEnvelopeLambertProjection() {
         final double startScaleDenominator = 17983.582534790035;
-        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(LAMBERT, 445000, 6355000, startScaleDenominator);
+        final CenterScaleMapBounds bounds =
+                new CenterScaleMapBounds(LAMBERT, 445000, 6355000, startScaleDenominator);
         final Rectangle paintArea = new Rectangle(418, 512);
         final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea);
 
-        // It would be nice to nail this down in the future to the exact value but the method I used for measurement was openlayers and
+        // It would be nice to nail this down in the future to the exact value but the method I used for
+        // measurement was openlayers and
         // I don't know what the DPI it was using and I don't know how accurate its calculation is either.
         assertEquals(443674, envelope.getMinX(), 1);
         assertEquals(446325, envelope.getMaxX(), 1);
@@ -62,14 +66,16 @@ public class CenterScaleMapBoundsTest {
     }
 
     @Test
-    public void testToReferencedEnvelopeLatLong() throws Exception {
+    public void testToReferencedEnvelopeLatLong() {
         final double startScaleDenominator = 56304.83087498591;
-        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 8.2335427805083, 46.801424340241,
-                startScaleDenominator);
+        final CenterScaleMapBounds bounds =
+                new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 8.2335427805083, 46.801424340241,
+                                         startScaleDenominator);
         final Rectangle paintArea = new Rectangle(521, 330);
         final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea);
 
-        // It would be nice to nail this down in the future to the exact value but the method I used for measurement was openlayers and
+        // It would be nice to nail this down in the future to the exact value but the method I used for
+        // measurement was openlayers and
         // I don't know what the DPI it was using and I don't know how accurate its calculation is either.
         final double delta = 0.000001;
         assertEquals(8.1657602, envelope.getMinX(), delta);
@@ -80,9 +86,10 @@ public class CenterScaleMapBoundsTest {
     }
 
     @Test
-    public void testZoomOut() throws Exception {
+    public void testZoomOut() {
         final double Denominator = 2500.0;
-        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0.0, 0.0, Denominator);
+        final CenterScaleMapBounds bounds =
+                new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0.0, 0.0, Denominator);
         final Rectangle paintArea = new Rectangle(400, 200);
         final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea);
 

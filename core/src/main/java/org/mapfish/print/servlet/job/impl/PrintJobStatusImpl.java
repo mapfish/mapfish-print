@@ -8,7 +8,6 @@ import org.mapfish.print.servlet.job.PrintJobResult;
 import org.mapfish.print.servlet.job.PrintJobStatus;
 
 import java.util.Date;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -26,14 +25,12 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "print_job_statuses")
 public class PrintJobStatusImpl implements PrintJobStatus {
-    @Id
-    @Type(type = "org.hibernate.type.TextType")
-    private String referenceId;
-
     @Embedded
     @Target(PrintJobEntryImpl.class)
     private final PrintJobEntry entry;
-
+    @Id
+    @Type(type = "org.hibernate.type.TextType")
+    private String referenceId;
     @Column
     @Enumerated(EnumType.STRING)
     private PrintJobStatus.Status status = PrintJobStatus.Status.WAITING;
@@ -57,7 +54,6 @@ public class PrintJobStatusImpl implements PrintJobStatus {
 
     /**
      * Constructor.
-     *
      */
     public PrintJobStatusImpl() {
         this.entry = null;
@@ -80,13 +76,13 @@ public class PrintJobStatusImpl implements PrintJobStatus {
         return this.entry;
     }
 
-    public final void setCompletionTime(final Long completionTime) {
-        this.completionTime = completionTime;
-    }
-
     @Override
     public final Long getCompletionTime() {
         return this.completionTime;
+    }
+
+    public final void setCompletionTime(final Long completionTime) {
+        this.completionTime = completionTime;
     }
 
     @Override
@@ -94,9 +90,17 @@ public class PrintJobStatusImpl implements PrintJobStatus {
         return this.requestCount;
     }
 
+    public final void setRequestCount(final long requestCount) {
+        this.requestCount = requestCount;
+    }
+
     @Override
     public final String getError() {
         return this.error;
+    }
+
+    public final void setError(final String error) {
+        this.error = error;
     }
 
     @Override
@@ -108,14 +112,6 @@ public class PrintJobStatusImpl implements PrintJobStatus {
         this.status = status;
     }
 
-    public final void setRequestCount(final long requestCount) {
-        this.requestCount = requestCount;
-    }
-
-    public final void setError(final String error) {
-        this.error = error;
-    }
-
     @Override
     public final PrintJobResult getResult() {
         return this.result;
@@ -123,6 +119,7 @@ public class PrintJobStatusImpl implements PrintJobStatus {
 
     /**
      * Set the result.
+     *
      * @param result The result
      */
     public final void setResult(final PrintJobResult result) {
@@ -146,7 +143,7 @@ public class PrintJobStatusImpl implements PrintJobStatus {
 
     @Override
     public final String getAppId() {
-         return getEntry().getAppId();
+        return getEntry().getAppId();
     }
 
     @Override

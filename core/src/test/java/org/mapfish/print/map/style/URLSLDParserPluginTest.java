@@ -3,7 +3,6 @@ package org.mapfish.print.map.style;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
-
 import org.geotools.styling.Style;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -35,29 +34,34 @@ public class URLSLDParserPluginTest extends AbstractMapfishSpringTest {
     public void testParseStyle() throws Throwable {
         final String host = "URLSLDParserPluginTest.com";
         clientHttpRequestFactory.registerHandler(new Predicate<URI>() {
-                                           @Override
-                                           public boolean apply(URI input) {
-                                               return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
-                                           }
-                                       }, new TestHttpClientFactory.Handler() {
-                                           @Override
-                                           public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
-                                               try {
-                                                   byte[] bytes = Files.toByteArray(getFile(uri.getPath()));
-                                                   return ok(uri, bytes, httpMethod);
-                                               } catch (AssertionError e) {
-                                                   return error404(uri, httpMethod);
-                                               }
-                                           }
-                                       }
+                                                     @Override
+                                                     public boolean apply(URI input) {
+                                                         return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
+                                                     }
+                                                 }, new TestHttpClientFactory.Handler() {
+                                                     @Override
+                                                     public MockClientHttpRequest handleRequest(
+                                                             URI uri,
+                                                             HttpMethod httpMethod) throws Exception {
+                                                         try {
+                                                             byte[] bytes =
+                                                                     Files.toByteArray(getFile(uri.getPath()));
+                                                             return ok(uri, bytes, httpMethod);
+                                                         } catch (AssertionError e) {
+                                                             return error404(uri, httpMethod);
+                                                         }
+                                                     }
+                                                 }
         );
 
         Configuration configuration = new Configuration();
         configuration.setFileLoaderManager(this.fileLoaderManager);
-        configuration.setConfigurationFile(getFile("/org/mapfish/print/processor/map/center_wmts_fixedscale/thinline.sld"));
+        configuration.setConfigurationFile(
+                getFile("/org/mapfish/print/processor/map/center_wmts_fixedscale/thinline.sld"));
 
-        ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(this.clientHttpRequestFactory,
-                configuration, "test");
+        ConfigFileResolvingHttpRequestFactory requestFactory =
+                new ConfigFileResolvingHttpRequestFactory(this.clientHttpRequestFactory,
+                                                          configuration, "test");
         final Optional<Style> styleOptional = parserPlugin.parseStyle(
                 configuration, requestFactory,
                 "http://" + host + "/org/mapfish/print/processor/map/center_wmts_fixedscale/thinline.sld");

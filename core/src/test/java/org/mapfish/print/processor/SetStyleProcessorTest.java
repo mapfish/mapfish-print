@@ -38,17 +38,23 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
     @Test
     public void testAssignStyleBasic() throws Exception {
         this.configurationFactory.setDoValidation(false);
-        final Configuration config = this.configurationFactory.getConfig(getFile(BASE_DIR + "basic/config.yaml"));
+        final Configuration config =
+                this.configurationFactory.getConfig(getFile(BASE_DIR + "basic/config.yaml"));
         final Template template = config.getTemplate("main");
-        PJsonObject requestData = parseJSONObjectFromFile(SetStyleProcessorTest.class, BASE_DIR + "basic/request.json");
-        Values values = new Values("test", requestData, template, this.folder.getRoot(), this.httpClientFactory, new File("."));
+        PJsonObject requestData =
+                parseJSONObjectFromFile(SetStyleProcessorTest.class, BASE_DIR + "basic/request.json");
+        Values values =
+                new Values("test", requestData, template, this.folder.getRoot(), this.httpClientFactory,
+                           new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
-        final MapAttribute.MapAttributeValues map = values.getObject("map", MapAttribute.MapAttributeValues.class);
+        final MapAttribute.MapAttributeValues map =
+                values.getObject("map", MapAttribute.MapAttributeValues.class);
         final AbstractFeatureSourceLayer layer = (AbstractFeatureSourceLayer) map.getLayers().get(0);
         final MapfishMapContext mapContext = AbstractMapfishSpringTest.createTestMapContext();
         assertEquals("Default Line",
-                layer.getLayers(httpClientFactory, mapContext, "test").get(0).getStyle().getDescription().getTitle().toString());
+                     layer.getLayers(httpClientFactory, mapContext, "test").get(0).getStyle().getDescription()
+                             .getTitle().toString());
     }
 
     @Test
@@ -69,7 +75,8 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
     @Test
     public void testAssignStyleTwoMaps() throws Exception {
         this.configurationFactory.setDoValidation(false);
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "two_maps/config.yaml"));
+        final Configuration config =
+                configurationFactory.getConfig(getFile(BASE_DIR + "two_maps/config.yaml"));
         final Template template = config.getTemplate("main");
 
         ProcessorDependencyGraph graph = template.getProcessorGraph();

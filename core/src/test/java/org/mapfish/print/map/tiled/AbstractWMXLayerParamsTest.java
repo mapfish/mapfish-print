@@ -11,27 +11,29 @@ import static org.junit.Assert.assertTrue;
  * Test param methods.
  */
 public class AbstractWMXLayerParamsTest {
-    private static final String CUSTOM_PARAMS = "{\"key\": \"value\", \"key2\":[\"value1\", \"value2\"], \"key3\": null}";
+    private static final String CUSTOM_PARAMS =
+            "{\"key\": \"value\", \"key2\":[\"value1\", \"value2\"], \"key3\": null}";
+
     @Test
-    public void testCustomParams() throws Exception {
+    public void testCustomParams() {
         final AbstractWMXLayerParams params = new TestParams();
 
         assertEquals(0, params.getCustomParams().size());
 
         params.customParams = AbstractMapfishSpringTest.parseJSONObjectFromString(CUSTOM_PARAMS);
 
-        final Multimap<String,String> paramMap = params.getCustomParams();
+        final Multimap<String, String> paramMap = params.getCustomParams();
 
         assertCorrectParamsInMap(paramMap);
     }
 
     @Test
-    public void testMergeableParams() throws Exception {
+    public void testMergeableParams() {
         final AbstractWMXLayerParams params = new TestParams();
         assertEquals(0, params.getMergeableParams().size());
         params.customParams = AbstractMapfishSpringTest.parseJSONObjectFromString(CUSTOM_PARAMS);
 
-        final Multimap<String,String> paramMap = params.getCustomParams();
+        final Multimap<String, String> paramMap = params.getCustomParams();
 
         assertCorrectParamsInMap(paramMap);
     }

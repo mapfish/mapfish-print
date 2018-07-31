@@ -6,14 +6,12 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.FeaturesParser;
 import org.mapfish.print.parser.HasDefaultValue;
-import org.opengis.referencing.FactoryException;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * Attribute for GeoJson feature collection.
- * [[examples=report]]
+ * Attribute for GeoJson feature collection. [[examples=report]]
  */
 public final class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribute.FeaturesAttributeValues> {
 
@@ -37,19 +35,17 @@ public final class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribu
      */
     public static final class FeaturesAttributeValues {
         private final Template template;
-        private SimpleFeatureCollection featuresCollection;
-
         /**
          * The geojson features.
          */
         public String features;
-
         /**
-         * By default the normal axis order as specified in EPSG code will be used when parsing projections.  However
-         * the requestor can override this by explicitly declaring that longitude axis is first.
+         * By default the normal axis order as specified in EPSG code will be used when parsing projections.
+         * However the requestor can override this by explicitly declaring that longitude axis is first.
          */
         @HasDefaultValue
         public Boolean longitudeFirst = null;
+        private SimpleFeatureCollection featuresCollection;
 
         /**
          * Constructor.
@@ -65,8 +61,9 @@ public final class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribu
          *
          * @param httpRequestFactory the request factory to use for making requests
          */
-        public synchronized SimpleFeatureCollection getFeatures(final MfClientHttpRequestFactory httpRequestFactory) throws
-                FactoryException, IOException {
+        public synchronized SimpleFeatureCollection getFeatures(
+                final MfClientHttpRequestFactory httpRequestFactory) throws
+                IOException {
             if (this.featuresCollection == null) {
                 final boolean forceLongitudeFirst = this.longitudeFirst == null ? false : this.longitudeFirst;
                 final FeaturesParser parser = new FeaturesParser(httpRequestFactory, forceLongitudeFirst);

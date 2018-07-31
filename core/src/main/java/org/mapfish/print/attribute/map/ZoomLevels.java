@@ -44,16 +44,17 @@ public final class ZoomLevels implements ConfigurationObject {
 
     /**
      * Set the scales (sorts from largest to smallest).
+     *
      * @param newScaleDenominators The scales (may be unsorted).
      */
     public void setScales(final double[] newScaleDenominators) {
-        TreeSet<Double> sortedSet = new TreeSet<Double>(Ordering.natural().reverse());
-        for (int i = 0; i < newScaleDenominators.length; i++) {
-            sortedSet.add(newScaleDenominators[i]);
+        TreeSet<Double> sortedSet = new TreeSet<>(Ordering.natural().reverse());
+        for (final double newScaleDenominator: newScaleDenominators) {
+            sortedSet.add(newScaleDenominator);
         }
         this.scaleDenominators = new double[sortedSet.size()];
         int i = 0;
-        for (Double scaleDenominator : sortedSet) {
+        for (Double scaleDenominator: sortedSet) {
             this.scaleDenominators[i] = scaleDenominator;
             i++;
         }
@@ -68,6 +69,7 @@ public final class ZoomLevels implements ConfigurationObject {
 
     /**
      * Get the scale at the given index.
+     *
      * @param index the index of the zoom level to access.
      * @param unit the unit.
      */
@@ -83,8 +85,12 @@ public final class ZoomLevels implements ConfigurationObject {
     // CHECKSTYLE:OFF
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         ZoomLevels that = (ZoomLevels) o;
 
@@ -100,7 +106,8 @@ public final class ZoomLevels implements ConfigurationObject {
     @Override
     public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (scaleDenominators == null || scaleDenominators.length == 0) {
-            validationErrors.add(new ConfigurationException("There are no scales defined in " + getClass().getName()));
+            validationErrors.add(new ConfigurationException(
+                    "There are no scales defined in " + getClass().getName()));
         }
     }
 

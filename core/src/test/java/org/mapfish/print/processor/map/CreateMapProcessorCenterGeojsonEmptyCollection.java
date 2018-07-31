@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
  * Tests a GeoJSON layer with an empty FeatureCollection.
  */
 public class CreateMapProcessorCenterGeojsonEmptyCollection extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR ="center_geojson_empty_collection/";
+    public static final String BASE_DIR = "center_geojson_empty_collection/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
@@ -34,6 +34,11 @@ public class CreateMapProcessorCenterGeojsonEmptyCollection extends AbstractMapf
     private MfClientHttpRequestFactoryImpl httpRequestFactory;
     @Autowired
     private ForkJoinPool forkJoinPool;
+
+    public static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorCenterGeojsonEmptyCollection.class,
+                                       BASE_DIR + "requestData.json");
+    }
 
     @Test
     public void testExecute() throws Exception {
@@ -46,7 +51,7 @@ public class CreateMapProcessorCenterGeojsonEmptyCollection extends AbstractMapf
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.httpRequestFactory, new File("."));
+                                   this.httpRequestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -58,10 +63,5 @@ public class CreateMapProcessorCenterGeojsonEmptyCollection extends AbstractMapf
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
                 .assertSimilarity(new File(layerGraphics.get(0)), 1);
-    }
-
-    public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorCenterGeojsonEmptyCollection.class,
-                BASE_DIR + "requestData.json");
     }
 }

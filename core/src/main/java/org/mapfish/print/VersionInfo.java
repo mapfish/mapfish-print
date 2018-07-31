@@ -16,7 +16,7 @@ import javax.servlet.ServletContext;
 
 /**
  * Allows to access version information (from the manifest).
- *
+ * <p>
  * Works only in a servlet context.
  */
 public class VersionInfo {
@@ -70,11 +70,8 @@ public class VersionInfo {
         try {
             final String path = this.servletContext.getRealPath("/META-INF/MANIFEST.MF");
             if (path != null) {
-                final InputStream stream = new FileInputStream(path);
-                try {
+                try (InputStream stream = new FileInputStream(path)) {
                     return new Manifest(stream).getMainAttributes();
-                } finally {
-                    stream.close();
                 }
             }
         } catch (FileNotFoundException e) {

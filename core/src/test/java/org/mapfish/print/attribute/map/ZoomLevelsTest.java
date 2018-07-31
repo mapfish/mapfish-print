@@ -4,13 +4,13 @@ import org.junit.Test;
 import org.mapfish.print.map.DistanceUnit;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.mapfish.print.Constants.PDF_DPI;
 
 public class ZoomLevelsTest {
 
     @Test
-    public void testRemoveDuplicates() throws Exception {
+    public void testRemoveDuplicates() {
         final ZoomLevels zoomLevels = new ZoomLevels(4, 2, 3, 3, 2, 1, 3, 2, 1);
 
         assertEquals(4, zoomLevels.size());
@@ -20,10 +20,11 @@ public class ZoomLevelsTest {
         assertEquals(1, (int) zoomLevels.get(3, DistanceUnit.M).getDenominator(PDF_DPI));
 
     }
-    @Test
-    public void testSort() throws Exception {
 
-        final ZoomLevels zoomLevels = new ZoomLevels(4,2,3,1);
+    @Test
+    public void testSort() {
+
+        final ZoomLevels zoomLevels = new ZoomLevels(4, 2, 3, 1);
 
         assertEquals(4, zoomLevels.size());
         assertEquals(4, (int) zoomLevels.get(0, DistanceUnit.M).getDenominator(PDF_DPI));
@@ -34,7 +35,7 @@ public class ZoomLevelsTest {
     }
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
 
         final ZoomLevels zoomLevels1 = new ZoomLevels(4, 2, 3, 0);
         final ZoomLevels zoomLevels2 = new ZoomLevels(4, 2, 3, 1);
@@ -45,9 +46,9 @@ public class ZoomLevelsTest {
         assertEquals(zoomLevels2, zoomLevels2);
         assertEquals(zoomLevels3, zoomLevels3);
         assertEquals(zoomLevels1, zoomLevels1);
-        assertFalse(zoomLevels1.equals(zoomLevels2));
-        assertFalse(zoomLevels1.equals(zoomLevels3));
-        assertFalse(zoomLevels2.equals(zoomLevels1));
+        assertNotEquals(zoomLevels1, zoomLevels2);
+        assertNotEquals(zoomLevels1, zoomLevels3);
+        assertNotEquals(zoomLevels2, zoomLevels1);
 
     }
 }

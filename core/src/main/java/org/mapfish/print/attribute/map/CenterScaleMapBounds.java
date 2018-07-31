@@ -95,10 +95,10 @@ public final class CenterScaleMapBounds extends MapBounds {
             final double dpi) {
 
         final Scale newScale = getNearestScale(zoomLevels, tolerance, zoomLevelSnapStrategy,
-                geodetic, paintArea, dpi);
+                                               geodetic, paintArea, dpi);
 
         return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y,
-                newScale);
+                                        newScale);
     }
 
     @Override
@@ -120,7 +120,7 @@ public final class CenterScaleMapBounds extends MapBounds {
 
         final double newResolution = this.scale.getResolution() * factor;
         return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y,
-                this.scale.toResolution(newResolution));
+                                        this.scale.toResolution(newResolution));
     }
 
     @Override
@@ -133,13 +133,15 @@ public final class CenterScaleMapBounds extends MapBounds {
         return this.center;
     }
 
-    private ReferencedEnvelope computeGeodeticBBox(final double geoWidthInInches, final double geoHeightInInches) {
+    private ReferencedEnvelope computeGeodeticBBox(
+            final double geoWidthInInches, final double geoHeightInInches) {
         try {
             CoordinateReferenceSystem crs = getProjection();
 
             GeodeticCalculator calc = new GeodeticCalculator(crs);
 
-            DistanceUnit ellipsoidUnit = DistanceUnit.fromString(calc.getEllipsoid().getAxisUnit().toString());
+            DistanceUnit ellipsoidUnit =
+                    DistanceUnit.fromString(calc.getEllipsoid().getAxisUnit().toString());
             double geoWidth = DistanceUnit.IN.convertTo(geoWidthInInches, ellipsoidUnit);
             double geoHeight = DistanceUnit.IN.convertTo(geoHeightInInches, ellipsoidUnit);
 
@@ -149,7 +151,7 @@ public final class CenterScaleMapBounds extends MapBounds {
 
             final int west = -90;
             calc.setDirection(west, geoWidth / 2.0);
-            double minGeoX =  calc.getDestinationPosition().getOrdinate(0);
+            double minGeoX = calc.getDestinationPosition().getOrdinate(0);
 
             final int east = 90;
             calc.setDirection(east, geoWidth / 2.0);

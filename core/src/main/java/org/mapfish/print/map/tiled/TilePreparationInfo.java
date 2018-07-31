@@ -8,7 +8,6 @@ import java.util.List;
 
 /**
  * Tile Preparation Task Result.
- *
  */
 public class TilePreparationInfo {
 
@@ -31,7 +30,8 @@ public class TilePreparationInfo {
      * @param gridCoverageMaxY grid coverage max y
      * @param mapProjection map projection
      */
-    public TilePreparationInfo(final List<SingleTilePreparationInfo> singleTiles, final int imageWidth, final int imageHeight,
+    public TilePreparationInfo(
+            final List<SingleTilePreparationInfo> singleTiles, final int imageWidth, final int imageHeight,
             final Coordinate gridCoverageOrigin, final double gridCoverageMaxX, final double gridCoverageMaxY,
             final CoordinateReferenceSystem mapProjection) {
         this.singleTiles = singleTiles;
@@ -73,7 +73,6 @@ public class TilePreparationInfo {
 
     /**
      * Information per tile (x, y and request).
-     *
      */
     public static class SingleTilePreparationInfo {
         private final int tileIndexX;
@@ -87,7 +86,8 @@ public class TilePreparationInfo {
          * @param tileIndexY tile index y
          * @param tileRequest tile request
          */
-        public SingleTilePreparationInfo(final int tileIndexX, final int tileIndexY, final ClientHttpRequest tileRequest) {
+        public SingleTilePreparationInfo(
+                final int tileIndexX, final int tileIndexY, final ClientHttpRequest tileRequest) {
             super();
             this.tileIndexX = tileIndexX;
             this.tileIndexY = tileIndexY;

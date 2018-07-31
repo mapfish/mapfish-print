@@ -40,8 +40,9 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
         return new FeatureSourceSupplier() {
             @Nonnull
             @Override
-            public FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
-                                      @Nonnull final MapfishMapContext mapContext) {
+            public FeatureSource load(
+                    @Nonnull final MfClientHttpRequestFactory requestFactory,
+                    @Nonnull final MapfishMapContext mapContext) {
                 SimpleFeatureType featureType = GridUtils.createGridFeatureType(mapContext, LineString.class);
                 SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureType);
                 final DefaultFeatureCollection features;
@@ -69,7 +70,8 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
         double minX = bounds.getMinimum(0) + xSpace;
         double minY = bounds.getMinimum(1) + ySpace;
 
-        return sharedCreateFeatures(labels, featureBuilder, layerData, mapContext, xSpace, ySpace, minX, minY);
+        return sharedCreateFeatures(labels, featureBuilder, layerData, mapContext, xSpace, ySpace, minX,
+                                    minY);
     }
 
     @Nonnull
@@ -86,7 +88,8 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
         double minX = GridUtils.calculateFirstLine(bounds, layerData, 0);
         double minY = GridUtils.calculateFirstLine(bounds, layerData, 1);
 
-        return sharedCreateFeatures(labels, featureBuilder, layerData, mapContext, xSpace, ySpace, minX, minY);
+        return sharedCreateFeatures(labels, featureBuilder, layerData, mapContext, xSpace, ySpace, minX,
+                                    minY);
     }
 
     // CSOFF: ParameterNumber
@@ -106,7 +109,8 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
         String unit = layerData.calculateLabelUnit(mapCrs);
         MathTransform labelTransform = layerData.calculateLabelTransform(mapCrs);
 
-        final AxisDirection direction = bounds.getCoordinateReferenceSystem().getCoordinateSystem().getAxis(0).getDirection();
+        final AxisDirection direction =
+                bounds.getCoordinateReferenceSystem().getCoordinateSystem().getAxis(0).getDirection();
         int numDimensions = bounds.getCoordinateReferenceSystem().getCoordinateSystem().getDimension();
         Polygon rotatedBounds = GridUtils.calculateBounds(mapContext);
         AffineTransform worldToScreenTransform = GridUtils.getWorldToScreenTransform(mapContext);
@@ -118,12 +122,14 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
         for (double x = minX; x < bounds.getMaxX(); x += xSpace) {
             i++;
             final SimpleFeature feature = createFeature(featureBuilder, geometryFactory, layerData,
-                    direction, numDimensions, pointSpacing, x, bounds.getMinimum(1), i, 1);
+                                                        direction, numDimensions, pointSpacing, x,
+                                                        bounds.getMinimum(1), i, 1);
             features.add(feature);
             GridUtils.topBorderLabel(labels, geometryFactory, rotatedBounds, unit, x,
-                    worldToScreenTransform, labelTransform, layerData.getGridLabelFormat());
+                                     worldToScreenTransform, labelTransform, layerData.getGridLabelFormat());
             GridUtils.bottomBorderLabel(labels, geometryFactory, rotatedBounds, unit, x,
-                    worldToScreenTransform, labelTransform, layerData.getGridLabelFormat());
+                                        worldToScreenTransform, labelTransform,
+                                        layerData.getGridLabelFormat());
         }
 
         pointSpacing = bounds.getSpan(0) / layerData.pointsInLine;
@@ -131,12 +137,14 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
         for (double y = minY; y < bounds.getMaxY(); y += ySpace) {
             j++;
             final SimpleFeature feature = createFeature(featureBuilder, geometryFactory, layerData,
-                    direction, numDimensions, pointSpacing, bounds.getMinimum(0), y, j, 0);
+                                                        direction, numDimensions, pointSpacing,
+                                                        bounds.getMinimum(0), y, j, 0);
             features.add(feature);
             GridUtils.rightBorderLabel(labels, geometryFactory, rotatedBounds, unit, y,
-                    worldToScreenTransform, labelTransform, layerData.getGridLabelFormat());
+                                       worldToScreenTransform, labelTransform,
+                                       layerData.getGridLabelFormat());
             GridUtils.leftBorderLabel(labels, geometryFactory, rotatedBounds, unit, y,
-                    worldToScreenTransform, labelTransform, layerData.getGridLabelFormat());
+                                      worldToScreenTransform, labelTransform, layerData.getGridLabelFormat());
 
         }
 

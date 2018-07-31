@@ -23,25 +23,28 @@ import static org.mapfish.print.Constants.PDF_DPI;
  */
 public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
 
+    private final Boolean renderAsSvg;
     private FeatureSourceSupplier featureSourceSupplier;
     private FeatureSource<?, ?> featureSource = null;
     private StyleSupplier<FeatureSource> styleSupplier;
-    private final Boolean renderAsSvg;
 
     /**
      * Constructor.
      *
      * @param executorService the thread pool for doing the rendering.
-     * @param featureSourceSupplier a function that creates the feature source.  This will only be called once.
-     * @param styleSupplier a function that creates the style for styling the features. This will only be called once.
+     * @param featureSourceSupplier a function that creates the feature source.  This will only be
+     *         called once.
+     * @param styleSupplier a function that creates the style for styling the features. This will only
+     *         be called once.
      * @param renderAsSvg is the layer rendered as SVG?
      * @param params the parameters for this layer
      */
-    public AbstractFeatureSourceLayer(final ExecutorService executorService,
-                                      final FeatureSourceSupplier featureSourceSupplier,
-                                      final StyleSupplier<FeatureSource> styleSupplier,
-                                      final boolean renderAsSvg,
-                                      final AbstractLayerParams params) {
+    public AbstractFeatureSourceLayer(
+            final ExecutorService executorService,
+            final FeatureSourceSupplier featureSourceSupplier,
+            final StyleSupplier<FeatureSource> styleSupplier,
+            final boolean renderAsSvg,
+            final AbstractLayerParams params) {
         super(executorService, params);
         this.featureSourceSupplier = featureSourceSupplier;
         this.styleSupplier = styleSupplier;
@@ -56,6 +59,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
 
     /**
      * Get the feature source (either load from the supplier or return the cached source).
+     *
      * @param httpRequestFactory The factory for making http requests.
      * @param mapContext The map context.
      */
@@ -91,8 +95,9 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
 
             @Nonnull
             @Override
-            public FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
-                                      @Nonnull final MapfishMapContext mapContext) {
+            public FeatureSource load(
+                    @Nonnull final MfClientHttpRequestFactory requestFactory,
+                    @Nonnull final MapfishMapContext mapContext) {
                 return new CollectionFeatureSource(featureCollection);
             }
         };

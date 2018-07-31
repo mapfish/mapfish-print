@@ -20,65 +20,27 @@ public abstract class InetHostMatcher extends HostMatcher {
 
     private List<AddressMask> authorizedIPs = null;
 
-    /**
-     * The ip addresses that are considered legal.
-     */
-    protected static class AddressMask {
-        private final byte[] address;
-        @Nullable
-        private final byte[] mask;
-
-        /**
-         * IP and mask are given.
-         *
-         * @param ip The IP address
-         * @param mask A null mask means match all.
-         */
-        public AddressMask(final InetAddress ip, final InetAddress mask) {
-            this.mask = mask != null ? mask.getAddress() : null;
-            this.address = mask(ip.getAddress(), this.mask);
-        }
-
-        /**
-         * Guess the mask in function of the address: /8 for IPv4 loopback and full match
-         * for the rest.
-         *
-         * @param address The IP address
-         */
-        public AddressMask(final InetAddress address) {
-            if (address.isLoopbackAddress() && address instanceof Inet4Address) {
-                final byte all = (byte) 0xff;
-                this.mask = new byte[]{all, 0, 0, 0};
+    private static byte[] mask(final byte[] address, final byte[] mask) {
+        if (mask != null) {
+            if (address.length != mask.length) {
+                LOGGER.warn("Cannot mask address [" + Arrays.toString(address) + "] with: " +
+                                    Arrays.toString(mask));
+                return address;
             } else {
-                this.mask = null;
+                final byte[] result = new byte[address.length];
+                for (int i = 0; i < result.length; ++i) {
+                    result[i] = (byte) (address[i] & mask[i]);
+                }
+                return result;
             }
-            this.address = mask(address.getAddress(), this.mask);
-        }
-
-        @Override
-        public final int hashCode() {
-            final int prime = 31;
-            return Arrays.hashCode(this.address) * prime + Arrays.hashCode(this.mask);
-        }
-
-        @Override
-        public final boolean equals(final Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            final AddressMask other = (AddressMask) obj;
-            return Arrays.equals(this.address, other.address) && Arrays.equals(this.mask, other.mask);
+        } else {
+            return address;
         }
     }
 
     @Override
-    protected final Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo) throws UnknownHostException, SocketException {
+    protected final Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo)
+            throws UnknownHostException, SocketException {
         final String host = matchInfo.getHost();
         if (host == MatchInfo.ANY_HOST) {
             return Optional.absent();
@@ -90,7 +52,7 @@ public abstract class InetHostMatcher extends HostMatcher {
         } catch (UnknownHostException ex) {
             return Optional.of(false);
         }
-        for (InetAddress requestedIP : requestedIPs) {
+        for (InetAddress requestedIP: requestedIPs) {
             if (isInAuthorized(requestedIP)) {
                 return Optional.absent();
             }
@@ -102,7 +64,7 @@ public abstract class InetHostMatcher extends HostMatcher {
             SocketException {
         final List<AddressMask> finalAuthorizedIPs = getAuthorizedIPs();
         final byte[] address = requestedIP.getAddress();
-        for (AddressMask authorizedIP : finalAuthorizedIPs) {
+        for (AddressMask authorizedIP: finalAuthorizedIPs) {
             if (compareIP(address, authorizedIP)) {
                 return true;
             }
@@ -117,23 +79,6 @@ public abstract class InetHostMatcher extends HostMatcher {
         }
         byte[] maskedRequest = mask(requestedIP, authorizedIP.mask);
         return Arrays.equals(authorizedIP.address, maskedRequest);
-    }
-
-    private static byte[] mask(final byte[] address, final byte[] mask) {
-        if (mask != null) {
-            if (address.length != mask.length) {
-                LOGGER.warn("Cannot mask address [" + Arrays.toString(address) + "] with: " + Arrays.toString(mask));
-                return address;
-            } else {
-                final byte[] result = new byte[address.length];
-                for (int i = 0; i < result.length; ++i) {
-                    result[i] = (byte) (address[i] & mask[i]);
-                }
-                return result;
-            }
-        } else {
-            return address;
-        }
     }
 
     private List<AddressMask> getAuthorizedIPs() throws SocketException, UnknownHostException {
@@ -178,6 +123,62 @@ public abstract class InetHostMatcher extends HostMatcher {
         }
         InetHostMatcher other = (InetHostMatcher) obj;
         return authorizedIPs.equals(other.authorizedIPs);
+    }
+
+    /**
+     * The ip addresses that are considered legal.
+     */
+    protected static class AddressMask {
+        private final byte[] address;
+        @Nullable
+        private final byte[] mask;
+
+        /**
+         * IP and mask are given.
+         *
+         * @param ip The IP address
+         * @param mask A null mask means match all.
+         */
+        public AddressMask(final InetAddress ip, final InetAddress mask) {
+            this.mask = mask != null ? mask.getAddress() : null;
+            this.address = mask(ip.getAddress(), this.mask);
+        }
+
+        /**
+         * Guess the mask in function of the address: /8 for IPv4 loopback and full match for the rest.
+         *
+         * @param address The IP address
+         */
+        public AddressMask(final InetAddress address) {
+            if (address.isLoopbackAddress() && address instanceof Inet4Address) {
+                final byte all = (byte) 0xff;
+                this.mask = new byte[]{all, 0, 0, 0};
+            } else {
+                this.mask = null;
+            }
+            this.address = mask(address.getAddress(), this.mask);
+        }
+
+        @Override
+        public final int hashCode() {
+            final int prime = 31;
+            return Arrays.hashCode(this.address) * prime + Arrays.hashCode(this.mask);
+        }
+
+        @Override
+        public final boolean equals(final Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final AddressMask other = (AddressMask) obj;
+            return Arrays.equals(this.address, other.address) && Arrays.equals(this.mask, other.mask);
+        }
     }
     // CHECKSTYLE:ON
 

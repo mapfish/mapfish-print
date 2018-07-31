@@ -22,12 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.http.client.ClientHttpRequest;
+
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.util.List;
 import java.util.concurrent.Callable;
-
 import javax.annotation.Nonnull;
 
 
@@ -43,11 +43,12 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
     private final TileCacheInformation tiledLayer;
     private final String jobId;
     private final MfClientHttpRequestFactory httpRequestFactory;
-    private Optional<Geometry> cachedRotatedMapBounds = null;
     private final HttpRequestCache requestCache;
+    private Optional<Geometry> cachedRotatedMapBounds = null;
 
     /**
      * Constructor.
+     *
      * @param httpRequestFactory the factory to use for making http requests
      * @param transformer a transformer for making calculations
      * @param tileCacheInfo the object used to create the tile requests
@@ -81,10 +82,11 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
 
             final double layerResolution = this.tiledLayer.getResolution();
             Coordinate tileSizeInWorld = new Coordinate(tileSizeOnScreen.width * layerResolution,
-                    tileSizeOnScreen.height * layerResolution);
+                                                        tileSizeOnScreen.height * layerResolution);
 
             // The minX minY of the first (minY, minY) tile
-            Coordinate gridCoverageOrigin = this.tiledLayer.getMinGeoCoordinate(mapGeoBounds, tileSizeInWorld);
+            Coordinate gridCoverageOrigin =
+                    this.tiledLayer.getMinGeoCoordinate(mapGeoBounds, tileSizeInWorld);
 
             final String commonUrl = this.tiledLayer.createCommonUrl();
 
@@ -97,7 +99,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
             int imageHeight = 0;
             int xIndex;
             int yIndex = (int) Math.floor((mapGeoBounds.getMaxY() - gridCoverageOrigin.y) /
-                    tileSizeInWorld.y) + 1;
+                                                  tileSizeInWorld.y) + 1;
 
             double gridCoverageMaxX = gridCoverageOrigin.x;
             double gridCoverageMaxY = gridCoverageOrigin.y;
@@ -105,7 +107,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
             List<SingleTilePreparationInfo> tiles = Lists.newArrayList();
 
             for (double geoY = gridCoverageOrigin.y; geoY < mapGeoBounds.getMaxY();
-                    geoY += tileSizeInWorld.y) {
+                 geoY += tileSizeInWorld.y) {
                 yIndex--;
                 imageHeight += tileSizeOnScreen.height;
                 imageWidth = 0;
@@ -114,7 +116,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
                 gridCoverageMaxX = gridCoverageOrigin.x;
                 gridCoverageMaxY += tileSizeInWorld.y;
                 for (double geoX = gridCoverageOrigin.x; geoX < mapGeoBounds.getMaxX();
-                        geoX += tileSizeInWorld.x) {
+                     geoX += tileSizeInWorld.x) {
                     xIndex++;
                     imageWidth += tileSizeOnScreen.width;
                     gridCoverageMaxX += tileSizeInWorld.x;
@@ -129,7 +131,9 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
                             tileCacheBounds.getMinX()) * columnFactor);
 
                     ClientHttpRequest tileRequest = this.tiledLayer.getTileRequest(this.httpRequestFactory,
-                            commonUrl, tileBounds, tileSizeOnScreen, column, row);
+                                                                                   commonUrl, tileBounds,
+                                                                                   tileSizeOnScreen, column,
+                                                                                   row);
                     if (isInTileCacheBounds(tileCacheBounds, tileBounds)) {
                         if (isTileVisible(tileBounds)) {
                             tileRequest = this.requestCache.register(tileRequest);
@@ -143,7 +147,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
             }
 
             return new TilePreparationInfo(tiles, imageWidth, imageHeight, gridCoverageOrigin,
-                    gridCoverageMaxX, gridCoverageMaxY, mapProjection);
+                                           gridCoverageMaxX, gridCoverageMaxY, mapProjection);
         } catch (Exception e) {
             throw ExceptionUtils.getRuntimeException(e);
         }
@@ -155,14 +159,13 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
         final double boundsMinX = tilesBounds.getMinX();
         final double boundsMinY = tilesBounds.getMinY();
         return boundsMinX >= tileCacheBounds.getMinX() && boundsMinX <= tileCacheBounds.getMaxX()
-               && boundsMinY >= tileCacheBounds.getMinY() && boundsMinY <= tileCacheBounds.getMaxY();
+                && boundsMinY >= tileCacheBounds.getMinY() && boundsMinY <= tileCacheBounds.getMaxY();
         // we don't use maxX and maxY since tilecache doesn't seems to care about those...
     }
 
     /**
-     * When using a map rotation, there might be tiles that are outside the
-     * rotated map area. To avoid to load these tiles, this method checks
-     * if a tile is really required to draw the map.
+     * When using a map rotation, there might be tiles that are outside the rotated map area. To avoid to load
+     * these tiles, this method checks if a tile is really required to draw the map.
      */
     private boolean isTileVisible(final ReferencedEnvelope tileBounds) {
         if (FloatingPointUtil.equals(this.transformer.getRotation(), 0.0)) {

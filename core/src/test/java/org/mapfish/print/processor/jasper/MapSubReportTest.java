@@ -57,7 +57,7 @@ public class MapSubReportTest {
 
         JasperReport jasperReport = (JasperReport) JRLoader.loadObject(compiledReportFile);
         assertEquals("report can be loaded from compiled file",
-                "map", jasperReport.getName());
+                     "map", jasperReport.getName());
     }
 
 }

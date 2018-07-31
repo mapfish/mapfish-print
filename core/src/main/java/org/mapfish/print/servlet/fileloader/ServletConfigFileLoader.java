@@ -10,8 +10,8 @@ import java.util.Iterator;
 import javax.servlet.ServletContext;
 
 /**
- * A plugin that loads the config resources from urls starting with prefix:
- * {@value org.mapfish.print.servlet.fileloader.ServletConfigFileLoader#PREFIX}://.
+ * A plugin that loads the config resources from urls starting with prefix: {@value
+ * org.mapfish.print.servlet.fileloader.ServletConfigFileLoader#PREFIX}://.
  */
 public final class ServletConfigFileLoader extends AbstractFileConfigFileLoader {
 

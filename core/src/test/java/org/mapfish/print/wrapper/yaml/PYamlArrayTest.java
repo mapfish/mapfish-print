@@ -11,17 +11,18 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class PYamlArrayTest {
 
     @Test
-    public void testToJSON() throws Exception {
+    public void testToJSON() {
         Map<String, Object> embedded = Maps.newHashMap();
         embedded.put("a", 1);
         List<Object> array = Lists.newArrayList(1, embedded,
-                Lists.newArrayList(1,2,3),
-                new String[]{"a", "b", "c"});
+                                                Lists.newArrayList(1, 2, 3),
+                                                new String[]{"a", "b", "c"});
         final PJsonArray test = new PYamlArray(null, array, "test").toJSON();
         assertEquals(4, test.size());
 
@@ -44,6 +45,6 @@ public class PYamlArrayTest {
         assertEquals("c", array2.getString(2));
 
         assertTrue(test.getArray(3) instanceof PJsonArray);
-        assertTrue(test.getJSONArray(3) != null);
+        assertNotNull(test.getJSONArray(3));
     }
 }

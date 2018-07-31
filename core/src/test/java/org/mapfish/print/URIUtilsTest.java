@@ -28,7 +28,7 @@ public class URIUtilsTest {
 
 
     @Test
-    public void testGetParametersString() throws Exception {
+    public void testGetParametersString() {
         final Multimap<String, String> parameters = URIUtils.getParameters(TEST_QUERY);
 
         assertEquals(6, parameters.size());
@@ -126,22 +126,28 @@ public class URIUtilsTest {
         params.put("a", "1");
         params.put("b", "2");
         params.put("b", "3");
-        assertEquals("http://un:ps@server.com:9876/p1/p2?a=1&b=2&b=3#fragment", URIUtils.setQueryParams(initialUri, params).toString());
+        assertEquals("http://un:ps@server.com:9876/p1/p2?a=1&b=2&b=3#fragment",
+                     URIUtils.setQueryParams(initialUri, params).toString());
 
         initialUri = new URI("http", "un:ps", "server.com", 9876, "/p1/p2", "z=3&y=4", "fragment");
-        assertEquals("http://un:ps@server.com:9876/p1/p2?a=1&b=2&b=3#fragment", URIUtils.setQueryParams(initialUri, params).toString());
+        assertEquals("http://un:ps@server.com:9876/p1/p2?a=1&b=2&b=3#fragment",
+                     URIUtils.setQueryParams(initialUri, params).toString());
 
         initialUri = new URI("http://center_wmts_fixedscale.com:1234/wmts");
-        assertEquals("http://center_wmts_fixedscale.com:1234/wmts?a=1&b=2&b=3", URIUtils.setQueryParams(initialUri, params).toString());
+        assertEquals("http://center_wmts_fixedscale.com:1234/wmts?a=1&b=2&b=3",
+                     URIUtils.setQueryParams(initialUri, params).toString());
 
         initialUri = new URI("http://user:pass@center_wmts_fixedscale.com:1234/wmts");
-        assertEquals("http://user:pass@center_wmts_fixedscale.com:1234/wmts?a=1&b=2&b=3", URIUtils.setQueryParams(initialUri, params).toString());
+        assertEquals("http://user:pass@center_wmts_fixedscale.com:1234/wmts?a=1&b=2&b=3",
+                     URIUtils.setQueryParams(initialUri, params).toString());
 
-        initialUri = new URI("http","center_wmts_fixedscale.com:1234", "/wmts", "a=3", "fragment");
-        assertEquals("http://center_wmts_fixedscale.com:1234/wmts?a=1&b=2&b=3#fragment", URIUtils.setQueryParams(initialUri, params).toString());
+        initialUri = new URI("http", "center_wmts_fixedscale.com:1234", "/wmts", "a=3", "fragment");
+        assertEquals("http://center_wmts_fixedscale.com:1234/wmts?a=1&b=2&b=3#fragment",
+                     URIUtils.setQueryParams(initialUri, params).toString());
 
-        initialUri = new URI("http","center_wmts_fixedscale.com:1234", "/wmts", null, null);
-        assertEquals("http://center_wmts_fixedscale.com:1234/wmts?a=1&b=2&b=3", URIUtils.setQueryParams(initialUri, params).toString());
+        initialUri = new URI("http", "center_wmts_fixedscale.com:1234", "/wmts", null, null);
+        assertEquals("http://center_wmts_fixedscale.com:1234/wmts?a=1&b=2&b=3",
+                     URIUtils.setQueryParams(initialUri, params).toString());
 
         params = LinkedListMultimap.create();
         final String trickyKey = "a # param";
@@ -164,12 +170,16 @@ public class URIUtilsTest {
     public void testSetPath() throws Exception {
         URI initialUri = new URI("http://un:ps@server.com:9876/p1/p2?z=3,y=4#fragment");
 
-        assertEquals("http://un:ps@server.com:9876/np1/np2?z=3,y=4#fragment", URIUtils.setPath(initialUri, "/np1/np2").toString());
-        assertEquals("http://un:ps@server.com:9876/np1/np2?z=3,y=4#fragment", URIUtils.setPath(initialUri, "np1/np2").toString());
+        assertEquals("http://un:ps@server.com:9876/np1/np2?z=3,y=4#fragment",
+                     URIUtils.setPath(initialUri, "/np1/np2").toString());
+        assertEquals("http://un:ps@server.com:9876/np1/np2?z=3,y=4#fragment",
+                     URIUtils.setPath(initialUri, "np1/np2").toString());
         URI forceHostURI = new URI("http", "un:ps", "server.com", 9876, "/p1/p2", "z=3,y=4", "fragment");
-        assertEquals("http://un:ps@server.com:9876/np1/np2?z=3,y=4#fragment", URIUtils.setPath(forceHostURI, "np1/np2").toString());
+        assertEquals("http://un:ps@server.com:9876/np1/np2?z=3,y=4#fragment",
+                     URIUtils.setPath(forceHostURI, "np1/np2").toString());
         URI forceAuthorityURI = new URI("http", "un:ps@server.com:9876", "/p1/p2", "z=3,y=4", "fragment");
-        assertEquals("http://un:ps@server.com:9876/np1/np2?z=3,y=4#fragment", URIUtils.setPath(forceAuthorityURI, "np1/np2").toString());
+        assertEquals("http://un:ps@server.com:9876/np1/np2?z=3,y=4#fragment",
+                     URIUtils.setPath(forceAuthorityURI, "np1/np2").toString());
 
         assertEquals("z=3,y=4", URIUtils.setPath(initialUri, "/p?y=2").getQuery());
         assertTrue(URIUtils.setPath(initialUri, "/p?y=2").getPath().contains("p"));

@@ -20,9 +20,9 @@ import static org.mapfish.print.Constants.PDF_DPI;
  * Represent a scale and provide transformation.
  */
 public final class Scale implements Comparable<Scale> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Scale.class);
     private final double resolution;
     private final DistanceUnit unit;
-    private static final Logger LOGGER = LoggerFactory.getLogger(Scale.class);
 
     /**
      * Constructor.
@@ -73,9 +73,61 @@ public final class Scale implements Comparable<Scale> {
         this.unit = DistanceUnit.fromProjection(projection);
     }
 
+    /**
+     * @param geodetic Do in geodetic.
+     * @param scaleDenominator the scale denominator.
+     * @param projection the projection to perform the calculation in.
+     * @param dpi the dpi of the display device.
+     * @param position the position on the map.
+     * @return the scale denominator.
+     */
+    public static double getDenominator(
+            final boolean geodetic,
+            final double scaleDenominator, @Nonnull final CoordinateReferenceSystem projection,
+            final double dpi, final Coordinate position) {
+        return geodetic ? getGeodeticDenominator(scaleDenominator, projection, dpi, position) :
+                scaleDenominator;
+    }
+
+    /**
+     * @param scaleDenominator the scale denominator.
+     * @param projection the projection to perform the calculation in.
+     * @param dpi the dpi of the display device.
+     * @param position the position on the map.
+     * @return the scale denominator.
+     */
+    public static double getGeodeticDenominator(
+            final double scaleDenominator, @Nonnull final CoordinateReferenceSystem projection,
+            final double dpi, final Coordinate position) {
+        return new Scale(scaleDenominator, DistanceUnit.fromProjection(projection), dpi)
+                .getGeodeticDenominator(projection, dpi, position);
+    }
+
+    /**
+     * Construct a scale object from a resolution.
+     *
+     * @param resolution the resolution of the map
+     * @param projectionUnit the unit used by the projection.
+     */
+    public static Scale fromResolution(
+            final double resolution, @Nonnull final DistanceUnit projectionUnit) {
+        return new Scale(resolution, projectionUnit);
+    }
+
+    /**
+     * Construct a scale object from a resolution.
+     *
+     * @param resolution the resolution of the map
+     * @param projection the projection to perform the calculation in.
+     */
+    public static Scale fromResolution(
+            final double resolution, @Nonnull final CoordinateReferenceSystem projection) {
+        return new Scale(resolution, projection);
+    }
 
     /**
      * Get the resolution in meters.
+     *
      * @return the resolution
      */
     public double getResolution() {
@@ -84,6 +136,7 @@ public final class Scale implements Comparable<Scale> {
 
     /**
      * Get the resolution in inches.
+     *
      * @return the resolution
      */
     public double getResolutionInInches() {
@@ -92,6 +145,7 @@ public final class Scale implements Comparable<Scale> {
 
     /**
      * Get the scale unit.
+     *
      * @return the unit
      */
     public DistanceUnit getUnit() {
@@ -153,19 +207,21 @@ public final class Scale implements Comparable<Scale> {
             final double centerY = position.y;
 
             final MathTransform transform = CRS.findMathTransform(projection,
-                    GenericMapAttribute.parseProjection("EPSG:4326", true));
+                                                                  GenericMapAttribute
+                                                                          .parseProjection("EPSG:4326",
+                                                                                           true));
             final Coordinate start = JTS.transform(new Coordinate(minGeoX, centerY), null, transform);
             final Coordinate end = JTS.transform(new Coordinate(maxGeoX, centerY), null, transform);
             calculator.setStartingGeographicPoint(start.x, start.y);
             calculator.setDestinationGeographicPoint(end.x, end.y);
             final double geoWidthInEllipsoidUnits = calculator.getOrthodromicDistance();
-            final DistanceUnit ellipsoidUnit = DistanceUnit.fromString(calculator.getEllipsoid().getAxisUnit().toString());
+            final DistanceUnit ellipsoidUnit =
+                    DistanceUnit.fromString(calculator.getEllipsoid().getAxisUnit().toString());
 
-            final double geoWidthInInches = ellipsoidUnit.convertTo(geoWidthInEllipsoidUnits, DistanceUnit.IN);
+            final double geoWidthInInches =
+                    ellipsoidUnit.convertTo(geoWidthInEllipsoidUnits, DistanceUnit.IN);
             return geoWidthInInches * (dpi / width);
-        } catch (FactoryException e) {
-            LOGGER.error("Unable to do the geodetic calculation on the scale", e);
-        } catch (TransformException e) {
+        } catch (FactoryException | TransformException e) {
             LOGGER.error("Unable to do the geodetic calculation on the scale", e);
         }
 
@@ -174,63 +230,12 @@ public final class Scale implements Comparable<Scale> {
     }
 
     /**
-     * @param geodetic Do in geodetic.
-     * @param scaleDenominator the scale denominator.
-     * @param projection the projection to perform the calculation in.
-     * @param dpi the dpi of the display device.
-     * @param position the position on the map.
-     * @return the scale denominator.
-     */
-    public static double getDenominator(
-            final boolean geodetic,
-            final double scaleDenominator, @Nonnull final CoordinateReferenceSystem projection,
-            final double dpi, final Coordinate position) {
-        return geodetic ? getGeodeticDenominator(scaleDenominator, projection, dpi, position) : scaleDenominator;
-    }
-
-    /**
-     * @param scaleDenominator the scale denominator.
-     * @param projection the projection to perform the calculation in.
-     * @param dpi the dpi of the display device.
-     * @param position the position on the map.
-     * @return the scale denominator.
-     */
-    public static double getGeodeticDenominator(
-            final double scaleDenominator, @Nonnull final CoordinateReferenceSystem projection,
-            final double dpi, final Coordinate position) {
-        return new Scale(scaleDenominator, DistanceUnit.fromProjection(projection), dpi).getGeodeticDenominator(projection, dpi, position);
-    }
-
-
-    /**
      * Construct a scale object from a resolution.
      *
      * @param newResolution the resolution of the map
      */
     public Scale toResolution(final double newResolution) {
         return Scale.fromResolution(newResolution, this.unit);
-    }
-
-    /**
-     * Construct a scale object from a resolution.
-     *
-     * @param resolution the resolution of the map
-     * @param projectionUnit the unit used by the projection.
-     */
-    public static Scale fromResolution(
-            final double resolution, @Nonnull final DistanceUnit projectionUnit) {
-        return new Scale(resolution, projectionUnit);
-    }
-
-    /**
-     * Construct a scale object from a resolution.
-     *
-     * @param resolution the resolution of the map
-     * @param projection the projection to perform the calculation in.
-     */
-    public static Scale fromResolution(
-            final double resolution, @Nonnull final CoordinateReferenceSystem projection) {
-        return new Scale(resolution, projection);
     }
 
     @Override

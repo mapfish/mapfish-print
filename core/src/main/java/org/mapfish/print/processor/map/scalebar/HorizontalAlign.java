@@ -27,11 +27,12 @@ public enum HorizontalAlign {
 
     /**
      * Get a type from its label.
+     *
      * @param label the type label
      */
     public static HorizontalAlign fromString(final String label) {
         if (label != null) {
-            for (HorizontalAlign type : HorizontalAlign.values()) {
+            for (HorizontalAlign type: HorizontalAlign.values()) {
                 if (label.equalsIgnoreCase(type.label)) {
                     return type;
                 }

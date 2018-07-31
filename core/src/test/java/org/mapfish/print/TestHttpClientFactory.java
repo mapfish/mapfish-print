@@ -25,7 +25,8 @@ import static org.junit.Assert.fail;
 /**
  * Allows tests to provide canned responses to requests.
  */
-public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl implements MfClientHttpRequestFactory {
+public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
+        implements MfClientHttpRequestFactory {
 
     private final Map<Predicate<URI>, Handler> handlers = Maps.newConcurrentMap();
 
@@ -41,8 +42,8 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl implem
     }
 
     @Override
-    public ConfigurableRequest createRequest(URI uri, final HttpMethod httpMethod) throws IOException {
-        for (Map.Entry<Predicate<URI>, Handler> entry : handlers.entrySet()) {
+    public ConfigurableRequest createRequest(URI uri, final HttpMethod httpMethod) {
+        for (Map.Entry<Predicate<URI>, Handler> entry: handlers.entrySet()) {
             if (entry.getKey().apply(uri)) {
                 try {
                     final MockClientHttpRequest httpRequest = entry.getValue().handleRequest(uri, httpMethod);
@@ -62,6 +63,7 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl implem
 
     public static abstract class Handler {
         public abstract MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception;
+
         public MockClientHttpRequest ok(URI uri, byte[] bytes, HttpMethod httpMethod) {
             MockClientHttpRequest request = new MockClientHttpRequest(httpMethod, uri);
             ClientHttpResponse response = new MockClientHttpResponse(bytes, HttpStatus.OK);

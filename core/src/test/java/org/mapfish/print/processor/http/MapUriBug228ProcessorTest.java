@@ -24,9 +24,12 @@ import java.util.concurrent.ForkJoinPool;
 import static org.junit.Assert.assertEquals;
 
 @ContextConfiguration(locations = {
-        "classpath:org/mapfish/print/processor/http/map-uri/map-uri-228-bug-fix-processor-application-context.xml"
+        "classpath:org/mapfish/print/processor/http/map-uri/map-uri-228-bug-fix-processor-application" +
+                "-context.xml"
 })
 public class MapUriBug228ProcessorTest extends AbstractMapfishSpringTest {
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
     @Autowired
     ConfigurationFactory configurationFactory;
     @Autowired
@@ -34,28 +37,28 @@ public class MapUriBug228ProcessorTest extends AbstractMapfishSpringTest {
     @Autowired
     ForkJoinPool forkJoinPool;
 
-
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
     protected String baseDir() {
         return "map-uri";
     }
+
     @Test
     @DirtiesContext
     public void bug228FixMapUri() throws Exception {
         this.configurationFactory.setDoValidation(false);
-        final Configuration config = configurationFactory.getConfig(getFile(baseDir() + "/map-uri-228-bug-fix-config.yaml"));
+        final Configuration config =
+                configurationFactory.getConfig(getFile(baseDir() + "/map-uri-228-bug-fix-config.yaml"));
         final Template template = config.getTemplate("main");
 
-        ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(this.httpClientFactory, config, "test");
+        ConfigFileResolvingHttpRequestFactory requestFactory =
+                new ConfigFileResolvingHttpRequestFactory(this.httpClientFactory, config, "test");
         ProcessorDependencyGraph graph = template.getProcessorGraph();
         List<ProcessorGraphNode> roots = graph.getRoots();
 
         assertEquals(1, roots.size());
 
         Values values = new Values();
-        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, new MfClientHttpRequestFactoryProvider(requestFactory));
+        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
+                   new MfClientHttpRequestFactoryProvider(requestFactory));
         values.put(Values.TASK_DIRECTORY_KEY, temporaryFolder.getRoot());
         values.put(Values.VALUES_KEY, values);
         MapAttribute.MapAttributeValues map = getMapValue(template);

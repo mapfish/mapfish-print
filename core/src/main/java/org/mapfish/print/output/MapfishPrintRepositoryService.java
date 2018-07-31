@@ -47,7 +47,8 @@ class MapfishPrintRepositoryService implements StreamRepositoryService {
             uri = new File(uriString).toURI();
         }
         try {
-            final ClientHttpResponse response = this.httpRequestFactory.createRequest(uri, HttpMethod.GET).execute();
+            final ClientHttpResponse response =
+                    this.httpRequestFactory.createRequest(uri, HttpMethod.GET).execute();
             return new ResponseClosingStream(response);
         } catch (IOException e) {
             return null;
@@ -78,7 +79,8 @@ class MapfishPrintRepositoryService implements StreamRepositoryService {
             }
 
             final PersistenceUtil persistenceUtil = PersistenceUtil.getInstance(this.jasperReportsContext);
-            PersistenceService persistenceService = persistenceUtil.getService(FileRepositoryService.class, resourceType);
+            PersistenceService persistenceService =
+                    persistenceUtil.getService(FileRepositoryService.class, resourceType);
             if (persistenceService != null) {
                 return resourceType.cast(persistenceService.load(uri, this));
             }
@@ -95,11 +97,11 @@ class MapfishPrintRepositoryService implements StreamRepositoryService {
         throw new UnsupportedOperationException();
     }
 
-    private static class ResponseClosingStream extends InputStream {
+    private static final class ResponseClosingStream extends InputStream {
         private final Closer closer;
         private final InputStream stream;
 
-        public ResponseClosingStream(final ClientHttpResponse response) throws IOException {
+        private ResponseClosingStream(final ClientHttpResponse response) throws IOException {
             this.closer = Closer.create();
             this.closer.register(response);
             this.stream = this.closer.register(response.getBody());

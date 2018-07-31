@@ -11,7 +11,7 @@ import java.util.Collection;
 public class AccessAssertionTestUtil {
     public static void setCreds(String... role) {
         Collection<SimpleGrantedAuthority> authorities = Sets.newHashSet();
-        for (String roleName : role) {
+        for (String roleName: role) {
             authorities.add(new SimpleGrantedAuthority(roleName));
         }
         Authentication auth = new UsernamePasswordAuthenticationToken("user", "pass", authorities);

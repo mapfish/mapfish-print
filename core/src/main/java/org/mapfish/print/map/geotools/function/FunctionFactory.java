@@ -9,8 +9,7 @@ import org.opengis.filter.expression.Function;
 import org.opengis.filter.expression.Literal;
 
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.stream.Collectors;
 
 /**
  * A factory for building all the mapfish print functions.
@@ -22,26 +21,19 @@ public final class FunctionFactory implements org.geotools.filter.FunctionFactor
 
     @Override
     public List<FunctionName> getFunctionNames() {
-        return Lists.transform(this.functions, new com.google.common.base.Function<Function, FunctionName>() {
-            @Nullable
-            @Override
-            public FunctionName apply(@Nonnull final Function input) {
-                return input.getFunctionName();
-            }
-        });
+        return this.functions.stream().map(FunctionExpressionImpl::getFunctionName)
+                .collect(Collectors.toList());
     }
 
     @Override
     public Function function(final String name, final List<Expression> args, final Literal fallback) {
-        for (FunctionExpressionImpl template : this.functions) {
+        for (FunctionExpressionImpl template: this.functions) {
             if (template.getName().equals(name)) {
                 try {
                     final FunctionExpressionImpl function = template.getClass().newInstance();
                     function.setParameters(args);
                     return function;
-                } catch (InstantiationException e) {
-                    throw new RuntimeException(e);
-                } catch (IllegalAccessException e) {
+                } catch (InstantiationException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
             }

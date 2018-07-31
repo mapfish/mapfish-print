@@ -7,7 +7,6 @@ import java.util.Date;
 
 /**
  * Print Job Entry.
- *
  */
 public interface PrintJobEntry {
 

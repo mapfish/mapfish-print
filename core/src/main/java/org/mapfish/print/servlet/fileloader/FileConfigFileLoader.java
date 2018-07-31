@@ -7,8 +7,8 @@ import java.net.URI;
 import java.util.Iterator;
 
 /**
- * A plugin that loads the config resources from urls starting with prefix:
- * {@value org.mapfish.print.servlet.fileloader.FileConfigFileLoader#PREFIX}://.
+ * A plugin that loads the config resources from urls starting with prefix: {@value
+ * org.mapfish.print.servlet.fileloader.FileConfigFileLoader#PREFIX}://.
  */
 public final class FileConfigFileLoader extends AbstractFileConfigFileLoader {
     static final String PREFIX = "file";

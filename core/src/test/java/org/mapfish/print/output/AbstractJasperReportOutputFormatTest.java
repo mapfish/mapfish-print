@@ -26,20 +26,34 @@ public class AbstractJasperReportOutputFormatTest extends AbstractMapfishSpringT
     @Autowired
     private Map<String, OutputFormat> outputFormat;
 
+    public static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(JasperReportOutputFormatSimpleMapTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
+    public static PJsonObject loadTableJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(JasperReportOutputFormatSimpleMapTest.class,
+                                       TABLE_BASE_DIR + "requestData.json");
+    }
+
     @Test
     @DirtiesContext
     public void testParameterValidation_WrongType() throws Exception {
         configurationFactory.setDoValidation(false);
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-map-wrong-type.yaml"));
+        final Configuration config =
+                configurationFactory.getConfig(getFile(BASE_DIR + "config-map-wrong-type.yaml"));
         PJsonObject requestData = loadJsonRequestData();
 
-        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        final AbstractJasperReportOutputFormat format =
+                (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
         try {
             format.getJasperPrint("test", requestData, config,
-                    getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR), getTaskDirectory());
+                                  getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
+                                  getTaskDirectory());
             fail("Expected a " + AssertionFailedException.class);
         } catch (AssertionFailedException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("does not match the class of the actual object"));
+            assertTrue(e.getMessage(),
+                       e.getMessage().contains("does not match the class of the actual object"));
         }
     }
 
@@ -47,16 +61,20 @@ public class AbstractJasperReportOutputFormatTest extends AbstractMapfishSpringT
     @DirtiesContext
     public void testParameterValidation_MissingParameter() throws Exception {
         configurationFactory.setDoValidation(false);
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config-missing-map.yaml"));
+        final Configuration config =
+                configurationFactory.getConfig(getFile(BASE_DIR + "config-missing-map.yaml"));
         PJsonObject requestData = loadJsonRequestData();
 
-        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        final AbstractJasperReportOutputFormat format =
+                (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
         try {
             format.getJasperPrint("test", requestData, config,
-                    getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR), getTaskDirectory());
+                                  getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
+                                  getTaskDirectory());
             fail("Expected a " + ExtraPropertyException.class);
         } catch (ExtraPropertyException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("Extra properties found in the request attributes"));
+            assertTrue(e.getMessage(),
+                       e.getMessage().contains("Extra properties found in the request attributes"));
         }
     }
 
@@ -68,20 +86,16 @@ public class AbstractJasperReportOutputFormatTest extends AbstractMapfishSpringT
         config.getTemplate("main").setReportTemplate("simpleReport-wrong-field-type.jrxml");
         PJsonObject requestData = loadTableJsonRequestData();
 
-        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        final AbstractJasperReportOutputFormat format =
+                (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
         try {
             format.getJasperPrint("test", requestData, config,
-                    getFile(JasperReportOutputFormatSimpleMapTest.class, TABLE_BASE_DIR), getTaskDirectory());
+                                  getFile(JasperReportOutputFormatSimpleMapTest.class, TABLE_BASE_DIR),
+                                  getTaskDirectory());
             fail("Expected a " + AssertionFailedException.class);
         } catch (AssertionFailedException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("does not match the class of the actual object"));
+            assertTrue(e.getMessage(),
+                       e.getMessage().contains("does not match the class of the actual object"));
         }
-    }
-
-    public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR + "requestData.json");
-    }
-    public static PJsonObject loadTableJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(JasperReportOutputFormatSimpleMapTest.class, TABLE_BASE_DIR + "requestData.json");
     }
 }

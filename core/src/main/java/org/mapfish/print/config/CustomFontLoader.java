@@ -14,7 +14,7 @@ import java.util.Set;
 
 /**
  * Used to load custom fonts.
- *
+ * <p>
  * To add a custom font, the file `mapfish-spring-custom-fonts.xml` must be overridden.
  */
 public final class CustomFontLoader {
@@ -22,11 +22,12 @@ public final class CustomFontLoader {
 
     /**
      * Load the custom fonts when the application is started.
+     *
      * @param paths A list of paths to ttf font files.
      */
     public CustomFontLoader(final Set<String> paths) {
 
-        for (String path : paths) {
+        for (String path: paths) {
             try {
                 loadFont(path);
             } catch (FontFormatException e) {
@@ -58,7 +59,7 @@ public final class CustomFontLoader {
         if (!registered) {
             LOGGER.warn(
                     "Font " + fontFile.getAbsolutePath() + " could not be registered. " +
-                    "Is there already a system font with the same name?");
+                            "Is there already a system font with the same name?");
         } else {
             LOGGER.info("Font " + fontFile.getAbsolutePath() + " registered successfully");
         }

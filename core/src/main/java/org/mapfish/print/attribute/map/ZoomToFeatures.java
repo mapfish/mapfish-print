@@ -11,18 +11,18 @@ public class ZoomToFeatures {
     /**
      * The zoom type. Possible values:
      * <ul>
-     *  <li><code>extent</code> (default): Set the extent of the map so that all features
-     *      are visible.</li>
-     *  <li><code>center</code>: Set the center of the map to the center of the extent
-     *      of the features.</li>
+     * <li><code>extent</code> (default): Set the extent of the map so that all features
+     * are visible.</li>
+     * <li><code>center</code>: Set the center of the map to the center of the extent
+     * of the features.</li>
      * </ul>
      */
     @HasDefaultValue
     public ZoomType zoomType = ZoomType.EXTENT;
 
     /**
-     * The name of the layer whose features will be used. If not set,
-     * the features of all vector layers will be used.
+     * The name of the layer whose features will be used. If not set, the features of all vector layers will
+     * be used.
      */
     @HasDefaultValue
     public String layer;

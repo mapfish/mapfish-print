@@ -10,9 +10,8 @@ public interface JobQueue {
     /**
      * Return the amount of time the queue will keep an entry before purging the record.
      *
-     * @return the number of milliseconds between the last access of a record and the time when a record can be purged from the registry.
-     * -1 if there it is unlimited.
-     *
+     * @return the number of milliseconds between the last access of a record and the time when a record can
+     *         be purged from the registry. -1 if there it is unlimited.
      */
     long getTimeToKeepAfterAccessInMillis();
 
@@ -114,7 +113,6 @@ public interface JobQueue {
 
     /**
      * Get the jobs that are marked as "CANCELING" and must be cancelled.
-     *
      */
     List<? extends PrintJobStatus> toCancel();
 

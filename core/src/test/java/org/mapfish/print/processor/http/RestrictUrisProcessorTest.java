@@ -13,11 +13,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 
-import javax.annotation.Nullable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 
@@ -25,7 +25,7 @@ public class RestrictUrisProcessorTest {
     static final TestHttpClientFactory requestFactory = new TestHttpClientFactory();
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         requestFactory.registerHandler(new Predicate<URI>() {
             @Override
             public boolean apply(@Nullable URI input) {
@@ -44,7 +44,8 @@ public class RestrictUrisProcessorTest {
     public void testCreateFactoryWrapperLegalRequest() throws Exception {
         final RestrictUrisProcessor restrictUrisProcessor = createLocalhostOnly();
         ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
-        final MfClientHttpRequestFactory factoryWrapper = restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
+        final MfClientHttpRequestFactory factoryWrapper =
+                restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
         factoryWrapper.createRequest(new URI("http://localhost:8080/geoserver/wms"), HttpMethod.GET);
     }
 
@@ -52,7 +53,8 @@ public class RestrictUrisProcessorTest {
     public void testCreateFactoryWrapperIllegalRequest() throws Exception {
         final RestrictUrisProcessor restrictUrisProcessor = createLocalhostOnly();
         ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
-        final ClientHttpRequestFactory factoryWrapper = restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
+        final ClientHttpRequestFactory factoryWrapper =
+                restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
         factoryWrapper.createRequest(new URI("http://www.google.com/q"), HttpMethod.GET);
     }
 
@@ -60,7 +62,8 @@ public class RestrictUrisProcessorTest {
     public void testRejectWithLegalRequest() throws Exception {
         final RestrictUrisProcessor restrictUrisProcessor = createDenyInternal();
         ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
-        final ClientHttpRequestFactory factoryWrapper = restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
+        final ClientHttpRequestFactory factoryWrapper =
+                restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
         factoryWrapper.createRequest(new URI("http://localhost/q"), HttpMethod.GET);
     }
 
@@ -68,7 +71,8 @@ public class RestrictUrisProcessorTest {
     public void testRejectWithIllegalRequest() throws Exception {
         final RestrictUrisProcessor restrictUrisProcessor = createDenyInternal();
         ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
-        final ClientHttpRequestFactory factoryWrapper = restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
+        final ClientHttpRequestFactory factoryWrapper =
+                restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
         factoryWrapper.createRequest(new URI("http://192.168.12.23/q"), HttpMethod.GET);
     }
 
@@ -80,7 +84,7 @@ public class RestrictUrisProcessorTest {
 
     private RestrictUrisProcessor createDenyInternal() {
         final RestrictUrisProcessor processor = new RestrictUrisProcessor();
-        List<URIMatcher> matchers = new ArrayList<URIMatcher>();
+        List<URIMatcher> matchers = new ArrayList<>();
         AddressHostMatcher addressHostMatcher = new AddressHostMatcher();
         addressHostMatcher.setIp("192.168.12.0");
         addressHostMatcher.setMask("255.255.255.0");

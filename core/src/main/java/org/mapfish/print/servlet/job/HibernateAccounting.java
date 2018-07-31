@@ -47,8 +47,8 @@ public class HibernateAccounting extends Accounting {
         @Override
         public long onJobSuccess(final PrintJob.PrintResult printResult) {
             final long duractionUSec = super.onJobSuccess(printResult);
-            final HibernateAccountingEntry record1 = new HibernateAccountingEntry(this.entry,
-                    PrintJobStatus.Status.FINISHED, this.configuration);
+            final HibernateAccountingEntry record1 = new HibernateAccountingEntry(
+                    this.entry, PrintJobStatus.Status.FINISHED, this.configuration);
             final HibernateAccountingEntry record = record1;
             record.setProcessingTimeMS(duractionUSec / 1000000L);
             record.setFileSize(printResult.fileSize);
@@ -60,16 +60,16 @@ public class HibernateAccounting extends Accounting {
         @Override
         public void onJobCancel() {
             super.onJobCancel();
-            final HibernateAccountingEntry record = new HibernateAccountingEntry(this.entry,
-                    PrintJobStatus.Status.CANCELLED, this.configuration);
+            final HibernateAccountingEntry record = new HibernateAccountingEntry(
+                    this.entry, PrintJobStatus.Status.CANCELLED, this.configuration);
             insertRecord(record);
         }
 
         @Override
         public void onJobError() {
             super.onJobError();
-            final HibernateAccountingEntry record = new HibernateAccountingEntry(this.entry,
-                    PrintJobStatus.Status.ERROR, this.configuration);
+            final HibernateAccountingEntry record = new HibernateAccountingEntry(
+                    this.entry, PrintJobStatus.Status.ERROR, this.configuration);
             insertRecord(record);
         }
 
@@ -79,10 +79,10 @@ public class HibernateAccounting extends Accounting {
                 tmpl.execute(new TransactionCallbackWithoutResult() {
                     @Override
                     protected void doInTransactionWithoutResult(final TransactionStatus status) {
-                    final Session currentSession = HibernateAccounting.this.sf.getCurrentSession();
-                    currentSession.merge(tuple);
-                    currentSession.flush();
-                    currentSession.evict(tuple);
+                        final Session currentSession = HibernateAccounting.this.sf.getCurrentSession();
+                        currentSession.merge(tuple);
+                        currentSession.flush();
+                        currentSession.evict(tuple);
                     }
                 });
             } catch (HibernateException ex) {

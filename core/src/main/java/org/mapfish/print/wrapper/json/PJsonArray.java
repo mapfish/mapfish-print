@@ -9,14 +9,14 @@ import org.mapfish.print.wrapper.PElement;
 import org.mapfish.print.wrapper.PObject;
 
 /**
- * Wrapper around the {@link org.json.JSONArray} class to have a better
- * error management.
+ * Wrapper around the {@link org.json.JSONArray} class to have a better error management.
  */
 public class PJsonArray extends PElement implements PArray {
     private final JSONArray array;
 
     /**
      * Constructor.
+     *
      * @param parent the parent object.
      * @param array the array to wrap
      * @param contextName the name of this object within the parent.
@@ -36,6 +36,7 @@ public class PJsonArray extends PElement implements PArray {
 
     /**
      * Get the element at the index as a json object.
+     *
      * @param i the index of the object to access
      */
     @Override
@@ -45,6 +46,7 @@ public class PJsonArray extends PElement implements PArray {
 
     /**
      * Get the element at the index as a json object.
+     *
      * @param i the index of the object to access
      */
     public final PJsonObject getJSONObject(final int i) {
@@ -58,6 +60,7 @@ public class PJsonArray extends PElement implements PArray {
 
     /**
      * Get the element at the index as a json array.
+     *
      * @param i the index of the element to access
      */
     @Override
@@ -67,6 +70,7 @@ public class PJsonArray extends PElement implements PArray {
 
     /**
      * Get the element at the index as a json array.
+     *
      * @param i the index of the element to access
      */
     public final PJsonArray getJSONArray(final int i) {
@@ -80,6 +84,7 @@ public class PJsonArray extends PElement implements PArray {
 
     /**
      * Get the element at the index as an integer.
+     *
      * @param i the index of the element to access
      */
     @Override
@@ -102,6 +107,7 @@ public class PJsonArray extends PElement implements PArray {
 
     /**
      * Get the element at the index as a float.
+     *
      * @param i the index of the element to access
      */
     @Override
@@ -115,6 +121,7 @@ public class PJsonArray extends PElement implements PArray {
 
     /**
      * Get the element at the index as a double.
+     *
      * @param i the index of the element to access
      */
     @Override
@@ -128,6 +135,7 @@ public class PJsonArray extends PElement implements PArray {
 
     /**
      * Get the element at the index as a string.
+     *
      * @param i the index of the element to access
      */
     @Override
@@ -148,6 +156,7 @@ public class PJsonArray extends PElement implements PArray {
 
     /**
      * Get the element as a boolean.
+     *
      * @param i the index of the element to access
      */
     @Override

@@ -42,7 +42,8 @@ import static org.mapfish.print.Constants.PDF_DPI;
  * <p>See also: <a href="attributes.html#!northArrow">!northArrow</a> attribute</p>
  * [[examples=verboseExample,print_osm_new_york_nosubreports]]
  */
-public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArrowProcessor.Input, CreateNorthArrowProcessor.Output> {
+public class CreateNorthArrowProcessor
+        extends AbstractProcessor<CreateNorthArrowProcessor.Input, CreateNorthArrowProcessor.Output> {
 
     /**
      * Constructor.
@@ -52,7 +53,8 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
+    protected void extraValidation(
+            final List<Throwable> validationErrors, final Configuration configuration) {
     }
 
     @Override
@@ -82,22 +84,24 @@ public class CreateNorthArrowProcessor extends AbstractProcessor<CreateNorthArro
         String strScalebarSubReport = null;
         if (values.northArrow.isCreateSubReport()) {
             final URI scalebarSubReport = createNorthArrowSubReport(
-                values.tempTaskDirectory, values.northArrow.getSize(),
-                Lists.newArrayList(northArrowGraphicFile), values.map.getDpi());
+                    values.tempTaskDirectory, values.northArrow.getSize(),
+                    Lists.newArrayList(northArrowGraphicFile), values.map.getDpi());
             strScalebarSubReport = scalebarSubReport.toString();
         }
 
         return new Output(northArrowGraphicFile.toString(), strScalebarSubReport);
     }
 
-    private URI createNorthArrowSubReport(final File printDirectory,
-                                   final Dimension size,
-                                   final List<URI> graphics,
-                                   final double dpi) throws IOException, JRException {
+    private URI createNorthArrowSubReport(
+            final File printDirectory,
+            final Dimension size,
+            final List<URI> graphics,
+            final double dpi) throws IOException, JRException {
         final ImagesSubReport subReport = new ImagesSubReport(graphics, size, dpi);
 
         final File compiledReport = File.createTempFile("north-arrow-report-",
-                JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT, printDirectory);
+                                                        JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT,
+                                                        printDirectory);
         subReport.compile(compiledReport);
 
         return compiledReport.toURI();

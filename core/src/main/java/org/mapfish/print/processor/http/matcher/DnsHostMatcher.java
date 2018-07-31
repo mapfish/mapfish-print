@@ -12,9 +12,9 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 /**
- * Allows to check that a given URL matches a DNS address (textual format). The actual comparison is
- * performed on numerical IP addresses. The configured DNS host address is transformed into numerical IP
- * addresses during application startup. The urls to be compared are transformed during the print processing.
+ * Allows to check that a given URL matches a DNS address (textual format). The actual comparison is performed
+ * on numerical IP addresses. The configured DNS host address is transformed into numerical IP addresses
+ * during application startup. The urls to be compared are transformed during the print processing.
  * <p>Example 1: Accept any www.camptocamp.com url</p>
  * <pre><code>
  *     - !dnsMatch
@@ -33,10 +33,10 @@ import java.util.List;
  *       port : 80
  * </code></pre>
  * <p></p>
- *     Example 4: Accept www.camptocamp.com urls with paths that start with /print/.
- *     <p>
- *         If the regular expression give does not start with / then it will be added because all paths start with /
- *     </p>
+ * Example 4: Accept www.camptocamp.com urls with paths that start with /print/.
+ * <p>
+ * If the regular expression give does not start with / then it will be added because all paths start with /
+ * </p>
  *
  * <pre><code>
  *     - !dnsMatch
@@ -53,13 +53,12 @@ public class DnsHostMatcher extends HostMatcher {
      * Check the given URI to see if it matches.
      *
      * @param matchInfo the matchInfo to validate.
-     *
      * @return True if it matches.
      */
     @Override
     public final Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo) throws SocketException,
             UnknownHostException, MalformedURLException {
-        for (AddressHostMatcher addressHostMatcher : this.matchersForHost) {
+        for (AddressHostMatcher addressHostMatcher: this.matchersForHost) {
             if (addressHostMatcher.matches(matchInfo)) {
                 return Optional.absent();
             }
@@ -67,6 +66,7 @@ public class DnsHostMatcher extends HostMatcher {
 
         return Optional.of(false);
     }
+
     @Override
     public final void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.host == null) {
@@ -76,13 +76,14 @@ public class DnsHostMatcher extends HostMatcher {
 
     /**
      * Set the host.
+     *
      * @param host the host
      */
     public final void setHost(final String host) throws UnknownHostException {
         this.host = host;
         final InetAddress[] inetAddresses = InetAddress.getAllByName(host);
 
-        for (InetAddress address : inetAddresses) {
+        for (InetAddress address: inetAddresses) {
             final AddressHostMatcher matcher = new AddressHostMatcher();
             matcher.setIp(address.getHostAddress());
             this.matchersForHost.add(matcher);

@@ -46,13 +46,14 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
     @Test
     public void testParseCRSBackwardCompat() throws Exception {
         JSONObject crsJSON = new JSONObject("{\"crs\":{\n"
-                                            + "  \"type\":\"EPSG\",\n"
-                                            + "  \"properties\" : {\n"
-                                            + "     \"code\":\"4326\"\n"
-                                            + "  }\n"
-                                            + "}\n}");
+                                                    + "  \"type\":\"EPSG\",\n"
+                                                    + "  \"properties\" : {\n"
+                                                    + "     \"code\":\"4326\"\n"
+                                                    + "  }\n"
+                                                    + "}\n}");
 
-        CoordinateReferenceSystem crs = FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
+        CoordinateReferenceSystem crs =
+                FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
         assertNotNull(crs);
         assertEquals("EPSG:4326", CRS.lookupIdentifier(crs, false));
     }
@@ -60,13 +61,14 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
     @Test
     public void testParseCRSNameCode() throws Exception {
         JSONObject crsJSON = new JSONObject("{\"crs\":{\n"
-                                            + "  \"type\":\"name\",\n"
-                                            + "  \"properties\" : {\n"
-                                            + "     \"name\":\"EPSG:4326\"\n"
-                                            + "  }\n"
-                                            + "}}");
+                                                    + "  \"type\":\"name\",\n"
+                                                    + "  \"properties\" : {\n"
+                                                    + "     \"name\":\"EPSG:4326\"\n"
+                                                    + "  }\n"
+                                                    + "}}");
 
-        CoordinateReferenceSystem crs = FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
+        CoordinateReferenceSystem crs =
+                FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
         assertNotNull(crs);
         assertEquals("EPSG:4326", CRS.lookupIdentifier(crs, false));
     }
@@ -75,18 +77,20 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
     @Test
     public void testParseCRSNameURI() throws Exception {
         JSONObject crsJSON = new JSONObject("{\"crs\":{\n"
-                                            + "  \"type\":\"name\",\n"
-                                            + "  \"properties\" : {\n"
-                                            + "     \"name\":\"urn:ogc:def:crs:EPSG::4326\"\n"
-                                            + "  }\n"
-                                            + "}}");
+                                                    + "  \"type\":\"name\",\n"
+                                                    + "  \"properties\" : {\n"
+                                                    + "     \"name\":\"urn:ogc:def:crs:EPSG::4326\"\n"
+                                                    + "  }\n"
+                                                    + "}}");
 
-        CoordinateReferenceSystem crs = FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
+        CoordinateReferenceSystem crs =
+                FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
         assertNotNull(crs);
         assertEquals("EPSG:4326", CRS.lookupIdentifier(crs, false));
     }
 
-    @Test @DirtiesContext
+    @Test
+    @DirtiesContext
     public void testParseCRSLinkOgcWkt() throws Exception {
         requestFactory.registerHandler(new Predicate<URI>() {
             @Override
@@ -95,10 +99,16 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
             }
         }, new TestHttpClientFactory.Handler() {
             @Override
-            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
-                String wkt = "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\","
-                             + "\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],"
-                             + "UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]";
+            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
+                String wkt =
+                        "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563," +
+                                "AUTHORITY[\"EPSG\","
+                                +
+                                "\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0," +
+                                "AUTHORITY[\"EPSG\",\"8901\"]],"
+                                +
+                                "UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]]," +
+                                "AUTHORITY[\"EPSG\",\"4326\"]]";
                 MockClientHttpRequest mockClientHttpRequest = new MockClientHttpRequest();
                 mockClientHttpRequest.setResponse(new MockClientHttpResponse(wkt.getBytes(), HttpStatus.OK));
                 return mockClientHttpRequest;
@@ -106,20 +116,24 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
             }
         });
         JSONObject crsJSON = new JSONObject("{\"crs\":{\n"
-                                            + "  \"type\":\"link\",\n"
-                                            + "  \"properties\" : {\n"
-                                            + "     \"href\":\"http://spatialreference.org/ref/epsg/4326/ogcwkt/\",\n"
-                                            + "     \"type\":\"ogcwkt\"\n"
-                                            + "  }\n"
-                                            + "}}");
+                                                    + "  \"type\":\"link\",\n"
+                                                    + "  \"properties\" : {\n"
+                                                    +
+                                                    "     \"href\":\"http://spatialreference" +
+                                                    ".org/ref/epsg/4326/ogcwkt/\",\n"
+                                                    + "     \"type\":\"ogcwkt\"\n"
+                                                    + "  }\n"
+                                                    + "}}");
 
-        CoordinateReferenceSystem crs = FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
+        CoordinateReferenceSystem crs =
+                FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
         assertNotNull(crs);
         assertEquals("EPSG:4326", CRS.lookupIdentifier(crs, false));
     }
 
-    @Test @DirtiesContext
-    public void testParseCRSLinkEsriWkt() throws Exception {
+    @Test
+    @DirtiesContext
+    public void testParseCRSLinkEsriWkt() {
         requestFactory.registerHandler(new Predicate<URI>() {
             @Override
             public boolean apply(@Nullable URI input) {
@@ -127,38 +141,46 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
             }
         }, new TestHttpClientFactory.Handler() {
             @Override
-            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
-                String wkt = "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],"
-                             + "PRIMEM[\"Greenwich\","
-                             + "0],UNIT[\"Degree\",0.017453292519943295]]";
+            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
+                String wkt =
+                        "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298" +
+                                ".257223563]],"
+                                + "PRIMEM[\"Greenwich\","
+                                + "0],UNIT[\"Degree\",0.017453292519943295]]";
                 MockClientHttpRequest mockClientHttpRequest = new MockClientHttpRequest();
                 mockClientHttpRequest.setResponse(new MockClientHttpResponse(wkt.getBytes(), HttpStatus.OK));
                 return mockClientHttpRequest;
             }
         });
         JSONObject crsJSON = new JSONObject("{\"crs\":{\n"
-                                            + "  \"type\":\"link\",\n"
-                                            + "  \"properties\" : {\n"
-                                            + "     \"href\":\"http://spatialreference.org/ref/epsg/4326/esriwkt/\",\n"
-                                            + "     \"type\":\"esriwkt\"\n"
-                                            + "  }\n"
-                                            + "}}");
+                                                    + "  \"type\":\"link\",\n"
+                                                    + "  \"properties\" : {\n"
+                                                    +
+                                                    "     \"href\":\"http://spatialreference" +
+                                                    ".org/ref/epsg/4326/esriwkt/\",\n"
+                                                    + "     \"type\":\"esriwkt\"\n"
+                                                    + "  }\n"
+                                                    + "}}");
 
-        CoordinateReferenceSystem crs = FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
+        CoordinateReferenceSystem crs =
+                FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
         assertNotNull(crs);
         assertNotSame(DefaultEngineeringCRS.GENERIC_2D, crs);
     }
 
-    public void testParseCRSLinkProj4() throws Exception {
+    public void testParseCRSLinkProj4() {
         JSONObject crsJSON = new JSONObject("{\"crs\":{\n"
-                                            + "  \"type\":\"link\",\n"
-                                            + "  \"properties\" : {\n"
-                                            + "     \"href\":\"http://spatialreference.org/ref/epsg/4326/proj4/\",\n"
-                                            + "     \"type\":\"proj4\"\n"
-                                            + "  }\n"
-                                            + "}}");
+                                                    + "  \"type\":\"link\",\n"
+                                                    + "  \"properties\" : {\n"
+                                                    +
+                                                    "     \"href\":\"http://spatialreference" +
+                                                    ".org/ref/epsg/4326/proj4/\",\n"
+                                                    + "     \"type\":\"proj4\"\n"
+                                                    + "  }\n"
+                                                    + "}}");
 
-        CoordinateReferenceSystem crs = FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
+        CoordinateReferenceSystem crs =
+                FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
         assertNotNull(crs);
         assertNotSame(DefaultEngineeringCRS.GENERIC_2D, crs);
     }
@@ -166,19 +188,23 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
     @Test
     public void testTreatStringAsGeoJson() throws Exception {
         Configuration configuration = configurationFactory.getConfig(getFile("geojson/config.yaml"));
-        MfClientHttpRequestFactory configRequestFactory = new ConfigFileResolvingHttpRequestFactory(requestFactory, configuration, "test");
-        FeaturesParser featuresParser = new FeaturesParser( configRequestFactory, false);
-        for (File geojsonExample : getGeoJsonExamples()) {
+        MfClientHttpRequestFactory configRequestFactory =
+                new ConfigFileResolvingHttpRequestFactory(requestFactory, configuration, "test");
+        FeaturesParser featuresParser = new FeaturesParser(configRequestFactory, false);
+        for (File geojsonExample: getGeoJsonExamples()) {
             try {
                 int numFeatures = getNumExpectedFeatures(geojsonExample);
                 final String geojson = Files.toString(geojsonExample, Constants.DEFAULT_CHARSET);
-                final SimpleFeatureCollection simpleFeatureCollection = featuresParser.treatStringAsGeoJson(geojson);
+                final SimpleFeatureCollection simpleFeatureCollection =
+                        featuresParser.treatStringAsGeoJson(geojson);
                 assertEquals(geojsonExample.getName(), numFeatures, simpleFeatureCollection.size());
             } catch (AssertionError e) {
                 throw e;
             } catch (Throwable t) {
                 t.printStackTrace();
-                throw new AssertionError("Exception raised when processing: " + geojsonExample.getName() + "\n" + t.getMessage());
+                throw new AssertionError(
+                        "Exception raised when processing: " + geojsonExample.getName() + "\n" +
+                                t.getMessage());
             }
         }
     }
@@ -186,8 +212,9 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
     @Test
     public void testTreatStringAsGeoJsonEmptyCollection() throws Exception {
         Configuration configuration = configurationFactory.getConfig(getFile("geojson/config.yaml"));
-        MfClientHttpRequestFactory configRequestFactory = new ConfigFileResolvingHttpRequestFactory(requestFactory, configuration, "test");
-        FeaturesParser featuresParser = new FeaturesParser( configRequestFactory, false);
+        MfClientHttpRequestFactory configRequestFactory =
+                new ConfigFileResolvingHttpRequestFactory(requestFactory, configuration, "test");
+        FeaturesParser featuresParser = new FeaturesParser(configRequestFactory, false);
 
         final String geojson = "{\"type\": \"FeatureCollection\", \"features\": []}";
         final SimpleFeatureCollection simpleFeatureCollection = featuresParser.treatStringAsGeoJson(geojson);

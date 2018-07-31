@@ -6,9 +6,6 @@ import org.mapfish.print.config.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.List;
 
 /**
@@ -32,10 +29,10 @@ import java.util.List;
  *       port : 80
  * </code></pre>
  * <p></p>
- *     Example 4: Accept www.camptocamp.com urls with paths that start with /print/.
- *     <p>
- *         If the regular expression give does not start with / then it will be added because all paths start with /
- *     </p>
+ * Example 4: Accept www.camptocamp.com urls with paths that start with /print/.
+ * <p>
+ * If the regular expression give does not start with / then it will be added because all paths start with /
+ * </p>
  *
  * <pre><code>
  *     - !hostnameMatch
@@ -56,7 +53,8 @@ public final class HostnameMatcher extends HostMatcher {
     }
 
     /* (non-Javadoc)
-     * @see org.mapfish.print.config.ConfigurationObject#validate(java.util.List, org.mapfish.print.config.Configuration)
+     * @see org.mapfish.print.config.ConfigurationObject#validate(java.util.List, org.mapfish.print.config
+     * .Configuration)
      */
     @Override
     public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
@@ -66,11 +64,11 @@ public final class HostnameMatcher extends HostMatcher {
     }
 
     /* (non-Javadoc)
-     * @see org.mapfish.print.processor.http.matcher.HostMatcher#tryOverrideValidation(org.mapfish.print.processor.http.matcher.MatchInfo)
+     * @see org.mapfish.print.processor.http.matcher.HostMatcher#tryOverrideValidation(org.mapfish.print
+     * .processor.http.matcher.MatchInfo)
      */
     @Override
-    protected Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo)
-            throws UnknownHostException, SocketException, MalformedURLException {
+    protected Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo) {
         String host = matchInfo.getHost();
         if (host == MatchInfo.ANY_HOST) {
             return Optional.absent();
@@ -88,7 +86,8 @@ public final class HostnameMatcher extends HostMatcher {
     protected boolean isHostnameMatch(final String host) {
         boolean match = this.host.equalsIgnoreCase(host);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Configured hostname '" + this.host + "' matches requested '" + host + "': " + match);
+            LOGGER.debug(
+                    "Configured hostname '" + this.host + "' matches requested '" + host + "': " + match);
         }
         return match;
     }
@@ -113,9 +112,10 @@ public final class HostnameMatcher extends HostMatcher {
 
     /**
      * Set the host.
+     *
      * @param host the host
      */
-    public void setHost(final String host) throws UnknownHostException {
+    public void setHost(final String host) {
         this.host = host;
     }
 

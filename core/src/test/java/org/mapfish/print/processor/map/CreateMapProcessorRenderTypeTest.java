@@ -1,15 +1,7 @@
 package org.mapfish.print.processor.map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-
+import com.google.common.base.Predicate;
+import com.google.common.io.Files;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -23,8 +15,15 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import com.google.common.base.Predicate;
-import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CreateMapProcessorRenderTypeTest extends AbstractMapfishSpringTest {
 
@@ -36,6 +35,10 @@ public class CreateMapProcessorRenderTypeTest extends AbstractMapfishSpringTest 
     private TestHttpClientFactory requestFactory;
     @Autowired
     private ForkJoinPool forkJoinPool;
+
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorAoiTest.class, BASE_DIR + "requestData.json");
+    }
 
     @Test
     @DirtiesContext
@@ -50,7 +53,8 @@ public class CreateMapProcessorRenderTypeTest extends AbstractMapfishSpringTest 
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data/zoomed-in-ny-tiger.tif"));
                             return ok(uri, bytes, httpMethod);
@@ -69,7 +73,8 @@ public class CreateMapProcessorRenderTypeTest extends AbstractMapfishSpringTest 
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -84,7 +89,7 @@ public class CreateMapProcessorRenderTypeTest extends AbstractMapfishSpringTest 
 
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -99,9 +104,5 @@ public class CreateMapProcessorRenderTypeTest extends AbstractMapfishSpringTest 
         assertTrue(layerGraphics.get(2).getPath().endsWith(".svg"));
         assertTrue(layerGraphics.get(3).getPath().endsWith(".png"));
 
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorAoiTest.class, BASE_DIR + "requestData.json");
     }
 }

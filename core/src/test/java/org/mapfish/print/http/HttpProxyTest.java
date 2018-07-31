@@ -52,9 +52,9 @@ import static org.junit.Assert.assertEquals;
         "classpath:/org/mapfish/print/http/proxy/application-context-proxy-test.xml"
 })
 public class HttpProxyTest {
-    private static final int PROXY_PORT = 23434;
     static final int HTTPS_PROXY_PORT = 23433;
     static final String LOCALHOST = "localhost";
+    private static final int PROXY_PORT = 23434;
     private static final String MESSAGE_FROM_PROXY = "Message From Proxy";
     private static final int TARGET_PORT = 22434;
     private static HttpServer targetServer;
@@ -78,14 +78,99 @@ public class HttpProxyTest {
     }
 
     @AfterClass
-    public static void tearDown() throws Exception {
+    public static void tearDown() {
         proxyServer.stop(0);
         targetServer.stop(0);
         httpsServer.stop(0);
     }
 
+    static void assertCorrectResponse(
+            ConfigurationFactory configurationFactory,
+            MfClientHttpRequestFactoryImpl requestFactory,
+            HttpCredential httpCredential, String expected, String target, String path) throws Exception {
+        final File configFile = AbstractMapfishSpringTest.getFile(
+                HttpProxyTest.class, "proxy/config.yaml");
+        configurationFactory.setDoValidation(false);
+        final Configuration config = configurationFactory.getConfig(configFile);
+        final CertificateStore certificateStore = new CertificateStore();
+        certificateStore.setConfiguration(config);
+        certificateStore.setPassword("password");
+        certificateStore.setUri(getKeystoreFile().toURI());
+
+        config.setCertificateStore(certificateStore);
+        if (httpCredential instanceof HttpProxy) {
+            config.setProxies(Collections.singletonList((HttpProxy) httpCredential));
+        } else {
+            config.setCredentials(Collections.singletonList(httpCredential));
+        }
+
+        ConfigFileResolvingHttpRequestFactory clientHttpRequestFactory =
+                new ConfigFileResolvingHttpRequestFactory(requestFactory, config, "test");
+
+        URI uri = new URI(target + path);
+        final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+        final ClientHttpResponse response = request.execute();
+
+        final String message = new String(ByteStreams.toByteArray(
+                response.getBody()), Constants.DEFAULT_CHARSET);
+        assertEquals(message, HttpStatus.OK, response.getStatusCode());
+
+        assertEquals(expected, message);
+    }
+
+    private static SSLContext getSslContext()
+            throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException,
+            UnrecoverableKeyException, KeyManagementException {
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+
+        char[] password = "password".toCharArray();
+
+        KeyStore ks = KeyStore.getInstance("JKS");
+        final File keystoreFile = getKeystoreFile();
+        FileInputStream fis = new FileInputStream(keystoreFile);
+        ks.load(fis, password);
+
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+        kmf.init(ks, password);
+
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+        tmf.init(ks);
+
+        sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+        return sslContext;
+    }
+
+    private static File getKeystoreFile() {
+        return AbstractMapfishSpringTest.getFile(HttpProxyTest.class, "proxy/keystore.jks");
+    }
+
+    public static void respond(HttpExchange httpExchange, String errorMessage, int responseCode)
+            throws IOException {
+        final byte[] bytes = errorMessage.getBytes(Constants.DEFAULT_CHARSET);
+        httpExchange.sendResponseHeaders(responseCode, bytes.length);
+        httpExchange.getResponseBody().write(bytes);
+        httpExchange.close();
+    }
+
+    public static HttpsServer createHttpsServer(int httpsProxyPort) throws Exception {
+        HttpsServer httpsServer = HttpsServer.create(new InetSocketAddress(httpsProxyPort), 0);
+        SSLContext sslContext = getSslContext();
+
+        final SSLEngine m_engine = sslContext.createSSLEngine();
+
+        httpsServer.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
+            public void configure(HttpsParameters params) {
+                params.setCipherSuites(m_engine.getEnabledCipherSuites());
+                params.setProtocols(m_engine.getEnabledProtocols());
+            }
+        });
+        httpsServer.start();
+
+        return httpsServer;
+    }
+
     @Test
-    public void testValidate() throws Exception {
+    public void testValidate() {
         final HttpProxy httpProxy = new HttpProxy();
 
         List<Throwable> errors = Lists.newArrayList();
@@ -146,8 +231,8 @@ public class HttpProxyTest {
                     } else {
                         final String errorMessage =
                                 String.format("Expected authorization:\n" +
-                                        "'%s' but got:\n" +
-                                        "'%s'", expectedAuth, authorization);
+                                                      "'%s' but got:\n" +
+                                                      "'%s'", expectedAuth, authorization);
                         respond(httpExchange, errorMessage, 500);
                     }
                 }
@@ -254,90 +339,5 @@ public class HttpProxyTest {
     private void assertCorrectResponse(HttpProxy httpProxy, String expected, String target, String path)
             throws Exception {
         assertCorrectResponse(configurationFactory, requestFactory, httpProxy, expected, target, path);
-    }
-
-    static void assertCorrectResponse(
-            ConfigurationFactory configurationFactory,
-            MfClientHttpRequestFactoryImpl requestFactory,
-            HttpCredential httpCredential, String expected, String target, String path) throws Exception {
-        final File configFile = AbstractMapfishSpringTest.getFile(
-                HttpProxyTest.class, "proxy/config.yaml");
-        configurationFactory.setDoValidation(false);
-        final Configuration config = configurationFactory.getConfig(configFile);
-        final CertificateStore certificateStore = new CertificateStore();
-        certificateStore.setConfiguration(config);
-        certificateStore.setPassword("password");
-        certificateStore.setUri(getKeystoreFile().toURI());
-
-        config.setCertificateStore(certificateStore);
-        if (httpCredential instanceof HttpProxy) {
-            config.setProxies(Collections.singletonList((HttpProxy)httpCredential));
-        } else {
-            config.setCredentials(Collections.singletonList(httpCredential));
-        }
-
-        ConfigFileResolvingHttpRequestFactory clientHttpRequestFactory =
-                new ConfigFileResolvingHttpRequestFactory(requestFactory, config, "test");
-
-        URI uri = new URI(target + path);
-        final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
-        final ClientHttpResponse response = request.execute();
-
-        final String message = new String(ByteStreams.toByteArray(
-                response.getBody()), Constants.DEFAULT_CHARSET);
-        assertEquals(message, HttpStatus.OK, response.getStatusCode());
-
-        assertEquals(expected, message);
-    }
-
-    private static SSLContext getSslContext()
-            throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException,
-            UnrecoverableKeyException, KeyManagementException {
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-
-        char[] password = "password".toCharArray();
-
-        KeyStore ks = KeyStore.getInstance("JKS");
-        final File keystoreFile = getKeystoreFile();
-        FileInputStream fis = new FileInputStream(keystoreFile);
-        ks.load(fis, password);
-
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-        kmf.init(ks, password);
-
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-        tmf.init(ks);
-
-        sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-        return sslContext;
-    }
-
-    private static File getKeystoreFile() {
-        return AbstractMapfishSpringTest.getFile(HttpProxyTest.class, "proxy/keystore.jks");
-    }
-
-    public static void respond(HttpExchange httpExchange, String errorMessage, int responseCode)
-            throws IOException {
-        final byte[] bytes = errorMessage.getBytes(Constants.DEFAULT_CHARSET);
-        httpExchange.sendResponseHeaders(responseCode, bytes.length);
-        httpExchange.getResponseBody().write(bytes);
-        httpExchange.close();
-    }
-
-    public static HttpsServer createHttpsServer(int httpsProxyPort) throws Exception {
-        HttpsServer httpsServer = HttpsServer.create(new InetSocketAddress(httpsProxyPort), 0);
-        SSLContext sslContext = getSslContext();
-
-        final SSLEngine m_engine = sslContext.createSSLEngine();
-
-        httpsServer.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
-            public void configure(HttpsParameters params) {
-                params.setCipherSuites(m_engine.getEnabledCipherSuites());
-                params.setProtocols(m_engine.getEnabledProtocols());
-            }
-        });
-        httpsServer.start();
-
-        return httpsServer;
     }
 }

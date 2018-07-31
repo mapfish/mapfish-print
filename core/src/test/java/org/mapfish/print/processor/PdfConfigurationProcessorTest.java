@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 public class PdfConfigurationProcessorTest {
 
     @Test
-    public void testValidation() throws Exception {
+    public void testValidation() {
         Map<String, Object> attributeMap = Maps.newHashMap();
         attributeMap.put("title", "titleAtt");
         assertNumErrors(attributeMap, 0);
@@ -74,7 +74,8 @@ public class PdfConfigurationProcessorTest {
         assertEquals(updatedTitle, in.pdfConfig.getTitle());
         attributeMap.clear();
 
-        attributeMap.put("title", new PdfConfigurationProcessor.Update(titleKey + ".value", "Print Report %s"));
+        attributeMap
+                .put("title", new PdfConfigurationProcessor.Update(titleKey + ".value", "Print Report %s"));
         pdfConfigurationProcessor.setUpdates(attributeMap);
         in.values.put(titleKey, new CustomTitleAtt(updatedTitle));
         pdfConfigurationProcessor.execute(in, null);
@@ -98,7 +99,7 @@ public class PdfConfigurationProcessorTest {
         assertEquals("1,2,3", in.pdfConfig.getKeywordsAsString());
 
         pdfConfigurationProcessor.setUpdates(attributeMap);
-        in.values.put(keywordsKey, new String[] {"9", " 8 8", " 7"});
+        in.values.put(keywordsKey, new String[]{"9", " 8 8", " 7"});
         pdfConfigurationProcessor.execute(in, null);
         assertEquals("9,8 8,7", in.pdfConfig.getKeywordsAsString());
 
@@ -113,12 +114,12 @@ public class PdfConfigurationProcessorTest {
         assertEquals("4,5,6", in.pdfConfig.getKeywordsAsString());
 
         pdfConfigurationProcessor.setUpdates(attributeMap);
-        in.values.put(keywordsKey, new Integer[]{6,7});
+        in.values.put(keywordsKey, new Integer[]{6, 7});
         pdfConfigurationProcessor.execute(in, null);
         assertEquals("6,7", in.pdfConfig.getKeywordsAsString());
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testExec_WrongFieldName() throws Exception {
         Map<String, Object> attributeMap = Maps.newHashMap();
         final String titleKey = "titleAtt";
@@ -133,7 +134,8 @@ public class PdfConfigurationProcessorTest {
         in.values.put(titleKey, new CustomTitleAtt());
         pdfConfigurationProcessor.execute(in, null);
     }
-    @Test (expected = IllegalArgumentException.class)
+
+    @Test(expected = IllegalArgumentException.class)
     public void testExec_NullValue() throws Exception {
         Map<String, Object> attributeMap = Maps.newHashMap();
         final String titleKey = "titleAtt";
@@ -149,6 +151,15 @@ public class PdfConfigurationProcessorTest {
         pdfConfigurationProcessor.execute(in, null);
     }
 
+    private void assertNumErrors(Map<String, Object> attributeMap, int expectedNumErrors) {
+        final PdfConfigurationProcessor pdfConfigurationProcessor = new PdfConfigurationProcessor();
+        pdfConfigurationProcessor.setUpdates(attributeMap);
+        List<Throwable> errors = Lists.newArrayList();
+        Configuration configuration = new Configuration();
+        pdfConfigurationProcessor.validate(errors, configuration);
+        assertEquals(expectedNumErrors, errors.size());
+    }
+
     public static class CustomTitleAtt {
         public String value;
 
@@ -159,14 +170,5 @@ public class PdfConfigurationProcessorTest {
         public CustomTitleAtt() {
             // do nothing
         }
-    }
-
-    private void assertNumErrors(Map<String, Object> attributeMap, int expectedNumErrors) {
-        final PdfConfigurationProcessor pdfConfigurationProcessor = new PdfConfigurationProcessor();
-        pdfConfigurationProcessor.setUpdates(attributeMap);
-        List<Throwable> errors = Lists.newArrayList();
-        Configuration configuration = new Configuration();
-        pdfConfigurationProcessor.validate(errors, configuration);
-        assertEquals(expectedNumErrors, errors.size());
     }
 }

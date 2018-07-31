@@ -11,8 +11,8 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 /**
- * A simple implementation of {@link org.mapfish.print.servlet.registry.Registry} based on a
- * {@link java.util.HashMap}.
+ * A simple implementation of {@link org.mapfish.print.servlet.registry.Registry} based on a {@link
+ * java.util.HashMap}.
  */
 public class BasicRegistry implements Registry {
     private static final int TIME_TO_KEEP_AFTER_ACCESS = 30;
@@ -86,7 +86,8 @@ public class BasicRegistry implements Registry {
 
     @Override
     public final synchronized <T> T opt(final String key, final T defaultValue) {
-        @SuppressWarnings("unchecked") T value = (T) this.registry.getIfPresent(key);
+        @SuppressWarnings("unchecked")
+        T value = (T) this.registry.getIfPresent(key);
         if (value == null) {
             return defaultValue;
         }

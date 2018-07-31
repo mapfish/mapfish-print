@@ -41,6 +41,11 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
     @Autowired
     private ForkJoinPool forkJoinPool;
 
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGmlTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
@@ -53,7 +58,8 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -70,12 +76,12 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
         final JSONObject jsonLayer = requestData.getJSONObject("attributes").getJSONObject("map")
                 .getJSONArray("layers").getJSONObject(0).getInternalObj();
 
-        for (String gmlDataName : new String[]{"spearfish-streams-v2.gml", "spearfish-streams-v311.gml"}) {
+        for (String gmlDataName: new String[]{"spearfish-streams-v2.gml", "spearfish-streams-v311.gml"}) {
             jsonLayer.remove("url");
             jsonLayer.accumulate("url", "http://" + host + ":23432" + "/gml/" + gmlDataName);
 
             Values values = new Values("test", requestData, template, getTaskDirectory(),
-                    this.requestFactory, new File("."));
+                                       this.requestFactory, new File("."));
 
             final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                     template.getProcessorGraph().createTask(values));
@@ -89,10 +95,5 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
                     .assertSimilarity(new File(layerGraphics.get(0)), 20);
         }
 
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGmlTest.class,
-                BASE_DIR + "requestData.json");
     }
 }

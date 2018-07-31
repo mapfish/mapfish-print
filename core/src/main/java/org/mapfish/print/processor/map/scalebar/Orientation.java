@@ -34,11 +34,12 @@ public enum Orientation {
 
     /**
      * Get a direction from its label.
+     *
      * @param label the direction label
      */
     public static Orientation fromString(final String label) {
         if (label != null) {
-            for (Orientation direction : Orientation.values()) {
+            for (Orientation direction: Orientation.values()) {
                 if (label.equalsIgnoreCase(direction.label)) {
                     return direction;
                 }

@@ -6,39 +6,8 @@ import java.util.Date;
 
 /**
  * Print Job Status.
- *
  */
 public interface PrintJobStatus {
-
-    /**
-     * The status type.
-     */
-    enum Status {
-        /**
-         * The job hasn't yet started processing.
-         */
-        WAITING,
-        /**
-         * The job is currently being processed.
-         */
-        RUNNING,
-        /**
-         * The job is still running, but needs to be cancelled.
-         */
-        CANCELING,
-        /**
-         * The job has finished processing.
-         */
-        FINISHED,
-        /**
-         * The job was cancelled.
-         */
-        CANCELLED,
-        /**
-         * There was an error executing the job.
-         */
-        ERROR
-    }
 
     /**
      * Get the entry.
@@ -117,8 +86,39 @@ public interface PrintJobStatus {
 
     /**
      * Set the estimated waiting time for the job to finish (this is a transient value).
+     *
      * @param waitingTime the waiting time
      */
     void setWaitingTime(long waitingTime);
+
+    /**
+     * The status type.
+     */
+    enum Status {
+        /**
+         * The job hasn't yet started processing.
+         */
+        WAITING,
+        /**
+         * The job is currently being processed.
+         */
+        RUNNING,
+        /**
+         * The job is still running, but needs to be cancelled.
+         */
+        CANCELING,
+        /**
+         * The job has finished processing.
+         */
+        FINISHED,
+        /**
+         * The job was cancelled.
+         */
+        CANCELLED,
+        /**
+         * There was an error executing the job.
+         */
+        ERROR
+    }
 
 }

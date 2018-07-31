@@ -30,10 +30,12 @@ public class StyleAttributeTest extends AbstractMapfishSpringTest {
         final File configFile = getFile(StyleAttributeTest.class, "style_attributes/config.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
-        final PJsonObject pJsonObject = parseJSONObjectFromFile(StyleAttributeTest.class, "style_attributes/request.json");
+        final PJsonObject pJsonObject =
+                parseJSONObjectFromFile(StyleAttributeTest.class, "style_attributes/request.json");
         final Values values = new Values("test", pJsonObject, template, this.folder.getRoot(),
-                this.clientHttpRequestFactory, new File("."));
-        final StyleAttribute.StylesAttributeValues value = values.getObject("styleDef", StyleAttribute.StylesAttributeValues.class);
+                                         this.clientHttpRequestFactory, new File("."));
+        final StyleAttribute.StylesAttributeValues value =
+                values.getObject("styleDef", StyleAttribute.StylesAttributeValues.class);
 
         assertNotNull(value.style);
     }

@@ -12,23 +12,23 @@ import java.util.regex.Pattern;
 /**
  * Parses colors from text strings. Supports formats:
  * <ul>
- *     <li><code>#F00</code></li>
- *     <li><code>#FFAABB</code></li>
- *     <li><code>rgb(100,100,100)</code></li>
- *     <li><code>rgba(100,100,100, 100)</code></li>
- *     <li><code>hsl(100,100,100)</code></li>
- *     <li><code>hsla(100,100,100, 100)</code></li>
- *     <li><code>-65536</code></li>
- *     <li><code>red</code></li>
+ * <li><code>#F00</code></li>
+ * <li><code>#FFAABB</code></li>
+ * <li><code>rgb(100,100,100)</code></li>
+ * <li><code>rgba(100,100,100, 100)</code></li>
+ * <li><code>hsl(100,100,100)</code></li>
+ * <li><code>hsla(100,100,100, 100)</code></li>
+ * <li><code>-65536</code></li>
+ * <li><code>red</code></li>
  * </ul>
  * The numbers in the rgb(..) and hsl(..) can have the following formats:
  * <ul>
- *     <li>0-255</li>
- *     <li>0%-100%</li>
- *     <li>0.0%-100.0%</li>
- *     <li>0.0-1.0</li>
- *     <li>0f-1f</li>
- *     <li>0.0f-1.0f</li>
+ * <li>0-255</li>
+ * <li>0%-100%</li>
+ * <li>0.0%-100.0%</li>
+ * <li>0.0-1.0</li>
+ * <li>0f-1f</li>
+ * <li>0.0f-1.0f</li>
  * </ul>
  */
 public final class ColorParser {
@@ -38,12 +38,14 @@ public final class ColorParser {
     private static final Pattern RGB_COLOR_EXTRACTOR = Pattern.compile(
             "rgb\\s*\\(" + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," + NUMBER_PATTERN + "\\)");
     private static final Pattern RGBA_COLOR_EXTRACTOR = Pattern.compile(
-            "rgba\\s*\\(" + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," + NUMBER_PATTERN + "\\)");
+            "rgba\\s*\\(" + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," +
+                    NUMBER_PATTERN + "\\)");
 
     private static final Pattern HSL_COLOR_EXTRACTOR = Pattern.compile(
             "hsl\\s*\\(" + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," + NUMBER_PATTERN + "\\)");
     private static final Pattern HSLA_COLOR_EXTRACTOR = Pattern.compile(
-            "hsla\\s*\\(" + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," + NUMBER_PATTERN + "\\)");
+            "hsla\\s*\\(" + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," +
+                    NUMBER_PATTERN + "\\)");
 
 
     private ColorParser() {
@@ -51,8 +53,8 @@ public final class ColorParser {
     }
 
     /**
-     * Parse the string and convert it to a {@link java.awt.Color}.  See class description for details on the supported
-     * color formats.
+     * Parse the string and convert it to a {@link java.awt.Color}.  See class description for details on the
+     * supported color formats.
      *
      * @param colorString the color string encoded.
      */
@@ -91,9 +93,10 @@ public final class ColorParser {
 
         if (color == null) {
             final Field[] fields = Color.class.getFields();
-            for (Field field : fields) {
+            for (Field field: fields) {
                 if (field.getType() == Color.class && Modifier.isFinal(field.getModifiers())
-                    && Modifier.isStatic(field.getModifiers()) && field.getName().equalsIgnoreCase(trimmedString)) {
+                        && Modifier.isStatic(field.getModifiers()) &&
+                        field.getName().equalsIgnoreCase(trimmedString)) {
                     try {
                         return (Color) field.get(null);
                     } catch (IllegalAccessException e) {
@@ -106,6 +109,7 @@ public final class ColorParser {
 
         return color;
     }
+
     private static Color parseRgbColor(final String colorString) {
         final Matcher matcher = RGB_COLOR_EXTRACTOR.matcher(colorString);
         if (matcher.matches()) {
@@ -117,6 +121,7 @@ public final class ColorParser {
 
         return null;
     }
+
     private static Color parseRgbaColor(final String colorString) {
         final Matcher matcher = RGBA_COLOR_EXTRACTOR.matcher(colorString);
         if (matcher.matches()) {
@@ -129,6 +134,7 @@ public final class ColorParser {
 
         return null;
     }
+
     private static Color parseHslColor(final String colorString) {
         final Matcher matcher = HSL_COLOR_EXTRACTOR.matcher(colorString);
         if (matcher.matches()) {
@@ -141,6 +147,7 @@ public final class ColorParser {
 
         return null;
     }
+
     private static Color parseHslaColor(final String colorString) {
         final Matcher matcher = HSLA_COLOR_EXTRACTOR.matcher(colorString);
         if (matcher.matches()) {
@@ -153,7 +160,9 @@ public final class ColorParser {
 
         return null;
     }
-    private static Color toColorRGBA(final String red, final String green, final String blue, final String alpha) {
+
+    private static Color toColorRGBA(
+            final String red, final String green, final String blue, final String alpha) {
         float finalRed = parsePercent(red).
                 or(parseInt(red)).
                 or(parseFloat(red)).
@@ -182,7 +191,8 @@ public final class ColorParser {
         return Optional.absent();
     }
 
-    private static Color toColorFromHSLA(final String hue, final String saturation, final String luminance, final String alpha) {
+    private static Color toColorFromHSLA(
+            final String hue, final String saturation, final String luminance, final String alpha) {
         float finalHue = parsePercent(hue).
                 or(parseInt(hue)).
                 or(parseFloat(hue)).
@@ -229,8 +239,8 @@ public final class ColorParser {
         float blue = hueToRGB(p, q, finalHue - (1.0f / 3.0f));
         return new Color(red, green, blue, finalAlpha);
     }
-    private static float hueToRGB(final float p, final float q, final float hue)
-    {
+
+    private static float hueToRGB(final float p, final float q, final float hue) {
         float finalHue = hue;
         if (finalHue < 0) {
             finalHue += 1;
@@ -254,19 +264,23 @@ public final class ColorParser {
 
         return p;
     }
+
     private static Optional<Float> parseFloat(final String stringForm) {
         try {
             return Optional.of(Float.parseFloat(stringForm));
         } catch (NumberFormatException e) {
             return Optional.absent();
         }
-    }   private static Optional<Float> parseDouble(final String stringForm) {
+    }
+
+    private static Optional<Float> parseDouble(final String stringForm) {
         try {
             return Optional.of((float) Double.parseDouble(stringForm));
         } catch (NumberFormatException e) {
             return Optional.absent();
         }
     }
+
     private static Optional<Float> parseInt(final String stringForm) {
         try {
             final int i = Integer.parseInt(stringForm);
@@ -281,6 +295,7 @@ public final class ColorParser {
 
     /**
      * Check if the given color string can be parsed.
+     *
      * @param colorString The color to parse.
      */
     public static boolean canParseColor(final String colorString) {
@@ -293,6 +308,7 @@ public final class ColorParser {
 
     /**
      * Get the "rgb(...)" representation for a color.
+     *
      * @param color The color.
      */
     public static String toRGB(final Color color) {

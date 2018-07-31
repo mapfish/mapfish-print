@@ -23,7 +23,7 @@ public class ScaleAdjustmentAccuracyTest {
             new ZoomLevelSnapStrategy.SearchResult(1, ZOOM_LEVELS);
 
     @Test
-    public void testSearchCLOSEST_LOWER_SCALE_ON_MATCHMatch() throws Exception {
+    public void testSearchCLOSEST_LOWER_SCALE_ON_MATCHMatch() {
         assertEquals(SCALE_12_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(
                 new Scale(12, DistanceUnit.M, PDF_DPI), TOLERANCE, ZOOM_LEVELS));
         assertEquals(SCALE_12_RESULT, CLOSEST_LOWER_SCALE_ON_TIE.search(
@@ -43,7 +43,7 @@ public class ScaleAdjustmentAccuracyTest {
     }
 
     @Test
-    public void testSearchCLOSEST_HIGHER_SCALE_ON_MATCHMatch() throws Exception {
+    public void testSearchCLOSEST_HIGHER_SCALE_ON_MATCHMatch() {
         assertEquals(SCALE_12_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(
                 new Scale(12, DistanceUnit.M, PDF_DPI), TOLERANCE, ZOOM_LEVELS));
         assertEquals(SCALE_12_RESULT, CLOSEST_HIGHER_SCALE_ON_TIE.search(
@@ -63,7 +63,7 @@ public class ScaleAdjustmentAccuracyTest {
     }
 
     @Test
-    public void testSearchNextHighest() throws Exception {
+    public void testSearchNextHighest() {
         assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(
                 new Scale(12, DistanceUnit.M, PDF_DPI), TOLERANCE, ZOOM_LEVELS));
         assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(
@@ -81,8 +81,9 @@ public class ScaleAdjustmentAccuracyTest {
         assertEquals(SCALE_12_RESULT, HIGHER_SCALE.search(
                 new Scale(9, DistanceUnit.M, PDF_DPI), TOLERANCE, ZOOM_LEVELS));
     }
+
     @Test
-    public void testSearchLower() throws Exception {
+    public void testSearchLower() {
         assertEquals(SCALE_12_RESULT, LOWER_SCALE.search(
                 new Scale(12, DistanceUnit.M, PDF_DPI), TOLERANCE, ZOOM_LEVELS));
         assertEquals(SCALE_12_RESULT, LOWER_SCALE.search(

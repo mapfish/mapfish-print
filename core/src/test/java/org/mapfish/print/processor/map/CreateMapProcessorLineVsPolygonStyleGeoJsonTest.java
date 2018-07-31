@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
  * Created by Jesse on 3/26/14.
  */
 public class CreateMapProcessorLineVsPolygonStyleGeoJsonTest extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR ="bbox_geojson_line_style/";
+    public static final String BASE_DIR = "bbox_geojson_line_style/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
@@ -36,6 +36,11 @@ public class CreateMapProcessorLineVsPolygonStyleGeoJsonTest extends AbstractMap
     private MfClientHttpRequestFactoryImpl httpRequestFactory;
     @Autowired
     private ForkJoinPool forkJoinPool;
+
+    public static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorLineVsPolygonStyleGeoJsonTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
 
     @Test
     public void testExecute() throws Exception {
@@ -48,7 +53,7 @@ public class CreateMapProcessorLineVsPolygonStyleGeoJsonTest extends AbstractMap
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.httpRequestFactory, new File("."));
+                                   this.httpRequestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -60,10 +65,5 @@ public class CreateMapProcessorLineVsPolygonStyleGeoJsonTest extends AbstractMap
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
                 .assertSimilarity(new File(layerGraphics.get(0)), 20);
-    }
-
-    public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorLineVsPolygonStyleGeoJsonTest.class,
-                BASE_DIR + "requestData.json");
     }
 }

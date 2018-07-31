@@ -43,7 +43,6 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
     private ConfigFileLoaderManager fileLoaderManager;
 
 
-
     @Test
     public void testGeoJsonEmbedded() throws Exception {
         final PJsonObject requestData = CreateMapProcessorFixedScaleBBoxGeoJsonTest.loadJsonRequestData()
@@ -64,7 +63,8 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
         assertNotNull(layer);
 
-        final List<? extends Layer> layers = layer.getLayers(httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), "test");
+        final List<? extends Layer> layers =
+                layer.getLayers(httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), "test");
 
         assertEquals(1, layers.size());
 
@@ -76,9 +76,11 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
     @Test(expected = IllegalFileAccessException.class)
     public void testGeoIllegalFileUrl() throws Exception {
-        final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
-        final PJsonObject requestData = parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\""
-                                                                  + file.toURI().toURL() + "\"}");
+        final File file =
+                getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
+        final PJsonObject requestData =
+                parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\""
+                                                  + file.toURI().toURL() + "\"}");
 
         final Configuration configuration = new Configuration();
         configuration.setConfigurationFile(File.createTempFile("xyz", ".yaml"));
@@ -89,7 +91,8 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
         MapfishParserTest.populateLayerParam(requestData, param, "type");
-        geojsonLayerParser.parse(template, param).getLayers(httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), "test");
+        geojsonLayerParser.parse(template, param)
+                .getLayers(httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), "test");
 
     }
 
@@ -105,13 +108,16 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
         param.geoJson = "file://../" + BASE_DIR + "/geojson.json";
-        geojsonLayerParser.parse(template, param).getLayers(httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), "test");
+        geojsonLayerParser.parse(template, param)
+                .getLayers(httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), "test");
     }
 
     @Test(expected = Exception.class)
     public void testGeoNotUrlNotGeoJson() throws Exception {
-        final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
-        final PJsonObject requestData = parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\"Random\"}");
+        final File file =
+                getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
+        final PJsonObject requestData =
+                parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\"Random\"}");
 
         final Configuration configuration = new Configuration();
         configuration.setConfigurationFile(file);
@@ -122,7 +128,8 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
         GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
         MapfishParserTest.populateLayerParam(requestData, param, "type");
-        geojsonLayerParser.parse(template, param).getLayers(httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), "test");
+        geojsonLayerParser.parse(template, param)
+                .getLayers(httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), "test");
     }
 
     @Test
@@ -137,9 +144,11 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
-                            final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, uri.getPath().substring(1));
+                            final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class,
+                                                      uri.getPath().substring(1));
                             byte[] bytes = Files.toByteArray(file);
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
@@ -148,10 +157,12 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
                     }
                 }
         );
-        final PJsonObject requestData = parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\"http://"
-                                                                  + host + "/" + BASE_DIR + "geojson.json" + "\"}");
+        final PJsonObject requestData =
+                parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\"http://"
+                                                  + host + "/" + BASE_DIR + "geojson.json" + "\"}");
 
-        final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
+        final File file =
+                getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
         final Configuration configuration = new Configuration();
         configuration.setConfigurationFile(file);
         configuration.setFileLoaderManager(this.fileLoaderManager);
@@ -165,7 +176,9 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
         assertNotNull(mapLayer);
 
-        final List<? extends Layer> layers = mapLayer.getLayers(httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), "test");
+        final List<? extends Layer> layers =
+                mapLayer.getLayers(httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(),
+                                   "test");
 
         assertEquals(1, layers.size());
 
@@ -176,9 +189,11 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testRelativeFileUrl() throws Exception {
-        final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
-        final PJsonObject requestData = parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\"file://"
-                                                                  + file.getName() + "\"}");
+        final File file =
+                getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
+        final PJsonObject requestData =
+                parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\"file://"
+                                                  + file.getName() + "\"}");
 
         final Configuration configuration = new Configuration();
         configuration.setConfigurationFile(file);
@@ -193,7 +208,9 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
         assertNotNull(mapLayer);
 
-        final List<? extends Layer> layers = mapLayer.getLayers(httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), "test");
+        final List<? extends Layer> layers =
+                mapLayer.getLayers(httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(),
+                                   "test");
 
         assertEquals(1, layers.size());
 

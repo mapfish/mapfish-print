@@ -13,16 +13,20 @@ import org.yaml.snakeyaml.nodes.NodeId;
 import java.util.Map;
 
 /**
- * The interface to SnakeYaml that is responsible for creating the different objects during parsing the config yaml files.
+ * The interface to SnakeYaml that is responsible for creating the different objects during parsing the config
+ * yaml files.
  * <p></p>
- * The objects are created using spring dependency injection so that the methods are correctly wired using spring.
+ * The objects are created using spring dependency injection so that the methods are correctly wired using
+ * spring.
  * <p></p>
- * If an object has the interface HashConfiguration then this class will inject the configuration object after creating the object.
+ * If an object has the interface HashConfiguration then this class will inject the configuration object after
+ * creating the object.
  * <p></p>
  */
 public final class MapfishPrintConstructor extends Constructor {
     private static final String CONFIGURATION_TAG = "configuration";
-    private static final ThreadLocal<Configuration> CONFIGURATION_UNDER_CONSTRUCTION = new InheritableThreadLocal<Configuration>();
+    private static final ThreadLocal<Configuration> CONFIGURATION_UNDER_CONSTRUCTION =
+            new InheritableThreadLocal<>();
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(MapfishPrintConstructor.class);
 
     /**
@@ -33,9 +37,10 @@ public final class MapfishPrintConstructor extends Constructor {
     public MapfishPrintConstructor(final ConfigurableApplicationContext context) {
         super(new TypeDescription(Configuration.class, CONFIGURATION_TAG));
         Map<String, ConfigurationObject> yamlObjects = context.getBeansOfType(ConfigurationObject.class);
-        for (Map.Entry<String, ConfigurationObject> entry : yamlObjects.entrySet()) {
+        for (Map.Entry<String, ConfigurationObject> entry: yamlObjects.entrySet()) {
             final BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition(entry.getKey());
-            final String message = "Error: Spring bean: " + entry.getKey() + " is not defined as scope = prototype";
+            final String message =
+                    "Error: Spring bean: " + entry.getKey() + " is not defined as scope = prototype";
             if (!beanDefinition.isPrototype()) {
                 LOGGER.error(message);
                 throw new AssertionError(message);
@@ -47,6 +52,9 @@ public final class MapfishPrintConstructor extends Constructor {
         super.yamlClassConstructors.put(NodeId.mapping, construct);
     }
 
+    static void setConfigurationUnderConstruction(final Configuration config) {
+        CONFIGURATION_UNDER_CONSTRUCTION.set(config);
+    }
 
     /**
      * The object that will create the yaml object using the spring application context.
@@ -86,9 +94,5 @@ public final class MapfishPrintConstructor extends Constructor {
         private Configuration getConfiguration() {
             return MapfishPrintConstructor.this.CONFIGURATION_UNDER_CONSTRUCTION.get();
         }
-    }
-
-    static void setConfigurationUnderConstruction(final Configuration config) {
-        CONFIGURATION_UNDER_CONSTRUCTION.set(config);
     }
 }

@@ -410,10 +410,10 @@ public class ScalebarDrawerTest {
         final Font font = new Font(params.font, Font.PLAIN, params.fontSize);
         final FontRenderContext frc = new FontRenderContext(null, true, true);
 
-        final List<Label> labels = new ArrayList<Label>(params.intervals + 1);
+        final List<Label> labels = new ArrayList<>(params.intervals + 1);
         for (int i = 0; i <= params.intervals; i++) {
             String labelText = ScalebarGraphic.createLabelText(DistanceUnit.M,
-                    intervalWidthInWorldUnits * i, DistanceUnit.M);
+                                                               intervalWidthInWorldUnits * i, DistanceUnit.M);
             if (i == params.intervals) {
                 labelText += DistanceUnit.M;
             }

@@ -19,16 +19,6 @@ public final class LinearCoordinateSequence implements CoordinateSequence {
     private AxisDirection ordinate0AxisDirection;
 
     /**
-     * Set the number of dimensions.
-     *
-     * @param dimension the number of dimensions for each point.
-     */
-    public LinearCoordinateSequence setDimension(final int dimension) {
-        this.dimension = dimension;
-        return this;
-    }
-
-    /**
      * Set the origin point of the sequence.
      *
      * @param axis1Origin origin of axis 1
@@ -83,6 +73,16 @@ public final class LinearCoordinateSequence implements CoordinateSequence {
     @Override
     public int getDimension() {
         return this.dimension;
+    }
+
+    /**
+     * Set the number of dimensions.
+     *
+     * @param dimension the number of dimensions for each point.
+     */
+    public LinearCoordinateSequence setDimension(final int dimension) {
+        this.dimension = dimension;
+        return this;
     }
 
     @Override
@@ -182,11 +182,11 @@ public final class LinearCoordinateSequence implements CoordinateSequence {
 
     private boolean ordinate0IsY() {
         return this.ordinate0AxisDirection == AxisDirection.DOWN ||
-               this.ordinate0AxisDirection == AxisDirection.UP ||
-               this.ordinate0AxisDirection == AxisDirection.NORTH ||
-               this.ordinate0AxisDirection == AxisDirection.SOUTH ||
-               this.ordinate0AxisDirection == AxisDirection.DISPLAY_DOWN ||
-               this.ordinate0AxisDirection == AxisDirection.DISPLAY_UP;
+                this.ordinate0AxisDirection == AxisDirection.UP ||
+                this.ordinate0AxisDirection == AxisDirection.NORTH ||
+                this.ordinate0AxisDirection == AxisDirection.SOUTH ||
+                this.ordinate0AxisDirection == AxisDirection.DISPLAY_DOWN ||
+                this.ordinate0AxisDirection == AxisDirection.DISPLAY_UP;
     }
 
     @Override

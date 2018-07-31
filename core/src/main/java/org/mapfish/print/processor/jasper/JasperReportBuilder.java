@@ -2,8 +2,6 @@ package org.mapfish.print.processor.jasper;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -21,7 +19,8 @@ import java.io.IOException;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * <p>A processor that actually compiles a JasperReport template file.</p>
@@ -34,7 +33,6 @@ import javax.annotation.Nullable;
  */
 public final class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.Input, Void>
         implements HasConfiguration {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
     /**
      * Extension for Jasper XML Report Template files.
      */
@@ -43,7 +41,7 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
      * Extension for Compiled Jasper Report Template files.
      */
     public static final String JASPER_REPORT_COMPILED_FILE_EXT = ".jasper";
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
     private File directory = null;
     private Configuration configuration;
     @Autowired
@@ -61,7 +59,7 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     @Override
     public Void execute(final JasperReportBuilder.Input param, final ExecutionContext context)
             throws JRException {
-        for (final File jasperFile : jasperXmlFiles()) {
+        for (final File jasperFile: jasperXmlFiles()) {
             checkCancelState(context);
             compileJasperReport(this.configuration, jasperFile);
         }
@@ -88,10 +86,12 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
                 LOGGER.info("Building Jasper report: {}", jasperFile.getAbsolutePath());
                 LOGGER.debug("To: {}", buildFile.getAbsolutePath());
                 final Timer.Context compileJasperReport = this.metricRegistry.timer(getClass().getName() +
-                        ".compile." + jasperFile).time();
+                                                                                            ".compile." +
+                                                                                            jasperFile)
+                        .time();
                 try {
                     JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(),
-                            tmpBuildFile.getAbsolutePath());
+                                                             tmpBuildFile.getAbsolutePath());
                 } catch (JRValidationException e) {
                     LOGGER.error("The report '{}' isn't valid.", jasperFile.getAbsolutePath());
                     throw e;
@@ -125,12 +125,9 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
                     directoryToSearch, this.configuration.getDirectory()));
         }
         final Iterable<File> children = Files.fileTreeTraverser().children(directoryToSearch);
-        return Iterables.filter(children, new Predicate<File>() {
-            @Override
-            public boolean apply(@Nullable final File input) {
-                return input != null && input.getName().endsWith(JASPER_REPORT_XML_FILE_EXT);
-            }
-        });
+        return StreamSupport.stream(children.spliterator(), false)
+                .filter(input -> input != null && input.getName().endsWith(JASPER_REPORT_XML_FILE_EXT))
+                .collect(Collectors.toList());
     }
 
 
@@ -155,7 +152,8 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
                     this.directory, directory));
         }
 
-        if (!this.directory.getAbsolutePath().startsWith(this.configuration.getDirectory().getAbsolutePath())) {
+        if (!this.directory.getAbsolutePath()
+                .startsWith(this.configuration.getDirectory().getAbsolutePath())) {
             throw new IllegalArgumentException(String.format(
                     "All files and directories must be contained in the configuration directory the " +
                             "directory provided in the configuration breaks that contract: %s in config " +
@@ -174,14 +172,14 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
         return getClass().getSimpleName() + "(" + this.directory + ")";
     }
 
+    @Override
+    protected void extraValidation(final List<Throwable> validationErrors, final Configuration config) {
+        // nothing to do
+    }
+
     /**
      * The input parameter object for {@link JasperReportBuilder}.
      */
     public static final class Input {
-    }
-
-    @Override
-    protected void extraValidation(final List<Throwable> validationErrors, final Configuration config) {
-        // nothing to do
     }
 }

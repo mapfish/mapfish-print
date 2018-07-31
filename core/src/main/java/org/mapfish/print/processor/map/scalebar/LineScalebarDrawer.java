@@ -9,6 +9,7 @@ public class LineScalebarDrawer extends ScalebarDrawer {
 
     /**
      * Constructor.
+     *
      * @param graphics2d The graphics context.
      * @param settings Parameters for rendering the scalebar.
      */
@@ -39,7 +40,8 @@ public class LineScalebarDrawer extends ScalebarDrawer {
             // draw the ticks for the sub-intervals
             for (int j = 1; j < getSettings().getNumSubIntervals(); j++) {
                 pos += getSettings().getIntervalLengthInPixels() / getSettings().getNumSubIntervals();
-                getGraphics2d().drawLine(Math.round(pos), -barSize, Math.round(pos), -Math.round(barSize / 2.0f));
+                getGraphics2d()
+                        .drawLine(Math.round(pos), -barSize, Math.round(pos), -Math.round(barSize / 2.0f));
             }
         }
     }

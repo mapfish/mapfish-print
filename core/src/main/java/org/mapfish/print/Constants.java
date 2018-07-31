@@ -3,10 +3,7 @@ package org.mapfish.print;
 import java.nio.charset.Charset;
 
 /**
- * Strings used in configurations etc...
- * User: jeichar
- * Date: Sep 30, 2010
- * Time: 4:27:46 PM
+ * Strings used in configurations etc... User: jeichar Date: Sep 30, 2010 Time: 4:27:46 PM
  * <p></p>
  */
 public interface Constants {
@@ -35,7 +32,8 @@ public interface Constants {
     Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_ENCODING);
 
     /**
-     * The DPI of a PDF according to the spec.  Also the DPI used by old Openlayers versions (2.0 and earlier).
+     * The DPI of a PDF according to the spec.  Also the DPI used by old Openlayers versions (2.0 and
+     * earlier).
      */
     double PDF_DPI = 72.0;
 

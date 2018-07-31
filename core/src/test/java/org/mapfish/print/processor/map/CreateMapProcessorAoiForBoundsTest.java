@@ -40,6 +40,11 @@ public class CreateMapProcessorAoiForBoundsTest extends AbstractMapfishSpringTes
     @Autowired
     private ForkJoinPool forkJoinPool;
 
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorAoiForBoundsTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
@@ -48,11 +53,13 @@ public class CreateMapProcessorAoiForBoundsTest extends AbstractMapfishSpringTes
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".json")) || input.getAuthority().contains(host + ".json");
+                        return (("" + input.getHost()).contains(host + ".json")) ||
+                                input.getAuthority().contains(host + ".json");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -67,7 +74,8 @@ public class CreateMapProcessorAoiForBoundsTest extends AbstractMapfishSpringTes
 
         PJsonObject requestData = loadJsonRequestData();
 
-        Values values = new Values("test", requestData, template, getTaskDirectory(), this.requestFactory, new File("."));
+        Values values = new Values("test", requestData, template, getTaskDirectory(), this.requestFactory,
+                                   new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -79,9 +87,5 @@ public class CreateMapProcessorAoiForBoundsTest extends AbstractMapfishSpringTes
 
         new ImageSimilarity(getFile(BASE_DIR + "/expectedSimpleImage-no-bounds.png"))
                 .assertSimilarity(layerGraphics, 630, 294, 100);
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorAoiForBoundsTest.class, BASE_DIR + "requestData.json");
     }
 }

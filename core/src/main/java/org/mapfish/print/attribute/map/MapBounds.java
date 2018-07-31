@@ -13,12 +13,12 @@ import java.awt.Rectangle;
 import static org.mapfish.print.Constants.PDF_DPI;
 
 /**
- * Class Represents the bounds of the map in some way.  The implementations will represent the as a bbox or as a center and scale.
- * Created by Jesse on 3/26/14.
+ * Class Represents the bounds of the map in some way.  The implementations will represent the as a bbox or as
+ * a center and scale. Created by Jesse on 3/26/14.
  */
 public abstract class MapBounds {
-    private final CoordinateReferenceSystem projection;
     private static final Logger LOGGER = LoggerFactory.getLogger(MapBounds.class);
+    private final CoordinateReferenceSystem projection;
 
     /**
      * Constructor.
@@ -54,32 +54,31 @@ public abstract class MapBounds {
 
     /**
      * Adjust these bounds so that they are adjusted to the nearest scale in the provided set of scales.
-     *
+     * <p>
      * The center should remain the same and the scale should be adjusted
      *
      * @param zoomLevels the list of Zoom Levels
-     * @param tolerance the tolerance to use when considering if two values are equal.  For example if 12.0 == 12.001.
-     *                  The tolerance is a percentage
+     * @param tolerance the tolerance to use when considering if two values are equal.  For example if
+     *         12.0 == 12.001. The tolerance is a percentage
      * @param zoomLevelSnapStrategy the strategy to use for snapping to the nearest zoom level.
      * @param geodetic snap to geodetic scales.
      * @param paintArea the paint area of the map.
      * @param dpi the DPI.
      */
     public abstract MapBounds adjustBoundsToNearestScale(
-            final ZoomLevels zoomLevels,
-            final double tolerance,
-            final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
-            final boolean geodetic,
-            final Rectangle paintArea,
-            final double dpi);
+            ZoomLevels zoomLevels,
+            double tolerance,
+            ZoomLevelSnapStrategy zoomLevelSnapStrategy,
+            boolean geodetic,
+            Rectangle paintArea,
+            double dpi);
 
     /**
      * Get the nearest scale.
      *
      * @param zoomLevels the list of Zoom Levels.
-     * @param tolerance the tolerance to use when considering if two values are equal.
-     *          For example if 12.0 == 12.001.
-     *          The tolerance is a percentage.
+     * @param tolerance the tolerance to use when considering if two values are equal. For example if
+     *         12.0 == 12.001. The tolerance is a percentage.
      * @param zoomLevelSnapStrategy the strategy to use for snapping to the nearest zoom level.
      * @param geodetic snap to geodetic scales.
      * @param paintArea the paint area of the map.
@@ -121,22 +120,23 @@ public abstract class MapBounds {
 
         return newScale;
     }
+
     /**
      * Calculate and return the scale of the map bounds.
      *
      * @param paintArea the paint area of the map.
      * @param dpi the dpi of the map
      */
-    public abstract Scale getScale(final Rectangle paintArea, final double dpi);
+    public abstract Scale getScale(Rectangle paintArea, double dpi);
 
     /**
-     * In case a rotation is used for the map, the bounds have to be adjusted so that all
-     * visible parts are rendered.
+     * In case a rotation is used for the map, the bounds have to be adjusted so that all visible parts are
+     * rendered.
      *
      * @param rotation The rotation of the map in radians.
      * @return Bounds adjusted to the map rotation.
      */
-    public abstract MapBounds adjustBoundsToRotation(final double rotation);
+    public abstract MapBounds adjustBoundsToRotation(double rotation);
 
     /**
      * Zooms-out the bounds by the given factor.
@@ -144,7 +144,7 @@ public abstract class MapBounds {
      * @param factor The zoom factor.
      * @return Bounds adjusted to the zoom factor.
      */
-    public abstract MapBounds zoomOut(final double factor);
+    public abstract MapBounds zoomOut(double factor);
 
     /**
      * Zoom to the given scale.
@@ -152,7 +152,7 @@ public abstract class MapBounds {
      * @param scale The new scale.
      * @return Bounds adjusted to the scale.
      */
-    public abstract MapBounds zoomToScale(final Scale scale);
+    public abstract MapBounds zoomToScale(Scale scale);
 
     /**
      * Get the center.

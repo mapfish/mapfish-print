@@ -26,10 +26,11 @@ import javax.annotation.Nonnull;
  * @param <Value> The value type of the attribute
  */
 public abstract class PrimitiveAttribute<Value> implements Attribute {
-    private Class<Value> valueClass;
-    /** The default value. */
+    /**
+     * The default value.
+     */
     protected Value defaultValue;
-
+    private Class<Value> valueClass;
     private String configName;
 
     /**
@@ -45,15 +46,16 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
         return this.valueClass;
     }
 
-    /**
-     * <p>A default value for this attribute.</p>
-     * @param value The default value.
-     */
-    public abstract void setDefault(final Value value);
-
     public final Value getDefault() {
         return this.defaultValue;
     }
+
+    /**
+     * <p>A default value for this attribute.</p>
+     *
+     * @param value The default value.
+     */
+    public abstract void setDefault(Value value);
 
     @Override
     public final void setConfigName(final String configName) {
@@ -67,6 +69,7 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
 
     /**
      * Validation of the value from a request.
+     *
      * @param value The value from a request.
      */
     public void validateValue(final Object value) {
@@ -82,23 +85,25 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
     }
 
     /**
-     * Returns a string that is a technical description of the type.  In other words, a string that the client software
-     * (user of the capabilities response) can use to create a request or UI.
+     * Returns a string that is a technical description of the type.  In other words, a string that the client
+     * software (user of the capabilities response) can use to create a request or UI.
      */
     protected String clientConfigTypeDescription() {
         return this.valueClass.getSimpleName();
     }
 
     @Override
-    public Object getValue(@Nonnull final Template template,
-                           @Nonnull final String attributeName,
-                           @Nonnull final PObject requestJsonAttributes) {
+    public Object getValue(
+            @Nonnull final Template template,
+            @Nonnull final String attributeName,
+            @Nonnull final PObject requestJsonAttributes) {
         final Object defaultVal = getDefault();
         PObject jsonToUse = requestJsonAttributes;
         if (defaultVal != null) {
             final JSONObject obj = new JSONObject();
             obj.put(attributeName, defaultVal);
-            final PObject[] pValues = new PObject[]{requestJsonAttributes, new PJsonObject(obj, "default_" + attributeName)};
+            final PObject[] pValues =
+                    new PObject[]{requestJsonAttributes, new PJsonObject(obj, "default_" + attributeName)};
             jsonToUse = new PMultiObject(pValues);
         }
         return MapfishParser.parsePrimitive(attributeName, this, jsonToUse);

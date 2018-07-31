@@ -23,14 +23,21 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
     @Autowired
     private Map<String, OutputFormat> outputFormat;
 
+    public static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(JasperReportOutputFormatSimpleMapTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     public void testPrint() throws Exception {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         PJsonObject requestData = loadJsonRequestData();
 
-        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        final AbstractJasperReportOutputFormat format =
+                (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
         JasperPrint print = format.getJasperPrint("test", requestData, config,
-                getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR), getTaskDirectory()).print;
+                                                  getFile(JasperReportOutputFormatSimpleMapTest.class,
+                                                          BASE_DIR), getTaskDirectory()).print;
 
         // note that we are using a sample size of 50, because the image is quite big.
         // otherwise small differences are not detected!
@@ -43,23 +50,19 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final PJsonObject requestData = loadJsonRequestData();
 
-        for (OutputFormat format : this.outputFormat.values()) {
+        for (OutputFormat format: this.outputFormat.values()) {
             if (format.getFileSuffix().equals("bmp")) {
                 // BMP does not support transparency
                 continue;
             }
             final OutputStream outputStream = new ByteArrayOutputStream();
             format.print("test", requestData, config,
-                    getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
-                    getTaskDirectory(), outputStream);
+                         getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
+                         getTaskDirectory(), outputStream);
             // no error?  its a pass
 
 
         }
-    }
-
-    public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR + "requestData.json");
     }
 
 }

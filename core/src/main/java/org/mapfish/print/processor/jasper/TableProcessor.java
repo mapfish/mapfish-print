@@ -24,7 +24,6 @@ import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.type.StretchTypeEnum;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
-
 import org.json.JSONObject;
 import org.mapfish.print.Constants;
 import org.mapfish.print.PrintException;
@@ -89,16 +88,17 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     }
 
     /**
-     * The path to the JasperReports template that contains the template for the sub-report. If dynamic is false then the template
-     * will be used without any changes. It will simply be compiled and used as is.
+     * The path to the JasperReports template that contains the template for the sub-report. If dynamic is
+     * false then the template will be used without any changes. It will simply be compiled and used as is.
      * <p>
-     * If dynamic is true then the template will be used to obtain the column styles and the size of the subreport and to
-     * get the position of the first header and field element.
-     * The actual field and column definitions will be dynamically generated from the table data that is provided.
+     * If dynamic is true then the template will be used to obtain the column styles and the size of the
+     * subreport and to get the position of the first header and field element. The actual field and column
+     * definitions will be dynamically generated from the table data that is provided.
      * </p>
-     * This may be null if dynamic is false.  If it is null then the main template will likely use the generated
-     * table datasource directly as its datasource for use in its detail section and the table will be directly in the main template's
-     * detail section.  Or a later processor may use the table's datasource in someway.
+     * This may be null if dynamic is false.  If it is null then the main template will likely use the
+     * generated table datasource directly as its datasource for use in its detail section and the table will
+     * be directly in the main template's detail section.  Or a later processor may use the table's datasource
+     * in someway.
      *
      * @param jasperTemplate the template to use for rendering the table.
      */
@@ -107,10 +107,12 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     }
 
     /**
-     * If true then the JasperReport template will be generated dynamically based on the columns in the table attribute.
+     * If true then the JasperReport template will be generated dynamically based on the columns in the table
+     * attribute.
      * <p>Default: false</p>
      *
-     * @param dynamic indicate if the template should be dynamically generated for each print request.
+     * @param dynamic indicate if the template should be dynamically generated for each print
+     *         request.
      */
     public void setDynamic(final boolean dynamic) {
         this.dynamic = dynamic;
@@ -126,7 +128,8 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     }
 
     /**
-     * Set strategies for converting the textual representation of each column to some other object (image, other text, etc...).
+     * Set strategies for converting the textual representation of each column to some other object (image,
+     * other text, etc...).
      * <p></p>
      * Note: The type returned by the column converter must match the type in the jasper template.
      *
@@ -137,10 +140,13 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     }
 
     /**
-     * Set strategies for converting the textual representation of each cell to some other object (image, other text, etc...).
+     * Set strategies for converting the textual representation of each cell to some other object (image,
+     * other text, etc...).
      * <p></p>
-     * This is similar to the converters specified for a particular column. The difference is that these converters are applied
-     * to every cell of the table (except for the cells of those columns that are assigned a specific converter).
+     * This is similar to the converters specified for a particular column. The difference is that these
+     * converters are applied to every cell of the table (except for the cells of those columns that are
+     * assigned a specific converter).
+     *
      * @param converters A list of {@link TableColumnConverter}s.
      */
     public void setConverters(final List<TableColumnConverter<?>> converters) {
@@ -150,8 +156,9 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     /**
      * The id of the style to apply to the first column in the table header.  This is optional.
      * <p>
-     *     The style must be a style element in the jasperTemplate.
+     * The style must be a style element in the jasperTemplate.
      * </p>
+     *
      * @param firstHeaderStyle a ref to a style in the japserTemplate
      */
     public void setFirstHeaderStyle(final String firstHeaderStyle) {
@@ -161,52 +168,61 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     /**
      * The id of the style to apply to the last column in the table header.  This is optional.
      * <p>
-     *     The style must be a style element in the jasperTemplate.
+     * The style must be a style element in the jasperTemplate.
      * </p>
+     *
      * @param lastHeaderStyle a ref to a style in the japserTemplate
      */
     public void setLastHeaderStyle(final String lastHeaderStyle) {
         this.lastHeaderStyle = lastHeaderStyle;
     }
+
     /**
-     * The id of the style to apply to the all columns in the table header except first and last columns.  This value is will be
-     * used as a default if either firstHeaderStyle or lastHeaderStyle is not defined.  This is required if dynamic is true
-     * and is not permitted if dynamic is false.
+     * The id of the style to apply to the all columns in the table header except first and last columns. This
+     * value is will be used as a default if either firstHeaderStyle or lastHeaderStyle is not defined. This
+     * is required if dynamic is true and is not permitted if dynamic is false.
      * <p>
-     *     The style must be a style element in the jasperTemplate.
+     * The style must be a style element in the jasperTemplate.
      * </p>
+     *
      * @param headerStyle a ref to a style in the japserTemplate
      */
     public void setHeaderStyle(final String headerStyle) {
         this.headerStyle = headerStyle;
     }
+
     /**
      * The id of the style to apply to the first column in the table detail section.  This is optional.
      * <p>
-     *     The style must be a style element in the jasperTemplate.
+     * The style must be a style element in the jasperTemplate.
      * </p>
+     *
      * @param firstDetailStyle a ref to a style in the jasperTemplate
      */
     public void setFirstDetailStyle(final String firstDetailStyle) {
         this.firstDetailStyle = firstDetailStyle;
     }
+
     /**
      * The id of the style to apply to the last column in the table detail section.  This is optional.
      * <p>
-     *     The style must be a style element in the jasperTemplate.
+     * The style must be a style element in the jasperTemplate.
      * </p>
+     *
      * @param lastDetailStyle a ref to a style in the jasperTemplate
      */
     public void setLastDetailStyle(final String lastDetailStyle) {
         this.lastDetailStyle = lastDetailStyle;
     }
+
     /**
-     * The id of the style to apply to the all columns in the table detail section except first and last columns.  This value is will be
-     * used as a default if either firstDetailStyle or lastDetailStyle is not defined.  This is required if dynamic is true
-     * and is not permitted if dynamic is false.
+     * The id of the style to apply to the all columns in the table detail section except first and last
+     * columns.  This value is will be used as a default if either firstDetailStyle or lastDetailStyle is not
+     * defined.  This is required if dynamic is true and is not permitted if dynamic is false.
      * <p>
-     *     The style must be a style element in the jasperTemplate.
+     * The style must be a style element in the jasperTemplate.
      * </p>
+     *
      * @param detailStyle a ref to a style in the japserTemplate
      */
     public void setDetailStyle(final String detailStyle) {
@@ -215,6 +231,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
 
     /**
      * The maximum number of columns to allow.
+     *
      * @param maxColumns maximum number of columns to allow.
      */
     public void setMaxColumns(final int maxColumns) {
@@ -238,16 +255,16 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     @Override
     public Output execute(final Input values, final ExecutionContext context) throws Exception {
         final TableAttributeValue jsonTable = values.table;
-        final Collection<Map<String, ?>> table = new ArrayList<Map<String, ?>>();
+        final Collection<Map<String, ?>> table = new ArrayList<>();
 
         final String[] columnNames = jsonTable.columns;
 
         // this map needs to be linked so it keeps order
         Map<String, Class<?>> columns = Maps.newLinkedHashMap();
         final PArray[] jsonData = jsonTable.data;
-        for (final PArray jsonRow : jsonData) {
+        for (final PArray jsonRow: jsonData) {
             checkCancelState(context);
-            final Map<String, Object> row = new HashMap<String, Object>();
+            final Map<String, Object> row = new HashMap<>();
             for (int j = 0; j < jsonRow.size(); j++) {
                 final String columnName = columnNames[j];
                 Object rowValue = jsonRow.get(j);
@@ -256,7 +273,8 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                 }
                 TableColumnConverter<?> converter = this.columnConverterMap.get(columnName);
                 if (converter != null) {
-                    rowValue = converter.resolve(values.clientHttpRequestFactoryProvider.get(), (String) rowValue);
+                    rowValue = converter
+                            .resolve(values.clientHttpRequestFactoryProvider.get(), (String) rowValue);
                 } else {
                     rowValue = tryConvert(values.clientHttpRequestFactoryProvider.get(), rowValue);
                 }
@@ -284,18 +302,18 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     }
 
     /**
-     * If converters are set on a table, this function tests if these can convert
-     * a cell value. The first converter, which claims that it can convert,
-     * will be used to do the conversion.
+     * If converters are set on a table, this function tests if these can convert a cell value. The first
+     * converter, which claims that it can convert, will be used to do the conversion.
      */
-    private Object tryConvert(final MfClientHttpRequestFactory clientHttpRequestFactory,
+    private Object tryConvert(
+            final MfClientHttpRequestFactory clientHttpRequestFactory,
             final Object rowValue) throws URISyntaxException, IOException {
         if (this.converters.isEmpty()) {
             return rowValue;
         }
 
         String value = String.valueOf(rowValue);
-        for (TableColumnConverter<?> converter : this.converters) {
+        for (TableColumnConverter<?> converter: this.converters) {
             if (converter.canConvert(value)) {
                 return converter.resolve(clientHttpRequestFactory, value);
             }
@@ -306,12 +324,12 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
 
     private String generateSubReport(
             final Input input,
-            final Map<String, Class<?>> columns) throws JRException, ClassNotFoundException, IOException {
+            final Map<String, Class<?>> columns) throws JRException, IOException {
         byte[] bytes = loadJasperTemplate(input.template.getConfiguration());
         final JasperDesign templateDesign = JRXmlLoader.load(new ByteArrayInputStream(bytes));
 
         if (this.reportWidth != null) {
-          templateDesign.setPageWidth(this.reportWidth);
+            templateDesign.setPageWidth(this.reportWidth);
         }
 
         int headerHeight = templateDesign.getColumnHeader().getHeight();
@@ -339,11 +357,12 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         if (columns.isEmpty()) {
             columnWidth = templateDesign.getPageWidth();
         } else {
-            columnWidth = (templateDesign.getPageWidth() - (SPACE_BETWEEN_COLS * (numColumns - 1))) / numColumns;
+            columnWidth =
+                    (templateDesign.getPageWidth() - (SPACE_BETWEEN_COLS * (numColumns - 1))) / numColumns;
         }
 
         int i = 0;
-        for (Map.Entry<String, Class<?>> entry : columns.entrySet()) {
+        for (Map.Entry<String, Class<?>> entry: columns.entrySet()) {
             i++;
 
             JRStyle columnDetailStyle;
@@ -398,42 +417,48 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                 if (RenderedImage.class.isAssignableFrom(valueClass)) {
                     designElement = createImageElement(templateDesign, columnName);
                     addElement(detailBand, designElement, detailPosX, detailPosY,
-                            columnWidth, detailHeight, columnDetailStyle);
+                               columnWidth, detailHeight, columnDetailStyle);
                 } else {
                     JRDesignTextField textField = createTextField(columnName);
                     addElement(detailBand, textField, detailPosX, detailPosY,
-                            columnWidth, detailHeight, columnDetailStyle);
+                               columnWidth, detailHeight, columnDetailStyle);
                 }
             } else {
                 // image element
                 JRDesignElement imageElement = createImageElement(templateDesign, columnName);
                 // condition: use this element for images
                 JRDesignExpression printWhenExpression = new JRDesignExpression();
-                printWhenExpression.setText("new Boolean($F{" + columnName + "}.getClass().equals(java.awt.image.BufferedImage.class))");
+                printWhenExpression.setText("new Boolean($F{" + columnName +
+                                                    "}.getClass().equals(java.awt.image.BufferedImage" +
+                                                    ".class))");
                 imageElement.setPrintWhenExpression(printWhenExpression);
 
                 addElement(detailBand, imageElement, detailPosX, detailPosY,
-                        columnWidth, detailHeight, columnDetailStyle);
+                           columnWidth, detailHeight, columnDetailStyle);
 
                 // text field element
                 JRDesignTextField textField = createTextField(columnName);
                 // condition: use this element for non-images
                 printWhenExpression = new JRDesignExpression();
-                printWhenExpression.setText("new Boolean(!$F{" + columnName + "}.getClass().equals(java.awt.image.BufferedImage.class))");
+                printWhenExpression.setText("new Boolean(!$F{" + columnName +
+                                                    "}.getClass().equals(java.awt.image.BufferedImage" +
+                                                    ".class))");
                 textField.setPrintWhenExpression(printWhenExpression);
 
                 addElement(detailBand, textField, detailPosX, detailPosY,
-                        columnWidth, detailHeight, columnDetailStyle);
+                           columnWidth, detailHeight, columnDetailStyle);
             }
 
             headerPosX = headerPosX + columnWidth + SPACE_BETWEEN_COLS;
             detailPosX = detailPosX + columnWidth + SPACE_BETWEEN_COLS;
         }
 
-        final File jrxmlFile = File.createTempFile("table-", JASPER_REPORT_XML_FILE_EXT, input.tempTaskDirectory);
+        final File jrxmlFile =
+                File.createTempFile("table-", JASPER_REPORT_XML_FILE_EXT, input.tempTaskDirectory);
         JRXmlWriter.writeReport(templateDesign, jrxmlFile.getAbsolutePath(), Constants.DEFAULT_ENCODING);
 
-        final File buildFile = File.createTempFile("table-", JASPER_REPORT_COMPILED_FILE_EXT, input.tempTaskDirectory);
+        final File buildFile =
+                File.createTempFile("table-", JASPER_REPORT_COMPILED_FILE_EXT, input.tempTaskDirectory);
         if (!buildFile.delete()) {
             throw new PrintException("Unable to delete the build file: " + buildFile);
         }
@@ -450,7 +475,8 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         return textField;
     }
 
-    private JRDesignElement createImageElement(final JasperDesign templateDesign,
+    private JRDesignElement createImageElement(
+            final JasperDesign templateDesign,
             final String columnName) {
         JRDesignImage designImage = new JRDesignImage(templateDesign);
         designImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
@@ -461,7 +487,8 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         return designImage;
     }
 
-    private void addElement(final JRDesignBand detailBand,
+    private void addElement(
+            final JRDesignBand detailBand,
             final JRDesignElement designElement, final int detailPosX, final int detailPosY,
             final int columnWidth, final int detailHeight, final JRStyle columnDetailStyle) {
         designElement.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
@@ -476,21 +503,22 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     private void removeDetailBand(final JasperDesign templateDesign) {
         final JRDesignSection detailSection = (JRDesignSection) templateDesign.getDetailSection();
         final List<JRBand> bandsList = Lists.newArrayList(detailSection.getBandsList());
-        for (JRBand jrBand : bandsList) {
+        for (JRBand jrBand: bandsList) {
             detailSection.removeBand(jrBand);
         }
     }
 
     private void clearFields(final JasperDesign templateDesign) {
         final List<JRField> fieldsList = Lists.newArrayList(templateDesign.getFieldsList());
-        for (JRField jrField : fieldsList) {
+        for (JRField jrField: fieldsList) {
             templateDesign.removeField(jrField);
         }
     }
 
-    private JRStyle  getStyle(final JasperDesign templateDesign,
-                           final String specificStyle,
-                           final String defaultStyle) {
+    private JRStyle getStyle(
+            final JasperDesign templateDesign,
+            final String specificStyle,
+            final String defaultStyle) {
         JRStyle columnDetailStyle;
         if (specificStyle != null) {
             columnDetailStyle = templateDesign.getStylesMap().get(specificStyle);
@@ -501,9 +529,12 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
-        final boolean styleRefDeclared = this.firstHeaderStyle != null || this.lastHeaderStyle != null || this.headerStyle != null ||
-                                         this.firstDetailStyle != null || this.lastDetailStyle != null || this.detailStyle != null;
+    protected void extraValidation(
+            final List<Throwable> validationErrors, final Configuration configuration) {
+        final boolean styleRefDeclared =
+                this.firstHeaderStyle != null || this.lastHeaderStyle != null || this.headerStyle != null ||
+                        this.firstDetailStyle != null || this.lastDetailStyle != null ||
+                        this.detailStyle != null;
         if (styleRefDeclared && this.jasperTemplate == null) {
             validationErrors.add(new ConfigurationException(
                     "if a style is declared a 'jasperTemplate' must also be declared (in !tableProcessor)."));
@@ -515,7 +546,9 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         if (this.dynamic) {
             if (this.jasperTemplate == null) {
                 try {
-                    this.jasperTemplate = TableProcessor.class.getResource("dynamic-table-default.jrxml").toURI().toString();
+                    this.jasperTemplate =
+                            TableProcessor.class.getResource("dynamic-table-default.jrxml").toURI()
+                                    .toString();
                     this.firstDetailStyle = "column_style_1";
                     this.detailStyle = "column_style_2";
                     this.lastDetailStyle = "column_style_3";
@@ -543,19 +576,23 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                 final Map<String, JRStyle> stylesMap = templateDesign.getStylesMap();
                 if (templateDesign.getColumnHeader() == null) {
                     validationErrors.add(new ConfigurationException(
-                            "JasperTemplate must have a column band defined for height and positioning information"));
+                            "JasperTemplate must have a column band defined for height and positioning " +
+                                    "information"));
                 } else if (templateDesign.getColumnHeader().getElements().length == 0) {
                     validationErrors.add(new ConfigurationException(
-                            "column header band must have at least one element defined for to height and positioning information"));
+                            "column header band must have at least one element defined for to height and " +
+                                    "positioning information"));
                 }
 
                 final JRDesignSection detailSection = (JRDesignSection) templateDesign.getDetailSection();
                 if (detailSection.getBands().length == 0) {
                     validationErrors.add(new ConfigurationException(
-                            "JasperTemplate must have a detail band defined for height and positioning information"));
+                            "JasperTemplate must have a detail band defined for height and positioning " +
+                                    "information"));
                 } else if (detailSection.getBands()[0].getElements().length == 0) {
                     validationErrors.add(new ConfigurationException(
-                            "detail band must have at least one element defined for to height and positioning information"));
+                            "detail band must have at least one element defined for to height and " +
+                                    "positioning information"));
                 }
 
                 checkStyleExists(validationErrors, stylesMap, this.firstDetailStyle);
@@ -579,9 +616,10 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         }
     }
 
-    private void checkStyleExists(final List<Throwable> validationErrors,
-                                  final Map<String, JRStyle> stylesMap,
-                                  final String styleRef) {
+    private void checkStyleExists(
+            final List<Throwable> validationErrors,
+            final Map<String, JRStyle> stylesMap,
+            final String styleRef) {
         if (styleRef != null && !stylesMap.containsKey(styleRef)) {
             validationErrors.add(new ConfigurationException(
                     "No style with id: '" + styleRef + "' exists in " + this.jasperTemplate));
@@ -630,9 +668,10 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
          */
         public final String tableSubReport;
 
-        private Output(final JRMapCollectionDataSource dataSource,
-                       final int numberOfTableRows,
-                       final String subReport) {
+        private Output(
+                final JRMapCollectionDataSource dataSource,
+                final int numberOfTableRows,
+                final String subReport) {
             this.tableDataSource = dataSource;
             this.numberOfTableRows = numberOfTableRows;
             this.tableSubReport = subReport;

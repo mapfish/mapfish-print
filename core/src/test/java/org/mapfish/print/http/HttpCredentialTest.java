@@ -48,12 +48,12 @@ public class HttpCredentialTest {
     }
 
     @AfterClass
-    public static void tearDown() throws Exception {
+    public static void tearDown() {
         httpsServer.stop(0);
     }
 
     @Test
-    public void testValidate() throws Exception {
+    public void testValidate() {
         final HttpCredential credential = new HttpCredential();
         Configuration configuration = new Configuration();
 
@@ -88,16 +88,19 @@ public class HttpCredentialTest {
         assertEquals(USERNAME, object.getUserPrincipal().getName());
         assertEquals(PASSWORD, object.getPassword());
 
-        authscope = new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthScope.ANY_SCHEME);
+        authscope = new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
+                                  AuthScope.ANY_SCHEME);
         assertNotNull(credential.toCredentials(authscope));
 
-        authscope = new AuthScope(AuthScope.ANY_HOST, HttpProxyTest.HTTPS_PROXY_PORT, AuthScope.ANY_REALM, AuthScope.ANY_SCHEME);
+        authscope = new AuthScope(AuthScope.ANY_HOST, HttpProxyTest.HTTPS_PROXY_PORT, AuthScope.ANY_REALM,
+                                  AuthScope.ANY_SCHEME);
         assertNotNull(credential.toCredentials(authscope));
 
         authscope = new AuthScope(AuthScope.ANY_HOST, 80, AuthScope.ANY_REALM, AuthScope.ANY_SCHEME);
         assertNotNull(credential.toCredentials(authscope));
 
-        authscope = new AuthScope("google.com", AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthScope.ANY_SCHEME);
+        authscope =
+                new AuthScope("google.com", AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthScope.ANY_SCHEME);
         assertNull(credential.toCredentials(authscope));
 
         authscope = new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, "http");
@@ -122,7 +125,9 @@ public class HttpCredentialTest {
                     if (authorization.equals(expectedAuth)) {
                         HttpProxyTest.respond(httpExchange, message, 200);
                     } else {
-                        final String errorMessage = "Expected authorization:\n'" + expectedAuth + "' but got:\n'" + authorization + "'";
+                        final String errorMessage =
+                                "Expected authorization:\n'" + expectedAuth + "' but got:\n'" +
+                                        authorization + "'";
                         HttpProxyTest.respond(httpExchange, errorMessage, 500);
                     }
                 }
@@ -138,6 +143,8 @@ public class HttpCredentialTest {
         credential.setMatchers(Collections.singletonList(matcher));
 
         final String target = "https://" + HttpProxyTest.LOCALHOST + ":" + HTTPS_PROXY_PORT;
-        HttpProxyTest.assertCorrectResponse(this.configurationFactory, this.requestFactory, credential, message, target, path);
+        HttpProxyTest
+                .assertCorrectResponse(this.configurationFactory, this.requestFactory, credential, message,
+                                       target, path);
     }
 }

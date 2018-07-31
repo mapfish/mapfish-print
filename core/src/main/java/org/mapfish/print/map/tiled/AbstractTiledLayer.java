@@ -21,24 +21,24 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * An abstract class to support implementing layers that consist of Raster tiles which are combined to
- * compose a single raster to be drawn on the map.
+ * An abstract class to support implementing layers that consist of Raster tiles which are combined to compose
+ * a single raster to be drawn on the map.
  */
 public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
 
     private final StyleSupplier<GridCoverage2D> styleSupplier;
     private final MetricRegistry registry;
     private final Configuration configuration;
-    private TileCacheInformation tileCacheInformation;
-    private TilePreparationInfo tilePreparationInfo;
-
     /**
      * The scale ratio between the tiles resolution and the target resolution.
      */
     protected double imageBufferScaling = 1.0;
+    private TileCacheInformation tileCacheInformation;
+    private TilePreparationInfo tilePreparationInfo;
 
     /**
      * Constructor.
+     *
      * @param forkJoinPool the thread pool for doing the rendering.
      * @param styleSupplier strategy for loading the style for this layer.
      * @param params the parameters for this layer.
@@ -71,7 +71,8 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
             final MapfishMapContext mapContext, final String jobId) throws Exception {
 
         final CoverageTask task = new CoverageTask(this.tilePreparationInfo,
-                getFailOnError(), this.registry, jobId, this.tileCacheInformation, this.configuration);
+                                                   getFailOnError(), this.registry, jobId,
+                                                   this.tileCacheInformation, this.configuration);
         final GridCoverage2D gridCoverage2D = task.call();
 
         GridCoverageLayer layer = new GridCoverageLayer(
@@ -95,10 +96,11 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
     }
 
     @Override
-    public final void cacheResources(final HttpRequestCache httpRequestCache,
-                                     final MfClientHttpRequestFactory clientHttpRequestFactory,
-                                     final MapfishMapContext transformer,
-                                     final String jobId) {
+    public final void cacheResources(
+            final HttpRequestCache httpRequestCache,
+            final MfClientHttpRequestFactory clientHttpRequestFactory,
+            final MapfishMapContext transformer,
+            final String jobId) {
         final MapfishMapContext layerTransformer = getLayerTransformer(transformer);
 
         final TilePreparationTask task = new TilePreparationTask(

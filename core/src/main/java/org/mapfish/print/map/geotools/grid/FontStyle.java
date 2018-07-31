@@ -21,7 +21,7 @@ public enum FontStyle {
 
     final int styleId;
 
-    private FontStyle(final int styleId) {
+    FontStyle(final int styleId) {
         this.styleId = styleId;
     }
 }

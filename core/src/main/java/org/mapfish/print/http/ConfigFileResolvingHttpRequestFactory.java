@@ -25,8 +25,8 @@ import javax.annotation.Nonnull;
 /**
  * This request factory will attempt to load resources using
  * {@link org.mapfish.print.config.Configuration#loadFile(String)}
- * and {@link org.mapfish.print.config.Configuration#isAccessible(String)} to load the resources if the
- * http method is GET and will fallback to the normal/wrapped factory to make http requests.
+ * and {@link org.mapfish.print.config.Configuration#isAccessible(String)} to load the resources if the http
+ * method is GET and will fallback to the normal/wrapped factory to make http requests.
  */
 public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttpRequestFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigFileResolvingHttpRequestFactory.class);
@@ -37,6 +37,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
 
     /**
      * Constructor.
+     *
      * @param httpRequestFactory basic request factory
      * @param config the template for the current print job.
      * @param jobId the job ID
@@ -55,8 +56,9 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
     }
 
     @Override
-    public ClientHttpRequest createRequest(final URI uri,
-                                           final HttpMethod httpMethod) {
+    public ClientHttpRequest createRequest(
+            final URI uri,
+            final HttpMethod httpMethod) {
         return new ConfigFileResolvingRequest(uri, httpMethod);
     }
 
@@ -94,9 +96,11 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
         }
 
         @Override
-        protected synchronized ClientHttpResponse executeInternal(final HttpHeaders headers) throws IOException {
+        protected synchronized ClientHttpResponse executeInternal(final HttpHeaders headers)
+                throws IOException {
             final boolean noJobId = MDC.get("job_id") == null;
-            if (noJobId) {  // that can be called from threads that don't belong to MFP, so we have to be careful
+            if (noJobId) {  // that can be called from threads that don't belong to MFP, so we have to be
+                // careful
                 MDC.put("job_id", ConfigFileResolvingHttpRequestFactory.this.jobId);
             }
             try {
@@ -130,7 +134,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
 
         private ClientHttpResponse executeCallbacksAndRequest(final ClientHttpRequest requestToExecute)
                 throws IOException {
-            for (RequestConfigurator callback : ConfigFileResolvingHttpRequestFactory.this.callbacks) {
+            for (RequestConfigurator callback: ConfigFileResolvingHttpRequestFactory.this.callbacks) {
                 callback.configureRequest(requestToExecute);
             }
 
@@ -151,8 +155,9 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
             private final HttpHeaders headers;
             private final byte[] bytes;
 
-            ConfigFileResolverHttpResponse(final byte[] bytes,
-                                           final HttpHeaders headers) {
+            ConfigFileResolverHttpResponse(
+                    final byte[] bytes,
+                    final HttpHeaders headers) {
                 this.headers = headers;
                 this.bytes = bytes;
             }

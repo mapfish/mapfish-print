@@ -21,15 +21,21 @@ public class LocalHostMatcherTest {
     public void testAccepts() throws Exception {
 
         final InetAddress[] localhosts = InetAddress.getAllByName("localhost");
-        for (InetAddress localhost : localhosts) {
+        for (InetAddress localhost: localhosts) {
 
             assertMatch(localHostMatcher, true, new URI("http://" + localhost.getHostName()), HttpMethod.GET);
-            assertMatch(localHostMatcher, true, new URI("https://" + localhost.getHostName()), HttpMethod.GET);
-            assertMatch(localHostMatcher, true, new URI("https://" + localhost.getHostName()), HttpMethod.POST);
-            assertMatch(localHostMatcher, true, new URI("http://" + localhost.getHostName()), HttpMethod.POST);
-            assertMatch(localHostMatcher, true, new URI("http://" + localhost.getHostName()), HttpMethod.HEAD);
-            assertMatch(localHostMatcher, true, new URI("http://" + localhost.getHostName() + "/print/create"), HttpMethod.GET);
-            assertMatch(localHostMatcher, true, new URI("http://" + localhost.getHostName() + ":8080"), HttpMethod.GET);
+            assertMatch(localHostMatcher, true, new URI("https://" + localhost.getHostName()),
+                        HttpMethod.GET);
+            assertMatch(localHostMatcher, true, new URI("https://" + localhost.getHostName()),
+                        HttpMethod.POST);
+            assertMatch(localHostMatcher, true, new URI("http://" + localhost.getHostName()),
+                        HttpMethod.POST);
+            assertMatch(localHostMatcher, true, new URI("http://" + localhost.getHostName()),
+                        HttpMethod.HEAD);
+            assertMatch(localHostMatcher, true,
+                        new URI("http://" + localhost.getHostName() + "/print/create"), HttpMethod.GET);
+            assertMatch(localHostMatcher, true, new URI("http://" + localhost.getHostName() + ":8080"),
+                        HttpMethod.GET);
         }
 
 
@@ -44,25 +50,31 @@ public class LocalHostMatcherTest {
 
         localHostMatcher.setPort(8080);
 
-        for (InetAddress localhost : localhosts) {
-            assertMatch(localHostMatcher, true, new URI("http://"+localhost.getHostName() + ":8080"), HttpMethod.GET);
-            assertMatch(localHostMatcher, false, new URI("http://"+localhost.getHostName()), HttpMethod.GET);
+        for (InetAddress localhost: localhosts) {
+            assertMatch(localHostMatcher, true, new URI("http://" + localhost.getHostName() + ":8080"),
+                        HttpMethod.GET);
+            assertMatch(localHostMatcher, false, new URI("http://" + localhost.getHostName()),
+                        HttpMethod.GET);
         }
 
         assertMatch(localHostMatcher, false, new URI("http://www.camptocamp.com:8080/"), HttpMethod.GET);
 
         localHostMatcher.setPort(-1);
         localHostMatcher.setPathRegex("/print/.+");
-        for (InetAddress localhost : localhosts) {
-            assertMatch(localHostMatcher, true, new URI("http://"+localhost.getHostName() + "/print/create"), HttpMethod.GET);
-            assertMatch(localHostMatcher, false, new URI("http://"+localhost.getHostName() + "/printing/create"), HttpMethod.GET);
+        for (InetAddress localhost: localhosts) {
+            assertMatch(localHostMatcher, true,
+                        new URI("http://" + localhost.getHostName() + "/print/create"), HttpMethod.GET);
+            assertMatch(localHostMatcher, false,
+                        new URI("http://" + localhost.getHostName() + "/printing/create"), HttpMethod.GET);
         }
 
-        assertMatch(localHostMatcher, false, new URI("http://www.camptocamp.com/print/create"), HttpMethod.GET);
+        assertMatch(localHostMatcher, false, new URI("http://www.camptocamp.com/print/create"),
+                    HttpMethod.GET);
     }
 
     @Test
-    public void testLoopback() throws URISyntaxException, SocketException, UnknownHostException, MalformedURLException {
+    public void testLoopback()
+            throws URISyntaxException, SocketException, UnknownHostException, MalformedURLException {
         assertMatch(localHostMatcher, true, new URI("http://127.0.0.1/"), HttpMethod.GET);
         assertMatch(localHostMatcher, true, new URI("http://127.36.0.0/"), HttpMethod.GET);
         assertMatch(localHostMatcher, false, new URI("http://128.0.0.0/"), HttpMethod.GET);

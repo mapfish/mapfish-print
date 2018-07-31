@@ -35,147 +35,147 @@ public class ScaleBarRenderSettings {
     private float bottomLabelMargin;
     private int padding;
 
-    public final void setParams(final ScalebarAttributeValues params) {
-        this.params = params;
-    }
-
-    public final void setLabels(final List<Label> labels) {
-        this.labels = labels;
-    }
-
-    public final void setScaleUnit(final DistanceUnit scaleUnit) {
-        this.scaleUnit = scaleUnit;
-    }
-
-    public final void setIntervalLengthInPixels(final float intervalLengthInPixels) {
-        this.intervalLengthInPixels = intervalLengthInPixels;
+    public final double getIntervalLengthInWorldUnits() {
+        return this.intervalLengthInWorldUnits;
     }
 
     public final void setIntervalLengthInWorldUnits(final double intervalLengthInWorldUnits) {
         this.intervalLengthInWorldUnits = intervalLengthInWorldUnits;
     }
 
-    public final void setIntervalUnit(final DistanceUnit intervalUnit) {
-        this.intervalUnit = intervalUnit;
-    }
-
-    public final void setLeftLabelMargin(final float leftLabelMargin) {
-        this.leftLabelMargin = leftLabelMargin;
-    }
-
-    public final void setRightLabelMargin(final float rightLabelMargin) {
-        this.rightLabelMargin = rightLabelMargin;
-    }
-
-    public final void setTopLabelMargin(final float topLabelMargin) {
-        this.topLabelMargin = topLabelMargin;
-    }
-
-    public final void setBottomLabelMargin(final float bottomLabelMargin) {
-        this.bottomLabelMargin = bottomLabelMargin;
-    }
-
-    public final double getIntervalLengthInWorldUnits() {
-        return this.intervalLengthInWorldUnits;
-    }
-
-    public final void setBarSize(final int barSize) {
-        this.barSize = barSize;
-    }
-
-    public final void setLabelDistance(final int labelDistance) {
-        this.labelDistance = labelDistance;
-    }
-
-    public final void setNumSubIntervals(final int numSubIntervals) {
-        this.numSubIntervals = numSubIntervals;
-    }
-
-    public final void setLineWidth(final int lineWidth) {
-        this.lineWidth = lineWidth;
-    }
-
     public final List<Label> getLabels() {
         return this.labels;
+    }
+
+    public final void setLabels(final List<Label> labels) {
+        this.labels = labels;
     }
 
     public final float getIntervalLengthInPixels() {
         return this.intervalLengthInPixels;
     }
 
+    public final void setIntervalLengthInPixels(final float intervalLengthInPixels) {
+        this.intervalLengthInPixels = intervalLengthInPixels;
+    }
+
     public final float getLeftLabelMargin() {
         return this.leftLabelMargin;
+    }
+
+    public final void setLeftLabelMargin(final float leftLabelMargin) {
+        this.leftLabelMargin = leftLabelMargin;
     }
 
     public final float getRightLabelMargin() {
         return this.rightLabelMargin;
     }
 
+    public final void setRightLabelMargin(final float rightLabelMargin) {
+        this.rightLabelMargin = rightLabelMargin;
+    }
+
     public final float getTopLabelMargin() {
         return this.topLabelMargin;
+    }
+
+    public final void setTopLabelMargin(final float topLabelMargin) {
+        this.topLabelMargin = topLabelMargin;
     }
 
     public final float getBottomLabelMargin() {
         return this.bottomLabelMargin;
     }
 
+    public final void setBottomLabelMargin(final float bottomLabelMargin) {
+        this.bottomLabelMargin = bottomLabelMargin;
+    }
+
     public final DistanceUnit getScaleUnit() {
         return this.scaleUnit;
+    }
+
+    public final void setScaleUnit(final DistanceUnit scaleUnit) {
+        this.scaleUnit = scaleUnit;
     }
 
     public final DistanceUnit getIntervalUnit() {
         return this.intervalUnit;
     }
 
+    public final void setIntervalUnit(final DistanceUnit intervalUnit) {
+        this.intervalUnit = intervalUnit;
+    }
+
     public final ScalebarAttributeValues getParams() {
         return this.params;
+    }
+
+    public final void setParams(final ScalebarAttributeValues params) {
+        this.params = params;
     }
 
     public final int getLabelDistance() {
         return this.labelDistance;
     }
 
+    public final void setLabelDistance(final int labelDistance) {
+        this.labelDistance = labelDistance;
+    }
+
     public final int getLineWidth() {
         return this.lineWidth;
+    }
+
+    public final void setLineWidth(final int lineWidth) {
+        this.lineWidth = lineWidth;
     }
 
     public final int getBarSize() {
         return this.barSize;
     }
 
+    public final void setBarSize(final int barSize) {
+        this.barSize = barSize;
+    }
+
     public final int getNumSubIntervals() {
         return this.numSubIntervals;
     }
 
-    public final void setMaxLabelSize(final Dimension maxLabelSize) {
-        this.maxLabelSize = maxLabelSize;
-    }
-
-    public final void setSize(final Dimension size) {
-        this.size = size;
+    public final void setNumSubIntervals(final int numSubIntervals) {
+        this.numSubIntervals = numSubIntervals;
     }
 
     public final Dimension getMaxLabelSize() {
         return this.maxLabelSize;
     }
 
+    public final void setMaxLabelSize(final Dimension maxLabelSize) {
+        this.maxLabelSize = maxLabelSize;
+    }
+
     public final Dimension getSize() {
         return this.size;
     }
 
-    public final void setMaxSize(final Dimension maxSize) {
-        this.maxSize = maxSize;
+    public final void setSize(final Dimension size) {
+        this.size = size;
     }
 
     public final Dimension getMaxSize() {
         return this.maxSize;
     }
 
-    public final void setPadding(final int padding) {
-        this.padding = padding;
+    public final void setMaxSize(final Dimension maxSize) {
+        this.maxSize = maxSize;
     }
 
     public final int getPadding() {
         return this.padding;
+    }
+
+    public final void setPadding(final int padding) {
+        this.padding = padding;
     }
 }

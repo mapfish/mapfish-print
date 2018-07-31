@@ -37,13 +37,12 @@ import javax.annotation.Nullable;
  */
 public final class MapfishJsonStyleVersion1 {
 
-    private static final String JSON_STYLE_PROPERTY = "styleProperty";
-    private static final String DEFAULT_STYLE_PROPERTY = "_style";
     /**
      * The default name to use for selecting the geometry attribute of a feature.
      */
     public static final String DEFAULT_GEOM_ATT_NAME = "geometry";
-
+    private static final String JSON_STYLE_PROPERTY = "styleProperty";
+    private static final String DEFAULT_STYLE_PROPERTY = "_style";
     private final String geometryProperty;
     private final PJsonObject json;
     private final StyleBuilder sldStyleBuilder;
@@ -58,7 +57,7 @@ public final class MapfishJsonStyleVersion1 {
         this.json = json;
         this.sldStyleBuilder = styleBuilder;
         this.parserHelper = new JsonStyleParserHelper(configuration, requestFactory, this.sldStyleBuilder,
-                true);
+                                                      true);
         this.geometryProperty = defaultGeomAttName;
     }
 
@@ -75,14 +74,15 @@ public final class MapfishJsonStyleVersion1 {
     private List<Rule> getStyleRules(final String styleProperty) {
         final List<Rule> styleRules = Lists.newArrayListWithExpectedSize(this.json.size());
 
-        for (Iterator<String> iterator = this.json.keys(); iterator.hasNext();) {
+        for (Iterator<String> iterator = this.json.keys(); iterator.hasNext(); ) {
             String styleKey = iterator.next();
-            if (styleKey.equals(JSON_STYLE_PROPERTY) || styleKey.equals(MapfishStyleParserPlugin.JSON_VERSION)) {
+            if (styleKey.equals(JSON_STYLE_PROPERTY) ||
+                    styleKey.equals(MapfishStyleParserPlugin.JSON_VERSION)) {
                 continue;
             }
             PJsonObject styleJson = this.json.getJSONObject(styleKey);
             final List<Rule> currentRules = createStyleRule(styleKey, styleJson, styleProperty);
-            for (Rule currentRule : currentRules) {
+            for (Rule currentRule: currentRules) {
                 if (currentRule != null) {
                     styleRules.add(currentRule);
                 }
@@ -114,27 +114,32 @@ public final class MapfishJsonStyleVersion1 {
         }
 
         return Lists.newArrayList(
-                createGeometryFilteredRule(pointSymbolizer, styleKey, styleProperty, Point.class, MultiPoint.class,
-                        GeometryCollection.class),
-                createGeometryFilteredRule(lineSymbolizer, styleKey, styleProperty, LineString.class, MultiLineString.class,
-                        LinearRing.class, GeometryCollection.class),
-                createGeometryFilteredRule(polygonSymbolizer, styleKey, styleProperty, Polygon.class, MultiPolygon.class,
-                        GeometryCollection.class),
+                createGeometryFilteredRule(pointSymbolizer, styleKey, styleProperty, Point.class,
+                                           MultiPoint.class,
+                                           GeometryCollection.class),
+                createGeometryFilteredRule(lineSymbolizer, styleKey, styleProperty, LineString.class,
+                                           MultiLineString.class,
+                                           LinearRing.class, GeometryCollection.class),
+                createGeometryFilteredRule(polygonSymbolizer, styleKey, styleProperty, Polygon.class,
+                                           MultiPolygon.class,
+                                           GeometryCollection.class),
                 textRule);
     }
 
     @SafeVarargs
     //CHECKSTYLE:OFF
-    private final Rule createGeometryFilteredRule(final Symbolizer symb,
-                                                  final String styleKey,
-                                                  final String styleProperty,
-                                                  final Class<? extends Geometry>... geomClass) {
+    private final Rule createGeometryFilteredRule(
+            final Symbolizer symb,
+            final String styleKey,
+            final String styleProperty,
+            final Class<? extends Geometry>... geomClass) {
         //CHECKSTYLE:ON
         if (symb != null) {
             Expression geomProperty = this.sldStyleBuilder.attributeExpression(this.geometryProperty);
-            final Function geometryTypeFunction = this.sldStyleBuilder.getFilterFactory().function("geometryType", geomProperty);
+            final Function geometryTypeFunction =
+                    this.sldStyleBuilder.getFilterFactory().function("geometryType", geomProperty);
             final ArrayList<Filter> geomOptions = Lists.newArrayListWithExpectedSize(geomClass.length);
-            for (Class<? extends Geometry> requiredType : geomClass) {
+            for (Class<? extends Geometry> requiredType: geomClass) {
                 Expression expr = this.sldStyleBuilder.literalExpression(requiredType.getSimpleName());
                 geomOptions.add(this.sldStyleBuilder.getFilterFactory().equals(geometryTypeFunction, expr));
             }

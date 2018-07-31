@@ -30,9 +30,9 @@ public class MergeDataSourceProcessorTest {
         values.put("row11", "hello11");
         values.put("row2", "hello2");
         List<Map<String, ?>> innerData = Lists.newArrayList(
-            createRow("r1val1", "r1val2", "r1val3"),
-            createRow("r2val1", "r2val2", "r2val3"),
-            createRow("r3val1", "r3val2", "r3val3")
+                createRow("r1val1", "r1val2", "r1val3"),
+                createRow("r2val1", "r2val2", "r2val3"),
+                createRow("r3val1", "r3val2", "r3val3")
         );
         JRMapCollectionDataSource datasource = new JRMapCollectionDataSource(innerData);
         values.put("manyRows", datasource);
@@ -74,7 +74,7 @@ public class MergeDataSourceProcessorTest {
         value = execute.mergedDataSource.getFieldValue(field);
         assertEquals("hello2", value);
 
-        for (int i = 0; i < 3 ; i++) {
+        for (int i = 0; i < 3; i++) {
             assertTrue(execute.mergedDataSource.next());
             field.setName("col1");
             value = execute.mergedDataSource.getFieldValue(field);

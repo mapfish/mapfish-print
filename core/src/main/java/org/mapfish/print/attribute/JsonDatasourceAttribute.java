@@ -12,7 +12,6 @@ import org.mapfish.print.wrapper.PObject;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -29,7 +28,7 @@ import javax.annotation.Nonnull;
  * < /subreport>
  * }
  * </pre>
- *
+ * <p>
  * The expression given to the subDataSource method must select an array in the JSON structure.
  */
 public class JsonDatasourceAttribute implements Attribute {
@@ -52,8 +51,9 @@ public class JsonDatasourceAttribute implements Attribute {
     }
 
     @Override
-    public Object getValue(@Nonnull final Template template, @Nonnull final String attributeName,
-                           @Nonnull final PObject requestJsonAttributes) {
+    public Object getValue(
+            @Nonnull final Template template, @Nonnull final String attributeName,
+            @Nonnull final PObject requestJsonAttributes) {
         final String json;
         final Object value = requestJsonAttributes.opt(attributeName);
 
@@ -70,12 +70,13 @@ public class JsonDatasourceAttribute implements Attribute {
         }
 
         try {
-            final JsonDataSource result = new JsonDataSource(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));
+            final JsonDataSource result =
+                    new JsonDataSource(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));
             result.next();
             return result;
         } catch (JRException e) {
             throw new RuntimeException("Error while parsing " +
-                    requestJsonAttributes.getPath(attributeName) + " as json", e);
+                                               requestJsonAttributes.getPath(attributeName) + " as json", e);
         }
     }
 

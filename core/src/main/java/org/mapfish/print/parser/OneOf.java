@@ -5,6 +5,7 @@ import java.lang.annotation.Target;
 
 /**
  * Indicates that the annotated field or one of the others in the same OneOf group is required.
+ *
  * @see org.mapfish.print.parser.CanSatisfyOneOf
  */
 @Target(value = ElementType.FIELD)

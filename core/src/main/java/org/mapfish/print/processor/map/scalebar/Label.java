@@ -29,6 +29,7 @@ public class Label {
 
     /**
      * Constructor.
+     *
      * @param graphicOffset Position offset.
      * @param labelLayout Layout for the label.
      * @param graphics2D Where it is going to be rendered (more accurate size computation
@@ -41,38 +42,6 @@ public class Label {
         assert graphics2D.getTransform().getScaleX() == graphics2D.getTransform().getScaleY();
         this.width = (float) (bounds.getWidth() / graphics2D.getTransform().getScaleX());
         this.height = (float) (bounds.getHeight() / graphics2D.getTransform().getScaleY());
-    }
-
-    public final float getWidth() {
-        return this.width;
-    }
-
-    public final float getHeight() {
-        return this.height;
-    }
-
-    public final float getGraphicOffset() {
-        return this.graphicOffset;
-    }
-
-    public final TextLayout getLabelLayout() {
-        return this.labelLayout;
-    }
-
-    /**
-     * @param angle Angle
-     * @return The width of the rotated label
-     */
-    public float getRotatedWidth(final float angle) {
-        return getRotatedWidth(this.width, this.height, angle);
-    }
-
-    /**
-     * @param angle Angle
-     * @return The height of the rotated label
-     */
-    public float getRotatedHeight(final float angle) {
-        return getRotatedHeight(this.width, this.height, angle);
     }
 
     /**
@@ -111,5 +80,37 @@ public class Label {
      */
     public static float getRotatedWidth(final Dimension dimension, final float angle) {
         return getRotatedWidth(dimension.width, dimension.height, angle);
+    }
+
+    public final float getWidth() {
+        return this.width;
+    }
+
+    public final float getHeight() {
+        return this.height;
+    }
+
+    public final float getGraphicOffset() {
+        return this.graphicOffset;
+    }
+
+    public final TextLayout getLabelLayout() {
+        return this.labelLayout;
+    }
+
+    /**
+     * @param angle Angle
+     * @return The width of the rotated label
+     */
+    public float getRotatedWidth(final float angle) {
+        return getRotatedWidth(this.width, this.height, angle);
+    }
+
+    /**
+     * @param angle Angle
+     * @return The height of the rotated label
+     */
+    public float getRotatedHeight(final float angle) {
+        return getRotatedHeight(this.width, this.height, angle);
     }
 }

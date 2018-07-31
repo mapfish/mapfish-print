@@ -17,12 +17,12 @@ public class ProcessorDependency {
     private final Set<String> commonInputs;
 
     /**
-     * Constructor.
-     * The processor <code>dependent</code> requires the processor <code>required</code>.
+     * Constructor. The processor <code>dependent</code> requires the processor <code>required</code>.
      *
      * @param required The processor which is required to be executed before the other.
      * @param dependent The processor which requires the other to be executed first.
-     * @param commonInputs The dependency is only enforced if the two processors have these inputs in common.
+     * @param commonInputs The dependency is only enforced if the two processors have these inputs in
+     *         common.
      */
     public ProcessorDependency(
             final Class<? extends Processor<?, ?>> required,
@@ -34,8 +34,7 @@ public class ProcessorDependency {
     }
 
     /**
-     * Constructor.
-     * The processor <code>dependent</code> requires the processor <code>required</code>.
+     * Constructor. The processor <code>dependent</code> requires the processor <code>required</code>.
      *
      * @param required The processor which is required to be executed before the other.
      * @param dependent The processor which requires the other to be executed first.
@@ -43,7 +42,7 @@ public class ProcessorDependency {
     public ProcessorDependency(
             final Class<? extends Processor<?, ?>> required,
             final Class<? extends Processor<?, ?>> dependent) {
-        this(required, dependent, new HashSet<String>());
+        this(required, dependent, new HashSet<>());
     }
 
     /**
@@ -79,9 +78,9 @@ public class ProcessorDependency {
     @Override
     public final String toString() {
         return "ProcessorDependency{" +
-               "required=" + this.required.getSimpleName() +
-               ", dependent=" + this.dependent.getSimpleName() +
-               ", commonInputs=" + this.commonInputs +
-               '}';
+                "required=" + this.required.getSimpleName() +
+                ", dependent=" + this.dependent.getSimpleName() +
+                ", commonInputs=" + this.commonInputs +
+                '}';
     }
 }

@@ -40,6 +40,11 @@ public class CreateMapProcessorGridFixedNumlinesPointRotatedTest extends Abstrac
     @Autowired
     private ForkJoinPool forkJoinPool;
 
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorGridFixedNumlinesPointRotatedTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
@@ -48,11 +53,13 @@ public class CreateMapProcessorGridFixedNumlinesPointRotatedTest extends Abstrac
                 new Predicate<URI>() {
                     @Override
                     public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".osm")) || input.getAuthority().contains(host + ".osm");
+                        return (("" + input.getHost()).contains(host + ".osm")) ||
+                                input.getAuthority().contains(host + ".osm");
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data/osm" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -69,9 +76,10 @@ public class CreateMapProcessorGridFixedNumlinesPointRotatedTest extends Abstrac
         PJsonObject map = requestData.getJSONObject("attributes").getJSONObject("map");
         int[] rotationsToTest = {23, 90, 123, 180, 203, 270, 310, 360};
 
-        for (int rotation : rotationsToTest) {
+        for (int rotation: rotationsToTest) {
             map.getInternalObj().put("rotation", rotation);
-            Values values = new Values("test", requestData, template, getTaskDirectory(), this.requestFactory, new File("."));
+            Values values = new Values("test", requestData, template, getTaskDirectory(), this.requestFactory,
+                                       new File("."));
 
             final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                     template.getProcessorGraph().createTask(values));
@@ -88,9 +96,5 @@ public class CreateMapProcessorGridFixedNumlinesPointRotatedTest extends Abstrac
             } catch (AssertionError e) {
             }
         }
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorGridFixedNumlinesPointRotatedTest.class, BASE_DIR + "requestData.json");
     }
 }

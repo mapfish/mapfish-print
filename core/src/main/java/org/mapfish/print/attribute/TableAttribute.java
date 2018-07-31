@@ -16,10 +16,12 @@ public final class TableAttribute extends ReflectiveAttribute<TableAttribute.Tab
     public Class<TableAttributeValue> getValueType() {
         return TableAttributeValue.class;
     }
+
     @Override
     public TableAttributeValue createValue(final Template template) {
         return new TableAttributeValue();
     }
+
     @Override
     public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         // no checks required

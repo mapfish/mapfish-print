@@ -1,4 +1,3 @@
-
 package org.mapfish.print.processor.http.matcher;
 
 import org.apache.http.auth.AuthScope;
@@ -66,14 +65,15 @@ public final class MatchInfo {
      * @param method the method to match.
      */
     // CSOFF: ParameterNumber
-    public MatchInfo(final String scheme,
-                     final String host,
-                     final int port,
-                     final String path,
-                     final String query,
-                     final String fragment,
-                     final String realm,
-                     final HttpMethod method) {
+    public MatchInfo(
+            final String scheme,
+            final String host,
+            final int port,
+            final String path,
+            final String query,
+            final String fragment,
+            final String realm,
+            final HttpMethod method) {
         // CSON: ParameterNumber
         this.scheme = scheme;
         this.host = host;
@@ -96,16 +96,13 @@ public final class MatchInfo {
         if (newPort < 0) {
             try {
                 newPort = uri.toURL().getDefaultPort();
-            } catch (MalformedURLException e) {
-                newPort = ANY_PORT;
-            } catch (IllegalArgumentException e) {
-                //the URL is relative
+            } catch (MalformedURLException | IllegalArgumentException e) {
                 newPort = ANY_PORT;
             }
         }
 
         return new MatchInfo(uri.getScheme(), uri.getHost(), newPort, uri.getPath(), uri.getQuery(),
-                uri.getFragment(), ANY_REALM, method);
+                             uri.getFragment(), ANY_REALM, method);
     }
 
     /**
@@ -121,7 +118,11 @@ public final class MatchInfo {
         String newRealm = authscope.getRealm() == AuthScope.ANY_REALM ? ANY_REALM : authscope.getRealm();
 
         return new MatchInfo(newScheme, newHost, newPort, ANY_PATH, ANY_QUERY,
-                ANY_FRAGMENT, newRealm, ANY_METHOD);
+                             ANY_FRAGMENT, newRealm, ANY_METHOD);
+    }
+
+    private static String valOrAny(final String val) {
+        return val != null ? val : "*";
     }
 
     public String getScheme() {
@@ -152,17 +153,14 @@ public final class MatchInfo {
         return this.realm;
     }
 
-    private static String valOrAny(final String val) {
-        return val != null ? val : "*";
-    }
-
     /**
      * @return A string
      */
     @Override
     public String toString() {
         String result = String.format("%s://%s:%s/%s", valOrAny(this.scheme), valOrAny(this.host),
-                this.port != ANY_PORT ? Integer.toString(this.port) : "*", valOrAny(this.path));
+                                      this.port != ANY_PORT ? Integer.toString(this.port) : "*",
+                                      valOrAny(this.path));
         if (this.method != ANY_METHOD) {
             result = this.method + " " + result;
         }

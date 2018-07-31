@@ -50,13 +50,13 @@ public final class NorthArrowGraphic {
     private static final String DEFAULT_GRAPHIC = "NorthArrow_10.svg";
     private static final String SVG_NS = SVGDOMImplementation.SVG_NAMESPACE_URI;
 
-    private NorthArrowGraphic() { }
+    private NorthArrowGraphic() {
+    }
 
     /**
      * Creates the north-arrow graphic.
-     *
-     * Scales the given graphic to the given size and applies the given
-     * rotation.
+     * <p>
+     * Scales the given graphic to the given size and applies the given rotation.
      *
      * @param targetSize The size of the graphic to create.
      * @param graphicFile The graphic to use as north-arrow.
@@ -73,20 +73,18 @@ public final class NorthArrowGraphic {
             final Double rotation,
             final File workingDir,
             final MfClientHttpRequestFactory clientHttpRequestFactory) throws Exception {
-        final Closer closer = Closer.create();
-        try {
+        try (Closer closer = Closer.create()) {
             final RasterReference input = loadGraphic(graphicFile, clientHttpRequestFactory, closer);
             if (graphicFile == null || graphicFile.toLowerCase().trim().endsWith("svg")) {
                 return createSvg(targetSize, input, rotation, backgroundColor, workingDir);
             } else {
                 return createRaster(targetSize, input, rotation, backgroundColor, workingDir);
             }
-        } finally {
-            closer.close();
         }
     }
 
-    private static RasterReference loadGraphic(final String graphicFile,
+    private static RasterReference loadGraphic(
+            final String graphicFile,
             final MfClientHttpRequestFactory clientHttpRequestFactory,
             final Closer closer) throws IOException, URISyntaxException {
         if (Strings.isNullOrEmpty(graphicFile)) {
@@ -112,12 +110,14 @@ public final class NorthArrowGraphic {
     /**
      * Renders a given graphic into a new image, scaled to fit the new size and rotated.
      */
-    private static URI createRaster(final Dimension targetSize, final RasterReference rasterReference,
-                                    final Double rotation, final Color backgroundColor,
-                                    final File workingDir) throws IOException {
+    private static URI createRaster(
+            final Dimension targetSize, final RasterReference rasterReference,
+            final Double rotation, final Color backgroundColor,
+            final File workingDir) throws IOException {
         final File path = File.createTempFile("north-arrow-", ".tiff", workingDir);
 
-        final BufferedImage newImage = new BufferedImage(targetSize.width, targetSize.height, BufferedImage.TYPE_4BYTE_ABGR);
+        final BufferedImage newImage =
+                new BufferedImage(targetSize.width, targetSize.height, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D graphics2d = null;
         try {
             graphics2d = newImage.createGraphics();
@@ -125,7 +125,7 @@ public final class NorthArrowGraphic {
             final BufferedImage originalImage = ImageIO.read(rasterReference.inputStream);
             if (originalImage == null) {
                 LOGGER.warn("Unable to load NorthArrow graphic: " + rasterReference.uri +
-                            ", it is not an image format that can be decoded");
+                                    ", it is not an image format that can be decoded");
                 throw new IllegalArgumentException();
             }
 
@@ -139,13 +139,15 @@ public final class NorthArrowGraphic {
             if (originalImage.getWidth() > originalImage.getHeight()) {
                 newWidth = targetSize.width;
                 newHeight = Math.min(
-                                targetSize.height,
-                                (int) Math.ceil(newWidth / (originalImage.getWidth() / (double) originalImage.getHeight())));
+                        targetSize.height,
+                        (int) Math.ceil(newWidth / (originalImage.getWidth() /
+                                (double) originalImage.getHeight())));
             } else {
                 newHeight = targetSize.height;
                 newWidth = Math.min(
-                                targetSize.width,
-                                (int) Math.ceil(newHeight / (originalImage.getHeight() / (double) originalImage.getWidth())));
+                        targetSize.width,
+                        (int) Math.ceil(newHeight / (originalImage.getHeight() /
+                                (double) originalImage.getWidth())));
             }
 
             // position the original image in the center of the new
@@ -158,7 +160,8 @@ public final class NorthArrowGraphic {
                 graphics2d.setTransform(rotate);
             }
 
-            graphics2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            graphics2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                                        RenderingHints.VALUE_INTERPOLATION_BICUBIC);
             graphics2d.drawImage(originalImage, deltaX, deltaY, newWidth, newHeight, null);
 
             ImageUtils.writeImage(newImage, "tiff", path);
@@ -171,11 +174,11 @@ public final class NorthArrowGraphic {
     }
 
     /**
-     * With the Batik SVG library it is only possible to create new SVG graphics,
-     * but you can not modify an existing graphic. So, we are loading the SVG file
-     * as plain XML and doing the modifications by hand.
+     * With the Batik SVG library it is only possible to create new SVG graphics, but you can not modify an
+     * existing graphic. So, we are loading the SVG file as plain XML and doing the modifications by hand.
      */
-    private static URI createSvg(final Dimension targetSize,
+    private static URI createSvg(
+            final Dimension targetSize,
             final RasterReference rasterReference, final Double rotation,
             final Color backgroundColor, final File workingDir)
             throws IOException {
@@ -196,7 +199,8 @@ public final class NorthArrowGraphic {
         return path.toURI();
     }
 
-    private static void setSvgBackground(final Color backgroundColor,  final Dimension targetSize,
+    private static void setSvgBackground(
+            final Color backgroundColor, final Dimension targetSize,
             final Document newDocument, final SVGElement newSvgRoot) {
         final Element rect = newDocument.createElementNS(SVG_NS, "rect");
         rect.setAttributeNS(null, "x", "0");
@@ -211,11 +215,11 @@ public final class NorthArrowGraphic {
     }
 
     /**
-     * Embeds the given SVG element into a new SVG element scaling
-     * the graphic to the given dimension and applying the given
-     * rotation.
+     * Embeds the given SVG element into a new SVG element scaling the graphic to the given dimension and
+     * applying the given rotation.
      */
-    private static void embedSvgGraphic(final SVGElement svgRoot,
+    private static void embedSvgGraphic(
+            final SVGElement svgRoot,
             final SVGElement newSvgRoot, final Document newDocument,
             final Dimension targetSize, final Double rotation) {
         final String originalWidth = svgRoot.getAttributeNS(null, "width");
@@ -289,12 +293,14 @@ public final class NorthArrowGraphic {
             wrapperContainer.appendChild(svgRootImported);
         } else {
             throw new IllegalArgumentException(
-                    "Unsupported or invalid north-arrow SVG graphic: The same unit (px, em, %, ...) must be " +
-                    "used for `width` and `height`.");
+                    "Unsupported or invalid north-arrow SVG graphic: The same unit (px, em, %, ...) must be" +
+                            " " +
+                            "used for `width` and `height`.");
         }
     }
 
-    private static String getRotateTransformation(final Dimension targetSize,
+    private static String getRotateTransformation(
+            final Dimension targetSize,
             final double rotation) {
         return "rotate(" + Double.toString(Math.toDegrees(rotation)) + " "
                 + Integer.toString(targetSize.width / 2) + " "
@@ -309,18 +315,14 @@ public final class NorthArrowGraphic {
         return (SVGElement) document.getDocumentElement();
     }
 
-    private static File writeSvgToFile(final Document document,
+    private static File writeSvgToFile(
+            final Document document,
             final File workingDir) throws IOException {
         final File path = File.createTempFile("north-arrow-", ".svg", workingDir);
-        FileWriterWithEncoding fw = null;
-        try {
-            fw = new FileWriterWithEncoding(path, Charset.forName("UTF-8").newEncoder());
+        try (FileWriterWithEncoding fw = new FileWriterWithEncoding(path,
+                                                                    Charset.forName("UTF-8").newEncoder())) {
             DOMUtilities.writeDocument(document, fw);
             fw.flush();
-        } finally {
-            if (fw != null) {
-                fw.close();
-            }
         }
         return path;
     }
@@ -330,7 +332,7 @@ public final class NorthArrowGraphic {
         private final InputStream inputStream;
         private final URI uri;
 
-        public RasterReference(
+        private RasterReference(
                 final InputStream inputStream,
                 final URI uri) {
             this.inputStream = inputStream;

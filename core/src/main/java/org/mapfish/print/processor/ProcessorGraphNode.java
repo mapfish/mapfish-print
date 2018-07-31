@@ -85,8 +85,7 @@ public final class ProcessorGraphNode<In, Out> {
     }
 
     /**
-     * Returns true if the node has requirements, that is there are other
-     * nodes that should be run first.
+     * Returns true if the node has requirements, that is there are other nodes that should be run first.
      */
     public boolean hasRequirements() {
         return !this.requirements.isEmpty();
@@ -103,7 +102,7 @@ public final class ProcessorGraphNode<In, Out> {
         if (!execContext.tryStart(this)) {
             return Optional.absent();
         } else {
-            return Optional.of(new ProcessorNodeForkJoinTask<In, Out>(this, execContext));
+            return Optional.of(new ProcessorNodeForkJoinTask<>(this, execContext));
         }
     }
 
@@ -133,13 +132,14 @@ public final class ProcessorGraphNode<In, Out> {
 
     /**
      * Create a string representing this node.
+     *
      * @param builder the builder to add the string to.
      * @param indent the number of steps of indent for this node
      * @param parent the parent node
      */
     public void toString(final StringBuilder builder, final int indent, final String parent) {
         this.processor.toString(builder, indent, parent);
-        for (ProcessorGraphNode dependency : this.dependencies) {
+        for (ProcessorGraphNode dependency: this.dependencies) {
             dependency.toString(builder, indent + 1, this.processor.toString());
         }
     }
@@ -159,10 +159,10 @@ public final class ProcessorGraphNode<In, Out> {
      * Create a set containing all the processor at the current node and the entire subgraph.
      */
     public Set<? extends Processor<?, ?>> getAllProcessors() {
-        IdentityHashMap<Processor<?, ?>, Void> all = new IdentityHashMap<Processor<?, ?>, Void>();
+        IdentityHashMap<Processor<?, ?>, Void> all = new IdentityHashMap<>();
         all.put(this.getProcessor(), null);
-        for (ProcessorGraphNode<?, ?> dependency : this.dependencies) {
-            for (Processor<?, ?> p : dependency.getAllProcessors()) {
+        for (ProcessorGraphNode<?, ?> dependency: this.dependencies) {
+            for (Processor<?, ?> p: dependency.getAllProcessors()) {
                 all.put(p, null);
             }
         }
@@ -171,12 +171,16 @@ public final class ProcessorGraphNode<In, Out> {
 
     /**
      * A ForkJoinTask that will run the processor and all of its dependencies.
+     *
+     * @param <In> the type of the input parameter
+     * @param <Out> the type of the output parameter
      */
     public static final class ProcessorNodeForkJoinTask<In, Out> extends RecursiveTask<Values> {
         private final ProcessorExecutionContext execContext;
         private final ProcessorGraphNode<In, Out> node;
 
-        private ProcessorNodeForkJoinTask(final ProcessorGraphNode<In, Out> node, final ProcessorExecutionContext execContext) {
+        private ProcessorNodeForkJoinTask(
+                final ProcessorGraphNode<In, Out> node, final ProcessorExecutionContext execContext) {
             this.node = node;
             this.execContext = execContext;
         }
@@ -189,7 +193,8 @@ public final class ProcessorGraphNode<In, Out> {
             final Processor<In, Out> process = this.node.processor;
             final MetricRegistry registry = this.node.metricRegistry;
             final String name = String.format("%s.compute.%s",
-                    ProcessorGraphNode.class.getName(), process.getClass().getName());
+                                              ProcessorGraphNode.class.getName(),
+                                              process.getClass().getName());
             Timer.Context timerContext = registry.timer(name).time();
             try {
                 final In inputParameter = ProcessorUtils.populateInputParameter(process, values);
@@ -218,7 +223,7 @@ public final class ProcessorGraphNode<In, Out> {
                 final long processorTime = TimeUnit.MILLISECONDS.convert(
                         timerContext.stop(), TimeUnit.NANOSECONDS);
                 LOGGER.info("Time taken to run processor: '{}' was {} ms",
-                        process.getClass(), processorTime);
+                            process.getClass(), processorTime);
             }
 
             if (this.execContext.getContext().isCanceled()) {

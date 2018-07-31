@@ -46,18 +46,20 @@ public class PointGridStrategyTest extends AbstractMapfishSpringTest {
         double dpi = 72;
         MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, true, true);
 
-        FeatureSourceSupplier supplier = pointGridStrategy.createFeatureSource(template, layerData, new LabelPositionCollector());
+        FeatureSourceSupplier supplier =
+                pointGridStrategy.createFeatureSource(template, layerData, new LabelPositionCollector());
         SimpleFeatureSource featureSource = (SimpleFeatureSource) supplier.load(requestFactory, context);
         assertEquals(6, featureSource.getFeatures().size());
 
         SimpleFeatureIterator features = featureSource.getFeatures().features();
         List<Coordinate> expectedPoints = Lists.newArrayList(
-                new Coordinate(200,400),new Coordinate(300,400),new Coordinate(400,400),
-                new Coordinate(200,600),new Coordinate(300,600),new Coordinate(400,600)
-                );
+                new Coordinate(200, 400), new Coordinate(300, 400), new Coordinate(400, 400),
+                new Coordinate(200, 600), new Coordinate(300, 600), new Coordinate(400, 600)
+        );
         while (features.hasNext()) {
             SimpleFeature next = features.next();
-            assertTrue(next.getDefaultGeometry().getClass().getName(), next.getDefaultGeometry() instanceof Point);
+            assertTrue(next.getDefaultGeometry().getClass().getName(),
+                       next.getDefaultGeometry() instanceof Point);
             Coordinate coord = ((Point) next.getDefaultGeometry()).getCoordinate();
             assertTrue(coord + " is not one of the expected points", expectedPoints.contains(coord));
         }
@@ -83,21 +85,25 @@ public class PointGridStrategyTest extends AbstractMapfishSpringTest {
         double dpi = 72;
         MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, true, true);
 
-        FeatureSourceSupplier supplier = pointGridStrategy.createFeatureSource(template, layerData, new LabelPositionCollector());
+        FeatureSourceSupplier supplier =
+                pointGridStrategy.createFeatureSource(template, layerData, new LabelPositionCollector());
         SimpleFeatureSource featureSource = (SimpleFeatureSource) supplier.load(requestFactory, context);
 
         SimpleFeatureIterator features = featureSource.getFeatures().features();
 
         List<Coordinate> expectedPoints = Lists.newArrayList(
-                new Coordinate(15, 35), new Coordinate(25, 35), new Coordinate(35, 35), new Coordinate(45, 35),
-                new Coordinate(15, 50), new Coordinate(25, 50), new Coordinate(35, 50), new Coordinate(45, 50),
+                new Coordinate(15, 35), new Coordinate(25, 35), new Coordinate(35, 35),
+                new Coordinate(45, 35),
+                new Coordinate(15, 50), new Coordinate(25, 50), new Coordinate(35, 50),
+                new Coordinate(45, 50),
                 new Coordinate(15, 65), new Coordinate(25, 65), new Coordinate(35, 65), new Coordinate(45, 65)
-                );
+        );
 
         assertEquals(expectedPoints.size(), featureSource.getFeatures().size());
         while (features.hasNext()) {
             SimpleFeature next = features.next();
-            assertTrue(next.getDefaultGeometry().getClass().getName(), next.getDefaultGeometry() instanceof Point);
+            assertTrue(next.getDefaultGeometry().getClass().getName(),
+                       next.getDefaultGeometry() instanceof Point);
             Coordinate coord = ((Point) next.getDefaultGeometry()).getCoordinate();
             assertTrue(coord + " is not one of the expected points", expectedPoints.contains(coord));
         }

@@ -10,14 +10,13 @@ import org.mapfish.print.servlet.ServletMapPrinterFactory;
 import org.mapfish.print.servlet.job.PrintJobEntry;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.context.ApplicationContext;
-import java.util.Date;
 
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 /**
  * Print Job Entry.
- *
  */
 @Embeddable
 public class PrintJobEntryImpl implements PrintJobEntry {
@@ -63,26 +62,16 @@ public class PrintJobEntryImpl implements PrintJobEntry {
      * @param referenceId reference of the report.
      * @param requestData the request data
      * @param startTime the time when the print job started.
-     * @param access the an access control object for downloading this report.  Typically this is combined access of the
-     *                        template and the configuration.
+     * @param access the an access control object for downloading this report.  Typically this is
+     *         combined access of the template and the configuration.
      */
-    public PrintJobEntryImpl(final String referenceId, final PJsonObject requestData, final long startTime, final AccessAssertion access) {
+    public PrintJobEntryImpl(
+            final String referenceId, final PJsonObject requestData, final long startTime,
+            final AccessAssertion access) {
         this.referenceId = referenceId;
         this.requestData = requestData;
         this.access = access;
         this.startTime = startTime;
-    }
-
-    public final void setReferenceId(final String referenceId) {
-        this.referenceId = referenceId;
-    }
-
-    public final void setRequestData(final PJsonObject requestData) {
-        this.requestData = requestData;
-    }
-
-    public final void setAccess(final AccessAssertion access) {
-        this.access = access;
     }
 
     @Override
@@ -90,9 +79,17 @@ public class PrintJobEntryImpl implements PrintJobEntry {
         return this.referenceId;
     }
 
+    public final void setReferenceId(final String referenceId) {
+        this.referenceId = referenceId;
+    }
+
     @Override
     public final PJsonObject getRequestData() {
         return this.requestData;
+    }
+
+    public final void setRequestData(final PJsonObject requestData) {
+        this.requestData = requestData;
     }
 
     @Override
@@ -114,11 +111,15 @@ public class PrintJobEntryImpl implements PrintJobEntry {
         return this.access;
     }
 
+    public final void setAccess(final AccessAssertion access) {
+        this.access = access;
+    }
+
     @Override
     public final String getAppId() {
         return getRequestData().optString(
-               MapPrinterServlet.JSON_APP,
-               ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY);
+                MapPrinterServlet.JSON_APP,
+                ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY);
     }
 
     @Override
@@ -130,15 +131,14 @@ public class PrintJobEntryImpl implements PrintJobEntry {
     public final void assertAccess() {
         this.access.assertAccess(
                 getClass().getSimpleName() + " for app '" + getAppId() +
-                "' for print job '" + getReferenceId() + "'", this);
+                        "' for print job '" + getReferenceId() + "'", this);
     }
 
     /**
      * Configure the access permissions required to access this print job.
      *
-     * @param template
-     *            the containing print template which should have sufficient
-     *            information to configure the access.
+     * @param template the containing print template which should have sufficient information to
+     *         configure the access.
      * @param context the application context
      */
     public final void configureAccess(final Template template, final ApplicationContext context) {

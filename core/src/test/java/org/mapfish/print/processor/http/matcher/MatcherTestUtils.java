@@ -13,7 +13,8 @@ import static org.junit.Assert.assertEquals;
  * Support methods for the tests
  */
 public class MatcherTestUtils {
-    static void assertMatch(final URIMatcher matcher, boolean expected, final URI uri, final HttpMethod method)
+    static void assertMatch(
+            final URIMatcher matcher, boolean expected, final URI uri, final HttpMethod method)
             throws SocketException, UnknownHostException, MalformedURLException {
         assertEquals(expected, matcher.matches(MatchInfo.fromUri(uri, method)));
     }

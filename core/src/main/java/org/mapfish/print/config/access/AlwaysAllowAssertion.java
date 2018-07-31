@@ -10,11 +10,11 @@ import java.util.List;
  */
 public final class AlwaysAllowAssertion implements AccessAssertion {
 
-    private static final int HASH_CODE = 42;
     /**
      * A public instance that can be used by all resource in the default case.
      */
     public static final AlwaysAllowAssertion INSTANCE = new AlwaysAllowAssertion();
+    private static final int HASH_CODE = 42;
 
     @Override
     public void assertAccess(final String resourceDescription, final Object protectedResource) {

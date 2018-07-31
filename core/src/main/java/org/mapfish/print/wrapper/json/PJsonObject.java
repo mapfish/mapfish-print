@@ -11,11 +11,11 @@ import org.mapfish.print.wrapper.PObject;
 import java.util.Iterator;
 
 /**
- * Wrapper around the {@link org.json.JSONObject} class to have a better
- * error management.
+ * Wrapper around the {@link org.json.JSONObject} class to have a better error management.
  */
 public class PJsonObject extends PAbstractObject {
     private final JSONObject obj;
+
     /**
      * Constructor.
      *
@@ -45,6 +45,7 @@ public class PJsonObject extends PAbstractObject {
 
     /**
      * Get a property as a string or null.
+     *
      * @param key the property name
      */
     @Override
@@ -54,6 +55,7 @@ public class PJsonObject extends PAbstractObject {
 
     /**
      * Get a property as a int or null.
+     *
      * @param key the property name
      */
     @Override
@@ -70,6 +72,7 @@ public class PJsonObject extends PAbstractObject {
 
     /**
      * Get a property as a double or null.
+     *
      * @param key the property name
      */
     @Override
@@ -83,6 +86,7 @@ public class PJsonObject extends PAbstractObject {
 
     /**
      * Get a property as a float or null.
+     *
      * @param key the property name
      */
     @Override
@@ -96,6 +100,7 @@ public class PJsonObject extends PAbstractObject {
 
     /**
      * Get a property as a boolean or null.
+     *
      * @param key the property name
      */
     @Override
@@ -109,6 +114,7 @@ public class PJsonObject extends PAbstractObject {
 
     /**
      * Get a property as a object or null.
+     *
      * @param key the property name
      */
     @Override
@@ -118,6 +124,7 @@ public class PJsonObject extends PAbstractObject {
 
     /**
      * Get a property as a array or null.
+     *
      * @param key the property name
      */
     @Override
@@ -132,6 +139,7 @@ public class PJsonObject extends PAbstractObject {
 
     /**
      * Get a property as a json object or null.
+     *
      * @param key the property name
      */
     public final PJsonObject optJSONObject(final String key) {
@@ -141,6 +149,7 @@ public class PJsonObject extends PAbstractObject {
 
     /**
      * Get a property as a json object or throw exception.
+     *
      * @param key the property name
      */
     public final PJsonObject getJSONObject(final String key) {
@@ -153,6 +162,7 @@ public class PJsonObject extends PAbstractObject {
 
     /**
      * Get a property as a json array or throw exception.
+     *
      * @param key the property name
      */
     public final PJsonArray getJSONArray(final String key) {
@@ -165,6 +175,7 @@ public class PJsonObject extends PAbstractObject {
 
     /**
      * Get a property as a json array or null.
+     *
      * @param key the property name
      */
     public final PJsonArray optJSONArray(final String key) {
@@ -177,6 +188,7 @@ public class PJsonObject extends PAbstractObject {
 
     /**
      * Get a property as a json array or default.
+     *
      * @param key the property name
      * @param defaultValue default
      */
@@ -187,6 +199,7 @@ public class PJsonObject extends PAbstractObject {
 
     /**
      * Get an iterator of all keys in this objects.
+     *
      * @return The keys iterator
      */
     @Override
@@ -212,6 +225,7 @@ public class PJsonObject extends PAbstractObject {
         result = prime * result + ((obj == null) ? 0 : obj.hashCode());
         return result;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -237,6 +251,7 @@ public class PJsonObject extends PAbstractObject {
 
     /**
      * Get the internal json object.
+     *
      * @return The internal object
      */
     public final JSONObject getInternalObj() {
@@ -245,6 +260,7 @@ public class PJsonObject extends PAbstractObject {
 
     /**
      * Check if the object has a property with the key.
+     *
      * @param key key to check for.
      */
     @Override

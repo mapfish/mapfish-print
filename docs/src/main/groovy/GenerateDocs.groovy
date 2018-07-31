@@ -1,10 +1,9 @@
 import com.google.common.collect.HashMultimap
-import com.google.common.io.Files
-import java.io.FileReader;
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Template as MustacheTemplate;
-import org.apache.commons.io.FileUtils;
-import groovy.json.JsonBuilder
+import com.samskivert.mustache.Mustache
+import com.samskivert.mustache.Template as MustacheTemplate
+import groovy.io.FileType
+import groovy.json.JsonSlurper
+import org.apache.commons.io.FileUtils
 import org.mapfish.print.attribute.Attribute
 import org.mapfish.print.attribute.ReflectiveAttribute
 import org.mapfish.print.config.ConfigurationObject
@@ -20,13 +19,7 @@ import org.mapfish.print.servlet.fileloader.ConfigFileLoaderPlugin
 import org.mapfish.print.test.util.AttributeTesting
 import org.springframework.beans.BeanUtils
 import org.springframework.mock.web.MockServletContext
-import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.context.support.XmlWebApplicationContext
-import groovy.json.JsonSlurper
-import groovy.io.FileType
-
 
 class GenerateDocs {
     static def javadocParser;
@@ -48,7 +41,7 @@ class GenerateDocs {
         springAppContext.setServletContext(new MockServletContext())
         springAppContext.refresh()
         springAppContext.start()
-        springAppContext.getBeansOfType(MapLayerFactoryPlugin.class, true, true).entrySet().each {entry ->
+        springAppContext.getBeansOfType(MapLayerFactoryPlugin.class, true, true).entrySet().each { entry ->
             handleMapLayerFactoryPlugin(entry.getValue(), "!" + entry.getKey())
         }
         springAppContext.getBeansOfType(Attribute.class, true, true).entrySet().each { entry ->
@@ -73,13 +66,13 @@ class GenerateDocs {
         springAppContext.getBeansOfType(ConfigurationObject.class, true, true).entrySet().each { entry ->
             def bean = entry.getValue()
             if (!(bean instanceof Attribute || bean instanceof MapLayerFactoryPlugin || bean instanceof Processor)) {
-                handleConfigurationObject(entry.getValue(),"!" + entry.getKey())
+                handleConfigurationObject(entry.getValue(), "!" + entry.getKey())
             }
         }
 
         springAppContext.stop()
 
-        def gitRev =  'git rev-parse HEAD'.execute().text
+        def gitRev = 'git rev-parse HEAD'.execute().text
         Map<String, String> version = new HashMap<String, String>();
         version.put("short", gitRev.substring(0, 8));
         version.put("long", gitRev);
@@ -91,100 +84,103 @@ class GenerateDocs {
 
         File mainTemplateFile = new File(GenerateDocs.class.getResource("/templates/_main.html").toURI());
         MustacheTemplate mainTemplate = Mustache.compiler().
-            escapeHTML(false).
-            defaultValue("").
-            compile(new FileReader(mainTemplateFile));
+                escapeHTML(false).
+                defaultValue("").
+                compile(new FileReader(mainTemplateFile));
         File subNavTemplateFile = new File(GenerateDocs.class.getResource("/templates/_sub_nav.html").toURI());
         MustacheTemplate subNavTemplate = Mustache.compiler().
-            escapeHTML(false).
-            defaultValue("").
-            compile(new FileReader(subNavTemplateFile));
+                escapeHTML(false).
+                defaultValue("").
+                compile(new FileReader(subNavTemplateFile));
         File contentTemplateFile = new File(GenerateDocs.class.getResource("/templates/_content.html").toURI());
         MustacheTemplate contentTemplate = Mustache.compiler().
-            escapeHTML(false).
-            defaultValue("").
-            compile(new FileReader(contentTemplateFile));
+                escapeHTML(false).
+                defaultValue("").
+                compile(new FileReader(contentTemplateFile));
 
-        plugins.asMap().each {key, value ->
+        plugins.asMap().each { key, value ->
             write(value as List, key, siteDirectory,
-                mainTemplate, subNavTemplate, contentTemplate, siteConfig.generated,
-                version);
+                    mainTemplate, subNavTemplate, contentTemplate, siteConfig.generated,
+                    version);
         }
 
         siteConfig.pages.each { key, title ->
             createPage(key, title, siteDirectory,
-                mainTemplate, subNavTemplate, contentTemplate,
-                version)
+                    mainTemplate, subNavTemplate, contentTemplate,
+                    version)
         }
         System.exit(0)
     }
-    static void write (Collection<Record> records, String varName, String siteDirectory,
-            MustacheTemplate mainTemplate, MustacheTemplate subNavTemplate,
-            MustacheTemplate contentTemplate,
-            Object configGeneratedPages, Map<String, String> version ) {
+
+    static void write(Collection<Record> records, String varName, String siteDirectory,
+                      MustacheTemplate mainTemplate, MustacheTemplate subNavTemplate,
+                      MustacheTemplate contentTemplate,
+                      Object configGeneratedPages, Map<String, String> version) {
         records.sort({ a, b -> a.title <=> b.title })
         new File(siteDirectory, varName + ".html").withPrintWriter "UTF-8", { pageWriter ->
 
-              String description = FileUtils.readFileToString(
-                  new File(GenerateDocs.class.getResource("/templates/" + varName + ".html").toURI())
-              );
+            String description = FileUtils.readFileToString(
+                    new File(GenerateDocs.class.getResource("/templates/" + varName + ".html").toURI())
+            );
 
-              // toc
-              List<Map> entries = new ArrayList<Map>();
-              records.eachWithIndex { record, idx ->
-                  Map<String, String> entry = new HashMap<String, String>();
-                  entry.put("key", record.title);
-                  entry.put("title", record.title);
-                  entries.add(entry);
-              }
-              Map<String, Object> dataSubNav = new HashMap<String, Object>();
-              dataSubNav.put("entries", entries);
-              String subNav = subNavTemplate.execute(dataSubNav);
+            // toc
+            List<Map> entries = new ArrayList<Map>();
+            records.eachWithIndex { record, idx ->
+                Map<String, String> entry = new HashMap<String, String>();
+                entry.put("key", record.title);
+                entry.put("title", record.title);
+                entries.add(entry);
+            }
+            Map<String, Object> dataSubNav = new HashMap<String, Object>();
+            dataSubNav.put("entries", entries);
+            String subNav = subNavTemplate.execute(dataSubNav);
 
-              // content
-              Map<String, String> contentData = new HashMap<String, String>();
-              contentData.put("description", description);
-              contentData.put("records", records);
-              String content = contentTemplate.execute(contentData)
+            // content
+            Map<String, String> contentData = new HashMap<String, String>();
+            contentData.put("description", description);
+            contentData.put("records", records);
+            String content = contentTemplate.execute(contentData)
 
-              Map<String, String> data = new HashMap<String, String>();
-              data.put("content", content);
-              data.put("pageTitle", configGeneratedPages.get(varName));
-              data.put("current_" + varName, "current");
-              data.put("sub_nav_" + varName, subNav);
-              data.put("version", version);
-              pageWriter.append(mainTemplate.execute(data));
+            Map<String, String> data = new HashMap<String, String>();
+            data.put("content", content);
+            data.put("pageTitle", configGeneratedPages.get(varName));
+            data.put("current_" + varName, "current");
+            data.put("sub_nav_" + varName, subNav);
+            data.put("version", version);
+            pageWriter.append(mainTemplate.execute(data));
         }
     }
-    static void createPage (String key, String title, String siteDirectory,
-            MustacheTemplate mainTemplate, MustacheTemplate subNavTemplate,
-            MustacheTemplate contentTemplate, Map<String, String> version) {
+
+    static void createPage(String key, String title, String siteDirectory,
+                           MustacheTemplate mainTemplate, MustacheTemplate subNavTemplate,
+                           MustacheTemplate contentTemplate, Map<String, String> version) {
         new File(siteDirectory, key + ".html").withPrintWriter "UTF-8", { pageWriter ->
 
-              String description = FileUtils.readFileToString(
-                  new File(GenerateDocs.class.getResource("/templates/" + key + ".html").toURI())
-              );
+            String description = FileUtils.readFileToString(
+                    new File(GenerateDocs.class.getResource("/templates/" + key + ".html").toURI())
+            );
 
-              // toc
-              Map<String, Object> dataSubNav = new HashMap<String, Object>();
-              dataSubNav.put("entries", []);
-              String subNav = subNavTemplate.execute(dataSubNav);
+            // toc
+            Map<String, Object> dataSubNav = new HashMap<String, Object>();
+            dataSubNav.put("entries", []);
+            String subNav = subNavTemplate.execute(dataSubNav);
 
-              // content
-              Map<String, String> contentData = new HashMap<String, String>();
-              contentData.put("description", description);
-              contentData.put("records", []);
-              String content = contentTemplate.execute(contentData)
+            // content
+            Map<String, String> contentData = new HashMap<String, String>();
+            contentData.put("description", description);
+            contentData.put("records", []);
+            String content = contentTemplate.execute(contentData)
 
-              Map<String, String> data = new HashMap<String, String>();
-              data.put("content", content);
-              data.put("pageTitle", title);
-              data.put("current_" + key, "current");
-              data.put("sub_nav_" + key, subNav);
-              data.put("version", version);
-              pageWriter.append(mainTemplate.execute(data));
+            Map<String, String> data = new HashMap<String, String>();
+            data.put("content", content);
+            data.put("pageTitle", title);
+            data.put("current_" + key, "current");
+            data.put("sub_nav_" + key, subNav);
+            data.put("version", version);
+            pageWriter.append(mainTemplate.execute(data));
         }
     }
+
     static void handleConfigurationObject(ConfigurationObject bean, String beanName) {
         if (bean instanceof Attribute || bean instanceof MapLayerFactoryPlugin) {
             return;
@@ -194,15 +190,17 @@ class GenerateDocs {
         def examples = getExamples(desc)
         desc = desc.replaceAll(examplePattern, "")
         plugins.put('configuration', new Record([
-          title:beanName,
-          desc:desc,
-          details: details,
-          examples: examples]))
+                title   : beanName,
+                desc    : desc,
+                details : details,
+                examples: examples]))
     }
 
     private static List<Detail> findAllConfigurationDetails(bean, String beanName) {
         def descriptors = BeanUtils.getPropertyDescriptors(bean.getClass())
-        def details = descriptors.findAll { it.writeMethod != null && !"configName".equals(it.displayName)}.collect { desc ->
+        def details = descriptors.findAll {
+            it.writeMethod != null && !"configName".equals(it.displayName)
+        }.collect { desc ->
             def title = desc.displayName
             def detailDesc = cleanUpCodeTags(javadocParser.findMethodDescription(beanName, bean.getClass(), desc.writeMethod))
             return new Detail([title: title, desc: detailDesc])
@@ -216,13 +214,15 @@ class GenerateDocs {
         def examples = getExamples(desc)
         desc = desc.replaceAll(examplePattern, "")
         plugins.put(javascriptVarName, new Record([
-          title:title,
-          desc:desc,
-          examples: examples]))
+                title   : title,
+                desc    : desc,
+                examples: examples]))
     }
 
     static void handleMapLayerFactoryPlugin(MapLayerFactoryPlugin<?> bean, String beanName) {
-        def parseMethod = bean.class.methods.findAll { it.name == "parse" && it.returnType.simpleName != 'MapLayer' }[0]
+        def parseMethod = bean.class.methods.findAll {
+            it.name == "parse" && it.returnType.simpleName != 'MapLayer'
+        }[0]
         if (parseMethod == null) {
             throw new AssertionError("\nBean " + beanName + " needs to have the return type of the parse method be the specific type, not the generic MapLayer type.")
         }
@@ -237,13 +237,14 @@ class GenerateDocs {
         def examples = getExamples(desc)
         desc = desc.replaceAll(examplePattern, "")
         plugins.put('layers', new Record([
-                title:layerType.simpleName.replaceAll(/([A-Z][a-z])/, ' $1').trim(),
-                desc: desc,
-                details: details,
-                input: input,
+                title   : layerType.simpleName.replaceAll(/([A-Z][a-z])/, ' $1').trim(),
+                desc    : desc,
+                details : details,
+                input   : input,
                 examples: examples
         ]))
     }
+
     static void handleAttribute(Attribute bean, String beanName) {
         def input = []
         AttributeTesting.configureAttributeForTesting(bean);
@@ -255,11 +256,11 @@ class GenerateDocs {
         def examples = getExamples(desc)
         desc = desc.replaceAll(examplePattern, "")
         plugins.put('attributes', new Record([
-            title:beanName,
-            desc: desc,
-            examples: examples,
-            details: details,
-            input: input]))
+                title   : beanName,
+                desc    : desc,
+                examples: examples,
+                details : details,
+                input   : input]))
     }
 
     private static Collection<Detail> findAllAttributes(Class cls, String beanName) {
@@ -289,46 +290,49 @@ class GenerateDocs {
         def examples = getExamples(desc)
         desc = desc.replaceAll(examplePattern, "")
         plugins.put('processors', new Record([
-          title:beanName,
-          desc: desc,
-          details: details,
-          input: input,
-          output: output,
-          examples: examples]))
+                title   : beanName,
+                desc    : desc,
+                details : details,
+                input   : input,
+                output  : output,
+                examples: examples]))
     }
 
     private static List<String> getExamples(String desc) {
         def examples = new ArrayList<String>();
         desc.find(examplePattern) { match, rawExamples ->
-           examples.addAll(rawExamples.split(","));
+            examples.addAll(rawExamples.split(","));
         }
-        examples = examples.collect { it.trim()}
+        examples = examples.collect { it.trim() }
         examples.each { example ->
-            if (! (example in GenerateDocs.availableExamples)) {
+            if (!(example in GenerateDocs.availableExamples)) {
                 throw new Exception(
-                    "Example " + example + " does not exist in " +
-                    System.getProperty("path_to_examples"));
+                        "Example " + example + " does not exist in " +
+                                System.getProperty("path_to_examples"));
             }
         }
         return examples;
     }
+
     static String cleanUpCodeTags(String desc) {
-      return desc
-        .replaceAll("<pre><code>", "<div class=\"highlight\"><pre>")
-        .replaceAll("<div class=\"highlight\"><pre><br>", "<div class=\"highlight\"><pre>")
-        .replaceAll("</code></pre>", "</pre></div>")
-        .replaceAll("<br> </pre></div>", "</pre></div>")
+        return desc
+                .replaceAll("<pre><code>", "<div class=\"highlight\"><pre>")
+                .replaceAll("<div class=\"highlight\"><pre><br>", "<div class=\"highlight\"><pre>")
+                .replaceAll("</code></pre>", "</pre></div>")
+                .replaceAll("<br> </pre></div>", "</pre></div>")
     }
+
     static Set<String> initExamples() {
         final File examplesDir = new File(System.getProperty("path_to_examples"))
         def examples = []
 
-        examplesDir.eachFileRecurse (FileType.DIRECTORIES) { dir ->
+        examplesDir.eachFileRecurse(FileType.DIRECTORIES) { dir ->
             examples << dir.getName()
         }
 
         return examples.toSet()
     }
+
     static class Record {
         String title, desc
         List<String> examples = []

@@ -26,12 +26,13 @@ import static org.junit.Assert.assertEquals;
 public class MergeDataSourceProcessorIntegrationTest extends AbstractMapfishSpringTest {
 
 
-    private static final Predicate<? super ProcessorGraphNode> FIND_MERGE_PROCESSOR = new Predicate<ProcessorGraphNode>() {
-        @Override
-        public boolean apply(@Nonnull ProcessorGraphNode input) {
-            return input.getProcessor() instanceof MergeDataSourceProcessor;
-        }
-    };
+    private static final Predicate<? super ProcessorGraphNode> FIND_MERGE_PROCESSOR =
+            new Predicate<ProcessorGraphNode>() {
+                @Override
+                public boolean apply(@Nonnull ProcessorGraphNode input) {
+                    return input.getProcessor() instanceof MergeDataSourceProcessor;
+                }
+            };
     @Autowired
     private ConfigurationFactory configurationFactory;
 
@@ -47,11 +48,11 @@ public class MergeDataSourceProcessorIntegrationTest extends AbstractMapfishSpri
         final List<ProcessorGraphNode> roots = processorGraph.getRoots();
         assertEquals(0, Collections2.filter(roots, FIND_MERGE_PROCESSOR).size());
         assertEquals(processorGraph.toString(), 3,
-                count(processorGraph.toString(), " -> \"MergeDataSourceProcessor@"));
+                     count(processorGraph.toString(), " -> \"MergeDataSourceProcessor@"));
 
         MergeDataSourceProcessor mergeDataSourceProcessor = null;
         List<ProcessorGraphNode<Object, Object>> allNodes = Lists.newArrayList();
-        for (Processor<?, ?> processor : processorGraph.getAllProcessors()) {
+        for (Processor<?, ?> processor: processorGraph.getAllProcessors()) {
             if (processor instanceof MergeDataSourceProcessor) {
                 mergeDataSourceProcessor = (MergeDataSourceProcessor) processor;
             } else {
@@ -66,7 +67,7 @@ public class MergeDataSourceProcessorIntegrationTest extends AbstractMapfishSpri
     private int count(String string, String toFind) {
         final Matcher matcher = Pattern.compile(Pattern.quote(toFind)).matcher(string);
         int count = 0;
-        while(matcher.find()) {
+        while (matcher.find()) {
             count += 1;
         }
         return count;

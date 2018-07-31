@@ -23,11 +23,11 @@ import java.util.concurrent.ForkJoinTask;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests that the style (e.g. line width, font size, ...) is scaled when
- * using a higher dpi value for the print.
+ * Tests that the style (e.g. line width, font size, ...) is scaled when using a higher dpi value for the
+ * print.
  */
 public class CreateMapProcessorCenterGeojsonJsonStyleHighDpi extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR ="center_geojson_json_style_highdpi/";
+    public static final String BASE_DIR = "center_geojson_json_style_highdpi/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
@@ -35,6 +35,11 @@ public class CreateMapProcessorCenterGeojsonJsonStyleHighDpi extends AbstractMap
     private MfClientHttpRequestFactoryImpl httpRequestFactory;
     @Autowired
     private ForkJoinPool forkJoinPool;
+
+    public static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorCenterGeojsonJsonStyleHighDpi.class,
+                                       BASE_DIR + "requestData.json");
+    }
 
     @Test
     public void testExecute() throws Exception {
@@ -47,7 +52,7 @@ public class CreateMapProcessorCenterGeojsonJsonStyleHighDpi extends AbstractMap
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.httpRequestFactory, new File("."));
+                                   this.httpRequestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -59,10 +64,5 @@ public class CreateMapProcessorCenterGeojsonJsonStyleHighDpi extends AbstractMap
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png")).assertSimilarity(
                 new File(layerGraphics.get(0)), 15);
-    }
-
-    public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorCenterGeojsonJsonStyleHighDpi.class,
-                BASE_DIR + "requestData.json");
     }
 }

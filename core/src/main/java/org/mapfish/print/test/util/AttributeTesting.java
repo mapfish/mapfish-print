@@ -6,16 +6,16 @@ import org.mapfish.print.attribute.ScalebarAttribute;
 import org.mapfish.print.attribute.map.GenericMapAttribute;
 
 /**
- * Support for testing attributes.  This is in main jar because it might be needed across module
- * boundaries and that can be difficult if it is in testing jar.
- *
+ * Support for testing attributes.  This is in main jar because it might be needed across module boundaries
+ * and that can be difficult if it is in testing jar.
+ * <p>
  * CHECKSTYLE:OFF
  */
 public class AttributeTesting {
     /**
      * A few attributes will throw exceptions if not initialized this method can be called when an attribute
-     * needs testing but the test is generic and does not necessarily want or need to know the specific
-     * type of attribute and its properties.
+     * needs testing but the test is generic and does not necessarily want or need to know the specific type
+     * of attribute and its properties.
      */
     public static void configureAttributeForTesting(Attribute att) {
         if (att instanceof GenericMapAttribute) {

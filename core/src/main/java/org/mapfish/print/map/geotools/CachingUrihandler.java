@@ -1,4 +1,3 @@
-
 package org.mapfish.print.map.geotools;
 
 import org.eclipse.emf.common.util.URI;

@@ -2,7 +2,6 @@ package org.mapfish.print.http;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +25,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;
 
 /**
- *
  * Creates tasks for caching Http Requests that can be run simultaneously.
- *
  */
 public final class HttpRequestCache {
 
@@ -42,7 +39,60 @@ public final class HttpRequestCache {
 
     private boolean cached = false;
 
-    private class CachedClientHttpResponse extends AbstractClientHttpResponse {
+    /**
+     * Constructor.
+     *
+     * @param temporaryDirectory temporary directory for cached requests
+     * @param registry the metric registry
+     */
+    public HttpRequestCache(final File temporaryDirectory, final MetricRegistry registry) {
+        this.temporaryDirectory = temporaryDirectory;
+        this.registry = registry;
+    }
+
+    private CachedClientHttpRequest save(final CachedClientHttpRequest request) {
+        this.requests.add(request);
+        return request;
+    }
+
+    /**
+     * Register a http request for caching. Returns a handle to the HttpRequest that will be cached.
+     *
+     * @param originalRequest the original request
+     * @return the cached http request
+     */
+    public ClientHttpRequest register(final ClientHttpRequest originalRequest) {
+        return save(new CachedClientHttpRequest(originalRequest));
+    }
+
+    /**
+     * Register a URI for caching. Returns a handle to the HttpRequest that will be cached.
+     *
+     * @param factory the request factory
+     * @param uri the uri
+     * @return the cached http request
+     * @throws IOException in case of I/O errors
+     */
+    public ClientHttpRequest register(final MfClientHttpRequestFactory factory, final URI uri)
+            throws IOException {
+        return register(factory.createRequest(uri, HttpMethod.GET));
+    }
+
+    /**
+     * Cache all requests at once.
+     *
+     * @param requestForkJoinPool request fork join pool
+     */
+    public void cache(final ForkJoinPool requestForkJoinPool) {
+        if (!this.cached) {
+            requestForkJoinPool.invokeAll(this.requests);
+            this.cached = true;
+        } else {
+            LOGGER.warn("Attempting to cache twice!");
+        }
+    }
+
+    private final class CachedClientHttpResponse extends AbstractClientHttpResponse {
 
         private final File cachedFile;
         private final HttpHeaders headers;
@@ -50,11 +100,12 @@ public final class HttpRequestCache {
         private final String statusText;
         private InputStream body;
 
-        public CachedClientHttpResponse(final ClientHttpResponse originalResponse) throws IOException {
+        private CachedClientHttpResponse(final ClientHttpResponse originalResponse) throws IOException {
             this.headers = originalResponse.getHeaders();
             this.status = originalResponse.getRawStatusCode();
             this.statusText = originalResponse.getStatusText();
-            this.cachedFile = File.createTempFile("cacheduri", null, HttpRequestCache.this.temporaryDirectory);
+            this.cachedFile =
+                    File.createTempFile("cacheduri", null, HttpRequestCache.this.temporaryDirectory);
             try (InputStream is = originalResponse.getBody()) {
                 try (OutputStream os = new FileOutputStream(this.cachedFile)) {
                     IOUtils.copy(is, os);
@@ -97,11 +148,11 @@ public final class HttpRequestCache {
         }
     }
 
-    private class CachedClientHttpRequest implements ClientHttpRequest, Callable<Void> {
+    private final class CachedClientHttpRequest implements ClientHttpRequest, Callable<Void> {
         private final ClientHttpRequest originalRequest;
         private ClientHttpResponse response;
 
-        public CachedClientHttpRequest(final ClientHttpRequest request) {
+        private CachedClientHttpRequest(final ClientHttpRequest request) {
             this.originalRequest = request;
         }
 
@@ -129,9 +180,11 @@ public final class HttpRequestCache {
         @Override
         public ClientHttpResponse execute() {
             if (!HttpRequestCache.this.cached) {
-                LOGGER.warn("Attempting to load cached URI before actual caching: " + this.originalRequest.getURI());
+                LOGGER.warn("Attempting to load cached URI before actual caching: " +
+                                    this.originalRequest.getURI());
             } else if (this.response == null) {
-                LOGGER.warn("Attempting to load cached URI from failed request: " + this.originalRequest.getURI());
+                LOGGER.warn("Attempting to load cached URI from failed request: " +
+                                    this.originalRequest.getURI());
             } else {
                 LOGGER.debug("Loading cached URI resource " + this.originalRequest.getURI());
             }
@@ -183,58 +236,6 @@ public final class HttpRequestCache {
                 timerDownload.stop();
             }
             return null;
-        }
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param temporaryDirectory temporary directory for cached requests
-     * @param registry the metric registry
-     */
-    public HttpRequestCache(final File temporaryDirectory, final MetricRegistry registry) {
-        this.temporaryDirectory = temporaryDirectory;
-        this.registry = registry;
-    }
-
-    private CachedClientHttpRequest save(final CachedClientHttpRequest request) {
-        this.requests.add(request);
-        return request;
-    }
-
-    /**
-     * Register a http request for caching. Returns a handle to the HttpRequest that will be cached.
-     *
-     * @param originalRequest the original request
-     * @return the cached http request
-     */
-    public ClientHttpRequest register(final ClientHttpRequest originalRequest) {
-        return save(new CachedClientHttpRequest(originalRequest));
-    }
-
-    /**
-     * Register a URI for caching. Returns a handle to the HttpRequest that will be cached.
-     *
-     * @param factory the request factory
-     * @param uri the uri
-     * @return the cached http request
-     * @throws IOException in case of I/O errors
-     */
-    public ClientHttpRequest register(final MfClientHttpRequestFactory factory, final URI uri) throws IOException {
-        return register(factory.createRequest(uri, HttpMethod.GET));
-    }
-
-    /**
-     * Cache all requests at once.
-     *
-     * @param requestForkJoinPool request fork join pool
-     */
-    public void cache(final ForkJoinPool requestForkJoinPool) {
-        if (!this.cached) {
-            requestForkJoinPool.invokeAll(this.requests);
-            this.cached = true;
-        } else {
-            LOGGER.warn("Attempting to cache twice!");
         }
     }
 }

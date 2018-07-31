@@ -39,11 +39,6 @@ import static org.mapfish.print.parser.MapfishParser.stringRepresentation;
  * @param <Value>
  */
 public abstract class ReflectiveAttribute<Value> implements Attribute {
-    private static final HashSet<Class<? extends Object>> VALUE_OBJ_FIELD_TYPE_THAT_SHOULD_BE_P_TYPE =
-            createClassSet(PJsonArray.class, PJsonObject.class,
-                    JSONObject.class, JSONArray.class);
-    private static final HashSet<Class<? extends Object>> VALUE_OBJ_FIELD_NON_RECURSIVE_TYPE =
-            createClassSet(PElement.class, PArray.class, PObject.class);
     /**
      * Name of attribute in the client config json.
      *
@@ -67,8 +62,8 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      */
     public static final String JSON_ATTRIBUTE_TYPE = "type";
     /**
-     * If the parameter in the value object is another value object (and not a PObject or PArray) then
-     * this will be a json object describing the embedded param in the same way as each object in clientParams.
+     * If the parameter in the value object is another value object (and not a PObject or PArray) then this
+     * will be a json object describing the embedded param in the same way as each object in clientParams.
      */
     public static final String JSON_ATTRIBUTE_EMBEDDED_TYPE = "embeddedType";
     /**
@@ -79,13 +74,17 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      * Json field that declares if the param is an array.
      */
     public static final String JSON_ATTRIBUTE_IS_ARRAY = "isArray";
-
+    private static final HashSet<Class<? extends Object>> VALUE_OBJ_FIELD_TYPE_THAT_SHOULD_BE_P_TYPE =
+            createClassSet(PJsonArray.class, PJsonObject.class,
+                           JSONObject.class, JSONArray.class);
+    private static final HashSet<Class<? extends Object>> VALUE_OBJ_FIELD_NON_RECURSIVE_TYPE =
+            createClassSet(PElement.class, PArray.class, PObject.class);
     private PYamlObject defaults;
     private String configName;
 
     private static HashSet<Class<? extends Object>> createClassSet(final Object... args) {
         final HashSet<Class<?>> classes = Sets.newHashSet();
-        for (Object arg : args) {
+        for (Object arg: args) {
             classes.add((Class<?>) arg);
         }
         return classes;
@@ -94,8 +93,9 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
     private void validateParamObject(final Class<?> typeToTest, final Set<Class> tested) {
         if (!tested.contains(typeToTest)) {
             final Collection<Field> allAttributes = ParserUtils.getAllAttributes(typeToTest);
-            Assert.isTrue(!allAttributes.isEmpty(), "An attribute value object must have at least on public field.");
-            for (Field attribute : allAttributes) {
+            Assert.isTrue(!allAttributes.isEmpty(),
+                          "An attribute value object must have at least on public field.");
+            for (Field attribute: allAttributes) {
                 Class<?> type = attribute.getType();
                 if (type.isArray()) {
                     type = type.getComponentType();
@@ -104,9 +104,11 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
                     continue;
                 }
                 if (VALUE_OBJ_FIELD_TYPE_THAT_SHOULD_BE_P_TYPE.contains(type)) {
-                    throw new AssertionFailedException(typeToTest.getName() + "#" + attribute.getName() + " should not be a field in a" +
-                                                       " value object.  Instead use the more general " + PArray.class.getName() + " or " +
-                                                       PObject.class.getName());
+                    throw new AssertionFailedException(
+                            typeToTest.getName() + "#" + attribute.getName() + " should not be a field in a" +
+                                    " value object.  Instead use the more general " + PArray.class.getName() +
+                                    " or " +
+                                    PObject.class.getName());
                 }
                 tested.add(type);
                 validateParamObject(type, tested);
@@ -122,9 +124,9 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
     @PostConstruct
     final void init() {
         if (this.defaults == null) {
-            this.defaults = new PYamlObject(Collections.<String, Object>emptyMap(), getAttributeName());
+            this.defaults = new PYamlObject(Collections.emptyMap(), getAttributeName());
         }
-        validateParamObject(getValueType(), Sets.<Class>newHashSet());
+        validateParamObject(getValueType(), Sets.newHashSet());
     }
 
     /**
@@ -148,6 +150,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      *   legend: !legend
      *     default:
      *       name: "Legend"</code></pre>
+     *
      * @param defaultValue The default values.
      */
     public final void setDefault(final Map<String, Object> defaultValue) {
@@ -163,19 +166,22 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      * Return a descriptive name of this attribute.
      */
     protected final String getAttributeName() {
-        return getClass().getSimpleName().substring(0, 1).toLowerCase() + getClass().getSimpleName().substring(1);
+        return getClass().getSimpleName().substring(0, 1).toLowerCase() +
+                getClass().getSimpleName().substring(1);
     }
 
     /**
-     * Create an instance of a attribute value object.  Each instance must be new and unique. Instances must <em>NOT</em> be shared.
+     * Create an instance of a attribute value object.  Each instance must be new and unique. Instances must
+     * <em>NOT</em> be shared.
      * <p></p>
-     * The object will be populated from the json.  Each public field will be populated by looking up the value in the json.
+     * The object will be populated from the json.  Each public field will be populated by looking up the
+     * value in the json.
      * <p></p>
-     * If a field in the object has the {@link org.mapfish.print.parser.HasDefaultValue} annotation then no exception
-     * will be thrown if the json does not contain a value.
+     * If a field in the object has the {@link org.mapfish.print.parser.HasDefaultValue} annotation then no
+     * exception will be thrown if the json does not contain a value.
      * <p></p>
-     * Fields in the object with the {@link org.mapfish.print.parser.OneOf} annotation must have one of the fields in the
-     * request data.
+     * Fields in the object with the {@link org.mapfish.print.parser.OneOf} annotation must have one of the
+     * fields in the request data.
      * <p></p>
      * <ul>
      * <li>{@link java.lang.String}</li>
@@ -195,32 +201,35 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      * <li>array of any of the above (String[], boolean[], PJsonObject[], ...)</li>
      * </ul>
      * <p></p>
-     * If there is a public <code>{@value org.mapfish.print.parser.MapfishParser#POST_CONSTRUCT_METHOD_NAME}()</code>
+     * If there is a public
+     * <code>{@value org.mapfish.print.parser.MapfishParser#POST_CONSTRUCT_METHOD_NAME}()</code>
      * method then it will be called after the fields are all set.
      * <p></p>
-     * In the case where the a parameter type is a normal POJO (not a special case like PJsonObject, URL, enum, double, etc...)
-     * then it will be assumed that the json data is a json object and the parameters will be recursively parsed into the new
-     * object as if it is also MapLayer parameter object.
+     * In the case where the a parameter type is a normal POJO (not a special case like PJsonObject, URL,
+     * enum, double, etc...) then it will be assumed that the json data is a json object and the parameters
+     * will be recursively parsed into the new object as if it is also MapLayer parameter object.
      * <p></p>
-     * It is important to put values in the value object as public fields because reflection is used when printing client config
-     * as well as generating documentation.  If a field is intended for the client software as information but is not intended
-     * to be set (or sent as part of the request data), the field can be a final field.
+     * It is important to put values in the value object as public fields because reflection is used when
+     * printing client config as well as generating documentation.  If a field is intended for the client
+     * software as information but is not intended to be set (or sent as part of the request data), the field
+     * can be a final field.
      *
      * @param template the template that this attribute is part of.
      */
     public abstract Value createValue(Template template);
 
     /**
-     * Uses reflection on the object created by {@link #createValue(org.mapfish.print.config.Template)} to create the options.
+     * Uses reflection on the object created by {@link #createValue(org.mapfish.print.config.Template)} to
+     * create the options.
      * <p></p>
      * The public final fields are written as the field name as the key and the value as the value.
      * <p></p>
-     * The public (non-final) mandatory fields are written as part of clientParams and are written with the field name as the key and
-     * the field type as the value.
+     * The public (non-final) mandatory fields are written as part of clientParams and are written with the
+     * field name as the key and the field type as the value.
      * <p></p>
-     * The public (non-final) {@link org.mapfish.print.parser.HasDefaultValue} fields are written as part of clientOptions and are
-     * written with the field name as the key and an object as a value with a type property with the type and a default property
-     * containing the default value.
+     * The public (non-final) {@link org.mapfish.print.parser.HasDefaultValue} fields are written as part of
+     * clientOptions and are written with the field name as the key and an object as a value with a type
+     * property with the type and a default property containing the default value.
      *
      * @param json the json writer to write to
      * @param template the template that this attribute is part of
@@ -258,24 +267,27 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
         return Optional.absent();
     }
 
-    private void printClientConfigForType(final JSONWriter json,
-                                          final Object exampleValue,
-                                          final Class<?> valueType,
-                                          final PObject defaultValue,
-                                          final Set<Class> printed) throws JSONException, IllegalAccessException {
+    private void printClientConfigForType(
+            final JSONWriter json,
+            final Object exampleValue,
+            final Class<?> valueType,
+            final PObject defaultValue,
+            final Set<Class> printed) throws JSONException, IllegalAccessException {
 
-        final Collection<Field> mutableFields = ParserUtils.getAttributes(valueType,
-                ParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES);
+        final Collection<Field> mutableFields = ParserUtils.getAttributes(
+                valueType, ParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES);
         if (!mutableFields.isEmpty()) {
-            for (Field attribute : mutableFields) {
-                encodeAttributeValue(true, json, exampleValue, getDefaultValue(defaultValue, attribute), attribute, printed);
+            for (Field attribute: mutableFields) {
+                encodeAttributeValue(true, json, exampleValue, getDefaultValue(defaultValue, attribute),
+                                     attribute, printed);
             }
         }
-        final Collection<Field> hasDefaultFields = ParserUtils.getAttributes(valueType,
-                ParserUtils.FILTER_HAS_DEFAULT_ATTRIBUTES);
+        final Collection<Field> hasDefaultFields = ParserUtils.getAttributes(
+                valueType, ParserUtils.FILTER_HAS_DEFAULT_ATTRIBUTES);
         if (!hasDefaultFields.isEmpty()) {
-            for (Field attribute : hasDefaultFields) {
-                encodeAttributeValue(false, json, exampleValue, getDefaultValue(defaultValue, attribute), attribute, printed);
+            for (Field attribute: hasDefaultFields) {
+                encodeAttributeValue(false, json, exampleValue, getDefaultValue(defaultValue, attribute),
+                                     attribute, printed);
             }
         }
     }
@@ -287,18 +299,20 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
         return defaultValue.opt(attribute.getName());
     }
 
-    private void encodeAttributeValue(final boolean required,
-                                      final JSONWriter json,
-                                      final Object exampleValue,
-                                      final Object defaultValue,
-                                      final Field attribute,
-                                      final Set<Class> printed) throws JSONException, IllegalAccessException {
+    private void encodeAttributeValue(
+            final boolean required,
+            final JSONWriter json,
+            final Object exampleValue,
+            final Object defaultValue,
+            final Field attribute,
+            final Set<Class> printed) throws JSONException, IllegalAccessException {
         json.key(attribute.getName());
         json.object();
         final Class<?> type = attribute.getType();
         final Class<?> typeOrComponentType = type.isArray() ? type.getComponentType() : type;
 
-        if (!VALUE_OBJ_FIELD_NON_RECURSIVE_TYPE.contains(typeOrComponentType) && !isJavaType(typeOrComponentType)) {
+        if (!VALUE_OBJ_FIELD_NON_RECURSIVE_TYPE.contains(typeOrComponentType) &&
+                !isJavaType(typeOrComponentType)) {
             if (printed.contains(typeOrComponentType)) {
                 json.key(JSON_ATTRIBUTE_TYPE).value("recursiveDefinition");
             } else {
@@ -323,7 +337,8 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
                     }
                 }
                 final Object childDefaultValue = getDefaultValue(((PObject) defaultValue), attribute);
-                printClientConfigForType(json, value, typeOrComponentType, (PObject) childDefaultValue, printedForSubTree);
+                printClientConfigForType(json, value, typeOrComponentType, (PObject) childDefaultValue,
+                                         printedForSubTree);
                 json.endObject();
             }
         } else {
@@ -381,8 +396,9 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
     }
 
     @Override
-    public Object getValue(@Nonnull final Template template,
-                           @Nonnull final String attributeName, @Nonnull final PObject requestJsonAttributes) {
+    public Object getValue(
+            @Nonnull final Template template,
+            @Nonnull final String attributeName, @Nonnull final PObject requestJsonAttributes) {
         boolean errorOnExtraParameters = template.getConfiguration().isThrowErrorOnExtraParameters();
         final Object value = this.createValue(template);
         PObject pValue = requestJsonAttributes.optObject(attributeName);
@@ -401,10 +417,11 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
                 } else {
                     valueAsString = valueOpt.toString();
                 }
-                final String message = "Expected a JSON Object as the value for the element with the path: '" +
-                        requestJsonAttributes.getPath(attributeName) + "' but instead "
-                        + "got a '" + valueOpt.getClass().toString() +
-                        "'.\nThe value is: \n" + valueAsString;
+                final String message =
+                        "Expected a JSON Object as the value for the element with the path: '" +
+                                requestJsonAttributes.getPath(attributeName) + "' but instead "
+                                + "got a '" + valueOpt.getClass().toString() +
+                                "'.\nThe value is: \n" + valueAsString;
                 throw new IllegalArgumentException(message);
             }
             pValue = this.getDefaultValue();

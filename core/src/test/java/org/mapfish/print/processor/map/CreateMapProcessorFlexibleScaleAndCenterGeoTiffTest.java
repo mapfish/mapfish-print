@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
  * Created by Jesse on 3/26/14.
  */
 public class CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR ="center_geotiff_flexible_scale/";
+    public static final String BASE_DIR = "center_geotiff_flexible_scale/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
@@ -35,12 +35,18 @@ public class CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest extends Abstrac
     @Autowired
     private ForkJoinPool forkJoinPool;
 
+    public static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     public void testExecute() throws Exception {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values("test", requestData, template, getTaskDirectory(), this.httpRequestFactory, new File("."));
+        Values values = new Values("test", requestData, template, getTaskDirectory(), this.httpRequestFactory,
+                                   new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -51,10 +57,7 @@ public class CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest extends Abstrac
         assertEquals(1, layerGraphics.size());
 
 //        Files.copy(new File(layerGraphics.get(0)), new File(TMP, getClass().getSimpleName()+".png"));
-        new ImageSimilarity(new File(layerGraphics.get(0))).assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 0);
-    }
-
-    public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest.class, BASE_DIR + "requestData.json");
+        new ImageSimilarity(new File(layerGraphics.get(0)))
+                .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 0);
     }
 }

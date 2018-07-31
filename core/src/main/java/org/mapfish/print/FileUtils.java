@@ -20,12 +20,14 @@ public final class FileUtils {
     private FileUtils() {
         // intentionally empty
     }
+
     /**
-     * Check if the url is a file url which is either relative to the configuration directory or refers to a file in the
-     * configuration directory.
+     * Check if the url is a file url which is either relative to the configuration directory or refers to a
+     * file in the configuration directory.
      * <p></p>
-     * The correct file url is returned or the original if not a file url.  If an illegal file url (one that does not refer to a
-     * file within the configuration directory or is relative to the configuration directory) then an exception is thrown.
+     * The correct file url is returned or the original if not a file url.  If an illegal file url (one that
+     * does not refer to a file within the configuration directory or is relative to the configuration
+     * directory) then an exception is thrown.
      *
      * @param url the url to test
      * @param configuration the configuration to test relativity.
@@ -35,7 +37,8 @@ public final class FileUtils {
         if (protocol.equalsIgnoreCase("file")) {
             try {
 
-                File file = new File(configuration.getDirectory(), url.toExternalForm().substring("file://".length()));
+                File file = new File(configuration.getDirectory(),
+                                     url.toExternalForm().substring("file://".length()));
                 if (file.exists() && file.isFile()) {
                     URL tmpUrl = file.getAbsoluteFile().toURI().toURL();
                     assertFileIsInConfigDir(configuration, file);
@@ -47,7 +50,8 @@ public final class FileUtils {
                         assertFileIsInConfigDir(configuration, file);
                         return tmpUrl;
                     } else {
-                        throw new IllegalArgumentException("File urls must refer to a file within the configuration directory");
+                        throw new IllegalArgumentException(
+                                "File urls must refer to a file within the configuration directory");
                     }
                 }
             } catch (MalformedURLException e) {
@@ -69,28 +73,32 @@ public final class FileUtils {
 
 
     /**
-     * Verify that the file is within the base directory. {@link org.mapfish.print.IllegalFileAccessException} will be thrown
-     * if the assertion does not hold.
+     * Verify that the file is within the base directory. {@link org.mapfish.print.IllegalFileAccessException}
+     * will be thrown if the assertion does not hold.
+     *
      * @param descriptorOfBase a simple description of the base file, for example: configuration
      * @param child the file to test that is is a child of base.
      * @param baseFiles the directories that can legally contain the child.
      */
-    public static boolean assertIsSubDirectory(final String descriptorOfBase, final File child, final File... baseFiles) {
+    public static boolean assertIsSubDirectory(
+            final String descriptorOfBase, final File child, final File... baseFiles) {
         File canonicalChild;
         try {
             canonicalChild = child.getCanonicalFile();
         } catch (IOException e) {
-            throw new Error("Unable to get the canonical file of '" + child + "'.  Therefore it is not possible to verify if it is a " +
+            throw new Error("Unable to get the canonical file of '" + child +
+                                    "'.  Therefore it is not possible to verify if it is a " +
 
-                            "child of '" + Arrays.toString(baseFiles) + "'.");
+                                    "child of '" + Arrays.toString(baseFiles) + "'.");
         }
-        for (File base : baseFiles) {
+        for (File base: baseFiles) {
             File canonicalBase;
             try {
                 canonicalBase = base.getCanonicalFile();
             } catch (IOException e) {
-                throw new Error("Unable to get the canonical file of '" + base + "'.  Therefore it is not possible to verify if '" + child
-                                + "' is a child of it.");
+                throw new Error("Unable to get the canonical file of '" + base +
+                                        "'.  Therefore it is not possible to verify if '" + child
+                                        + "' is a child of it.");
             }
             File parentFile = canonicalChild;
             while (parentFile != null) {
@@ -100,11 +108,13 @@ public final class FileUtils {
                 parentFile = parentFile.getParentFile();
             }
         }
-        LOGGER.warn("A user attempted to access a file not within the '" + descriptorOfBase + "' directories (" +
-                    Arrays.toString(baseFiles) + "). " + "Attempted access to :" + canonicalChild);
-        throw new IllegalFileAccessException("'" + canonicalChild + "' identifies a file that is not within the '" +
-                                             descriptorOfBase +
-                                             "' directories: " + Arrays.toString(baseFiles));
+        LOGGER.warn(
+                "A user attempted to access a file not within the '" + descriptorOfBase + "' directories (" +
+                        Arrays.toString(baseFiles) + "). " + "Attempted access to :" + canonicalChild);
+        throw new IllegalFileAccessException(
+                "'" + canonicalChild + "' identifies a file that is not within the '" +
+                        descriptorOfBase +
+                        "' directories: " + Arrays.toString(baseFiles));
     }
 
 

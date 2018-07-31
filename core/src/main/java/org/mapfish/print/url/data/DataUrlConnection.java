@@ -3,7 +3,6 @@ package org.mapfish.print.url.data;
 import org.apache.http.entity.ContentType;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -25,7 +24,7 @@ public class DataUrlConnection extends URLConnection {
     }
 
     @Override
-    public void connect() throws IOException {
+    public void connect() {
         // nothing to be done
     }
 

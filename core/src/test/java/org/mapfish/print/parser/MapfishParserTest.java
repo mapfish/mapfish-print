@@ -19,12 +19,18 @@ import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mapfish.print.AbstractMapfishSpringTest.parseJSONObjectFromFile;
 
 public class MapfishParserTest {
+    public static void populateLayerParam(PObject requestData, Object param, String... extraNamesToIgnore)
+            throws JSONException {
+        MapfishParser.parse(true, requestData, param, extraNamesToIgnore);
+    }
+
     @Test
     public void testNullOptionalArray() {
         OptionalArrayParam p = new OptionalArrayParam();
@@ -39,7 +45,8 @@ public class MapfishParserTest {
     public void testEnum() {
         TestEnumParam p = new TestEnumParam();
 
-        final PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"e1\":\"VAL1\", \"e2\": [1, \"VAL2\"]}");
+        final PJsonObject json = AbstractMapfishSpringTest
+                .parseJSONObjectFromString("{\"e1\":\"VAL1\", \"e2\": [1, \"VAL2\"]}");
 
         MapfishParser.parse(true, json, p, "toIgnore");
         assertEquals(TestEnum.DEF, p.def2);
@@ -90,14 +97,16 @@ public class MapfishParserTest {
     @Test(expected = AssertionFailedException.class)
     public void testBothOneOfChoices() {
         TestChoiceClass p = new TestChoiceClass();
-        PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceA\":1,\"choiceB\":2.0}");
+        PJsonObject json =
+                AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceA\":1,\"choiceB\":2.0}");
         MapfishParser.parse(true, json, p);
     }
 
     @Test(expected = AssertionFailedException.class)
     public void testBothOneOfChoicesAndCanSatisfyOneOf() {
         TestChoiceClass p = new TestChoiceClass();
-        PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceA\":1,\"choiceB\":2.0,\"choiceC\":3.0}");
+        PJsonObject json = AbstractMapfishSpringTest
+                .parseJSONObjectFromString("{\"choiceA\":1,\"choiceB\":2.0,\"choiceC\":3.0}");
         MapfishParser.parse(true, json, p);
     }
 
@@ -121,7 +130,8 @@ public class MapfishParserTest {
     @Test
     public void testRequirementSatisfied() {
         TestRequireClass p = new TestRequireClass();
-        PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"i\":1, \"b\":true, \"c\":true}");
+        PJsonObject json =
+                AbstractMapfishSpringTest.parseJSONObjectFromString("{\"i\":1, \"b\":true, \"c\":true}");
         MapfishParser.parse(true, json, p);
         assertEquals(1, p.i.intValue());
         assertTrue(p.b);
@@ -168,11 +178,12 @@ public class MapfishParserTest {
         MapfishParser.parse(true, json, p);
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testEnumIllegalVal() {
         TestEnumParam p = new TestEnumParam();
 
-        final PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"e1\":\"foo\", \"e2\": [2, \"VAL2\"]}");
+        final PJsonObject json = AbstractMapfishSpringTest
+                .parseJSONObjectFromString("{\"e1\":\"foo\", \"e2\": [2, \"VAL2\"]}");
 
         MapfishParser.parse(true, json, p, "toIgnore");
     }
@@ -195,7 +206,7 @@ public class MapfishParserTest {
         assertEquals(13.0f, param.bigF, delta);
         assertEquals(3.0f, param.littleF, delta);
         assertEquals(true, param.bigB);
-        assertEquals(true, param.littleB);
+        assertTrue(param.littleB);
         assertEquals("fieldValue", param.po.getString("poField"));
         assertEquals("http://localhost:8080", param.url.toExternalForm());
 
@@ -207,14 +218,14 @@ public class MapfishParserTest {
         assertArrayEquals(new String[]{"s1", "s2"}, param.sa);
 
         assertEquals(2, param.ba.length);
-        assertEquals(true, param.ba[0]);
-        assertEquals(false, param.ba[1]);
+        assertTrue(param.ba[0]);
+        assertFalse(param.ba[1]);
         assertArrayEquals(new double[]{2.1, 2.2}, param.da, delta);
 
         assertEquals(2, param.oa.length);
-        assertEquals(true, param.oa[0].has("f"));
-        assertEquals(true, param.oa[1].has("b"));
-        assertEquals(true, param.calledByPostConstruct);
+        assertTrue(param.oa[0].has("f"));
+        assertTrue(param.oa[1].has("b"));
+        assertTrue(param.calledByPostConstruct);
 
         assertEquals("embeddedValue", param.e.embeddedValue);
         assertEquals("def", param.e.embeddedDefault);
@@ -242,7 +253,7 @@ public class MapfishParserTest {
             final Matcher missingParameterMatcher = Pattern.compile("\\*.+?").matcher(e.getMessage());
             int errorCount = 0;
             while (missingParameterMatcher.find()) {
-                errorCount ++;
+                errorCount++;
             }
             int totalAttributes = ParserUtils.getAllAttributeNames(param.getClass()).size();
             assertEquals(18 + totalAttributes, errorCount);
@@ -252,6 +263,7 @@ public class MapfishParserTest {
         }
 
     }
+
     @Test
     public void testPopulateLayerParam_TooManyParams() throws IOException {
         final TestParam param = new TestParam();
@@ -264,7 +276,7 @@ public class MapfishParserTest {
             final Matcher missingParameterMatcher = Pattern.compile("\\*.+?").matcher(e.getMessage());
             int errorCount = 0;
             while (missingParameterMatcher.find()) {
-                errorCount ++;
+                errorCount++;
             }
             int totalAttributes = ParserUtils.getAllAttributeNames(param.getClass()).size();
             assertEquals(2 + totalAttributes, errorCount);
@@ -278,22 +290,23 @@ public class MapfishParserTest {
     @Test(expected = ExtraPropertyException.class)
     public void testDoesntMap() {
         String legendAtts = "{\n"
-                     + "    \"extra\": \"\",\n"
-                     + "    \"classes\": [{\n"
-                     + "        \"name\": \"osm\",\n"
-                     + "        \"icons\": [\"http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0"
-                     + ".0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states\"]\n"
-                     + "    }]\n"
-                     + "}\n";
+                + "    \"extra\": \"\",\n"
+                + "    \"classes\": [{\n"
+                + "        \"name\": \"osm\",\n"
+                +
+                "        \"icons\": [\"http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic" +
+                "&VERSION=1.0"
+                + ".0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states\"]\n"
+                + "    }]\n"
+                + "}\n";
         PObject requestData = new PJsonObject(new JSONObject(legendAtts), "legend");
         LegendAttribute.LegendAttributeValue param = new LegendAttribute.LegendAttributeValue();
         MapfishParser.parse(true, requestData, param);
 
     }
 
-    public static void populateLayerParam(PObject requestData, Object param, String... extraNamesToIgnore)
-            throws IOException, JSONException {
-        MapfishParser.parse(true, requestData, param, extraNamesToIgnore);
+    enum TestEnum {
+        VAL1, VAL2, DEF
     }
 
     static class TestParam {
@@ -343,10 +356,6 @@ public class MapfishParserTest {
         public String[] sa;
     }
 
-    enum TestEnum {
-        VAL1, VAL2, DEF
-    }
-
     static class TestEnumParam {
         public TestEnum e1 = TestEnum.DEF;
         public TestEnum[] e2;
@@ -372,6 +381,7 @@ public class MapfishParserTest {
         @HasDefaultValue
         public Boolean c;
     }
+
     static class TestFinalClass {
         public final Integer i = 100;
     }

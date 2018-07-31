@@ -35,7 +35,7 @@ public class MapUriProcessorTest extends AbstractHttpProcessorTest {
         public Void execute(TestParam values, ExecutionContext context) throws Exception {
             final URI uri = new URI("http://localhost:8080/path?query#fragment");
             final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(uri,
-                    HttpMethod.GET);
+                                                                                                          HttpMethod.GET);
             final URI finalUri = request.getURI();
 
             assertEquals("http", finalUri.getScheme());

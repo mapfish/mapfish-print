@@ -20,6 +20,17 @@ public abstract class PElement {
         this.contextName = contextName;
     }
 
+    private static String getPathElement(final String val) {
+        if (val == null) {
+            return "";
+        }
+        if (val.contains(" ")) {
+            return "'" + val + "'";
+        } else {
+            return val;
+        }
+    }
+
     /**
      * Gets the string representation of the path to the current JSON element.
      *
@@ -48,6 +59,7 @@ public abstract class PElement {
 
     /**
      * Append the path to the StringBuilder.
+     *
      * @param result the string builder to add the path to.
      */
     protected final void addPathTo(final StringBuilder result) {
@@ -59,19 +71,6 @@ public abstract class PElement {
         }
         result.append(getPathElement(this.contextName));
     }
-
-    private static String getPathElement(final String val) {
-        if (val == null) {
-            return "";
-        }
-        if (val.contains(" ")) {
-            return "'" + val + "'";
-        } else {
-            return val;
-        }
-    }
-
-
 
     public final PElement getParent() {
         return this.parent;

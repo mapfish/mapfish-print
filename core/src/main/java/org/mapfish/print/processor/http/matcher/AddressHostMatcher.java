@@ -4,7 +4,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,8 @@ import java.util.List;
  *       mask : 255.255.0.0
  *       port : -1
  * </code></pre>
- * <p>Example 5: accept any uri whose host ip starts with 192.1 and restricts to paths that start with /print/</p>
+ * <p>Example 5: accept any uri whose host ip starts with 192.1 and restricts to paths that start with
+ * /print/</p>
  * <pre><code>
  *     - !ipMatch
  *       ip : 192.1.0.0
@@ -52,11 +52,11 @@ public class AddressHostMatcher extends InetHostMatcher {
     private InetAddress maskAddress = null;
 
     @Override
-    protected final List<AddressMask> createAuthorizedIPs() throws UnknownHostException, SocketException {
+    protected final List<AddressMask> createAuthorizedIPs() throws UnknownHostException {
         InetAddress[] ips = InetAddress.getAllByName(this.ip);
-        final ArrayList<AddressMask> authorizedIPs = new ArrayList<AddressMask>(ips.length);
+        final ArrayList<AddressMask> authorizedIPs = new ArrayList<>(ips.length);
         final InetAddress theMask = getMaskAddress();
-        for (InetAddress actualIp : ips) {
+        for (InetAddress actualIp: ips) {
             authorizedIPs.add(new AddressMask(actualIp, theMask));
         }
         return authorizedIPs;

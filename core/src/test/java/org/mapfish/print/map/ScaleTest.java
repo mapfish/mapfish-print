@@ -8,12 +8,12 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import static org.junit.Assert.assertEquals;
 import static org.mapfish.print.Constants.PDF_DPI;
 
-public class ScaleTest{
+public class ScaleTest {
+    public static final CoordinateReferenceSystem SPHERICAL_MERCATOR;
+    public static final CoordinateReferenceSystem CH1903;
     private static final double DELTA = 0.00001;
     private static final double SCALE = 108335.72891406555;
     private static final double RESOLUTION = 38.21843770023979;
-    public static final CoordinateReferenceSystem SPHERICAL_MERCATOR;
-    public static final CoordinateReferenceSystem CH1903;
 
     static {
         try {
@@ -25,7 +25,7 @@ public class ScaleTest{
     }
 
     @Test
-    public void testToResolution() throws Exception {
+    public void testToResolution() {
         final double resolution = new Scale(SCALE, CH1903, PDF_DPI).getResolution();
         assertEquals(RESOLUTION, resolution, DELTA);
         assertEquals(SCALE, Scale.fromResolution(resolution, CH1903).getDenominator(PDF_DPI), DELTA);
@@ -37,7 +37,7 @@ public class ScaleTest{
     }
 
     @Test
-    public void geodetic() throws Exception {
+    public void geodetic() {
         final Scale scale = new Scale(15432.0, SPHERICAL_MERCATOR, 254);
 
         assertEquals(

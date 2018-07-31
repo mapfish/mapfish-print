@@ -1,7 +1,6 @@
 package org.mapfish.print.servlet;
 
 import com.google.common.collect.Maps;
-
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Test;
@@ -32,7 +31,8 @@ import static org.junit.Assert.fail;
 })
 public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
 
-    public static final String PRINT_CONTEXT = "classpath:org/mapfish/print/servlet/mapfish-print-servlet.xml";
+    public static final String PRINT_CONTEXT =
+            "classpath:org/mapfish/print/servlet/mapfish-print-servlet.xml";
 
     @Autowired
     private MapPrinterServlet servlet;
@@ -40,7 +40,7 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
     private ServletMapPrinterFactory printerFactory;
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         SecurityContextHolder.clearContext();
     }
 
@@ -55,7 +55,7 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
         String requestData = loadRequestDataAsString();
 
         this.servlet.createReportAndGetNoAppId("png", requestData, false,
-                servletCreateRequest, servletCreateResponse);
+                                               servletCreateRequest, servletCreateResponse);
         assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
 
         assertCorrectResponse(servletCreateResponse);
@@ -72,7 +72,7 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
         String requestData = loadRequestDataAsString();
 
         this.servlet.createReportAndGetNoAppId("png", requestData, false,
-                servletCreateRequest, servletCreateResponse);
+                                               servletCreateRequest, servletCreateResponse);
 
     }
 
@@ -86,7 +86,7 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
         String requestData = loadRequestDataAsString();
 
         this.servlet.createReportAndGetNoAppId("png", requestData, false,
-                servletCreateRequest, servletCreateResponse);
+                                               servletCreateRequest, servletCreateResponse);
     }
 
     @Test(timeout = 60000)
@@ -144,7 +144,8 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
         }
     }
 
-    private byte[] assertCorrectResponse(MockHttpServletResponse servletGetReportResponse) throws IOException {
+    private byte[] assertCorrectResponse(MockHttpServletResponse servletGetReportResponse)
+            throws IOException {
         byte[] report;
         report = servletGetReportResponse.getContentAsByteArray();
 
@@ -163,7 +164,8 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
     private void setUpConfigFiles() throws URISyntaxException {
         final HashMap<String, String> configFiles = Maps.newHashMap();
         configFiles.put("default",
-                getFile(MapPrinterServletSecurityTest.class, "config-security.yaml").getAbsolutePath());
+                        getFile(MapPrinterServletSecurityTest.class, "config-security.yaml")
+                                .getAbsolutePath());
         printerFactory.setConfigurationFiles(configFiles);
     }
 

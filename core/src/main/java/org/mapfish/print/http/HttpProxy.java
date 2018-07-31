@@ -7,8 +7,8 @@ import org.mapfish.print.processor.http.matcher.URIMatcher;
 import java.util.List;
 
 /**
- * This configuration object configures the proxies to be used by the system. This is configured as
- * one of the root elements of the config.yaml
+ * This configuration object configures the proxies to be used by the system. This is configured as one of the
+ * root elements of the config.yaml
  *
  * <p>Example - Proxy all requests except localhost and www.camptocamp.org:</p>
  * <pre><code>
@@ -49,12 +49,23 @@ public final class HttpProxy extends HttpCredential {
     }
 
     /**
+     * The scheme (http, https) of the proxy.
+     * <p>
+     * This is optional, default is http if no username and https if there is a password
+     * </p>
+     *
+     * @param scheme the scheme of the proxy
+     */
+    public void setScheme(final String scheme) {
+        this.scheme = scheme;
+    }
+
+    /**
      * Matchers are used to choose which requests this proxy applies to.
      *
+     * @param matchers the matchers to use to determine which requests the applies can be used for
      * @see org.mapfish.print.processor.http.matcher.URIMatcher
      * @see org.mapfish.print.processor.http.RestrictUrisProcessor
-     *
-     * @param matchers the matchers to use to determine which requests the applies can be used for
      */
     public void setMatchers(final List<? extends URIMatcher> matchers) {
         super.setMatchers(matchers);
@@ -70,18 +81,6 @@ public final class HttpProxy extends HttpCredential {
      */
     public void setHost(final String host) {
         this.host = host;
-    }
-
-    /**
-     * The scheme (http, https) of the proxy.
-     * <p>
-     * This is optional, default is http if no username and https if there is a password
-     * </p>
-     *
-     * @param scheme the scheme of the proxy
-     */
-    public void setScheme(final String scheme) {
-        this.scheme = scheme;
     }
 
     /**
@@ -104,7 +103,7 @@ public final class HttpProxy extends HttpCredential {
      *
      * @param password the password for authenticating with the proxy
      */
-    public  void setPassword(final String password) {
+    public void setPassword(final String password) {
         super.setPassword(password);
     }
 
@@ -116,7 +115,7 @@ public final class HttpProxy extends HttpCredential {
      *
      * @param port the port of the proxy
      */
-    public  void setPort(final int port) {
+    public void setPort(final int port) {
         this.port = port;
     }
 

@@ -15,11 +15,10 @@ import java.sql.Types;
 
 /**
  * Hibernate User Type for PJson object.
- *
  */
 public class PJsonObjectUserType implements UserType {
 
-    private static final int[] SQL_TYPES = { Types.LONGVARCHAR };
+    private static final int[] SQL_TYPES = {Types.LONGVARCHAR};
 
     private static final String CONTEXT_NAME = "spec";
 
@@ -34,7 +33,8 @@ public class PJsonObjectUserType implements UserType {
             return value;
         } else {
             try {
-                return new PJsonObject(new JSONObject(((PJsonObject) value).getInternalObj().toString()), CONTEXT_NAME);
+                return new PJsonObject(new JSONObject(((PJsonObject) value).getInternalObj().toString()),
+                                       CONTEXT_NAME);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -57,7 +57,7 @@ public class PJsonObjectUserType implements UserType {
 
     @Override
     public final int hashCode(final Object x) throws HibernateException {
-        return ((PJsonObject) x).hashCode();
+        return x.hashCode();
     }
 
     @Override
@@ -66,7 +66,8 @@ public class PJsonObjectUserType implements UserType {
     }
 
     @Override
-    public final Object nullSafeGet(final ResultSet rs, final String[] names, final SessionImplementor session,
+    public final Object nullSafeGet(
+            final ResultSet rs, final String[] names, final SessionImplementor session,
             final Object owner) throws HibernateException, SQLException {
         String value = rs.getString(names[0]);
         if (value != null) {
@@ -80,7 +81,8 @@ public class PJsonObjectUserType implements UserType {
     }
 
     @Override
-    public final void nullSafeSet(final PreparedStatement st, final Object value, final int index,
+    public final void nullSafeSet(
+            final PreparedStatement st, final Object value, final int index,
             final SessionImplementor session) throws HibernateException, SQLException {
         if (value == null) {
             st.setNull(index, SQL_TYPES[0]);

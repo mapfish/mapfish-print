@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public final class OldAPILayerConverter {
 
-    private static Map<String, LayerConverter> converters = new HashMap<String, LayerConverter>();
+    private static Map<String, LayerConverter> converters = new HashMap<>();
 
     static {
         converters.put("osm", new OSMConverter());
@@ -36,31 +36,34 @@ public final class OldAPILayerConverter {
      * @param oldApi configuration for oldApi to newAPI conversion
      * @return the converted layer definition
      */
-    public static JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi) throws JSONException {
+    public static JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi)
+            throws JSONException {
         final String layerType = oldLayer.optString("type", "").toLowerCase();
 
         if (!converters.containsKey(layerType)) {
             throw new UnsupportedOperationException("Layer type '" + layerType + "' is "
-                    + "not supported by the legacy API.");
+                                                            + "not supported by the legacy API.");
         }
         return converters.get(layerType).convert(oldLayer, oldApi);
     }
 
     private interface LayerConverter {
-        JSONObject convert(final PJsonObject oldLayer, OldApiConfig oldApi) throws JSONException;
+        JSONObject convert(PJsonObject oldLayer, OldApiConfig oldApi) throws JSONException;
     }
 
     private abstract static class AbstractLayerConverter implements LayerConverter {
 
         @Override
-        public JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi) throws JSONException {
+        public JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi)
+                throws JSONException {
             return new JSONObject();
         }
     }
 
     private static class GeoImageConverter extends AbstractLayerConverter {
         @Override
-        public JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi) throws JSONException {
+        public JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi)
+                throws JSONException {
             final JSONObject layer = super.convert(oldLayer, oldApi);
             layer.put("type", "image");
             if (oldLayer.has("baseURL")) {
@@ -76,13 +79,14 @@ public final class OldAPILayerConverter {
                 layer.put("extent", oldLayer.getInternalObj().getJSONArray("extent"));
             }
             return layer;
-         }
+        }
     }
 
     private static class OSMConverter extends AbstractLayerConverter {
 
         @Override
-        public final JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi) throws JSONException {
+        public final JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi)
+                throws JSONException {
             final JSONObject layer = super.convert(oldLayer, oldApi);
             layer.put("type", "osm");
 
@@ -119,7 +123,8 @@ public final class OldAPILayerConverter {
     private static class WMSConverter extends AbstractLayerConverter {
 
         @Override
-        public final JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi) throws JSONException {
+        public final JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi)
+                throws JSONException {
             final JSONObject layer = super.convert(oldLayer, oldApi);
             layer.put("type", "wms");
             if (oldLayer.has("isTiled") && oldLayer.getInternalObj().getBoolean("isTiled")) {
@@ -148,7 +153,8 @@ public final class OldAPILayerConverter {
             }
             if (oldLayer.has("styles")) {
                 JSONArray stylesJson = oldLayer.getInternalObj().getJSONArray("styles");
-                if (stylesJson.length() > 1 || (stylesJson.length() == 1 && !stylesJson.getString(0).trim().isEmpty())) {
+                if (stylesJson.length() > 1 ||
+                        (stylesJson.length() == 1 && !stylesJson.getString(0).trim().isEmpty())) {
                     layer.put("styles", stylesJson);
                 }
             }
@@ -179,7 +185,8 @@ public final class OldAPILayerConverter {
     private static class GeoJsonConverter extends AbstractLayerConverter {
 
         @Override
-        public final JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi) throws JSONException {
+        public final JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi)
+                throws JSONException {
             final JSONObject layer = super.convert(oldLayer, oldApi);
             layer.put("type", "geojson");
 
@@ -211,7 +218,8 @@ public final class OldAPILayerConverter {
     private static class WMSTConverter extends AbstractLayerConverter {
 
         @Override
-        public final JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi) throws JSONException {
+        public final JSONObject convert(final PJsonObject oldLayer, final OldApiConfig oldApi)
+                throws JSONException {
             final JSONObject layer = super.convert(oldLayer, oldApi);
             layer.put("type", "wmts");
 
@@ -290,8 +298,8 @@ public final class OldAPILayerConverter {
                     }
                     if (old.has("resolution") && !old.has("scaleDenominator")) {
 
-                        Double scaleDenominator = 0.0D;
-                        Double resolution = old.optDouble("resolution", 0.0D);
+                        double scaleDenominator = 0.0D;
+                        double resolution = old.optDouble("resolution", 0.0D);
                         if (!FloatingPointUtil.equals(resolution, 0.0D)) {
                             //works with meter based srs
                             final double conversionRatio = 0.00028D;

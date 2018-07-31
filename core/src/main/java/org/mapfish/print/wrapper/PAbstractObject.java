@@ -18,6 +18,7 @@ public abstract class PAbstractObject extends PElement implements PObject {
 
     /**
      * Get a property as a string or throw an exception.
+     *
      * @param key the property name
      */
     @Override
@@ -31,6 +32,7 @@ public abstract class PAbstractObject extends PElement implements PObject {
 
     /**
      * Get a property as a string or defaultValue.
+     *
      * @param key the property name
      * @param defaultValue the default value
      */
@@ -42,6 +44,7 @@ public abstract class PAbstractObject extends PElement implements PObject {
 
     /**
      * Get a property as an int or throw an exception.
+     *
      * @param key the property name
      */
     @Override
@@ -55,6 +58,7 @@ public abstract class PAbstractObject extends PElement implements PObject {
 
     /**
      * Get a property as an int or default value.
+     *
      * @param key the property name
      * @param defaultValue the default value
      */
@@ -66,6 +70,7 @@ public abstract class PAbstractObject extends PElement implements PObject {
 
     /**
      * Get a property as an long or throw an exception.
+     *
      * @param key the property name
      */
     @Override
@@ -76,8 +81,10 @@ public abstract class PAbstractObject extends PElement implements PObject {
         }
         return result;
     }
+
     /**
      * Get a property as an long or default value.
+     *
      * @param key the property name
      * @param defaultValue the default value
      */
@@ -86,8 +93,10 @@ public abstract class PAbstractObject extends PElement implements PObject {
         Long result = optLong(key);
         return result == null ? defaultValue : result;
     }
+
     /**
      * Get a property as a double or throw an exception.
+     *
      * @param key the property name
      */
     @Override
@@ -101,6 +110,7 @@ public abstract class PAbstractObject extends PElement implements PObject {
 
     /**
      * Get a property as a double or defaultValue.
+     *
      * @param key the property name
      * @param defaultValue the default value
      */
@@ -112,6 +122,7 @@ public abstract class PAbstractObject extends PElement implements PObject {
 
     /**
      * Get a property as a float or throw an exception.
+     *
      * @param key the property name
      */
     @Override
@@ -125,6 +136,7 @@ public abstract class PAbstractObject extends PElement implements PObject {
 
     /**
      * Get a property as a float or Default value.
+     *
      * @param key the property name
      * @param defaultValue default value
      */
@@ -136,6 +148,7 @@ public abstract class PAbstractObject extends PElement implements PObject {
 
     /**
      * Get a property as a boolean or throw exception.
+     *
      * @param key the property name
      */
     @Override
@@ -149,6 +162,7 @@ public abstract class PAbstractObject extends PElement implements PObject {
 
     /**
      * Get a property as a boolean or default value.
+     *
      * @param key the property name
      * @param defaultValue the default
      */
@@ -160,6 +174,7 @@ public abstract class PAbstractObject extends PElement implements PObject {
 
     /**
      * Get a property as a object or throw exception.
+     *
      * @param key the property name
      */
     @Override
@@ -173,6 +188,7 @@ public abstract class PAbstractObject extends PElement implements PObject {
 
     /**
      * Get a property as a array or default.
+     *
      * @param key the property name
      * @param defaultValue default
      */
@@ -184,6 +200,7 @@ public abstract class PAbstractObject extends PElement implements PObject {
 
     /**
      * Get a property as a array or throw exception.
+     *
      * @param key the property name
      */
     @Override
@@ -197,6 +214,7 @@ public abstract class PAbstractObject extends PElement implements PObject {
 
     /**
      * Get a property as a array or default.
+     *
      * @param key the property name
      * @param defaultValue default
      */

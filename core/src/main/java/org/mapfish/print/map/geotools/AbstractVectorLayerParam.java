@@ -8,8 +8,8 @@ import org.mapfish.print.parser.HasDefaultValue;
  */
 public abstract class AbstractVectorLayerParam extends AbstractLayerParams {
     /**
-     * The style name of a style to apply to the features during rendering.  The style name must map to a style in the
-     * template or the configuration objects.
+     * The style name of a style to apply to the features during rendering.  The style name must map to a
+     * style in the template or the configuration objects.
      * <p></p>
      * If no style is defined then the default style for the geometry type will be used.
      */

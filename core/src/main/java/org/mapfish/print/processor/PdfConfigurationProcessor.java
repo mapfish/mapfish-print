@@ -20,11 +20,13 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
- * <p>This processor allows the dynamic configuration of the {@link org.mapfish.print.config.PDFConfig} object by obtaining data
- * from attributes.  For example the title and author could be string attributes posted from the client, this processor would update
- * the {@link org.mapfish.print.config.PDFConfig} object with the attribute data allowing per report PDF metadata.
+ * <p>This processor allows the dynamic configuration of the {@link org.mapfish.print.config.PDFConfig}
+ * object by obtaining data from attributes.  For example the title and author could be string attributes
+ * posted from the client, this processor would update the {@link org.mapfish.print.config.PDFConfig} object
+ * with the attribute data allowing per report PDF metadata.
  * </p><p>
- * Note: The {@link org.mapfish.print.config.PDFConfig} can also be configured in the config.yaml either at the config or template level.
+ * Note: The {@link org.mapfish.print.config.PDFConfig} can also be configured in the config.yaml either at
+ * the config or template level.
  * </p>
  * <p>See also: <a href="attributes.html#!updatePdfConfigUpdate">!updatePdfConfigUpdate</a> attribute</p>
  * [[examples=updatePdfMetadata]]
@@ -41,9 +43,9 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
     }
 
     /**
-     * The pdf metadata property -&gt; attribute name map.  The keys must be one of the values in
-     * {@link org.mapfish.print.config.PDFConfig} and the values must be the name of the attribute to obtain the
-     * the data from.  Example Configuration:
+     * The pdf metadata property -&gt; attribute name map.  The keys must be one of the values in {@link
+     * org.mapfish.print.config.PDFConfig} and the values must be the name of the attribute to obtain the the
+     * data from.  Example Configuration:
      * <p></p>
      * <pre><code>
      * processors:
@@ -53,19 +55,21 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
      *       subject: "subjectAttribute"
      * </code></pre>
      * <p></p>
-     * The type of the attribute must be of the correct type, for example title mus be a string, keywords must be an array of strings,
-     * compress must be a boolean.
+     * The type of the attribute must be of the correct type, for example title mus be a string, keywords must
+     * be an array of strings, compress must be a boolean.
      * <p></p>
-     * If the value is within the attribute output object then you can use dot separators for each level. For example suppose
-     * there is a custom attribute: myconfig, if and it has a property title then the configuration would be:
+     * If the value is within the attribute output object then you can use dot separators for each level. For
+     * example suppose there is a custom attribute: myconfig, if and it has a property title then the
+     * configuration would be:
      * <pre><code>
      * processors:
      *   - updatePdfConfig
      *     updates: {title: :myconfig.title"}
      * </code></pre>
      * <p></p>
-     * For more power a "format" can be defined.  The format is a printf style format string which will be called with a single
-     * value that is identified by the value key/path.  In this case the short hand key: value can't be used instead it is as follows:
+     * For more power a "format" can be defined.  The format is a printf style format string which will be
+     * called with a single value that is identified by the value key/path.  In this case the short hand key:
+     * value can't be used instead it is as follows:
      * <pre><code>
      *   - updatePdfConfig
      *     updates:
@@ -78,7 +82,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
      */
     public void setUpdates(final Map<String, Object> updates) {
         Map<String, Update> finalUpdatesMap = Maps.newHashMap();
-        for (Map.Entry<String, Object> entry : updates.entrySet()) {
+        for (Map.Entry<String, Object> entry: updates.entrySet()) {
             String property = entry.getKey();
             Update update;
             if (entry.getValue() instanceof Update) {
@@ -90,8 +94,9 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
                 update.property = property;
                 update.setValueKey(value);
             } else {
-                throw new IllegalArgumentException("Update property " + property + " has a non-string and non-!updatePdfConfigUpdate " +
-                                                   "value: " + entry.getValue() + "(" + entry.getValue().getClass() + ")");
+                throw new IllegalArgumentException(
+                        "Update property " + property + " has a non-string and non-!updatePdfConfigUpdate " +
+                                "value: " + entry.getValue() + "(" + entry.getValue().getClass() + ")");
             }
 
             finalUpdatesMap.put(property, update);
@@ -100,7 +105,8 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
     }
 
     @Override
-    protected void extraValidation(final List<Throwable> validationErrors, final Configuration configuration) {
+    protected void extraValidation(
+            final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.updates == null) {
             validationErrors.add(new ConfigurationException(
                     "The property 'attributeMap' in the !updatePdfConfig processor is required"));
@@ -109,7 +115,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
                 validationErrors.add(new ConfigurationException(
                         "At least one value for 'attributeMap' in !updatePdfConfig should be declared."));
             }
-            for (Map.Entry<String, Update> entry : this.updates.entrySet()) {
+            for (Map.Entry<String, Update> entry: this.updates.entrySet()) {
                 entry.getValue().validate(validationErrors, configuration);
             }
         }
@@ -123,16 +129,18 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
 
     @Nullable
     @Override
-    public Void execute(final In in, final ExecutionContext context) throws Exception {
-        for (Map.Entry<String, Update> entry : this.updates.entrySet()) {
+    public Void execute(final In in, final ExecutionContext context) {
+        for (Map.Entry<String, Update> entry: this.updates.entrySet()) {
             Object value = getAttributeValue(entry.getValue().valueKey, in.values);
-            final PropertyDescriptor propertyDescriptor = BeanUtils.getPropertyDescriptor(PDFConfig.class, entry.getValue().property);
+            final PropertyDescriptor propertyDescriptor =
+                    BeanUtils.getPropertyDescriptor(PDFConfig.class, entry.getValue().property);
             final String format = entry.getValue().format;
             if (format != null) {
                 value = String.format(format, value);
             }
 
-            final MethodParameter writeMethodParameter = BeanUtils.getWriteMethodParameter(propertyDescriptor);
+            final MethodParameter writeMethodParameter =
+                    BeanUtils.getWriteMethodParameter(propertyDescriptor);
             try {
                 if (propertyDescriptor.getName().equals("keywords")) {
                     value = convertKeywords(value);
@@ -141,13 +149,17 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
             } catch (Throwable e) {
                 if (writeMethodParameter == null) {
                     throw new RuntimeException(
-                            "An error occurred while executing !updatePdfConfig.  Unable to set configuration property '" +
-                            entry.getKey() + " with value " + value + ". ");
+                            "An error occurred while executing !updatePdfConfig.  Unable to set " +
+                                    "configuration property '" +
+                                    entry.getKey() + " with value " + value + ". ");
                 }
                 throw new RuntimeException(
-                        "An error occurred while executing !updatePdfConfig.  Unable to set configuration property '" +
-                        entry.getKey() + " with value " + value + ". The expected type is " + writeMethodParameter.getParameterType() +
-                        " but the type of the value being set was: " + (value != null ? value.getClass() : "null"));
+                        "An error occurred while executing !updatePdfConfig.  Unable to set configuration " +
+                                "property '" +
+                                entry.getKey() + " with value " + value + ". The expected type is " +
+                                writeMethodParameter.getParameterType() +
+                                " but the type of the value being set was: " +
+                                (value != null ? value.getClass() : "null"));
             }
         }
 
@@ -161,7 +173,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
         if (keywordsObj instanceof Iterable) {
             Iterable obj = (Iterable) keywordsObj;
             final ArrayList<String> list = Lists.newArrayList();
-            for (Object keyword : obj) {
+            for (Object keyword: obj) {
                 list.add(keyword.toString());
             }
             return list;
@@ -169,8 +181,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
         if (keywordsObj.getClass().isArray()) {
             Object[] arr = (Object[]) keywordsObj;
             final ArrayList<String> list = Lists.newArrayList();
-            for (int i = 0; i < arr.length; i++) {
-                Object keyword = arr[i];
+            for (Object keyword: arr) {
                 list.add(keyword.toString());
 
             }
@@ -198,13 +209,15 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
                 value = field.get(value);
             } catch (NoSuchFieldException e) {
                 throw new IllegalArgumentException(
-                        "No field " + part + " in object: " + value.getClass() + ". This error is part of the processor " +
-                        "!updatePdfConfig for the value: " + attributeName);
+                        "No field " + part + " in object: " + value.getClass() +
+                                ". This error is part of the processor " +
+                                "!updatePdfConfig for the value: " + attributeName);
             } catch (IllegalAccessException e) {
                 throw new IllegalArgumentException(
-                        "Not permitted to access" + part + " in object: " + value.getClass() + ".  This is likely caused by the " +
-                        "Java security manager. This error is part of the processor " +
-                        "!updatePdfConfig for the value: " + attributeName);
+                        "Not permitted to access" + part + " in object: " + value.getClass() +
+                                ".  This is likely caused by the " +
+                                "Java security manager. This error is part of the processor " +
+                                "!updatePdfConfig for the value: " + attributeName);
             }
         }
 
@@ -214,8 +227,9 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
 
     private void assertNonnullValue(final String attributeName, final Values values, final Object value) {
         if (value == null) {
-            throw new IllegalArgumentException(attributeName + " does not identify a value that is currently in the values object.  " +
-                                               "Values object is: \n" + values);
+            throw new IllegalArgumentException(
+                    attributeName + " does not identify a value that is currently in the values object.  " +
+                            "Values object is: \n" + values);
         }
     }
 
@@ -260,41 +274,46 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
         public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
             if (this.valueKey.isEmpty()) {
                 validationErrors.add(new ConfigurationException(
-                        "The value of '" + this.property + "' should not be empty. Error in !updatePdfConfig"));
+                        "The value of '" + this.property +
+                                "' should not be empty. Error in !updatePdfConfig"));
                 return;
             }
             if (this.valueKey.charAt(0) == '.') {
                 validationErrors.add(new ConfigurationException(
                         "The value of '" + this.property + "' should start with a '.', it was " +
-                        this.valueKey + ". Error in !updatePdfConfig"));
+                                this.valueKey + ". Error in !updatePdfConfig"));
                 return;
             }
 
             String[] attributeAccessorDefinition = this.valueKey.split("\\.");
             if (attributeAccessorDefinition.length == 0) {
                 validationErrors.add(new ConfigurationException(
-                        this.property + ": " + this.valueKey + " is not a valid mapping in !updatePdfConfig"));
+                        this.property + ": " + this.valueKey +
+                                " is not a valid mapping in !updatePdfConfig"));
                 return;
             }
 
-            final PropertyDescriptor propertyDescriptor = BeanUtils.getPropertyDescriptor(PDFConfig.class, this.property);
+            final PropertyDescriptor propertyDescriptor =
+                    BeanUtils.getPropertyDescriptor(PDFConfig.class, this.property);
             if (propertyDescriptor == null || BeanUtils.getWriteMethodParameter(propertyDescriptor) == null) {
                 PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(PDFConfig.class);
                 StringBuilder options = new StringBuilder();
-                for (PropertyDescriptor descriptor : descriptors) {
+                for (PropertyDescriptor descriptor: descriptors) {
                     options.append("\n\t* ").append(descriptor.getName());
                 }
                 validationErrors.add(new ConfigurationException(
-                        "There is no pdf config property called '" + this.property + "'. Options include: " + options));
+                        "There is no pdf config property called '" + this.property + "'. Options include: " +
+                                options));
             }
 
         }
 
         /**
-         * The key to use to look up the value in the values object.  It can be a path that can reach into nested objects.
+         * The key to use to look up the value in the values object.  It can be a path that can reach into
+         * nested objects.
          * <p></p>
-         * Examples 1 a simple lookup key: "key"
-         * Example 2 a path.  First part (before .) is the lookup key, the second part is the field name to load: "key.fieldName"
+         * Examples 1 a simple lookup key: "key" Example 2 a path.  First part (before .) is the lookup key,
+         * the second part is the field name to load: "key.fieldName"
          *
          * @param valueKey the path or key for retrieving the value
          */

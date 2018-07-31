@@ -3,7 +3,6 @@ package org.mapfish.print.map.image;
 import com.google.common.collect.Maps;
 import com.google.common.io.Closer;
 import com.vividsolutions.jts.util.Assert;
-
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -36,14 +35,12 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
-
 import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 
@@ -81,10 +78,111 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         this.configuration = configuration;
     }
 
+    @Override
+    protected BufferedImage loadImage(
+            final MfClientHttpRequestFactory requestFactory,
+            final MapfishMapContext transformer) throws Throwable {
+        final ImageParam layerParam = this.params;
+        final URI commonUri = new URI(layerParam.getBaseUrl());
+
+        final Double extentMinX = layerParam.extent[0];
+        final Double extentMinY = layerParam.extent[1];
+        final Double extentMaxX = layerParam.extent[2];
+        final Double extentMaxY = layerParam.extent[3];
+        final Rectangle paintArea = transformer.getPaintArea();
+
+        final ReferencedEnvelope envelope = transformer.getBounds().toReferencedEnvelope(paintArea);
+        final CoordinateReferenceSystem mapProjection = envelope.getCoordinateReferenceSystem();
+
+        final BufferedImage bufferedImage = new BufferedImage(paintArea.width, paintArea.height,
+                                                              TYPE_INT_ARGB_PRE);
+        final Graphics2D graphics = bufferedImage.createGraphics();
+        final MapBounds bounds = transformer.getBounds();
+        final MapContent content = new MapContent();
+        try (Closer closer = Closer.create()) {
+            final ClientHttpRequest request = requestFactory.createRequest(commonUri, HttpMethod.GET);
+            final ClientHttpResponse httpResponse = closer.register(request.execute());
+            final BufferedImage image = ImageIO.read(httpResponse.getBody());
+            if (image == null) {
+                return createErrorImage(paintArea);
+            }
+
+            GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
+            GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapProjection);
+
+            gridEnvelope.setEnvelope(extentMinX, extentMinY, extentMaxX, extentMaxY);
+            GridCoverage2D coverage = factory.create(layerParam.getBaseUrl(), image, gridEnvelope,
+                                                     null, null, null);
+            Style style = this.styleSupplier.load(requestFactory, coverage);
+            GridCoverageLayer l = new GridCoverageLayer(coverage, style);
+
+            content.addLayers(Collections.singletonList(l));
+
+            StreamingRenderer renderer = new StreamingRenderer();
+
+            RenderingHints hints = new RenderingHints(Collections.emptyMap());
+            hints.add(new RenderingHints(RenderingHints.KEY_ALPHA_INTERPOLATION,
+                                         RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY));
+            hints.add(new RenderingHints(RenderingHints.KEY_ANTIALIASING,
+                                         RenderingHints.VALUE_ANTIALIAS_ON));
+            hints.add(new RenderingHints(RenderingHints.KEY_COLOR_RENDERING,
+                                         RenderingHints.VALUE_COLOR_RENDER_QUALITY));
+            hints.add(new RenderingHints(RenderingHints.KEY_DITHERING,
+                                         RenderingHints.VALUE_DITHER_ENABLE));
+            hints.add(new RenderingHints(RenderingHints.KEY_FRACTIONALMETRICS,
+                                         RenderingHints.VALUE_FRACTIONALMETRICS_ON));
+            hints.add(new RenderingHints(RenderingHints.KEY_INTERPOLATION,
+                                         RenderingHints.VALUE_INTERPOLATION_BICUBIC));
+            hints.add(new RenderingHints(RenderingHints.KEY_RENDERING,
+                                         RenderingHints.VALUE_RENDER_QUALITY));
+            hints.add(new RenderingHints(RenderingHints.KEY_STROKE_CONTROL,
+                                         RenderingHints.VALUE_STROKE_PURE));
+            hints.add(new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING,
+                                         RenderingHints.VALUE_TEXT_ANTIALIAS_ON));
+
+            graphics.addRenderingHints(hints);
+            renderer.setJava2DHints(hints);
+            Map<String, Object> renderHints = Maps.newHashMap();
+            if (transformer.isForceLongitudeFirst() != null) {
+                renderHints.put(StreamingRenderer.FORCE_EPSG_AXIS_ORDER_KEY,
+                                transformer.isForceLongitudeFirst());
+            }
+            renderer.setRendererHints(renderHints);
+
+            renderer.setMapContent(content);
+            renderer.setThreadPool(this.executorService);
+
+            final ReferencedEnvelope mapArea = bounds.toReferencedEnvelope(paintArea);
+            renderer.paint(graphics, paintArea, mapArea);
+            return bufferedImage;
+        } finally {
+            graphics.dispose();
+            content.dispose();
+        }
+    }
+
+    private BufferedImage createErrorImage(final Rectangle area) {
+        final BufferedImage bufferedImage = new BufferedImage(area.width, area.height, TYPE_INT_ARGB_PRE);
+        final Graphics2D graphics = bufferedImage.createGraphics();
+        try {
+            graphics.setBackground(ColorParser.toColor(this.configuration.getTransparentTileErrorColor()));
+
+            graphics.clearRect(0, 0, area.width, area.height);
+            return bufferedImage;
+        } finally {
+            graphics.dispose();
+        }
+    }
+
+    @Override
+    public RenderType getRenderType() {
+        return RenderType.UNKNOWN;
+    }
+
     /**
-      * <p>Renders an image as layer.</p>
-      * <p>Type: <code>image</code></p>
-      */
+     * <p>Renders an image as layer.</p>
+     * <p>Type: <code>image</code></p>
+     */
     public static final class ImageLayerPlugin extends AbstractGridCoverageLayerPlugin
             implements MapLayerFactoryPlugin<ImageParam> {
         private static final String TYPE = "image";
@@ -108,8 +206,8 @@ public final class ImageLayer extends AbstractSingleImageLayer {
                 @Nonnull final ImageParam layerData) {
             String styleRef = layerData.style;
             return new ImageLayer(this.forkJoinPool,
-                    super.<GridCoverage2D>createStyleSupplier(template, styleRef),
-                    layerData, template.getConfiguration());
+                                  super.<GridCoverage2D>createStyleSupplier(template, styleRef),
+                                  layerData, template.getConfiguration());
         }
     }
 
@@ -118,138 +216,35 @@ public final class ImageLayer extends AbstractSingleImageLayer {
      */
     public static final class ImageParam extends AbstractLayerParams {
 
-         private static final int NUMBER_OF_EXTENT_COORDS = 4;
-         /**
+        private static final int NUMBER_OF_EXTENT_COORDS = 4;
+        /**
          * The base URL for the image file.  Used for making request.
          */
-         public String baseURL;
+        public String baseURL;
 
-         /**
-          * The extent of the image.  Used for placing image on map.
-          */
-         public double[] extent;
+        /**
+         * The extent of the image.  Used for placing image on map.
+         */
+        public double[] extent;
 
-         /**
-          * The styles to apply to the image.
-          */
+        /**
+         * The styles to apply to the image.
+         */
         @HasDefaultValue
         public String style = Constants.Style.Raster.NAME;
 
 
         /**
          * Validate the properties have the correct values.
-         * @throws URISyntaxException
          */
-        public void postConstruct() throws URISyntaxException {
+        public void postConstruct() {
             Assert.equals(NUMBER_OF_EXTENT_COORDS, this.extent.length,
-                    "maxExtent must have exactly 4 elements to the array.  Was: " +
-                            Arrays.toString(this.extent));
+                          "maxExtent must have exactly 4 elements to the array.  Was: " +
+                                  Arrays.toString(this.extent));
         }
 
         public String getBaseUrl() {
             return this.baseURL;
         }
-    }
-
-    @Override
-    protected BufferedImage loadImage(final MfClientHttpRequestFactory requestFactory,
-              final MapfishMapContext transformer) throws Throwable {
-        final ImageParam layerParam = this.params;
-        final URI commonUri = new URI(layerParam.getBaseUrl());
-
-        final Double extentMinX = layerParam.extent[0];
-        final Double extentMinY = layerParam.extent[1];
-        final Double extentMaxX = layerParam.extent[2];
-        final Double extentMaxY = layerParam.extent[3];
-        final Rectangle paintArea = transformer.getPaintArea();
-
-        final ReferencedEnvelope envelope = transformer.getBounds().toReferencedEnvelope(paintArea);
-        final CoordinateReferenceSystem mapProjection = envelope.getCoordinateReferenceSystem();
-
-        final Closer closer = Closer.create();
-        final BufferedImage bufferedImage = new BufferedImage(paintArea.width, paintArea.height,
-                TYPE_INT_ARGB_PRE);
-        final Graphics2D graphics = bufferedImage.createGraphics();
-        final MapBounds bounds = transformer.getBounds();
-        final MapContent content = new MapContent();
-        try {
-            final ClientHttpRequest request = requestFactory.createRequest(commonUri, HttpMethod.GET);
-            final ClientHttpResponse httpResponse = closer.register(request.execute());
-            final BufferedImage image = ImageIO.read(httpResponse.getBody());
-            if (image == null) {
-                return createErrorImage(paintArea);
-            }
-
-            GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
-            GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapProjection);
-
-            gridEnvelope.setEnvelope(extentMinX, extentMinY, extentMaxX, extentMaxY);
-            GridCoverage2D coverage = factory.create(layerParam.getBaseUrl(), image, gridEnvelope,
-                    null, null, null);
-            Style style = this.styleSupplier.load(requestFactory, coverage);
-            GridCoverageLayer l = new GridCoverageLayer(coverage, style);
-
-            content.addLayers(Collections.singletonList(l));
-
-            StreamingRenderer renderer = new StreamingRenderer();
-
-            RenderingHints hints = new RenderingHints(Collections.<RenderingHints.Key, Object>emptyMap());
-            hints.add(new RenderingHints(RenderingHints.KEY_ALPHA_INTERPOLATION,
-                    RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY));
-            hints.add(new RenderingHints(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON));
-            hints.add(new RenderingHints(RenderingHints.KEY_COLOR_RENDERING,
-                    RenderingHints.VALUE_COLOR_RENDER_QUALITY));
-            hints.add(new RenderingHints(RenderingHints.KEY_DITHERING,
-                    RenderingHints.VALUE_DITHER_ENABLE));
-            hints.add(new RenderingHints(RenderingHints.KEY_FRACTIONALMETRICS,
-                    RenderingHints.VALUE_FRACTIONALMETRICS_ON));
-            hints.add(new RenderingHints(RenderingHints.KEY_INTERPOLATION,
-                    RenderingHints.VALUE_INTERPOLATION_BICUBIC));
-            hints.add(new RenderingHints(RenderingHints.KEY_RENDERING,
-                    RenderingHints.VALUE_RENDER_QUALITY));
-            hints.add(new RenderingHints(RenderingHints.KEY_STROKE_CONTROL,
-                    RenderingHints.VALUE_STROKE_PURE));
-            hints.add(new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON));
-
-            graphics.addRenderingHints(hints);
-            renderer.setJava2DHints(hints);
-            Map<String, Object> renderHints = Maps.newHashMap();
-            if (transformer.isForceLongitudeFirst() != null) {
-                renderHints.put(StreamingRenderer.FORCE_EPSG_AXIS_ORDER_KEY,
-                        transformer.isForceLongitudeFirst());
-            }
-            renderer.setRendererHints(renderHints);
-
-            renderer.setMapContent(content);
-            renderer.setThreadPool(this.executorService);
-
-            final ReferencedEnvelope mapArea = bounds.toReferencedEnvelope(paintArea);
-            renderer.paint(graphics, paintArea, mapArea);
-            return bufferedImage;
-        } finally {
-            graphics.dispose();
-            closer.close();
-            content.dispose();
-        }
-    }
-
-    private BufferedImage createErrorImage(final Rectangle area) {
-        final BufferedImage bufferedImage = new BufferedImage(area.width, area.height, TYPE_INT_ARGB_PRE);
-        final Graphics2D graphics = bufferedImage.createGraphics();
-        try {
-            graphics.setBackground(ColorParser.toColor(this.configuration.getTransparentTileErrorColor()));
-
-            graphics.clearRect(0, 0, area.width, area.height);
-            return bufferedImage;
-        } finally {
-            graphics.dispose();
-        }
-    }
-
-    @Override
-    public RenderType getRenderType() {
-        return RenderType.UNKNOWN;
     }
 }

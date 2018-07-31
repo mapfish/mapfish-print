@@ -45,6 +45,11 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
     @Autowired
     private ForkJoinPool forkJoinPool;
 
+    private static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterWms1_0_0Test.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
@@ -58,27 +63,28 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
 
                         final Multimap<String, String> uppercaseParams = HashMultimap.create();
-                        for (Map.Entry<String, String> entry : URIUtils.getParameters(uri).entries()) {
+                        for (Map.Entry<String, String> entry: URIUtils.getParameters(uri).entries()) {
                             uppercaseParams.put(entry.getKey().toUpperCase(), entry.getValue().toUpperCase());
                         }
 
                         assertTrue("SERVICE != WMS: " + uppercaseParams.get("WMS"),
-                                uppercaseParams.containsEntry("SERVICE", "WMS"));
+                                   uppercaseParams.containsEntry("SERVICE", "WMS"));
                         assertTrue("FORMAT != IMAGE/TIFF: " + uppercaseParams.get("FORMAT"),
-                                uppercaseParams.containsEntry("FORMAT", "IMAGE/PNG"));
+                                   uppercaseParams.containsEntry("FORMAT", "IMAGE/PNG"));
                         assertTrue("REQUEST != MAP: " + uppercaseParams.get("REQUEST"),
-                                uppercaseParams.containsEntry("REQUEST", "MAP"));
+                                   uppercaseParams.containsEntry("REQUEST", "MAP"));
                         assertTrue("VERSION != 1.0.0: " + uppercaseParams.get("VERSION"),
-                                uppercaseParams.containsEntry("VERSION", "1.0.0"));
+                                   uppercaseParams.containsEntry("VERSION", "1.0.0"));
                         assertTrue("LAYERS != TIGER-NY: " + uppercaseParams.get("LAYERS"),
-                                uppercaseParams.containsEntry("LAYERS", "TIGER-NY"));
+                                   uppercaseParams.containsEntry("LAYERS", "TIGER-NY"));
                         assertTrue("STYLES != LINE: " + uppercaseParams.get("STYLES"),
-                                uppercaseParams.containsEntry("STYLES", "LINE"));
+                                   uppercaseParams.containsEntry("STYLES", "LINE"));
                         assertTrue("CUSTOMP1 != 1: " + uri,
-                                uppercaseParams.containsEntry("CUSTOMP1", "1"));
+                                   uppercaseParams.containsEntry("CUSTOMP1", "1"));
                         assertTrue("CUSTOMP2 != 2", uppercaseParams.containsEntry("CUSTOMP2", "2"));
                         assertTrue("BBOX is missing", uppercaseParams.containsKey("BBOX"));
                         assertTrue("EXCEPTIONS is missing", uppercaseParams.containsKey("EXCEPTIONS"));
@@ -91,7 +97,7 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
                         }
                     }
                 }
-                );
+        );
         requestFactory.registerHandler(
                 new Predicate<URI>() {
                     @Override
@@ -101,7 +107,8 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
                     }
                 }, new TestHttpClientFactory.Handler() {
                     @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                            throws Exception {
                         try {
                             byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
                             return ok(uri, bytes, httpMethod);
@@ -110,12 +117,12 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
                         }
                     }
                 }
-                );
+        );
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         @SuppressWarnings("unchecked")
@@ -124,10 +131,5 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
                 .assertSimilarity(layerGraphics, 630, 294, 40);
-    }
-
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleCenterWms1_0_0Test.class,
-                BASE_DIR + "requestData.json");
     }
 }

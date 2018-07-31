@@ -40,7 +40,7 @@ public abstract class HostMatcher extends AbstractMatcher {
                 Matcher matcher = Pattern.compile(this.pathRegex).matcher(matchInfo.getPath());
                 if (!matcher.matches()) {
                     LOGGER.debug("pathRegex '{}' is not matching '{}'", this.pathRegex,
-                            matchInfo.getPath());
+                                 matchInfo.getPath());
                     return false;
                 }
             }
@@ -54,7 +54,8 @@ public abstract class HostMatcher extends AbstractMatcher {
      *
      * @param matchInfo the match information to validate.
      */
-    protected abstract Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo) throws UnknownHostException, SocketException,
+    protected abstract Optional<Boolean> tryOverrideValidation(MatchInfo matchInfo)
+            throws UnknownHostException, SocketException,
             MalformedURLException;
 
     public final void setPort(final int port) {

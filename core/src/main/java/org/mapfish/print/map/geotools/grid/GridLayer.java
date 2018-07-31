@@ -24,7 +24,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -39,19 +38,24 @@ public final class GridLayer implements MapLayer {
      * Constructor.
      *
      * @param executorService the thread pool for doing the rendering.
-     * @param featureSourceSupplier a function that creates the feature source.  This will only be called once.
-     * @param styleSupplier a function that creates the style for styling the features. This will only be called once.
+     * @param featureSourceSupplier a function that creates the feature source.  This will only be
+     *         called once.
+     * @param styleSupplier a function that creates the style for styling the features. This will only
+     *         be called once.
      * @param renderAsSvg is the layer rendered as SVG?
      * @param params the parameters for this layer
      * @param labels the grid labels to render
      */
-    public GridLayer(final ExecutorService executorService,
-                     final FeatureSourceSupplier featureSourceSupplier,
-                     final StyleSupplier<FeatureSource> styleSupplier,
-                     final boolean renderAsSvg,
-                     final GridParam params,
-                     final LabelPositionCollector labels) {
-        this.grid = new AbstractFeatureSourceLayer(executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params) { };
+    public GridLayer(
+            final ExecutorService executorService,
+            final FeatureSourceSupplier featureSourceSupplier,
+            final StyleSupplier<FeatureSource> styleSupplier,
+            final boolean renderAsSvg,
+            final GridParam params,
+            final LabelPositionCollector labels) {
+        this.grid = new AbstractFeatureSourceLayer(executorService, featureSourceSupplier, styleSupplier,
+                                                   renderAsSvg, params) {
+        };
         this.params = params;
         this.labels = labels;
     }
@@ -71,17 +75,19 @@ public final class GridLayer implements MapLayer {
     }
 
     @Override
-    public void render(final Graphics2D graphics, final MfClientHttpRequestFactory clientHttpRequestFactory,
-                       final MapfishMapContext transformer, final String jobId) {
+    public void render(
+            final Graphics2D graphics, final MfClientHttpRequestFactory clientHttpRequestFactory,
+            final MapfishMapContext transformer, final String jobId) {
         Graphics2D graphics2D = (Graphics2D) graphics.create();
         float haloRadius = (float) this.params.haloRadius;
         double dpiScaling = transformer.getDPI() / Constants.PDF_DPI;
 
         this.grid.render(graphics2D, clientHttpRequestFactory, transformer, jobId);
         Font baseFont = null;
-        for (String fontName : this.params.font.name) {
+        for (String fontName: this.params.font.name) {
             try {
-                baseFont = new Font(fontName, this.params.font.style.styleId, (int) (this.params.font.size * dpiScaling));
+                baseFont = new Font(fontName, this.params.font.style.styleId,
+                                    (int) (this.params.font.size * dpiScaling));
                 break;
             } catch (Exception e) {
                 // try next font in list
@@ -95,8 +101,9 @@ public final class GridLayer implements MapLayer {
         Color haloColor = ColorParser.toColor(this.params.haloColor);
         Color labelColor = ColorParser.toColor(this.params.labelColor);
 
-        for (GridLabel label : this.labels) {
-            Shape textShape = baseFont.createGlyphVector(graphics2D.getFontRenderContext(), label.text).getOutline();
+        for (GridLabel label: this.labels) {
+            Shape textShape =
+                    baseFont.createGlyphVector(graphics2D.getFontRenderContext(), label.text).getOutline();
 
             Rectangle2D textBounds = textShape.getBounds2D();
             AffineTransform transform = new AffineTransform(baseTransform);
@@ -106,11 +113,12 @@ public final class GridLayer implements MapLayer {
 
             RotationQuadrant.getQuadrant(transformer.getRotation(), this.params.rotateLabels)
                     .updateTransform(transform, this.params.indent, label.side,
-                            halfCharHeight, textBounds);
+                                     halfCharHeight, textBounds);
             graphics2D.setTransform(transform);
 
             if (haloRadius > 0.0f) {
-                graphics2D.setStroke(new BasicStroke(2.0f * haloRadius, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                graphics2D.setStroke(
+                        new BasicStroke(2.0f * haloRadius, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
                 graphics2D.setColor(haloColor);
                 graphics2D.draw(textShape);
             }
@@ -156,9 +164,10 @@ public final class GridLayer implements MapLayer {
     }
 
     @Override
-    public void cacheResources(final HttpRequestCache httpRequestCache,
-                               final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer,
-                               final String jobId) {
+    public void cacheResources(
+            final HttpRequestCache httpRequestCache,
+            final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer,
+            final String jobId) {
         this.grid.cacheResources(httpRequestCache, clientHttpRequestFactory, transformer, jobId);
     }
 

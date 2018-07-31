@@ -16,8 +16,8 @@ import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
 /**
- * A plugin that loads the config resources from urls starting with prefix:
- * {@value org.mapfish.print.servlet.fileloader.ClasspathConfigFileLoader#PREFIX}://.
+ * A plugin that loads the config resources from urls starting with prefix: {@value
+ * org.mapfish.print.servlet.fileloader.ClasspathConfigFileLoader#PREFIX}://.
  */
 public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathConfigFileLoader.class);
@@ -28,7 +28,8 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
     @Override
     public Optional<File> toFile(final URI fileUri) {
         final Optional<URL> urlOptional = loadResources(fileUri);
-        if (urlOptional.isPresent() && urlOptional.get().getProtocol().equalsIgnoreCase(FileConfigFileLoader.PREFIX)) {
+        if (urlOptional.isPresent() &&
+                urlOptional.get().getProtocol().equalsIgnoreCase(FileConfigFileLoader.PREFIX)) {
             try {
                 return Optional.of(new File(urlOptional.get().toURI()));
             } catch (URISyntaxException e) {
@@ -86,9 +87,7 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
         try {
             Optional<URL> child = resolveChild(configFileUri, pathToSubResource);
             return child.isPresent();
-        } catch (IllegalArgumentException e) {
-            return false;
-        } catch (NoSuchElementException e) {
+        } catch (IllegalArgumentException | NoSuchElementException e) {
             return false;
         }
     }
@@ -99,8 +98,9 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
         if (child.isPresent()) {
             return Resources.toByteArray(child.get());
         }
-        throw new NoSuchElementException("No file is found for parameters: '" + configFileUri + "' and subresource: '" +
-                                         pathToSubResource + "'");
+        throw new NoSuchElementException(
+                "No file is found for parameters: '" + configFileUri + "' and subresource: '" +
+                        pathToSubResource + "'");
     }
 
     private Optional<URL> resolveChild(final URI configFileUri, final String pathToSubResource) {
@@ -123,23 +123,27 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
         try {
             if (pathToSubResource.contains(":/")) {
                 final URI uri = new URI(pathToSubResource);
-                throw new IllegalArgumentException("Only uris with prefix " + PREFIX + " are supported.  Found: " + uri);
+                throw new IllegalArgumentException(
+                        "Only uris with prefix " + PREFIX + " are supported.  Found: " + uri);
             }
         } catch (URISyntaxException e) {
             // good it should not be a non-classpath uri.
         }
 
-        final String subResourceRelativeToConfigFileDir = configUriAsString.substring(0, configUriAsString.indexOf(configFileName)) +
-                                                          pathToSubResource;
+        final String subResourceRelativeToConfigFileDir =
+                configUriAsString.substring(0, configUriAsString.indexOf(configFileName)) +
+                        pathToSubResource;
         return resolveChildAsUri(configFileUri, subResourceRelativeToConfigFileDir, configFileDir);
     }
 
-    private Optional<URL> resolveChildAsUri(final URI configFileUri, final String pathToSubResource, final String configFileDir) {
+    private Optional<URL> resolveChildAsUri(
+            final URI configFileUri, final String pathToSubResource, final String configFileDir) {
         try {
             final Optional<URL> subResource = loadResources(new URI(pathToSubResource));
             if (subResource.isPresent()) {
                 if (!subResource.get().toString().startsWith(configFileDir)) {
-                    throw new IllegalArgumentException("'" + pathToSubResource + "' is not a child of '" + configFileUri + "'");
+                    throw new IllegalArgumentException(
+                            "'" + pathToSubResource + "' is not a child of '" + configFileUri + "'");
                 }
                 return Optional.of(subResource.get());
             }

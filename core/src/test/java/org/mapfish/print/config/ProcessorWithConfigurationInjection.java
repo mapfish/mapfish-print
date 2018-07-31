@@ -10,7 +10,8 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Processor that needs the configuration object injected.
  */
-public class ProcessorWithConfigurationInjection extends AbstractProcessor<Object, Void> implements HasConfiguration {
+public class ProcessorWithConfigurationInjection extends AbstractProcessor<Object, Void>
+        implements HasConfiguration {
 
     private Configuration configuration;
 
@@ -33,7 +34,7 @@ public class ProcessorWithConfigurationInjection extends AbstractProcessor<Objec
 
     @Nullable
     @Override
-    public Void execute(Object values, ExecutionContext context) throws Exception {
+    public Void execute(Object values, ExecutionContext context) {
         return null;
     }
 

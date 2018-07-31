@@ -40,7 +40,7 @@ public final class GridFontParam {
         Assert.isTrue(this.size > 1, "size must be greater than 1");
 
         Font baseFont = null;
-        for (String fontName : this.name) {
+        for (String fontName: this.name) {
             try {
                 baseFont = new Font(fontName, this.style.styleId, this.size);
                 break;
@@ -50,9 +50,11 @@ public final class GridFontParam {
         }
 
         if (baseFont == null) {
-            String[] legalFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-            throw new IllegalArgumentException(Arrays.toString(this.name) + " does not contain a font that can be created by this Java "
-                                               + "Virtual Machine, legal options are: \n" + Arrays.toString(legalFonts));
+            String[] legalFonts =
+                    GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+            throw new IllegalArgumentException(
+                    Arrays.toString(this.name) + " does not contain a font that can be created by this Java "
+                            + "Virtual Machine, legal options are: \n" + Arrays.toString(legalFonts));
         }
     }
 }

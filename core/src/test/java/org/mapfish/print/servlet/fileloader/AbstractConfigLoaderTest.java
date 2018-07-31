@@ -24,9 +24,10 @@ public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest
     protected WorkingDirectories workingDirectories;
 
     @After
-    public void tearDown() throws Exception {
-        final Iterable<File> children = Files.fileTreeTraverser().children(this.workingDirectories.getWorking());
-        for (File child : children) {
+    public void tearDown() {
+        final Iterable<File> children =
+                Files.fileTreeTraverser().children(this.workingDirectories.getWorking());
+        for (File child: children) {
             this.workingDirectories.removeDirectory(child);
         }
     }
@@ -68,11 +69,14 @@ public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest
         try {
             testFile.getParentFile().mkdirs();
             Files.touch(testFile);
-            assertTrue(testFile.getAbsolutePath() + " is not accessible", getLoader().isAccessible(CONFIG_FILE.toURI(),
-                    testFile.getAbsolutePath()));
-            assertTrue(testFile.getAbsoluteFile().toURI().toString() + " is not accessible", getLoader().isAccessible(CONFIG_FILE.toURI
-                    (), testFile.getAbsoluteFile().toURI().toString()));
-            assertTrue(testFile.toURI().toString() + " is not accessible", getLoader().isAccessible(CONFIG_FILE.toURI(), testFile.toURI().toString()));
+            assertTrue(testFile.getAbsolutePath() + " is not accessible",
+                       getLoader().isAccessible(CONFIG_FILE.toURI(),
+                                                testFile.getAbsolutePath()));
+            assertTrue(testFile.getAbsoluteFile().toURI().toString() + " is not accessible",
+                       getLoader().isAccessible(CONFIG_FILE.toURI
+                               (), testFile.getAbsoluteFile().toURI().toString()));
+            assertTrue(testFile.toURI().toString() + " is not accessible",
+                       getLoader().isAccessible(CONFIG_FILE.toURI(), testFile.toURI().toString()));
         } finally {
             testFile.delete();
         }
@@ -84,7 +88,8 @@ public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest
             testFile.getParentFile().mkdirs();
             Files.write(bytes, testFile);
             assertArrayEquals(bytes, getLoader().loadFile(CONFIG_FILE.toURI(), testFile.getAbsolutePath()));
-            assertArrayEquals(bytes, getLoader().loadFile(CONFIG_FILE.toURI(), testFile.getAbsoluteFile().toURI().toString()));
+            assertArrayEquals(bytes, getLoader()
+                    .loadFile(CONFIG_FILE.toURI(), testFile.getAbsoluteFile().toURI().toString()));
             assertArrayEquals(bytes, getLoader().loadFile(CONFIG_FILE.toURI(), testFile.toURI().toString()));
         } finally {
             testFile.delete();

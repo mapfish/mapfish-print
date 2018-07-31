@@ -6,7 +6,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
-
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.renderer.lite.RendererUtilities;
@@ -18,7 +17,6 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 import java.awt.geom.AffineTransform;
-
 import javax.annotation.Nonnull;
 import javax.measure.unit.NonSI;
 
@@ -36,8 +34,8 @@ final class GridUtils {
     }
 
     /**
-     * Create a polygon that represents in world space the exact area that will be visible on
-     * the printed map.
+     * Create a polygon that represents in world space the exact area that will be visible on the printed
+     * map.
      *
      * @param context map context
      */
@@ -51,7 +49,8 @@ final class GridUtils {
         double[] dstPts = new double[8];
         double[] srcPts = {
                 env.getMinX(), env.getMinY(), env.getMinX(), env.getMaxY(),
-                env.getMaxX(), env.getMaxY(), env.getMaxX(), env.getMinY()};
+                env.getMaxX(), env.getMaxY(), env.getMaxX(), env.getMinY()
+        };
 
         rotateInstance.transform(srcPts, 0, dstPts, 0, 4);
 
@@ -63,15 +62,17 @@ final class GridUtils {
     }
 
     /**
-     * Calculate the where the grid first line should be drawn when spacing and origin are defined in {@link GridParam}.
+     * Calculate the where the grid first line should be drawn when spacing and origin are defined in {@link
+     * GridParam}.
      *
      * @param bounds the map bounds
      * @param layerData the parameter information
      * @param ordinal the direction (x,y) the grid line will be drawn.
      */
-    public static double calculateFirstLine(final ReferencedEnvelope bounds,
-                                     final GridParam layerData,
-                                     final int ordinal) {
+    public static double calculateFirstLine(
+            final ReferencedEnvelope bounds,
+            final GridParam layerData,
+            final int ordinal) {
         double spaceFromOrigin = bounds.getMinimum(ordinal) - layerData.origin[ordinal];
         double linesBetweenOriginAndMap = Math.ceil(spaceFromOrigin / layerData.spacing[ordinal]);
 
@@ -81,11 +82,13 @@ final class GridUtils {
     /**
      * Create the grid feature type.
      *
-     * @param mapContext the map context containing the information about the map the grid will be added to.
+     * @param mapContext the map context containing the information about the map the grid will be
+     *         added to.
      * @param geomClass the geometry type
      */
-    public static SimpleFeatureType createGridFeatureType(@Nonnull final MapfishMapContext mapContext,
-                                                   @Nonnull final Class<? extends Geometry> geomClass) {
+    public static SimpleFeatureType createGridFeatureType(
+            @Nonnull final MapfishMapContext mapContext,
+            @Nonnull final Class<? extends Geometry> geomClass) {
         final SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
         CoordinateReferenceSystem projection = mapContext.getBounds().getProjection();
         typeBuilder.add(Constants.Style.Grid.ATT_GEOM, geomClass, projection);
@@ -103,7 +106,7 @@ final class GridUtils {
     public static String createLabel(final double value, final String unit, final GridLabelFormat format) {
         final double zero = 0.000000001;
         if (format != null) {
-          return format.format(value, unit);
+            return format.format(value, unit);
         } else {
             if (Math.abs(value - Math.round(value)) < zero) {
                 return String.format("%d %s", Math.round(value), unit);
@@ -121,11 +124,12 @@ final class GridUtils {
 
     /**
      * Create the affine transform that maps from the world (map) projection to the pixel on the printed map.
+     *
      * @param mapContext the map context
      */
     public static AffineTransform getWorldToScreenTransform(final MapfishMapContext mapContext) {
         return RendererUtilities.worldToScreenTransform(mapContext.toReferencedEnvelope(),
-                mapContext.getPaintArea());
+                                                        mapContext.getPaintArea());
     }
 
     /**
@@ -139,24 +143,29 @@ final class GridUtils {
      * @param worldToScreenTransform the transform for mapping from world to screen(pixel)
      */
     // CSOFF: ParameterNumber
-    public static void topBorderLabel(final LabelPositionCollector labels, final GeometryFactory geometryFactory,
-                                      final Polygon rotatedBounds, final String unit, final double x,
-                                      final AffineTransform worldToScreenTransform,
-                                      final MathTransform toLabelProjection,
-                                      final GridLabelFormat labelFormat) {
+    public static void topBorderLabel(
+            final LabelPositionCollector labels, final GeometryFactory geometryFactory,
+            final Polygon rotatedBounds, final String unit, final double x,
+            final AffineTransform worldToScreenTransform,
+            final MathTransform toLabelProjection,
+            final GridLabelFormat labelFormat) {
         Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
         LineString lineString = geometryFactory.createLineString(new Coordinate[]{
                 new Coordinate(x, envelopeInternal.centre().y),
-                new Coordinate(x, envelopeInternal.getMaxY())});
+                new Coordinate(x, envelopeInternal.getMaxY())
+        });
         Geometry intersections = lineString.intersection(rotatedBounds.getExteriorRing());
 
         if (intersections.getNumPoints() > 0) {
             Coordinate borderIntersection = intersections.getGeometryN(0).getCoordinates()[0];
             double[] screenPoints = new double[2];
-            worldToScreenTransform.transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
+            worldToScreenTransform
+                    .transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0,
+                               1);
 
             double[] labelProj = transformToLabelProjection(toLabelProjection, borderIntersection);
-            labels.add(new GridLabel(createLabel(labelProj[0], unit, labelFormat), (int) screenPoints[0], (int) screenPoints[1], TOP));
+            labels.add(new GridLabel(createLabel(labelProj[0], unit, labelFormat), (int) screenPoints[0],
+                                     (int) screenPoints[1], TOP));
         }
     }
     // CSON: ParameterNumber
@@ -172,25 +181,30 @@ final class GridUtils {
      * @param worldToScreenTransform the transform for mapping from world to screen(pixel)
      */
     // CSOFF: ParameterNumber
-    public static void bottomBorderLabel(final LabelPositionCollector labels, final GeometryFactory geometryFactory,
-                                         final Polygon rotatedBounds, final String unit, final double x,
-                                         final AffineTransform worldToScreenTransform,
-                                         final MathTransform toLabelProjection,
-                                         final GridLabelFormat labelFormat) {
+    public static void bottomBorderLabel(
+            final LabelPositionCollector labels, final GeometryFactory geometryFactory,
+            final Polygon rotatedBounds, final String unit, final double x,
+            final AffineTransform worldToScreenTransform,
+            final MathTransform toLabelProjection,
+            final GridLabelFormat labelFormat) {
         Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
         LineString lineString = geometryFactory.createLineString(new Coordinate[]{
                 new Coordinate(x, envelopeInternal.getMinY()),
-                new Coordinate(x, envelopeInternal.centre().y)});
+                new Coordinate(x, envelopeInternal.centre().y)
+        });
         Geometry intersections = lineString.intersection(rotatedBounds.getExteriorRing());
 
         if (intersections.getNumPoints() > 0) {
             int idx = intersections instanceof LineString ? 1 : 0;
             Coordinate borderIntersection = intersections.getGeometryN(0).getCoordinates()[idx];
             double[] screenPoints = new double[2];
-            worldToScreenTransform.transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
+            worldToScreenTransform
+                    .transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0,
+                               1);
 
             double[] labelProj = transformToLabelProjection(toLabelProjection, borderIntersection);
-            labels.add(new GridLabel(createLabel(labelProj[0], unit, labelFormat), (int) screenPoints[0], (int) screenPoints[1], BOTTOM));
+            labels.add(new GridLabel(createLabel(labelProj[0], unit, labelFormat), (int) screenPoints[0],
+                                     (int) screenPoints[1], BOTTOM));
         }
     }
     // CSON: ParameterNumber
@@ -206,25 +220,30 @@ final class GridUtils {
      * @param worldToScreenTransform the transform for mapping from world to screen(pixel)
      */
     // CSOFF: ParameterNumber
-    public static void rightBorderLabel(final LabelPositionCollector labels, final GeometryFactory geometryFactory,
-                                        final Polygon rotatedBounds, final String unit, final double y,
-                                        final AffineTransform worldToScreenTransform,
-                                        final MathTransform toLabelProjection,
-                                        final GridLabelFormat labelFormat) {
+    public static void rightBorderLabel(
+            final LabelPositionCollector labels, final GeometryFactory geometryFactory,
+            final Polygon rotatedBounds, final String unit, final double y,
+            final AffineTransform worldToScreenTransform,
+            final MathTransform toLabelProjection,
+            final GridLabelFormat labelFormat) {
         Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
         LineString lineString = geometryFactory.createLineString(new Coordinate[]{
                 new Coordinate(envelopeInternal.centre().x, y),
-                new Coordinate(envelopeInternal.getMaxX(), y)});
+                new Coordinate(envelopeInternal.getMaxX(), y)
+        });
         Geometry intersections = lineString.intersection(rotatedBounds.getExteriorRing());
 
         if (intersections.getNumPoints() > 0) {
             int idx = intersections instanceof LineString ? 1 : 0;
             Coordinate borderIntersection = intersections.getGeometryN(0).getCoordinates()[idx];
             double[] screenPoints = new double[2];
-            worldToScreenTransform.transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
+            worldToScreenTransform
+                    .transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0,
+                               1);
 
             double[] labelProj = transformToLabelProjection(toLabelProjection, borderIntersection);
-            labels.add(new GridLabel(createLabel(labelProj[1], unit, labelFormat), (int) screenPoints[0], (int) screenPoints[1], RIGHT));
+            labels.add(new GridLabel(createLabel(labelProj[1], unit, labelFormat), (int) screenPoints[0],
+                                     (int) screenPoints[1], RIGHT));
         }
     }
     // CSON: ParameterNumber
@@ -240,34 +259,41 @@ final class GridUtils {
      * @param worldToScreenTransform the transform for mapping from world to screen(pixel)
      */
     // CSOFF: ParameterNumber
-    static void leftBorderLabel(final LabelPositionCollector labels, final GeometryFactory geometryFactory,
-                                final Polygon rotatedBounds, final String unit, final double y,
-                                final AffineTransform worldToScreenTransform,
-                                final MathTransform toLabelProjection,
-                                final GridLabelFormat labelFormat) {
+    static void leftBorderLabel(
+            final LabelPositionCollector labels, final GeometryFactory geometryFactory,
+            final Polygon rotatedBounds, final String unit, final double y,
+            final AffineTransform worldToScreenTransform,
+            final MathTransform toLabelProjection,
+            final GridLabelFormat labelFormat) {
         Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
         LineString lineString = geometryFactory.createLineString(new Coordinate[]{
                 new Coordinate(envelopeInternal.getMinX(), y),
-                new Coordinate(envelopeInternal.centre().x, y)});
+                new Coordinate(envelopeInternal.centre().x, y)
+        });
         Geometry intersections = lineString.intersection(rotatedBounds.getExteriorRing());
 
         if (intersections.getNumPoints() > 0) {
             double[] screenPoints = new double[2];
             Coordinate borderIntersection = intersections.getGeometryN(0).getCoordinates()[0];
-            worldToScreenTransform.transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
+            worldToScreenTransform
+                    .transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0,
+                               1);
 
             double[] labelProj = transformToLabelProjection(toLabelProjection, borderIntersection);
 
-            labels.add(new GridLabel(createLabel(labelProj[1], unit, labelFormat), (int) screenPoints[0], (int) screenPoints[1], LEFT));
+            labels.add(new GridLabel(createLabel(labelProj[1], unit, labelFormat), (int) screenPoints[0],
+                                     (int) screenPoints[1], LEFT));
         }
     }
     // CSON: ParameterNumber
 
-    private static double[] transformToLabelProjection(final MathTransform toLabelProjection,
-                                                       final Coordinate borderIntersection) {
+    private static double[] transformToLabelProjection(
+            final MathTransform toLabelProjection,
+            final Coordinate borderIntersection) {
         try {
             double[] labelProj = new double[2];
-            toLabelProjection.transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, labelProj, 0, 1);
+            toLabelProjection
+                    .transform(new double[]{borderIntersection.x, borderIntersection.y}, 0, labelProj, 0, 1);
             return labelProj;
         } catch (TransformException e) {
             throw new RuntimeException(e);

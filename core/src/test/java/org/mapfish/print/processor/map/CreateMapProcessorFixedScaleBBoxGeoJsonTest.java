@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
  * Created by Jesse on 3/26/14.
  */
 public class CreateMapProcessorFixedScaleBBoxGeoJsonTest extends AbstractMapfishSpringTest {
-    private static final String BASE_DIR ="bbox_geojson_fixedscale/";
+    private static final String BASE_DIR = "bbox_geojson_fixedscale/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
@@ -35,13 +35,18 @@ public class CreateMapProcessorFixedScaleBBoxGeoJsonTest extends AbstractMapfish
     @Autowired
     private ForkJoinPool forkJoinPool;
 
+    public static PJsonObject loadJsonRequestData() throws IOException {
+        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleBBoxGeoJsonTest.class,
+                                       BASE_DIR + "requestData.json");
+    }
+
     @Test
     public void testExecute() throws Exception {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                this.httpRequestFactory, new File("."));
+                                   this.httpRequestFactory, new File("."));
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));
@@ -53,10 +58,5 @@ public class CreateMapProcessorFixedScaleBBoxGeoJsonTest extends AbstractMapfish
 
         new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
                 .assertSimilarity(layerGraphics.get(0), 500, 100, 0);
-    }
-
-    public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleBBoxGeoJsonTest.class,
-                BASE_DIR + "requestData.json");
     }
 }

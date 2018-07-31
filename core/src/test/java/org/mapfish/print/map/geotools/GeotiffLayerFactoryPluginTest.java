@@ -15,8 +15,9 @@ public class GeotiffLayerFactoryPluginTest {
     @Test(expected = IllegalFileAccessException.class)
     public void testGeoIllegalFileUrl() throws Exception {
         final File file = AbstractMapfishSpringTest.
-                getFile(CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest.class, CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest
-                                                                                           .BASE_DIR + "sampleGeoTiff.tif");
+                getFile(CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest.class,
+                        CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest
+                                .BASE_DIR + "sampleGeoTiff.tif");
         final Configuration configuration = new Configuration();
         configuration.setConfigurationFile(File.createTempFile("xyz", ".yaml"));
 

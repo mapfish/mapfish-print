@@ -42,7 +42,8 @@ import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttribut
  * <p>A processor that will process a
  * {@link org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue} and construct a single
  * Jasper DataSource from the input values in the
- * {@link org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue} input object.</p>
+ * {@link org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue}
+ * input object.</p>
  *
  * <p>The {@link org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue} has an array of
  * maps, each map in the array equates to a row in the Jasper DataSource.</p>
@@ -51,10 +52,10 @@ import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttribut
  * to transform each map in the input array before constructing the final DataSource row.</p>
  *
  * <p>For example, each map in the array could be
- * {@link org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues} and the DataSourceProcessor
- * could be configured with !createMap processor.  In this scenario each element in the array would be
- * transformed by the !createMap processor and thus each row of the resulting DataSource will contain the
- * map subreport created by the !createMap processor.</p>
+ * {@link org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues} and the DataSourceProcessor could
+ * be configured with !createMap processor.  In this scenario each element in the array would be transformed
+ * by the !createMap processor and thus each row of the resulting DataSource will contain the map subreport
+ * created by the !createMap processor.</p>
  *
  * <p>An additional point to remember is that (as with the normal execution) in addition to the output of
  * the processors, the attributes in the input map will also be columns in the row.  This means that the
@@ -62,8 +63,8 @@ import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttribut
  * processor as well as the input values (unless overwritten by the processor output).</p>
  *
  * <p>If the reportKey is defined (and reportTemplate) then a the reportTemplate jrxml file will be
- * compiled (as required by all jrxml files) and an additional column will be added to each row [reportKey]
- * : [compiled reportTemplate File]</p>
+ * compiled (as required by all jrxml files) and an additional column will be added to each row [reportKey] :
+ * [compiled reportTemplate File]</p>
  *
  * <p>If reportKey is defined the reportTemplate must also be defined (and vice-versa).</p>
  *
@@ -99,16 +100,17 @@ public final class DataSourceProcessor
     @PostConstruct
     private void init() {
         // default to no processors
-        this.processorGraph  = this.processorGraphFactory.build(Collections.<Processor>emptyList(),
-                Collections.<String, Class<?>>emptyMap());
+        this.processorGraph = this.processorGraphFactory.build(Collections.emptyList(),
+                                                               Collections.emptyMap());
     }
 
     /**
      * The path to the report template used to render each row of the data.  This is only required if a
      * subreport needs to be compiled and is referenced in the containing report's detail section.
      * <p>
-     *     The path should be relative to the configuration directory
+     * The path should be relative to the configuration directory
      * </p>
+     *
      * @param reportTemplate the path to the report template.
      */
     public void setReportTemplate(final String reportTemplate) {
@@ -116,27 +118,27 @@ public final class DataSourceProcessor
     }
 
     /**
-     * The key/name to use when putting the path to the compiled subreport in each row of the datasource.
-     * This is required if {@link #reportTemplate} has been set.  The path to the compiled
-     * subreport will be added to each row in the datasource with this value as the key.  This allows the
-     * containing report to reference the subreport in each row.
+     * The key/name to use when putting the path to the compiled subreport in each row of the datasource. This
+     * is required if {@link #reportTemplate} has been set.  The path to the compiled subreport will be added
+     * to each row in the datasource with this value as the key.  This allows the containing report to
+     * reference the subreport in each row.
      *
-     * @param reportKey the key/name to use when putting the path to the compiled subreport in each row of
-     *      the datasource.
+     * @param reportKey the key/name to use when putting the path to the compiled subreport in each
+     *         row of the datasource.
      */
     public void setReportKey(final String reportKey) {
         this.reportKey = reportKey;
     }
 
     /**
-     * All the processors that will executed for each value retrieved from the
-     * {@link org.mapfish.print.output.Values} object with the datasource name.  All output values from the
-     * processor graph will be the datasource values.
+     * All the processors that will executed for each value retrieved from the {@link
+     * org.mapfish.print.output.Values} object with the datasource name.  All output values from the processor
+     * graph will be the datasource values.
      * <p></p>
      * <p>
-     * Each value retrieved from values with the datasource name will be the input of the processor graph
-     * and all the output values for that execution will be the values of a single row in the datasource.
-     * The Jasper template can use any of the values in its detail band.
+     * Each value retrieved from values with the datasource name will be the input of the processor graph and
+     * all the output values for that execution will be the values of a single row in the datasource. The
+     * Jasper template can use any of the values in its detail band.
      * </p>
      *
      * @param processors the processors which will be ran to create the datasource
@@ -214,13 +216,13 @@ public final class DataSourceProcessor
     private JRDataSource processInput(@Nonnull final Input input)
             throws JSONException, JRException {
         List<Values> dataSourceValues = Lists.newArrayList();
-        for (Map<String, Object> o : input.datasource.attributesValues) {
+        for (Map<String, Object> o: input.datasource.attributesValues) {
             // copy only the required values
             Values rowValues = new Values(input.values);
             for (String attributeName: this.copyAttributes) {
                 rowValues.put(attributeName, input.values.getObject(attributeName, Object.class));
             }
-            for (Map.Entry<String, Object> entry : o.entrySet()) {
+            for (Map.Entry<String, Object> entry: o.entrySet()) {
                 rowValues.put(entry.getKey(), entry.getValue());
             }
 
@@ -229,9 +231,10 @@ public final class DataSourceProcessor
 
         List<ForkJoinTask<Values>> futures = Lists.newArrayList();
         if (!dataSourceValues.isEmpty()) {
-            for (Values dataSourceValue : dataSourceValues) {
+            for (Values dataSourceValue: dataSourceValues) {
                 addAttributes(input.template, dataSourceValue);
-                final ForkJoinTask<Values> taskFuture = this.processorGraph.createTask(dataSourceValue).fork();
+                final ForkJoinTask<Values> taskFuture =
+                        this.processorGraph.createTask(dataSourceValue).fork();
                 futures.add(taskFuture);
             }
             final File reportFile;
@@ -242,12 +245,12 @@ public final class DataSourceProcessor
             } else {
                 reportFile = null;
             }
-            List<Map<String, ?>> rows = new ArrayList<Map<String, ?>>();
+            List<Map<String, ?>> rows = new ArrayList<>();
 
-            for (ForkJoinTask<Values> future : futures) {
+            for (ForkJoinTask<Values> future: futures) {
                 final Values rowData = future.join();
                 if (reportFile != null) {
-                        rowData.put(this.reportKey, reportFile.getAbsolutePath());
+                    rowData.put(this.reportKey, reportFile.getAbsolutePath());
                 }
                 rows.add(rowData.asMap());
             }
@@ -257,10 +260,12 @@ public final class DataSourceProcessor
         return null;
     }
 
-    private void addAttributes(@Nonnull final Template template,
-                               @Nonnull final Values dataSourceValue) throws JSONException {
+    private void addAttributes(
+            @Nonnull final Template template,
+            @Nonnull final Values dataSourceValue) throws JSONException {
         dataSourceValue.populateFromAttributes(template, this.internalAttributes,
-                new PJsonObject(new JSONObject(), "DataSourceProcessorAttributes"));
+                                               new PJsonObject(new JSONObject(),
+                                                               "DataSourceProcessorAttributes"));
     }
 
     @Override
@@ -276,20 +281,22 @@ public final class DataSourceProcessor
         if (this.reportTemplate != null && this.reportKey == null ||
                 this.reportTemplate == null && this.reportKey != null) {
             validationErrors.add(new ConfigurationException("'reportKey' and 'reportTemplate' must ither " +
-                    "both be null or both be non-null.  reportKey: " + this.reportKey + " reportTemplate: "
-                    + this.reportTemplate));
+                                                                    "both be null or both be non-null.  " +
+                                                                    "reportKey: " +
+                                                                    this.reportKey + " reportTemplate: "
+                                                                    + this.reportTemplate));
         }
 
-        for (Attribute attribute : this.internalAttributes.values()) {
+        for (Attribute attribute: this.internalAttributes.values()) {
             attribute.validate(validationErrors, configuration);
         }
 
         ProcessorDependencyGraphFactory.fillProcessorAttributes(this.processors, this.allAttributes);
-        for (Processor processor : this.processors) {
+        for (Processor processor: this.processors) {
             processor.validate(validationErrors, configuration);
         }
 
-        final Map<String, Class<?>> attcls = new HashMap<String, Class<?>>();
+        final Map<String, Class<?>> attcls = new HashMap<>();
         for (String attributeName: this.allAttributes.keySet()) {
             attcls.put(attributeName, this.allAttributes.get(attributeName).getValueType());
         }
@@ -304,7 +311,7 @@ public final class DataSourceProcessor
                     "There are no child processors for this processor"));
         } else {
             final Set<Processor<?, ?>> allProcessors = this.processorGraph.getAllProcessors();
-            for (Processor<?, ?> processor : allProcessors) {
+            for (Processor<?, ?> processor: allProcessors) {
                 processor.validate(validationErrors, configuration);
             }
         }
