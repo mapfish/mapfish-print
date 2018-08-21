@@ -153,9 +153,9 @@
                 type: 'GET',
                 url: 'print/apps.json',
                 success: function (data) {
+                    data.sort();
                     var specSelect = $('#selectSpec');
-                    var i = 0;
-                    for (i = 0; i < data.length; i++) {
+                    for (var i = 0, len = data.length; i < len; i++) {
                         specSelect.append(new Option(data[i], data[i]));
                     }
 
