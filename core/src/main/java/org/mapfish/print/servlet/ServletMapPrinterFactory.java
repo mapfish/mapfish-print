@@ -182,7 +182,7 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
         }
         if (this.configurationFiles.isEmpty()) {
             throw new IllegalArgumentException(
-                    directory + " is an emptry directory.  There must be at least one subdirectory " +
+                    directory + " is an empty directory. There must be at least one subdirectory " +
                             "containing a config.yaml file");
         }
 
