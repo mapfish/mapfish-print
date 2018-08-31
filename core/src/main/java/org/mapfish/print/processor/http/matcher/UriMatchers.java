@@ -16,7 +16,23 @@ import java.util.List;
  */
 public final class UriMatchers {
     private static final Logger LOGGER = LoggerFactory.getLogger(UriMatchers.class);
-    private List<? extends URIMatcher> matchers = Collections.singletonList(new AcceptAllMatcher());
+    private List<? extends URIMatcher> matchers;
+
+    /**
+     * Constructor.
+     */
+    public UriMatchers() {
+        matchers = Collections.singletonList(new AcceptAllMatcher());
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param matchers the list
+     */
+    public UriMatchers(final List<? extends URIMatcher> matchers) {
+        this.matchers = matchers;
+    }
 
     /**
      * Set the matchers.

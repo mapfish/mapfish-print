@@ -11,7 +11,9 @@ import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.processor.http.matcher.UriMatchers;
 import org.mapfish.print.servlet.job.JobManager;
 import org.mapfish.print.servlet.job.NoSuchReferenceException;
 import org.mapfish.print.servlet.job.PrintJobStatus;
@@ -24,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,8 +45,12 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -657,15 +664,17 @@ public class MapPrinterServlet extends BaseMapServlet {
      *
      * @param pretty if true then pretty print the capabilities
      * @param jsonpCallback if given the result is returned with a function call wrapped around it
+     * @param request the request
      * @param capabilitiesResponse the response object
      */
     @RequestMapping(value = CAPABILITIES_URL, method = RequestMethod.GET)
     public final void getCapabilities(
             @RequestParam(value = "pretty", defaultValue = "false") final boolean pretty,
             @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
+            final HttpServletRequest request,
             final HttpServletResponse capabilitiesResponse) throws ServletException,
             IOException, JSONException {
-        getCapabilities(DEFAULT_CONFIGURATION_FILE_KEY, pretty, jsonpCallback, capabilitiesResponse);
+        getCapabilities(DEFAULT_CONFIGURATION_FILE_KEY, pretty, jsonpCallback, request, capabilitiesResponse);
     }
 
     /**
@@ -675,6 +684,7 @@ public class MapPrinterServlet extends BaseMapServlet {
      *         this request.
      * @param pretty if true then pretty print the capabilities
      * @param jsonpCallback if given the result is returned with a function call wrapped around it
+     * @param request the request
      * @param capabilitiesResponse the response object
      */
     @RequestMapping(value = "/{appId}" + CAPABILITIES_URL, method = RequestMethod.GET)
@@ -682,12 +692,17 @@ public class MapPrinterServlet extends BaseMapServlet {
             @PathVariable final String appId,
             @RequestParam(value = "pretty", defaultValue = "false") final boolean pretty,
             @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
+            final HttpServletRequest request,
             final HttpServletResponse capabilitiesResponse) throws ServletException,
             IOException, JSONException {
         setCache(capabilitiesResponse);
         MapPrinter printer;
         try {
             printer = this.printerFactory.create(appId);
+            if (!checkReferer(request, printer)) {
+                error(capabilitiesResponse, "Invalid referer", HttpStatus.FORBIDDEN);
+                return;
+            }
         } catch (NoSuchAppException e) {
             error(capabilitiesResponse, e.getMessage(), HttpStatus.NOT_FOUND);
             return;
@@ -756,13 +771,15 @@ public class MapPrinterServlet extends BaseMapServlet {
      * Get a sample request for the app.  An empty response may be returned if there is not example request.
      *
      * @param jsonpCallback if given the result is returned with a function call wrapped around it
+     * @param request the request object
      * @param getExampleResponse the response object
      */
     @RequestMapping(value = EXAMPLE_REQUEST_URL, method = RequestMethod.GET)
     public final void getExampleRequest(
             @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
+            final HttpServletRequest request,
             final HttpServletResponse getExampleResponse) throws ServletException, IOException {
-        getExampleRequest(DEFAULT_CONFIGURATION_FILE_KEY, jsonpCallback, getExampleResponse);
+        getExampleRequest(DEFAULT_CONFIGURATION_FILE_KEY, jsonpCallback, request, getExampleResponse);
     }
 
     /**
@@ -770,18 +787,24 @@ public class MapPrinterServlet extends BaseMapServlet {
      *
      * @param appId the id of the app to get the request for.
      * @param jsonpCallback if given the result is returned with a function call wrapped around it
+     * @param request the request object
      * @param getExampleResponse the response object
      */
     @RequestMapping(value = "{appId}" + EXAMPLE_REQUEST_URL, method = RequestMethod.GET)
     public final void getExampleRequest(
             @PathVariable final String appId,
             @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
+            final HttpServletRequest request,
             final HttpServletResponse getExampleResponse) throws
             IOException {
         setCache(getExampleResponse);
         PrintWriter writer = null;
         try {
             final MapPrinter mapPrinter = this.printerFactory.create(appId);
+            if (!checkReferer(request, mapPrinter)) {
+                error(getExampleResponse, "Invalid referer", HttpStatus.FORBIDDEN);
+                return;
+            }
             final Iterable<File> children =
                     Files.fileTreeTraverser().children(mapPrinter.getConfiguration().getDirectory());
             JSONObject allExamples = new JSONObject();
@@ -976,6 +999,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         // sufficient authorization
         final String templateName = specJson.getString(Constants.JSON_LAYOUT_KEY);
         final MapPrinter mapPrinter = this.mapPrinterFactory.create(appId);
+        checkReferer(httpServletRequest, mapPrinter);
         final Template template = mapPrinter.getConfiguration().getTemplate(templateName);
 
         PrintJobEntryImpl jobEntry = new PrintJobEntryImpl(ref, specJson, System.currentTimeMillis());
@@ -988,6 +1012,23 @@ public class MapPrinterServlet extends BaseMapServlet {
             ref = null;
         }
         return ref;
+    }
+
+    private boolean checkReferer(
+            final HttpServletRequest request, final MapPrinter mapPrinter) {
+        final Configuration config = mapPrinter.getConfiguration();
+        final UriMatchers allowedReferers = config.getAllowedReferersImpl();
+        if (allowedReferers == null) {
+            return true;
+        }
+        final String referer = request.getHeader("referer");
+        try {
+            return allowedReferers.matches(new URI(referer),
+                                           HttpMethod.resolve(request.getMethod()));
+        } catch (SocketException | UnknownHostException | URISyntaxException | MalformedURLException e) {
+            LOGGER.error("Referer {} invalid", referer, e);
+            return false;
+        }
     }
 
     private <R> R loadReport(

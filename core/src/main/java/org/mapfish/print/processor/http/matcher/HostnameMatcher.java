@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Allows to check that a given URL matches a hostname literally (textual match).
@@ -44,13 +45,7 @@ public final class HostnameMatcher extends HostMatcher {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HostnameMatcher.class);
     private String host;
-
-    /**
-     * Creates a new instance.
-     */
-    public HostnameMatcher() {
-        super();
-    }
+    private boolean allowSubDomains = false;
 
     /* (non-Javadoc)
      * @see org.mapfish.print.config.ConfigurationObject#validate(java.util.List, org.mapfish.print.config
@@ -63,10 +58,6 @@ public final class HostnameMatcher extends HostMatcher {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.mapfish.print.processor.http.matcher.HostMatcher#tryOverrideValidation(org.mapfish.print
-     * .processor.http.matcher.MatchInfo)
-     */
     @Override
     protected Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo) {
         String host = matchInfo.getHost();
@@ -79,16 +70,12 @@ public final class HostnameMatcher extends HostMatcher {
         return Optional.of(false);
     }
 
-    /**
-     * @param host the host
-     * @return true, if the hostname matches.
-     */
-    protected boolean isHostnameMatch(final String host) {
+    private boolean isHostnameMatch(final String host) {
         boolean match = this.host.equalsIgnoreCase(host);
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(
-                    "Configured hostname '" + this.host + "' matches requested '" + host + "': " + match);
+        if (this.allowSubDomains && !match) {
+            match = host.toLowerCase().endsWith("." + this.host);
         }
+        LOGGER.debug("Configured !hostnameMatch '{}' matches requested '{}': {}", this.host, host, match);
         return match;
     }
 
@@ -99,6 +86,7 @@ public final class HostnameMatcher extends HostMatcher {
         final StringBuilder sb = new StringBuilder();
         sb.append("HostnameMatcher");
         sb.append("{host='").append(host).append('\'');
+        sb.append(", allowSubDomains=").append(this.allowSubDomains);
         if (port >= 0) {
             sb.append(", port=").append(port);
         }
@@ -116,40 +104,37 @@ public final class HostnameMatcher extends HostMatcher {
      * @param host the host
      */
     public void setHost(final String host) {
-        this.host = host;
+        this.host = host.toLowerCase();
+    }
+
+    /**
+     * Set if sub-domains are allowed.
+     *
+     * @param allowSubDomains true if allowed
+     */
+    public void setAllowSubDomains(final boolean allowSubDomains) {
+        this.allowSubDomains = allowSubDomains;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        final HostnameMatcher that = (HostnameMatcher) o;
+        return allowSubDomains == that.allowSubDomains &&
+                Objects.equals(host, that.host);
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((host == null) ? 0 : host.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (this == obj) {
-            return true;
-        }
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        HostnameMatcher other = (HostnameMatcher) obj;
-        if (host == null) {
-            if (other.host != null) {
-                return false;
-            }
-        } else if (!host.equals(other.host)) {
-            return false;
-        }
-        return true;
+        return Objects.hash(super.hashCode(), host, allowSubDomains);
     }
     // CHECKSTYLE:ON
 }
