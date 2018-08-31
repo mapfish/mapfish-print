@@ -65,6 +65,7 @@ public abstract class BaseMapServlet {
         try {
             httpServletResponse.setContentType("text/plain");
             httpServletResponse.setStatus(code.value());
+            setNoCache(httpServletResponse);
             out = httpServletResponse.getWriter();
             out.println("Error while processing request:");
             out.println(message);
@@ -77,6 +78,15 @@ public abstract class BaseMapServlet {
                 out.close();
             }
         }
+    }
+
+    /**
+     * Disable caching of the response.
+     *
+     * @param response the response
+     */
+    protected static void setNoCache(final HttpServletResponse response) {
+        response.setHeader("Cache-Control", "max-age=0, must-revalidate, no-cache, no-store");
     }
 
     /**
@@ -125,15 +135,6 @@ public abstract class BaseMapServlet {
      */
     public final void setCacheDuration(final int cacheDurationInSeconds) {
         this.cacheDurationInSeconds = cacheDurationInSeconds;
-    }
-
-    /**
-     * Disable caching of the response.
-     *
-     * @param response the response
-     */
-    protected void setNoCache(final HttpServletResponse response) {
-        response.setHeader("Cache-Control", "max-age=0, must-revalidate, no-cache, no-store");
     }
 
     /**
