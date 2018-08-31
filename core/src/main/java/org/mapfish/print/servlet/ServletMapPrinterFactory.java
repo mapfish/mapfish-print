@@ -1,9 +1,9 @@
 package org.mapfish.print.servlet;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
-import com.google.common.io.Files;
 import com.vividsolutions.jts.util.Assert;
+import org.apache.commons.io.DirectoryWalker;
+import org.apache.commons.lang.StringUtils;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
@@ -14,12 +14,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.channels.ClosedByInterruptException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 
@@ -34,14 +41,17 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
      * The name of the default app.  This is always required to be one of the apps that are registered.
      */
     public static final String DEFAULT_CONFIGURATION_FILE_KEY = "default";
+    private static final String CONFIG_YAML = "config.yaml";
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletMapPrinterFactory.class);
-    private final Map<String, MapPrinter> printers = Maps.newConcurrentMap();
-    private final HashMap<String, Long> configurationFileLastModifiedTimes = new HashMap<>();
+    private static final int MAX_DEPTH = 2;
+    private final Map<String, MapPrinter> printers = new HashMap<>();
+    private final Map<String, Long> configurationFileLastModifiedTimes = new HashMap<>();
+    private final Map<String, URI> configurationFiles = new HashMap<>();
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
     private ConfigFileLoaderManager configFileLoader;
-    private Map<String, URI> configurationFiles = new HashMap<>();
+    private String appsRootDirectory = null;
 
     @PostConstruct
     private void validateConfigurationFiles() {
@@ -66,18 +76,34 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
         URI configFile = this.configurationFiles.get(finalApp);
 
         if (configFile == null) {
+            configFile = checkForAddedApp(finalApp);
+        }
+
+        if (configFile == null) {
             throw new NoSuchAppException(
                     "There is no configurationFile registered in the " + getClass().getName() +
-                            " bean with the " +
-                            "id: " +
-                            "'" + finalApp + "'");
+                            " bean with the id: '" + finalApp + "'");
         }
 
         final long lastModified = this.configurationFileLastModifiedTimes.getOrDefault(finalApp, 0L);
 
         MapPrinter printer = this.printers.get(finalApp);
 
-        Optional<Long> configFileLastModified = this.configFileLoader.lastModified(configFile);
+        final Optional<Long> configFileLastModified;
+        try {
+            configFileLastModified = this.configFileLoader.lastModified(configFile);
+        } catch (NoSuchElementException e) {
+            // the app has been removed
+            this.configurationFiles.remove(finalApp);
+            this.configurationFileLastModifiedTimes.remove(finalApp);
+            this.printers.remove(finalApp);
+            if (finalApp.equals(DEFAULT_CONFIGURATION_FILE_KEY)) {
+                pickDefaultApp();
+            }
+            throw new NoSuchAppException(
+                    "There is no configurationFile registered in the " + getClass().getName() +
+                            " bean with the id: '" + finalApp + "'");
+        }
         if (configFileLastModified.isPresent() && configFileLastModified.get() > lastModified) {
             // file modified, reload it
             LOGGER.info("Configuration file modified. Reloading...");
@@ -112,8 +138,7 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
                 LOGGER.error(String.format(
                         "Error occurred while reading configuration file '%s'", configFile), e);
                 throw new RuntimeException(String.format(
-                        "Error occurred while reading configuration file '%s': ", configFile),
-                                           e);
+                        "Error occurred while reading configuration file '%s'", configFile), e);
             }
         }
 
@@ -159,38 +184,96 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
      * @param directory the root directory containing the sub-app-directories.  This must resolve to a
      *         file with the
      */
-    public final void setAppsRootDirectory(final String directory) throws URISyntaxException {
+    public final void setAppsRootDirectory(final String directory) throws URISyntaxException, IOException {
+        this.appsRootDirectory = directory;
 
-        final Iterable<File> children;
-
+        final File realRoot;
         if (!directory.contains(":/")) {
-            children = Files.fileTreeTraverser().children(new File(directory));
+            realRoot = new File(directory);
         } else {
             final Optional<File> fileOptional = this.configFileLoader.toFile(new URI(directory));
             if (fileOptional.isPresent()) {
-                children = Files.fileTreeTraverser().children(fileOptional.get());
+                realRoot = fileOptional.get();
             } else {
                 throw new IllegalArgumentException(
                         directory + " does not refer to a file on the current system.");
             }
         }
-        for (File child: children) {
-            final File configFile = new File(child, "config.yaml");
-            if (configFile.exists()) {
-                this.configurationFiles.put(child.getName(), configFile.toURI());
+
+        final AppWalker walker = new AppWalker();
+        for (File child: walker.getAppDirs(realRoot)) {
+            final File configFile = new File(child, CONFIG_YAML);
+            String appName = realRoot.toURI().relativize(child.toURI()).getPath().replace('/', ':');
+            if (appName.endsWith(":")) {
+                appName = appName.substring(0, appName.length() - 1);
             }
+            this.configurationFiles.put(appName, configFile.toURI());
         }
         if (this.configurationFiles.isEmpty()) {
-            throw new IllegalArgumentException(
-                    directory + " is an empty directory. There must be at least one subdirectory " +
-                            "containing a config.yaml file");
+            return;
         }
 
         // ensure there is a "default" app
         if (!this.configurationFiles.containsKey(DEFAULT_CONFIGURATION_FILE_KEY)) {
-            final String next = this.configurationFiles.keySet().iterator().next();
+            pickDefaultApp();
+        }
+    }
+
+    private void pickDefaultApp() {
+        final Iterator<String> iterator = this.configurationFiles.keySet().iterator();
+        if (iterator.hasNext()) {
+            final String next = iterator.next();
             final URI uri = this.configurationFiles.get(next);
             this.configurationFiles.put(DEFAULT_CONFIGURATION_FILE_KEY, uri);
+        }
+    }
+
+    @Nullable
+    private URI checkForAddedApp(@Nonnull final String app) {
+        if (this.appsRootDirectory == null) {
+            return null;
+        }
+
+        if (StringUtils.countMatches(app, ":") > MAX_DEPTH) {
+            return null;
+        }
+        final Optional<File> child;
+        try {
+            child = this.configFileLoader.toFile(new URI(this.appsRootDirectory + "/" +
+                                                                 app.replace(':', '/')));
+        } catch (URISyntaxException e) {
+            return null;
+        }
+        if (child.isPresent()) {
+            final File configFile = new File(child.get(), CONFIG_YAML);
+            if (configFile.exists()) {
+                final URI uri = configFile.toURI();
+                this.configurationFiles.put(app, uri);
+                if (!this.configurationFiles.containsKey(DEFAULT_CONFIGURATION_FILE_KEY)) {
+                    this.configurationFiles.put(DEFAULT_CONFIGURATION_FILE_KEY, uri);
+                }
+                return uri;
+            }
+        }
+        return null;
+    }
+
+    private static class AppWalker extends DirectoryWalker {
+        public List<File> getAppDirs(final File base) throws IOException {
+            List<File> results = new ArrayList<>();
+            //noinspection unchecked
+            walk(base, results);
+            return results;
+        }
+
+        @Override
+        protected boolean handleDirectory(final File directory, final int depth, final Collection results) {
+            final File configFile = new File(directory, CONFIG_YAML);
+            if (configFile.exists()) {
+                //noinspection unchecked
+                results.add(directory);
+            }
+            return depth < MAX_DEPTH;
         }
     }
 }
