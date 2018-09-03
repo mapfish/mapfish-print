@@ -31,6 +31,8 @@ import org.mapfish.print.http.HttpCredential;
 import org.mapfish.print.http.HttpProxy;
 import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.map.style.json.ColorParser;
+import org.mapfish.print.processor.http.matcher.URIMatcher;
+import org.mapfish.print.processor.http.matcher.UriMatchers;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -98,6 +100,7 @@ public class Configuration implements ConfigurationObject {
     private boolean defaultToSvg = false;
     private Set<String> jdbcDrivers = Sets.newHashSet();
     private Map<String, Style> namedStyles = Maps.newHashMap();
+    private UriMatchers allowedReferers = null;
 
     /**
      * The color used to draw the WMS tiles error default: transparent pink.
@@ -677,5 +680,31 @@ public class Configuration implements ConfigurationObject {
      */
     public final void setResourceBundle(final String resourceBundle) {
         this.resourceBundle = resourceBundle;
+    }
+
+    /**
+     * @return the list of referer checks (null = no check)
+     */
+    public final UriMatchers getAllowedReferersImpl() {
+        return this.allowedReferers;
+    }
+
+    /**
+     * The matchers used to authorize the incoming requests in function of the referer. For example:
+     * <pre><code>
+     * allowedReferers:
+     *   - !hostnameMatch
+     *     host: example.com
+     *     allowSubDomains: true
+     * </code></pre>
+     * <p>
+     * By default, the referer is not checked
+     *
+     * @param matchers the list of matcher to use to check if a referer is permitted or null for no
+     *         check
+     * @see org.mapfish.print.processor.http.matcher.URIMatcher
+     */
+    public final void setAllowedReferers(@Nullable final List<? extends URIMatcher> matchers) {
+        this.allowedReferers = matchers != null ? new UriMatchers(matchers) : null;
     }
 }
