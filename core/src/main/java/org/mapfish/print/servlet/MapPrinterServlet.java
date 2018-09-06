@@ -1021,7 +1021,10 @@ public class MapPrinterServlet extends BaseMapServlet {
         if (allowedReferers == null) {
             return true;
         }
-        final String referer = request.getHeader("referer");
+        String referer = request.getHeader("referer");
+        if (referer == null) {
+            referer = "http://localhost/";
+        }
         try {
             return allowedReferers.matches(new URI(referer),
                                            HttpMethod.resolve(request.getMethod()));
