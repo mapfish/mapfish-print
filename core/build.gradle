@@ -188,7 +188,7 @@ dependencies {
     )
 
     providedCompile('com.google.code.findbugs:jsr305:2.0.1')
-    providedCompile('javax.servlet:javax.servlet-api:3.1.0')
+    providedCompile('javax.servlet:javax.servlet-api:4.0.1')
 }
 
 def gitRevision() {
