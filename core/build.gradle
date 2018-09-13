@@ -129,7 +129,7 @@ dependencies {
             "org.springframework:spring-jdbc:$project.springVersion",
             "org.springframework:spring-tx:$project.springVersion"
     )
-    def metricsVersion = "3.1.5"
+    def metricsVersion = "4.0.3"
     metrics (
             "io.dropwizard.metrics:metrics-core:$metricsVersion",
             "io.dropwizard.metrics:metrics-servlet:$metricsVersion",
