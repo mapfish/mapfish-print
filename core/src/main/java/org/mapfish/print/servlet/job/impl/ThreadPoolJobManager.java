@@ -1,5 +1,6 @@
 package org.mapfish.print.servlet.job.impl;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.primitives.Longs;
 import org.mapfish.print.ExceptionUtils;
@@ -119,6 +120,9 @@ public class ThreadPoolJobManager implements JobManager {
 
     @Autowired
     private JobQueue jobQueue;
+
+    @Autowired
+    private MetricRegistry metricRegistry;
 
     public final void setMaxNumberOfRunningPrintJobs(final int maxNumberOfRunningPrintJobs) {
         this.maxNumberOfRunningPrintJobs = maxNumberOfRunningPrintJobs;
@@ -306,6 +310,7 @@ public class ThreadPoolJobManager implements JobManager {
     private void submitInternal(final PrintJobEntry jobEntry) {
         final int numberOfWaitingRequests = this.jobQueue.getWaitingJobsCount();
         if (numberOfWaitingRequests >= this.maxNumberOfWaitingJobs) {
+            metricRegistry.counter(getClass().getName() + ".queue_overflow").inc();
             throw new RuntimeException(
                     "Max. number of waiting print job requests exceeded.  Number of waiting requests are: " +
                             numberOfWaitingRequests);

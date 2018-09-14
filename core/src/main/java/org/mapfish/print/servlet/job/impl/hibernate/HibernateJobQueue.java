@@ -1,5 +1,6 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
+import com.codahale.metrics.MetricRegistry;
 import org.mapfish.print.servlet.job.JobQueue;
 import org.mapfish.print.servlet.job.NoSuchReferenceException;
 import org.mapfish.print.servlet.job.PrintJobEntry;
@@ -9,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
@@ -34,6 +35,10 @@ public class HibernateJobQueue implements JobQueue {
 
     @Autowired
     private PlatformTransactionManager txManager;
+
+    @Autowired
+    private MetricRegistry metricRegistry;
+
 
     private ScheduledExecutorService cleanUpTimer;
 
@@ -211,12 +216,13 @@ public class HibernateJobQueue implements JobQueue {
 
     private void cleanup() {
         TransactionTemplate tmpl = new TransactionTemplate(this.txManager);
-        tmpl.execute(new TransactionCallbackWithoutResult() {
+        final int nbDeleted = tmpl.execute(new TransactionCallback<Integer>() {
             @Override
-            protected void doInTransactionWithoutResult(final TransactionStatus status) {
-                HibernateJobQueue.this.dao
+            public Integer doInTransaction(final TransactionStatus status) {
+                return HibernateJobQueue.this.dao
                         .deleteOld(System.currentTimeMillis() - getTimeToKeepAfterAccessInMillis());
             }
         });
+        metricRegistry.counter(getClass().getName() + ".deleted_old").inc(nbDeleted);
     }
 }

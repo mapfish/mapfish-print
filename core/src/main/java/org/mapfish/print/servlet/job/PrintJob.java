@@ -151,8 +151,13 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
                                 this.entry.getRequestData(), e);
             throw e;
         } finally {
-            final long stop = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
-            LOGGER.debug("Print Job {} completed in {}ms", this.entry.getReferenceId(), stop);
+            final long totalTimeMS = System.currentTimeMillis() - entry.getStartTime();
+            final long computationTimeMs = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
+            this.metricRegistry.timer(getClass().getName() + ".total")
+                    .update(totalTimeMS, TimeUnit.MILLISECONDS);
+            this.metricRegistry.timer(getClass().getName() + ".wait")
+                    .update(totalTimeMS - computationTimeMs, TimeUnit.MILLISECONDS);
+            LOGGER.debug("Print Job {} completed in {}ms", this.entry.getReferenceId(), computationTimeMs);
         }
     }
 
