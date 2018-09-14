@@ -1,1 +1,1 @@
-include 'core', 'examples', 'debian', 'docs', 'publish'
+include 'core', 'examples', 'docs', 'publish'

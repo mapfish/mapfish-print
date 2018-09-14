@@ -11,13 +11,11 @@ core/gradle/
 /core/gradlew
 /generated-gradlew
 /generated-gradlew.bat
-/projectTests/
 /.idea/
 *.iml
 
 /build/
 /core/build/
-/debian/build
 /docs/build
 /examples/build/
 /publish/build

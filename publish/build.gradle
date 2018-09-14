@@ -2,7 +2,6 @@ apply plugin: 'maven'
 
 def distZip = tasks.getByPath(':core:distZip')
 def distTar = tasks.getByPath(':core:distTar')
-def deb = tasks.getByPath(':debian:debian')
 def jar = tasks.getByPath(':core:jar')
 artifacts {
     archives tasks.getByPath(':core:war'), tasks.getByPath(':core:libSourcesJar'),
@@ -23,11 +22,6 @@ artifacts {
         type 'tar'
         classifier 'tar'
         builtBy distTar
-    }
-    archives (deb.debFile) {
-        name 'print-deb'
-        type 'deb'
-        builtBy deb
     }
 }
 
@@ -73,9 +67,6 @@ if (Boolean.parseBoolean(enablePublishing)) {
                 addFilter('cli') { artifact, file ->
                     artifact.name.contains('print-cli') && (extAnd(file, ".zip") || extAnd(file, ".tar"))
                 }
-                addFilter('deb') { artifact, file ->
-                    artifact.name.contains('print-deb')  && extAnd(file, ".deb")
-                }
 
                 pom('lib').project {
                     name 'print-lib'
@@ -92,12 +83,8 @@ if (Boolean.parseBoolean(enablePublishing)) {
                     packaging 'pom'
                     description 'Application for generating PDFs and images from online webmapping services. All dependencies are included'
                 }
-                pom('deb').project {
-                    name 'print-deb'
-                    description 'Debian package containing Web-application for generating PDFs and images from online webmapping services.'
-                }
 
-                ['lib', 'war', 'cli', 'deb'].each { filterName ->
+                ['lib', 'war', 'cli'].each { filterName ->
                     pom(filterName).project {
                         url 'http://mapfish.github.io/mapfish-print'
 
