@@ -1,3 +1,0 @@
-#!/bin/sh
-
-# This script is ran before the debian package is removed.
