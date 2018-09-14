@@ -57,22 +57,13 @@ Publish Workflow
 
   > ./gradlew uploadArchives
 
-4. Login to https://oss.sonatype.org/
-5. Click _Staging Repositories_ in Navigation along left side
-6. Locate and select the mapfish-print repository
-  The details will be shown in a panel below the repository list
-7. Check the _Activity_ in the _Detail Section_ (the _Summary Tab_ should be visible at this point)
-8. Open the _Content Tab_ in the _Detail Section_.
-9. Verify all the expected artifacts have been uploaded
-10. Check Repository in the repository list (if not already checked)
-11. Click the _Close_ button to trigger the quality checks required by maven central
-  If you see a problem them you can click the _Drop_ button to get rid of this upload
-  It might take a while for the Close operation to finish so you can keep checking back or wait for the email that says the close operation has finished
-12. Once Closed you have to check the _Summary_ and _Activity_ Tabs to ensure that no errors were found during the Close operation
-  There will be a temporary Maven repository set up for you to test that the artifacts work correctly.  You can test this if you wish but it is not required unless you have some concern.
-13. Click the _Release_ button
-  It can take several hours for the artifacts to show up on Maven Central after being released.  You will just have to keep checking http://search.maven.org/ (or http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.mapfish.print%22) and see if the new version is available.
-14. Push the commit and the tag to github
+4. Close and release:
+
+.. code :: groovy
+
+  > ./gradlew closeAndReleaseRepository
+
+5. Push the commit and the tag to github
 
 More information about the release procedure on Sonatype can be found here: http://central.sonatype.org/pages/releasing-the-deployment.html
 

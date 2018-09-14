@@ -7,7 +7,7 @@ task wrapper(type: Wrapper) {
 
 allprojects {
     group = 'org.mapfish.print'
-    version = '3.16.0'
+    version = '3.16.1'
     ext.junitVersion = "4.12"
     ext.springVersion = "4.3.15.RELEASE"
     ext.jasperReportVersion = "6.5.1"
@@ -23,7 +23,8 @@ buildscript {
   }
 
   dependencies {
-    classpath 'org.akhikhl.gretty:gretty:1.4.2'
+      classpath 'org.akhikhl.gretty:gretty:1.4.2'
+      classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0'
   }
 }
 
@@ -122,10 +123,23 @@ configure(subprojects.findAll {['core', 'examples'].contains(it.name)}) {
     }
 
     tasks.withType(JavaCompile) {
-        options.encoding = "utf-8"
+        options.encoding = 'utf-8'
     }
     tasks.withType(Javadoc) {
-        options.encoding = "utf-8"
+        options.encoding = 'utf-8'
     }
 
+}
+
+if (Boolean.parseBoolean(enablePublishing)) {
+    apply plugin: 'io.codearte.nexus-staging'
+
+    nexusStaging {
+        packageGroup = 'org.mapfish'
+        stagingProfileId = '201d075c19938f'
+        serverUrl = "https://$host/service/local/"
+        username = sonatypeUsername
+        password = sonatypePassword
+        numberOfRetries = 200
+    }
 }
