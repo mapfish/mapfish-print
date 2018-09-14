@@ -17,6 +17,10 @@ services:
 jdk:
 - oraclejdk8
 
+before_install:
+- mkdir -p $HOME/.gradle/ && openssl aes-256-cbc -K $encrypted_4c209f73aa5c_key -iv $encrypted_4c209f73aa5c_iv -in gradle.properties.enc -out $HOME/.gradle/gradle.properties -d
+- openssl aes-256-cbc -K $encrypted_4c209f73aa5c_key -iv $encrypted_4c209f73aa5c_iv -in signing.gpg.enc -d | gpg --import
+
 # Don't run eval ./gradlew assemble"
 install:
 - ./gradlew examples:geoserverData
