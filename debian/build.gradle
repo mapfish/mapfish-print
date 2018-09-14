@@ -8,7 +8,7 @@ repositories {
     mavenLocal()
 }
 dependencies {
-    jdeb 'org.vafer:jdeb:1.1.1', 'org.bouncycastle:bcpg-jdk15on:1.50'
+    jdeb 'org.vafer:jdeb:1.6', 'org.bouncycastle:bcpg-jdk15on:1.50'
 }
 
 
