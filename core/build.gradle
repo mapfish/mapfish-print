@@ -187,7 +187,7 @@ dependencies {
             "org.apache.xmlgraphics:batik-svg-dom:$batikVersion"
     )
 
-    providedCompile('com.google.code.findbugs:jsr305:2.0.1')
+    providedCompile('com.google.code.findbugs:jsr305:3.0.2')
     providedCompile('javax.servlet:javax.servlet-api:4.0.1')
 }
 
