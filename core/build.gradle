@@ -123,7 +123,7 @@ dependencies {
             "com.thetransactioncompany:cors-filter:2.6",
             //hibernate & postgres
             "org.hibernate:hibernate-core:4.3.11.Final",
-            "org.postgresql:postgresql:42.2.2",
+            "org.postgresql:postgresql:42.2.5",
             "com.vladmihalcea:hibernate-types-43:2.3.0",
             "org.springframework:spring-orm:$project.springVersion",
             "org.springframework:spring-jdbc:$project.springVersion",
