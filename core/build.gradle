@@ -180,7 +180,7 @@ dependencies {
 
     def batikVersion = '1.10'
     compile (
-            'org.apache.xmlgraphics:xmlgraphics-commons:2.2',
+            'org.apache.xmlgraphics:xmlgraphics-commons:2.3',
             "org.apache.xmlgraphics:batik-transcoder:$batikVersion",
             "org.apache.xmlgraphics:batik-bridge:$batikVersion",
             "org.apache.xmlgraphics:batik-codec:$batikVersion",
