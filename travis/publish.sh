@@ -27,6 +27,13 @@ then
 elif [ ! -z "${TRAVIS_TAG}" ]
 then
   publish "${TRAVIS_TAG}"
+  if [[ "${TRAVIS_TAG}" == release/* ]]
+  then
+    echo "Uploading to Nexus"
+    ./gradlew uploadArchives
+    echo "Releasing to mvnrepository"
+    ./gradlew closeAndReleaseRepository
+  fi
 elif [ ! -z "${TRAVIS_BRANCH}" ]
 then
   publish "${TRAVIS_BRANCH}"

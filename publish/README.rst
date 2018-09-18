@@ -8,8 +8,15 @@ Once uploaded to https://oss.sonatype.org/ then it can be published to maven cen
 See http://central.sonatype.org/pages/ossrh-guide.html for details on the general process as described by
 sonatype.
 
-Process
-=======
+Automated Process
+=================
+
+1. Edit the root build.gradle to change the allprojects/version and commit that with a release/${version} tag
+2. Push the commit and the tag to github
+
+
+Manual Process
+==============
 
 Credential Configuration
 ------------------------
@@ -37,7 +44,6 @@ Credential Configuration
   # gpg configuration information
   signing_keyId=<id of the gpg key to use for the deploy>
   signing_password=<password for gpg key that applies to the keyId>
-  signing_secretKeyRingFile=<path to gnupg .gpg file for example: C:\\Users\\xyz\\.gnupg\\secring.gpg>
   sonatypeUsername=<sonatype username>
   sonatypePassword=<sonatype password>
 

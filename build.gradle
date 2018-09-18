@@ -13,7 +13,7 @@ allprojects {
     ext.jasperReportVersion = "6.5.1"
     ext.groovyVersion = "2.4.15"
     ext."signing.keyId" = signing_keyId
-    ext."signing.secretKeyRingFile" = signing_secretKeyRingFile
+    ext."signing.secretKeyRingFile" = System.properties.get('user.home') + '/.gnupg/secring.gpg'
     ext."signing.password" = signing_password
 }
 
