@@ -65,7 +65,7 @@ if (Boolean.parseBoolean(enablePublishing)) {
                     artifact.name.contains('print-servlet') && extAnd(file, ".war")
                 }
                 addFilter('cli') { artifact, file ->
-                    artifact.name.contains('print-cli') && (extAnd(file, ".zip") || extAnd(file, ".tar"))
+                    artifact.name.contains('print-cli') && extAnd(file, ".zip")
                 }
 
                 pom('lib').project {
