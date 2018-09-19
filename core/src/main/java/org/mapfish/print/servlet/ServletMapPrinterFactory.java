@@ -9,7 +9,6 @@ import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -55,12 +54,6 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
 
     @PostConstruct
     private void validateConfigurationFiles() {
-        if (!this.configurationFiles.containsKey(DEFAULT_CONFIGURATION_FILE_KEY)) {
-            throw new BeanCreationException(
-                    getClass().getName() + " requires that one of the configurationFiles is called '" +
-                            DEFAULT_CONFIGURATION_FILE_KEY + "'");
-        }
-
         for (URI file: this.configurationFiles.values()) {
             Assert.isTrue(this.configFileLoader.isAccessible(file),
                           file + " does not exist or is not accessible.");
