@@ -19,6 +19,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -123,6 +125,8 @@ public class ThreadPoolJobManager implements JobManager {
 
     @Autowired
     private MetricRegistry metricRegistry;
+
+    private boolean requestedToStop = false;
 
     public final void setMaxNumberOfRunningPrintJobs(final int maxNumberOfRunningPrintJobs) {
         this.maxNumberOfRunningPrintJobs = maxNumberOfRunningPrintJobs;
@@ -456,6 +460,7 @@ public class ThreadPoolJobManager implements JobManager {
                         this.jobQueue.cancel(printJob.getEntry().getReferenceId(),
                                              "task cancelled (timeout)", true);
                     }
+                    notifyIfStopped();
                 } catch (NoSuchReferenceException e) { // shouldnt'// really happen
                     throw ExceptionUtils.getRuntimeException(e);
                 }
@@ -486,6 +491,41 @@ public class ThreadPoolJobManager implements JobManager {
                         printJob.getEntry().getReferenceId(), ThreadPoolJobManager.this.abandonedTimeout);
         }
         return abandoned;
+    }
+
+    /**
+     * Check if the print has not been asked to stop taking new jobs.
+     *
+     * @return true if it's OK to take new jobs.
+     */
+    private boolean isAcceptingNewJobs() {
+        if (this.requestedToStop) {
+            return false;
+        } else if (new File(this.workingDirectories.getWorking(), "stop").exists()) {
+            LOGGER.info("The print has been requested to stop");
+            this.requestedToStop = true;
+            notifyIfStopped();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Add a file to notify the script that asked to stop the print that it is now done processing the remain
+     * jobs.
+     */
+    private void notifyIfStopped() {
+        if (isAcceptingNewJobs() || !this.runningTasksFutures.isEmpty()) {
+            return;
+        }
+        final File stoppedFile = new File(this.workingDirectories.getWorking(), "stopped");
+        try {
+            LOGGER.info("The print has finished processing jobs and can now stop");
+            stoppedFile.createNewFile();
+        } catch (IOException e) {
+            LOGGER.warn("Cannot create the {} file", stoppedFile);
+        }
     }
 
     /**
@@ -545,7 +585,7 @@ public class ThreadPoolJobManager implements JobManager {
                         if (this.counter % this.cancelOldModulo == 0) {
                             cancelOld();
                         }
-                        if (updated || this.counter % this.pollModulo == 0) {
+                        if ((updated || this.counter % this.pollModulo == 0) && isAcceptingNewJobs()) {
                             pollRegistry();
                         }
                     }
