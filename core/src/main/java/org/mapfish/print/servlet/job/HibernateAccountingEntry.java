@@ -98,7 +98,9 @@ public class HibernateAccountingEntry {
                     getObject(MapPrinterServlet.JSON_ATTRIBUTES).
                     getObject(MapPrinterServlet.JSON_REQUEST_HEADERS).
                     getObject(MapPrinterServlet.JSON_REQUEST_HEADERS);
-            this.referer = headers.getArray("referer").getString(0);
+            if (headers.has("referer")) {
+                this.referer = headers.getArray("referer").getString(0);
+            }
         } catch (ObjectMissingException ex) {
             LOGGER.info("Cannot get the referer", ex);
         }
