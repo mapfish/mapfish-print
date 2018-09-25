@@ -57,9 +57,9 @@ public final class StyleParser {
                                                  styleString, transformer.transform(sld));
                                 }
                             } catch (Exception e) {
-                                LOGGER.debug(String.format("Loaded style from: \n\n '%s' \n\n<Unable to " +
-                                                                   "transform it to xml>: %s", styleString,
-                                                           e), e);
+                                LOGGER.debug(
+                                        "Loaded style from: \n\n '{}' \n\n<Unable to transform it to xml>",
+                                        styleString, e);
                             }
                         }
                         return style;

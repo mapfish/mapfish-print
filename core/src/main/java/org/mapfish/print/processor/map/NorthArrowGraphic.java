@@ -124,8 +124,9 @@ public final class NorthArrowGraphic {
 
             final BufferedImage originalImage = ImageIO.read(rasterReference.inputStream);
             if (originalImage == null) {
-                LOGGER.warn("Unable to load NorthArrow graphic: " + rasterReference.uri +
-                                    ", it is not an image format that can be decoded");
+                LOGGER.warn("Unable to load NorthArrow graphic: {}, it is not an image format that can be " +
+                                    "decoded",
+                            rasterReference.uri);
                 throw new IllegalArgumentException();
             }
 

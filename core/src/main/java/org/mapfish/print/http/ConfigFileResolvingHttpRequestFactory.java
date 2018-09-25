@@ -105,7 +105,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
             }
             try {
                 if (this.request != null) {
-                    LOGGER.debug("Executing http request: " + this.request.getURI());
+                    LOGGER.debug("Executing http request: {}", this.request.getURI());
                     return executeCallbacksAndRequest(this.request);
                 }
                 if (this.httpMethod == HttpMethod.GET) {
@@ -115,15 +115,15 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
                         final byte[] bytes = configuration.loadFile(uriString);
                         final ConfigFileResolverHttpResponse response =
                                 new ConfigFileResolverHttpResponse(bytes, headers);
-                        LOGGER.debug(String.format(
-                                "Resolved request: %s using mapfish print config file loaders.", uriString));
+                        LOGGER.debug("Resolved request: {} using mapfish print config file loaders.",
+                                     uriString);
                         return response;
                     } catch (NoSuchElementException e) {
                         // cannot be loaded by configuration so try http
                     }
                 }
 
-                LOGGER.debug("Executing http request: " + this.getURI());
+                LOGGER.debug("Executing http request: {}", this.getURI());
                 return executeCallbacksAndRequest(createRequestFromWrapped(headers));
             } finally {
                 if (noJobId) {

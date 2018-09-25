@@ -203,7 +203,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
             this.cachedRotatedMapBounds = Optional.of(rotatedBounds);
         } catch (TransformException e) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Failed to rotate map bounds: " + mapBounds.toString(), e);
+                LOGGER.debug("Failed to rotate map bounds: {}", mapBounds.toString(), e);
             }
             this.cachedRotatedMapBounds = Optional.absent();
         }

@@ -180,13 +180,13 @@ public final class HttpRequestCache {
         @Override
         public ClientHttpResponse execute() {
             if (!HttpRequestCache.this.cached) {
-                LOGGER.warn("Attempting to load cached URI before actual caching: " +
-                                    this.originalRequest.getURI());
+                LOGGER.warn("Attempting to load cached URI before actual caching: {}",
+                            this.originalRequest.getURI());
             } else if (this.response == null) {
-                LOGGER.warn("Attempting to load cached URI from failed request: " +
-                                    this.originalRequest.getURI());
+                LOGGER.warn("Attempting to load cached URI from failed request: {}",
+                            this.originalRequest.getURI());
             } else {
-                LOGGER.debug("Loading cached URI resource " + this.originalRequest.getURI());
+                LOGGER.debug("Loading cached URI resource {}", this.originalRequest.getURI());
             }
             return this.response;
         }
@@ -198,10 +198,10 @@ public final class HttpRequestCache {
             ClientHttpResponse originalResponse = null;
             try {
                 originalResponse = this.originalRequest.execute();
-                LOGGER.debug("Caching URI resource " + this.originalRequest.getURI());
+                LOGGER.debug("Caching URI resource {}", this.originalRequest.getURI());
                 this.response = new CachedClientHttpResponse(originalResponse);
             } catch (IOException e) {
-                LOGGER.error("Request failed " + this.originalRequest.getURI(), e);
+                LOGGER.error("Request failed {}", this.originalRequest.getURI());
                 this.response = new AbstractClientHttpResponse() {
                     @Override
                     public HttpHeaders getHeaders() {

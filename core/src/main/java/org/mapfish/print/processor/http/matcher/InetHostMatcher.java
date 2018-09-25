@@ -23,8 +23,8 @@ public abstract class InetHostMatcher extends HostMatcher {
     private static byte[] mask(final byte[] address, final byte[] mask) {
         if (mask != null) {
             if (address.length != mask.length) {
-                LOGGER.warn("Cannot mask address [" + Arrays.toString(address) + "] with: " +
-                                    Arrays.toString(mask));
+                LOGGER.warn("Cannot mask address [{}] with: {}", Arrays.toString(address),
+                            Arrays.toString(mask));
                 return address;
             } else {
                 final byte[] result = new byte[address.length];
@@ -69,7 +69,7 @@ public abstract class InetHostMatcher extends HostMatcher {
                 return true;
             }
         }
-        LOGGER.debug("Address not in the authorized set: " + requestedIP);
+        LOGGER.debug("Address not in the authorized set: {}", requestedIP);
         return false;
     }
 

@@ -360,7 +360,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                     }
                 }
             } catch (Exception e) {
-                LOGGER.warn("Failed to load image from: " + this.icon, e);
+                LOGGER.warn("Failed to load image from: {}", this.icon, e);
             }
 
             if (image == null) {

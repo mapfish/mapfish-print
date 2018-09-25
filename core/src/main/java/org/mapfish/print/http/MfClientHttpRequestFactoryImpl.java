@@ -156,13 +156,13 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         protected Response executeInternal(@Nonnull final HttpHeaders headers) throws IOException {
             CURRENT_CONFIGURATION.set(this.configuration);
 
-            LOGGER.debug("Preparing request " + this.getMethod() + " -- " + this.getURI());
+            LOGGER.debug("Preparing request {} -- {}", this.getMethod(), this.getURI());
             for (Map.Entry<String, List<String>> entry: headers.entrySet()) {
                 String headerName = entry.getKey();
                 if (!headerName.equalsIgnoreCase(HTTP.CONTENT_LEN) &&
                         !headerName.equalsIgnoreCase(HTTP.TRANSFER_ENCODING)) {
                     for (String headerValue: entry.getValue()) {
-                        LOGGER.debug("Setting header: " + headerName + " : " + headerValue);
+                        LOGGER.debug("Setting header: {} : {}", headerName, headerValue);
                         this.request.addHeader(headerName, headerValue);
                     }
                 }
@@ -174,7 +174,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
                 entityEnclosingRequest.setEntity(requestEntity);
             }
             HttpResponse response = this.client.execute(this.request, this.context);
-            LOGGER.debug("Response: " + response.getStatusLine().getStatusCode() + " -- " + this.getURI());
+            LOGGER.debug("Response: {} -- {}", response.getStatusLine().getStatusCode(), this.getURI());
 
             return new Response(response);
         }
@@ -191,7 +191,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
 
         Response(@Nonnull final HttpResponse response) {
             this.response = response;
-            LOGGER.trace("Creating Http Response object: " + this.id);
+            LOGGER.trace("Creating Http Response object: {}", this.id);
         }
 
 
@@ -215,17 +215,17 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             try {
                 getBody();
             } catch (IOException e) {
-                LOGGER.error(String.format("Error occurred while trying to retrieve Http Response %s in " +
-                                                   "order to close it.", this.id), e);
+                LOGGER.error("Error occurred while trying to retrieve Http Response {} in order to close it.",
+                             this.id, e);
             } finally {
                 try {
                     this.closer.close();
                 } catch (IOException e) {
-                    LOGGER.trace("Error while closing Http Response object: " + this.id);
+                    LOGGER.trace("Error while closing Http Response object: {}", this.id);
                     throw new RuntimeException(e);
                 }
 
-                LOGGER.trace("Closed Http Response object: " + this.id);
+                LOGGER.trace("Closed Http Response object: {}", this.id);
             }
         }
 

@@ -134,10 +134,10 @@ public final class MapfishParser {
 
         try {
             final Method method = objectToPopulate.getClass().getMethod(POST_CONSTRUCT_METHOD_NAME);
-            LOGGER.debug("Executing " + POST_CONSTRUCT_METHOD_NAME + " method on parameter object.");
+            LOGGER.debug("Executing {} method on parameter object.", POST_CONSTRUCT_METHOD_NAME);
             method.invoke(objectToPopulate);
         } catch (NoSuchMethodException e) {
-            LOGGER.debug("No " + POST_CONSTRUCT_METHOD_NAME + " method on parameter object.");
+            LOGGER.debug("No {} method on parameter object.", POST_CONSTRUCT_METHOD_NAME);
         } catch (InvocationTargetException e) {
             final Throwable targetException = e.getTargetException();
             if (targetException instanceof RuntimeException) {

@@ -69,7 +69,7 @@ public class ConfigurationFactory {
                 StringBuilder errors = new StringBuilder();
                 for (Throwable throwable: validate) {
                     errors.append("\n\t* ").append(throwable.getMessage());
-                    LOGGER.error("Configuration Error found: ", throwable);
+                    LOGGER.error("Configuration Error found", throwable);
                 }
                 throw new Error(errors.toString(), validate.get(0));
             }

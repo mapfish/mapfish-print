@@ -252,7 +252,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                 }
             }
         } catch (RuntimeException e) {
-            LOGGER.warn("Error parsing request data: " + requestDataRaw);
+            LOGGER.warn("Error parsing request data: {}", requestDataRaw);
             throw e;
         }
     }
@@ -335,7 +335,6 @@ public class MapPrinterServlet extends BaseMapServlet {
             json.endObject();
             appendJsonpCallbackEnd(jsonpCallback, writer);
         } catch (JSONException | IOException e) {
-            LOGGER.error("Error obtaining status", e);
             throw ExceptionUtils.getRuntimeException(e);
         } catch (NoSuchReferenceException e) {
             error(statusResponse, e.getMessage(), HttpStatus.NOT_FOUND);

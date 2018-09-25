@@ -185,7 +185,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
          * @param e Exception
          */
         public final void error(final SAXParseException e) throws SAXException {
-            LOGGER.debug("XML error: " + e.getLocalizedMessage());
+            LOGGER.debug("XML error: {}", e.getLocalizedMessage());
             super.error(e);
         }
 
@@ -193,7 +193,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
          * @param e Exception
          */
         public final void fatalError(final SAXParseException e) throws SAXException {
-            LOGGER.debug("XML fatal error: " + e.getLocalizedMessage());
+            LOGGER.debug("XML fatal error: {}", e.getLocalizedMessage());
             super.fatalError(e);
         }
 

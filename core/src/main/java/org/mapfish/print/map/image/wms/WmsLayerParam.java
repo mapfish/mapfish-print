@@ -103,7 +103,7 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
         }
 
         if (this.imageFormat.indexOf('/') < 0) {
-            LOGGER.warn("The format should be a mime type");
+            LOGGER.warn("The format {} should be a mime type", this.imageFormat);
             this.imageFormat = "image/" + this.imageFormat;
         }
 

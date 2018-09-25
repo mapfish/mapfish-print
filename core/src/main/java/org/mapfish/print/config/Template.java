@@ -139,7 +139,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
             if (!(attribute instanceof Attribute)) {
                 final String msg =
                         "Attribute: '" + entry.getKey() + "' is not an attribute. It is a: " + attribute;
-                LOGGER.error("Error setting the Attributes: " + msg);
+                LOGGER.error("Error setting the Attributes: {}", msg);
                 throw new IllegalArgumentException(msg);
             } else {
                 ((Attribute) attribute).setConfigName(entry.getKey());
@@ -174,7 +174,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
         for (Processor entry: processorsToCheck) {
             if (!(entry instanceof Processor)) {
                 final String msg = "Processor: " + entry + " is not a processor.";
-                LOGGER.error("Error setting the Attributes: " + msg);
+                LOGGER.error("Error setting the Attributes: {}", msg);
                 throw new IllegalArgumentException(msg);
             }
         }

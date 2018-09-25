@@ -111,7 +111,7 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
             }
 
             try {
-                LOGGER.info("Loading configuration file: " + configFile);
+                LOGGER.info("Loading configuration file: {}", configFile);
                 printer = this.applicationContext.getBean(MapPrinter.class);
                 byte[] bytes = this.configFileLoader.loadFile(configFile);
                 printer.setConfiguration(configFile, bytes);
@@ -122,14 +122,12 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
                 // when throwing a ClosedByInterruptException. so, we do it manually.
                 // see also http://bugs.java.com/view_bug.do?bug_id=7043425
                 Thread.currentThread().interrupt();
-                LOGGER.error(String.format(
-                        "Error occurred while reading configuration file '%s'", configFile), e);
+                LOGGER.error("Error occurred while reading configuration file '{}'", configFile);
                 throw new RuntimeException(String.format(
                         "Error occurred while reading configuration file '%s': ", configFile),
                                            e);
             } catch (Throwable e) {
-                LOGGER.error(String.format(
-                        "Error occurred while reading configuration file '%s'", configFile), e);
+                LOGGER.error("Error occurred while reading configuration file '{}'", configFile);
                 throw new RuntimeException(String.format(
                         "Error occurred while reading configuration file '%s'", configFile), e);
             }

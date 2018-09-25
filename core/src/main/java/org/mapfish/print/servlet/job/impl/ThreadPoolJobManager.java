@@ -243,8 +243,8 @@ public class ThreadPoolJobManager implements JobManager {
                                 } catch (RuntimeException e) {
                                     LOGGER.error("failed to mark job as running", e);
                                 } catch (NoSuchReferenceException e) {
-                                    LOGGER.error("tried to mark non-existing job as 'running': " +
-                                                         printJob.getEntry().getReferenceId(), e);
+                                    LOGGER.error("tried to mark non-existing job as 'running': {}",
+                                                 printJob.getEntry().getReferenceId(), e);
                                 }
                             }
                         }
@@ -524,7 +524,7 @@ public class ThreadPoolJobManager implements JobManager {
             LOGGER.info("The print has finished processing jobs and can now stop");
             stoppedFile.createNewFile();
         } catch (IOException e) {
-            LOGGER.warn("Cannot create the {} file", stoppedFile);
+            LOGGER.warn("Cannot create the {} file", stoppedFile, e);
         }
     }
 

@@ -109,8 +109,8 @@ public final class OldAPIRequestConverter {
             } else {
                 LOGGER.warn(
                         "The request json data has attribute information for creating the map but config " +
-                                "does not have a" +
-                                "map attribute.  Check that the request and the config.yaml are correct.");
+                                "does not have a map attribute.  Check that the request and the config.yaml" +
+                                " are correct.");
                 return;
             }
         } else if (oldMapPage == null) {
@@ -243,8 +243,8 @@ public final class OldAPIRequestConverter {
             } else {
                 LOGGER.warn(
                         "The request json data has attribute information for creating the map but config " +
-                                "does not have a" +
-                                "map attribute.  Check that the request and the config.yaml are correct.");
+                                "does not have a map attribute.  Check that the request and the config.yaml" +
+                                " are correct.");
                 return;
             }
         } else if (oldLegendJson == null) {
@@ -254,8 +254,8 @@ public final class OldAPIRequestConverter {
 
         if (legendProcessors.size() != oldLegendJson.size()) {
             LOGGER.warn(
-                    "Not all legends processors have request data.  There are " + legendProcessors.size() +
-                            " and there are " + oldLegendJson.size() + " legend request objects.");
+                    "Not all legends processors have request data.  There are {} and there are {} legend " +
+                            "request objects.", legendProcessors.size(), oldLegendJson.size());
         }
 
         String legendAttName = "legend";
@@ -329,8 +329,8 @@ public final class OldAPIRequestConverter {
             } else {
                 LOGGER.warn(
                         "The request json data has attribute information for creating the map but config " +
-                                "does not have a" +
-                                "map attribute.  Check that the request and the config.yaml are correct.");
+                                "does not have a map attribute.  Check that the request and the config.yaml" +
+                                " are correct.");
                 return;
             }
         } else if (oldTablePage == null) {

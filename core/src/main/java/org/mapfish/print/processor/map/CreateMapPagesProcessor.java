@@ -129,7 +129,7 @@ public class CreateMapPagesProcessor
         final double minX = aoiBBox.getMinX() - marginWidth - overlapProj / 2;
         final double minY = aoiBBox.getMinY() - marginHeight - overlapProj / 2;
 
-        LOGGER.info("Paging generate a grid of " + nbWidth + "x" + nbHeight + " potential maps.");
+        LOGGER.info("Paging generate a grid of {}x{} potential maps.", nbWidth, nbHeight);
         final int[][] mapIndexes = new int[nbWidth][nbHeight];
         final Envelope[][] mapsBounds = new Envelope[nbWidth][nbHeight];
         int mapIndex = 0;
