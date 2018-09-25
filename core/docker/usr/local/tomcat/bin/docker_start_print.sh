@@ -9,4 +9,4 @@ fi
 
 mkdir -p print-apps
 rm -f /usr/local/tomcat/temp/mapfish-print/ROOT/stop /usr/local/tomcat/temp/mapfish-print/ROOT/stopped
-catalina.sh run
+exec catalina.sh run
