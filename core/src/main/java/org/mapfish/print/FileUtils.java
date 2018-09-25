@@ -109,8 +109,9 @@ public final class FileUtils {
             }
         }
         LOGGER.warn(
-                "A user attempted to access a file not within the '" + descriptorOfBase + "' directories (" +
-                        Arrays.toString(baseFiles) + "). " + "Attempted access to :" + canonicalChild);
+                "A user attempted to access a file not within the '{}' directories ({}). Attempted access " +
+                        "to: {}",
+                descriptorOfBase, Arrays.toString(baseFiles), canonicalChild);
         throw new IllegalFileAccessException(
                 "'" + canonicalChild + "' identifies a file that is not within the '" +
                         descriptorOfBase +

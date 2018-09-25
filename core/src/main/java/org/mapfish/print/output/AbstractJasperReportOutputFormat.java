@@ -266,10 +266,10 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                                 wrongType.append(" expected type: ").append(type).append("\n");
                             }
                         } else {
-                            LOGGER.warn(String.format(
-                                    "The field %s in %s is not available in at least one" +
-                                            " of the rows in the datasource.  This may not be an error.",
-                                    name, reportTemplate));
+                            LOGGER.warn(
+                                    "The field {} in {} is not available in at least one of the rows in the" +
+                                            " datasource.  This may not be an error.",
+                                    name, reportTemplate);
                         }
                     }
                 }

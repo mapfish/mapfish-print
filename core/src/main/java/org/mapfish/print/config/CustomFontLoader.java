@@ -57,11 +57,10 @@ public final class CustomFontLoader {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         boolean registered = ge.registerFont(font);
         if (!registered) {
-            LOGGER.warn(
-                    "Font " + fontFile.getAbsolutePath() + " could not be registered. " +
-                            "Is there already a system font with the same name?");
+            LOGGER.warn("Font {} could not be registered. Is there already a system font with the same name?",
+                        fontFile.getAbsolutePath());
         } else {
-            LOGGER.info("Font " + fontFile.getAbsolutePath() + " registered successfully");
+            LOGGER.info("Font {} registered successfully", fontFile.getAbsolutePath());
         }
     }
 }

@@ -107,7 +107,7 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
                 throw new JRException(e);
             }
         } else {
-            LOGGER.debug("Destination file is already up to date: " + buildFile.getAbsolutePath());
+            LOGGER.debug("Destination file is already up to date: {}", buildFile.getAbsolutePath());
         }
         return buildFile;
     }

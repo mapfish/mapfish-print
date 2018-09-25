@@ -87,7 +87,7 @@ class MapfishPrintRepositoryService implements StreamRepositoryService {
         } catch (IllegalStateException e) {
             LOGGER.info("Resource not found {} ({}).", uri, e.toString());
         } catch (Exception e) {
-            LOGGER.trace(String.format("Error on getting resource %s.", uri), e);
+            LOGGER.trace("Error on getting resource {}", uri, e);
         }
         return null;
     }

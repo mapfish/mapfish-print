@@ -114,7 +114,7 @@ public class WorkingDirectories {
         try {
             FileUtils.deleteDirectory(directory);
         } catch (IOException e) {
-            LOGGER.error("Unable to delete directory '" + directory + "'");
+            LOGGER.error("Unable to delete directory '{}'", directory);
         }
     }
 
@@ -154,8 +154,8 @@ public class WorkingDirectories {
         final File buildFile = new File(getJasperCompilation(configuration), relativePathToFile + extension);
 
         if (!buildFile.getParentFile().exists() && !buildFile.getParentFile().mkdirs()) {
-            logger.error("Unable to create directory for containing compiled jasper report templates: " +
-                                 buildFile.getParentFile());
+            logger.error("Unable to create directory for containing compiled jasper report templates: {}",
+                         buildFile.getParentFile());
         }
         return buildFile;
     }
@@ -219,14 +219,14 @@ public class WorkingDirectories {
                     if ((prefix == null || file.getName().startsWith(prefix))
                             && file.lastModified() < ageThreshold) {
                         if (!FileUtils.deleteQuietly(file)) {
-                            LOGGER.warn("failed to delete file " + file.getAbsolutePath());
+                            LOGGER.warn("failed to delete file {}", file.getAbsolutePath());
                         } else {
                             deletedFiles++;
                         }
                     }
                 }
             }
-            LOGGER.info("deleted " + deletedFiles + " old file(s) in " + dir.getPath());
+            LOGGER.info("deleted {} old file(s) in {}", deletedFiles, dir.getPath());
         }
     }
 }

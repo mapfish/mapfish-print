@@ -49,8 +49,7 @@ public class ScalebarGraphic {
             final int tryNumber) {
         if (tryNumber > MAX_NUMBER_LAYOUTING_TRIES) {
             // if no good layout can be found, stop. an empty scalebar graphic will be shown.
-            LOGGER.error("layouting the scalebar failed (unit: " + scaleUnit.toString()
-                                 + ", scale: " + scaleDenominator + ")");
+            LOGGER.error("layouting the scalebar failed (unit: {}, scale: {})", scaleUnit, scaleDenominator);
             return;
         }
 

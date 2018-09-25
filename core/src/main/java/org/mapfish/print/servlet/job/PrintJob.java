@@ -147,8 +147,8 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
                 this.metricRegistry.counter(getClass().getName() + ".error").inc();
                 jobTracker.onJobError();
             }
-            LOGGER.info("Error executing print job " + canceledText + this.entry.getReferenceId() + "\n" +
-                                this.entry.getRequestData(), e);
+            LOGGER.warn("Error executing print job {} {}\n{}",
+                        this.entry.getRequestData(), canceledText, this.entry.getReferenceId(), e);
             throw e;
         } finally {
             final long totalTimeMS = System.currentTimeMillis() - entry.getStartTime();

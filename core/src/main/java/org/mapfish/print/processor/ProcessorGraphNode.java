@@ -209,7 +209,7 @@ public final class ProcessorGraphNode<In, Out> {
                         // the processor is already canceled, so we don't care if something fails
                         throw new CancellationException();
                     } else {
-                        LOGGER.error("Error while executing process: " + process, e);
+                        LOGGER.error("Error while executing process: " + process);
                         registry.counter(name + ".error").inc();
                         throw ExceptionUtils.getRuntimeException(e);
                     }

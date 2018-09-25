@@ -108,13 +108,13 @@ public class FeaturesParser {
                                 try {
                                     return CRS.parseWKT(wkt);
                                 } catch (FactoryException e) {
-                                    LOGGER.warn("Unable to load linked CRS from geojson: \n" + crsJson +
-                                                        "\n\nWKT loaded from:\n" + wkt);
+                                    LOGGER.warn("Unable to load linked CRS from geojson: \n{}\n\nWKT loaded" +
+                                                        " from:\n{}", crsJson, wkt);
                                 }
                             }
                         }
                     } else {
-                        LOGGER.warn("Unable to load linked CRS from geojson: \n" + crsJson);
+                        LOGGER.warn("Unable to load linked CRS from geojson: \n{}", crsJson);
                     }
                 } else {
                     code.append(getProperty(crsJson, "code"));
@@ -122,16 +122,16 @@ public class FeaturesParser {
 
             }
         } catch (JSONException | IOException | URISyntaxException e) {
-            LOGGER.warn("Error reading the required elements to parse crs of the geojson: \n" + geojson, e);
+            LOGGER.warn("Error reading the required elements to parse crs of the geojson: \n{}", geojson, e);
         }
         try {
             if (code.length() > 0) {
                 crs = CRS.decode(code.toString(), forceLongitudeFirst);
             }
         } catch (NoSuchAuthorityCodeException e) {
-            LOGGER.warn("No CRS with code: " + code + ".\nRead from geojson: \n" + geojson);
+            LOGGER.warn("No CRS with code: {}.\nRead from geojson: \n{}", code, geojson);
         } catch (FactoryException e) {
-            LOGGER.warn("Error loading CRS with code: " + code + ".\nRead from geojson: \n" + geojson);
+            LOGGER.warn("Error loading CRS with code: {}.\nRead from geojson: \n{}", code, geojson);
         }
         return crs;
     }

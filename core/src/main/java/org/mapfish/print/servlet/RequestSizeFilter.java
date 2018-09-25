@@ -37,7 +37,7 @@ public class RequestSizeFilter implements Filter {
             final FilterChain chain) throws IOException, ServletException {
         if (request.getContentLength() > this.maxContentLength) {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
-            LOGGER.error("Request size exceeds limit: " + request.getContentLength() + " bytes");
+            LOGGER.error("Request size exceeds limit: {} bytes", request.getContentLength());
             httpResponse.sendError(HttpStatus.BAD_REQUEST.value(), "Request size exceeds limit");
         } else {
             chain.doFilter(request, response);

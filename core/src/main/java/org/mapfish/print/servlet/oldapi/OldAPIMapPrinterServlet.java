@@ -320,7 +320,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
                     }
                 }
                 if (map == null) {
-                    LOGGER.warn(String.format("Template '%s' contains no map configuration.", name));
+                    LOGGER.warn("Template '{}' contains no map configuration.", name);
                 } else {
                     MapAttributeValues mapValues = map.createValue(template);
                     json.key("map");

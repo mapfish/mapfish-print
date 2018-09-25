@@ -74,20 +74,19 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
                     try {
                         final BufferedImage image = ImageIO.read(response.getBody());
                         if (image == null) {
-                            LOGGER.warn("The URL: " + url + " is NOT an image format that can be decoded");
+                            LOGGER.warn("The URL: {} is NOT an image format that can be decoded", url);
                             return this.defaultImage;
                         }
                         return image;
                     } catch (IOException e) {
-                        LOGGER.warn("Image loaded from '" + url + "'is not valid: " + e.getMessage());
+                        LOGGER.warn("Image loaded from '{}'is not valid", url, e);
                     }
                 } else {
-                    LOGGER.warn("Error loading the table row image: " + url + ".\nStatus Code: " +
-                                        response.getStatusCode() +
-                                        "\nStatus Text: " + response.getStatusText());
+                    LOGGER.warn("Error loading the table row image: {}.\nStatus Code: {}\nStatus Text: {}",
+                                url, response.getStatusCode(), response.getStatusText());
                 }
             } catch (Throwable e) {
-                LOGGER.warn("Error loading table row image: " + uriString, e);
+                LOGGER.warn("Error loading table row image: {}", uriString, e);
             }
         }
 

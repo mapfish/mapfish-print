@@ -527,8 +527,8 @@ public final class CreateMapProcessor
                 mapValues.center = new double[]{center.x, center.y};
                 if (mapValues.zoomToFeatures.minScale != null) {
                     LOGGER.warn(
-                            "The map.zoomToFeatures.minScale is deprecated, " +
-                                    "please use directly the map.scale");
+                            "The map.zoomToFeatures.minScale is deprecated, please use directly the map" +
+                                    ".scale");
                     mapValues.scale = mapValues.zoomToFeatures.minScale;
                 }
                 mapValues.recalculateBounds();

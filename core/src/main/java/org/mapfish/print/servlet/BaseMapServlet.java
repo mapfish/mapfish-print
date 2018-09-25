@@ -46,7 +46,7 @@ public abstract class BaseMapServlet {
             try {
                 return new SimpleDateFormat(variableName).format(date);
             } catch (Exception e) {
-                LOGGER.error("Unable to format timestamp according to pattern: " + variableName, e);
+                LOGGER.error("Unable to format timestamp according to pattern: {}", variableName, e);
                 return "${" + variableName + "}";
             }
         }
@@ -70,7 +70,7 @@ public abstract class BaseMapServlet {
             out.println("Error while processing request:");
             out.println(message);
 
-            LOGGER.error("Error while processing request: " + message);
+            LOGGER.error("Error while processing request: {}", message);
         } catch (IOException ex) {
             throw ExceptionUtils.getRuntimeException(ex);
         } finally {
