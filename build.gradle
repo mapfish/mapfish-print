@@ -24,7 +24,7 @@ buildscript {
 
   dependencies {
       classpath 'org.akhikhl.gretty:gretty:2.0.0'
-      classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0'
+      classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.12.0'
   }
 }
 
