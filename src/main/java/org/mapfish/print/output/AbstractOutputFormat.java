@@ -10,8 +10,6 @@ import com.itextpdf.text.pdf.PdfStream;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.PdfReader;
 
-import java.util.List;
-
 public abstract class AbstractOutputFormat implements OutputFormat {
 
     protected RenderingContext doPrint(PrintParams params) throws DocumentException {
@@ -34,19 +32,8 @@ public abstract class AbstractOutputFormat implements OutputFormat {
 
         doc.close();
         writer.close();
-        
-        // close all opened PdfReader's
-        List<PdfReader> readerList = context.getCustomBlocks().getReaders();
-        if (readerList != null) {
-            for (int i = 0; i < readerList.size(); i++) {
-                try {
-                    readerList.get(i).close();
-                } catch (Exception e) {
-                    context.addError(e);
-                }
-            }
-        }
-        
+        context.getCustomBlocks().closeReaders();
+
         return context;
     }
 }
