@@ -8,6 +8,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfStream;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.PdfReader;
 
 public abstract class AbstractOutputFormat implements OutputFormat {
 
@@ -31,6 +32,7 @@ public abstract class AbstractOutputFormat implements OutputFormat {
 
         doc.close();
         writer.close();
+        context.getCustomBlocks().closeReaders();
 
         return context;
     }
