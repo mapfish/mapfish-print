@@ -59,6 +59,7 @@ public class PDFCustomBlocks extends PdfPageEventHelper {
     private PJsonObject footerParams;
     private String backgroundPdf;
     private final List<Exception> errors = Collections.synchronizedList(new ArrayList<Exception>());
+    private List<PdfReader> readers;
 
     /**
      * cache of background PDF pages
@@ -74,6 +75,7 @@ public class PDFCustomBlocks extends PdfPageEventHelper {
         this.writer = writer;
         this.context = context;
         writer.setPageEvent(this);
+        readers = new ArrayList<PdfReader>();
     }
 
     public void onStartPage(PdfWriter writer, Document document) {
@@ -104,6 +106,7 @@ public class PDFCustomBlocks extends PdfPageEventHelper {
                 PdfImportedPage page = backgroundPdfs.get(backgroundPdf);
                 if (page == null) {
                     PdfReader reader = new PdfReader(backgroundPdf);
+                    this.readers.add(reader);
                     page = writer.getImportedPage(reader, 1);
                     backgroundPdfs.put(backgroundPdf, page);
                 }
@@ -222,4 +225,7 @@ public class PDFCustomBlocks extends PdfPageEventHelper {
         public abstract void render(PdfContentByte dc) throws DocumentException;
     }
 
+    public List<PdfReader> getReaders() {
+        return readers;
+    }
 }
