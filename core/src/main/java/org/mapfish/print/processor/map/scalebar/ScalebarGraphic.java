@@ -421,7 +421,7 @@ public class ScalebarGraphic {
         File path = null;
         if (template.getConfiguration().renderAsSvg(scalebarParams.renderAsSvg)) {
             // render scalebar as SVG
-            final SVGGraphics2D graphics2D = CreateMapProcessor.getSvgGraphics(scalebarParams.getSize());
+            final SVGGraphics2D graphics2D = CreateMapProcessor.createSvgGraphics(scalebarParams.getSize());
 
             try {
                 tryLayout(

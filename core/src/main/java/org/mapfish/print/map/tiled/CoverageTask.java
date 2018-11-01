@@ -86,25 +86,27 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                     this.tilePreparationInfo.getImageWidth(),
                     this.tilePreparationInfo.getImageHeight());
             Graphics2D graphics = coverageImage.createGraphics();
-
-            for (SingleTilePreparationInfo tileInfo: this.tilePreparationInfo.getSingleTiles()) {
-                TileTask task;
-                if (tileInfo.getTileRequest() != null) {
-                    task = new SingleTileLoaderTask(
-                            tileInfo.getTileRequest(), this.errorImage, tileInfo.getTileIndexX(),
-                            tileInfo.getTileIndexY(), this.failOnError, this.registry, this.jobId);
-                } else {
-                    task = new PlaceHolderImageTask(this.tiledLayer.getMissingTileImage(),
-                                                    tileInfo.getTileIndexX(), tileInfo.getTileIndexY());
+            try {
+                for (SingleTilePreparationInfo tileInfo: this.tilePreparationInfo.getSingleTiles()) {
+                    TileTask task;
+                    if (tileInfo.getTileRequest() != null) {
+                        task = new SingleTileLoaderTask(
+                                tileInfo.getTileRequest(), this.errorImage, tileInfo.getTileIndexX(),
+                                tileInfo.getTileIndexY(), this.failOnError, this.registry, this.jobId);
+                    } else {
+                        task = new PlaceHolderImageTask(this.tiledLayer.getMissingTileImage(),
+                                                        tileInfo.getTileIndexX(), tileInfo.getTileIndexY());
+                    }
+                    Tile tile = task.call();
+                    if (tile.getImage() != null) {
+                        graphics.drawImage(tile.getImage(),
+                                           tile.getxIndex() * this.tiledLayer.getTileSize().width,
+                                           tile.getyIndex() * this.tiledLayer.getTileSize().height, null);
+                    }
                 }
-                Tile tile = task.call();
-                if (tile.getImage() != null) {
-                    graphics.drawImage(tile.getImage(),
-                                       tile.getxIndex() * this.tiledLayer.getTileSize().width,
-                                       tile.getyIndex() * this.tiledLayer.getTileSize().height, null);
-                }
+            } finally {
+                graphics.dispose();
             }
-            graphics.dispose();
 
             GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
             GeneralEnvelope gridEnvelope = new GeneralEnvelope(this.tilePreparationInfo.getMapProjection());
