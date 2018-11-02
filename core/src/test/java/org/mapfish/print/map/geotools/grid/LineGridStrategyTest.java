@@ -113,11 +113,11 @@ public class LineGridStrategyTest {
 
     private Map<String, SimpleFeature> idToFeatureMap(SimpleFeatureCollection features) {
         Map<String, SimpleFeature> result = Maps.newHashMap();
-
-        final SimpleFeatureIterator features1 = features.features();
-        while (features1.hasNext()) {
-            final SimpleFeature feature = features1.next();
-            result.put(feature.getID(), feature);
+        try (SimpleFeatureIterator features1 = features.features()) {
+            while (features1.hasNext()) {
+                final SimpleFeature feature = features1.next();
+                result.put(feature.getID(), feature);
+            }
         }
         return result;
     }

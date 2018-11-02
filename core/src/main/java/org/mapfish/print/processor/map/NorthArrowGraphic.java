@@ -118,10 +118,8 @@ public final class NorthArrowGraphic {
 
         final BufferedImage newImage =
                 new BufferedImage(targetSize.width, targetSize.height, BufferedImage.TYPE_4BYTE_ABGR);
-        Graphics2D graphics2d = null;
+        final Graphics2D graphics2d = newImage.createGraphics();
         try {
-            graphics2d = newImage.createGraphics();
-
             final BufferedImage originalImage = ImageIO.read(rasterReference.inputStream);
             if (originalImage == null) {
                 LOGGER.warn("Unable to load NorthArrow graphic: {}, it is not an image format that can be " +
@@ -167,9 +165,7 @@ public final class NorthArrowGraphic {
 
             ImageUtils.writeImage(newImage, "tiff", path);
         } finally {
-            if (graphics2d != null) {
-                graphics2d.dispose();
-            }
+            graphics2d.dispose();
         }
         return path.toURI();
     }

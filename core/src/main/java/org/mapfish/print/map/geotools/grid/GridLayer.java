@@ -79,53 +79,59 @@ public final class GridLayer implements MapLayer {
             final Graphics2D graphics, final MfClientHttpRequestFactory clientHttpRequestFactory,
             final MapfishMapContext transformer, final String jobId) {
         Graphics2D graphics2D = (Graphics2D) graphics.create();
-        float haloRadius = (float) this.params.haloRadius;
-        double dpiScaling = transformer.getDPI() / Constants.PDF_DPI;
+        try {
+            float haloRadius = (float) this.params.haloRadius;
+            double dpiScaling = transformer.getDPI() / Constants.PDF_DPI;
 
-        this.grid.render(graphics2D, clientHttpRequestFactory, transformer, jobId);
-        Font baseFont = null;
-        for (String fontName: this.params.font.name) {
-            try {
-                baseFont = new Font(fontName, this.params.font.style.styleId,
-                                    (int) (this.params.font.size * dpiScaling));
-                break;
-            } catch (Exception e) {
-                // try next font in list
-            }
-        }
-
-        graphics2D.setFont(baseFont);
-        int halfCharHeight = (graphics2D.getFontMetrics().getAscent() / 2);
-        Stroke baseStroke = graphics2D.getStroke();
-        AffineTransform baseTransform = graphics2D.getTransform();
-        Color haloColor = ColorParser.toColor(this.params.haloColor);
-        Color labelColor = ColorParser.toColor(this.params.labelColor);
-
-        for (GridLabel label: this.labels) {
-            Shape textShape =
-                    baseFont.createGlyphVector(graphics2D.getFontRenderContext(), label.text).getOutline();
-
-            Rectangle2D textBounds = textShape.getBounds2D();
-            AffineTransform transform = new AffineTransform(baseTransform);
-            transform.translate(label.x, label.y);
-
-            applyOffset(transform, label.side);
-
-            RotationQuadrant.getQuadrant(transformer.getRotation(), this.params.rotateLabels)
-                    .updateTransform(transform, this.params.indent, label.side,
-                                     halfCharHeight, textBounds);
-            graphics2D.setTransform(transform);
-
-            if (haloRadius > 0.0f) {
-                graphics2D.setStroke(
-                        new BasicStroke(2.0f * haloRadius, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-                graphics2D.setColor(haloColor);
-                graphics2D.draw(textShape);
+            this.grid.render(graphics2D, clientHttpRequestFactory, transformer, jobId);
+            Font baseFont = null;
+            for (String fontName: this.params.font.name) {
+                try {
+                    baseFont = new Font(fontName, this.params.font.style.styleId,
+                                        (int) (this.params.font.size * dpiScaling));
+                    break;
+                } catch (Exception e) {
+                    // try next font in list
+                }
             }
 
-            graphics2D.setStroke(baseStroke);
-            graphics2D.setColor(labelColor);
-            graphics2D.fill(textShape);
+            graphics2D.setFont(baseFont);
+            int halfCharHeight = (graphics2D.getFontMetrics().getAscent() / 2);
+            Stroke baseStroke = graphics2D.getStroke();
+            AffineTransform baseTransform = graphics2D.getTransform();
+            Color haloColor = ColorParser.toColor(this.params.haloColor);
+            Color labelColor = ColorParser.toColor(this.params.labelColor);
+
+            for (GridLabel label: this.labels) {
+                Shape textShape =
+                        baseFont.createGlyphVector(graphics2D.getFontRenderContext(), label.text)
+                                .getOutline();
+
+                Rectangle2D textBounds = textShape.getBounds2D();
+                AffineTransform transform = new AffineTransform(baseTransform);
+                transform.translate(label.x, label.y);
+
+                applyOffset(transform, label.side);
+
+                RotationQuadrant.getQuadrant(transformer.getRotation(), this.params.rotateLabels)
+                        .updateTransform(transform, this.params.indent, label.side,
+                                         halfCharHeight, textBounds);
+                graphics2D.setTransform(transform);
+
+                if (haloRadius > 0.0f) {
+                    graphics2D.setStroke(
+                            new BasicStroke(2.0f * haloRadius, BasicStroke.CAP_ROUND,
+                                            BasicStroke.JOIN_ROUND));
+                    graphics2D.setColor(haloColor);
+                    graphics2D.draw(textShape);
+                }
+
+                graphics2D.setStroke(baseStroke);
+                graphics2D.setColor(labelColor);
+                graphics2D.fill(textShape);
+            }
+        } finally {
+            graphics2D.dispose();
         }
     }
 

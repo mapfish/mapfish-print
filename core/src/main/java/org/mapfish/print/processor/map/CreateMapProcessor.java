@@ -186,7 +186,7 @@ public final class CreateMapProcessor
      *
      * @param size The size of the SVG graphic.
      */
-    public static SVGGraphics2D getSvgGraphics(final Dimension size)
+    public static SVGGraphics2D createSvgGraphics(final Dimension size)
             throws ParserConfigurationException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
@@ -396,7 +396,7 @@ public final class CreateMapProcessor
                 // render layers as SVG
                 for (MapLayer layer: layerGroup.layers) {
                     checkCancelState(context);
-                    final SVGGraphics2D graphics2D = getSvgGraphics(mapContext.getMapSize());
+                    final SVGGraphics2D graphics2D = createSvgGraphics(mapContext.getMapSize());
 
                     try {
                         Graphics2D clippedGraphics2D = createClippedGraphics(
