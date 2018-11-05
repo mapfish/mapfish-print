@@ -15,6 +15,7 @@
         p:fileSuffix="gif"/>
     <bean id="bmpOutputFormat" class="org.mapfish.print.output.JasperReportImageOutputFormat" scope="prototype"
         p:fileSuffix="bmp"/>
+    <bean id="svgOutputFormat" class="org.mapfish.print.output.JasperReportSvgOutputFormat" scope="prototype" />
 
     <bean id="pngMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
         p:fileSuffix="png" p:contentType="image/png"/>
