@@ -47,7 +47,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
     protected final List<? extends Layer> getLayers(
             final MfClientHttpRequestFactory httpRequestFactory,
             final MapfishMapContext mapContext,
-            final String jobId) throws Exception {
+            final String jobId) {
         BufferedImage image;
         try {
             image = loadImage(httpRequestFactory, mapContext);

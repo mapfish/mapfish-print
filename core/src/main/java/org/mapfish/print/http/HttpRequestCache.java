@@ -5,6 +5,7 @@ import com.codahale.metrics.Timer;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.AbstractClientHttpResponse;
@@ -36,6 +37,7 @@ public final class HttpRequestCache {
     private final File temporaryDirectory;
 
     private final MetricRegistry registry;
+    private final String jobId;
 
     private boolean cached = false;
 
@@ -44,10 +46,14 @@ public final class HttpRequestCache {
      *
      * @param temporaryDirectory temporary directory for cached requests
      * @param registry the metric registry
+     * @param jobId the job ID
      */
-    public HttpRequestCache(final File temporaryDirectory, final MetricRegistry registry) {
+    public HttpRequestCache(
+            final File temporaryDirectory, final MetricRegistry registry,
+            final String jobId) {
         this.temporaryDirectory = temporaryDirectory;
         this.registry = registry;
+        this.jobId = jobId;
     }
 
     private CachedClientHttpRequest save(final CachedClientHttpRequest request) {
@@ -62,7 +68,7 @@ public final class HttpRequestCache {
      * @return the cached http request
      */
     public ClientHttpRequest register(final ClientHttpRequest originalRequest) {
-        return save(new CachedClientHttpRequest(originalRequest));
+        return save(new CachedClientHttpRequest(originalRequest, this.jobId));
     }
 
     /**
@@ -150,10 +156,12 @@ public final class HttpRequestCache {
 
     private final class CachedClientHttpRequest implements ClientHttpRequest, Callable<Void> {
         private final ClientHttpRequest originalRequest;
+        private final String jobId;
         private ClientHttpResponse response;
 
-        private CachedClientHttpRequest(final ClientHttpRequest request) {
+        private CachedClientHttpRequest(final ClientHttpRequest request, final String jobId) {
             this.originalRequest = request;
+            this.jobId = jobId;
         }
 
         @Override
@@ -193,6 +201,7 @@ public final class HttpRequestCache {
 
         @Override
         public Void call() throws Exception {
+            MDC.put("job_id", this.jobId);
             final String baseMetricName = HttpRequestCache.class.getName() + ".read." + getURI().getHost();
             final Timer.Context timerDownload = HttpRequestCache.this.registry.timer(baseMetricName).time();
             ClientHttpResponse originalResponse = null;

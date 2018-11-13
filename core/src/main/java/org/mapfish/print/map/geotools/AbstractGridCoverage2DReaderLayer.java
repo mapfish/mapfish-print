@@ -48,7 +48,7 @@ public abstract class AbstractGridCoverage2DReaderLayer extends AbstractGeotools
     public final synchronized List<? extends Layer> getLayers(
             final MfClientHttpRequestFactory httpRequestFactory,
             final MapfishMapContext mapContext,
-            final String jobId) throws Exception {
+            final String jobId) {
         AbstractGridCoverage2DReader coverage2DReader =
                 this.coverage2DReaderSupplier.apply(httpRequestFactory);
         Style style = this.styleSupplier.load(httpRequestFactory, coverage2DReader);

@@ -156,5 +156,10 @@ public interface Processor<In, Out> extends ConfigurationObject {
          * @return The ExecutionStats object
          */
         ExecutionStats getStats();
+
+        /**
+         * @return The job ID
+         */
+        String getJobId();
     }
 }

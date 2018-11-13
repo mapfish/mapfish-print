@@ -15,6 +15,7 @@ import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -335,6 +336,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
         @Override
         public Object[] call() throws IOException, URISyntaxException, JRException {
+            MDC.put("job_id", context.getJobId());
             BufferedImage image = null;
             final URI uri = this.icon.toURI();
             final String metricName = LegendProcessor.class.getName() + ".read." + uri.getHost();

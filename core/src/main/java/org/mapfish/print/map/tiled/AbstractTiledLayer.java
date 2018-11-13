@@ -68,7 +68,7 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
     @Override
     protected final List<? extends Layer> getLayers(
             final MfClientHttpRequestFactory httpRequestFactory,
-            final MapfishMapContext mapContext, final String jobId) throws Exception {
+            final MapfishMapContext mapContext, final String jobId) {
 
         final CoverageTask task = new CoverageTask(this.tilePreparationInfo,
                                                    getFailOnError(), this.registry, jobId,

@@ -193,8 +193,17 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
      */
     public static final class Context implements ExecutionContext {
 
+        private final String jobId;
         private volatile boolean canceled = false;
         private ExecutionStats stats = new ExecutionStats();
+
+        /**
+         * @param jobId The job ID.
+         */
+        public Context(final String jobId) {
+            this.jobId = jobId;
+        }
+
 
         /**
          * Sets the canceled flag.
@@ -211,6 +220,11 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
         @Override
         public ExecutionStats getStats() {
             return this.stats;
+        }
+
+        @Override
+        public String getJobId() {
+            return this.jobId;
         }
     }
 }

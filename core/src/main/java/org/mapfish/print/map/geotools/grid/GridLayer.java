@@ -160,7 +160,7 @@ public final class GridLayer implements MapLayer {
     List<? extends Layer> getLayers(
             @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
             @Nonnull final MapfishMapContext mapContext,
-            @Nonnull final String jobId) throws Exception {
+            @Nonnull final String jobId) {
         return this.grid.getLayers(httpRequestFactory, mapContext, jobId);
     }
 
