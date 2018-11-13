@@ -59,7 +59,7 @@ public abstract class BaseMapServlet {
      * @param message the message to send
      * @param code the error code
      */
-    protected static final void error(
+    protected static void error(
             final HttpServletResponse httpServletResponse, final String message, final HttpStatus code) {
         PrintWriter out = null;
         try {
@@ -143,6 +143,6 @@ public abstract class BaseMapServlet {
      * @param response the response
      */
     protected void setCache(final HttpServletResponse response) {
-        response.setHeader("Cache-Control", "max-age=" + String.valueOf(this.cacheDurationInSeconds));
+        response.setHeader("Cache-Control", "max-age=" + this.cacheDurationInSeconds);
     }
 }

@@ -166,7 +166,7 @@ public class OldAPIMapPrinterServletTest extends AbstractMapfishSpringTest {
         }
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), infoResponse.getStatus());
         final String content = infoResponse.getContentAsString();
-        assertTrue(content.contains("Error while processing request"));
+        assertTrue(content, content.contains("Error while processing request"));
     }
 
     @Test
