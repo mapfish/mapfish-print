@@ -11,11 +11,9 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.output.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 import java.util.IdentityHashMap;
 import java.util.Set;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
@@ -187,51 +185,47 @@ public final class ProcessorGraphNode<In, Out> {
 
         @Override
         protected Values compute() {
-            MDC.put("job_id", this.execContext.getJobId());
-            final Values values = this.execContext.getValues();
+            return this.execContext.getContext().mdcContext(() -> {
+                final Values values = this.execContext.getValues();
 
-            final Processor<In, Out> process = this.node.processor;
-            final MetricRegistry registry = this.node.metricRegistry;
-            final String name = String.format("%s.compute.%s",
-                                              ProcessorGraphNode.class.getName(),
-                                              process.getClass().getName());
-            Timer.Context timerContext = registry.timer(name).time();
-            try {
-                final In inputParameter = ProcessorUtils.populateInputParameter(process, values);
-
-                Out output;
+                final Processor<In, Out> process = this.node.processor;
+                final MetricRegistry registry = this.node.metricRegistry;
+                final String name = String.format("%s.compute.%s",
+                                                  ProcessorGraphNode.class.getName(),
+                                                  process.getClass().getName());
+                Timer.Context timerContext = registry.timer(name).time();
                 try {
-                    LOGGER.debug("Executing process: {}", process);
-                    output = process.execute(inputParameter, this.execContext.getContext());
-                    LOGGER.debug("Succeeded in executing process: {}", process);
-                } catch (Exception e) {
-                    if (this.execContext.getContext().isCanceled()) {
+                    final In inputParameter = ProcessorUtils.populateInputParameter(process, values);
+
+                    Out output;
+                    try {
+                        LOGGER.debug("Executing process: {}", process);
+                        output = process.execute(inputParameter, this.execContext.getContext());
+                        LOGGER.debug("Succeeded in executing process: {}", process);
+                    } catch (Exception e) {
                         // the processor is already canceled, so we don't care if something fails
-                        throw new CancellationException();
-                    } else {
+                        this.execContext.getContext().stopIfCanceled();
                         LOGGER.error("Error while executing process: " + process);
                         registry.counter(name + ".error").inc();
                         throw ExceptionUtils.getRuntimeException(e);
                     }
+
+                    if (output != null) {
+                        ProcessorUtils.writeProcessorOutputToValues(output, process, values);
+                    }
+                } finally {
+                    this.execContext.finished(this.node);
+                    final long processorTime = TimeUnit.MILLISECONDS.convert(
+                            timerContext.stop(), TimeUnit.NANOSECONDS);
+                    LOGGER.info("Time taken to run processor: '{}' was {} ms",
+                                process.getClass(), processorTime);
                 }
 
-                if (output != null) {
-                    ProcessorUtils.writeProcessorOutputToValues(output, process, values);
-                }
-            } finally {
-                this.execContext.finished(this.node);
-                final long processorTime = TimeUnit.MILLISECONDS.convert(
-                        timerContext.stop(), TimeUnit.NANOSECONDS);
-                LOGGER.info("Time taken to run processor: '{}' was {} ms",
-                            process.getClass(), processorTime);
-            }
+                this.execContext.getContext().stopIfCanceled();
+                ProcessorDependencyGraph.tryExecuteNodes(this.node.dependencies, this.execContext, true);
 
-            if (this.execContext.getContext().isCanceled()) {
-                throw new CancellationException();
-            }
-            ProcessorDependencyGraph.tryExecuteNodes(this.node.dependencies, this.execContext, true);
-
-            return values;
+                return values;
+            });
         }
     }
 }

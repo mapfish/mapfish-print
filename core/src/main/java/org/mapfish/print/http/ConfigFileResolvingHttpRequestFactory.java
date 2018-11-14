@@ -3,6 +3,7 @@ package org.mapfish.print.http;
 import com.google.common.collect.Lists;
 import com.vividsolutions.jts.util.Assert;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.processor.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -98,10 +99,10 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
         @Override
         protected synchronized ClientHttpResponse executeInternal(final HttpHeaders headers)
                 throws IOException {
-            final boolean noJobId = MDC.get("job_id") == null;
-            if (noJobId) {  // that can be called from threads that don't belong to MFP, so we have to be
-                // careful
-                MDC.put("job_id", ConfigFileResolvingHttpRequestFactory.this.jobId);
+            final String prev = MDC.get(Processor.MDC_JOB_ID_KEY);
+            boolean mdcChanged = prev == null || jobId.equals(prev);
+            if (mdcChanged) {
+                MDC.put(Processor.MDC_JOB_ID_KEY, ConfigFileResolvingHttpRequestFactory.this.jobId);
             }
             try {
                 if (this.request != null) {
@@ -126,8 +127,12 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
                 LOGGER.debug("Executing http request: {}", this.getURI());
                 return executeCallbacksAndRequest(createRequestFromWrapped(headers));
             } finally {
-                if (noJobId) {
-                    MDC.remove("job_id");
+                if (mdcChanged) {
+                    if (prev != null) {
+                        MDC.put(Processor.MDC_JOB_ID_KEY, prev);
+                    } else {
+                        MDC.remove(Processor.MDC_JOB_ID_KEY);
+                    }
                 }
             }
         }

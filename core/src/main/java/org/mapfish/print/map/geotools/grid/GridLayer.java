@@ -13,6 +13,7 @@ import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.FeatureSourceSupplier;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.style.json.ColorParser;
+import org.mapfish.print.processor.Processor;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -77,13 +78,13 @@ public final class GridLayer implements MapLayer {
     @Override
     public void render(
             final Graphics2D graphics, final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final MapfishMapContext transformer, final String jobId) {
+            final MapfishMapContext transformer, final Processor.ExecutionContext context) {
         Graphics2D graphics2D = (Graphics2D) graphics.create();
         try {
             float haloRadius = (float) this.params.haloRadius;
             double dpiScaling = transformer.getDPI() / Constants.PDF_DPI;
 
-            this.grid.render(graphics2D, clientHttpRequestFactory, transformer, jobId);
+            this.grid.render(graphics2D, clientHttpRequestFactory, transformer, context);
             Font baseFont = null;
             for (String fontName: this.params.font.name) {
                 try {
@@ -160,8 +161,8 @@ public final class GridLayer implements MapLayer {
     List<? extends Layer> getLayers(
             @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
             @Nonnull final MapfishMapContext mapContext,
-            @Nonnull final String jobId) {
-        return this.grid.getLayers(httpRequestFactory, mapContext, jobId);
+            @Nonnull final Processor.ExecutionContext context) {
+        return this.grid.getLayers(httpRequestFactory, mapContext, context);
     }
 
     @Override
@@ -173,8 +174,8 @@ public final class GridLayer implements MapLayer {
     public void cacheResources(
             final HttpRequestCache httpRequestCache,
             final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer,
-            final String jobId) {
-        this.grid.cacheResources(httpRequestCache, clientHttpRequestFactory, transformer, jobId);
+            final Processor.ExecutionContext context) {
+        this.grid.cacheResources(httpRequestCache, clientHttpRequestFactory, transformer, context);
     }
 
     @Override

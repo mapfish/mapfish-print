@@ -11,6 +11,7 @@ import org.geotools.styling.visitor.RescaleStyleVisitor;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
+import org.mapfish.print.processor.Processor;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -75,7 +76,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
     @Override
     public final List<? extends Layer> getLayers(
             @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
-            @Nonnull final MapfishMapContext mapContext, @Nonnull final String jobId) {
+            @Nonnull final MapfishMapContext mapContext, @Nonnull final Processor.ExecutionContext context) {
         FeatureSource<?, ?> source = getFeatureSource(httpRequestFactory, mapContext);
         Style style = this.styleSupplier.load(httpRequestFactory, source);
 

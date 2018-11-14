@@ -13,6 +13,7 @@ import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.image.AbstractSingleImageLayer;
 import org.mapfish.print.map.style.json.ColorParser;
+import org.mapfish.print.processor.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -153,7 +154,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
     public void cacheResources(
             @Nonnull final HttpRequestCache httpRequestCache,
             @Nonnull final MfClientHttpRequestFactory requestFactory,
-            @Nonnull final MapfishMapContext transformer, @Nonnull final String jobId) {
+            @Nonnull final MapfishMapContext transformer, @Nonnull final Processor.ExecutionContext context) {
         try {
             final MapfishMapContext layerTransformer = getLayerTransformer(transformer);
 

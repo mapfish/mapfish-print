@@ -16,6 +16,7 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.HttpRequestCache;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
+import org.mapfish.print.processor.Processor;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -61,7 +62,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     public final void render(
             final Graphics2D graphics2D,
             final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final MapfishMapContext transformer, final String jobId) {
+            final MapfishMapContext transformer, final Processor.ExecutionContext context) {
 
         MapfishMapContext layerTransformer = getLayerTransformer(transformer);
 
@@ -72,7 +73,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         Rectangle paintArea = new Rectangle(layerTransformer.getMapSize());
         MapContent content = new MapContent();
         try {
-            List<? extends Layer> layers = getLayers(clientHttpRequestFactory, layerTransformer, jobId);
+            List<? extends Layer> layers = getLayers(clientHttpRequestFactory, layerTransformer, context);
             applyTransparency(layers);
 
             content.addLayers(layers);
@@ -146,11 +147,11 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
      *
      * @param httpRequestFactory the factory for making http requests
      * @param transformer the map transformer
-     * @param jobId the job ID
+     * @param context the job ID
      */
     protected abstract List<? extends Layer> getLayers(
             MfClientHttpRequestFactory httpRequestFactory,
-            MapfishMapContext transformer, String jobId) throws Exception;
+            MapfishMapContext transformer, Processor.ExecutionContext context) throws Exception;
 
     @Override
     public boolean supportsNativeRotation() {
@@ -194,6 +195,6 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     public void cacheResources(
             final HttpRequestCache httpRequestCache,
             final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer,
-            final String jobId) {
+            final Processor.ExecutionContext context) {
     }
 }

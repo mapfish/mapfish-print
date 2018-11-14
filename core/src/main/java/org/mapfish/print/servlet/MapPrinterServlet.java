@@ -13,6 +13,7 @@ import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.http.matcher.UriMatchers;
 import org.mapfish.print.servlet.job.JobManager;
 import org.mapfish.print.servlet.job.NoSuchReferenceException;
@@ -313,6 +314,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
             final HttpServletRequest statusRequest,
             final HttpServletResponse statusResponse) {
+        MDC.put(Processor.MDC_JOB_ID_KEY, referenceId);
         setNoCache(statusResponse);
         PrintWriter writer = null;
         try {
@@ -377,6 +379,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     public final void cancel(
             @PathVariable final String referenceId,
             final HttpServletResponse statusResponse) {
+        MDC.put(Processor.MDC_JOB_ID_KEY, referenceId);
         setNoCache(statusResponse);
         try {
             this.jobManager.cancel(referenceId);
@@ -407,6 +410,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                                              createReportResponse);
         if (ref == null) {
             error(createReportResponse, "Failed to create a print job", HttpStatus.INTERNAL_SERVER_ERROR);
+            return;
         }
 
         PrintWriter writer = null;
@@ -463,6 +467,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
             final HttpServletResponse getReportResponse)
             throws IOException, ServletException {
+        MDC.put(Processor.MDC_JOB_ID_KEY, referenceId);
         setNoCache(getReportResponse);
         loadReport(referenceId, getReportResponse, new HandleReportLoadResult<Void>() {
 
@@ -558,6 +563,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                                              createReportResponse);
         if (ref == null) {
             error(createReportResponse, "Failed to create a print job", HttpStatus.INTERNAL_SERVER_ERROR);
+            return;
         }
 
         final HandleReportLoadResult<Boolean> handler = new HandleReportLoadResult<Boolean>() {
@@ -649,6 +655,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
             final HttpServletResponse listAppsResponse) throws ServletException,
             IOException {
+        MDC.remove(Processor.MDC_JOB_ID_KEY);
         setCache(listAppsResponse);
         Set<String> appIds = this.printerFactory.getAppIds();
 
@@ -707,6 +714,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             final HttpServletRequest request,
             final HttpServletResponse capabilitiesResponse) throws ServletException,
             IOException {
+        MDC.remove(Processor.MDC_JOB_ID_KEY);
         setCache(capabilitiesResponse);
         MapPrinter printer;
         try {
@@ -809,6 +817,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             final HttpServletRequest request,
             final HttpServletResponse getExampleResponse) throws
             IOException {
+        MDC.remove(Processor.MDC_JOB_ID_KEY);
         setCache(getExampleResponse);
         PrintWriter writer = null;
         try {
@@ -895,6 +904,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     @RequestMapping(value = FONTS_URL)
     @ResponseBody
     public final String listAvailableFonts() {
+        MDC.remove(Processor.MDC_JOB_ID_KEY);
         GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
         JSONArray availableFonts = new JSONArray();
         for (String font: e.getAvailableFontFamilyNames()) {
@@ -999,7 +1009,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         String ref = maybeAddRequestId(
                 UUID.randomUUID().toString() + "@" + this.servletInfo.getServletId(),
                 httpServletRequest);
-        MDC.put("job_id", ref);
+        MDC.put(Processor.MDC_JOB_ID_KEY, ref);
         LOGGER.debug("\nspec:\n{}", specJson);
 
         specJson.getInternalObj().remove(JSON_OUTPUT_FORMAT);

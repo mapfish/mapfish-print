@@ -155,6 +155,6 @@ public final class ProcessorExecutionContext {
     }
 
     public String getJobId() {
-        return this.values.getString(Values.JOB_ID_KEY);
+        return this.context.getJobId();
     }
 }

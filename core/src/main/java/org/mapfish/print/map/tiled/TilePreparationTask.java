@@ -15,12 +15,12 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.HttpRequestCache;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.tiled.TilePreparationInfo.SingleTilePreparationInfo;
+import org.mapfish.print.processor.Processor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.http.client.ClientHttpRequest;
 
 import java.awt.Dimension;
@@ -41,7 +41,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
     private final Rectangle paintArea;
     private final MapfishMapContext transformer;
     private final TileCacheInformation tiledLayer;
-    private final String jobId;
+    private final Processor.ExecutionContext context;
     private final MfClientHttpRequestFactory httpRequestFactory;
     private final HttpRequestCache requestCache;
     private Optional<Geometry> cachedRotatedMapBounds = null;
@@ -53,104 +53,106 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
      * @param transformer a transformer for making calculations
      * @param tileCacheInfo the object used to create the tile requests
      * @param requestCache request cache
-     * @param jobId the job ID
+     * @param context the job ID
      */
     public TilePreparationTask(
             @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
             @Nonnull final MapfishMapContext transformer,
             @Nonnull final TileCacheInformation tileCacheInfo,
             final HttpRequestCache requestCache,
-            @Nonnull final String jobId) {
+            @Nonnull final Processor.ExecutionContext context) {
         this.requestCache = requestCache;
         this.bounds = transformer.getBounds();
         this.paintArea = new Rectangle(transformer.getMapSize());
         this.httpRequestFactory = httpRequestFactory;
         this.transformer = transformer;
         this.tiledLayer = tileCacheInfo;
-        this.jobId = jobId;
+        this.context = context;
     }
 
     /**
      * Call the Tile Preparation Task.
      */
     public TilePreparationInfo call() {
-        try {
-            MDC.put("job_id", this.jobId);
-            final ReferencedEnvelope mapGeoBounds = this.bounds.toReferencedEnvelope(this.paintArea);
-            final CoordinateReferenceSystem mapProjection = mapGeoBounds.getCoordinateReferenceSystem();
-            Dimension tileSizeOnScreen = this.tiledLayer.getTileSize();
+        return this.context.mdcContext(() -> {
+            try {
+                final ReferencedEnvelope mapGeoBounds = this.bounds.toReferencedEnvelope(this.paintArea);
+                final CoordinateReferenceSystem mapProjection = mapGeoBounds.getCoordinateReferenceSystem();
+                Dimension tileSizeOnScreen = this.tiledLayer.getTileSize();
 
-            final double layerResolution = this.tiledLayer.getResolution();
-            Coordinate tileSizeInWorld = new Coordinate(tileSizeOnScreen.width * layerResolution,
-                                                        tileSizeOnScreen.height * layerResolution);
+                final double layerResolution = this.tiledLayer.getResolution();
+                Coordinate tileSizeInWorld = new Coordinate(tileSizeOnScreen.width * layerResolution,
+                                                            tileSizeOnScreen.height * layerResolution);
 
-            // The minX minY of the first (minY, minY) tile
-            Coordinate gridCoverageOrigin =
-                    this.tiledLayer.getMinGeoCoordinate(mapGeoBounds, tileSizeInWorld);
+                // The minX minY of the first (minY, minY) tile
+                Coordinate gridCoverageOrigin =
+                        this.tiledLayer.getMinGeoCoordinate(mapGeoBounds, tileSizeInWorld);
 
-            final String commonUrl = this.tiledLayer.createCommonUrl();
+                final String commonUrl = this.tiledLayer.createCommonUrl();
 
-            ReferencedEnvelope tileCacheBounds = this.tiledLayer.getTileCacheBounds();
-            final double resolution = this.tiledLayer.getResolution();
-            double rowFactor = 1 / (resolution * tileSizeOnScreen.height);
-            double columnFactor = 1 / (resolution * tileSizeOnScreen.width);
+                ReferencedEnvelope tileCacheBounds = this.tiledLayer.getTileCacheBounds();
+                final double resolution = this.tiledLayer.getResolution();
+                double rowFactor = 1 / (resolution * tileSizeOnScreen.height);
+                double columnFactor = 1 / (resolution * tileSizeOnScreen.width);
 
-            int imageWidth = 0;
-            int imageHeight = 0;
-            int xIndex;
-            int yIndex = (int) Math.floor((mapGeoBounds.getMaxY() - gridCoverageOrigin.y) /
-                                                  tileSizeInWorld.y) + 1;
+                int imageWidth = 0;
+                int imageHeight = 0;
+                int xIndex;
+                int yIndex = (int) Math.floor((mapGeoBounds.getMaxY() - gridCoverageOrigin.y) /
+                                                      tileSizeInWorld.y) + 1;
 
-            double gridCoverageMaxX = gridCoverageOrigin.x;
-            double gridCoverageMaxY = gridCoverageOrigin.y;
+                double gridCoverageMaxX = gridCoverageOrigin.x;
+                double gridCoverageMaxY = gridCoverageOrigin.y;
 
-            List<SingleTilePreparationInfo> tiles = Lists.newArrayList();
+                List<SingleTilePreparationInfo> tiles = Lists.newArrayList();
 
-            for (double geoY = gridCoverageOrigin.y; geoY < mapGeoBounds.getMaxY();
-                 geoY += tileSizeInWorld.y) {
-                yIndex--;
-                imageHeight += tileSizeOnScreen.height;
-                imageWidth = 0;
-                xIndex = -1;
+                for (double geoY = gridCoverageOrigin.y; geoY < mapGeoBounds.getMaxY();
+                     geoY += tileSizeInWorld.y) {
+                    yIndex--;
+                    imageHeight += tileSizeOnScreen.height;
+                    imageWidth = 0;
+                    xIndex = -1;
 
-                gridCoverageMaxX = gridCoverageOrigin.x;
-                gridCoverageMaxY += tileSizeInWorld.y;
-                for (double geoX = gridCoverageOrigin.x; geoX < mapGeoBounds.getMaxX();
-                     geoX += tileSizeInWorld.x) {
-                    xIndex++;
-                    imageWidth += tileSizeOnScreen.width;
-                    gridCoverageMaxX += tileSizeInWorld.x;
+                    gridCoverageMaxX = gridCoverageOrigin.x;
+                    gridCoverageMaxY += tileSizeInWorld.y;
+                    for (double geoX = gridCoverageOrigin.x; geoX < mapGeoBounds.getMaxX();
+                         geoX += tileSizeInWorld.x) {
+                        xIndex++;
+                        imageWidth += tileSizeOnScreen.width;
+                        gridCoverageMaxX += tileSizeInWorld.x;
 
-                    ReferencedEnvelope tileBounds = new ReferencedEnvelope(
-                            geoX, geoX + tileSizeInWorld.x, geoY, geoY + tileSizeInWorld.y,
-                            mapProjection);
+                        ReferencedEnvelope tileBounds = new ReferencedEnvelope(
+                                geoX, geoX + tileSizeInWorld.x, geoY, geoY + tileSizeInWorld.y,
+                                mapProjection);
 
-                    int row = (int) Math.round((tileCacheBounds.getMaxY() -
-                            tileBounds.getMaxY()) * rowFactor);
-                    int column = (int) Math.round((tileBounds.getMinX() -
-                            tileCacheBounds.getMinX()) * columnFactor);
+                        int row = (int) Math.round((tileCacheBounds.getMaxY() -
+                                tileBounds.getMaxY()) * rowFactor);
+                        int column = (int) Math.round((tileBounds.getMinX() -
+                                tileCacheBounds.getMinX()) * columnFactor);
 
-                    ClientHttpRequest tileRequest = this.tiledLayer.getTileRequest(this.httpRequestFactory,
-                                                                                   commonUrl, tileBounds,
-                                                                                   tileSizeOnScreen, column,
-                                                                                   row);
-                    if (isInTileCacheBounds(tileCacheBounds, tileBounds)) {
-                        if (isTileVisible(tileBounds)) {
-                            tileRequest = this.requestCache.register(tileRequest);
-                            tiles.add(new SingleTilePreparationInfo(xIndex, yIndex, tileRequest));
+                        ClientHttpRequest tileRequest =
+                                this.tiledLayer.getTileRequest(this.httpRequestFactory,
+                                                               commonUrl, tileBounds,
+                                                               tileSizeOnScreen, column,
+                                                               row);
+                        if (isInTileCacheBounds(tileCacheBounds, tileBounds)) {
+                            if (isTileVisible(tileBounds)) {
+                                tileRequest = this.requestCache.register(tileRequest);
+                                tiles.add(new SingleTilePreparationInfo(xIndex, yIndex, tileRequest));
+                            }
+                        } else {
+                            LOGGER.debug("Tile out of bounds: {}", tileRequest);
+                            tiles.add(new SingleTilePreparationInfo(xIndex, yIndex, null));
                         }
-                    } else {
-                        LOGGER.debug("Tile out of bounds: {}", tileRequest);
-                        tiles.add(new SingleTilePreparationInfo(xIndex, yIndex, null));
                     }
                 }
-            }
 
-            return new TilePreparationInfo(tiles, imageWidth, imageHeight, gridCoverageOrigin,
-                                           gridCoverageMaxX, gridCoverageMaxY, mapProjection);
-        } catch (Exception e) {
-            throw ExceptionUtils.getRuntimeException(e);
-        }
+                return new TilePreparationInfo(tiles, imageWidth, imageHeight, gridCoverageOrigin,
+                                               gridCoverageMaxX, gridCoverageMaxY, mapProjection);
+            } catch (Exception e) {
+                throw ExceptionUtils.getRuntimeException(e);
+            }
+        });
     }
 
     private boolean isInTileCacheBounds(

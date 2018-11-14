@@ -3,6 +3,8 @@ package org.mapfish.print.processor;
 import com.google.common.collect.BiMap;
 import org.mapfish.print.config.ConfigurationObject;
 
+import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 /**
@@ -18,6 +20,10 @@ import javax.annotation.Nullable;
  *         the {@link org.mapfish.print.output.Values} object so other processor can access the values.
  */
 public interface Processor<In, Out> extends ConfigurationObject {
+    /**
+     * MDC key for the job ID.
+     */
+    String MDC_JOB_ID_KEY = "job_id";
 
     /**
      * Get the class of the output type.  This is used when determining the outputs this processor produces.
@@ -146,11 +152,12 @@ public interface Processor<In, Out> extends ConfigurationObject {
     /**
      * An execution context for a specific print task.
      */
-    public interface ExecutionContext {
+    interface ExecutionContext {
+
         /**
-         * @return Was the print task canceled?
+         * Throws a CancellationException if the job was cancelled.
          */
-        boolean isCanceled();
+        void stopIfCanceled();
 
         /**
          * @return The ExecutionStats object
@@ -161,5 +168,21 @@ public interface Processor<In, Out> extends ConfigurationObject {
          * @return The job ID
          */
         String getJobId();
+
+        /**
+         * Set the MDC context while running the action.
+         *
+         * @param action The action to run
+         * @param <T> The returned class
+         */
+        <T> T mdcContext(Supplier<T> action);
+
+        /**
+         * Set the MDC context while running the action.
+         *
+         * @param action The action to run
+         * @param <T> The returned class
+         */
+        <T> T mdcContextEx(Callable<T> action) throws Exception;
     }
 }
