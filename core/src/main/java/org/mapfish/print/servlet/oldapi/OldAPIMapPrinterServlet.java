@@ -62,6 +62,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
     private static final String CREATE_URL = "/create.json";
     private static final String DEP_CREATE_URL = DEP_SEG + CREATE_URL;
     private static final int HALF_SECOND = 500;
+    private static final String MISSING_SPEC_PARAMETER = "Missing 'spec' parameter";
     @Autowired
     private MapPrinterFactory printerFactory;
 
@@ -83,7 +84,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
             final HttpServletRequest httpServletRequest,
             final HttpServletResponse httpServletResponse) {
         if (Strings.isNullOrEmpty(requestData)) {
-            error(httpServletResponse, "Missing 'spec' parameter", HttpStatus.INTERNAL_SERVER_ERROR);
+            error(httpServletResponse, MISSING_SPEC_PARAMETER, HttpStatus.INTERNAL_SERVER_ERROR);
             return;
         }
         createAndGetPDF(httpServletRequest, httpServletResponse, requestData);
@@ -102,7 +103,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
             final HttpServletRequest httpServletRequest,
             final HttpServletResponse httpServletResponse) {
         if (Strings.isNullOrEmpty(spec)) {
-            error(httpServletResponse, "Missing 'spec' parameter", HttpStatus.INTERNAL_SERVER_ERROR);
+            error(httpServletResponse, MISSING_SPEC_PARAMETER, HttpStatus.INTERNAL_SERVER_ERROR);
             return;
         }
         createAndGetPDF(httpServletRequest, httpServletResponse, spec);
@@ -123,11 +124,11 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
             @RequestParam(value = "spec", required = false) final String spec,
             @RequestBody final String requestData,
             final HttpServletRequest httpServletRequest,
-            final HttpServletResponse httpServletResponse) throws IOException, JSONException {
+            final HttpServletResponse httpServletResponse) throws IOException {
         if (Strings.isNullOrEmpty(requestData)) {
             // TODO in case the POST body is empty, status code 415 is returned automatically, so we never
             // get here
-            error(httpServletResponse, "Missing 'spec' parameter", HttpStatus.INTERNAL_SERVER_ERROR);
+            error(httpServletResponse, MISSING_SPEC_PARAMETER, HttpStatus.INTERNAL_SERVER_ERROR);
             return;
         }
         String baseUrlPath = getBaseUrl(DEP_CREATE_URL,
@@ -155,10 +156,13 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
 
         try {
             String jobRef = doCreatePDFFile(spec, httpServletRequest, httpServletResponse);
+            if (jobRef == null) {
+                return;
+            }
             this.primaryApiServlet.getReport(jobRef, false, httpServletResponse);
         } catch (NoSuchAppException e) {
             error(httpServletResponse, e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             error(httpServletResponse, e);
         }
     }
@@ -171,13 +175,16 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
      * @param basePath the path of the webapp
      * @param spec the request spec
      */
-    protected final void createPDF(
+    private void createPDF(
             final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse,
-            final String basePath, final String spec) throws JSONException {
+            final String basePath, final String spec) {
         String jobRef;
         try {
             try {
                 jobRef = doCreatePDFFile(spec, httpServletRequest, httpServletResponse);
+                if (jobRef == null) {
+                    return;
+                }
                 httpServletResponse.setContentType("application/json; charset=utf-8");
                 try (PrintWriter writer = httpServletResponse.getWriter()) {
                     JSONWriter json = new JSONWriter(writer);
@@ -189,11 +196,9 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
                 }
             } catch (NoSuchAppException e) {
                 error(httpServletResponse, e.getMessage(), HttpStatus.NOT_FOUND);
-                return;
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             error(httpServletResponse, e);
-            return;
         }
 
     }
@@ -270,8 +275,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
 
     private void writeInfoJson(
             final JSONWriter json, final String baseUrl,
-            final MapPrinter printer, final HttpServletRequest req)
-            throws JSONException {
+            final MapPrinter printer, final HttpServletRequest req) {
         json.key("outputFormats");
         json.array();
         {
@@ -290,8 +294,7 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
         json.key(JSON_CREATE_URL).value(urlToUseInSpec + CREATE_URL);
     }
 
-    private void writeInfoLayouts(final JSONWriter json, final Configuration configuration)
-            throws JSONException {
+    private void writeInfoLayouts(final JSONWriter json, final Configuration configuration) {
         Double maxDpi = null;
         double[] dpiSuggestions = null;
         ZoomLevels zoomLevels = null;
@@ -415,11 +418,13 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
             final String spec,
             final HttpServletRequest httpServletRequest,
             final HttpServletResponse httpServletResponse)
-            throws
-            InterruptedException, NoSuchAppException, NoSuchReferenceException {
+            throws InterruptedException, NoSuchAppException, NoSuchReferenceException {
         LOGGER.debug("\nOLD-API:\n{}", spec);
 
         PJsonObject specJson = MapPrinterServlet.parseJson(spec, httpServletResponse);
+        if (specJson == null) {
+            return null;
+        }
         String appId;
         if (specJson.has("app")) {
             appId = specJson.getString("app");
@@ -427,9 +432,9 @@ public class OldAPIMapPrinterServlet extends BaseMapServlet {
             appId = DEFAULT_CONFIGURATION_FILE_KEY;
         }
         MapPrinter mapPrinter = this.printerFactory.create(appId);
-        PJsonObject updatedSpecJson = null;
         try {
-            updatedSpecJson = OldAPIRequestConverter.convert(specJson, mapPrinter.getConfiguration());
+            final PJsonObject updatedSpecJson =
+                    OldAPIRequestConverter.convert(specJson, mapPrinter.getConfiguration());
 
             String format = updatedSpecJson.optString(MapPrinterServlet.JSON_OUTPUT_FORMAT, "pdf");
             final String jobReferenceId = this.primaryApiServlet.createAndSubmitPrintJob(

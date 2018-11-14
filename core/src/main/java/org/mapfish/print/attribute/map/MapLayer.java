@@ -3,6 +3,7 @@ package org.mapfish.print.attribute.map;
 import com.google.common.base.Optional;
 import org.mapfish.print.http.HttpRequestCache;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.processor.Processor;
 
 import java.awt.Graphics2D;
 
@@ -43,13 +44,13 @@ public interface MapLayer {
      * @param graphics2D the graphics object.
      * @param clientHttpRequestFactory The factory to use for making http requests.
      * @param transformer the map transformer containing the map bounds and size.
-     * @param jobId the job ID
+     * @param context the job ID
      */
     void render(
             Graphics2D graphics2D,
             MfClientHttpRequestFactory clientHttpRequestFactory,
             MapfishMapContext transformer,
-            String jobId);
+            Processor.ExecutionContext context);
 
     /**
      * Indicate if the layer supports native rotation (e.g. WMS layers with the "angle" parameter).
@@ -76,13 +77,13 @@ public interface MapLayer {
      * @param httpRequestCache TODO
      * @param clientHttpRequestFactory client http request factory
      * @param transformer transformer
-     * @param jobId the job ID
+     * @param context the job ID
      */
     void cacheResources(
             HttpRequestCache httpRequestCache,
             MfClientHttpRequestFactory clientHttpRequestFactory,
             MapfishMapContext transformer,
-            String jobId);
+            Processor.ExecutionContext context);
 
     /**
      * Gets the opacity.

@@ -44,11 +44,11 @@ public class CreateScalebarProcessor
 
     @Override
     public final Output execute(final Input values, final ExecutionContext context) throws Exception {
-        checkCancelState(context);
+        context.stopIfCanceled();
 
         final URI scalebarGraphicFile = createScalebarGraphic(values);
 
-        checkCancelState(context);
+        context.stopIfCanceled();
 
         String strScalebarSubReport = null;
         if (values.scalebar.isCreateSubReport()) {

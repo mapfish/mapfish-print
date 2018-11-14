@@ -11,9 +11,9 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.style.json.ColorParser;
 import org.mapfish.print.map.tiled.TilePreparationInfo.SingleTilePreparationInfo;
+import org.mapfish.print.processor.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
@@ -39,7 +39,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
     private final TilePreparationInfo tilePreparationInfo;
     private final boolean failOnError;
     private final MetricRegistry registry;
-    private final String jobId;
+    private final Processor.ExecutionContext context;
     private final BufferedImage errorImage;
 
 
@@ -49,7 +49,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
      * @param tilePreparationInfo tileLoader Results.
      * @param failOnError fail on tile download error.
      * @param registry the metrics registry.
-     * @param jobId the job ID.
+     * @param context the job ID.
      * @param tileCacheInfo the object used to create the tile requests.
      * @param configuration the configuration.
      */
@@ -57,11 +57,11 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
             @Nonnull final TilePreparationInfo tilePreparationInfo,
             final boolean failOnError,
             @Nonnull final MetricRegistry registry,
-            @Nonnull final String jobId,
+            @Nonnull final Processor.ExecutionContext context,
             @Nonnull final TileCacheInformation tileCacheInfo,
             @Nonnull final Configuration configuration) {
         this.tilePreparationInfo = tilePreparationInfo;
-        this.jobId = jobId;
+        this.context = context;
         this.tiledLayer = tileCacheInfo;
         this.failOnError = failOnError;
         this.registry = registry;
@@ -92,7 +92,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                     if (tileInfo.getTileRequest() != null) {
                         task = new SingleTileLoaderTask(
                                 tileInfo.getTileRequest(), this.errorImage, tileInfo.getTileIndexX(),
-                                tileInfo.getTileIndexY(), this.failOnError, this.registry, this.jobId);
+                                tileInfo.getTileIndexY(), this.failOnError, this.registry, this.context);
                     } else {
                         task = new PlaceHolderImageTask(this.tiledLayer.getMissingTileImage(),
                                                         tileInfo.getTileIndexX(), tileInfo.getTileIndexY());
@@ -162,7 +162,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
         private final ClientHttpRequest tileRequest;
         private final boolean failOnError;
         private final MetricRegistry registry;
-        private final String jobId;
+        private final Processor.ExecutionContext context;
         private final BufferedImage errorImage;
 
         /**
@@ -174,71 +174,73 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
          * @param tileIndexY tile index y
          * @param failOnError fail on error
          * @param registry registry
-         * @param jobId the job ID
+         * @param context the job ID
          */
         public SingleTileLoaderTask(
                 final ClientHttpRequest tileRequest, final BufferedImage errorImage,
                 final int tileIndexX, final int tileIndexY, final boolean failOnError,
-                final MetricRegistry registry, final String jobId) {
+                final MetricRegistry registry, final Processor.ExecutionContext context) {
             super(tileIndexX, tileIndexY);
             this.tileRequest = tileRequest;
             this.errorImage = errorImage;
             this.failOnError = failOnError;
             this.registry = registry;
-            this.jobId = jobId;
+            this.context = context;
         }
 
         @Override
         protected Tile compute() {
-            MDC.put("job_id", this.jobId);
-            ClientHttpResponse response = null;
-            final String baseMetricName = TilePreparationTask.class.getName() + ".read." +
-                    this.tileRequest.getURI().getHost();
-            try {
-                LOGGER.debug("\n\t" + this.tileRequest.getMethod() + " -- " + this.tileRequest.getURI());
-                final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
-                response = this.tileRequest.execute();
-                final HttpStatus statusCode = response.getStatusCode();
-                if (statusCode == HttpStatus.NO_CONTENT || statusCode == HttpStatus.NOT_FOUND) {
-                    if (statusCode == HttpStatus.NOT_FOUND) {
-                        LOGGER.info("The request {} returns a not found status code, we consider it as an " +
+            return this.context.mdcContext(() -> {
+                ClientHttpResponse response = null;
+                final String baseMetricName = TilePreparationTask.class.getName() + ".read." +
+                        this.tileRequest.getURI().getHost();
+                try {
+                    LOGGER.debug("\n\t" + this.tileRequest.getMethod() + " -- " + this.tileRequest.getURI());
+                    final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
+                    response = this.tileRequest.execute();
+                    final HttpStatus statusCode = response.getStatusCode();
+                    if (statusCode == HttpStatus.NO_CONTENT || statusCode == HttpStatus.NOT_FOUND) {
+                        if (statusCode == HttpStatus.NOT_FOUND) {
+                            LOGGER.info(
+                                    "The request {} returns a not found status code, we consider it as an " +
                                             "empty tile.", this.tileRequest.getURI());
+                        }
+                        // Empty response, nothing special to do
+                        return new Tile(null, getTileIndexX(), getTileIndexY());
+                    } else if (statusCode != HttpStatus.OK) {
+                        String errorMessage = String.format("Error making tile request: %s\n\t" +
+                                                                    "Status: %s\n" +
+                                                                    "\toutMessage: %s",
+                                                            this.tileRequest.getURI(), statusCode,
+                                                            response.getStatusText());
+                        LOGGER.error(errorMessage);
+                        this.registry.counter(baseMetricName + ".error").inc();
+                        if (this.failOnError) {
+                            throw new RuntimeException(errorMessage);
+                        }
+                        return new Tile(this.errorImage, getTileIndexX(), getTileIndexY());
                     }
-                    // Empty response, nothing special to do
-                    return new Tile(null, getTileIndexX(), getTileIndexY());
-                } else if (statusCode != HttpStatus.OK) {
-                    String errorMessage = String.format("Error making tile request: %s\n\t" +
-                                                                "Status: %s\n" +
-                                                                "\toutMessage: %s",
-                                                        this.tileRequest.getURI(), statusCode,
-                                                        response.getStatusText());
-                    LOGGER.error(errorMessage);
-                    this.registry.counter(baseMetricName + ".error").inc();
-                    if (this.failOnError) {
-                        throw new RuntimeException(errorMessage);
+
+                    BufferedImage image = ImageIO.read(response.getBody());
+                    if (image == null) {
+                        LOGGER.warn(String.format("The URL: %s is an image format that cannot be decoded",
+                                                  this.tileRequest.getURI()));
+                        image = this.errorImage;
+                        this.registry.counter(baseMetricName + ".error").inc();
+                    } else {
+                        timerDownload.stop();
                     }
-                    return new Tile(this.errorImage, getTileIndexX(), getTileIndexY());
-                }
 
-                BufferedImage image = ImageIO.read(response.getBody());
-                if (image == null) {
-                    LOGGER.warn(String.format("The URL: %s is an image format that cannot be decoded",
-                                              this.tileRequest.getURI()));
-                    image = this.errorImage;
+                    return new Tile(image, getTileIndexX(), getTileIndexY());
+                } catch (IOException e) {
                     this.registry.counter(baseMetricName + ".error").inc();
-                } else {
-                    timerDownload.stop();
+                    throw ExceptionUtils.getRuntimeException(e);
+                } finally {
+                    if (response != null) {
+                        response.close();
+                    }
                 }
-
-                return new Tile(image, getTileIndexX(), getTileIndexY());
-            } catch (IOException e) {
-                this.registry.counter(baseMetricName + ".error").inc();
-                throw ExceptionUtils.getRuntimeException(e);
-            } finally {
-                if (response != null) {
-                    response.close();
-                }
-            }
+            });
         }
     }
 

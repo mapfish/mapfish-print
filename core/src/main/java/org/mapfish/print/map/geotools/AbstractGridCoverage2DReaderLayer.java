@@ -8,6 +8,7 @@ import org.geotools.styling.Style;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
+import org.mapfish.print.processor.Processor;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,7 +49,7 @@ public abstract class AbstractGridCoverage2DReaderLayer extends AbstractGeotools
     public final synchronized List<? extends Layer> getLayers(
             final MfClientHttpRequestFactory httpRequestFactory,
             final MapfishMapContext mapContext,
-            final String jobId) throws Exception {
+            final Processor.ExecutionContext context) {
         AbstractGridCoverage2DReader coverage2DReader =
                 this.coverage2DReaderSupplier.apply(httpRequestFactory);
         Style style = this.styleSupplier.load(httpRequestFactory, coverage2DReader);

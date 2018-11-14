@@ -7,7 +7,6 @@ import com.google.common.collect.Multimap;
 import org.mapfish.print.output.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -204,15 +203,16 @@ public final class ProcessorDependencyGraph {
 
         @Override
         protected Values compute() {
-            final ProcessorDependencyGraph graph = ProcessorDependencyGraph.this;
-            MDC.put("job_id", this.execContext.getJobId());
-            LOGGER.debug("Starting to execute processor graph: \n{}", graph);
-            try {
-                tryExecuteNodes(graph.roots, this.execContext, false);
-            } finally {
-                LOGGER.debug("Finished executing processor graph: \n{}", graph);
-            }
-            return this.execContext.getValues();
+            return this.execContext.getContext().mdcContext(() -> {
+                final ProcessorDependencyGraph graph = ProcessorDependencyGraph.this;
+                LOGGER.debug("Starting to execute processor graph: \n{}", graph);
+                try {
+                    tryExecuteNodes(graph.roots, this.execContext, false);
+                } finally {
+                    LOGGER.debug("Finished executing processor graph: \n{}", graph);
+                }
+                return this.execContext.getValues();
+            });
         }
 
         public Processor.ExecutionContext getExecutionContext() {

@@ -10,7 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.util.Map;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 public class JasperReportSvgOutputFormatTest extends AbstractJasperReportOutputFormatTest {
     @Autowired
@@ -30,7 +30,7 @@ public class JasperReportSvgOutputFormatTest extends AbstractJasperReportOutputF
                 getFile(JasperReportSvgOutputFormatTest.class, BASE_DIR), getTaskDirectory(),
                 outputStream);
 
-        byte[] expected = Files.readAllBytes(getFile(BASE_DIR + "expectedReport.svg").toPath());
-        assertArrayEquals(expected, outputStream.toByteArray());
+        String expected = new String(Files.readAllBytes(getFile(BASE_DIR + "expectedReport.svg").toPath()));
+        assertEquals(expected, outputStream.toString());
     }
 }

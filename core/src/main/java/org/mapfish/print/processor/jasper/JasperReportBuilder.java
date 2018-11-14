@@ -60,7 +60,7 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     public Void execute(final JasperReportBuilder.Input param, final ExecutionContext context)
             throws JRException {
         for (final File jasperFile: jasperXmlFiles()) {
-            checkCancelState(context);
+            context.stopIfCanceled();
             compileJasperReport(this.configuration, jasperFile);
         }
         return null;

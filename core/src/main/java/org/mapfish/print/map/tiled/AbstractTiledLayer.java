@@ -12,6 +12,7 @@ import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
+import org.mapfish.print.processor.Processor;
 
 import java.awt.Rectangle;
 import java.util.Collections;
@@ -68,10 +69,10 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
     @Override
     protected final List<? extends Layer> getLayers(
             final MfClientHttpRequestFactory httpRequestFactory,
-            final MapfishMapContext mapContext, final String jobId) throws Exception {
+            final MapfishMapContext mapContext, final Processor.ExecutionContext context) {
 
         final CoverageTask task = new CoverageTask(this.tilePreparationInfo,
-                                                   getFailOnError(), this.registry, jobId,
+                                                   getFailOnError(), this.registry, context,
                                                    this.tileCacheInformation, this.configuration);
         final GridCoverage2D gridCoverage2D = task.call();
 
@@ -100,12 +101,12 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
             final HttpRequestCache httpRequestCache,
             final MfClientHttpRequestFactory clientHttpRequestFactory,
             final MapfishMapContext transformer,
-            final String jobId) {
+            final Processor.ExecutionContext context) {
         final MapfishMapContext layerTransformer = getLayerTransformer(transformer);
 
         final TilePreparationTask task = new TilePreparationTask(
                 clientHttpRequestFactory, layerTransformer,
-                this.tileCacheInformation, httpRequestCache, jobId);
+                this.tileCacheInformation, httpRequestCache, context);
         this.tilePreparationInfo = task.call();
     }
 }

@@ -64,7 +64,7 @@ public class CreateNorthArrowProcessor
 
     @Override
     public final Output execute(final Input values, final ExecutionContext context) throws Exception {
-        checkCancelState(context);
+        context.stopIfCanceled();
 
         final double dpiRatio = values.map.getDpi() / PDF_DPI;
         final Dimension size = new Dimension(
@@ -79,7 +79,7 @@ public class CreateNorthArrowProcessor
                 values.tempTaskDirectory,
                 values.clientHttpRequestFactoryProvider.get());
 
-        checkCancelState(context);
+        context.stopIfCanceled();
 
         String strScalebarSubReport = null;
         if (values.northArrow.isCreateSubReport()) {

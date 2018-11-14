@@ -48,7 +48,6 @@ public class ProcessorDependencyGraphTest {
         Values values = new Values();
         values.put(Values.VALUES_KEY, values);
         values.put("pp", "value");
-
         final TestProcessor processor = new TestProcessor("p");
         processor.getInputMapperBiMap().put("pp", "prop");
 
@@ -71,6 +70,7 @@ public class ProcessorDependencyGraphTest {
         Values values = new Values();
         // this is a misconfiguration prop should be pp thus an exception should be thrown below.
         values.put("prop", "value");
+        values.put(Values.JOB_ID_KEY, "test");
 
         final TestProcessor processor = new TestProcessor("p");
         processor.getInputMapperBiMap().put("pp", "prop");

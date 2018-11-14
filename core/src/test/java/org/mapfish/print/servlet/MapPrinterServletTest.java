@@ -607,7 +607,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         // cancel directly after starting the print
         MockHttpServletResponse servletCancelResponse = new MockHttpServletResponse();
-        servlet.cancelSpecificAppId(ref, servletCancelResponse);
+        servlet.cancelSpecificAppId("default", ref, servletCancelResponse);
         assertEquals(HttpStatus.OK.value(), servletCancelResponse.getStatus());
 
         final MockHttpServletRequest statusRequest = new MockHttpServletRequest();

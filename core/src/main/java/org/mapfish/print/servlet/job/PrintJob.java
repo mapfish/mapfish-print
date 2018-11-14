@@ -108,7 +108,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     public final PrintJobResult call() throws Exception {
         SecurityContextHolder.setContext(this.securityContext);
         Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".call").time();
-        MDC.put("job_id", this.entry.getReferenceId());
+        MDC.put(Processor.MDC_JOB_ID_KEY, this.entry.getReferenceId());
         LOGGER.info("Starting print job {}", this.entry.getReferenceId());
         final MapPrinter mapPrinter = PrintJob.this.mapPrinterFactory.create(this.entry.getAppId());
         final Accounting.JobTracker jobTracker =
@@ -158,6 +158,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
             this.metricRegistry.timer(getClass().getName() + ".wait")
                     .update(totalTimeMS - computationTimeMs, TimeUnit.MILLISECONDS);
             LOGGER.debug("Print Job {} completed in {}ms", this.entry.getReferenceId(), computationTimeMs);
+            MDC.remove(Processor.MDC_JOB_ID_KEY);
         }
     }
 

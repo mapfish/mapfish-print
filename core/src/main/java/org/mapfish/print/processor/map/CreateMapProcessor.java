@@ -226,7 +226,7 @@ public final class CreateMapProcessor
 
     @Override
     public Output execute(final Input param, final ExecutionContext context) throws Exception {
-        checkCancelState(context);
+        context.stopIfCanceled();
         MapAttributeValues mapValues = (MapAttributeValues) param.map;
         if (mapValues.zoomToFeatures != null) {
             zoomToFeatures(param.clientHttpRequestFactoryProvider.get(), mapValues, context);
@@ -235,8 +235,8 @@ public final class CreateMapProcessor
         final List<URI> graphics = createLayerGraphics(
                 param.tempTaskDirectory,
                 param.clientHttpRequestFactoryProvider.get(),
-                mapValues, context, mapContext, param.jobId);
-        checkCancelState(context);
+                mapValues, context, mapContext);
+        context.stopIfCanceled();
 
         final URI mapSubReport;
         if (param.map.getTemplate().isMapExport()) {
@@ -366,8 +366,7 @@ public final class CreateMapProcessor
             final MfClientHttpRequestFactory clientHttpRequestFactory,
             final MapAttributeValues mapValues,
             final ExecutionContext context,
-            final MapfishMapContext mapContext,
-            final String jobId)
+            final MapfishMapContext mapContext)
             throws Exception {
         // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
         final List<MapLayer> layers = Lists.reverse(Lists.newArrayList(mapValues.getLayers()));
@@ -377,14 +376,15 @@ public final class CreateMapProcessor
         final String mapKey = UUID.randomUUID().toString();
         final List<URI> graphics = new ArrayList<>(layers.size());
 
-        HttpRequestCache cache = new HttpRequestCache(printDirectory, this.metricRegistry);
+        HttpRequestCache cache = new HttpRequestCache(printDirectory, this.metricRegistry,
+                                                      context);
 
         //prepare layers for rendering
         for (final MapLayer layer: layers) {
             layer.prepareRender(mapContext);
             final MapfishMapContext transformer = getTransformer(mapContext,
                                                                  layer.getImageBufferScaling());
-            layer.cacheResources(cache, clientHttpRequestFactory, transformer, jobId);
+            layer.cacheResources(cache, clientHttpRequestFactory, transformer, context);
         }
 
         //now we download and cache all images at once
@@ -395,13 +395,13 @@ public final class CreateMapProcessor
             if (layerGroup.renderType == RenderType.SVG) {
                 // render layers as SVG
                 for (MapLayer layer: layerGroup.layers) {
-                    checkCancelState(context);
+                    context.stopIfCanceled();
                     final SVGGraphics2D graphics2D = createSvgGraphics(mapContext.getMapSize());
 
                     try {
                         Graphics2D clippedGraphics2D = createClippedGraphics(
                                 mapContext, areaOfInterest, graphics2D);
-                        layer.render(clippedGraphics2D, clientHttpRequestFactory, mapContext, jobId);
+                        layer.render(clippedGraphics2D, clientHttpRequestFactory, mapContext, context);
 
                         final File path =
                                 new File(printDirectory, mapKey + "_layer_" + fileNumber++ + ".svg");
@@ -434,9 +434,9 @@ public final class CreateMapProcessor
                     final MapfishMapContext transformer =
                             getTransformer(mapContext, layerGroup.imageBufferScaling);
                     for (MapLayer cur: layerGroup.layers) {
-                        checkCancelState(context);
+                        context.stopIfCanceled();
                         warnIfDifferentRenderType(layerGroup.renderType, cur);
-                        cur.render(graphics2D, clientHttpRequestFactory, transformer, jobId);
+                        cur.render(graphics2D, clientHttpRequestFactory, transformer, context);
                     }
 
                     // Try to respect the original format of the layer. But if it needs to be transparent,
@@ -594,7 +594,7 @@ public final class CreateMapProcessor
         String layerName = mapValues.zoomToFeatures.layer;
         ReferencedEnvelope bounds = null;
         for (MapLayer layer: mapValues.getLayers()) {
-            checkCancelState(context);
+            context.stopIfCanceled();
 
             if ((!Strings.isNullOrEmpty(layerName) && layerName.equals(layer.getName())) ||
                     (Strings.isNullOrEmpty(layerName) && layer instanceof AbstractFeatureSourceLayer &&
@@ -649,11 +649,6 @@ public final class CreateMapProcessor
          */
         @HasDefaultValue
         public String outputFormat = null;
-
-        /**
-         * The job id.
-         */
-        public String jobId;
     }
 
     /**

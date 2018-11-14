@@ -263,7 +263,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         Map<String, Class<?>> columns = Maps.newLinkedHashMap();
         final PArray[] jsonData = jsonTable.data;
         for (final PArray jsonRow: jsonData) {
-            checkCancelState(context);
+            context.stopIfCanceled();
             final Map<String, Object> row = new HashMap<>();
             for (int j = 0; j < jsonRow.size(); j++) {
                 final String columnName = columnNames[j];

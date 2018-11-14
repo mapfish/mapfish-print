@@ -49,7 +49,7 @@ public class SetStyleProcessor extends
                     values.style.style
             ).get();
             for (MapLayer layer: values.map.getLayers()) {
-                checkCancelState(context);
+                context.stopIfCanceled();
                 if (layer instanceof AbstractFeatureSourceLayer) {
                     ((AbstractFeatureSourceLayer) layer).setStyle(new StyleSupplier() {
                         @Override

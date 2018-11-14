@@ -7,6 +7,8 @@ import org.junit.runner.RunWith;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.WorkingDirectories;
+import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.Processor;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -36,6 +38,7 @@ public abstract class AbstractMapfishSpringTest {
             "classpath:test-http-request-factory-application-context.xml";
     public static final String TEST_SPRING_FONT_XML = "classpath:test-mapfish-spring-custom-fonts.xml";
     public static final String TMP = System.getProperty("java.io.tmpdir");
+    protected static final Processor.ExecutionContext CONTEXT = new AbstractProcessor.Context("test");
     static final Pattern IMPORT_PATTERN = Pattern.compile("@@importFile\\((\\S+)\\)@@");
     @Autowired
     private WorkingDirectories workingDirectories;

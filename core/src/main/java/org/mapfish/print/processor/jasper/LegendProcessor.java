@@ -30,7 +30,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -334,46 +333,49 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         }
 
         @Override
-        public Object[] call() throws IOException, URISyntaxException, JRException {
-            BufferedImage image = null;
-            final URI uri = this.icon.toURI();
-            final String metricName = LegendProcessor.class.getName() + ".read." + uri.getHost();
-            try {
-                checkCancelState(this.context);
-                final ClientHttpRequest request = this.clientHttpRequestFactory.createRequest(
-                        uri, HttpMethod.GET);
-                final Timer.Context timer = LegendProcessor.this.metricRegistry.timer(metricName).time();
-                try (ClientHttpResponse httpResponse = request.execute()) {
-                    if (httpResponse.getStatusCode() == HttpStatus.OK) {
-                        image = ImageIO.read(httpResponse.getBody());
-                        if (image == null) {
-                            LOGGER.warn("The URL: {} is NOT an image format that can be decoded", this.icon);
+        public Object[] call() throws Exception {
+            return context.mdcContextEx(() -> {
+                BufferedImage image = null;
+                final URI uri = this.icon.toURI();
+                final String metricName = LegendProcessor.class.getName() + ".read." + uri.getHost();
+                try {
+                    this.context.stopIfCanceled();
+                    final ClientHttpRequest request = this.clientHttpRequestFactory.createRequest(
+                            uri, HttpMethod.GET);
+                    final Timer.Context timer = LegendProcessor.this.metricRegistry.timer(metricName).time();
+                    try (ClientHttpResponse httpResponse = request.execute()) {
+                        if (httpResponse.getStatusCode() == HttpStatus.OK) {
+                            image = ImageIO.read(httpResponse.getBody());
+                            if (image == null) {
+                                LOGGER.warn("The URL: {} is NOT an image format that can be decoded",
+                                            this.icon);
+                            } else {
+                                timer.stop();
+                            }
                         } else {
-                            timer.stop();
+                            LOGGER.warn(
+                                    "Failed to load image from: {} due to server side error.\n" +
+                                            "\tResponse Code: {}\n" +
+                                            "\tResponse Text: {}",
+                                    this.icon, httpResponse.getStatusCode(), httpResponse.getStatusText());
                         }
-                    } else {
-                        LOGGER.warn(
-                                "Failed to load image from: {} due to server side error.\n" +
-                                        "\tResponse Code: {}\n" +
-                                        "\tResponse Text: {}",
-                                this.icon, httpResponse.getStatusCode(), httpResponse.getStatusText());
                     }
+                } catch (Exception e) {
+                    LOGGER.warn("Failed to load image from: {}", this.icon, e);
                 }
-            } catch (Exception e) {
-                LOGGER.warn("Failed to load image from: {}", this.icon, e);
-            }
 
-            if (image == null) {
-                image = getMissingImage();
-                LegendProcessor.this.metricRegistry.counter(metricName + ".error").inc();
-            }
+                if (image == null) {
+                    image = getMissingImage();
+                    LegendProcessor.this.metricRegistry.counter(metricName + ".error").inc();
+                }
 
-            String report = null;
-            if (LegendProcessor.this.maxWidth != null) {
-                // if a max width is given, create a sub-report containing the cropped graphic
-                report = createSubReport(image, this.iconDPI, this.tempTaskDirectory).toString();
-            }
-            return new Object[]{null, image, report, this.level};
+                String report = null;
+                if (LegendProcessor.this.maxWidth != null) {
+                    // if a max width is given, create a sub-report containing the cropped graphic
+                    report = createSubReport(image, this.iconDPI, this.tempTaskDirectory).toString();
+                }
+                return new Object[]{null, image, report, this.level};
+            });
         }
     }
 

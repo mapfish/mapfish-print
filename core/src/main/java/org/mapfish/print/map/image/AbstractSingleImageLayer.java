@@ -15,6 +15,7 @@ import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
+import org.mapfish.print.processor.Processor;
 
 import java.awt.image.BufferedImage;
 import java.util.Collections;
@@ -47,7 +48,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
     protected final List<? extends Layer> getLayers(
             final MfClientHttpRequestFactory httpRequestFactory,
             final MapfishMapContext mapContext,
-            final String jobId) throws Exception {
+            final Processor.ExecutionContext context) {
         BufferedImage image;
         try {
             image = loadImage(httpRequestFactory, mapContext);

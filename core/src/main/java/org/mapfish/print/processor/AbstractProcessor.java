@@ -5,12 +5,15 @@ import com.google.common.collect.HashBiMap;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.parser.ParserUtils;
+import org.slf4j.MDC;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
 /**
@@ -169,18 +172,6 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     protected abstract void extraValidation(
             List<Throwable> validationErrors, Configuration configuration);
 
-    /**
-     * Checks if the print was canceled and throws a {@link CancellationException} if so.
-     *
-     * @param context the execution context
-     * @throws CancellationException
-     */
-    protected final void checkCancelState(final ExecutionContext context) {
-        if (context.isCanceled()) {
-            throw new CancellationException("task was canceled");
-        }
-    }
-
     // CHECKSTYLE:OFF
     @Override
     public String toString() {
@@ -192,9 +183,17 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
      * Default implementation of {@link ExecutionContext}.
      */
     public static final class Context implements ExecutionContext {
-
+        private final String jobId;
         private volatile boolean canceled = false;
         private ExecutionStats stats = new ExecutionStats();
+
+        /**
+         * @param jobId The job ID.
+         */
+        public Context(final String jobId) {
+            this.jobId = jobId;
+        }
+
 
         /**
          * Sets the canceled flag.
@@ -204,13 +203,62 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
         }
 
         @Override
-        public boolean isCanceled() {
-            return this.canceled;
+        public void stopIfCanceled() {
+            if (this.canceled) {
+                throw new CancellationException("task was canceled");
+            }
         }
 
         @Override
         public ExecutionStats getStats() {
             return this.stats;
+        }
+
+        @Override
+        public String getJobId() {
+            return this.jobId;
+        }
+
+        @Override
+        public <T> T mdcContext(final Supplier<T> action) {
+            this.stopIfCanceled();
+            final String prev = MDC.get(MDC_JOB_ID_KEY);
+            boolean changed = prev == null || (jobId != null && jobId.equals(prev));
+            if (changed) {
+                MDC.put(MDC_JOB_ID_KEY, this.jobId);
+            }
+            try {
+                return action.get();
+            } finally {
+                if (changed) {
+                    if (prev != null) {
+                        MDC.put(MDC_JOB_ID_KEY, prev);
+                    } else {
+                        MDC.remove(MDC_JOB_ID_KEY);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public <T> T mdcContextEx(final Callable<T> action) throws Exception {
+            this.stopIfCanceled();
+            final String prev = MDC.get(MDC_JOB_ID_KEY);
+            boolean mdcChanged = prev == null || jobId.equals(prev);
+            if (mdcChanged) {
+                MDC.put(MDC_JOB_ID_KEY, this.jobId);
+            }
+            try {
+                return action.call();
+            } finally {
+                if (mdcChanged) {
+                    if (prev != null) {
+                        MDC.put(MDC_JOB_ID_KEY, prev);
+                    } else {
+                        MDC.remove(MDC_JOB_ID_KEY);
+                    }
+                }
+            }
         }
     }
 }

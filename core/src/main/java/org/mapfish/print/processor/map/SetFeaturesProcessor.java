@@ -35,7 +35,7 @@ public class SetFeaturesProcessor extends
     @Override
     public final Void execute(final Input values, final ExecutionContext context) throws Exception {
         for (MapLayer layer: values.map.getLayers()) {
-            checkCancelState(context);
+            context.stopIfCanceled();
             if (layer instanceof AbstractFeatureSourceLayer) {
                 final SimpleFeatureCollection features = values.features.getFeatures(
                         values.clientHttpRequestFactoryProvider.get());

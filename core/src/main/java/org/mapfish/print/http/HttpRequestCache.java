@@ -3,6 +3,7 @@ package org.mapfish.print.http;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import org.apache.commons.io.IOUtils;
+import org.mapfish.print.processor.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -36,6 +37,7 @@ public final class HttpRequestCache {
     private final File temporaryDirectory;
 
     private final MetricRegistry registry;
+    private final Processor.ExecutionContext context;
 
     private boolean cached = false;
 
@@ -44,10 +46,14 @@ public final class HttpRequestCache {
      *
      * @param temporaryDirectory temporary directory for cached requests
      * @param registry the metric registry
+     * @param context the job ID
      */
-    public HttpRequestCache(final File temporaryDirectory, final MetricRegistry registry) {
+    public HttpRequestCache(
+            final File temporaryDirectory, final MetricRegistry registry,
+            final Processor.ExecutionContext context) {
         this.temporaryDirectory = temporaryDirectory;
         this.registry = registry;
+        this.context = context;
     }
 
     private CachedClientHttpRequest save(final CachedClientHttpRequest request) {
@@ -62,7 +68,7 @@ public final class HttpRequestCache {
      * @return the cached http request
      */
     public ClientHttpRequest register(final ClientHttpRequest originalRequest) {
-        return save(new CachedClientHttpRequest(originalRequest));
+        return save(new CachedClientHttpRequest(originalRequest, this.context));
     }
 
     /**
@@ -150,10 +156,13 @@ public final class HttpRequestCache {
 
     private final class CachedClientHttpRequest implements ClientHttpRequest, Callable<Void> {
         private final ClientHttpRequest originalRequest;
+        private final Processor.ExecutionContext context;
         private ClientHttpResponse response;
 
-        private CachedClientHttpRequest(final ClientHttpRequest request) {
+        private CachedClientHttpRequest(
+                final ClientHttpRequest request, final Processor.ExecutionContext context) {
             this.originalRequest = request;
+            this.context = context;
         }
 
         @Override
@@ -193,49 +202,53 @@ public final class HttpRequestCache {
 
         @Override
         public Void call() throws Exception {
-            final String baseMetricName = HttpRequestCache.class.getName() + ".read." + getURI().getHost();
-            final Timer.Context timerDownload = HttpRequestCache.this.registry.timer(baseMetricName).time();
-            ClientHttpResponse originalResponse = null;
-            try {
-                originalResponse = this.originalRequest.execute();
-                LOGGER.debug("Caching URI resource {}", this.originalRequest.getURI());
-                this.response = new CachedClientHttpResponse(originalResponse);
-            } catch (IOException e) {
-                LOGGER.error("Request failed {}", this.originalRequest.getURI());
-                this.response = new AbstractClientHttpResponse() {
-                    @Override
-                    public HttpHeaders getHeaders() {
-                        return new HttpHeaders();
-                    }
+            return context.mdcContextEx(() -> {
+                final String baseMetricName =
+                        HttpRequestCache.class.getName() + ".read." + getURI().getHost();
+                final Timer.Context timerDownload =
+                        HttpRequestCache.this.registry.timer(baseMetricName).time();
+                ClientHttpResponse originalResponse = null;
+                try {
+                    originalResponse = this.originalRequest.execute();
+                    LOGGER.debug("Caching URI resource {}", this.originalRequest.getURI());
+                    this.response = new CachedClientHttpResponse(originalResponse);
+                } catch (IOException e) {
+                    LOGGER.error("Request failed {}", this.originalRequest.getURI());
+                    this.response = new AbstractClientHttpResponse() {
+                        @Override
+                        public HttpHeaders getHeaders() {
+                            return new HttpHeaders();
+                        }
 
-                    @Override
-                    public InputStream getBody() {
-                        return StreamUtils.emptyInput();
-                    }
+                        @Override
+                        public InputStream getBody() {
+                            return StreamUtils.emptyInput();
+                        }
 
-                    @Override
-                    public int getRawStatusCode() {
-                        return 500;
-                    }
+                        @Override
+                        public int getRawStatusCode() {
+                            return 500;
+                        }
 
-                    @Override
-                    public String getStatusText() {
-                        return e.getMessage();
-                    }
+                        @Override
+                        public String getStatusText() {
+                            return e.getMessage();
+                        }
 
-                    @Override
-                    public void close() {
+                        @Override
+                        public void close() {
+                        }
+                    };
+                    HttpRequestCache.this.registry.counter(baseMetricName + ".error").inc();
+                    throw e;
+                } finally {
+                    if (originalResponse != null) {
+                        originalResponse.close();
                     }
-                };
-                HttpRequestCache.this.registry.counter(baseMetricName + ".error").inc();
-                throw e;
-            } finally {
-                if (originalResponse != null) {
-                    originalResponse.close();
+                    timerDownload.stop();
                 }
-                timerDownload.stop();
-            }
-            return null;
+                return null;
+            });
         }
     }
 }

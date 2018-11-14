@@ -99,7 +99,7 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
                     TestJobManager.this.jobsRun++;
                     Thread.sleep(1000);
                     return new PrintResult(new URI("oh:well:whatever:nevermind"), 42,
-                                           new AbstractProcessor.Context());
+                                           new AbstractProcessor.Context("test"));
                 }
 
             };
