@@ -12,7 +12,7 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
-import org.mapfish.print.http.HttpRequestCache;
+import org.mapfish.print.http.HttpRequestFetcher;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.tiled.TilePreparationInfo.SingleTilePreparationInfo;
 import org.mapfish.print.processor.Processor;
@@ -43,7 +43,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
     private final TileCacheInformation tiledLayer;
     private final Processor.ExecutionContext context;
     private final MfClientHttpRequestFactory httpRequestFactory;
-    private final HttpRequestCache requestCache;
+    private final HttpRequestFetcher requestCache;
     private Optional<Geometry> cachedRotatedMapBounds = null;
 
     /**
@@ -59,7 +59,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
             @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
             @Nonnull final MapfishMapContext transformer,
             @Nonnull final TileCacheInformation tileCacheInfo,
-            final HttpRequestCache requestCache,
+            final HttpRequestFetcher requestCache,
             @Nonnull final Processor.ExecutionContext context) {
         this.requestCache = requestCache;
         this.bounds = transformer.getBounds();

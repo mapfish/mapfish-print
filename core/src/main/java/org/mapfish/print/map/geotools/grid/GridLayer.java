@@ -7,7 +7,7 @@ import org.geotools.map.Layer;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
-import org.mapfish.print.http.HttpRequestCache;
+import org.mapfish.print.http.HttpRequestFetcher;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.FeatureSourceSupplier;
@@ -171,11 +171,11 @@ public final class GridLayer implements MapLayer {
     }
 
     @Override
-    public void cacheResources(
-            final HttpRequestCache httpRequestCache,
+    public void prefetchResources(
+            final HttpRequestFetcher httpRequestFetcher,
             final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer,
             final Processor.ExecutionContext context) {
-        this.grid.cacheResources(httpRequestCache, clientHttpRequestFactory, transformer, context);
+        this.grid.prefetchResources(httpRequestFetcher, clientHttpRequestFactory, transformer, context);
     }
 
     @Override

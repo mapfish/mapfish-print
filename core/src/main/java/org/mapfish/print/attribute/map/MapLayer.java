@@ -1,7 +1,7 @@
 package org.mapfish.print.attribute.map;
 
 import com.google.common.base.Optional;
-import org.mapfish.print.http.HttpRequestCache;
+import org.mapfish.print.http.HttpRequestFetcher;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.Processor;
 
@@ -74,13 +74,13 @@ public interface MapLayer {
     /**
      * Cache any needed resources on disk.
      *
-     * @param httpRequestCache TODO
+     * @param httpRequestFetcher TODO
      * @param clientHttpRequestFactory client http request factory
      * @param transformer transformer
      * @param context the job ID
      */
-    void cacheResources(
-            HttpRequestCache httpRequestCache,
+    void prefetchResources(
+            HttpRequestFetcher httpRequestFetcher,
             MfClientHttpRequestFactory clientHttpRequestFactory,
             MapfishMapContext transformer,
             Processor.ExecutionContext context);

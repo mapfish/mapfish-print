@@ -7,7 +7,7 @@ import org.geotools.map.Layer;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.http.HttpRequestCache;
+import org.mapfish.print.http.HttpRequestFetcher;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
@@ -97,8 +97,8 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
     }
 
     @Override
-    public final void cacheResources(
-            final HttpRequestCache httpRequestCache,
+    public final void prefetchResources(
+            final HttpRequestFetcher httpRequestFetcher,
             final MfClientHttpRequestFactory clientHttpRequestFactory,
             final MapfishMapContext transformer,
             final Processor.ExecutionContext context) {
@@ -106,7 +106,7 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
 
         final TilePreparationTask task = new TilePreparationTask(
                 clientHttpRequestFactory, layerTransformer,
-                this.tileCacheInformation, httpRequestCache, context);
+                this.tileCacheInformation, httpRequestFetcher, context);
         this.tilePreparationInfo = task.call();
     }
 }

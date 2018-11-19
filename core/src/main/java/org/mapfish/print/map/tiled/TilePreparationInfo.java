@@ -77,7 +77,7 @@ public class TilePreparationInfo {
     public static class SingleTilePreparationInfo {
         private final int tileIndexX;
         private final int tileIndexY;
-        private final ClientHttpRequest tileRequest;
+        private ClientHttpRequest tileRequest;
 
         /**
          * Constructor.

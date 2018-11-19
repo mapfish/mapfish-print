@@ -13,7 +13,7 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
-import org.mapfish.print.http.HttpRequestCache;
+import org.mapfish.print.http.HttpRequestFetcher;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.processor.Processor;
@@ -192,8 +192,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     }
 
     @Override
-    public void cacheResources(
-            final HttpRequestCache httpRequestCache,
+    public void prefetchResources(
+            final HttpRequestFetcher httpRequestFetcher,
             final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer,
             final Processor.ExecutionContext context) {
     }

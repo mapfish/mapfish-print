@@ -8,7 +8,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.http.HttpRequestCache;
+import org.mapfish.print.http.HttpRequestFetcher;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.image.AbstractSingleImageLayer;
@@ -99,7 +99,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
 
             final BufferedImage image = ImageIO.read(response.getBody());
             if (image == null) {
-                LOGGER.warn("The WMS image {} is an image format that can be decoded",
+                LOGGER.warn("The WMS image {} is an image format that cannot be decoded",
                             this.imageRequest.getURI());
                 this.registry.counter(baseMetricName + ".error").inc();
                 return createErrorImage(transformer.getPaintArea());
@@ -151,8 +151,8 @@ public final class WmsLayer extends AbstractSingleImageLayer {
     }
 
     @Override
-    public void cacheResources(
-            @Nonnull final HttpRequestCache httpRequestCache,
+    public void prefetchResources(
+            @Nonnull final HttpRequestFetcher httpRequestFetcher,
             @Nonnull final MfClientHttpRequestFactory requestFactory,
             @Nonnull final MapfishMapContext transformer, @Nonnull final Processor.ExecutionContext context) {
         try {
@@ -167,7 +167,8 @@ public final class WmsLayer extends AbstractSingleImageLayer {
                                                           layerTransformer.getDPI(),
                                                           layerTransformer.getRotation(), envelope);
 
-            this.imageRequest = WmsUtilities.createWmsRequest(requestFactory, uri, this.params.method);
+            this.imageRequest = httpRequestFetcher.register(
+                    WmsUtilities.createWmsRequest(requestFactory, uri, this.params.method));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
