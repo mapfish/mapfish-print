@@ -267,6 +267,5 @@ public final class BBoxMapBounds extends MapBounds {
                 "bbox=" + bbox +
                 '}';
     }
-// // CHECKSTYLE:ON
-
+    // CHECKSTYLE:ON
 }

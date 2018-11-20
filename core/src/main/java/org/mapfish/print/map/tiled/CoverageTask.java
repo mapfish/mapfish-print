@@ -88,7 +88,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
             Graphics2D graphics = coverageImage.createGraphics();
             try {
                 for (SingleTilePreparationInfo tileInfo: this.tilePreparationInfo.getSingleTiles()) {
-                    TileTask task;
+                    final TileTask task;
                     if (tileInfo.getTileRequest() != null) {
                         task = new SingleTileLoaderTask(
                                 tileInfo.getTileRequest(), this.errorImage, tileInfo.getTileIndexX(),

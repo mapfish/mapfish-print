@@ -80,9 +80,9 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
                 final CoordinateReferenceSystem mapProjection = mapGeoBounds.getCoordinateReferenceSystem();
                 Dimension tileSizeOnScreen = this.tiledLayer.getTileSize();
 
-                final double layerResolution = this.tiledLayer.getResolution();
-                Coordinate tileSizeInWorld = new Coordinate(tileSizeOnScreen.width * layerResolution,
-                                                            tileSizeOnScreen.height * layerResolution);
+                final double resolution = this.tiledLayer.getResolution();
+                Coordinate tileSizeInWorld = new Coordinate(tileSizeOnScreen.width * resolution,
+                                                            tileSizeOnScreen.height * resolution);
 
                 // The minX minY of the first (minY, minY) tile
                 Coordinate gridCoverageOrigin =
@@ -91,7 +91,6 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
                 final String commonUrl = this.tiledLayer.createCommonUrl();
 
                 ReferencedEnvelope tileCacheBounds = this.tiledLayer.getTileCacheBounds();
-                final double resolution = this.tiledLayer.getResolution();
                 double rowFactor = 1 / (resolution * tileSizeOnScreen.height);
                 double columnFactor = 1 / (resolution * tileSizeOnScreen.width);
 
@@ -113,17 +112,15 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
                     imageWidth = 0;
                     xIndex = -1;
 
-                    gridCoverageMaxX = gridCoverageOrigin.x;
-                    gridCoverageMaxY += tileSizeInWorld.y;
+                    gridCoverageMaxY = geoY + tileSizeInWorld.y;
                     for (double geoX = gridCoverageOrigin.x; geoX < mapGeoBounds.getMaxX();
                          geoX += tileSizeInWorld.x) {
                         xIndex++;
                         imageWidth += tileSizeOnScreen.width;
-                        gridCoverageMaxX += tileSizeInWorld.x;
+                        gridCoverageMaxX = geoX + tileSizeInWorld.x;
 
                         ReferencedEnvelope tileBounds = new ReferencedEnvelope(
-                                geoX, geoX + tileSizeInWorld.x, geoY, geoY + tileSizeInWorld.y,
-                                mapProjection);
+                                geoX, gridCoverageMaxX, geoY, gridCoverageMaxY, mapProjection);
 
                         int row = (int) Math.round((tileCacheBounds.getMaxY() -
                                 tileBounds.getMaxY()) * rowFactor);
