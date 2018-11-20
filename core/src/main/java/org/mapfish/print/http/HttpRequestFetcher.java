@@ -20,26 +20,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import javax.annotation.Nullable;
 
 /**
- * Creates tasks for caching Http Requests that can be run simultaneously.
+ * Schedule tasks for caching Http Requests that can be run simultaneously.
+ * <p>
+ * The instances of the returned request will use a future to wait for the actual request to be really
+ * completed.
  */
-public final class HttpRequestCache {
+public final class HttpRequestFetcher {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestCache.class);
-
-    private final List<CachedClientHttpRequest> requests = new ArrayList<>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestFetcher.class);
 
     private final File temporaryDirectory;
 
     private final MetricRegistry registry;
     private final Processor.ExecutionContext context;
-
-    private boolean cached = false;
+    private final ForkJoinPool requestForkJoinPool;
 
     /**
      * Constructor.
@@ -47,17 +47,21 @@ public final class HttpRequestCache {
      * @param temporaryDirectory temporary directory for cached requests
      * @param registry the metric registry
      * @param context the job ID
+     * @param requestForkJoinPool the work pool to use to do the requests
      */
-    public HttpRequestCache(
+    public HttpRequestFetcher(
             final File temporaryDirectory, final MetricRegistry registry,
-            final Processor.ExecutionContext context) {
+            final Processor.ExecutionContext context,
+            final ForkJoinPool requestForkJoinPool) {
         this.temporaryDirectory = temporaryDirectory;
         this.registry = registry;
         this.context = context;
+        this.requestForkJoinPool = requestForkJoinPool;
     }
 
-    private CachedClientHttpRequest save(final CachedClientHttpRequest request) {
-        this.requests.add(request);
+    private CachedClientHttpRequest add(final CachedClientHttpRequest request) {
+        final ForkJoinTask<Void> future = this.requestForkJoinPool.submit(request);
+        request.setFuture(future);
         return request;
     }
 
@@ -68,34 +72,7 @@ public final class HttpRequestCache {
      * @return the cached http request
      */
     public ClientHttpRequest register(final ClientHttpRequest originalRequest) {
-        return save(new CachedClientHttpRequest(originalRequest, this.context));
-    }
-
-    /**
-     * Register a URI for caching. Returns a handle to the HttpRequest that will be cached.
-     *
-     * @param factory the request factory
-     * @param uri the uri
-     * @return the cached http request
-     * @throws IOException in case of I/O errors
-     */
-    public ClientHttpRequest register(final MfClientHttpRequestFactory factory, final URI uri)
-            throws IOException {
-        return register(factory.createRequest(uri, HttpMethod.GET));
-    }
-
-    /**
-     * Cache all requests at once.
-     *
-     * @param requestForkJoinPool request fork join pool
-     */
-    public void cache(final ForkJoinPool requestForkJoinPool) {
-        if (!this.cached) {
-            requestForkJoinPool.invokeAll(this.requests);
-            this.cached = true;
-        } else {
-            LOGGER.warn("Attempting to cache twice!");
-        }
+        return add(new CachedClientHttpRequest(originalRequest, this.context));
     }
 
     private final class CachedClientHttpResponse extends AbstractClientHttpResponse {
@@ -111,7 +88,7 @@ public final class HttpRequestCache {
             this.status = originalResponse.getRawStatusCode();
             this.statusText = originalResponse.getStatusText();
             this.cachedFile =
-                    File.createTempFile("cacheduri", null, HttpRequestCache.this.temporaryDirectory);
+                    File.createTempFile("cacheduri", null, HttpRequestFetcher.this.temporaryDirectory);
             try (InputStream is = originalResponse.getBody()) {
                 try (OutputStream os = new FileOutputStream(this.cachedFile)) {
                     IOUtils.copy(is, os);
@@ -158,6 +135,8 @@ public final class HttpRequestCache {
         private final ClientHttpRequest originalRequest;
         private final Processor.ExecutionContext context;
         private ClientHttpResponse response;
+        @Nullable
+        private ForkJoinTask<Void> future;
 
         private CachedClientHttpRequest(
                 final ClientHttpRequest request, final Processor.ExecutionContext context) {
@@ -188,25 +167,33 @@ public final class HttpRequestCache {
 
         @Override
         public ClientHttpResponse execute() {
-            if (!HttpRequestCache.this.cached) {
-                LOGGER.warn("Attempting to load cached URI before actual caching: {}",
-                            this.originalRequest.getURI());
-            } else if (this.response == null) {
+            assert this.future != null;
+            final Timer.Context timerWait =
+                    HttpRequestFetcher.this.registry.timer(HttpRequestFetcher.class.getName() +
+                                                                   ".waitDownloader").time();
+            this.future.join();
+            timerWait.stop();
+            if (this.response == null) {
                 LOGGER.warn("Attempting to load cached URI from failed request: {}",
                             this.originalRequest.getURI());
             } else {
                 LOGGER.debug("Loading cached URI resource {}", this.originalRequest.getURI());
             }
-            return this.response;
+
+            // Drop the reference to the response to save some memory. It is wrong to call execute twice...
+            final ClientHttpResponse result = this.response;
+            this.response = null;
+            this.future = null;
+            return result;
         }
 
         @Override
         public Void call() throws Exception {
             return context.mdcContextEx(() -> {
                 final String baseMetricName =
-                        HttpRequestCache.class.getName() + ".read." + getURI().getHost();
+                        HttpRequestFetcher.class.getName() + ".read." + getURI().getHost();
                 final Timer.Context timerDownload =
-                        HttpRequestCache.this.registry.timer(baseMetricName).time();
+                        HttpRequestFetcher.this.registry.timer(baseMetricName).time();
                 ClientHttpResponse originalResponse = null;
                 try {
                     originalResponse = this.originalRequest.execute();
@@ -239,7 +226,7 @@ public final class HttpRequestCache {
                         public void close() {
                         }
                     };
-                    HttpRequestCache.this.registry.counter(baseMetricName + ".error").inc();
+                    HttpRequestFetcher.this.registry.counter(baseMetricName + ".error").inc();
                     throw e;
                 } finally {
                     if (originalResponse != null) {
@@ -249,6 +236,10 @@ public final class HttpRequestCache {
                 }
                 return null;
             });
+        }
+
+        public void setFuture(final ForkJoinTask<Void> future) {
+            this.future = future;
         }
     }
 }

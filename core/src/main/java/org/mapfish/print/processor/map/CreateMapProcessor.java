@@ -1,6 +1,7 @@
 package org.mapfish.print.processor.map;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -37,7 +38,7 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.attribute.map.ZoomLevelSnapStrategy;
 import org.mapfish.print.attribute.map.ZoomToFeatures.ZoomType;
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.http.HttpRequestCache;
+import org.mapfish.print.http.HttpRequestFetcher;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
@@ -376,20 +377,19 @@ public final class CreateMapProcessor
         final String mapKey = UUID.randomUUID().toString();
         final List<URI> graphics = new ArrayList<>(layers.size());
 
-        HttpRequestCache cache = new HttpRequestCache(printDirectory, this.metricRegistry,
-                                                      context);
+        HttpRequestFetcher cache = new HttpRequestFetcher(printDirectory, this.metricRegistry,
+                                                          context, this.requestForkJoinPool);
 
         //prepare layers for rendering
         for (final MapLayer layer: layers) {
             layer.prepareRender(mapContext);
             final MapfishMapContext transformer = getTransformer(mapContext,
                                                                  layer.getImageBufferScaling());
-            layer.cacheResources(cache, clientHttpRequestFactory, transformer, context);
+            layer.prefetchResources(cache, clientHttpRequestFactory, transformer, context);
         }
 
-        //now we download and cache all images at once
-        cache.cache(this.requestForkJoinPool);
-
+        final Timer.Context timer =
+                this.metricRegistry.timer(getClass().getName() + ".buildLayers").time();
         int fileNumber = 0;
         for (LayerGroup layerGroup: LayerGroup.buildGroups(layers)) {
             if (layerGroup.renderType == RenderType.SVG) {
@@ -453,6 +453,7 @@ public final class CreateMapProcessor
                 }
             }
         }
+        timer.stop();
 
         return graphics;
     }

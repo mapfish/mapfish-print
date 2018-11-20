@@ -25,13 +25,16 @@ public class WorkingDirectoriesTest extends AbstractMapfishSpringTest {
         long oldDate = new Date().getTime() - TimeUnit.DAYS.toMillis(1);
 
         // old file, should be deleted
-        new File(reportDir, "1").createNewFile();
-        new File(reportDir, "1").setLastModified(oldDate);
+        final File f1 = new File(reportDir, "1");
+        f1.createNewFile();
+        f1.setLastModified(oldDate);
         // old file, should be deleted
-        new File(reportDir, "2").createNewFile();
-        new File(reportDir, "2").setLastModified(oldDate);
+        final File f2 = new File(reportDir, "2");
+        f2.createNewFile();
+        f2.setLastModified(oldDate);
         // new file, should be kept
-        new File(reportDir, "3").createNewFile();
+        final File f3 = new File(reportDir, "3");
+        f3.createNewFile();
 
         // old task dir, should be deleted
         File taskDir1 = new File(workingDir, "task-1tmp");
@@ -43,18 +46,18 @@ public class WorkingDirectoriesTest extends AbstractMapfishSpringTest {
         taskDir2.mkdirs();
         new File(taskDir2, "123.tmp").createNewFile();
 
-        assertTrue(new File(reportDir, "1").exists());
-        assertTrue(new File(reportDir, "2").exists());
-        assertTrue(new File(reportDir, "3").exists());
+        assertTrue(f1.exists());
+        assertTrue(f2.exists());
+        assertTrue(f3.exists());
         assertTrue(taskDir1.exists());
         assertTrue(taskDir2.exists());
 
         int maxAgeInSeconds = 1000;
         this.workingDirectories.new CleanUpTask(maxAgeInSeconds, maxAgeInSeconds).run();
 
-        assertFalse(new File(reportDir, "1").exists());
-        assertFalse(new File(reportDir, "2").exists());
-        assertTrue(new File(reportDir, "3").exists());
+        assertFalse(f1.exists());
+        assertFalse(f2.exists());
+        assertTrue(f3.exists());
         assertFalse(taskDir1.exists());
         assertTrue(taskDir2.exists());
     }
