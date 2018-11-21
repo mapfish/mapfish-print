@@ -2,7 +2,6 @@ package org.mapfish.print.processor.jasper;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.io.Files;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.design.JRValidationException;
@@ -17,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -124,10 +124,14 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
                             "configuration directory: %s is not in %s.",
                     directoryToSearch, this.configuration.getDirectory()));
         }
-        final Iterable<File> children = Files.fileTreeTraverser().children(directoryToSearch);
-        return StreamSupport.stream(children.spliterator(), false)
-                .filter(input -> input != null && input.getName().endsWith(JASPER_REPORT_XML_FILE_EXT))
-                .collect(Collectors.toList());
+        final File[] children = directoryToSearch.listFiles();
+        if (children != null) {
+            return StreamSupport.stream(Arrays.spliterator(children), false)
+                    .filter(input -> input != null && input.getName().endsWith(JASPER_REPORT_XML_FILE_EXT))
+                    .collect(Collectors.toList());
+        } else {
+            throw new IllegalArgumentException(String.format("%s is not a directory", directoryToSearch));
+        }
     }
 
 
