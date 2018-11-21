@@ -136,6 +136,7 @@ dependencies {
             "io.dropwizard.metrics:metrics-httpclient:$metricsVersion",
             "io.dropwizard.metrics:metrics-servlets:$metricsVersion",
             "io.dropwizard.metrics:metrics-jvm:$metricsVersion",
+            "io.dropwizard.metrics:metrics-jmx:$metricsVersion",
             "io.dropwizard.metrics:metrics-logback:$metricsVersion",
             "com.readytalk:metrics3-statsd:4.2.0"
     )
@@ -231,7 +232,7 @@ war {
 gretty {
     // configuration to serve mfp under localhost:8080/print when you run
     // ./gradlew core:jettyRun
-    servletContainer = "jetty7"
+    servletContainer = "jetty9"
     contextPath = "/print"
     classPath = [file("jettyRunExtraFiles")]
     systemProperty "path_to_examples", examplesDir
