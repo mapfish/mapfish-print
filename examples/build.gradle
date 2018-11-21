@@ -31,7 +31,7 @@ def examplesDir = "${project(':examples').projectDir}/src/test/resources/example
 gretty {
     // configuration to serve a web-app containing test data required for
     // the integration tests
-    servletContainer = "jetty7"
+    servletContainer = "jetty9"
     integrationTestTask = "integrationTest"
 }
 
