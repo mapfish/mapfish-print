@@ -48,6 +48,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -732,11 +733,6 @@ public final class JsonStyleParserHelper {
     @Nullable
     @VisibleForTesting
     Stroke createStroke(final PJsonObject styleJson, final boolean allowNull) {
-        final float defaultDashSpacing = 0.1f;
-        final int doubleWidth = 2;
-        final int tripleWidth = 3;
-        final int quadrupleWidth = 4;
-        final int quintupleWidth = 5;
 
         if (this.allowNullSymbolizer && allowNull && !styleJson.has(JSON_STROKE_COLOR)) {
             return null;
@@ -766,7 +762,7 @@ public final class JsonStyleParserHelper {
                     }
                 });
 
-        float[] dashArray = null;
+        List<Expression> dashArray = new ArrayList<>();
         if (styleJson.has(JSON_STROKE_DASHSTYLE) && !STROKE_DASHSTYLE_SOLID.equals(
                 styleJson.getString(JSON_STROKE_DASHSTYLE))) {
             double width = 1.0;
@@ -774,39 +770,42 @@ public final class JsonStyleParserHelper {
                 Literal expression = (Literal) widthExpression;
                 width = ((Number) expression.getValue()).doubleValue();
             }
+            final Expression defaultDashSpacingE =
+                    this.styleBuilder.literalExpression(0.1f);
+            final Expression doubleWidthE =
+                    this.styleBuilder.literalExpression((float) (2 * width));
+            final Expression tripleWidthE =
+                    this.styleBuilder.literalExpression((float) (3 * width));
+            final Expression quadrupleWidthE =
+                    this.styleBuilder.literalExpression((float) (4 * width));
+            final Expression quintupleWidthE =
+                    this.styleBuilder.literalExpression((float) (5 * width));
             String dashStyle = styleJson.getString(JSON_STROKE_DASHSTYLE);
             if (dashStyle.equalsIgnoreCase(STROKE_DASHSTYLE_DOT)) {
-                dashArray = new float[]{defaultDashSpacing, (float) (doubleWidth * width)};
+                dashArray.add(defaultDashSpacingE);
+                dashArray.add(doubleWidthE);
             } else if (dashStyle.equalsIgnoreCase(STROKE_DASHSTYLE_DASH)) {
-                dashArray = new float[]{(float) (doubleWidth * width), (float) (doubleWidth * width)};
+                dashArray.add(doubleWidthE);
+                dashArray.add(doubleWidthE);
             } else if (dashStyle.equalsIgnoreCase(STROKE_DASHSTYLE_DASHDOT)) {
-                dashArray = new float[]{
-                        (float) (tripleWidth * width),
-                        (float) (doubleWidth * width),
-                        defaultDashSpacing,
-                        (float) (doubleWidth * width)
-                };
+                dashArray.add(tripleWidthE);
+                dashArray.add(doubleWidthE);
+                dashArray.add(defaultDashSpacingE);
+                dashArray.add(doubleWidthE);
             } else if (dashStyle.equalsIgnoreCase(STROKE_DASHSTYLE_LONGDASH)) {
-                dashArray = new float[]{
-                        (float) (quadrupleWidth * width),
-                        (float) (doubleWidth * width)
-                };
+                dashArray.add(quadrupleWidthE);
+                dashArray.add(doubleWidthE);
             } else if (dashStyle.equalsIgnoreCase(STROKE_DASHSTYLE_LONGDASHDOT)) {
-                dashArray = new float[]{
-                        (float) (quintupleWidth * width),
-                        (float) (doubleWidth * width),
-                        defaultDashSpacing,
-                        (float) (doubleWidth * width)
-                };
+                dashArray.add(quintupleWidthE);
+                dashArray.add(doubleWidthE);
+                dashArray.add(defaultDashSpacingE);
+                dashArray.add(doubleWidthE);
             } else if (dashStyle.contains(" ")) {
                 //check for pattern if empty array, throw.
                 try {
                     String[] x = dashStyle.split(" ");
-                    if (x.length > 1) {
-                        dashArray = new float[x.length];
-                        for (int i = 0; i < x.length; i++) {
-                            dashArray[i] = Float.parseFloat(x[i]);
-                        }
+                    for (final String aX: x) {
+                        dashArray.add(this.styleBuilder.literalExpression(Float.parseFloat(aX)));
                     }
                 } catch (NumberFormatException e) {
                     //assume solid!
@@ -823,7 +822,9 @@ public final class JsonStyleParserHelper {
         final Stroke stroke = this.styleBuilder.createStroke(strokeColor, widthExpression);
         stroke.setLineCap(lineCap);
         stroke.setOpacity(strokeOpacity);
-        stroke.setDashArray(dashArray);
+        if (!dashArray.isEmpty()) {
+            stroke.setDashArray(dashArray);
+        }
         return stroke;
     }
 
