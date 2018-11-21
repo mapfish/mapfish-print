@@ -249,19 +249,19 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
         return null;
     }
 
-    private static class AppWalker extends DirectoryWalker {
+    private static class AppWalker extends DirectoryWalker<File> {
         public List<File> getAppDirs(final File base) throws IOException {
             List<File> results = new ArrayList<>();
-            //noinspection unchecked
             walk(base, results);
             return results;
         }
 
         @Override
-        protected boolean handleDirectory(final File directory, final int depth, final Collection results) {
+        protected boolean handleDirectory(
+                final File directory, final int depth,
+                final Collection<File> results) {
             final File configFile = new File(directory, CONFIG_YAML);
             if (configFile.exists()) {
-                //noinspection unchecked
                 results.add(directory);
             }
             return depth < MAX_DEPTH;

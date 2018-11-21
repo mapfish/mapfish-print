@@ -22,4 +22,21 @@ public class AbstractLayerParams {
      */
     @HasDefaultValue
     public boolean failOnError = false;
+
+    /**
+     * Constructor.
+     */
+    public AbstractLayerParams() {
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param other the object to copy
+     */
+    public AbstractLayerParams(final AbstractLayerParams other) {
+        this.opacity = other.opacity;
+        this.name = other.name;
+        this.failOnError = other.failOnError;
+    }
 }

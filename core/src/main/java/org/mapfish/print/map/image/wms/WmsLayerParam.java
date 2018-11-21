@@ -74,6 +74,30 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
     @HasDefaultValue
     public HttpMethod method = HttpMethod.GET;
 
+    /**
+     * Constructor.
+     */
+    public WmsLayerParam() {
+        super();
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param other the object to copy
+     */
+    public WmsLayerParam(final WmsLayerParam other) {
+        super(other);
+        this.baseURL = other.baseURL;
+        this.layers = other.layers;
+        this.styles = other.styles;
+        this.version = other.version;
+        this.useNativeAngle = other.useNativeAngle;
+        this.serverType = other.serverType;
+        this.imageFormat = other.imageFormat;
+        this.method = other.method;
+    }
+
     @Override
     public final String getBaseUrl() {
         return this.baseURL;

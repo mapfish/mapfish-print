@@ -173,4 +173,12 @@ public final class WmsLayer extends AbstractSingleImageLayer {
             throw new RuntimeException(e);
         }
     }
+
+    public MetricRegistry getRegistry() {
+        return registry;
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
+    }
 }
