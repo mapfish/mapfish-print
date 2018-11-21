@@ -7,10 +7,13 @@ import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.StyleSupplier;
+import org.mapfish.print.map.image.wms.WmsLayer;
 import org.mapfish.print.map.image.wms.WmsUtilities;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
 import org.mapfish.print.map.tiled.TileCacheInformation;
 import org.opengis.referencing.FactoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.client.ClientHttpRequest;
 
 import java.awt.Dimension;
@@ -25,6 +28,7 @@ import javax.annotation.Nonnull;
  * Strategy object for rendering WMS based layers .
  */
 public final class TiledWmsLayer extends AbstractTiledLayer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TiledWmsLayer.class);
     private final TiledWmsLayerParam param;
 
 
@@ -45,6 +49,17 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
             @Nonnull final Configuration configuration) {
         super(forkJoinPool, styleSupplier, param, registry, configuration);
         this.param = param;
+    }
+
+    /**
+     * Create a copy of the given WmsLayer, but tiled.
+     *
+     * @param wmsLayer The source layer
+     * @param tileSize The size of the tiles
+     */
+    public TiledWmsLayer(final WmsLayer wmsLayer, final Dimension tileSize) {
+        super(wmsLayer, wmsLayer.getStyleSupplier(), wmsLayer.getRegistry(), wmsLayer.getConfiguration());
+        this.param = new TiledWmsLayerParam(wmsLayer.getParams(), tileSize);
     }
 
     /**
@@ -90,6 +105,7 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
             final URI uri = WmsUtilities.makeWmsGetLayerRequest(TiledWmsLayer.this.param, new URI(commonUrl),
                                                                 croppedStuff.sizeOnScreen, this.dpi, 0.0,
                                                                 croppedStuff.tileBounds);
+            LOGGER.info("Tiled WMS query: {}", uri);
             return WmsUtilities.createWmsRequest(httpRequestFactory, uri, TiledWmsLayer.this.param.method);
         }
 

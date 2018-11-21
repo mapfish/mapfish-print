@@ -477,6 +477,16 @@ public abstract class GenericMapAttribute
             return Lists.newArrayList(this.mapLayers);
         }
 
+        /**
+         * Replace a layer with another.
+         *
+         * @param pos The position of the layer to replace
+         * @param layer The new layer
+         */
+        public void replaceLayer(final int pos, final MapLayer layer) {
+            this.mapLayers.set(pos, layer);
+        }
+
         public final Template getTemplate() {
             return this.template;
         }

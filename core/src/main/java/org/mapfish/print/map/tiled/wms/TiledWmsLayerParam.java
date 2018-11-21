@@ -19,6 +19,24 @@ public final class TiledWmsLayerParam extends WmsLayerParam {
      */
     public int[] tileSize;
 
+    /**
+     * Constructor.
+     */
+    public TiledWmsLayerParam() {
+        super();
+    }
+
+    /**
+     * Convert WmsLayerParam into it's tiled equivalent.
+     *
+     * @param params the WMS parameters to convert
+     * @param tileSize The size of the tiles
+     */
+    public TiledWmsLayerParam(final WmsLayerParam params, final Dimension tileSize) {
+        super(params);
+        this.tileSize = new int[]{tileSize.width, tileSize.height};
+    }
+
     @Override
     public void postConstruct() throws URISyntaxException {
         super.postConstruct();

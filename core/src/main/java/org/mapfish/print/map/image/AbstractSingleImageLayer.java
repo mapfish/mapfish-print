@@ -85,4 +85,8 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
     public final double getImageBufferScaling() {
         return 1;
     }
+
+    public StyleSupplier<GridCoverage2D> getStyleSupplier() {
+        return styleSupplier;
+    }
 }

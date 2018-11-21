@@ -57,6 +57,25 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
     public PJsonObject mergeableParams;
 
     /**
+     * Constructor.
+     */
+    public AbstractWMXLayerParams() {
+        super();
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param other the object to copy
+     */
+    public AbstractWMXLayerParams(final AbstractWMXLayerParams other) {
+        super(other);
+        this.additionalCustomParam.putAll(other.additionalCustomParam);
+        this.customParams = other.customParams;
+        this.mergeableParams = other.mergeableParams;
+    }
+
+    /**
      * Read the {@link #customParams} into a Multimap.
      */
     public final Multimap<String, String> getCustomParams() {

@@ -18,6 +18,23 @@ public abstract class AbstractTiledLayerParams extends AbstractLayerParams {
     public String rasterStyle = "raster";
 
     /**
+     * Constructor.
+     */
+    public AbstractTiledLayerParams() {
+        super();
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param other the object to copy
+     */
+    public AbstractTiledLayerParams(final AbstractTiledLayerParams other) {
+        super(other);
+        this.rasterStyle = other.rasterStyle;
+    }
+
+    /**
      * Get the base url for all tile requests.  For example it might be 'http://server
      * .com/geoserver/gwc/service/wmts'.
      */

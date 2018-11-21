@@ -58,6 +58,25 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
         this.configuration = configuration;
     }
 
+    /**
+     * Copy constructor.
+     *
+     * @param other The source.
+     * @param styleSupplier strategy for loading the style for this layer.
+     * @param registry the metrics registry.
+     * @param configuration the configuration.
+     */
+    public AbstractTiledLayer(
+            final AbstractGeotoolsLayer other,
+            @Nullable final StyleSupplier<GridCoverage2D> styleSupplier,
+            @Nullable final MetricRegistry registry,
+            @Nonnull final Configuration configuration) {
+        super(other);
+        this.styleSupplier = styleSupplier;
+        this.registry = registry;
+        this.configuration = configuration;
+    }
+
     @Override
     public final void prepareRender(final MapfishMapContext mapContext) {
         this.tileCacheInformation = createTileInformation(

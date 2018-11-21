@@ -47,6 +47,16 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         this.params = params;
     }
 
+    /**
+     * Copy constructor.
+     *
+     * @param other The source.
+     */
+    public AbstractGeotoolsLayer(final AbstractGeotoolsLayer other) {
+        this.executorService = other.executorService;
+        this.params = other.params;
+    }
+
 
     @Override
     public final Optional<MapLayer> tryAddLayer(final MapLayer newLayer) {
