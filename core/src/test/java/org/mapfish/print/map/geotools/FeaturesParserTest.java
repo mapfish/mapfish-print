@@ -1,7 +1,5 @@
 package org.mapfish.print.map.geotools;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.referencing.CRS;
@@ -25,13 +23,15 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.File;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 public class FeaturesParserTest extends AbstractMapfishSpringTest {
 
@@ -92,12 +92,9 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
     @Test
     @DirtiesContext
     public void testParseCRSLinkOgcWkt() throws Exception {
-        requestFactory.registerHandler(new Predicate<URI>() {
-            @Override
-            public boolean apply(@Nullable URI input) {
-                return input != null && input.getHost().equals("spatialreference.org");
-            }
-        }, new TestHttpClientFactory.Handler() {
+        requestFactory.registerHandler(
+                input -> input != null && input.getHost().equals("spatialreference.org"),
+                new TestHttpClientFactory.Handler() {
             @Override
             public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
                 String wkt =
@@ -134,12 +131,9 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
     @Test
     @DirtiesContext
     public void testParseCRSLinkEsriWkt() {
-        requestFactory.registerHandler(new Predicate<URI>() {
-            @Override
-            public boolean apply(@Nullable URI input) {
-                return input != null && input.getHost().equals("spatialreference.org");
-            }
-        }, new TestHttpClientFactory.Handler() {
+        requestFactory.registerHandler(
+                input -> input != null && input.getHost().equals("spatialreference.org"),
+                new TestHttpClientFactory.Handler() {
             @Override
             public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
                 String wkt =
@@ -225,7 +219,7 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
         final Pattern numExpectedFilesPattern = Pattern.compile(".*-(\\d+)\\.json");
 
         final Matcher matcher = numExpectedFilesPattern.matcher(geojsonExample.getName());
-        matcher.find();
+        assertTrue(matcher.find());
         final String numFeatures = matcher.group(1);
         return Integer.parseInt(numFeatures);
 
@@ -234,11 +228,9 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
     private Iterable<File> getGeoJsonExamples() {
         final File file = getFile(EXAMPLE_GEOJSONFILE);
         File directory = file.getParentFile();
-        return Iterables.filter(Files.fileTreeTraverser().children(directory), new Predicate<File>() {
-            @Override
-            public boolean apply(@Nullable File input) {
-                return input.getName().endsWith(".json");
-            }
-        });
+        final File[] files = directory.listFiles();
+        assertNotNull(files);
+        return Arrays.stream(files).filter(input -> input.getName().endsWith(".json"))
+                .collect(Collectors.toList());
     }
 }

@@ -34,10 +34,12 @@ import java.io.File;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.mapfish.print.servlet.MapPrinterServlet.JSON_ATTRIBUTES;
 import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
@@ -96,7 +98,7 @@ public class ExamplesTest {
             // Call context.reset() to clear any previous configuration, e.g. default
             // configuration. For multi-step configuration, omit calling context.reset().
             loggerContext.reset();
-            configurator.doConfigure(logfile);
+            configurator.doConfigure(Objects.requireNonNull(logfile));
         } catch (JoranException je) {
             // StatusPrinter will handle this
         }
@@ -157,7 +159,7 @@ public class ExamplesTest {
         final String namePattern = "[a-zA-Z0-9_]+";
         final File examplesDir = getFile(ExamplesTest.class, "/examples");
         StringBuilder errors = new StringBuilder();
-        for (File example: Files.fileTreeTraverser().children(examplesDir)) {
+        for (File example: Objects.requireNonNull(examplesDir.listFiles())) {
             if (example.isDirectory() && !examplesDir.getName().matches(namePattern)) {
                 errors.append("\n    * ").append(examplesDir.getName());
             }
@@ -175,7 +177,7 @@ public class ExamplesTest {
         int testsRan = 0;
         final File examplesDir = getFile(ExamplesTest.class, "/examples");
 
-        for (File example: Files.fileTreeTraverser().children(examplesDir)) {
+        for (File example: Objects.requireNonNull(examplesDir.listFiles())) {
             if (example.isDirectory() && exampleFilter.matcher(example.getName()).matches()) {
                 testsRan += runExample(example, errors);
             }
@@ -200,6 +202,7 @@ public class ExamplesTest {
                 exampleName.append(error.getKey());
                 errorReport.append(exampleName);
                 errorReport.append('\n');
+                //noinspection ReplaceAllDot
                 errorReport.append(exampleName.toString().replaceAll(".", "="));
                 errorReport.append('\n');
                 errorReport.append("Failed with the error:\n");
@@ -221,7 +224,7 @@ public class ExamplesTest {
                 throw new AssertionError(String.format(
                         "Example: '%s' does not have any request data files.", example.getName()));
             }
-            for (File requestFile: Files.fileTreeTraverser().children(example)) {
+            for (File requestFile: Objects.requireNonNull(example.listFiles())) {
                 if (!requestFile.isFile() || !requestFilter.matcher(requestFile.getName()).matches()) {
                     continue;
                 }
@@ -236,6 +239,7 @@ public class ExamplesTest {
                         final PJsonObject jsonSpec;
                         if (requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE)) {
                             PJsonObject oldSpec = MapPrinterServlet.parseJson(requestData, null);
+                            assertNotNull(oldSpec);
                             jsonSpec = OldAPIRequestConverter.convert(oldSpec,
                                                                       this.mapPrinter.getConfiguration());
                         } else {
@@ -318,7 +322,7 @@ public class ExamplesTest {
     }
 
     private boolean hasRequestFile(File example) {
-        for (File file: Files.fileTreeTraverser().children(example)) {
+        for (File file: Objects.requireNonNull(example.listFiles())) {
             if (isRequestDataFile(file)) {
                 return true;
             }

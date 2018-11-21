@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.URI;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -25,8 +26,8 @@ public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest
 
     @After
     public void tearDown() {
-        final Iterable<File> children =
-                Files.fileTreeTraverser().children(this.workingDirectories.getWorking());
+        final File[] children = this.workingDirectories.getWorking().listFiles();
+        assertNotNull(children);
         for (File child: children) {
             this.workingDirectories.removeDirectory(child);
         }
