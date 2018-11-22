@@ -40,11 +40,11 @@ public class PrintJobResultExtImpl extends PrintJobResultImpl {
     }
 
 
-    public final byte[] getData() {
+    public byte[] getData() {
         return this.data;
     }
 
-    public final void setData(final byte[] data) {
+    public void setData(final byte[] data) {
         this.data = data;
     }
 

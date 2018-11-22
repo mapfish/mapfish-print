@@ -18,7 +18,7 @@ public interface JobQueue {
     /**
      * Get the number of prints that finished (either by error or success).
      */
-    int getLastPrintCount();
+    long getLastPrintCount();
 
     /**
      * Get the average time print jobs take to complete.
@@ -28,7 +28,7 @@ public interface JobQueue {
     /**
      * Get the total number of print requests made.
      */
-    int getNumberOfRequestsMade();
+    long getNumberOfRequestsMade();
 
     /**
      * Get the time since a client has last requested the print job.
@@ -40,7 +40,7 @@ public interface JobQueue {
     /**
      * Get the total number of waiting/running jobs.
      */
-    int getWaitingJobsCount();
+    long getWaitingJobsCount();
 
     /**
      * Return the completed job object if the job has completed or absent otherwise.

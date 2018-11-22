@@ -1,7 +1,6 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
-import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,12 +22,12 @@ public class AccessAssertionUserType implements UserType {
     private static final int[] SQL_TYPES = {Types.LONGVARCHAR};
 
     @Override
-    public final Object assemble(final Serializable cached, final Object owner) throws HibernateException {
+    public final Object assemble(final Serializable cached, final Object owner) {
         return deepCopy(cached);
     }
 
     @Override
-    public final Object deepCopy(final Object value) throws HibernateException {
+    public final Object deepCopy(final Object value) {
         if (value == null) {
             return value;
         }
@@ -36,12 +35,12 @@ public class AccessAssertionUserType implements UserType {
     }
 
     @Override
-    public final Serializable disassemble(final Object value) throws HibernateException {
+    public final Serializable disassemble(final Object value) {
         return (Serializable) deepCopy(value);
     }
 
     @Override
-    public final boolean equals(final Object x, final Object y) throws HibernateException {
+    public final boolean equals(final Object x, final Object y) {
         if (x == null) {
             return (y != null);
         } else {
@@ -50,7 +49,7 @@ public class AccessAssertionUserType implements UserType {
     }
 
     @Override
-    public final int hashCode(final Object x) throws HibernateException {
+    public final int hashCode(final Object x) {
         return x.hashCode();
     }
 
@@ -61,8 +60,8 @@ public class AccessAssertionUserType implements UserType {
 
     @Override
     public final Object nullSafeGet(
-            final ResultSet rs, final String[] names, final SessionImplementor session,
-            final Object owner) throws HibernateException, SQLException {
+            final ResultSet rs, final String[] names, final SharedSessionContractImplementor session,
+            final Object owner) throws SQLException {
         String value = rs.getString(names[0]);
         if (value != null) {
             try {
@@ -80,7 +79,7 @@ public class AccessAssertionUserType implements UserType {
     @Override
     public final void nullSafeSet(
             final PreparedStatement st, final Object value, final int index,
-            final SessionImplementor session) throws HibernateException, SQLException {
+            final SharedSessionContractImplementor session) throws SQLException {
         if (value == null) {
             st.setNull(index, SQL_TYPES[0]);
         } else {
@@ -91,8 +90,7 @@ public class AccessAssertionUserType implements UserType {
     }
 
     @Override
-    public final Object replace(final Object original, final Object target, final Object owner)
-            throws HibernateException {
+    public final Object replace(final Object original, final Object target, final Object owner) {
         return deepCopy(original);
     }
 

@@ -75,8 +75,8 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
         AssertionError error = null;
         while ((System.currentTimeMillis() - start) > 2000) {
             try {
-                int lastPrintCount = jobQueue.getLastPrintCount();
-                int numberOfRequestsMade = jobQueue.getNumberOfRequestsMade();
+                long lastPrintCount = jobQueue.getLastPrintCount();
+                long numberOfRequestsMade = jobQueue.getNumberOfRequestsMade();
                 long timeSpentPrinting = jobQueue.getAverageTimeSpentPrinting();
 
                 assertEquals(expectedLastPrintCount, lastPrintCount);

@@ -35,7 +35,6 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
@@ -104,12 +103,8 @@ public class ThreadPoolJobManager implements JobManager {
      * For example it could be that requests from certain users (like executive officers) are prioritized over
      * requests from other users.
      */
-    private Comparator<PrintJob> jobPriorityComparator = new Comparator<PrintJob>() {
-        @Override
-        public int compare(final PrintJob o1, final PrintJob o2) {
-            return Longs.compare(o1.getEntry().getStartTime(), o2.getEntry().getStartTime());
-        }
-    };
+    private Comparator<PrintJob> jobPriorityComparator =
+            (o1, o2) -> Longs.compare(o1.getEntry().getStartTime(), o2.getEntry().getStartTime());
     private ThreadPoolExecutor executor;
     private ScheduledExecutorService timer;
     private ScheduledExecutorService cleanUpTimer;
@@ -252,25 +247,19 @@ public class ThreadPoolJobManager implements JobManager {
                     }
                 };
 
-        this.timer = Executors.newScheduledThreadPool(1, new ThreadFactory() {
-            @Override
-            public Thread newThread(final Runnable timerTask) {
-                final Thread thread = new Thread(timerTask, "Post result to registry");
-                thread.setDaemon(true);
-                return thread;
-            }
+        this.timer = Executors.newScheduledThreadPool(1, timerTask -> {
+            final Thread thread = new Thread(timerTask, "Post result to registry");
+            thread.setDaemon(true);
+            return thread;
         });
         this.timer.scheduleAtFixedRate(new RegistryTask(), RegistryTask.CHECK_INTERVAL,
                                        RegistryTask.CHECK_INTERVAL, TimeUnit.MILLISECONDS);
 
         if (this.oldFileCleanUp) {
-            this.cleanUpTimer = Executors.newScheduledThreadPool(1, new ThreadFactory() {
-                @Override
-                public Thread newThread(final Runnable timerTask) {
-                    final Thread thread = new Thread(timerTask, "Clean up old files");
-                    thread.setDaemon(true);
-                    return thread;
-                }
+            this.cleanUpTimer = Executors.newScheduledThreadPool(1, timerTask -> {
+                final Thread thread = new Thread(timerTask, "Clean up old files");
+                thread.setDaemon(true);
+                return thread;
             });
             this.cleanUpTimer.scheduleAtFixedRate(
                     this.workingDirectories.getCleanUpTask(), 0,
@@ -312,7 +301,7 @@ public class ThreadPoolJobManager implements JobManager {
     }
 
     private void submitInternal(final PrintJobEntry jobEntry) {
-        final int numberOfWaitingRequests = this.jobQueue.getWaitingJobsCount();
+        final long numberOfWaitingRequests = this.jobQueue.getWaitingJobsCount();
         if (numberOfWaitingRequests >= this.maxNumberOfWaitingJobs) {
             metricRegistry.counter(getClass().getName() + ".queue_overflow").inc();
             throw new RuntimeException(

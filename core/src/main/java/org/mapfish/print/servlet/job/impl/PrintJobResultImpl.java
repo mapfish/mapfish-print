@@ -80,7 +80,7 @@ public class PrintJobResultImpl implements PrintJobResult {
     }
 
     @Override
-    public final URI getReportURI() {
+    public URI getReportURI() {
         try {
             return this.reportURI == null ? null : new URI(this.reportURI);
         } catch (URISyntaxException e) {
@@ -89,22 +89,22 @@ public class PrintJobResultImpl implements PrintJobResult {
     }
 
     @Override
-    public final String getReportURIString() {
+    public String getReportURIString() {
         return this.reportURI;
     }
 
     @Override
-    public final String getMimeType() {
+    public String getMimeType() {
         return this.mimeType;
     }
 
     @Override
-    public final String getFileExtension() {
+    public String getFileExtension() {
         return this.fileExtension;
     }
 
     @Override
-    public final String getFileName() {
+    public String getFileName() {
         return this.fileName;
     }
 }

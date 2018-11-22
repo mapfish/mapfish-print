@@ -172,7 +172,7 @@ public class RegistryJobQueue implements JobQueue {
     }
 
     @Override
-    public final int getNumberOfRequestsMade() {
+    public final long getNumberOfRequestsMade() {
         return this.registry.opt(NEW_PRINT_COUNT, 0);
     }
 
@@ -191,12 +191,12 @@ public class RegistryJobQueue implements JobQueue {
     }
 
     @Override
-    public final int getLastPrintCount() {
+    public final long getLastPrintCount() {
         return this.registry.opt(LAST_PRINT_COUNT, 0);
     }
 
     @Override
-    public final int getWaitingJobsCount() {
+    public final long getWaitingJobsCount() {
         return getNumberOfRequestsMade() - getLastPrintCount();
     }
 

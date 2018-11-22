@@ -297,15 +297,11 @@ startScripts {
 }
 
 def getVersionName = { ->
-    if (System.getenv("DOCKER_VERSION")) {
-        return System.getenv("DOCKER_VERSION")
+    def fromEnv = System.getenv('DOCKER_VERSION')
+    if (fromEnv) {
+        return fromEnv
     }
-    def stdout = new ByteArrayOutputStream()
-    exec {
-        commandLine 'sh', '-c', 'git describe --tags --first-parent || echo "0"'
-        standardOutput = stdout
-    }
-    return stdout.toString().trim().replace("release/", "").replaceAll("/", "_")
+    return 'latest'
 }
 
 docker {
