@@ -72,48 +72,48 @@ public class PrintJobStatusImpl implements PrintJobStatus {
     }
 
     @Override
-    public final PrintJobEntry getEntry() {
+    public PrintJobEntry getEntry() {
         return this.entry;
     }
 
     @Override
-    public final Long getCompletionTime() {
+    public Long getCompletionTime() {
         return this.completionTime;
     }
 
-    public final void setCompletionTime(final Long completionTime) {
+    public void setCompletionTime(final Long completionTime) {
         this.completionTime = completionTime;
     }
 
     @Override
-    public final long getRequestCount() {
+    public long getRequestCount() {
         return this.requestCount;
     }
 
-    public final void setRequestCount(final long requestCount) {
+    public void setRequestCount(final long requestCount) {
         this.requestCount = requestCount;
     }
 
     @Override
-    public final String getError() {
+    public String getError() {
         return this.error;
     }
 
-    public final void setError(final String error) {
+    public void setError(final String error) {
         this.error = error;
     }
 
     @Override
-    public final PrintJobStatus.Status getStatus() {
+    public PrintJobStatus.Status getStatus() {
         return this.status;
     }
 
-    public final void setStatus(final PrintJobStatus.Status status) {
+    public void setStatus(final PrintJobStatus.Status status) {
         this.status = status;
     }
 
     @Override
-    public final PrintJobResult getResult() {
+    public PrintJobResult getResult() {
         return this.result;
     }
 
@@ -122,42 +122,42 @@ public class PrintJobStatusImpl implements PrintJobStatus {
      *
      * @param result The result
      */
-    public final void setResult(final PrintJobResult result) {
+    public void setResult(final PrintJobResult result) {
         this.result = result;
     }
 
     @Override
-    public final String getReferenceId() {
+    public String getReferenceId() {
         return this.referenceId;
     }
 
     @Override
-    public final long getStartTime() {
+    public long getStartTime() {
         return getEntry().getStartTime();
     }
 
     @Override
-    public final AccessAssertion getAccess() {
+    public AccessAssertion getAccess() {
         return getEntry().getAccess();
     }
 
     @Override
-    public final String getAppId() {
+    public String getAppId() {
         return getEntry().getAppId();
     }
 
     @Override
-    public final Date getStartDate() {
+    public Date getStartDate() {
         return getEntry().getStartDate();
     }
 
     @Override
-    public final Date getCompletionDate() {
+    public Date getCompletionDate() {
         return getCompletionTime() == null ? null : new Date(getCompletionTime());
     }
 
     @Override
-    public final long getElapsedTime() {
+    public long getElapsedTime() {
         if (this.completionTime != null) {
             return this.completionTime - getEntry().getStartTime();
         } else if (this.statusTime != null) {
@@ -168,25 +168,25 @@ public class PrintJobStatusImpl implements PrintJobStatus {
     }
 
     @Override
-    public final boolean isDone() {
+    public boolean isDone() {
         return getStatus() != PrintJobStatus.Status.RUNNING && getStatus() != PrintJobStatus.Status.WAITING;
     }
 
     @Override
-    public final long getWaitingTime() {
+    public long getWaitingTime() {
         return this.waitingTime;
     }
 
     @Override
-    public final void setWaitingTime(final long waitingTime) {
+    public void setWaitingTime(final long waitingTime) {
         this.waitingTime = waitingTime;
     }
 
-    public final Long getStatusTime() {
+    public Long getStatusTime() {
         return this.statusTime;
     }
 
-    public final void setStatusTime(final Long statusTime) {
+    public void setStatusTime(final Long statusTime) {
         this.statusTime = statusTime;
     }
 

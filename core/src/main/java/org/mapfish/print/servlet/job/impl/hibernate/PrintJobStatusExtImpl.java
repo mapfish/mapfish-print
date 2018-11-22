@@ -34,11 +34,11 @@ public class PrintJobStatusExtImpl extends PrintJobStatusImpl {
         super(entry, requestCount);
     }
 
-    public final long getLastCheckTime() {
+    public long getLastCheckTime() {
         return this.lastCheckTime;
     }
 
-    public final void setLastCheckTime(final long lastCheckTime) {
+    public void setLastCheckTime(final long lastCheckTime) {
         this.lastCheckTime = lastCheckTime;
     }
 

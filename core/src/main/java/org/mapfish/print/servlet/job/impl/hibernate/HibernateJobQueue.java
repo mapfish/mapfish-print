@@ -8,15 +8,12 @@ import org.mapfish.print.servlet.job.PrintJobResult;
 import org.mapfish.print.servlet.job.PrintJobStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -62,18 +59,18 @@ public class HibernateJobQueue implements JobQueue {
     }
 
     @Override
-    public final int getLastPrintCount() {
+    public final long getLastPrintCount() {
         return this.dao.count(PrintJobStatus.Status.FINISHED, PrintJobStatus.Status.CANCELLED,
                               PrintJobStatus.Status.ERROR);
     }
 
     @Override
-    public final int getWaitingJobsCount() {
+    public final long getWaitingJobsCount() {
         return this.dao.count(PrintJobStatus.Status.WAITING, PrintJobStatus.Status.RUNNING);
     }
 
     @Override
-    public final int getNumberOfRequestsMade() {
+    public final long getNumberOfRequestsMade() {
         return this.dao.count();
     }
 
@@ -84,7 +81,7 @@ public class HibernateJobQueue implements JobQueue {
 
     @Override
     @Transactional(readOnly = true)
-    public final long timeSinceLastStatusCheck(final String referenceId) {
+    public long timeSinceLastStatusCheck(final String referenceId) {
         return System.currentTimeMillis() -
                 ((Number) this.dao.getValue(referenceId, "lastCheckTime")).longValue();
     }
@@ -194,13 +191,10 @@ public class HibernateJobQueue implements JobQueue {
      */
     @PostConstruct
     public final void init() {
-        this.cleanUpTimer = Executors.newScheduledThreadPool(1, new ThreadFactory() {
-            @Override
-            public Thread newThread(final Runnable timerTask) {
-                final Thread thread = new Thread(timerTask, "Clean up old job records");
-                thread.setDaemon(true);
-                return thread;
-            }
+        this.cleanUpTimer = Executors.newScheduledThreadPool(1, timerTask -> {
+            final Thread thread = new Thread(timerTask, "Clean up old job records");
+            thread.setDaemon(true);
+            return thread;
         });
         this.cleanUpTimer.scheduleAtFixedRate(this::cleanup, this.cleanupInterval, this.cleanupInterval,
                                               TimeUnit.SECONDS);
@@ -216,13 +210,9 @@ public class HibernateJobQueue implements JobQueue {
 
     private void cleanup() {
         TransactionTemplate tmpl = new TransactionTemplate(this.txManager);
-        final int nbDeleted = tmpl.execute(new TransactionCallback<Integer>() {
-            @Override
-            public Integer doInTransaction(final TransactionStatus status) {
-                return HibernateJobQueue.this.dao
-                        .deleteOld(System.currentTimeMillis() - getTimeToKeepAfterAccessInMillis());
-            }
-        });
+        final int nbDeleted = tmpl.execute(
+                status -> HibernateJobQueue.this.dao
+                        .deleteOld(System.currentTimeMillis() - getTimeToKeepAfterAccessInMillis()));
         metricRegistry.counter(getClass().getName() + ".deleted_old").inc(nbDeleted);
     }
 }

@@ -1,24 +1,25 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
 import org.hibernate.LockMode;
 import org.hibernate.PessimisticLockException;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.type.LongType;
-import org.hibernate.type.Type;
+import org.hibernate.query.Query;
 import org.mapfish.print.servlet.job.PrintJobStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Root;
 
 /**
  * JobEntryDao.
@@ -36,7 +37,7 @@ public class PrintJobDao {
         this.sf.openSession();
     }
 
-    public final Session getSession() {
+    private Session getSession() {
         return this.sf.getCurrentSession();
     }
 
@@ -55,7 +56,7 @@ public class PrintJobDao {
      * Get Job Record.
      *
      * @param id the id
-     * @return
+     * @return the job
      */
     @Nullable
     public final PrintJobStatusExtImpl get(final String id) {
@@ -75,16 +76,22 @@ public class PrintJobDao {
      */
     @Nullable
     public final PrintJobStatusExtImpl get(final String id, final boolean lock) {
-        Criteria c = getSession().createCriteria(PrintJobStatusExtImpl.class);
-        c.add(Restrictions.idEq(id));
-        if (lock) { //LOCK means SELECT FOR UPDATE which prevents these records to be pulled by different
+        final CriteriaBuilder builder = getSession().getCriteriaBuilder();
+        final CriteriaQuery<PrintJobStatusExtImpl> criteria =
+                builder.createQuery(PrintJobStatusExtImpl.class);
+        final Root<PrintJobStatusExtImpl> root = criteria.from(PrintJobStatusExtImpl.class);
+        root.alias("pj");
+        root.fetch("result", JoinType.LEFT);
+        criteria.where(builder.equal(root.get("referenceId"), id));
+        final Query<PrintJobStatusExtImpl> query = getSession().createQuery(criteria);
+        if (lock) {
+            //LOCK means SELECT FOR UPDATE which prevents these records to be pulled by different
             // instances
-            c.setLockMode("pj", LockMode.PESSIMISTIC_READ);
-            c.setFetchMode("result", FetchMode.SELECT);
+            query.setLockMode("pj", LockMode.PESSIMISTIC_READ);
         } else {
-            c.setReadOnly(true);  // make sure the object is not updated if there is no lock
+            query.setReadOnly(true);  // make sure the object is not updated if there is no lock
         }
-        return (PrintJobStatusExtImpl) c.uniqueResult();
+        return query.uniqueResult();
     }
 
     /**
@@ -95,48 +102,56 @@ public class PrintJobDao {
      * @return the property value
      */
     public final Object getValue(final String id, final String property) {
-        Criteria c = getSession().createCriteria(PrintJobStatusExtImpl.class);
-        c.add(Restrictions.idEq(id));
-        c.setProjection(Projections.property(property));
-        return c.uniqueResult();
+        final CriteriaBuilder builder = getSession().getCriteriaBuilder();
+        final CriteriaQuery<Object> criteria = builder.createQuery(Object.class);
+        final Root<PrintJobStatusExtImpl> root = criteria.from(PrintJobStatusExtImpl.class);
+        criteria.select(root.get(property));
+        criteria.where(builder.equal(root.get("referenceId"), id));
+        return getSession().createQuery(criteria).uniqueResult();
     }
 
     /**
      * @param statuses the statuses to include (or none if all)
      * @return the total amount of jobs
      */
-    public final int count(final PrintJobStatus.Status... statuses) {
-        Criteria c = getSession().createCriteria(PrintJobStatusExtImpl.class);
+    public final long count(final PrintJobStatus.Status... statuses) {
+        final CriteriaBuilder builder = getSession().getCriteriaBuilder();
+        final CriteriaQuery<Long> criteria = builder.createQuery(Long.class);
+        final Root<PrintJobStatusExtImpl> root = criteria.from(PrintJobStatusExtImpl.class);
+        criteria.select(builder.count(root));
         if (statuses.length > 0) {
-            c.add(Restrictions.in("status", statuses));
+            criteria.where(root.get("status").in(Arrays.asList(statuses)));
         }
-        c.setProjection(Projections.rowCount());
-        return ((Number) c.uniqueResult()).intValue();
+        return getSession().createQuery(criteria).uniqueResult();
     }
 
     /**
      * @param statuses the statuses to include (or none if all)
      * @return the jobs
      */
-    @SuppressWarnings("unchecked")
     public final List<PrintJobStatusExtImpl> get(final PrintJobStatus.Status... statuses) {
-        Criteria c = getSession().createCriteria(PrintJobStatusExtImpl.class);
+        final CriteriaBuilder builder = getSession().getCriteriaBuilder();
+        final CriteriaQuery<PrintJobStatusExtImpl> criteria =
+                builder.createQuery(PrintJobStatusExtImpl.class);
+        final Root<PrintJobStatusExtImpl> root = criteria.from(PrintJobStatusExtImpl.class);
         if (statuses.length > 0) {
-            c.add(Restrictions.in("status", statuses));
+            criteria.where(root.get("status").in(Arrays.asList(statuses)));
         }
-        return (List<PrintJobStatusExtImpl>) c.list();
+        return getSession().createQuery(criteria).list();
     }
 
     /**
      * @return total time spent printing
      */
     public final long getTotalTimeSpentPrinting() {
-        Criteria c = getSession().createCriteria(PrintJobStatusExtImpl.class);
-        c.add(Restrictions.isNotNull("completionTime"));
-        c.setProjection(Projections.sqlProjection("sum(completionTime - startTime) as totalTime",
-                                                  new String[]{"totalTime"}, new Type[]{LongType.INSTANCE}));
-        Number result = (Number) c.uniqueResult();
-        return result == null ? 0 : result.longValue();
+        final CriteriaBuilder builder = getSession().getCriteriaBuilder();
+        final CriteriaQuery<Long> criteria = builder.createQuery(Long.class);
+        final Root<PrintJobStatusExtImpl> root = criteria.from(PrintJobStatusExtImpl.class);
+        criteria.where(root.get("completionTime").isNotNull());
+        criteria.select(builder.sum(builder.diff(
+                root.get("completionTime"), root.get("entry").get("startTime"))));
+        final Long result = getSession().createQuery(criteria).uniqueResult();
+        return result != null ? result : 0;
     }
 
     /**
@@ -148,17 +163,20 @@ public class PrintJobDao {
      */
     public final void cancelOld(
             final long starttimeThreshold, final long checkTimeThreshold, final String message) {
-        Query query = getSession()
-                .createQuery("update PrintJobStatusExtImpl pj " + "set status=:newstatus, error=:msg "
-                                     + "where pj.status = :oldstatus " +
-                                     "and (startTime < :starttimethreshold "
-                                     + "or lastCheckTime < :checktimethreshold)");
-        query.setParameter("oldstatus", PrintJobStatus.Status.WAITING);
-        query.setParameter("newstatus", PrintJobStatus.Status.CANCELLED);
-        query.setParameter("msg", message);
-        query.setParameter("starttimethreshold", starttimeThreshold);
-        query.setParameter("checktimethreshold", checkTimeThreshold);
-        query.executeUpdate();
+        final CriteriaBuilder builder = getSession().getCriteriaBuilder();
+        final CriteriaUpdate<PrintJobStatusExtImpl> update =
+                builder.createCriteriaUpdate(PrintJobStatusExtImpl.class);
+        final Root<PrintJobStatusExtImpl> root = update.from(PrintJobStatusExtImpl.class);
+        update.where(builder.and(
+                builder.equal(root.get("status"), PrintJobStatus.Status.WAITING),
+                builder.or(
+                        builder.lessThan(root.get("entry").get("startTime"), starttimeThreshold),
+                        builder.lessThan(root.get("lastCheckTime"), checkTimeThreshold)
+                )
+        ));
+        update.set(root.get("status"), PrintJobStatus.Status.CANCELLED);
+        update.set(root.get("error"), message);
+        getSession().createQuery(update).executeUpdate();
     }
 
     /**
@@ -168,12 +186,13 @@ public class PrintJobDao {
      * @param lastCheckTime the new value
      */
     public final void updateLastCheckTime(final String id, final long lastCheckTime) {
-        Query query = getSession()
-                .createQuery("update PrintJobStatusExtImpl pj " + "set lastCheckTime=:lastCheckTime "
-                                     + "where pj.referenceId = :id");
-        query.setParameter("id", id);
-        query.setParameter("lastCheckTime", lastCheckTime);
-        query.executeUpdate();
+        final CriteriaBuilder builder = getSession().getCriteriaBuilder();
+        final CriteriaUpdate<PrintJobStatusExtImpl> update =
+                builder.createCriteriaUpdate(PrintJobStatusExtImpl.class);
+        final Root<PrintJobStatusExtImpl> root = update.from(PrintJobStatusExtImpl.class);
+        update.where(builder.equal(root.get("referenceId"), id));
+        update.set(root.get("lastCheckTime"), lastCheckTime);
+        getSession().createQuery(update).executeUpdate();
     }
 
     /**
@@ -183,31 +202,34 @@ public class PrintJobDao {
      * @return the number of jobs deleted
      */
     public final int deleteOld(final long checkTimeThreshold) {
-        Query query = getSession()
-                .createQuery(
-                        "delete from PrintJobStatusExtImpl " + "where lastCheckTime < :checktimethreshold)");
-        query.setParameter("checktimethreshold", checkTimeThreshold);
-        return query.executeUpdate();
+        final CriteriaBuilder builder = getSession().getCriteriaBuilder();
+        final CriteriaDelete<PrintJobStatusExtImpl> delete =
+                builder.createCriteriaDelete(PrintJobStatusExtImpl.class);
+        final Root<PrintJobStatusExtImpl> root = delete.from(PrintJobStatusExtImpl.class);
+        delete.where(builder.lessThan(root.get("lastCheckTime"), checkTimeThreshold));
+        return getSession().createQuery(delete).executeUpdate();
     }
 
     /**
      * Poll for the next N waiting jobs in line.
      *
      * @param size maximum amount of jobs to poll for
-     * @return
+     * @return up to "size" jobs
      */
-    @SuppressWarnings("unchecked")
     public final List<PrintJobStatusExtImpl> poll(final int size) {
-        Query query = getSession()
-                .createQuery(
-                        "from PrintJobStatusExtImpl pj " + "where status = :status " + "order by startTime");
-        query.setParameter("status", PrintJobStatus.Status.WAITING);
+        final CriteriaBuilder builder = getSession().getCriteriaBuilder();
+        final CriteriaQuery<PrintJobStatusExtImpl> criteria =
+                builder.createQuery(PrintJobStatusExtImpl.class);
+        final Root<PrintJobStatusExtImpl> root = criteria.from(PrintJobStatusExtImpl.class);
+        criteria.where(builder.equal(root.get("status"), PrintJobStatus.Status.WAITING));
+        criteria.orderBy(builder.asc(root.get("entry").get("startTime")));
+        final Query<PrintJobStatusExtImpl> query = getSession().createQuery(criteria);
         query.setMaxResults(size);
         // LOCK but don't wait for release (since this is run continuously
         // anyway, no wait prevents deadlock)
         query.setLockMode("pj", LockMode.UPGRADE_NOWAIT);
         try {
-            return (List<PrintJobStatusExtImpl>) query.list();
+            return query.getResultList();
         } catch (PessimisticLockException ex) {
             // Another process was polling at the same time. We can ignore this error
             return Collections.emptyList();
@@ -221,8 +243,11 @@ public class PrintJobDao {
      * @return the result report.
      */
     public final PrintJobResultExtImpl getResult(final URI reportURI) {
-        Criteria c = getSession().createCriteria(PrintJobResultExtImpl.class);
-        c.add(Restrictions.idEq(reportURI.toString()));
-        return (PrintJobResultExtImpl) c.uniqueResult();
+        final CriteriaBuilder builder = getSession().getCriteriaBuilder();
+        final CriteriaQuery<PrintJobResultExtImpl> criteria =
+                builder.createQuery(PrintJobResultExtImpl.class);
+        final Root<PrintJobResultExtImpl> root = criteria.from(PrintJobResultExtImpl.class);
+        criteria.where(builder.equal(root.get("reportURI"), reportURI.toString()));
+        return getSession().createQuery(criteria).uniqueResult();
     }
 }
