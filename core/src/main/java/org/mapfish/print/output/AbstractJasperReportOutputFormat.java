@@ -17,7 +17,6 @@ import net.sf.jasperreports.engine.design.JRDesignField;
 import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
 import net.sf.jasperreports.renderers.Renderable;
 import net.sf.jasperreports.repo.RepositoryService;
-import org.json.JSONException;
 import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapAttribute;
@@ -123,16 +122,10 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
     public final Print getJasperPrint(
             final String jobId, final PJsonObject requestData,
             final Configuration config, final File configDir, final File taskDirectory)
-            throws JRException, SQLException, ExecutionException, JSONException {
+            throws JRException, SQLException, ExecutionException {
         final String templateName = requestData.getString(Constants.JSON_LAYOUT_KEY);
 
         final Template template = config.getTemplate(templateName);
-        if (template == null) {
-            final String possibleTemplates = config.getTemplates().keySet().toString();
-            throw new IllegalArgumentException(String.format(
-                    "\nThere is no template with the name: %s.\nAvailable templates: %s",
-                    templateName, possibleTemplates));
-        }
         final File jasperTemplateFile = new File(configDir, template.getReportTemplate());
         final File jasperTemplateBuild = this.workingDirectories.getBuildFileFor(
                 config, jasperTemplateFile, JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT,

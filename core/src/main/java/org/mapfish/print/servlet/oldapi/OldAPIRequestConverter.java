@@ -5,7 +5,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.OldApiConfig;
@@ -53,13 +52,10 @@ public final class OldAPIRequestConverter {
      * @param oldRequest the request in the format of the old API
      * @param configuration the configuration
      */
-    public static PJsonObject convert(final PJsonObject oldRequest, final Configuration configuration)
-            throws JSONException {
+    public static PJsonObject convert(final PJsonObject oldRequest, final Configuration configuration) {
         final String layout = oldRequest.getString(JSON_LAYOUT_KEY);
 
-        if (configuration.getTemplate(layout) == null) {
-            throw new IllegalArgumentException("Layout '" + layout + "' is not configured");
-        }
+        configuration.getTemplate(layout);
 
         final JSONObject request = new JSONObject();
         request.put(JSON_LAYOUT_KEY, oldRequest.getString(JSON_LAYOUT_KEY));
@@ -75,8 +71,7 @@ public final class OldAPIRequestConverter {
         return new PJsonObject(request, "spec");
     }
 
-    private static JSONObject getAttributes(final PJsonObject oldRequest, final Template template)
-            throws JSONException {
+    private static JSONObject getAttributes(final PJsonObject oldRequest, final Template template) {
         final JSONObject attributes = new JSONObject();
 
         setMapAttribute(attributes, oldRequest, template);
@@ -98,7 +93,7 @@ public final class OldAPIRequestConverter {
 
     private static void setMapAttribute(
             final JSONObject attributes,
-            final PJsonObject oldRequest, final Template template) throws JSONException {
+            final PJsonObject oldRequest, final Template template) {
         final CreateMapProcessor mapProcessor = getMapProcessor(template);
         final PJsonObject oldMapPage = (PJsonObject) getOldMapPage(oldRequest);
 
@@ -195,8 +190,7 @@ public final class OldAPIRequestConverter {
     }
 
     private static void setMapLayers(
-            final JSONObject map, final PJsonObject oldRequest, final OldApiConfig oldApi)
-            throws JSONException {
+            final JSONObject map, final PJsonObject oldRequest, final OldApiConfig oldApi) {
         final JSONArray layers = new JSONArray();
         map.put("layers", layers);
 
@@ -232,7 +226,7 @@ public final class OldAPIRequestConverter {
     private static void setLegendAttribute(
             final JSONObject attributes,
             final PJsonObject oldRequest,
-            final Template template) throws JSONException {
+            final Template template) {
         final List<LegendProcessor> legendProcessors = getLegendProcessor(template);
         PJsonArray oldLegendJson = getLegendJson(oldRequest);
 
@@ -318,7 +312,7 @@ public final class OldAPIRequestConverter {
      */
     private static void setTableAttribute(
             final JSONObject attributes,
-            final PJsonObject oldRequest, final Template template) throws JSONException {
+            final PJsonObject oldRequest, final Template template) {
         final TableProcessor tableProcessor = getTableProcessor(template);
         PJsonObject oldTablePage = (PJsonObject) getOldTablePage(oldRequest);
 

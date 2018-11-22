@@ -106,9 +106,9 @@ public final class ProcessorDependencyGraphFactory {
                             }
 
                         } else {
-                            for (String attributeName: currentAttributes.keySet()) {
+                            for (Map.Entry<String, Attribute> attribute: currentAttributes.entrySet()) {
                                 ((RequireAttributes) processor).setAttribute(
-                                        attributeName, currentAttributes.get(attributeName));
+                                        attribute.getKey(), attribute.getValue());
                             }
                         }
                     } else {
@@ -216,9 +216,8 @@ public final class ProcessorDependencyGraphFactory {
                             }
                         }
                     } else {
-                        for (String name: provideByProcessor.keySet()) {
-                            final ProcessorGraphNode<Object, Object> processorSolution =
-                                    provideByProcessor.get(name);
+                        for (ProcessorGraphNode<Object, Object> processorSolution:
+                                provideByProcessor.values()) {
                             processorSolution.addDependency(node);
                             isRoot = false;
                         }

@@ -146,7 +146,8 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
                 return false;
             }
             try {
-                return WMTSLayer.createRestURI("matrix", 0, 0, this) != null;
+                WMTSLayer.createRestURI("matrix", 0, 0, this);
+                return true;
             } catch (URISyntaxException exc) {
                 LOGGER.warn("URL {} is invalid: {}", url, exc.getMessage());
                 return false;

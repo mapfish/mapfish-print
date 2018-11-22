@@ -211,10 +211,10 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
     }
 
     private void pickDefaultApp() {
-        final Iterator<String> iterator = this.configurationFiles.keySet().iterator();
+        final Iterator<Map.Entry<String, URI>> iterator = this.configurationFiles.entrySet().iterator();
         if (iterator.hasNext()) {
-            final String next = iterator.next();
-            final URI uri = this.configurationFiles.get(next);
+            final Map.Entry<String, URI> next = iterator.next();
+            final URI uri = next.getValue();
             this.configurationFiles.put(DEFAULT_CONFIGURATION_FILE_KEY, uri);
         }
     }

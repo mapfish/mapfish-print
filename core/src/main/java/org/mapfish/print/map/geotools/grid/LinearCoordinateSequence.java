@@ -9,7 +9,7 @@ import org.opengis.referencing.cs.AxisDirection;
 /**
  * The LinearCoordinateSequence class.
  */
-public final class LinearCoordinateSequence implements CoordinateSequence {
+public final class LinearCoordinateSequence implements CoordinateSequence, Cloneable {
     private int dimension;
     private double axis0Origin;
     private double axis1Origin;

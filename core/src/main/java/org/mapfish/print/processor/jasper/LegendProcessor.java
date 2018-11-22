@@ -311,6 +311,22 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         }
     }
 
+    private static final class NameTask implements Callable<Object[]> {
+
+        private String name;
+        private int level;
+
+        private NameTask(final String name, final int level) {
+            this.name = name;
+            this.level = level;
+        }
+
+        @Override
+        public Object[] call() {
+            return new Object[]{this.name, null, null, this.level};
+        }
+    }
+
     private final class IconTask implements Callable<Object[]> {
 
         private URL icon;
@@ -376,22 +392,6 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                 }
                 return new Object[]{null, image, report, this.level};
             });
-        }
-    }
-
-    private final class NameTask implements Callable<Object[]> {
-
-        private String name;
-        private int level;
-
-        private NameTask(final String name, final int level) {
-            this.name = name;
-            this.level = level;
-        }
-
-        @Override
-        public Object[] call() {
-            return new Object[]{this.name, null, null, this.level};
         }
     }
 }

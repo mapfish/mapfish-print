@@ -236,10 +236,10 @@ public class Configuration implements ConfigurationObject {
         json.key("layouts");
         json.array();
         final Map<String, Template> accessibleTemplates = getTemplates();
-        for (String name: accessibleTemplates.keySet()) {
+        for (Map.Entry<String, Template> entry: accessibleTemplates.entrySet()) {
             json.object();
-            json.key("name").value(name);
-            accessibleTemplates.get(name).printClientConfig(json);
+            json.key("name").value(entry.getKey());
+            entry.getValue().printClientConfig(json);
             json.endObject();
         }
         json.endArray();

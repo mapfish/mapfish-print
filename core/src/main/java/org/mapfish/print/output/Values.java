@@ -180,10 +180,10 @@ public final class Values {
                 !attributes.containsKey(JSON_REQUEST_HEADERS)) {
             attributes.put(JSON_REQUEST_HEADERS, new HttpRequestHeadersAttribute());
         }
-        for (String attributeName: attributes.keySet()) {
-            final Attribute attribute = attributes.get(attributeName);
+        for (Map.Entry<String, Attribute> attribute: attributes.entrySet()) {
             try {
-                put(attributeName, attribute.getValue(template, attributeName, requestJsonAttributes));
+                put(attribute.getKey(),
+                    attribute.getValue().getValue(template, attribute.getKey(), requestJsonAttributes));
             } catch (ObjectMissingException | IllegalArgumentException e) {
                 throw e;
             } catch (Throwable e) {
@@ -192,6 +192,7 @@ public final class Values {
                         .entrySet()) {
                     if (entry.getValue() == template) {
                         templateName = entry.getKey();
+                        break;
                     }
                 }
 
@@ -202,7 +203,7 @@ public final class Values {
                     defaults = "\n\n The attribute defaults are: " + reflectiveAttribute.getDefaultValue();
                 }
 
-                String errorMsg = "An error occurred when creating a value from the '" + attributeName +
+                String errorMsg = "An error occurred when creating a value from the '" + attribute.getKey() +
                         "' attribute for the '" +
                         templateName + "' template.\n\nThe JSON is: \n" + requestJsonAttributes + defaults +
                         "\n" +

@@ -140,7 +140,7 @@ public final class CompositeClientHttpRequestFactoryProcessor
     /**
      * The input.
      */
-    public class Input extends ClientHttpFactoryProcessorParam {
+    public static class Input extends ClientHttpFactoryProcessorParam {
         /**
          * The values.
          */

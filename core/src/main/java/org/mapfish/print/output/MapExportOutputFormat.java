@@ -84,11 +84,6 @@ public class MapExportOutputFormat implements OutputFormat {
         final String templateName = spec.getString(Constants.JSON_LAYOUT_KEY);
 
         final Template template = config.getTemplate(templateName);
-        if (template == null) {
-            final String possibleTemplates = config.getTemplates().keySet().toString();
-            throw new IllegalArgumentException("\nThere is no template with the name: " + templateName +
-                                                       ".\nAvailable templates: " + possibleTemplates);
-        }
 
         final Values values = new Values(jobId, spec, template, taskDirectory, this.httpRequestFactory, null,
                                          this.fileSuffix);
