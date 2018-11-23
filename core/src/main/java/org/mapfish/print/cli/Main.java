@@ -113,7 +113,7 @@ public final class Main {
         try {
             context.getBean(Main.class).run(cli);
         } finally {
-            context.destroy();
+            context.close();
         }
     }
 

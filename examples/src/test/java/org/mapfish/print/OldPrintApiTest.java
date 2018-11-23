@@ -115,7 +115,7 @@ public class OldPrintApiTest extends AbstractApiTest {
     public void testCreate_MissingSpec() throws Exception {
         ClientHttpRequest request = getPrintRequest("create.json", HttpMethod.POST);
         response = request.execute();
-        assertEquals(HttpStatus.UNSUPPORTED_MEDIA_TYPE, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
@@ -177,7 +177,7 @@ public class OldPrintApiTest extends AbstractApiTest {
     public void testPrint_MissingSpecPostBody() throws Exception {
         ClientHttpRequest request = getPrintRequest("print.pdf", HttpMethod.POST);
         response = request.execute();
-        assertEquals(HttpStatus.UNSUPPORTED_MEDIA_TYPE, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test

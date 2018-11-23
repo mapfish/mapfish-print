@@ -152,6 +152,11 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
         }
 
         @Override
+        public String getMethodValue() {
+            return this.httpMethod.name();
+        }
+
+        @Override
         public URI getURI() {
             return this.uri;
         }
