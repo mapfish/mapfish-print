@@ -1,5 +1,6 @@
 package org.mapfish.print.processor.http.matcher;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.auth.AuthScope;
 import org.springframework.http.HttpMethod;
 
@@ -112,10 +113,13 @@ public final class MatchInfo {
      */
     @SuppressWarnings("StringEquality")
     public static MatchInfo fromAuthScope(final AuthScope authscope) {
-        String newScheme = authscope.getScheme() == AuthScope.ANY_SCHEME ? ANY_SCHEME : authscope.getScheme();
-        String newHost = authscope.getHost() == AuthScope.ANY_HOST ? ANY_HOST : authscope.getHost();
+        String newScheme = StringUtils.equals(authscope.getScheme(), AuthScope.ANY_SCHEME) ? ANY_SCHEME :
+                authscope.getScheme();
+        String newHost = StringUtils.equals(authscope.getHost(), AuthScope.ANY_HOST) ? ANY_HOST :
+                authscope.getHost();
         int newPort = authscope.getPort() == AuthScope.ANY_PORT ? ANY_PORT : authscope.getPort();
-        String newRealm = authscope.getRealm() == AuthScope.ANY_REALM ? ANY_REALM : authscope.getRealm();
+        String newRealm = StringUtils.equals(authscope.getRealm(), AuthScope.ANY_REALM) ? ANY_REALM :
+                authscope.getRealm();
 
         return new MatchInfo(newScheme, newHost, newPort, ANY_PATH, ANY_QUERY,
                              ANY_FRAGMENT, newRealm, ANY_METHOD);

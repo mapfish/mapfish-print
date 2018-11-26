@@ -430,10 +430,9 @@ public abstract class GenericMapAttribute
                 }
             }
 
-            StringBuilder message = new StringBuilder(String.format("\nLayer with type: '%s' is not " +
-                                                                            "currently supported.  Options " +
-                                                                            "include: ",
-                                                                    layer.getString(TYPE)));
+            StringBuilder message = new StringBuilder(String.format(
+                    "\nLayer with type: '%s' is not currently supported.  Options include: ",
+                    layer.getString(TYPE)));
             for (MapLayerFactoryPlugin<?> mapLayerFactoryPlugin: layerParsers.values()) {
                 for (Object name: mapLayerFactoryPlugin.getTypeNames()) {
                     message.append("\n");

@@ -43,7 +43,6 @@ import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
 import org.mapfish.print.map.geotools.FeatureLayer;
-import org.mapfish.print.map.geotools.grid.GridLayer;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InputOutputValue;
@@ -265,8 +264,8 @@ public final class CreateMapProcessor
             final String outputFormat) throws IOException, JRException {
 
         final File mergedGraphic = File.createTempFile("map-", "." + outputFormat, printDirectory);
-        int width = Math.round(mapContext.getMapSize().width);
-        int height = Math.round(mapContext.getMapSize().height);
+        int width = mapContext.getMapSize().width;
+        int height = mapContext.getMapSize().height;
 
         if ("pdf".equalsIgnoreCase(outputFormat)) {
             com.lowagie.text.Document document = new com.lowagie.text.Document(
@@ -598,8 +597,7 @@ public final class CreateMapProcessor
             context.stopIfCanceled();
 
             if ((!Strings.isNullOrEmpty(layerName) && layerName.equals(layer.getName())) ||
-                    (Strings.isNullOrEmpty(layerName) && layer instanceof AbstractFeatureSourceLayer &&
-                            !(layer instanceof GridLayer))) {
+                    (Strings.isNullOrEmpty(layerName) && layer instanceof AbstractFeatureSourceLayer)) {
                 AbstractFeatureSourceLayer featureLayer = (AbstractFeatureSourceLayer) layer;
                 FeatureSource<?, ?> featureSource =
                         featureLayer.getFeatureSource(clientHttpRequestFactory, mapContext);

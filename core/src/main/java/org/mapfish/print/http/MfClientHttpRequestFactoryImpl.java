@@ -206,7 +206,8 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         }
 
         @Override
-        protected void finalize() {
+        protected void finalize() throws Throwable {
+            super.finalize();
             close();
         }
 

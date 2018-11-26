@@ -228,8 +228,8 @@ public class Template implements ConfigurationObject, HasConfiguration {
             synchronized (this) {
                 if (this.processorGraph == null) {
                     final Map<String, Class<?>> attcls = new HashMap<>();
-                    for (String attributeName: this.attributes.keySet()) {
-                        attcls.put(attributeName, this.attributes.get(attributeName).getValueType());
+                    for (Map.Entry<String, Attribute> attribute: this.attributes.entrySet()) {
+                        attcls.put(attribute.getKey(), attribute.getValue().getValueType());
                     }
                     this.processorGraph = this.processorGraphFactory.build(this.processors, attcls);
                 }

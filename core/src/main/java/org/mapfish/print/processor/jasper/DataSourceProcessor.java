@@ -297,8 +297,8 @@ public final class DataSourceProcessor
         }
 
         final Map<String, Class<?>> attcls = new HashMap<>();
-        for (String attributeName: this.allAttributes.keySet()) {
-            attcls.put(attributeName, this.allAttributes.get(attributeName).getValueType());
+        for (Map.Entry<String, Attribute> attribute: this.allAttributes.entrySet()) {
+            attcls.put(attribute.getKey(), attribute.getValue().getValueType());
         }
         try {
             this.processorGraph = this.processorGraphFactory.build(this.processors, attcls);

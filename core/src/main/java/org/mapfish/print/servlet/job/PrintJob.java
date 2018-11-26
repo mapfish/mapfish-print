@@ -129,13 +129,9 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
             LOGGER.debug("Job {}\n{}", this.entry.getReferenceId(), this.entry.getRequestData());
             String fileName = getFileName(mapPrinter, spec);
 
-            String mimeType = null;
-            String fileExtension = null;
-            if (mapPrinter != null) { //can only happen in test
-                final OutputFormat outputFormat = mapPrinter.getOutputFormat(spec);
-                mimeType = outputFormat.getContentType();
-                fileExtension = outputFormat.getFileSuffix();
-            }
+            final OutputFormat outputFormat = mapPrinter.getOutputFormat(spec);
+            final String mimeType = outputFormat.getContentType();
+            final String fileExtension = outputFormat.getFileSuffix();
             return createResult(report.uri, fileName, fileExtension, mimeType, this.entry.getReferenceId());
         } catch (Exception e) {
             String canceledText = "";
@@ -205,7 +201,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     /**
      * Holds the info that goes with the result of a print.
      */
-    public class PrintResult {
+    public static class PrintResult {
         /**
          * The URI to get the result.
          */

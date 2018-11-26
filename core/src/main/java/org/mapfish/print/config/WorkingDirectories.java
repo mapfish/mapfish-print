@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Date;
+import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 
@@ -215,7 +216,7 @@ public class WorkingDirectories {
 
             int deletedFiles = 0;
             if (dir.exists()) {
-                for (File file: dir.listFiles()) {
+                for (File file: Objects.requireNonNull(dir.listFiles())) {
                     if ((prefix == null || file.getName().startsWith(prefix))
                             && file.lastModified() < ageThreshold) {
                         if (!FileUtils.deleteQuietly(file)) {
