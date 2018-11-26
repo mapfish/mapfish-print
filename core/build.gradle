@@ -110,7 +110,7 @@ configurations {
 }
 
 dependencies {
-    def springSecurityVersion = "3.2.10.RELEASE"
+    def springSecurityVersion = "5.1.1.RELEASE"
     def slf4jVersion = '1.7.25'
     def logbackVersion = '1.2.3'
 

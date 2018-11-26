@@ -143,6 +143,11 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             return HttpMethod.valueOf(this.request.getMethod());
         }
 
+        @Override
+        public String getMethodValue() {
+            return this.request.getMethod();
+        }
+
         public URI getURI() {
             return this.request.getURI();
         }

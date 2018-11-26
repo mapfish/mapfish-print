@@ -134,6 +134,7 @@ public final class HttpRequestFetcher {
     private final class CachedClientHttpRequest implements ClientHttpRequest, Callable<Void> {
         private final ClientHttpRequest originalRequest;
         private final Processor.ExecutionContext context;
+        @Nullable
         private ClientHttpResponse response;
         @Nullable
         private ForkJoinTask<Void> future;
@@ -147,6 +148,12 @@ public final class HttpRequestFetcher {
         @Override
         public HttpMethod getMethod() {
             return this.originalRequest.getMethod();
+        }
+
+        @Override
+        public String getMethodValue() {
+            final HttpMethod method = this.originalRequest.getMethod();
+            return method != null ? method.name() : "";
         }
 
         @Override
@@ -173,12 +180,8 @@ public final class HttpRequestFetcher {
                                                                    ".waitDownloader").time();
             this.future.join();
             timerWait.stop();
-            if (this.response == null) {
-                LOGGER.warn("Attempting to load cached URI from failed request: {}",
-                            this.originalRequest.getURI());
-            } else {
-                LOGGER.debug("Loading cached URI resource {}", this.originalRequest.getURI());
-            }
+            assert this.response != null;
+            LOGGER.debug("Loading cached URI resource {}", this.originalRequest.getURI());
 
             // Drop the reference to the response to save some memory. It is wrong to call execute twice...
             final ClientHttpResponse result = this.response;
@@ -200,7 +203,7 @@ public final class HttpRequestFetcher {
                     LOGGER.debug("Caching URI resource {}", this.originalRequest.getURI());
                     this.response = new CachedClientHttpResponse(originalResponse);
                 } catch (IOException e) {
-                    LOGGER.error("Request failed {}", this.originalRequest.getURI());
+                    LOGGER.error("Request failed {}", this.originalRequest.getURI(), e);
                     this.response = new AbstractClientHttpResponse() {
                         @Override
                         public HttpHeaders getHeaders() {
