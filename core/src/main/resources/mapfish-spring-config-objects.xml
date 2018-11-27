@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" default-lazy-init="true"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
     <bean id="localMatch" class="org.mapfish.print.processor.http.matcher.LocalHostMatcher" scope="prototype" />
     <bean id="ipMatch" class="org.mapfish.print.processor.http.matcher.AddressHostMatcher" scope="prototype" />
     <bean id="dnsMatch" class="org.mapfish.print.processor.http.matcher.DnsHostMatcher" scope="prototype" />
@@ -14,6 +15,5 @@
     <bean id="proxy" class="org.mapfish.print.http.HttpProxy" scope="prototype" />
     <bean id="credential" class="org.mapfish.print.http.HttpCredential" scope="prototype" />
     <bean id="certificateStore" class="org.mapfish.print.http.CertificateStore" scope="prototype" />
-    <bean id="oldApi" class="org.mapfish.print.config.OldApiConfig" scope="prototype" />
 
 </beans>

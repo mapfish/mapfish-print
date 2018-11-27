@@ -1,8 +1,9 @@
 
 <html>
 <head>
-    <link rel="shortcut icon" href="favicon.ico" />
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <link href="favicon.ico" rel="shortcut icon"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"
+      type="text/javascript"></script>
     <script type="text/javascript">
         function changeFormat() {
 
@@ -13,11 +14,6 @@
         function openCapabilities() {
             var url = $('#capabilities').attr('url');
             window.open(url, '_capabilities')
-        }
-        function openOldApiCapabilities() {
-            var url = $('#old-api-capabilities').attr('url');
-            url = url + "app=" + $('#selectSpec').val();
-            window.open(url, '_info')
         }
         function copyRequestToTextArea() {
             var att = $('#selectExample').val();
@@ -172,8 +168,8 @@
     <h2><span id="messages"></span></h2>
     <h3><span id="validation" style="color:red"></span></h3>
 
-    <form id="spec" action="print/buildreport.pdf" method="post">
-        <textarea id="specText" name="spec" style="width: 100%" rows="30" oninput="validateJSON()">
+    <form action="print/buildreport.pdf" id="spec" method="post">
+        <textarea id="specText" name="spec" oninput="validateJSON()" rows="30" style="width: 100%">
 
         </textarea>
         <p>
@@ -185,29 +181,31 @@
         </p>
         <p>
             <button id="CreateAndGetPrint" type="submit">Create And Get Print</button>
-            <button id="PostAndPollPrint" type="button" onclick="javascript:post()">Post and Poll Print</button>
+            <button id="PostAndPollPrint" onclick="javascript:post()" type="button">Post and Poll Print
+            </button>
 
             <button id="capabilities"
+              onclick="openCapabilities()"
                     type="button"
-                    url="print/capabilities.json?pretty=true"
-                    onclick="openCapabilities()">Capabilities</button>
-        </p>
-        <p>
-
-            <button id="old-api-capabilities"
-                    type="button"
-                    url="print/dep/info.json?"
-                    onclick="openOldApiCapabilities()">Old API Info (Capabilities)</button>
+              url="print/capabilities.json?pretty=true">Capabilities
+            </button>
         </p>
     </form>
-    <button id="list-fonts" type="button" onclick="window.open('print/fonts', '_fonts')">List available fonts</button>
+    <button id="list-fonts" onclick="window.open('print/fonts', '_fonts')" type="button">List available
+        fonts
+    </button>
 
     <h2>Performance and Health Metrics:</h2>
     <p>
-        <button id="metrics" type="button" onclick="window.open('metrics/metrics?pretty=true', '_metrics')">Metrics</button>
-        <button id="healthcheck" type="button" onclick="window.open('metrics/healthcheck', '_metrics')">Health Check</button>
-        <button id="ping" type="button" onclick="window.open('metrics/ping', '_metrics')">Ping</button>
-        <button id="threads" type="button" onclick="window.open('metrics/threads', '_metrics')">Threads</button>
+        <button id="metrics" onclick="window.open('metrics/metrics?pretty=true', '_metrics')" type="button">
+            Metrics
+        </button>
+        <button id="healthcheck" onclick="window.open('metrics/healthcheck', '_metrics')" type="button">Health
+            Check
+        </button>
+        <button id="ping" onclick="window.open('metrics/ping', '_metrics')" type="button">Ping</button>
+        <button id="threads" onclick="window.open('metrics/threads', '_metrics')" type="button">Threads
+        </button>
     </p>
 </body>
 </html>

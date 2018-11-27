@@ -10,7 +10,6 @@ import com.sampullara.cli.Args;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
-import org.mapfish.print.servlet.oldapi.OldAPIRequestConverter;
 import org.mapfish.print.url.data.Handler;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
@@ -196,12 +195,6 @@ public final class Main {
                 final String jsonConfiguration =
                         CharStreams.toString(new InputStreamReader(inFile, Constants.DEFAULT_ENCODING));
                 PJsonObject jsonSpec = MapPrinter.parseSpec(jsonConfiguration);
-
-                if (cli.v2Api) {
-                    PJsonObject oldApiSpec = jsonSpec;
-                    LOGGER.info("Converting request data from V2 API request data to V3 API");
-                    jsonSpec = OldAPIRequestConverter.convert(oldApiSpec, this.mapPrinter.getConfiguration());
-                }
 
                 outFile = getOutputStream(cli.output,
                                           this.mapPrinter.getOutputFormat(jsonSpec).getFileSuffix());

@@ -45,13 +45,6 @@ public final class CliDefinition extends CliHelpDefinition {
             "overriding certain values if desired")
     public String springConfig = null;
 
-    /**
-     * If true then request data (spec) is in a old api request data (Mapfish v2 compatible).
-     */
-    @Argument(description = "If true then request data (spec) is in a old api request data (Mapfish v2 " +
-            "compatible).", alias = "v2")
-    public boolean v2Api = false;
-
     CliDefinition() {
         // this is intentionally empty
     }

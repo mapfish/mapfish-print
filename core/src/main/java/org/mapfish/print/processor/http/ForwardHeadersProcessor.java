@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  *
  * <p>Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor}
  * (<a href="processors.html#!restrictUris">!restrictUris</a>
- * ).</p> [[examples=http_processors,osm_custom_params]]
+ * ).</p> [[examples=http_processors]]
  */
 public final class ForwardHeadersProcessor
         extends AbstractProcessor<ForwardHeadersProcessor.Param, Void>
