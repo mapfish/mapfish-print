@@ -94,7 +94,6 @@ public class Configuration implements ConfigurationObject {
     private PDFConfig pdfConfig = new PDFConfig();
     private List<HttpCredential> credentials = Lists.newArrayList();
     private CertificateStore certificateStore;
-    private OldApiConfig oldApi = new OldApiConfig();
     private String outputFilename;
     private String resourceBundle;
     private boolean defaultToSvg = false;
@@ -616,22 +615,6 @@ public class Configuration implements ConfigurationObject {
 
     public final AccessAssertion getAccessAssertion() {
         return this.accessAssertion;
-    }
-
-    /**
-     * Get the configuration options on how to interpret the request in the form of the old API.
-     */
-    public final OldApiConfig getOldApi() {
-        return this.oldApi;
-    }
-
-    /**
-     * Set the configuration options on how to interpret the request in the form of the old API.
-     *
-     * @param oldApi the old api configuration object
-     */
-    public final void setOldApi(final OldApiConfig oldApi) {
-        this.oldApi = oldApi;
     }
 
     /**

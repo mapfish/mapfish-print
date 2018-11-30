@@ -50,24 +50,3 @@ templates:
       processors:
         - !prepareTable {}
     tableData: jrDataSource
-
-  A4 portrait old api: !template
-    pdfConfig: !pdfConfig
-      title: "Verbose A4 Portrait old api"
-      keywords: ["map", "verbose", "old-api"]
-    reportTemplate: simpleReport-old-api.jrxml
-    attributes:
-      map: !map
-        maxDpi: 400
-        dpiSuggestions: [90, 200, 300, 400]
-        width: 780
-        height: 330
-    processors:
-    - !restrictUris
-      matchers:
-        - !localMatch
-          port : 9876
-          pathRegex : .+
-    - !reportBuilder # compile all reports in current directory
-      directory: '.'
-    - !createMap {}

@@ -16,8 +16,6 @@ import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.RunListener;
-import org.mapfish.print.servlet.MapPrinterServlet;
-import org.mapfish.print.servlet.oldapi.OldAPIRequestConverter;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.url.data.Handler;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -39,7 +37,6 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.mapfish.print.servlet.MapPrinterServlet.JSON_ATTRIBUTES;
 import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
@@ -64,7 +61,6 @@ public class ExamplesTest {
             "classpath:test-http-request-factory-application-context.xml";
     private static final Logger LOGGER = LoggerFactory.getLogger(ExamplesTest.class);
     private static final String REQUEST_DATA_FILE = "requestData(-.*)?.json";
-    private static final String OLD_API_REQUEST_DATA_FILE = "oldApi-requestData(-.*)?.json";
     private static final String CONFIG_FILE = "config.yaml";
     /**
      * If this system property is set then it will be interpreted as a regular expression and will be used to
@@ -236,15 +232,7 @@ public class ExamplesTest {
                                                                 Charset.forName(Constants.DEFAULT_ENCODING))
                                 .read();
 
-                        final PJsonObject jsonSpec;
-                        if (requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE)) {
-                            PJsonObject oldSpec = MapPrinterServlet.parseJson(requestData, null);
-                            assertNotNull(oldSpec);
-                            jsonSpec = OldAPIRequestConverter.convert(oldSpec,
-                                                                      this.mapPrinter.getConfiguration());
-                        } else {
-                            jsonSpec = MapPrinter.parseSpec(requestData);
-                        }
+                        final PJsonObject jsonSpec = MapPrinter.parseSpec(requestData);
 
                         testsRan++;
                         String outputFormat = jsonSpec.getInternalObj().getString("outputFormat");
@@ -331,7 +319,6 @@ public class ExamplesTest {
     }
 
     private boolean isRequestDataFile(File requestFile) {
-        return requestFile.getName().matches(REQUEST_DATA_FILE) ||
-                requestFile.getName().matches(OLD_API_REQUEST_DATA_FILE);
+        return requestFile.getName().matches(REQUEST_DATA_FILE);
     }
 }

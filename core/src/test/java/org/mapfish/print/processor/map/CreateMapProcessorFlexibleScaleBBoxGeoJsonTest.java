@@ -48,14 +48,6 @@ public class CreateMapProcessorFlexibleScaleBBoxGeoJsonTest extends AbstractMapf
         doTest(requestData);
     }
 
-    @Test
-    public void testExecuteCompatibilityWithOldAPI() throws Exception {
-        PJsonObject requestData = parseJSONObjectFromFile(
-                CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class,
-                BASE_DIR + "requestDataOldAPI.json");
-        doTest(requestData);
-    }
-
     private void doTest(PJsonObject requestData) throws IOException, JSONException, ExecutionException,
             InterruptedException {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));

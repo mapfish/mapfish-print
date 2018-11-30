@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  *
  * <p>Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor}
  * (<a href="processors.html#!restrictUris">!restrictUris</a>
- * ).</p> [[examples=http_processors,osm_custom_params]]
+ * ).</p> [[examples=http_processors]]
  */
 public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(MapUriProcessor.class);
