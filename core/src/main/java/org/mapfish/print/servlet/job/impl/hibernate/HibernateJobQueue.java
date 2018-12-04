@@ -82,8 +82,11 @@ public class HibernateJobQueue implements JobQueue {
     @Override
     @Transactional(readOnly = true)
     public long timeSinceLastStatusCheck(final String referenceId) {
-        return System.currentTimeMillis() -
-                ((Number) this.dao.getValue(referenceId, "lastCheckTime")).longValue();
+        final Number lastCheckTime = (Number) this.dao.getValue(referenceId, "lastCheckTime");
+        if (lastCheckTime == null) {
+            return 0;
+        }
+        return System.currentTimeMillis() - lastCheckTime.longValue();
     }
 
     @Override

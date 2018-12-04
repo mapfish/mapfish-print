@@ -10,6 +10,7 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
+import javax.mail.internet.InternetAddress;
 
 /**
  * Statisctics about the execution of a print job.
@@ -17,6 +18,7 @@ import java.util.List;
 public class ExecutionStats {
     private List<MapStats> mapStats = new ArrayList<>();
     private List<PageStats> pageStats = new ArrayList<>();
+    private List<String> emailDests = new ArrayList<>();
 
     /**
      * Add statistics about a created map.
@@ -39,6 +41,17 @@ public class ExecutionStats {
     }
 
     /**
+     * Add statistics about sent emails.
+     *
+     * @param recipients The list of recipients
+     */
+    public void addEmailStats(final InternetAddress[] recipients) {
+        for (InternetAddress recipient: recipients) {
+            emailDests.add(recipient.getAddress());
+        }
+    }
+
+    /**
      * @return a JSON report about the collected statistics.
      */
     public ObjectNode toJson() {
@@ -51,6 +64,14 @@ public class ExecutionStats {
         final ArrayNode pages = stats.putArray("pages");
         for (PageStats pageStat: this.pageStats) {
             pageStat.toJson(pages.addObject());
+        }
+
+        if (!emailDests.isEmpty()) {
+            final ArrayNode emails = stats.putArray("emails");
+            for (String dest: emailDests) {
+                final ObjectNode email = emails.addObject();
+                email.put("dest", dest);
+            }
         }
 
         return stats;

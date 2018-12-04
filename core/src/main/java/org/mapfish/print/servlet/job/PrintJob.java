@@ -6,8 +6,10 @@ import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.SmtpConfig;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.OutputFormat;
+import org.mapfish.print.processor.ExecutionStats;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
 import org.mapfish.print.servlet.job.impl.PrintJobResultImpl;
@@ -20,13 +22,26 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 /**
  * The information for printing a report.
@@ -107,7 +122,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     @Override
     public final PrintJobResult call() throws Exception {
         SecurityContextHolder.setContext(this.securityContext);
-        Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".call").time();
+        final Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".call").time();
         MDC.put(Processor.MDC_JOB_ID_KEY, this.entry.getReferenceId());
         LOGGER.info("Starting print job {}", this.entry.getReferenceId());
         final MapPrinter mapPrinter = PrintJob.this.mapPrinterFactory.create(this.entry.getAppId());
@@ -124,14 +139,16 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
             });
 
             this.metricRegistry.counter(getClass().getName() + ".success").inc();
-            jobTracker.onJobSuccess(report);
             LOGGER.info("Successfully completed print job {}", this.entry.getReferenceId());
             LOGGER.debug("Job {}\n{}", this.entry.getReferenceId(), this.entry.getRequestData());
-            String fileName = getFileName(mapPrinter, spec);
+            final String fileName = getFileName(mapPrinter, spec);
 
             final OutputFormat outputFormat = mapPrinter.getOutputFormat(spec);
             final String mimeType = outputFormat.getContentType();
             final String fileExtension = outputFormat.getFileSuffix();
+            maybeSendResult(mapPrinter.getConfiguration(), fileName, fileExtension, mimeType,
+                            report.executionContext.getStats());
+            jobTracker.onJobSuccess(report);
             return createResult(report.uri, fileName, fileExtension, mimeType, this.entry.getReferenceId());
         } catch (Exception e) {
             String canceledText = "";
@@ -156,6 +173,90 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
             LOGGER.debug("Print Job {} completed in {}ms", this.entry.getReferenceId(), computationTimeMs);
             MDC.remove(Processor.MDC_JOB_ID_KEY);
         }
+    }
+
+    private void maybeSendResult(
+            final Configuration configuration, final String fileName, final String fileExtension,
+            final String mimeType, final ExecutionStats stats)
+            throws IOException, MessagingException {
+        final PJsonObject requestData = entry.getRequestData();
+        final SmtpConfig smtp = configuration.getSmtp();
+        final PJsonObject requestSmtp = requestData.optJSONObject("smtp");
+        if (smtp == null || requestSmtp == null) {
+            return;
+        }
+        sendEmail(smtp, requestSmtp, fileName, fileExtension, mimeType, stats);
+        deleteReport();
+    }
+
+    private void sendEmail(
+            final SmtpConfig config, final PJsonObject request, final String fileName,
+            final String fileExtension, final String mimeType,
+            final ExecutionStats stats) throws MessagingException, IOException {
+        final Session session = createEmailSession(config);
+        final Message message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(config.getFromAddress()));
+        final String to = request.getString("to");
+        final InternetAddress[] recipients = InternetAddress.parse(to);
+        message.setRecipients(
+                Message.RecipientType.TO, recipients);
+        message.setSubject(request.optString("subject", config.getSubject()));
+
+        final String msg = request.optString("body", config.getBody());
+        final MimeBodyPart html = new MimeBodyPart();
+        html.setContent(msg, "text/html; charset=utf-8");
+
+        MimeBodyPart attachement = getReportAttachment(mimeType);
+        attachement.setFileName(fileName + "." + fileExtension);
+
+        Multipart multipart = new MimeMultipart();
+        multipart.addBodyPart(html);
+        multipart.addBodyPart(attachement);
+
+        message.setContent(multipart);
+
+        LOGGER.info("Emailing result to {}", to);
+        Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".email").time();
+        Transport.send(message);
+        timer.stop();
+        stats.addEmailStats(recipients);
+    }
+
+    /**
+     * Build the email attachment that contains the report.
+     *
+     * @param mimeType The mimetype
+     * @return
+     */
+    protected abstract MimeBodyPart getReportAttachment(String mimeType)
+            throws IOException, MessagingException;
+
+    /**
+     * Delete the report (used if the report is sent by email).
+     */
+    protected abstract void deleteReport();
+
+    private Session createEmailSession(final SmtpConfig config) {
+        Properties prop = new Properties();
+        prop.put("mail.smtp.starttls.enable", config.isStarttls());
+        prop.put("mail.smtp.ssl.enable", config.isSsl());
+        prop.put("mail.smtp.host", config.getHost());
+        prop.put("mail.smtp.port", Integer.toString(config.getPort()));
+        // prop.put("mail.smtp.ssl.trust", "smtp.mailtrap.io");
+        final Session session;
+        if (config.getUsername() != null) {
+            prop.put("mail.smtp.auth", true);
+            session = Session.getInstance(prop, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(config.getUsername(), config.getPassword());
+                }
+            });
+        } else {
+            session = Session.getInstance(prop);
+        }
+        session.setDebug(true);
+        return session;
     }
 
     /**

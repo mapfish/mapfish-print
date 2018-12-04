@@ -15,8 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -119,6 +122,16 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
         @Override
         protected PrintResult withOpenOutputStream(PrintAction function) throws Exception {
             return new PrintResult(new URI("file://123.com"), 42, new AbstractProcessor.Context("test"));
+        }
+
+        @Override
+        protected MimeBodyPart getReportAttachment(final String mimeType)
+                throws IOException, MessagingException {
+            return null;
+        }
+
+        @Override
+        protected void deleteReport() {
         }
     }
 

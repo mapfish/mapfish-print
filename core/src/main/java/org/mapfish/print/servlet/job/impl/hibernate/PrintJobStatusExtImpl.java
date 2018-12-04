@@ -3,6 +3,7 @@ package org.mapfish.print.servlet.job.impl.hibernate;
 import org.mapfish.print.servlet.job.PrintJobEntry;
 import org.mapfish.print.servlet.job.impl.PrintJobStatusImpl;
 
+import javax.annotation.Nullable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -13,8 +14,9 @@ import javax.persistence.Entity;
 @Entity
 public class PrintJobStatusExtImpl extends PrintJobStatusImpl {
 
+    @Nullable
     @Column
-    private long lastCheckTime = System.currentTimeMillis();
+    private Long lastCheckTime = System.currentTimeMillis();
 
 
     /**
@@ -32,9 +34,14 @@ public class PrintJobStatusExtImpl extends PrintJobStatusImpl {
      */
     public PrintJobStatusExtImpl(final PrintJobEntry entry, final long requestCount) {
         super(entry, requestCount);
+        if (entry.getRequestData().optJSONObject("smtp") != null) {
+            // If the result is to be sent by email, we don't expect the client to check the status of the
+            // job.
+            lastCheckTime = null;
+        }
     }
 
-    public long getLastCheckTime() {
+    public Long getLastCheckTime() {
         return this.lastCheckTime;
     }
 

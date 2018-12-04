@@ -1010,7 +1010,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                 UUID.randomUUID().toString() + "@" + this.servletInfo.getServletId(),
                 httpServletRequest);
         MDC.put(Processor.MDC_JOB_ID_KEY, ref);
-        LOGGER.debug("\nspec:\n{}", specJson);
+        LOGGER.debug("{}", specJson);
 
         specJson.getInternalObj().remove(JSON_OUTPUT_FORMAT);
         specJson.getInternalObj().put(JSON_OUTPUT_FORMAT, format);

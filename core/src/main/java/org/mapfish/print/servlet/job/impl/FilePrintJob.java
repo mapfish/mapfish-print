@@ -8,13 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
 
 /**
  * A PrintJob implementation that write results to files.
  * <p></p>
  */
 public class FilePrintJob extends PrintJob {
-
 
     @Autowired
     private WorkingDirectories workingDirectories;
@@ -42,5 +44,18 @@ public class FilePrintJob extends PrintJob {
             }
         }
         return new PrintResult(reportFile.toURI(), reportFile.length(), executionContext);
+    }
+
+    @Override
+    protected MimeBodyPart getReportAttachment(final String mimeType) throws IOException, MessagingException {
+        final MimeBodyPart result = new MimeBodyPart();
+        result.attachFile(new File(this.workingDirectories.getReports(), getEntry().getReferenceId()),
+                          mimeType, null);
+        return result;
+    }
+
+    @Override
+    protected void deleteReport() {
+        new File(this.workingDirectories.getReports(), getEntry().getReferenceId()).delete();
     }
 }

@@ -45,3 +45,7 @@ templates:
         prefix: geojson
     - !createMap
         prefix: image
+
+smtp:
+  fromAddress: toto@camptocamp.com
+  host: localhost
