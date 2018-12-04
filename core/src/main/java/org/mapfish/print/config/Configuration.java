@@ -100,6 +100,7 @@ public class Configuration implements ConfigurationObject {
     private Set<String> jdbcDrivers = Sets.newHashSet();
     private Map<String, Style> namedStyles = Maps.newHashMap();
     private UriMatchers allowedReferers = null;
+    private SmtpConfig smtp = null;
 
     /**
      * The color used to draw the WMS tiles error default: transparent pink.
@@ -242,6 +243,9 @@ public class Configuration implements ConfigurationObject {
             json.endObject();
         }
         json.endArray();
+        json.key("smtp").object();
+        json.key("enabled").value(smtp != null);
+        json.endObject();
     }
 
     public final String getOutputFilename() {
@@ -689,5 +693,13 @@ public class Configuration implements ConfigurationObject {
      */
     public final void setAllowedReferers(@Nullable final List<? extends URIMatcher> matchers) {
         this.allowedReferers = matchers != null ? new UriMatchers(matchers) : null;
+    }
+
+    public SmtpConfig getSmtp() {
+        return smtp;
+    }
+
+    public void setSmtp(final SmtpConfig smtp) {
+        this.smtp = smtp;
     }
 }

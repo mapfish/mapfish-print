@@ -171,7 +171,8 @@ public class PrintJobDao {
                 builder.equal(root.get("status"), PrintJobStatus.Status.WAITING),
                 builder.or(
                         builder.lessThan(root.get("entry").get("startTime"), starttimeThreshold),
-                        builder.lessThan(root.get("lastCheckTime"), checkTimeThreshold)
+                        builder.and(builder.isNotNull(root.get("lastCheckTime")),
+                                    builder.lessThan(root.get("lastCheckTime"), checkTimeThreshold))
                 )
         ));
         update.set(root.get("status"), PrintJobStatus.Status.CANCELLED);
@@ -206,7 +207,8 @@ public class PrintJobDao {
         final CriteriaDelete<PrintJobStatusExtImpl> delete =
                 builder.createCriteriaDelete(PrintJobStatusExtImpl.class);
         final Root<PrintJobStatusExtImpl> root = delete.from(PrintJobStatusExtImpl.class);
-        delete.where(builder.lessThan(root.get("lastCheckTime"), checkTimeThreshold));
+        delete.where(builder.and(builder.isNotNull(root.get("lastCheckTime")),
+                                 builder.lessThan(root.get("lastCheckTime"), checkTimeThreshold)));
         return getSession().createQuery(delete).executeUpdate();
     }
 

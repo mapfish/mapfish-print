@@ -5,6 +5,9 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
+import de.saly.javamail.mock2.MailboxFolder;
+import de.saly.javamail.mock2.MockMailbox;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -12,6 +15,7 @@ import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.Constants;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.SmtpConfig;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest;
 import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
@@ -31,6 +35,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -40,6 +45,12 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.mail.Address;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.Multipart;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMultipart;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -315,6 +326,50 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertArrayEquals(new Object[]{"CookieValue", "CookieValue2"},
                           request.getHeaders().get("Cookies").toArray());
         assertArrayEquals(new Object[]{ref}, request.getHeaders().get("X-Request-ID").toArray());
+    }
+
+    @Test(timeout = 60000)
+    public void testCreateReport_Email() throws Exception {
+        setUpConfigFiles();
+        MockMailbox.resetAll();
+        final MockMailbox mb = MockMailbox.get("info@camptocamp.com");
+        final MailboxFolder inbox = mb.getInbox();
+
+        final MockHttpServletRequest servletCreateRequest =
+                new MockHttpServletRequest("POST", "http://localhost:9834/context/print/report.png");
+        servletCreateRequest.setContextPath("/print");
+        addHeaders(servletCreateRequest);
+        servletCreateRequest.addHeader("X-Request-ID", "totoIs/TheBest");
+
+        final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+        final PJsonObject requestJson =
+                parseJSONObjectFromFile(MapPrinterServletTest.class, "requestDataEmail.json");
+        final String requestData = requestJson.getInternalObj().toString();
+        servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
+
+        final PJsonObject createResponseJson =
+                parseJSONObjectFromString(servletCreateResponse.getContentAsString());
+        assertTrue(createResponseJson.has(MapPrinterServlet.JSON_PRINT_JOB_REF));
+        assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
+
+        while (inbox.getMessageCount() == 0) {
+            Thread.sleep(100);
+        }
+
+        final Message msg = inbox.getMessages()[0];
+        assertArrayEquals(new Address[]{new InternetAddress("info@camptocamp.com")}, msg.getAllRecipients());
+        assertEquals(SmtpConfig.DEFAULT_SUBJECT, msg.getSubject());
+        assertEquals(MimeMultipart.class, msg.getContent().getClass());
+        final Multipart multipart = (MimeMultipart) msg.getContent();
+        final BodyPart body = multipart.getBodyPart(0);
+        assertEquals("text/html; charset=utf-8", body.getContentType());
+        assertEquals(SmtpConfig.DEFAULT_BODY, body.getContent());
+
+        final BodyPart attachement = multipart.getBodyPart(1);
+        assertEquals("image/png; name=test-report.png", attachement.getContentType());
+        final InputStream content = (InputStream) attachement.getContent();
+        new ImageSimilarity(getFile(MapPrinterServletTest.class, "expectedSimpleImage.png"))
+                .assertSimilarity(IOUtils.toByteArray(content), 1);
     }
 
     @Test

@@ -114,8 +114,32 @@
                 },
                 dataType: 'application/json'
             });
-
         }
+
+        function postOnly() {
+          var data = encodeURIComponent($('#specText').val());
+          var appId = $('#selectSpec').val();
+          var format = $('#selectFormat').val();
+          disableUI(true);
+
+          var startTime = new Date().getTime();
+          $('#messages').text('Waiting for report...');
+
+          $.ajax({
+            type: 'POST',
+            url: 'print/' + appId + '/report.' + format,
+            data: data,
+            success: function (data) {
+              disableUI(false);
+            },
+            error: function (data) {
+              $('#messages').text('Error creating report: ' + data.statusText);
+              disableUI(false);
+            },
+            dataType: 'application/json'
+          });
+        }
+
         function updateWaitingMsg(startTime, data) {
             var elapsed = Math.floor((new Date().getTime() - startTime) / 100);
             var time = '';
@@ -182,6 +206,8 @@
         <p>
             <button id="CreateAndGetPrint" type="submit">Create And Get Print</button>
             <button id="PostAndPollPrint" onclick="javascript:post()" type="button">Post and Poll Print
+            </button>
+            <button id="PostPrint" onclick="javascript:postOnly()" type="button">Post only Print
             </button>
 
             <button id="capabilities"
