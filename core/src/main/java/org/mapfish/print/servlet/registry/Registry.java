@@ -118,4 +118,11 @@ public interface Registry {
      *         be purged from the registry.
      */
     long getTimeToKeepAfterAccessInMillis();
+
+    /**
+     * Delete the given key.
+     *
+     * @param key the key to delete.
+     */
+    void delete(String key);
 }

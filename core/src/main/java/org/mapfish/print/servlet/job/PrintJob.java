@@ -146,10 +146,13 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
             final OutputFormat outputFormat = mapPrinter.getOutputFormat(spec);
             final String mimeType = outputFormat.getContentType();
             final String fileExtension = outputFormat.getFileSuffix();
-            maybeSendResult(mapPrinter.getConfiguration(), fileName, fileExtension, mimeType,
-                            report.executionContext.getStats());
+            final boolean sent =
+                    maybeSendResult(mapPrinter.getConfiguration(), fileName, fileExtension, mimeType,
+                                    report.executionContext.getStats());
             jobTracker.onJobSuccess(report);
-            return createResult(report.uri, fileName, fileExtension, mimeType, this.entry.getReferenceId());
+            return sent ?
+                    null :
+                    createResult(report.uri, fileName, fileExtension, mimeType, this.entry.getReferenceId());
         } catch (Exception e) {
             String canceledText = "";
             if (Thread.currentThread().isInterrupted()) {
@@ -175,7 +178,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         }
     }
 
-    private void maybeSendResult(
+    private boolean maybeSendResult(
             final Configuration configuration, final String fileName, final String fileExtension,
             final String mimeType, final ExecutionStats stats)
             throws IOException, MessagingException {
@@ -183,10 +186,11 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         final SmtpConfig smtp = configuration.getSmtp();
         final PJsonObject requestSmtp = requestData.optJSONObject("smtp");
         if (smtp == null || requestSmtp == null) {
-            return;
+            return false;
         }
         sendEmail(smtp, requestSmtp, fileName, fileExtension, mimeType, stats);
         deleteReport();
+        return true;
     }
 
     private void sendEmail(
@@ -255,7 +259,6 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         } else {
             session = Session.getInstance(prop);
         }
-        session.setDebug(true);
         return session;
     }
 

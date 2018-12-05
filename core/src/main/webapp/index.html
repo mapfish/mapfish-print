@@ -123,13 +123,14 @@
           disableUI(true);
 
           var startTime = new Date().getTime();
-          $('#messages').text('Waiting for report...');
+          $('#messages').text('Scheduling the job...');
 
           $.ajax({
             type: 'POST',
             url: 'print/' + appId + '/report.' + format,
             data: data,
             success: function (data) {
+              $('#messages').text('Job scheduled');
               disableUI(false);
             },
             error: function (data) {

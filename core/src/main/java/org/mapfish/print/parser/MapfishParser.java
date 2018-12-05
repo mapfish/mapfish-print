@@ -74,6 +74,7 @@ public final class MapfishParser {
 
         final OneOfTracker oneOfTracker = new OneOfTracker();
         final RequiresTracker requiresTracker = new RequiresTracker();
+        final String paramClassName = objectToPopulate.getClass().getName();
         for (Field attribute: allAttributes) {
             oneOfTracker.register(attribute);
             requiresTracker.register(attribute);
@@ -87,7 +88,6 @@ public final class MapfishParser {
                                        property.getName(),
                                        requestData);
                 } catch (UnsupportedTypeException e) {
-                    final String paramClassName = objectToPopulate.getClass().getName();
                     String type = e.type.getName();
                     if (e.type.isArray()) {
                         type = e.type.getComponentType().getName() + "[]";
@@ -134,10 +134,10 @@ public final class MapfishParser {
 
         try {
             final Method method = objectToPopulate.getClass().getMethod(POST_CONSTRUCT_METHOD_NAME);
-            LOGGER.debug("Executing {} method on parameter object.", POST_CONSTRUCT_METHOD_NAME);
             method.invoke(objectToPopulate);
         } catch (NoSuchMethodException e) {
-            LOGGER.debug("No {} method on parameter object.", POST_CONSTRUCT_METHOD_NAME);
+            LOGGER.debug("No {} method on parameter object of class {}", POST_CONSTRUCT_METHOD_NAME,
+                         paramClassName);
         } catch (InvocationTargetException e) {
             final Throwable targetException = e.getTargetException();
             if (targetException instanceof RuntimeException) {

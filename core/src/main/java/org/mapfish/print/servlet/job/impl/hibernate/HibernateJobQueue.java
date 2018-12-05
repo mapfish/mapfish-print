@@ -189,6 +189,11 @@ public class HibernateJobQueue implements JobQueue {
         return this.dao.get(PrintJobStatus.Status.CANCELING);
     }
 
+    @Override
+    public void delete(final String referenceId) {
+        this.dao.delete(referenceId);
+    }
+
     /**
      * Called by spring on initialization.
      */

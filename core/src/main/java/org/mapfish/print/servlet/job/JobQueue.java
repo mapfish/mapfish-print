@@ -116,4 +116,10 @@ public interface JobQueue {
      */
     List<? extends PrintJobStatus> toCancel();
 
+    /**
+     * Delete the job.
+     *
+     * @param referenceId reference id to the job.
+     */
+    void delete(String referenceId);
 }

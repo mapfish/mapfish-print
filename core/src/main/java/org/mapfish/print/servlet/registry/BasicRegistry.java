@@ -36,6 +36,11 @@ public class BasicRegistry implements Registry {
     }
 
     @Override
+    public void delete(final String key) {
+        this.registry.invalidate(key);
+    }
+
+    @Override
     public final synchronized boolean containsKey(final String key) {
         return this.registry.getIfPresent(key) != null;
     }
