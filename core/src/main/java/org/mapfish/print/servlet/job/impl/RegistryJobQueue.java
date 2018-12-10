@@ -308,4 +308,8 @@ public class RegistryJobQueue implements JobQueue {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void delete(final String referenceId) {
+        this.registry.delete(referenceId);
+    }
 }

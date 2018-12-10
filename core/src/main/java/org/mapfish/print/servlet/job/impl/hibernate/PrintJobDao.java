@@ -252,4 +252,18 @@ public class PrintJobDao {
         criteria.where(builder.equal(root.get("reportURI"), reportURI.toString()));
         return getSession().createQuery(criteria).uniqueResult();
     }
+
+    /**
+     * Delete a record.
+     *
+     * @param referenceId the reference ID.
+     */
+    public void delete(final String referenceId) {
+        final CriteriaBuilder builder = getSession().getCriteriaBuilder();
+        final CriteriaDelete<PrintJobStatusExtImpl> delete =
+                builder.createCriteriaDelete(PrintJobStatusExtImpl.class);
+        final Root<PrintJobStatusExtImpl> root = delete.from(PrintJobStatusExtImpl.class);
+        delete.where(builder.equal(root.get("referenceId"), referenceId));
+        getSession().createQuery(delete).executeUpdate();
+    }
 }

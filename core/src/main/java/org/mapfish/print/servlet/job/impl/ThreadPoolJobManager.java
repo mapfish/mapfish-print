@@ -432,8 +432,14 @@ public class ThreadPoolJobManager implements JobManager {
                         // set the completion date to the moment the job was
                         // marked as completed
                         // in the registry.
-                        this.jobQueue
-                                .done(printJob.getEntry().getReferenceId(), printJob.getReportFuture().get());
+                        final PrintJobResult result = printJob.getReportFuture().get();
+                        if (result != null) {
+                            this.jobQueue
+                                    .done(printJob.getEntry().getReferenceId(), result);
+                        } else {
+                            // The report was sent to the user => don't need to keep it
+                            this.jobQueue.delete(printJob.getEntry().getReferenceId());
+                        }
                     } catch (InterruptedException e) {
                         // if this happens, the timer task was interrupted.
                         // restore the interrupted
