@@ -8,11 +8,11 @@ import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.SmtpConfig;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.processor.ExecutionStats;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
-import org.mapfish.print.servlet.job.impl.PrintJobResultImpl;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +22,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -48,7 +52,6 @@ import javax.mail.internet.MimeMultipart;
  */
 public abstract class PrintJob implements Callable<PrintJobResult> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PrintJob.class);
-
     private PrintJobEntry entry;
 
     @Autowired
@@ -57,6 +60,8 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     private MetricRegistry metricRegistry;
     @Autowired
     private Accounting accounting;
+    @Autowired
+    private WorkingDirectories workingDirectories;
 
     private SecurityContext securityContext;
 
@@ -94,30 +99,51 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         this.entry = entry;
     }
 
+    protected File getReportFile() {
+        return new File(workingDirectories.getReports(), getEntry().getReferenceId());
+    }
+
     /**
      * Open an OutputStream and execute the function using the OutputStream.
      *
      * @param function the function to execute
      * @return the URI and the file size
      */
-    protected abstract PrintResult withOpenOutputStream(PrintAction function) throws Exception;
+    protected PrintResult withOpenOutputStream(final PrintAction function) throws Exception {
+        final File reportFile = getReportFile();
+        FileOutputStream out = null;
+        BufferedOutputStream bout = null;
+        final Processor.ExecutionContext executionContext;
+        try {
+            out = new FileOutputStream(reportFile);
+            bout = new BufferedOutputStream(out);
+            executionContext = function.run(bout);
+        } finally {
+            try {
+                if (bout != null) {
+                    bout.close();
+                }
+            } finally {
+                if (out != null) {
+                    out.close();
+                }
+            }
+        }
+        return new PrintResult(reportFile.length(), executionContext);
+    }
+
 
     /**
      * Create Print Job Result.
      *
-     * @param reportURI the report URI
      * @param fileName the file name
      * @param fileExtension the file extension
      * @param mimeType the mime type
      * @return the job result
      */
-    //CHECKSTYLE:OFF
-    protected PrintJobResult createResult(
-            final URI reportURI, final String fileName, final String fileExtension,
-            final String mimeType, final String referenceId) {
-        //CHECKSTYLE:ON
-        return new PrintJobResultImpl(reportURI, fileName, fileExtension, mimeType, referenceId);
-    }
+    protected abstract PrintJobResult createResult(
+            String fileName, String fileExtension,
+            String mimeType) throws URISyntaxException, IOException;
 
     @Override
     public final PrintJobResult call() throws Exception {
@@ -130,13 +156,9 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
                 this.accounting.startJob(this.entry, mapPrinter.getConfiguration());
         try {
             final PJsonObject spec = this.entry.getRequestData();
-            PrintResult report = withOpenOutputStream(new PrintAction() {
-                @Override
-                public Processor.ExecutionContext run(final OutputStream outputStream) throws Exception {
-                    return mapPrinter.print(PrintJob.this.entry.getReferenceId(),
-                                            PrintJob.this.entry.getRequestData(), outputStream);
-                }
-            });
+            final PrintResult report = withOpenOutputStream(
+                    outputStream -> mapPrinter.print(entry.getReferenceId(), entry.getRequestData(),
+                                                     outputStream));
 
             this.metricRegistry.counter(getClass().getName() + ".success").inc();
             LOGGER.info("Successfully completed print job {}", this.entry.getReferenceId());
@@ -152,7 +174,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
             jobTracker.onJobSuccess(report);
             return sent ?
                     null :
-                    createResult(report.uri, fileName, fileExtension, mimeType, this.entry.getReferenceId());
+                    createResult(fileName, fileExtension, mimeType);
         } catch (Exception e) {
             String canceledText = "";
             if (Thread.currentThread().isInterrupted()) {
@@ -206,16 +228,27 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
                 Message.RecipientType.TO, recipients);
         message.setSubject(request.optString("subject", config.getSubject()));
 
-        final String msg = request.optString("body", config.getBody());
+        String msg = request.optString("body", config.getBody());
+        if (config.getStorage() != null) {
+            final Timer.Context saveTimer =
+                    this.metricRegistry.timer(config.getStorage().getClass().getName()).time();
+            final URL url = config.getStorage().save(
+                    this.entry.getReferenceId(), fileName, fileExtension, mimeType, getReportFile());
+            saveTimer.stop();
+            msg = msg.replace("{url}", url.toString());
+        }
         final MimeBodyPart html = new MimeBodyPart();
         html.setContent(msg, "text/html; charset=utf-8");
 
-        MimeBodyPart attachement = getReportAttachment(mimeType);
-        attachement.setFileName(fileName + "." + fileExtension);
-
         Multipart multipart = new MimeMultipart();
         multipart.addBodyPart(html);
-        multipart.addBodyPart(attachement);
+
+        if (config.getStorage() == null) {
+            final MimeBodyPart attachement = new MimeBodyPart();
+            attachement.attachFile(getReportFile(), mimeType, null);
+            attachement.setFileName(fileName + "." + fileExtension);
+            multipart.addBodyPart(attachement);
+        }
 
         message.setContent(multipart);
 
@@ -223,22 +256,15 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".email").time();
         Transport.send(message);
         timer.stop();
-        stats.addEmailStats(recipients);
+        stats.addEmailStats(recipients, config.getStorage() != null);
     }
-
-    /**
-     * Build the email attachment that contains the report.
-     *
-     * @param mimeType The mimetype
-     * @return
-     */
-    protected abstract MimeBodyPart getReportAttachment(String mimeType)
-            throws IOException, MessagingException;
 
     /**
      * Delete the report (used if the report is sent by email).
      */
-    protected abstract void deleteReport();
+    private void deleteReport() {
+        getReportFile().delete();
+    }
 
     private Session createEmailSession(final SmtpConfig config) {
         Properties prop = new Properties();
@@ -307,12 +333,6 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
      */
     public static class PrintResult {
         /**
-         * The URI to get the result.
-         */
-        @Nonnull
-        public final URI uri;
-
-        /**
          * The result size in bytes.
          */
         public final long fileSize;
@@ -326,14 +346,10 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         /**
          * Constructor.
          *
-         * @param uri the
          * @param fileSize the
          * @param executionContext the
          */
-        public PrintResult(
-                final URI uri, final long fileSize,
-                final Processor.ExecutionContext executionContext) {
-            this.uri = uri;
+        public PrintResult(final long fileSize, final Processor.ExecutionContext executionContext) {
             this.fileSize = fileSize;
             this.executionContext = executionContext;
         }

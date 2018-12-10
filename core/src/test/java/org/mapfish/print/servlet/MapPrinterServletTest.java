@@ -363,7 +363,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         final Multipart multipart = (MimeMultipart) msg.getContent();
         final BodyPart body = multipart.getBodyPart(0);
         assertEquals("text/html; charset=utf-8", body.getContentType());
-        assertEquals(SmtpConfig.DEFAULT_BODY, body.getContent());
+        assertEquals("Please find the requested document in attachment", body.getContent());
 
         final BodyPart attachement = multipart.getBodyPart(1);
         assertEquals("image/png; name=test-report.png", attachement.getContentType());

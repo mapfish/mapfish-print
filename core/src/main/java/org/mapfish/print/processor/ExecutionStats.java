@@ -19,6 +19,7 @@ public class ExecutionStats {
     private List<MapStats> mapStats = new ArrayList<>();
     private List<PageStats> pageStats = new ArrayList<>();
     private List<String> emailDests = new ArrayList<>();
+    private boolean storageUsed = false;
 
     /**
      * Add statistics about a created map.
@@ -43,9 +44,11 @@ public class ExecutionStats {
     /**
      * Add statistics about sent emails.
      *
-     * @param recipients The list of recipients
+     * @param recipients The list of recipients.
+     * @param storageUsed If a remote storage was used.
      */
-    public void addEmailStats(final InternetAddress[] recipients) {
+    public void addEmailStats(final InternetAddress[] recipients, final boolean storageUsed) {
+        this.storageUsed = storageUsed;
         for (InternetAddress recipient: recipients) {
             emailDests.add(recipient.getAddress());
         }
@@ -67,9 +70,11 @@ public class ExecutionStats {
         }
 
         if (!emailDests.isEmpty()) {
-            final ArrayNode emails = stats.putArray("emails");
+            final ObjectNode emails = stats.putObject("emails");
+            emails.put("storageUsed", storageUsed);
+            final ArrayNode dests = emails.putArray("dests");
             for (String dest: emailDests) {
-                final ObjectNode email = emails.addObject();
+                final ObjectNode email = dests.addObject();
                 email.put("dest", dest);
             }
         }

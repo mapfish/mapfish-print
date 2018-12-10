@@ -245,6 +245,11 @@ public class Configuration implements ConfigurationObject {
         json.endArray();
         json.key("smtp").object();
         json.key("enabled").value(smtp != null);
+        if (smtp != null) {
+            json.key("storage").object();
+            json.key("enabled").value(smtp.getStorage() != null);
+            json.endObject();
+        }
         json.endObject();
     }
 
@@ -529,6 +534,10 @@ public class Configuration implements ConfigurationObject {
             ColorParser.toColor(this.transparentTileErrorColor);
         } catch (RuntimeException ex) {
             validationErrors.add(new ConfigurationException("Cannot parse transparentTileErrorColor", ex));
+        }
+
+        if (smtp != null) {
+            smtp.validate(validationErrors, this);
         }
 
         return validationErrors;

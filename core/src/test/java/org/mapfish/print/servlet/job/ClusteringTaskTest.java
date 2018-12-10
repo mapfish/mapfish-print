@@ -17,11 +17,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.io.IOException;
-import java.net.URI;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -101,19 +96,13 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
                     System.out.println(getEntry().getReferenceId() + " is being run by jobman " + name);
                     TestJobManager.this.jobsRun++;
                     Thread.sleep(1000);
-                    return new PrintResult(new URI("oh:well:whatever:nevermind"), 42,
-                                           new AbstractProcessor.Context("test"));
+                    return new PrintResult(42, new AbstractProcessor.Context("test"));
                 }
 
                 @Override
-                protected MimeBodyPart getReportAttachment(final String mimeType)
-                        throws IOException, MessagingException {
+                protected PrintJobResult createResult(
+                        final String fileName, final String fileExtension, final String mimeType) {
                     return null;
-                }
-
-                @Override
-                protected void deleteReport() {
-
                 }
             };
             job.initForTesting(ClusteringTaskTest.this.context);

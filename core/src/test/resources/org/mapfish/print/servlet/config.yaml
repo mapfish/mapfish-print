@@ -49,3 +49,4 @@ templates:
 smtp:
   fromAddress: toto@camptocamp.com
   host: localhost
+  body: "Please find the requested document in attachment"
