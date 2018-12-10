@@ -1,7 +1,7 @@
 package org.mapfish.print.map.readers;
 
 import com.google.common.io.ByteStreams;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

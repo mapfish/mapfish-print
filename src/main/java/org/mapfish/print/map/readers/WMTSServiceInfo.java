@@ -19,7 +19,7 @@
 
 package org.mapfish.print.map.readers;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mapfish.print.RenderingContext;

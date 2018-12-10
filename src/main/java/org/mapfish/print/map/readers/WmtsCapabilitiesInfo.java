@@ -1,6 +1,6 @@
 package org.mapfish.print.map.readers;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 import java.util.Arrays;
 import java.util.Collections;
