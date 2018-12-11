@@ -15,13 +15,13 @@ templates:
         height: 500
         maxDpi: 400
     processors:
-    - !forwardHeaders
-      headers: ['Cookies']
-    - !reportBuilder # compile all reports in current directory
+      - !forwardHeaders
+        headers: ['Cookies']
+      - !reportBuilder # compile all reports in current directory
         directory: '.'
-    - !createMap
+      - !createMap
         prefix: geojson
-    - !createMap
+      - !createMap
         prefix: image
 
   WithOutputName: !template
@@ -37,16 +37,18 @@ templates:
         height: 500
         maxDpi: 400
     processors:
-    - !forwardHeaders
+      - !forwardHeaders
         headers: ['Cookies']
-    - !reportBuilder # compile all reports in current directory
+      - !reportBuilder # compile all reports in current directory
         directory: '.'
-    - !createMap
+      - !createMap
         prefix: geojson
-    - !createMap
+      - !createMap
         prefix: image
 
 smtp:
   fromAddress: toto@camptocamp.com
   host: localhost
-  body: "Please find the requested document in attachment"
+  body: "Please find the requested document there: {url}"
+  storage: !s3reportStorage
+    bucket: test-bucket

@@ -17,4 +17,6 @@
     </bean>
 
     <bean id="sleeper" class="org.mapfish.print.servlet.MapPrinterServletTest.SleepProcessor" scope="prototype" />
+    <bean id="s3reportStorage" class="org.mapfish.print.servlet.TestS3ReportStorage" scope="prototype"/>
+
 </beans>

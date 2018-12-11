@@ -1,56 +1,34 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
-import org.mapfish.print.processor.Processor;
+import org.apache.commons.io.FileUtils;
 import org.mapfish.print.servlet.job.PrintJob;
 import org.mapfish.print.servlet.job.PrintJobResult;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import javax.activation.DataHandler;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.util.ByteArrayDataSource;
+import java.net.URISyntaxException;
 
 /**
  * A PrintJob implementation that write results to the database.
  * <p></p>
  */
 public class HibernatePrintJob extends PrintJob {
-
-    private byte[] data;
-
-    @Override
-    protected final PrintResult withOpenOutputStream(final PrintAction function) throws Exception {
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        final Processor.ExecutionContext executionContext;
-        try (BufferedOutputStream bout = new BufferedOutputStream(out)) {
-            executionContext = function.run(bout);
-            this.data = out.toByteArray();
-        }
-        return new PrintResult(new URI("hibernate:" + getEntry().getReferenceId()),
-                               this.data.length, executionContext);
-    }
-
     @Override
     protected final PrintJobResult createResult(
-            final URI reportURI, final String fileName,
-            final String fileExtension, final String mimeType, final String referenceId) {
-        return new PrintJobResultExtImpl(reportURI, fileName, fileExtension, mimeType, this.data,
-                                         referenceId);
-    }
+            final String fileName, final String fileExtension, final String mimeType)
+            throws URISyntaxException, IOException {
+        final byte[] data;
+        final File reportFile = getReportFile();
+        if (reportFile.exists()) {
+            data = FileUtils.readFileToByteArray(reportFile);
+            deleteReport();
+        } else {
+            data = null;  // the report was sent.
+        }
 
-    @Override
-    protected MimeBodyPart getReportAttachment(final String mimeType) throws IOException, MessagingException {
-        final MimeBodyPart result = new MimeBodyPart();
-        ByteArrayDataSource bds = new ByteArrayDataSource(data, mimeType);
-        result.setDataHandler(new DataHandler(bds));
-        return result;
-    }
-
-    @Override
-    protected void deleteReport() {
-        this.data = null;
+        final String referenceId = getEntry().getReferenceId();
+        return new PrintJobResultExtImpl(new URI("hibernate:" + referenceId), fileName, fileExtension,
+                                         mimeType, data, referenceId);
     }
 }

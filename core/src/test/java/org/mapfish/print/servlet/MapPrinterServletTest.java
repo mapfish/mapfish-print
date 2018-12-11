@@ -363,13 +363,54 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         final Multipart multipart = (MimeMultipart) msg.getContent();
         final BodyPart body = multipart.getBodyPart(0);
         assertEquals("text/html; charset=utf-8", body.getContentType());
-        assertEquals(SmtpConfig.DEFAULT_BODY, body.getContent());
+        assertEquals("Please find the requested document in attachment", body.getContent());
 
         final BodyPart attachement = multipart.getBodyPart(1);
         assertEquals("image/png; name=test-report.png", attachement.getContentType());
         final InputStream content = (InputStream) attachement.getContent();
         new ImageSimilarity(getFile(MapPrinterServletTest.class, "expectedSimpleImage.png"))
                 .assertSimilarity(IOUtils.toByteArray(content), 1);
+    }
+
+    @Test(timeout = 60000)
+    public void testCreateReport_Email_S3() throws Exception {
+        setUpConfigFiles();
+        MockMailbox.resetAll();
+        final MockMailbox mb = MockMailbox.get("info@camptocamp.com");
+        final MailboxFolder inbox = mb.getInbox();
+
+        final MockHttpServletRequest servletCreateRequest =
+                new MockHttpServletRequest("POST", "http://localhost:9834/context/print/report.png");
+        servletCreateRequest.setContextPath("/print");
+        addHeaders(servletCreateRequest);
+        servletCreateRequest.addHeader("X-Request-ID", "totoIs/TheBest");
+
+        final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+        final PJsonObject requestJson =
+                parseJSONObjectFromFile(MapPrinterServletTest.class, "requestDataEmail.json");
+        final String requestData = requestJson.getInternalObj().toString();
+        servlet.createReport("email-s3", "png", requestData, servletCreateRequest, servletCreateResponse);
+
+        final PJsonObject createResponseJson =
+                parseJSONObjectFromString(servletCreateResponse.getContentAsString());
+        assertTrue(createResponseJson.has(MapPrinterServlet.JSON_PRINT_JOB_REF));
+        final String ref = createResponseJson.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
+        assertEquals(HttpStatus.OK.value(), servletCreateResponse.getStatus());
+
+        while (inbox.getMessageCount() == 0) {
+            Thread.sleep(100);
+        }
+
+        final Message msg = inbox.getMessages()[0];
+        assertArrayEquals(new Address[]{new InternetAddress("info@camptocamp.com")}, msg.getAllRecipients());
+        assertEquals(SmtpConfig.DEFAULT_SUBJECT, msg.getSubject());
+        assertEquals(MimeMultipart.class, msg.getContent().getClass());
+        final Multipart multipart = (MimeMultipart) msg.getContent();
+        final BodyPart body = multipart.getBodyPart(0);
+        assertEquals("text/html; charset=utf-8", body.getContentType());
+        assertEquals(String.format("Please find the requested document there: https://example" +
+                                           ".com/test-bucket/%s/test-report.png", ref),
+                     body.getContent());
     }
 
     @Test
@@ -1242,6 +1283,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
                                            "config-timeout.yaml").getAbsolutePath());
         configFiles.put("referer", getFile(MapPrinterServletTest.class,
                                            "config-referer.yaml").getAbsolutePath());
+        configFiles.put("email-s3", getFile(MapPrinterServletTest.class,
+                                            "config-email-s3.yaml").getAbsolutePath());
         printerFactory.setConfigurationFiles(configFiles);
     }
 

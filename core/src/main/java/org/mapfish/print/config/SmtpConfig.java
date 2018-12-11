@@ -18,6 +18,11 @@ public class SmtpConfig implements ConfigurationObject {
      */
     public static final String DEFAULT_BODY = "Please find attached the requested document";
 
+    /**
+     * The default body if there is a storage.
+     */
+    public static final String DEFAULT_BODY_STORAGE = "Please find the requested document there: {url}";
+
     private String fromAddress;
     private String host;
     private int port = 25;
@@ -26,7 +31,8 @@ public class SmtpConfig implements ConfigurationObject {
     private boolean starttls = false;
     private boolean ssl = false;
     private String subject = DEFAULT_SUBJECT;
-    private String body = DEFAULT_BODY;
+    private String body = null;
+    private ReportStorage storage = null;
 
     @Override
     public void validate(
@@ -46,6 +52,10 @@ public class SmtpConfig implements ConfigurationObject {
         if (ssl && starttls) {
             validationErrors.add(new ConfigurationException(
                     "Cannot enable ssl and starttls at the same time"));
+        }
+
+        if (storage != null) {
+            storage.validate(validationErrors, configuration);
         }
     }
 
@@ -158,8 +168,15 @@ public class SmtpConfig implements ConfigurationObject {
         this.subject = subject;
     }
 
+    /**
+     * Returns the configured body or the default value.
+     */
     public String getBody() {
-        return body;
+        if (body == null) {
+            return storage == null ? DEFAULT_BODY : DEFAULT_BODY_STORAGE;
+        } else {
+            return body;
+        }
     }
 
     /**
@@ -168,9 +185,28 @@ public class SmtpConfig implements ConfigurationObject {
      * This can be changed by the <code>smtp</code>.<code>body</code> property
      * in the request.
      *
+     * If you have setup a storage, you must put a "{url}" marker where the URL
+     * to fetch the report should be put.
+     *
      * @param body The body
      */
     public void setBody(final String body) {
         this.body = body;
+    }
+
+    public ReportStorage getStorage() {
+        return storage;
+    }
+
+    /**
+     * The report storage facility to use.
+     * <br>
+     * By default, attaches the report in an email. But, for big files, this is not practical. This can be
+     * used to configure a storage.
+     *
+     * @param storage The storage to use
+     */
+    public void setStorage(final ReportStorage storage) {
+        this.storage = storage;
     }
 }
