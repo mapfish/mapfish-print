@@ -1,0 +1,54 @@
+throwErrorOnExtraParameters: true
+
+outputFilename: config_test_outputname-${yyyy}
+
+templates:
+  A4 Landscape: !template
+    reportTemplate: MapOnly_A4.jrxml
+    attributes:
+      geojsonMap: !map
+        width: 802
+        height: 500
+        maxDpi: 400
+      imageMap: !map
+        width: 802
+        height: 500
+        maxDpi: 400
+    processors:
+      - !forwardHeaders
+        headers: ['Cookies']
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createMap
+        prefix: geojson
+      - !createMap
+        prefix: image
+
+  WithOutputName: !template
+    outputFilename: template_test_outputname-${yyyy}
+    reportTemplate: MapOnly_A4.jrxml
+    attributes:
+      geojsonMap: !map
+        width: 802
+        height: 500
+        maxDpi: 400
+      imageMap: !map
+        width: 802
+        height: 500
+        maxDpi: 400
+    processors:
+      - !forwardHeaders
+        headers: ['Cookies']
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createMap
+        prefix: geojson
+      - !createMap
+        prefix: image
+
+smtp:
+  fromAddress: toto@camptocamp.com
+  host: localhost
+  body: "Please find the requested document there: {url}"
+  storage: !s3reportStorage
+    bucket: test-bucket

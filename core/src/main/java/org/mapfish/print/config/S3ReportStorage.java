@@ -65,12 +65,23 @@ public class S3ReportStorage implements ReportStorage {
             final String ref, final String filename, final String extension, final String mimeType,
             final File file) {
         final PutObjectRequest request =
-                new PutObjectRequest(bucket, prefix + ref + "/" + filename + "." + extension, file);
+                new PutObjectRequest(bucket, getKey(ref, filename, extension), file);
         request.withCannedAcl(CannedAccessControlList.PublicRead);
         final ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(mimeType);
         request.withMetadata(metadata);
         return request;
+    }
+
+    /**
+     * Compute the key to use.
+     *
+     * @param ref The reference number.
+     * @param filename The filename.
+     * @param extension The file extension.
+     */
+    protected String getKey(final String ref, final String filename, final String extension) {
+        return prefix + ref + "/" + filename + "." + extension;
     }
 
     @Override
@@ -84,7 +95,7 @@ public class S3ReportStorage implements ReportStorage {
                     "If you define the accessKey, you must define the secretKey"));
         }
 
-        if (!prefix.endsWith("/")) {
+        if (!prefix.endsWith("/") && !prefix.isEmpty()) {
             prefix = prefix + "/";
         }
     }
