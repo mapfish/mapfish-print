@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils;
 import org.mapfish.print.servlet.job.PrintJob;
 import org.mapfish.print.servlet.job.PrintJobResult;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,8 +19,10 @@ public class HibernatePrintJob extends PrintJob {
             final String fileName, final String fileExtension, final String mimeType)
             throws URISyntaxException, IOException {
         final byte[] data;
-        if (getReportFile().exists()) {
-            data = FileUtils.readFileToByteArray(getReportFile());
+        final File reportFile = getReportFile();
+        if (reportFile.exists()) {
+            data = FileUtils.readFileToByteArray(reportFile);
+            deleteReport();
         } else {
             data = null;  // the report was sent.
         }

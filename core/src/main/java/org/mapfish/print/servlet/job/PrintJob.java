@@ -185,6 +185,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
                 this.metricRegistry.counter(getClass().getName() + ".error").inc();
                 jobTracker.onJobError();
             }
+            deleteReport();
             LOGGER.warn("Error executing print job {} {}\n{}",
                         this.entry.getRequestData(), canceledText, this.entry.getReferenceId(), e);
             throw e;
@@ -262,8 +263,14 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     /**
      * Delete the report (used if the report is sent by email).
      */
-    private void deleteReport() {
-        getReportFile().delete();
+    protected void deleteReport() {
+        final File reportFile = getReportFile();
+        if (!reportFile.exists()) {
+            return;
+        }
+        if (!reportFile.delete()) {
+            LOGGER.warn("Failed deleting the temporary print report");
+        }
     }
 
     private Session createEmailSession(final SmtpConfig config) {
