@@ -7,6 +7,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -62,13 +63,28 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         return CURRENT_CONFIGURATION.get();
     }
 
+    private static int getIntProperty(final String name) {
+        final String value = System.getProperty(name);
+        if (value == null) {
+            return -1;
+        }
+        return Integer.parseInt(value);
+    }
+
     private static CloseableHttpClient createHttpClient(final int maxConnTotal, final int maxConnPerRoute) {
+        final RequestConfig requestConfig =
+                RequestConfig.custom().
+                        setConnectionRequestTimeout(getIntProperty("http.connectionRequestTimeout")).
+                        setConnectTimeout(getIntProperty("http.connectTimeout")).
+                        setSocketTimeout(getIntProperty("http.socketTimeout")).build();
+
         final HttpClientBuilder httpClientBuilder = HttpClients.custom().
                 disableCookieManagement().
                 setDnsResolver(new RandomizingDnsResolver()).
                 setRoutePlanner(new MfRoutePlanner()).
                 setSSLSocketFactory(new MfSSLSocketFactory()).
                 setDefaultCredentialsProvider(new MfCredentialsProvider()).
+                setDefaultRequestConfig(requestConfig).
                 setMaxConnTotal(maxConnTotal).
                 setMaxConnPerRoute(maxConnPerRoute);
         return httpClientBuilder.build();
