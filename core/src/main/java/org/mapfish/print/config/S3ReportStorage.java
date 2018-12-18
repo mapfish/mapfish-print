@@ -1,5 +1,6 @@
 package org.mapfish.print.config;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -8,14 +9,18 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Configuration for storing the reports in a S3 compatible storage.
@@ -25,12 +30,48 @@ import java.util.List;
  */
 public class S3ReportStorage implements ReportStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger(S3ReportStorage.class);
+    private static final long PURGE_INTERVAL_MS = 6 * 60 * 60 * 1000;
+    private static long nextPurge = 0;
+
     private String bucket = null;
     private String prefix = "";
     private String accessKey = null;
     private String secretKey = null;
     private String region = null;
     private String endpointUrl = null;
+    private int retentionDays = 7;
+
+    private void maybePurge(final AmazonS3 client) {
+        boolean needPurge = false;
+        synchronized (S3ReportStorage.class) {
+            if (System.currentTimeMillis() >= nextPurge) {
+                needPurge = true;
+                nextPurge = System.currentTimeMillis() + PURGE_INTERVAL_MS;
+            }
+        }
+        if (needPurge) {
+            purge(client);
+        }
+    }
+
+    private void purge(final AmazonS3 client) {
+        LOGGER.debug("Checking for reports to delete");
+        final Date now = new Date();
+        final long retentionMs = TimeUnit.MILLISECONDS.convert(retentionDays, TimeUnit.DAYS);
+        try {
+            final ObjectListing objects = client.listObjects(bucket, prefix);
+            for (S3ObjectSummary object: objects.getObjectSummaries()) {
+                final Date lastModified = object.getLastModified();
+                final long ageMs = now.getTime() - lastModified.getTime();
+                if (ageMs > retentionMs) {
+                    LOGGER.info("Deleting old report: {}/{}", bucket, object.getKey());
+                    client.deleteObject(bucket, object.getKey());
+                }
+            }
+        } catch (SdkClientException ex) {
+            LOGGER.warn("Error while trying the delete old reports", ex);
+        }
+    }
 
     private AmazonS3 connect() {
         AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard();
@@ -53,8 +94,9 @@ public class S3ReportStorage implements ReportStorage {
     public URL save(
             final String ref, final String filename, final String extension, final String mimeType,
             final File file) {
-        final PutObjectRequest request = createPutRequest(ref, filename, extension, mimeType, file);
         final AmazonS3 client = connect();
+        maybePurge(client);
+        final PutObjectRequest request = createPutRequest(ref, filename, extension, mimeType, file);
         client.putObject(request);
         final URL url = client.getUrl(bucket, request.getKey());
         LOGGER.info("Report stored on S3: {}", url);
@@ -97,6 +139,10 @@ public class S3ReportStorage implements ReportStorage {
 
         if (!prefix.endsWith("/") && !prefix.isEmpty()) {
             prefix = prefix + "/";
+        }
+
+        if (retentionDays <= 0) {
+            validationErrors.add(new ConfigurationException("retentionDays must be bigger that 0"));
         }
     }
 
@@ -176,5 +222,21 @@ public class S3ReportStorage implements ReportStorage {
      */
     public void setPrefix(final String prefix) {
         this.prefix = prefix;
+    }
+
+    public int getRetentionDays() {
+        return retentionDays;
+    }
+
+    /**
+     * The number of day the reports must be kept.
+     * <p>
+     * Passed this delay, they will be deleted and the links included in the corresponding emails will become
+     * invalid. Defaults to 7 days.
+     *
+     * @param retentionDays the value.
+     */
+    public void setRetentionDays(final int retentionDays) {
+        this.retentionDays = retentionDays;
     }
 }
