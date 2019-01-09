@@ -2,17 +2,17 @@ package org.mapfish.print.processor;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.output.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.TimeUnit;
@@ -22,8 +22,8 @@ import javax.annotation.Nonnull;
  * Represents one node in the Processor dependency graph ({@link ProcessorDependencyGraph}).
  * <p></p>
  *
- * @param <In> Same as {@link org.mapfish.print.processor.Processor} <em>In</em> parameter
- * @param <Out> Same as {@link org.mapfish.print.processor.Processor} <em>Out</em> parameter
+ * @param <In> Same as {@link Processor} <em>In</em> parameter
+ * @param <Out> Same as {@link Processor} <em>Out</em> parameter
  */
 public final class ProcessorGraphNode<In, Out> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorGraphNode.class);
@@ -32,12 +32,12 @@ public final class ProcessorGraphNode<In, Out> {
     /**
      * The list of processors that get values from the output of this processor.
      */
-    private final Set<ProcessorGraphNode> dependencies = Sets.newHashSet();
+    private final Set<ProcessorGraphNode> dependencies = new HashSet<>();
 
     /**
      * The list of processors on which this processor gets its values from.
      */
-    private final Set<ProcessorGraphNode> requirements = Sets.newHashSet();
+    private final Set<ProcessorGraphNode> requirements = new HashSet<>();
 
     private final MetricRegistry metricRegistry;
 
@@ -98,7 +98,7 @@ public final class ProcessorGraphNode<In, Out> {
     public Optional<ProcessorNodeForkJoinTask<In, Out>> createTask(
             @Nonnull final ProcessorExecutionContext execContext) {
         if (!execContext.tryStart(this)) {
-            return Optional.absent();
+            return Optional.empty();
         } else {
             return Optional.of(new ProcessorNodeForkJoinTask<>(this, execContext));
         }
@@ -205,7 +205,7 @@ public final class ProcessorGraphNode<In, Out> {
                     } catch (Exception e) {
                         // the processor is already canceled, so we don't care if something fails
                         this.execContext.getContext().stopIfCanceled();
-                        LOGGER.error("Error while executing process: " + process);
+                        LOGGER.warn("Error while executing process: {}", process);
                         registry.counter(name + ".error").inc();
                         throw ExceptionUtils.getRuntimeException(e);
                     }

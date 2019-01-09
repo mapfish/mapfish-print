@@ -1,12 +1,12 @@
 package org.mapfish.print.wrapper.yaml;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.wrapper.json.PJsonArray;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,11 +18,11 @@ public class PYamlArrayTest {
 
     @Test
     public void testToJSON() {
-        Map<String, Object> embedded = Maps.newHashMap();
+        Map<String, Object> embedded = new HashMap<>();
         embedded.put("a", 1);
-        List<Object> array = Lists.newArrayList(1, embedded,
-                                                Lists.newArrayList(1, 2, 3),
-                                                new String[]{"a", "b", "c"});
+        List<Object> array = Arrays.asList(1, embedded,
+                                           Arrays.asList(1, 2, 3),
+                                           new String[]{"a", "b", "c"});
         final PJsonArray test = new PYamlArray(null, array, "test").toJSON();
         assertEquals(4, test.size());
 

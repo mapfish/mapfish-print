@@ -1,8 +1,6 @@
 package org.mapfish.print.processor.map;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Multimap;
-import com.google.common.io.Files;
 import com.vividsolutions.jts.geom.Envelope;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -21,13 +19,9 @@ public final class TiledWMSUtil {
 
     public static void registerTiledWmsHandler(TestHttpClientFactory requestFactory, final String host) {
         requestFactory.registerHandler(
-                new Predicate<URI>() {
-                    @Override
-                    public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".wms")) ||
-                                input.getAuthority().contains(host + ".wms");
-                    }
-                }, new TestHttpClientFactory.Handler() {
+                input -> (("" + input.getHost()).contains(host + ".wms")) ||
+                        input.getAuthority().contains(host + ".wms"),
+                new TestHttpClientFactory.Handler() {
                     @Override
                     public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
                             throws Exception {
@@ -85,9 +79,9 @@ public final class TiledWMSUtil {
                             return error404(uri, httpMethod);
                         }
                         try {
-                            byte[] bytes = Files.toByteArray(AbstractMapfishSpringTest.getFile
-                                    (CreateMapProcessorFlexibleScaleCenterTiledWmsTest.class,
-                                     "/map-data/tiled-wms-tiles/" + imageName));
+                            byte[] bytes = AbstractMapfishSpringTest.getFileBytes(
+                                    CreateMapProcessorFlexibleScaleCenterTiledWmsTest.class,
+                                    "/map-data/tiled-wms-tiles/" + imageName);
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
                             return error404(uri, httpMethod);

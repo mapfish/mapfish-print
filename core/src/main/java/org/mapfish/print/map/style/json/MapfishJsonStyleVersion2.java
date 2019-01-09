@@ -1,8 +1,6 @@
 package org.mapfish.print.map.style.json;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.styling.Rule;
@@ -18,6 +16,8 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.filter.Filter;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +53,8 @@ public final class MapfishJsonStyleVersion2 {
 
     @VisibleForTesting
     static Map<String, String> resolveAllValues(final Map<String, String> values) {
-        Map<String, String> toResolve = Maps.newHashMap(values);
-        Map<String, String> resolved = Maps.newHashMapWithExpectedSize(values.size());
+        Map<String, String> toResolve = new HashMap<>(values);
+        Map<String, String> resolved = new HashMap<>(values.size());
         while (!toResolve.isEmpty()) {
             Iterator<Map.Entry<String, String>> entries = toResolve.entrySet().iterator();
             while (entries.hasNext()) {
@@ -102,7 +102,7 @@ public final class MapfishJsonStyleVersion2 {
     }
 
     Style parseStyle() {
-        List<Rule> rules = Lists.newArrayList();
+        List<Rule> rules = new ArrayList<>();
 
         final Iterator<String> keys = this.json.keys();
         while (keys.hasNext()) {
@@ -179,7 +179,7 @@ public final class MapfishJsonStyleVersion2 {
     private Map<String, String> buildValuesMap(
             final PJsonObject ruleJson,
             final PJsonObject symbolizerJson) {
-        Map<String, String> values = Maps.newHashMap();
+        Map<String, String> values = new HashMap<>();
 
         Iterator<String> keys = this.json.keys();
         while (keys.hasNext()) {

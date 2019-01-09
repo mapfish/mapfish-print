@@ -1,6 +1,5 @@
 package org.mapfish.print.attribute.map;
 
-import com.google.common.collect.Lists;
 import org.geotools.referencing.CRS;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -20,6 +19,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -73,7 +73,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
 
         final MapAttribute mapAttribute = (MapAttribute) template.getAttributes().get("map");
-        List<Throwable> errors = Lists.newArrayList();
+        List<Throwable> errors = new ArrayList<>();
         mapAttribute.validate(errors, config);
 
         assertFalse(errors.isEmpty());

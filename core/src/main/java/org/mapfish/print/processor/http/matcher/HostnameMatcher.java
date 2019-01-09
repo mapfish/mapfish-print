@@ -1,6 +1,5 @@
 package org.mapfish.print.processor.http.matcher;
 
-import com.google.common.base.Optional;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.slf4j.Logger;
@@ -8,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Allows to check that a given URL matches a hostname literally (textual match).
@@ -62,10 +62,10 @@ public final class HostnameMatcher extends HostMatcher {
     protected Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo) {
         String host = matchInfo.getHost();
         if (host == MatchInfo.ANY_HOST) {
-            return Optional.absent();
+            return Optional.empty();
         }
         if (isHostnameMatch(host)) {
-            return Optional.absent();
+            return Optional.empty();
         }
         return Optional.of(false);
     }
@@ -104,7 +104,7 @@ public final class HostnameMatcher extends HostMatcher {
      * @param host the host
      */
     public void setHost(final String host) {
-        this.host = host.toLowerCase();
+        this.host = host != null ? host.toLowerCase() : null;
     }
 
     /**

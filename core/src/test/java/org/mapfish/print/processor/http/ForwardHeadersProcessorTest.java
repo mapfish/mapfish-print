@@ -1,6 +1,5 @@
 package org.mapfish.print.processor.http;
 
-import com.google.common.base.Predicate;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -57,12 +56,7 @@ public class ForwardHeadersProcessorTest extends AbstractHttpProcessorTest {
     @Test
     @DirtiesContext
     public void testForwardAll() throws Exception {
-        this.httpClientFactory.registerHandler(new Predicate<URI>() {
-            @Override
-            public boolean apply(@Nullable URI input) {
-                return true;
-            }
-        }, new TestHttpClientFactory.Handler() {
+        this.httpClientFactory.registerHandler(input -> true, new TestHttpClientFactory.Handler() {
             @Override
             public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
                 return new MockClientHttpRequest(httpMethod, uri);

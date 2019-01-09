@@ -1,12 +1,12 @@
 package org.mapfish.print.http;
 
-import com.google.common.collect.Lists;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.SystemDefaultCredentialsProvider;
 import org.mapfish.print.config.Configuration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,7 +34,7 @@ public final class MfCredentialsProvider implements CredentialsProvider {
 
         Configuration config = MfClientHttpRequestFactoryImpl.getCurrentConfiguration();
         if (config != null) {
-            List<HttpCredential> allCredentials = Lists.newArrayList(config.getCredentials());
+            List<HttpCredential> allCredentials = new ArrayList<>(config.getCredentials());
             allCredentials.addAll(config.getProxies());
 
             for (HttpCredential credential: allCredentials) {

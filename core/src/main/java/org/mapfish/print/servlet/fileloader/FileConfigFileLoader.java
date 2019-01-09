@@ -1,9 +1,8 @@
 package org.mapfish.print.servlet.fileloader;
 
-import com.google.common.collect.Iterators;
-
 import java.io.File;
 import java.net.URI;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -16,8 +15,7 @@ public final class FileConfigFileLoader extends AbstractFileConfigFileLoader {
     @Override
     protected Iterator<File> resolveFiles(final URI fileURI) {
         File file = platformIndependentUriToFile(fileURI);
-
-        return Iterators.singletonIterator(file);
+        return Collections.singletonList(file).iterator();
     }
 
     @Override

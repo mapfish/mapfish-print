@@ -1,8 +1,5 @@
 package org.mapfish.print.config;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.geotools.styling.Style;
 import org.json.JSONException;
 import org.json.JSONWriter;
@@ -16,6 +13,7 @@ import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
 import org.mapfish.print.processor.map.CreateMapProcessor;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -23,16 +21,20 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.annotation.Nonnull;
+
+import static org.mapfish.print.OptionalUtils.or;
 
 /**
  * Represents a report template configuration.
  */
 public class Template implements ConfigurationObject, HasConfiguration {
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Template.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Template.class);
     @Autowired
     private ProcessorDependencyGraphFactory processorGraphFactory;
     @Autowired
@@ -42,8 +44,8 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
 
     private String reportTemplate;
-    private Map<String, Attribute> attributes = Maps.newHashMap();
-    private List<Processor> processors = Lists.newArrayList();
+    private Map<String, Attribute> attributes = new HashMap<>();
+    private List<Processor> processors = new ArrayList<>();
     private boolean mapExport;
 
     private String jdbcUrl;
@@ -63,7 +65,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
     /**
      * The default output file name of the report (takes precedence over {@link
-     * org.mapfish.print.config.Configuration#setOutputFilename(String)}).  This can be overridden by the
+     * Configuration#setOutputFilename(String)}).  This can be overridden by the
      * outputFilename parameter in the request JSON.
      * <p>
      * This can be a string and can also have a date section in the string that will be filled when the report
@@ -254,16 +256,16 @@ public class Template implements ConfigurationObject, HasConfiguration {
      */
     @SuppressWarnings("unchecked")
     @Nonnull
-    public final Optional<Style> getStyle(final String styleName) {
+    public final java.util.Optional<Style> getStyle(final String styleName) {
         final String styleRef = this.styles.get(styleName);
         Optional<Style> style;
         if (styleRef != null) {
             style = (Optional<Style>) this.styleParser
                     .loadStyle(getConfiguration(), this.httpRequestFactory, styleRef);
         } else {
-            style = Optional.absent();
+            style = Optional.empty();
         }
-        return style.or(this.configuration.getStyle(styleName));
+        return or(style, this.configuration.getStyle(styleName));
     }
 
     public final Configuration getConfiguration() {

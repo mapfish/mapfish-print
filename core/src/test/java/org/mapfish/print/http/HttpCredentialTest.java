@@ -1,6 +1,5 @@
 package org.mapfish.print.http;
 
-import com.google.common.collect.Lists;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpsServer;
@@ -19,6 +18,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -57,7 +57,7 @@ public class HttpCredentialTest {
         final HttpCredential credential = new HttpCredential();
         Configuration configuration = new Configuration();
 
-        List<Throwable> errors = Lists.newArrayList();
+        List<Throwable> errors = new ArrayList<>();
         credential.validate(errors, configuration);
         assertEquals(1, errors.size());
 

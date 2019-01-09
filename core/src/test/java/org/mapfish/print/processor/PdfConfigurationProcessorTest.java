@@ -1,14 +1,14 @@
 package org.mapfish.print.processor;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.PDFConfig;
 import org.mapfish.print.output.Values;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +18,7 @@ public class PdfConfigurationProcessorTest {
 
     @Test
     public void testValidation() {
-        Map<String, Object> attributeMap = Maps.newHashMap();
+        Map<String, Object> attributeMap = new HashMap<>();
         attributeMap.put("title", "titleAtt");
         assertNumErrors(attributeMap, 0);
 
@@ -47,7 +47,7 @@ public class PdfConfigurationProcessorTest {
 
     @Test
     public void testExec() throws Exception {
-        Map<String, Object> attributeMap = Maps.newHashMap();
+        Map<String, Object> attributeMap = new HashMap<>();
         final String titleKey = "titleAtt";
         String subjectKey = "subjectAtt";
         attributeMap.put("title", titleKey);
@@ -84,7 +84,7 @@ public class PdfConfigurationProcessorTest {
 
     @Test
     public void testKeywords() throws Exception {
-        Map<String, Object> attributeMap = Maps.newHashMap();
+        Map<String, Object> attributeMap = new HashMap<>();
         String keywordsKey = "keywordsAtt";
         attributeMap.put("keywords", keywordsKey);
         final PdfConfigurationProcessor pdfConfigurationProcessor = new PdfConfigurationProcessor();
@@ -93,7 +93,7 @@ public class PdfConfigurationProcessorTest {
         in.values = new Values();
         in.pdfConfig = new PDFConfig();
 
-        final ArrayList<String> keywordList = Lists.newArrayList("1", " 2", " 3\n");
+        final List<String> keywordList = Arrays.asList("1", " 2", " 3\n");
         in.values.put(keywordsKey, keywordList);
         pdfConfigurationProcessor.execute(in, null);
         assertEquals("1,2,3", in.pdfConfig.getKeywordsAsString());
@@ -104,7 +104,7 @@ public class PdfConfigurationProcessorTest {
         assertEquals("9,8 8,7", in.pdfConfig.getKeywordsAsString());
 
         pdfConfigurationProcessor.setUpdates(attributeMap);
-        in.values.put(keywordsKey, Sets.newLinkedHashSet(keywordList));
+        in.values.put(keywordsKey, new LinkedHashSet(keywordList));
         pdfConfigurationProcessor.execute(in, null);
         assertEquals("1,2,3", in.pdfConfig.getKeywordsAsString());
 
@@ -121,7 +121,7 @@ public class PdfConfigurationProcessorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testExec_WrongFieldName() throws Exception {
-        Map<String, Object> attributeMap = Maps.newHashMap();
+        Map<String, Object> attributeMap = new HashMap<>();
         final String titleKey = "titleAtt";
         final PdfConfigurationProcessor pdfConfigurationProcessor = new PdfConfigurationProcessor();
         pdfConfigurationProcessor.setUpdates(attributeMap);
@@ -137,7 +137,7 @@ public class PdfConfigurationProcessorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testExec_NullValue() throws Exception {
-        Map<String, Object> attributeMap = Maps.newHashMap();
+        Map<String, Object> attributeMap = new HashMap<>();
         final String titleKey = "titleAtt";
         final PdfConfigurationProcessor pdfConfigurationProcessor = new PdfConfigurationProcessor();
         pdfConfigurationProcessor.setUpdates(attributeMap);
@@ -154,7 +154,7 @@ public class PdfConfigurationProcessorTest {
     private void assertNumErrors(Map<String, Object> attributeMap, int expectedNumErrors) {
         final PdfConfigurationProcessor pdfConfigurationProcessor = new PdfConfigurationProcessor();
         pdfConfigurationProcessor.setUpdates(attributeMap);
-        List<Throwable> errors = Lists.newArrayList();
+        List<Throwable> errors = new ArrayList<>();
         Configuration configuration = new Configuration();
         pdfConfigurationProcessor.validate(errors, configuration);
         assertEquals(expectedNumErrors, errors.size());

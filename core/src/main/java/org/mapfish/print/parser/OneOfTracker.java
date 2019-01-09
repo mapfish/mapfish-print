@@ -1,25 +1,22 @@
 package org.mapfish.print.parser;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Keeps track of which OneOf groups there are and which ones are satisfied.
  */
 final class OneOfTracker {
-    private Map<String, OneOfGroup> mapping = Maps.newHashMap();
+    private Map<String, OneOfGroup> mapping = new HashMap<>();
 
     /**
      * Check if a field is part of a  {@link org.mapfish.print.parser.OneOf} relationship and add if
@@ -88,12 +85,7 @@ final class OneOfTracker {
             }
 
             Collection<OneOfSatisfier> oneOfSatisfiers =
-                    Collections2.filter(group.satisfiedBy, new Predicate<OneOfSatisfier>() {
-                        @Override
-                        public boolean apply(@Nonnull final OneOfSatisfier input) {
-                            return !input.isCanSatisfy;
-                        }
-                    });
+                    Collections2.filter(group.satisfiedBy, input -> !input.isCanSatisfy);
             if (oneOfSatisfiers.size() > 1) {
                 errors.append("\n");
                 errors.append("\t* The OneOf choice: ").append(group.name)
@@ -109,13 +101,7 @@ final class OneOfTracker {
     }
 
     private Collection<Field> toFields(final Set<OneOfSatisfier> satisfiedBy) {
-        return Collections2.transform(satisfiedBy, new Function<OneOfSatisfier, Field>() {
-            @Nullable
-            @Override
-            public Field apply(@Nonnull final OneOfSatisfier input) {
-                return input.field;
-            }
-        });
+        return Collections2.transform(satisfiedBy, (@Nonnull final OneOfSatisfier input) -> input.field);
     }
 
     private String toNames(final Collection<Field> choices) {
@@ -135,8 +121,8 @@ final class OneOfTracker {
 
     private static final class OneOfGroup {
         private String name;
-        private Collection<Field> choices = Lists.newArrayList();
-        private Set<OneOfSatisfier> satisfiedBy = Sets.newHashSet();
+        private Collection<Field> choices = new ArrayList<>();
+        private Set<OneOfSatisfier> satisfiedBy = new HashSet<>();
 
         private OneOfGroup(final String name) {
             this.name = name;

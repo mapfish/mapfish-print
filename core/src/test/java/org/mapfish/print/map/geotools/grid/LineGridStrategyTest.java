@@ -1,6 +1,5 @@
 package org.mapfish.print.map.geotools.grid;
 
-import com.google.common.collect.Maps;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
 import org.geotools.data.FeatureSource;
@@ -20,6 +19,7 @@ import org.mapfish.print.processor.AbstractProcessor;
 import org.opengis.feature.simple.SimpleFeature;
 
 import java.awt.Dimension;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -115,7 +115,7 @@ public class LineGridStrategyTest {
     }
 
     private Map<String, SimpleFeature> idToFeatureMap(SimpleFeatureCollection features) {
-        Map<String, SimpleFeature> result = Maps.newHashMap();
+        Map<String, SimpleFeature> result = new HashMap<>();
         try (SimpleFeatureIterator features1 = features.features()) {
             while (features1.hasNext()) {
                 final SimpleFeature feature = features1.next();

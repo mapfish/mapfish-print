@@ -1,8 +1,5 @@
 package org.mapfish.print.processor.map;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.io.Files;
 import org.apache.batik.transcoder.TranscoderException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,8 +15,6 @@ import org.mapfish.print.output.Values;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.File;
@@ -29,8 +24,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -61,44 +56,14 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
     public void testExecute() throws Exception {
         final String host = "center_wms1_0_0_flexiblescale";
         requestFactory.registerHandler(
-                new Predicate<URI>() {
-                    @Override
-                    public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".wms")) ||
-                                input.getAuthority().contains(host + ".wms");
-                    }
-                }, new TestHttpClientFactory.Handler() {
-                    @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
-                            throws Exception {
-                        try {
-                            byte[] bytes = Files.toByteArray(getFile("/map-data/zoomed-in-ny-tiger.tif"));
-                            return ok(uri, bytes, httpMethod);
-                        } catch (AssertionError e) {
-                            return error404(uri, httpMethod);
-                        }
-                    }
-                }
+                input -> (("" + input.getHost()).contains(host + ".wms")) ||
+                        input.getAuthority().contains(host + ".wms"),
+                createFileHandler("/map-data/zoomed-in-ny-tiger.tif")
         );
         requestFactory.registerHandler(
-                new Predicate<URI>() {
-                    @Override
-                    public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".json")) ||
-                                input.getAuthority().contains(host + ".json");
-                    }
-                }, new TestHttpClientFactory.Handler() {
-                    @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
-                            throws Exception {
-                        try {
-                            byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
-                            return ok(uri, bytes, httpMethod);
-                        } catch (AssertionError e) {
-                            return error404(uri, httpMethod);
-                        }
-                    }
-                }
+                input -> (("" + input.getHost()).contains(host + ".json")) ||
+                        input.getAuthority().contains(host + ".json"),
+                createFileHandler(uri -> "/map-data" + uri.getPath())
         );
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
@@ -139,18 +104,13 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
         /* jpeg */
         createMap(template, "expectedSimpleImage-clip-svg.png",
                   CLIP, null, true, true, null, 10);
-        Function<PJsonObject, Void> setRotationUpdater = new Function<PJsonObject, Void>() {
-
-            @Nullable
-            @Override
-            public Void apply(@Nonnull PJsonObject input) {
-                try {
-                    getMapAttributes(input).getInternalObj().put("rotation", 90);
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
-                return null;
+        Function<PJsonObject, Void> setRotationUpdater = (@Nonnull PJsonObject input) -> {
+            try {
+                getMapAttributes(input).getInternalObj().put("rotation", 90);
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
             }
+            return null;
         };
         createMap(template, "expectedSimpleImage-rotate-clip-svg.png",
                   CLIP, null, true, setRotationUpdater, 10);
@@ -185,8 +145,9 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
 
     private void createMap(
             Template template, String expectedImageName, AreaOfInterest.AoiDisplay
-            aoiDisplay, String styleRef, boolean useSVG, boolean useJPEG, Function<PJsonObject, Void>
-                    requestUpdater, double tolerance) throws IOException, JSONException, TranscoderException,
+            aoiDisplay, String styleRef, boolean useSVG, boolean useJPEG,
+            Function<PJsonObject, Void> requestUpdater, double tolerance) throws IOException,
+            JSONException, TranscoderException,
             ExecutionException,
             InterruptedException {
         PJsonObject requestData = loadJsonRequestData();

@@ -1,6 +1,5 @@
 package org.mapfish.print.attribute.map;
 
-import com.google.common.collect.Ordering;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.ConfigurationObject;
@@ -8,6 +7,7 @@ import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -48,7 +48,7 @@ public final class ZoomLevels implements ConfigurationObject {
      * @param newScaleDenominators The scales (may be unsorted).
      */
     public void setScales(final double[] newScaleDenominators) {
-        TreeSet<Double> sortedSet = new TreeSet<>(Ordering.natural().reverse());
+        TreeSet<Double> sortedSet = new TreeSet<>(Collections.reverseOrder());
         for (final double newScaleDenominator: newScaleDenominators) {
             sortedSet.add(newScaleDenominator);
         }

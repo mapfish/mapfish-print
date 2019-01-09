@@ -1,12 +1,12 @@
 package org.mapfish.print.processor.http;
 
-import com.google.common.collect.Lists;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.ProcessorUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -62,7 +62,7 @@ import javax.annotation.Nullable;
 public final class CompositeClientHttpRequestFactoryProcessor
         extends AbstractProcessor<CompositeClientHttpRequestFactoryProcessor.Input, Void>
         implements HttpProcessor<CompositeClientHttpRequestFactoryProcessor.Input> {
-    private List<HttpProcessor> httpProcessors = Lists.newArrayList();
+    private List<HttpProcessor> httpProcessors = new ArrayList<>();
 
     /**
      * Constructor.

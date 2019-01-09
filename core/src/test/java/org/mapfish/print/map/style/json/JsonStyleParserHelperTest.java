@@ -1,8 +1,6 @@
 package org.mapfish.print.map.style.json;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
-import com.google.common.io.Files;
+import org.apache.commons.lang.StringUtils;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Font;
@@ -37,6 +35,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import javax.imageio.ImageIO;
@@ -664,7 +663,7 @@ public class JsonStyleParserHelperTest {
         for (String supportedMimetype: strings) {
             Set<String> compatibleMimetypes = findCompatibleMimeTypes(supportedMimetype);
             for (String mimeType: compatibleMimetypes) {
-                if (Strings.isNullOrEmpty(mimeType)) {
+                if (StringUtils.isEmpty(mimeType)) {
                     continue;
                 }
                 styleJson.getInternalObj().put(JsonStyleParserHelper.JSON_GRAPHIC_FORMAT, mimeType);
@@ -682,7 +681,7 @@ public class JsonStyleParserHelperTest {
         for (String supportedMimetype: strings) {
             Set<String> compatibleMimetypes = findCompatibleMimeTypes(supportedMimetype);
             for (String mimeType: compatibleMimetypes) {
-                if (Strings.isNullOrEmpty(mimeType)) {
+                if (StringUtils.isEmpty(mimeType)) {
                     continue;
                 }
                 final String gf1 = helper.getGraphicFormat("data:" + mimeType + ",blabla", styleJson);
@@ -700,7 +699,7 @@ public class JsonStyleParserHelperTest {
             }
         }
 
-        return Sets.newHashSet(mimeType);
+        return Collections.singleton(mimeType);
     }
 
     @Test
@@ -731,8 +730,10 @@ public class JsonStyleParserHelperTest {
 
     @Test
     public void testExpressionProperties() throws Exception {
-        String jsonString = Files.toString(getFile("v2-style-all-properies-as-expressions.json"),
-                                           Constants.DEFAULT_CHARSET);
+        String jsonString = new String(java.nio.file.Files.readAllBytes(
+                getFile("v2-style-all-properies-as-expressions.json").toPath()),
+                                       Constants.DEFAULT_CHARSET);
+
         PJsonObject json = MapPrinter.parseSpec(jsonString).getJSONObject("*");
 
         final PJsonArray symb = json.getJSONArray(MapfishJsonStyleVersion2.JSON_SYMB);

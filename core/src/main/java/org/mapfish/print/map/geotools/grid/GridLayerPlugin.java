@@ -2,6 +2,7 @@ package org.mapfish.print.map.geotools.grid;
 
 import org.geotools.data.FeatureSource;
 import org.geotools.styling.Style;
+import org.mapfish.print.OptionalUtils;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayerPlugin;
@@ -57,11 +58,11 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
                     final MfClientHttpRequestFactory requestFactory,
                     final FeatureSource featureSource) {
                 String styleRef = layerData.style;
-                return template.getStyle(styleRef)
-                        .or(GridLayerPlugin.super.parser.loadStyle(
-                                template.getConfiguration(),
-                                requestFactory, styleRef))
-                        .or(layerData.gridType.strategy.defaultStyle(template, layerData));
+                return OptionalUtils.or(
+                        () -> template.getStyle(styleRef),
+                        () -> GridLayerPlugin.super.parser.loadStyle(template.getConfiguration(),
+                                                                     requestFactory, styleRef))
+                        .orElseGet(() -> layerData.gridType.strategy.defaultStyle(template, layerData));
             }
         };
     }

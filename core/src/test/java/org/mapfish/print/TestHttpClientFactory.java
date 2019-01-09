@@ -1,8 +1,6 @@
 package org.mapfish.print;
 
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Maps;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.ConfigurableRequest;
@@ -19,6 +17,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 import static org.junit.Assert.fail;
 
@@ -28,7 +28,7 @@ import static org.junit.Assert.fail;
 public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
         implements MfClientHttpRequestFactory {
 
-    private final Map<Predicate<URI>, Handler> handlers = Maps.newConcurrentMap();
+    private final Map<Predicate<URI>, Handler> handlers = new ConcurrentHashMap<>();
 
     public TestHttpClientFactory() {
         super(20, 10);
@@ -44,7 +44,7 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
     @Override
     public ConfigurableRequest createRequest(URI uri, final HttpMethod httpMethod) {
         for (Map.Entry<Predicate<URI>, Handler> entry: handlers.entrySet()) {
-            if (entry.getKey().apply(uri)) {
+            if (entry.getKey().test(uri)) {
                 try {
                     final MockClientHttpRequest httpRequest = entry.getValue().handleRequest(uri, httpMethod);
                     return new TestConfigurableRequest(httpRequest);

@@ -1,6 +1,5 @@
 package org.mapfish.print.processor.jasper;
 
-import com.google.common.collect.Lists;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JRDesignImage;
 import net.sf.jasperreports.engine.design.JasperDesign;
@@ -12,6 +11,7 @@ import org.junit.rules.TemporaryFolder;
 import java.awt.Dimension;
 import java.io.File;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -27,7 +27,7 @@ public class MapSubReportTest {
         File layer1SVG = new File("/tmp/mfp/3/layer_1.svg").getAbsoluteFile();
         File layer2Tiff = new File("/tmp/mfp/3/layer_2.tiff").getAbsoluteFile();
         File layer3SVG = new File("/tmp/mfp/3/layer_3.svg").getAbsoluteFile();
-        List<URI> layerImages = Lists.newArrayList(
+        List<URI> layerImages = Arrays.asList(
                 layer0Tiff.toURI(),
                 layer1SVG.toURI(),
                 layer2Tiff.toURI(),

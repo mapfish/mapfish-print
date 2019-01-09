@@ -1,10 +1,9 @@
 package org.mapfish.print.servlet.fileloader;
 
-import com.google.common.base.Optional;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Optional;
 
 /**
  * Strategy for loading configuration files and files that are used in printing that are relative (or related)

@@ -1,11 +1,11 @@
 package org.mapfish.print.attribute.map;
 
-import com.google.common.base.Optional;
 import org.mapfish.print.http.HttpRequestFetcher;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.Processor;
 
 import java.awt.Graphics2D;
+import java.util.Optional;
 
 /**
  * Encapsulates the data required to load map data for a layer and render it.

@@ -1,11 +1,12 @@
 package org.mapfish.print.map.style.json;
 
-import com.google.common.base.Optional;
 import org.geotools.styling.SLD;
+import org.mapfish.print.OptionalUtils;
 
 import java.awt.Color;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -163,24 +164,17 @@ public final class ColorParser {
 
     private static Color toColorRGBA(
             final String red, final String green, final String blue, final String alpha) {
-        float finalRed = parsePercent(red).
-                or(parseInt(red)).
-                or(parseFloat(red)).
-                or(parseDouble(red)).get();
-        float finalGreen = parsePercent(green).
-                or(parseInt(green)).
-                or(parseFloat(green)).
-                or(parseDouble(green)).get();
-        float finalBlue = parsePercent(blue).
-                or(parseInt(blue)).
-                or(parseFloat(blue)).
-                or(parseDouble(blue)).get();
-        float finalAlpha = parsePercent(alpha).
-                or(parseInt(alpha)).
-                or(parseFloat(alpha)).
-                or(parseDouble(alpha)).or(1.0f);
+        float finalRed = parseValue(red).get();
+        float finalGreen = parseValue(green).get();
+        float finalBlue = parseValue(blue).get();
+        float finalAlpha = parseValue(alpha).orElse(1.0f);
 
         return new Color(finalRed, finalGreen, finalBlue, finalAlpha);
+    }
+
+    private static Optional<Float> parseValue(final String red) {
+        return OptionalUtils.or(() -> parsePercent(red), () -> parseInt(red),
+                                () -> parseFloat(red), () -> parseDouble(red));
     }
 
     private static Optional<Float> parsePercent(final String colorString) {
@@ -188,27 +182,15 @@ public final class ColorParser {
             return Optional.of(parseDouble(colorString.substring(0, colorString.length() - 1)).get() / 100f);
         }
 
-        return Optional.absent();
+        return Optional.empty();
     }
 
     private static Color toColorFromHSLA(
             final String hue, final String saturation, final String luminance, final String alpha) {
-        float finalHue = parsePercent(hue).
-                or(parseInt(hue)).
-                or(parseFloat(hue)).
-                or(parseDouble(hue)).get();
-        float finalSaturation = parsePercent(saturation).
-                or(parseInt(saturation)).
-                or(parseFloat(saturation)).
-                or(parseDouble(saturation)).get();
-        float finalLuminance = parsePercent(luminance).
-                or(parseInt(luminance)).
-                or(parseFloat(luminance)).
-                or(parseDouble(luminance)).get();
-        float finalAlpha = parsePercent(alpha).
-                or(parseInt(alpha)).
-                or(parseFloat(alpha)).
-                or(parseDouble(alpha)).or(1.0f);
+        float finalHue = parseValue(hue).get();
+        float finalSaturation = parseValue(saturation).get();
+        float finalLuminance = parseValue(luminance).get();
+        float finalAlpha = parseValue(alpha).orElse(1.0f);
 
         if (finalSaturation < 0.0f || finalSaturation > 1.0f) {
             String message = "Color parameter outside of expected range - Saturation (" + saturation + ")";
@@ -269,7 +251,7 @@ public final class ColorParser {
         try {
             return Optional.of(Float.parseFloat(stringForm));
         } catch (NumberFormatException e) {
-            return Optional.absent();
+            return Optional.empty();
         }
     }
 
@@ -277,7 +259,7 @@ public final class ColorParser {
         try {
             return Optional.of((float) Double.parseDouble(stringForm));
         } catch (NumberFormatException e) {
-            return Optional.absent();
+            return Optional.empty();
         }
     }
 
@@ -289,7 +271,7 @@ public final class ColorParser {
             }
             return Optional.of(i / MAX_INT_COLOR);
         } catch (NumberFormatException e) {
-            return Optional.absent();
+            return Optional.empty();
         }
     }
 

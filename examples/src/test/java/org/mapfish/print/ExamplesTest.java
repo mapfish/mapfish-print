@@ -4,10 +4,8 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.google.common.io.Files;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
@@ -30,7 +28,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -101,7 +100,7 @@ public class ExamplesTest {
         StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
 
         String filterProperty = System.getProperty(FILTER_PROPERTY);
-        if (!Strings.isNullOrEmpty(filterProperty)) {
+        if (!StringUtils.isEmpty(filterProperty)) {
             String[] parts = filterProperty.split("/", 2);
 
             if (parts.length == 1) {
@@ -168,7 +167,7 @@ public class ExamplesTest {
 
     @Test
     public void testAllExamples() {
-        Map<String, Throwable> errors = Maps.newHashMap();
+        Map<String, Throwable> errors = new HashMap<>();
 
         int testsRan = 0;
         final File examplesDir = getFile(ExamplesTest.class, "/examples");
@@ -179,6 +178,10 @@ public class ExamplesTest {
             }
         }
 
+        reportErrors(errors, testsRan);
+    }
+
+    private void reportErrors(final Map<String, Throwable> errors, final int testsRan) {
         if (!errors.isEmpty()) {
             for (Map.Entry<String, Throwable> error: errors.entrySet()) {
                 System.err.println("\nExample: '" + error.getKey() + "' failed with the error:");
@@ -210,6 +213,14 @@ public class ExamplesTest {
         }
     }
 
+    @Test
+    public void testOne() {
+        final File examplesDir = getFile(ExamplesTest.class, "/examples");
+        Map<String, Throwable> errors = new HashMap<>();
+        runExample(new File(examplesDir, "datasource_dynamic_tables"), errors);
+        reportErrors(errors, 1);
+    }
+
     private int runExample(File example, Map<String, Throwable> errors) {
         int testsRan = 0;
         try {
@@ -228,9 +239,9 @@ public class ExamplesTest {
                     if (isRequestDataFile(requestFile)) {
                         // WARN to be displayed in the Travis logs
                         LOGGER.warn("Run example '{}' ({})", example.getName(), requestFile.getName());
-                        String requestData = Files.asCharSource(requestFile,
-                                                                Charset.forName(Constants.DEFAULT_ENCODING))
-                                .read();
+                        String requestData =
+                                new String(java.nio.file.Files.readAllBytes(requestFile.toPath()),
+                                           Constants.DEFAULT_CHARSET);
 
                         final PJsonObject jsonSpec = MapPrinter.parseSpec(requestData);
 
@@ -275,7 +286,8 @@ public class ExamplesTest {
                         int similarity = 50;
                         File file = new File(expectedOutputDir, "image-similarity.txt");
                         if (file.isFile()) {
-                            String similarityString = Files.toString(file, Constants.DEFAULT_CHARSET);
+                            String similarityString = new String(Files.readAllBytes(file.toPath()),
+                                                                 Constants.DEFAULT_CHARSET);
                             similarity = Integer.parseInt(similarityString.trim());
                         }
                         new ImageSimilarity(expectedOutput).assertSimilarity(image, similarity);

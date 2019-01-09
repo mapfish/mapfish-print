@@ -1,13 +1,13 @@
 package org.mapfish.print.map.tiled.wmts;
 
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.Sets;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.geotools.AbstractGridCoverageLayerPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
 import javax.annotation.Nonnull;
@@ -19,16 +19,15 @@ import javax.annotation.Nonnull;
  */
 public final class WmtsLayerParserPlugin extends AbstractGridCoverageLayerPlugin
         implements MapLayerFactoryPlugin<WMTSLayerParam> {
+    private static final Set<String> TYPENAMES = Collections.singleton("wmts");
     @Autowired
     private ForkJoinPool forkJoinPool;
     @Autowired
     private MetricRegistry registry;
 
-    private Set<String> typenames = Sets.newHashSet("wmts");
-
     @Override
     public Set<String> getTypeNames() {
-        return this.typenames;
+        return TYPENAMES;
     }
 
     @Override

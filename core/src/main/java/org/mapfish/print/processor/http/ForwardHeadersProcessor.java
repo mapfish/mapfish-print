@@ -1,7 +1,5 @@
 package org.mapfish.print.processor.http;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
@@ -9,6 +7,7 @@ import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.http.matcher.URIMatcher;
 import org.mapfish.print.processor.http.matcher.UriMatchers;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +38,7 @@ public final class ForwardHeadersProcessor
         implements HttpProcessor<ForwardHeadersProcessor.Param> {
 
     private final UriMatchers matchers = new UriMatchers();
-    private Set<String> headerNames = Sets.newHashSet();
+    private Set<String> headerNames = new HashSet<>();
     private boolean forwardAll = false;
 
     /**
@@ -121,7 +120,7 @@ public final class ForwardHeadersProcessor
     public MfClientHttpRequestFactory createFactoryWrapper(
             final Param param,
             final MfClientHttpRequestFactory requestFactory) {
-        Map<String, List<String>> headers = Maps.newHashMap();
+        Map<String, List<String>> headers = new HashMap<>();
 
         for (Map.Entry<String, List<String>> entry: param.requestHeaders.getHeaders().entrySet()) {
             if (ForwardHeadersProcessor.this.forwardAll ||

@@ -1,9 +1,10 @@
 package org.mapfish.print.map.geotools;
 
-import com.google.common.collect.Sets;
 import com.vividsolutions.jts.geom.Geometry;
 import org.geotools.data.FeatureSource;
 import org.geotools.styling.Style;
+import org.mapfish.print.OptionalUtils;
+import org.mapfish.print.SetsUtils;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
@@ -40,7 +41,7 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
      *         definition.
      */
     public AbstractFeatureSourceLayerPlugin(final String typeName, final String... typeNames) {
-        this.typeNames = Sets.newHashSet(typeNames);
+        this.typeNames = SetsUtils.create(typeNames);
         this.typeNames.add(typeName);
     }
 
@@ -68,21 +69,17 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
                     throw new IllegalArgumentException("Feature source cannot be null");
                 }
 
-                String geomType = Geometry.class.getSimpleName().toLowerCase();
-                if (featureSource.getSchema() != null) {
-                    geomType = featureSource.getSchema().getGeometryDescriptor().getType().getBinding()
+                final String geomType = featureSource.getSchema() == null ?
+                        Geometry.class.getSimpleName().toLowerCase() :
+                        featureSource.getSchema().getGeometryDescriptor().getType().getBinding()
                             .getSimpleName();
-                }
-                String styleRef = styleString;
-
-                if (styleRef == null) {
-                    styleRef = geomType;
-                }
+                final String styleRef = styleString != null ? styleString : geomType;
 
                 final StyleParser styleParser = AbstractFeatureSourceLayerPlugin.this.parser;
-                return template.getStyle(styleRef)
-                        .or(styleParser.loadStyle(template.getConfiguration(), requestFactory, styleRef))
-                        .or(template.getConfiguration().getDefaultStyle(geomType));
+                return OptionalUtils.or(
+                        () -> template.getStyle(styleRef),
+                        () -> styleParser.loadStyle(template.getConfiguration(), requestFactory, styleRef))
+                        .orElseGet(() -> template.getConfiguration().getDefaultStyle(geomType));
             }
         };
     }

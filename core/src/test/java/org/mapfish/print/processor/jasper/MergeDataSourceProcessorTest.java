@@ -1,12 +1,12 @@
 package org.mapfish.print.processor.jasper;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
 import org.junit.Test;
 import org.mapfish.print.output.Values;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +29,7 @@ public class MergeDataSourceProcessorTest {
         values.put("row1", "hello10");
         values.put("row11", "hello11");
         values.put("row2", "hello2");
-        List<Map<String, ?>> innerData = Lists.newArrayList(
+        List<Map<String, ?>> innerData = Arrays.asList(
                 createRow("r1val1", "r1val2", "r1val3"),
                 createRow("r2val1", "r2val2", "r2val3"),
                 createRow("r3val1", "r3val2", "r3val3")
@@ -39,19 +39,19 @@ public class MergeDataSourceProcessorTest {
 
         final MergeDataSourceProcessor processor = new MergeDataSourceProcessor();
 
-        Map<String, String> fieldMap1 = Maps.newHashMap();
+        Map<String, String> fieldMap1 = new HashMap<>();
         fieldMap1.put("row1", "row1");
         fieldMap1.put("row11", "row11");
-        Map<String, String> fieldMap = Maps.newHashMap();
+        Map<String, String> fieldMap = new HashMap<>();
         fieldMap.put("col1", "col1");
         fieldMap.put("col3", "col2");
-        List<Source> source = Lists.newArrayList(
+        List<Source> source = Arrays.asList(
                 Source.createSource(null, SINGLE, fieldMap1),
                 Source.createSource(null, SINGLE, Collections.singletonMap("row2", "renamed")),
                 Source.createSource("manyRows", DATASOURCE, fieldMap));
         processor.setSources(source);
 
-        List<Throwable> errors = Lists.newArrayList();
+        List<Throwable> errors = new ArrayList<>();
         processor.validate(errors, null);
 
         assertEquals(errors.toString(), 0, errors.size());
@@ -91,7 +91,7 @@ public class MergeDataSourceProcessorTest {
     }
 
     private Map<String, ?> createRow(String val1, String val2, String val3) {
-        final HashMap<String, Object> map = Maps.newHashMap();
+        final HashMap<String, Object> map = new HashMap<>();
         map.put("col1", val1);
         map.put("col2", val2);
         map.put("col3", val3);

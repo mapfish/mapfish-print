@@ -1,10 +1,5 @@
 package org.mapfish.print.servlet;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.io.Files;
 import de.saly.javamail.mock2.MailboxFolder;
 import de.saly.javamail.mock2.MockMailbox;
 import org.apache.commons.io.IOUtils;
@@ -13,6 +8,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.Constants;
+import org.mapfish.print.SetsUtils;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.SmtpConfig;
@@ -43,7 +39,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nonnull;
+import java.util.function.Function;
 import javax.annotation.Nullable;
 import javax.mail.Address;
 import javax.mail.BodyPart;
@@ -158,116 +154,92 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
     @Test(timeout = 60000)
     public void testCreateReport_Success_NoAppId() throws Exception {
-        doCreateAndPollAndGetReport(new Function<MockHttpServletRequest, MockHttpServletResponse>() {
-            @Nonnull
-            @Override
-            public MockHttpServletResponse apply(@Nullable MockHttpServletRequest servletCreateRequest) {
-                try {
-                    final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
-                    String requestData = loadRequestDataAsString();
-                    servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
-                    return servletCreateResponse;
-                } catch (Exception e) {
-                    throw new AssertionError(e);
-                }
+        doCreateAndPollAndGetReport((@Nullable MockHttpServletRequest servletCreateRequest) -> {
+            try {
+                final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+                String requestData = loadRequestDataAsString();
+                servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
+                return servletCreateResponse;
+            } catch (Exception e) {
+                throw new AssertionError(e);
             }
         }, false);
     }
 
     @Test(timeout = 60000)
     public void testCreateReport_Success_EncodedSpec() throws Exception {
-        doCreateAndPollAndGetReport(new Function<MockHttpServletRequest, MockHttpServletResponse>() {
-            @Nonnull
-            @Override
-            public MockHttpServletResponse apply(@Nullable MockHttpServletRequest servletCreateRequest) {
-                try {
-                    final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
-                    String requestData =
-                            URLEncoder.encode(loadRequestDataAsString(), Constants.DEFAULT_ENCODING);
-                    servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
-                    return servletCreateResponse;
-                } catch (Exception e) {
-                    throw new AssertionError(e);
-                }
+        doCreateAndPollAndGetReport((@Nullable MockHttpServletRequest servletCreateRequest) -> {
+            try {
+                final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+                String requestData =
+                        URLEncoder.encode(loadRequestDataAsString(), Constants.DEFAULT_ENCODING);
+                servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
+                return servletCreateResponse;
+            } catch (Exception e) {
+                throw new AssertionError(e);
             }
         }, false);
     }
 
     @Test(timeout = 60000)
     public void testCreateReport_Success_FormPostEncodedSpec() throws Exception {
-        doCreateAndPollAndGetReport(new Function<MockHttpServletRequest, MockHttpServletResponse>() {
-            @Nonnull
-            @Override
-            public MockHttpServletResponse apply(@Nullable MockHttpServletRequest servletCreateRequest) {
-                try {
-                    final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
-                    String requestData = "spec=" +
-                            URLEncoder.encode(loadRequestDataAsString(), Constants.DEFAULT_ENCODING);
-                    servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
-                    return servletCreateResponse;
-                } catch (Exception e) {
-                    throw new AssertionError(e);
-                }
+        doCreateAndPollAndGetReport((@Nullable MockHttpServletRequest servletCreateRequest) -> {
+            try {
+                final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+                String requestData = "spec=" +
+                        URLEncoder.encode(loadRequestDataAsString(), Constants.DEFAULT_ENCODING);
+                servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
+                return servletCreateResponse;
+            } catch (Exception e) {
+                throw new AssertionError(e);
             }
         }, false);
     }
 
     @Test(timeout = 60000)
     public void testCreateReport_Success_explicitAppId() throws Exception {
-        doCreateAndPollAndGetReport(new Function<MockHttpServletRequest, MockHttpServletResponse>() {
-            @Nonnull
-            @Override
-            public MockHttpServletResponse apply(@Nullable MockHttpServletRequest servletCreateRequest) {
-                try {
-                    final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
-                    String requestData = loadRequestDataAsString();
-                    servlet.createReport(DEFAULT_CONFIGURATION_FILE_KEY, "png", requestData,
-                                         servletCreateRequest, servletCreateResponse);
-                    return servletCreateResponse;
-                } catch (Exception e) {
-                    throw new AssertionError(e);
-                }
+        doCreateAndPollAndGetReport((@Nullable MockHttpServletRequest servletCreateRequest) -> {
+            try {
+                final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+                String requestData = loadRequestDataAsString();
+                servlet.createReport(DEFAULT_CONFIGURATION_FILE_KEY, "png", requestData,
+                                     servletCreateRequest, servletCreateResponse);
+                return servletCreateResponse;
+            } catch (Exception e) {
+                throw new AssertionError(e);
             }
         }, false);
     }
 
     @Test(timeout = 60000)
     public void testCreateReport_FormPosting() throws Exception {
-        doCreateAndPollAndGetReport(new Function<MockHttpServletRequest, MockHttpServletResponse>() {
-            @Nonnull
-            @Override
-            public MockHttpServletResponse apply(@Nullable MockHttpServletRequest servletCreateRequest) {
-                try {
-                    final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
-                    String requestData = getFormEncodedRequestData();
-                    servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
-                    return servletCreateResponse;
-                } catch (Exception e) {
-                    throw new AssertionError(e);
-                }
+        doCreateAndPollAndGetReport((@Nullable MockHttpServletRequest servletCreateRequest) -> {
+            try {
+                final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+                String requestData = getFormEncodedRequestData();
+                servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
+                return servletCreateResponse;
+            } catch (Exception e) {
+                throw new AssertionError(e);
             }
         }, true);
     }
 
     @Test(timeout = 60000)
     public void testCreateReport_2Requests_Success_NoAppId() throws Exception {
-        doCreateAndPollAndGetReport(new Function<MockHttpServletRequest, MockHttpServletResponse>() {
-            @Nonnull
-            @Override
-            public MockHttpServletResponse apply(@Nullable MockHttpServletRequest servletCreateRequest) {
-                try {
-                    final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
-                    String requestData = loadRequestDataAsString();
-                    servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
+        doCreateAndPollAndGetReport((@Nullable MockHttpServletRequest servletCreateRequest) -> {
+            try {
+                final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+                String requestData = loadRequestDataAsString();
+                servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
 
-                    // make a 2nd request, but ignore the result
-                    final MockHttpServletResponse dummyResponse = new MockHttpServletResponse();
-                    servlet.createReport("png", requestData, servletCreateRequest, dummyResponse);
+                // make a 2nd request, but ignore the result
+                final MockHttpServletResponse dummyResponse = new MockHttpServletResponse();
+                servlet.createReport("png", requestData, servletCreateRequest, dummyResponse);
 
-                    return servletCreateResponse;
-                } catch (Exception e) {
-                    throw new AssertionError(e);
-                }
+                return servletCreateResponse;
+            } catch (Exception e) {
+                throw new AssertionError(e);
             }
         }, false);
     }
@@ -279,15 +251,11 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final MockClientHttpRequest request = new MockClientHttpRequest();
         ClientHttpResponse response =
-                new MockClientHttpResponse(Files.toByteArray(getFile("sampleGeoTiff.tif")), HttpStatus.OK);
+                new MockClientHttpResponse(getFileBytes("sampleGeoTiff.tif"), HttpStatus.OK);
         request.setResponse(response);
 
-        requestFactory.registerHandler(new Predicate<URI>() {
-            @Override
-            public boolean apply(@Nullable URI input) {
-                return input != null && input.toString().equals(geotiffURL);
-            }
-        }, new TestHttpClientFactory.Handler() {
+        requestFactory.registerHandler(input -> input != null && input.toString().equals(geotiffURL),
+                                       new TestHttpClientFactory.Handler() {
             @Override
             public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
                 return request;
@@ -295,30 +263,25 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         });
 
         String ref =
-                doCreateAndPollAndGetReport(new Function<MockHttpServletRequest, MockHttpServletResponse>() {
-                    @Nullable
-                    @Override
-                    public MockHttpServletResponse apply(
-                            @Nullable MockHttpServletRequest servletCreateRequest) {
-                        try {
-                            final MockHttpServletResponse servletCreateResponse =
-                                    new MockHttpServletResponse();
-                            servletCreateRequest.addHeader("Cookies", "CookieValue");
-                            servletCreateRequest.addHeader("Cookies", "CookieValue2");
-                            servletCreateRequest.addHeader("Header2", "h2");
+                doCreateAndPollAndGetReport((@Nullable MockHttpServletRequest servletCreateRequest) -> {
+                    try {
+                        final MockHttpServletResponse servletCreateResponse =
+                                new MockHttpServletResponse();
+                        servletCreateRequest.addHeader("Cookies", "CookieValue");
+                        servletCreateRequest.addHeader("Cookies", "CookieValue2");
+                        servletCreateRequest.addHeader("Header2", "h2");
 
-                            JSONObject rawRequestData = new JSONObject(loadRequestDataAsString());
-                            rawRequestData.getJSONObject("attributes").getJSONObject("imageMap")
-                                    .getJSONArray("layers").getJSONObject(0).
-                                    put("url", geotiffURL);
-                            String requestData = rawRequestData.toString(2);
-                            servlet.createReport("png", requestData, servletCreateRequest,
-                                                 servletCreateResponse);
+                        JSONObject rawRequestData = new JSONObject(loadRequestDataAsString());
+                        rawRequestData.getJSONObject("attributes").getJSONObject("imageMap")
+                                .getJSONArray("layers").getJSONObject(0).
+                                put("url", geotiffURL);
+                        String requestData = rawRequestData.toString(2);
+                        servlet.createReport("png", requestData, servletCreateRequest,
+                                             servletCreateResponse);
 
-                            return servletCreateResponse;
-                        } catch (Exception e) {
-                            throw new AssertionError(e);
-                        }
+                        return servletCreateResponse;
+                    } catch (Exception e) {
+                        throw new AssertionError(e);
                     }
                 }, false);
 
@@ -642,22 +605,17 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     public void testCancel_FinishedJob() throws Exception {
         // start a job and wait until it is finished
         String ref =
-                doCreateAndPollAndGetReport(new Function<MockHttpServletRequest, MockHttpServletResponse>() {
-                    @Nullable
-                    @Override
-                    public MockHttpServletResponse apply(
-                            @Nullable MockHttpServletRequest servletCreateRequest) {
-                        try {
-                            final MockHttpServletResponse servletCreateResponse =
-                                    new MockHttpServletResponse();
-                            String requestData =
-                                    URLEncoder.encode(loadRequestDataAsString(), Constants.DEFAULT_ENCODING);
-                            servlet.createReport("png", requestData, servletCreateRequest,
-                                                 servletCreateResponse);
-                            return servletCreateResponse;
-                        } catch (Exception e) {
-                            throw new AssertionError(e);
-                        }
+                doCreateAndPollAndGetReport((@Nullable MockHttpServletRequest servletCreateRequest) -> {
+                    try {
+                        final MockHttpServletResponse servletCreateResponse =
+                                new MockHttpServletResponse();
+                        String requestData =
+                                URLEncoder.encode(loadRequestDataAsString(), Constants.DEFAULT_ENCODING);
+                        servlet.createReport("png", requestData, servletCreateRequest,
+                                             servletCreateResponse);
+                        return servletCreateResponse;
+                    } catch (Exception e) {
+                        throw new AssertionError(e);
                     }
                 }, false);
 
@@ -1066,7 +1024,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testGetCapabilitiesWithAppId_NotPretty() throws Exception {
-        final HashMap<String, String> configFiles = Maps.newHashMap();
+        final HashMap<String, String> configFiles = new HashMap<>();
         configFiles.put("default", getFile(MapPrinterServletTest.class,
                                            "config.yaml").getAbsolutePath());
         configFiles.put("app2", getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class,
@@ -1104,7 +1062,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testGetCapabilitiesWithAppId_NotPrettyAndJsonp() throws Exception {
-        final HashMap<String, String> configFiles = Maps.newHashMap();
+        final HashMap<String, String> configFiles = new HashMap<>();
         configFiles.put("default", getFile(MapPrinterServletTest.class,
                                            "config.yaml").getAbsolutePath());
         configFiles.put("app2", getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class,
@@ -1126,7 +1084,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testGetCapabilitiesWithAppId_PrettyAndJsonp() throws Exception {
-        final HashMap<String, String> configFiles = Maps.newHashMap();
+        final HashMap<String, String> configFiles = new HashMap<>();
         configFiles.put("default", getFile(MapPrinterServletTest.class,
                                            "config.yaml").getAbsolutePath());
         configFiles.put("app2", getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class,
@@ -1148,7 +1106,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testListAppIds() throws Exception {
-        final HashMap<String, String> configFiles = Maps.newHashMap();
+        final HashMap<String, String> configFiles = new HashMap<>();
         configFiles.put("default",
                         getFile(MapPrinterServletTest.class, "config.yaml").getAbsolutePath());
         configFiles.put("app2", getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class,
@@ -1165,14 +1123,14 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         final JSONArray appIdsJson = new JSONArray(contentAsString);
 
         assertEquals(2, appIdsJson.length());
-        Set<String> expected = Sets.newHashSet("default", "app2");
+        Set<String> expected = SetsUtils.create("default", "app2");
         assertTrue(expected.contains(appIdsJson.getString(0)));
         assertTrue(expected.contains(appIdsJson.getString(1)));
     }
 
     @Test
     public void testListAppIds_Jsonp() throws Exception {
-        final HashMap<String, String> configFiles = Maps.newHashMap();
+        final HashMap<String, String> configFiles = new HashMap<>();
         configFiles.put("default", getFile(MapPrinterServletTest.class,
                                            "config.yaml").getAbsolutePath());
         configFiles.put("app2", getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class,
@@ -1276,7 +1234,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     }
 
     private void setUpConfigFiles() throws URISyntaxException {
-        final HashMap<String, String> configFiles = Maps.newHashMap();
+        final HashMap<String, String> configFiles = new HashMap<>();
         configFiles.put("default", getFile(MapPrinterServletTest.class,
                                            "config.yaml").getAbsolutePath());
         configFiles.put("timeout", getFile(MapPrinterServletTest.class,

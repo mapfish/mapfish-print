@@ -89,10 +89,8 @@ public final class HttpRequestFetcher {
             this.statusText = originalResponse.getStatusText();
             this.cachedFile =
                     File.createTempFile("cacheduri", null, HttpRequestFetcher.this.temporaryDirectory);
-            try (InputStream is = originalResponse.getBody()) {
-                try (OutputStream os = new FileOutputStream(this.cachedFile)) {
-                    IOUtils.copy(is, os);
-                }
+            try (OutputStream os = new FileOutputStream(this.cachedFile)) {
+                IOUtils.copy(originalResponse.getBody(), os);
             }
         }
 
@@ -197,9 +195,7 @@ public final class HttpRequestFetcher {
                         HttpRequestFetcher.class.getName() + ".read." + getURI().getHost();
                 final Timer.Context timerDownload =
                         HttpRequestFetcher.this.registry.timer(baseMetricName).time();
-                ClientHttpResponse originalResponse = null;
-                try {
-                    originalResponse = this.originalRequest.execute();
+                try (ClientHttpResponse originalResponse = this.originalRequest.execute()) {
                     LOGGER.debug("Caching URI resource {}", this.originalRequest.getURI());
                     this.response = new CachedClientHttpResponse(originalResponse);
                 } catch (IOException e) {
@@ -232,9 +228,6 @@ public final class HttpRequestFetcher {
                     HttpRequestFetcher.this.registry.counter(baseMetricName + ".error").inc();
                     throw e;
                 } finally {
-                    if (originalResponse != null) {
-                        originalResponse.close();
-                    }
                     timerDownload.stop();
                 }
                 return null;

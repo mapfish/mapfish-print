@@ -1,6 +1,5 @@
 package org.mapfish.print.processor;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -12,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.RecursiveTask;
 import javax.annotation.Nonnull;

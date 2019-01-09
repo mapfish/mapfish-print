@@ -1,6 +1,5 @@
 package org.mapfish.print.map.style;
 
-import com.google.common.base.Optional;
 import org.geotools.styling.Style;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -11,6 +10,7 @@ import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

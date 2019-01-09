@@ -1,6 +1,5 @@
 package org.mapfish.print.processor.http;
 
-import com.google.common.collect.Maps;
 import com.vividsolutions.jts.util.Assert;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
@@ -12,6 +11,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +30,7 @@ import java.util.Map;
  * ).</p> [[examples=http_processors]]
  */
 public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryProcessor {
-    private final Map<String, List<String>> headers = Maps.newHashMap();
+    private final Map<String, List<String>> headers = new HashMap<>();
 
     /**
      * Create a MfClientHttpRequestFactory for adding the specified headers.

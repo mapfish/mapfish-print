@@ -1,7 +1,5 @@
 package org.mapfish.print.map.style.json;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.json.JSONObject;
@@ -14,6 +12,7 @@ import org.mapfish.print.map.style.StyleParserPlugin;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -492,18 +491,15 @@ public final class MapfishStyleParserPlugin implements StyleParserPlugin {
         if (styleOptional.isPresent()) {
             return styleOptional;
         }
-        return ParserPluginUtils.loadStyleAsURI(clientHttpRequestFactory, styleString, new Function<byte[],
-                Optional<Style>>() {
-            @Override
-            public Optional<Style> apply(final byte[] input) {
-                try {
-                    return tryParse(
-                            configuration, new String(input, Constants.DEFAULT_CHARSET),
-                            clientHttpRequestFactory);
-                } catch (Throwable e) {
-                    throw ExceptionUtils.getRuntimeException(e);
-                }
-            }
+        return ParserPluginUtils.loadStyleAsURI(
+                clientHttpRequestFactory, styleString, (final byte[] input) -> {
+                    try {
+                        return tryParse(
+                                configuration, new String(input, Constants.DEFAULT_CHARSET),
+                                clientHttpRequestFactory);
+                    } catch (Throwable e) {
+                        throw ExceptionUtils.getRuntimeException(e);
+                    }
         });
     }
 
@@ -527,7 +523,7 @@ public final class MapfishStyleParserPlugin implements StyleParserPlugin {
             final SLDParserPlugin parser = new SLDParserPlugin();
             return parser.parseStyle(configuration, clientHttpRequestFactory, styleString);
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     enum Versions {

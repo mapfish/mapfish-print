@@ -1,8 +1,6 @@
 package org.mapfish.print.attribute;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
-import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jts.util.AssertionFailedException;
 import org.json.JSONArray;
@@ -11,7 +9,9 @@ import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.MapfishParser;
+import org.mapfish.print.parser.OneOf;
 import org.mapfish.print.parser.ParserUtils;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PElement;
@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
@@ -42,19 +43,19 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
     /**
      * Name of attribute in the client config json.
      *
-     * @see #printClientConfig(org.json.JSONWriter, org.mapfish.print.config.Template)
+     * @see #printClientConfig(JSONWriter, Template)
      */
     public static final String JSON_NAME = "name";
     /**
      * Name of the required parameters object in the client config json.
      *
-     * @see #printClientConfig(org.json.JSONWriter, org.mapfish.print.config.Template)
+     * @see #printClientConfig(JSONWriter, Template)
      */
     public static final String JSON_CLIENT_PARAMS = "clientParams";
     /**
      * Name of the value suggestions object in the client config json.
      *
-     * @see #printClientConfig(org.json.JSONWriter, org.mapfish.print.config.Template)
+     * @see #printClientConfig(JSONWriter, Template)
      */
     public static final String JSON_CLIENT_INFO = "clientInfo";
     /**
@@ -83,7 +84,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
     private String configName;
 
     private static HashSet<Class<? extends Object>> createClassSet(final Object... args) {
-        final HashSet<Class<?>> classes = Sets.newHashSet();
+        final HashSet<Class<?>> classes = new HashSet<>();
         for (Object arg: args) {
             classes.add((Class<?>) arg);
         }
@@ -126,11 +127,11 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
         if (this.defaults == null) {
             this.defaults = new PYamlObject(Collections.emptyMap(), getAttributeName());
         }
-        validateParamObject(getValueType(), Sets.newHashSet());
+        validateParamObject(getValueType(), new HashSet<>());
     }
 
     /**
-     * Return the type created by {@link #createValue(org.mapfish.print.config.Template)}.
+     * Return the type created by {@link #createValue(Template)}.
      */
     public abstract Class<? extends Value> getValueType();
 
@@ -177,22 +178,22 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      * The object will be populated from the json.  Each public field will be populated by looking up the
      * value in the json.
      * <p></p>
-     * If a field in the object has the {@link org.mapfish.print.parser.HasDefaultValue} annotation then no
+     * If a field in the object has the {@link HasDefaultValue} annotation then no
      * exception will be thrown if the json does not contain a value.
      * <p></p>
-     * Fields in the object with the {@link org.mapfish.print.parser.OneOf} annotation must have one of the
+     * Fields in the object with the {@link OneOf} annotation must have one of the
      * fields in the request data.
      * <p></p>
      * <ul>
-     * <li>{@link java.lang.String}</li>
-     * <li>{@link java.lang.Integer}</li>
-     * <li>{@link java.lang.Float}</li>
-     * <li>{@link java.lang.Double}</li>
-     * <li>{@link java.lang.Short}</li>
-     * <li>{@link java.lang.Boolean}</li>
-     * <li>{@link java.lang.Character}</li>
-     * <li>{@link java.lang.Byte}</li>
-     * <li>{@link java.lang.Enum}</li>
+     * <li>{@link String}</li>
+     * <li>{@link Integer}</li>
+     * <li>{@link Float}</li>
+     * <li>{@link Double}</li>
+     * <li>{@link Short}</li>
+     * <li>{@link Boolean}</li>
+     * <li>{@link Character}</li>
+     * <li>{@link Byte}</li>
+     * <li>{@link Enum}</li>
      * <li>PJsonObject</li>
      * <li>URL</li>
      * <li>Any enum</li>
@@ -202,7 +203,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      * </ul>
      * <p></p>
      * If there is a public
-     * <code>{@value org.mapfish.print.parser.MapfishParser#POST_CONSTRUCT_METHOD_NAME}()</code>
+     * <code>{@value MapfishParser#POST_CONSTRUCT_METHOD_NAME}()</code>
      * method then it will be called after the fields are all set.
      * <p></p>
      * In the case where the a parameter type is a normal POJO (not a special case like PJsonObject, URL,
@@ -219,7 +220,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
     public abstract Value createValue(Template template);
 
     /**
-     * Uses reflection on the object created by {@link #createValue(org.mapfish.print.config.Template)} to
+     * Uses reflection on the object created by {@link #createValue(Template)} to
      * create the options.
      * <p></p>
      * The public final fields are written as the field name as the key and the value as the value.
@@ -227,18 +228,18 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      * The public (non-final) mandatory fields are written as part of clientParams and are written with the
      * field name as the key and the field type as the value.
      * <p></p>
-     * The public (non-final) {@link org.mapfish.print.parser.HasDefaultValue} fields are written as part of
+     * The public (non-final) {@link HasDefaultValue} fields are written as part of
      * clientOptions and are written with the field name as the key and an object as a value with a type
      * property with the type and a default property containing the default value.
      *
      * @param json the json writer to write to
      * @param template the template that this attribute is part of
-     * @throws org.json.JSONException
+     * @throws JSONException
      */
     @Override
     public final void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
         try {
-            Set<Class> printed = Sets.newHashSet();
+            Set<Class> printed = new HashSet<>();
             final Value exampleValue = createValue(template);
             json.key(JSON_NAME).value(this.configName);
             json.key(JSON_ATTRIBUTE_TYPE).value(getValueType().getSimpleName());
@@ -250,9 +251,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
             json.endObject();
 
             Optional<JSONObject> clientOptions = getClientInfo();
-            if (clientOptions.isPresent()) {
-                json.key(JSON_CLIENT_INFO).value(clientOptions.get());
-            }
+            clientOptions.ifPresent(jsonObject -> json.key(JSON_CLIENT_INFO).value(jsonObject));
         } catch (Throwable e) {
             // Note: If this test fails and you just added a new attribute, make
             // sure to set defaults in AbstractMapfishSpringTest.configureAttributeForTesting
@@ -264,7 +263,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      * Return an object that will be added to the client config with the key <em>clientInfo</em>.
      */
     protected Optional<JSONObject> getClientInfo() throws JSONException {
-        return Optional.absent();
+        return Optional.empty();
     }
 
     private void printClientConfigForType(
@@ -275,7 +274,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
             final Set<Class> printed) throws JSONException, IllegalAccessException {
 
         final Collection<Field> mutableFields = ParserUtils.getAttributes(
-                valueType, ParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES);
+                valueType, ParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES::test);
         if (!mutableFields.isEmpty()) {
             for (Field attribute: mutableFields) {
                 encodeAttributeValue(true, json, exampleValue, getDefaultValue(defaultValue, attribute),
@@ -283,7 +282,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
             }
         }
         final Collection<Field> hasDefaultFields = ParserUtils.getAttributes(
-                valueType, ParserUtils.FILTER_HAS_DEFAULT_ATTRIBUTES);
+                valueType, ParserUtils.FILTER_HAS_DEFAULT_ATTRIBUTES::test);
         if (!hasDefaultFields.isEmpty()) {
             for (Field attribute: hasDefaultFields) {
                 encodeAttributeValue(false, json, exampleValue, getDefaultValue(defaultValue, attribute),
@@ -316,7 +315,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
             if (printed.contains(typeOrComponentType)) {
                 json.key(JSON_ATTRIBUTE_TYPE).value("recursiveDefinition");
             } else {
-                Set<Class> printedForSubTree = Sets.newHashSet(printed);
+                Set<Class> printedForSubTree = new HashSet<>(printed);
                 printedForSubTree.add(typeOrComponentType);
 
                 json.key(JSON_ATTRIBUTE_TYPE).value(stringRepresentation(type));

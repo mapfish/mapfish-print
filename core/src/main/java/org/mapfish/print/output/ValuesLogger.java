@@ -1,6 +1,5 @@
 package org.mapfish.print.output;
 
-import com.google.common.collect.Maps;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.mapfish.print.PrintException;
@@ -8,6 +7,7 @@ import org.mapfish.print.config.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -96,7 +96,7 @@ public final class ValuesLogger {
                                            + "only have a subset of the columns)\n");
 
                 this.indent += STANDARD_INDENT_SIZE;
-                Map<String, Object> columns = Maps.newHashMap();
+                Map<String, Object> columns = new HashMap<>();
 
                 // loop the source to get all columns of the table
                 for (Map<String, ?> row: source.getData()) {

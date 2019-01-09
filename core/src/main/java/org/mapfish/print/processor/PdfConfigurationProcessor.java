@@ -1,7 +1,5 @@
 package org.mapfish.print.processor;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.ConfigurationObject;
@@ -15,6 +13,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -81,7 +80,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
      * @param updates the attribute map
      */
     public void setUpdates(final Map<String, Object> updates) {
-        Map<String, Update> finalUpdatesMap = Maps.newHashMap();
+        Map<String, Update> finalUpdatesMap = new HashMap<>();
         for (Map.Entry<String, Object> entry: updates.entrySet()) {
             String property = entry.getKey();
             Update update;
@@ -172,7 +171,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
         }
         if (keywordsObj instanceof Iterable) {
             Iterable obj = (Iterable) keywordsObj;
-            final ArrayList<String> list = Lists.newArrayList();
+            final ArrayList<String> list = new ArrayList<>();
             for (Object keyword: obj) {
                 list.add(keyword.toString());
             }
@@ -180,7 +179,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
         }
         if (keywordsObj.getClass().isArray()) {
             Object[] arr = (Object[]) keywordsObj;
-            final ArrayList<String> list = Lists.newArrayList();
+            final ArrayList<String> list = new ArrayList<>();
             for (Object keyword: arr) {
                 list.add(keyword.toString());
 
@@ -189,9 +188,9 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
         }
         final String s = keywordsObj.toString();
         if (s.contains(",")) {
-            return Lists.newArrayList(Arrays.asList(s.split(",")));
+            return Arrays.asList(s.split(","));
         }
-        return Lists.newArrayList(s);
+        return Collections.singletonList(s);
     }
 
     private Object getAttributeValue(final String attributeName, final Values values) {

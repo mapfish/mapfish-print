@@ -1,7 +1,5 @@
 package org.mapfish.print;
 
-import com.google.common.base.Optional;
-import com.google.common.io.Files;
 import org.geotools.referencing.CRS;
 import org.junit.runner.RunWith;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
@@ -11,14 +9,19 @@ import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,6 +62,9 @@ public abstract class AbstractMapfishSpringTest {
         return new File(resource.getFile());
     }
 
+    public static byte[] getFileBytes(Class<?> testClass, String fileName) throws IOException {
+        return Files.readAllBytes(getFile(testClass, fileName).toPath());
+    }
     /**
      * Parse the json string.
      *
@@ -71,14 +77,14 @@ public abstract class AbstractMapfishSpringTest {
     public static PJsonObject parseJSONObjectFromFile(Class<?> testClass, String fileName)
             throws IOException {
         final File file = getFile(testClass, fileName);
-        final Charset charset = Charset.forName(Constants.DEFAULT_ENCODING);
-        String jsonString = Files.asCharSource(file, charset).read();
+        String jsonString = new String(Files.readAllBytes(file.toPath()), Constants.DEFAULT_CHARSET);
         Matcher matcher = IMPORT_PATTERN.matcher(jsonString);
         while (matcher.find()) {
             final String importFileName = matcher.group(1);
             File importFile = new File(file.getParentFile(), importFileName);
             final String tagToReplace = matcher.group();
-            final String importJson = Files.asCharSource(importFile, charset).read();
+            final String importJson = new String(Files.readAllBytes(importFile.toPath()),
+                                                 Constants.DEFAULT_CHARSET);
             jsonString = jsonString.replace(tagToReplace, importJson);
             matcher = IMPORT_PATTERN.matcher(jsonString);
         }
@@ -104,6 +110,36 @@ public abstract class AbstractMapfishSpringTest {
         }
     }
 
+    protected TestHttpClientFactory.Handler createFileHandler(String filename) {
+        return new TestHttpClientFactory.Handler() {
+            @Override
+            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                    throws Exception {
+                try {
+                    byte[] bytes = getFileBytes(filename);
+                    return ok(uri, bytes, httpMethod);
+                } catch (AssertionError e) {
+                    return error404(uri, httpMethod);
+                }
+            }
+        };
+    }
+
+    protected TestHttpClientFactory.Handler createFileHandler(Function<URI, String> filename) {
+        return new TestHttpClientFactory.Handler() {
+            @Override
+            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+                    throws Exception {
+                try {
+                    byte[] bytes = getFileBytes(filename.apply(uri));
+                    return ok(uri, bytes, httpMethod);
+                } catch (AssertionError e) {
+                    return error404(uri, httpMethod);
+                }
+            }
+        };
+    }
+
     /**
      * Get a file from the classpath relative to this test class.
      *
@@ -111,6 +147,14 @@ public abstract class AbstractMapfishSpringTest {
      */
     protected File getFile(String fileName) {
         return getFile(getClass(), fileName);
+    }
+
+    protected byte[] getFileBytes(String fileName) throws IOException {
+        return Files.readAllBytes(getFile(fileName).toPath());
+    }
+
+    protected String getFileContent(String fileName) throws IOException {
+        return new String(getFileBytes(fileName), Constants.DEFAULT_CHARSET);
     }
 
     protected File getTaskDirectory() {
@@ -144,7 +188,9 @@ public abstract class AbstractMapfishSpringTest {
 //        ImageIO.write(actualImage, "png", new File(TMP, baseDir + "/" + defaultName));
 
 
-        return findImage(baseDir, platformVersionName).or(findImage(baseDir, platformName)).or(defaultName);
+        return OptionalUtils
+                .or(() -> findImage(baseDir, platformVersionName), () -> findImage(baseDir, platformName))
+                .orElse(defaultName);
     }
 
     private Optional<String> findImage(final String baseDir, final String fileName) {
@@ -152,7 +198,7 @@ public abstract class AbstractMapfishSpringTest {
             getFile(baseDir + fileName);
             return Optional.of(fileName);
         } catch (AssertionError e) {
-            return Optional.absent();
+            return Optional.empty();
         }
     }
 

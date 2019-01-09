@@ -1,7 +1,5 @@
 package org.mapfish.print.map.style.json;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
@@ -11,6 +9,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import org.apache.commons.lang.StringUtils;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.PolygonSymbolizer;
@@ -27,6 +26,7 @@ import org.opengis.filter.expression.Function;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -72,7 +72,7 @@ public final class MapfishJsonStyleVersion1 {
      * Creates SLD rules for each old style.
      */
     private List<Rule> getStyleRules(final String styleProperty) {
-        final List<Rule> styleRules = Lists.newArrayListWithExpectedSize(this.json.size());
+        final List<Rule> styleRules = new ArrayList<>(this.json.size());
 
         for (Iterator<String> iterator = this.json.keys(); iterator.hasNext(); ) {
             String styleKey = iterator.next();
@@ -92,7 +92,6 @@ public final class MapfishJsonStyleVersion1 {
         return styleRules;
     }
 
-    @SuppressWarnings("unchecked")
     private List<Rule> createStyleRule(
             final String styleKey,
             final PJsonObject styleJson,
@@ -113,7 +112,7 @@ public final class MapfishJsonStyleVersion1 {
             textRule.setName(styleKey + "_Text");
         }
 
-        return Lists.newArrayList(
+        return Arrays.asList(
                 createGeometryFilteredRule(pointSymbolizer, styleKey, styleProperty, Point.class,
                                            MultiPoint.class,
                                            GeometryCollection.class),
@@ -138,7 +137,7 @@ public final class MapfishJsonStyleVersion1 {
             Expression geomProperty = this.sldStyleBuilder.attributeExpression(this.geometryProperty);
             final Function geometryTypeFunction =
                     this.sldStyleBuilder.getFilterFactory().function("geometryType", geomProperty);
-            final ArrayList<Filter> geomOptions = Lists.newArrayListWithExpectedSize(geomClass.length);
+            final ArrayList<Filter> geomOptions = new ArrayList<>(geomClass.length);
             for (Class<? extends Geometry> requiredType: geomClass) {
                 Expression expr = this.sldStyleBuilder.literalExpression(requiredType.getSimpleName());
                 geomOptions.add(this.sldStyleBuilder.getFilterFactory().equals(geometryTypeFunction, expr));
@@ -160,7 +159,7 @@ public final class MapfishJsonStyleVersion1 {
 
     @Nullable
     private Filter createFilter(final String styleKey, final String styleProperty) {
-        if (Strings.isNullOrEmpty(styleProperty) || Strings.isNullOrEmpty(styleKey)) {
+        if (StringUtils.isEmpty(styleProperty) || StringUtils.isEmpty(styleKey)) {
             return null;
         }
 

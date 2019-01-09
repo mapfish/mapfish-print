@@ -4,6 +4,7 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.styling.Style;
+import org.mapfish.print.OptionalUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
@@ -104,22 +105,16 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
                         throw new IllegalArgumentException("Feature source cannot be null");
                     }
 
-                    String geomType = featureSource.getSchema().getGeometryDescriptor().getType().getBinding()
+                    final String geomType =
+                            featureSource.getSchema().getGeometryDescriptor().getType().getBinding()
                             .getSimpleName();
-                    String styleRef = styleString;
-
-                    if (styleRef == null) {
-                        if (defaultStyleName != null) {
-                            styleRef = defaultStyleName;
-                        } else {
-                            styleRef = geomType;
-                        }
-                    }
-                    return template.getStyle(styleRef)
-                            .or(Plugin.this.parser.loadStyle(
-                                    template.getConfiguration(),
-                                    requestFactory, styleRef))
-                            .or(template.getConfiguration().getDefaultStyle(styleRef));
+                    final String styleRef = styleString != null ? styleString : (defaultStyleName != null ?
+                            defaultStyleName : geomType);
+                    return OptionalUtils.or(
+                            () -> template.getStyle(styleRef),
+                            () -> Plugin.this.parser.loadStyle(template.getConfiguration(), requestFactory,
+                                                               styleRef))
+                            .orElseGet(() -> template.getConfiguration().getDefaultStyle(styleRef));
                 }
             };
         }

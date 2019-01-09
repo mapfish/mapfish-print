@@ -1,6 +1,5 @@
 package org.mapfish.print.http;
 
-import com.google.common.collect.Lists;
 import com.vividsolutions.jts.util.Assert;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.Processor;
@@ -21,6 +20,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nonnull;
 
 /**
@@ -34,7 +34,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
     private final Configuration config;
     private final String jobId;
     private final MfClientHttpRequestFactoryImpl httpRequestFactory;
-    private final List<RequestConfigurator> callbacks = Lists.newCopyOnWriteArrayList();
+    private final List<RequestConfigurator> callbacks = new CopyOnWriteArrayList<>();
 
     /**
      * Constructor.

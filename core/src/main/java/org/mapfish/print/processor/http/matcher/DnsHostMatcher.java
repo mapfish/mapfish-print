@@ -1,7 +1,5 @@
 package org.mapfish.print.processor.http.matcher;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 
@@ -9,7 +7,9 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Allows to check that a given URL matches a DNS address (textual format). The actual comparison is performed
@@ -46,7 +46,7 @@ import java.util.List;
  * [[examples=http_processors]]
  */
 public class DnsHostMatcher extends HostMatcher {
-    private List<AddressHostMatcher> matchersForHost = Lists.newArrayList();
+    private List<AddressHostMatcher> matchersForHost = new ArrayList<>();
     private String host;
 
     /**
@@ -60,7 +60,7 @@ public class DnsHostMatcher extends HostMatcher {
             UnknownHostException, MalformedURLException {
         for (AddressHostMatcher addressHostMatcher: this.matchersForHost) {
             if (addressHostMatcher.matches(matchInfo)) {
-                return Optional.absent();
+                return Optional.empty();
             }
         }
 

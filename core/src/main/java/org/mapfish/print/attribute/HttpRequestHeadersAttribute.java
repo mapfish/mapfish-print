@@ -1,12 +1,12 @@
 package org.mapfish.print.attribute;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -55,12 +55,12 @@ public final class HttpRequestHeadersAttribute
          * Get all the headers in map form.
          */
         public Map<String, List<String>> getHeaders() {
-            Map<String, List<String>> headerMap = Maps.newHashMap();
+            Map<String, List<String>> headerMap = new HashMap<>();
 
             final Iterator<String> keys = this.requestHeaders.keys();
 
             while (keys.hasNext()) {
-                List<String> valuesAsList = Lists.newArrayList();
+                List<String> valuesAsList = new ArrayList<>();
 
                 String headerName = keys.next();
                 final PArray values = this.requestHeaders.optArray(headerName);

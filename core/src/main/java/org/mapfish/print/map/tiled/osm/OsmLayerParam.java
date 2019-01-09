@@ -1,11 +1,10 @@
 package org.mapfish.print.map.tiled.osm;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Ordering;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
+import org.apache.commons.lang.StringUtils;
 import org.mapfish.print.map.tiled.AbstractTiledLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.wrapper.PArray;
@@ -15,6 +14,7 @@ import java.awt.Dimension;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -166,7 +166,7 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
                               Arrays.toString(this.tileSize));
         Assert.isTrue(this.resolutions.length > 0, "resolutions must have at least one value");
 
-        Arrays.sort(this.resolutions, Ordering.<Double>natural().reverse());
+        Arrays.sort(this.resolutions, Collections.reverseOrder());
         Assert.isTrue(validateBaseUrl(), "invalid baseURL");
     }
 
@@ -199,7 +199,7 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
     @Override
     public boolean validateBaseUrl() {
         String url = getBaseUrl();
-        if (Strings.isNullOrEmpty(url)) {
+        if (StringUtils.isEmpty(url)) {
             return false;
         }
 

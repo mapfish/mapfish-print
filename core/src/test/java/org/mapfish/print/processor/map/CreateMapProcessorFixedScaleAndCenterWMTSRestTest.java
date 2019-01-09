@@ -1,7 +1,5 @@
 package org.mapfish.print.processor.map;
 
-import com.google.common.base.Predicate;
-import com.google.common.io.Files;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -53,13 +51,11 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractM
     @DirtiesContext
     public void testExecute() throws Exception {
         requestFactory.registerHandler(
-                new Predicate<URI>() {
-                    @Override
-                    public boolean apply(URI input) {
-                        final String host = "center_wmts_fixedscale_rest.com";
-                        return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
-                    }
-                }, new TestHttpClientFactory.Handler() {
+                input -> {
+                    final String host = "center_wmts_fixedscale_rest.com";
+                    return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
+                },
+                new TestHttpClientFactory.Handler() {
                     @Override
                     public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
                             throws Exception {
@@ -71,8 +67,7 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractM
                         String column = matcher.group(1);
                         String row = matcher.group(2);
                         try {
-                            byte[] bytes = Files.toByteArray(
-                                    getFile("/map-data/ny-tiles/" + column + "x" + row + ".png"));
+                            byte[] bytes = getFileBytes("/map-data/ny-tiles/" + column + "x" + row + ".png");
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
                             return error404(uri, httpMethod);
@@ -81,24 +76,11 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractM
                 }
         );
         requestFactory.registerHandler(
-                new Predicate<URI>() {
-                    @Override
-                    public boolean apply(URI input) {
-                        final String host = "center_wmts_fixedscale_rest.json";
-                        return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
-                    }
-                }, new TestHttpClientFactory.Handler() {
-                    @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
-                            throws Exception {
-                        try {
-                            byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
-                            return ok(uri, bytes, httpMethod);
-                        } catch (AssertionError e) {
-                            return error404(uri, httpMethod);
-                        }
-                    }
-                }
+                input -> {
+                    final String host = "center_wmts_fixedscale_rest.json";
+                    return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
+                },
+                createFileHandler(uri -> "/map-data" + uri.getPath())
         );
 
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));

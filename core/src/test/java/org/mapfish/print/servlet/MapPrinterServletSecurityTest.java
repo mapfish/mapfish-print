@@ -1,6 +1,5 @@
 package org.mapfish.print.servlet;
 
-import com.google.common.collect.Maps;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Test;
@@ -162,7 +161,7 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
     }
 
     private void setUpConfigFiles() throws URISyntaxException {
-        final HashMap<String, String> configFiles = Maps.newHashMap();
+        final HashMap<String, String> configFiles = new HashMap<>();
         configFiles.put("default",
                         getFile(MapPrinterServletSecurityTest.class, "config-security.yaml")
                                 .getAbsolutePath());

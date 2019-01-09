@@ -1,10 +1,7 @@
 package org.mapfish.print.map.style.json;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
+import org.apache.commons.lang.StringUtils;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.styling.AnchorPoint;
@@ -29,12 +26,14 @@ import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.SetsUtils;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.url.data.Handler;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
@@ -52,6 +51,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
@@ -115,17 +115,17 @@ public final class JsonStyleParserHelper {
     static final String STROKE_DASHSTYLE_DASHDOT = "dashdot";
     static final String STROKE_DASHSTYLE_LONGDASH = "longdash";
     static final String STROKE_DASHSTYLE_LONGDASHDOT = "longdashdot";
-    static final Set<Set<String>> COMPATIBLE_MIMETYPES = Sets.newIdentityHashSet();
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(JsonStyleParserHelper.class);
+    static final List<Set<String>> COMPATIBLE_MIMETYPES = new ArrayList<>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonStyleParserHelper.class);
     private static final String[] SUPPORTED_MIME_TYPES = ImageIO.getReaderMIMETypes();
     private static final String DEFAULT_POINT_MARK = "circle";
     private static final Pattern VALUE_UNIT_PATTERN = Pattern.compile("^([0-9.]+)([a-z]*)");
     private static final Pattern DATA_FORMAT_PATTERN = Pattern.compile("^data:([^;,]+)[;,]");
 
     static {
-        COMPATIBLE_MIMETYPES.add(Sets.newHashSet("image/jpeg", "image/jpg"));
-        COMPATIBLE_MIMETYPES.add(Sets.newHashSet("image/jpeg1000", "image/jpg2000"));
-        COMPATIBLE_MIMETYPES.add(Sets.newHashSet("image/tiff", "image/tif"));
+        COMPATIBLE_MIMETYPES.add(SetsUtils.create("image/jpeg", "image/jpg"));
+        COMPATIBLE_MIMETYPES.add(SetsUtils.create("image/jpeg1000", "image/jpg2000"));
+        COMPATIBLE_MIMETYPES.add(SetsUtils.create("image/tiff", "image/tif"));
     }
 
     private final Configuration configuration;
@@ -221,11 +221,7 @@ public final class JsonStyleParserHelper {
 
         if (styleJson.has(JSON_GRAPHIC_NAME)) {
             Expression graphicName =
-                    parseProperty(styleJson.getString(JSON_GRAPHIC_NAME), new Function<String, Object>() {
-                        public Object apply(final String input) {
-                            return input;
-                        }
-                    });
+                    parseProperty(styleJson.getString(JSON_GRAPHIC_NAME), input -> input);
             Fill fill = createFill(styleJson);
             Stroke stroke = createStroke(styleJson, false);
 
@@ -242,67 +238,32 @@ public final class JsonStyleParserHelper {
         }
 
         graphic.setOpacity(
-                parseExpression(null, styleJson, JSON_GRAPHIC_OPACITY, new Function<String, Object>() {
-                    @Nullable
-                    @Override
-                    public Object apply(final String opacityString) {
-                        return Double.parseDouble(opacityString);
-                    }
-                }));
+                parseExpression(null, styleJson, JSON_GRAPHIC_OPACITY, Double::parseDouble));
 
-        if (!Strings.isNullOrEmpty(styleJson.optString(JSON_POINT_RADIUS))) {
+        if (!StringUtils.isEmpty(styleJson.optString(JSON_POINT_RADIUS))) {
             Expression size =
-                    parseExpression(null, styleJson, JSON_POINT_RADIUS, new Function<String, Object>() {
-                        @Nullable
-                        @Override
-                        public Object apply(final String input) {
-                            return Double.parseDouble(input) * 2;
-                        }
-                    });
+                    parseExpression(null, styleJson, JSON_POINT_RADIUS,
+                                    (final String input) -> Double.parseDouble(input) * 2);
             graphic.setSize(size);
-        } else if (!Strings.isNullOrEmpty(styleJson.optString(JSON_GRAPHIC_WIDTH))) {
+        } else if (!StringUtils.isEmpty(styleJson.optString(JSON_GRAPHIC_WIDTH))) {
             Expression size =
-                    parseExpression(null, styleJson, JSON_GRAPHIC_WIDTH, new Function<String, Object>() {
-                        @Nullable
-                        @Override
-                        public Object apply(final String input) {
-                            return Double.parseDouble(input);
-                        }
-                    });
+                    parseExpression(null, styleJson, JSON_GRAPHIC_WIDTH, Double::parseDouble);
             graphic.setSize(size);
         }
 
-        if (!Strings.isNullOrEmpty(styleJson.optString(JSON_GRAPHIC_Y_OFFSET)) &&
-                !Strings.isNullOrEmpty(styleJson.optString(JSON_GRAPHIC_X_OFFSET))) {
+        if (!StringUtils.isEmpty(styleJson.optString(JSON_GRAPHIC_Y_OFFSET)) &&
+                !StringUtils.isEmpty(styleJson.optString(JSON_GRAPHIC_X_OFFSET))) {
             Expression dy =
-                    parseExpression(null, styleJson, JSON_GRAPHIC_Y_OFFSET, new Function<String, Object>() {
-                        @Nullable
-                        @Override
-                        public Object apply(final String input) {
-                            return Double.parseDouble(input);
-                        }
-                    });
+                    parseExpression(null, styleJson, JSON_GRAPHIC_Y_OFFSET, Double::parseDouble);
             Expression dx =
-                    parseExpression(null, styleJson, JSON_GRAPHIC_X_OFFSET, new Function<String, Object>() {
-                        @Nullable
-                        @Override
-                        public Object apply(final String input) {
-                            return Double.parseDouble(input);
-                        }
-                    });
+                    parseExpression(null, styleJson, JSON_GRAPHIC_X_OFFSET, Double::parseDouble);
             Displacement offset = this.styleBuilder.createDisplacement(dx, dy);
             graphic.setDisplacement(offset);
         }
 
-        if (!Strings.isNullOrEmpty(styleJson.optString(JSON_ROTATION))) {
+        if (!StringUtils.isEmpty(styleJson.optString(JSON_ROTATION))) {
             final Expression rotation =
-                    parseExpression(null, styleJson, JSON_ROTATION, new Function<String, Object>() {
-                        @Nullable
-                        @Override
-                        public Object apply(final String rotation) {
-                            return Double.parseDouble(rotation);
-                        }
-                    });
+                    parseExpression(null, styleJson, JSON_ROTATION, Double::parseDouble);
             graphic.setRotation(rotation);
         }
 
@@ -381,13 +342,9 @@ public final class JsonStyleParserHelper {
 
         if (styleJson.has(JSON_LABEL)) {
             final Expression label =
-                    parseExpression(null, styleJson, JSON_LABEL, new Function<String, Object>() {
-                        @Nullable
-                        @Override
-                        public Object apply(final String labelValue) {
-                            return labelValue.replace("${", "").replace("}", "");
-                        }
-                    });
+                    parseExpression(null, styleJson, JSON_LABEL,
+                                    (final String labelValue) -> labelValue.replace("${", "")
+                                            .replace("}", ""));
 
             textSymbolizer.setLabel(label);
         } else {
@@ -406,16 +363,16 @@ public final class JsonStyleParserHelper {
             textSymbolizer.setLabelPlacement(createLabelPlacement(styleJson));
         }
 
-        if (!Strings.isNullOrEmpty(styleJson.optString(JSON_HALO_RADIUS)) ||
-                !Strings.isNullOrEmpty(styleJson.optString(JSON_HALO_COLOR)) ||
-                !Strings.isNullOrEmpty(styleJson.optString(JSON_HALO_OPACITY)) ||
-                !Strings.isNullOrEmpty(styleJson.optString(JSON_LABEL_OUTLINE_WIDTH)) ||
-                !Strings.isNullOrEmpty(styleJson.optString(JSON_LABEL_OUTLINE_COLOR))) {
+        if (!StringUtils.isEmpty(styleJson.optString(JSON_HALO_RADIUS)) ||
+                !StringUtils.isEmpty(styleJson.optString(JSON_HALO_COLOR)) ||
+                !StringUtils.isEmpty(styleJson.optString(JSON_HALO_OPACITY)) ||
+                !StringUtils.isEmpty(styleJson.optString(JSON_LABEL_OUTLINE_WIDTH)) ||
+                !StringUtils.isEmpty(styleJson.optString(JSON_LABEL_OUTLINE_COLOR))) {
             textSymbolizer.setHalo(createHalo(styleJson));
         }
 
-        if (!Strings.isNullOrEmpty(styleJson.optString(JSON_FONT_COLOR)) ||
-                !Strings.isNullOrEmpty(styleJson.optString(JSON_FONT_OPACITY))) {
+        if (!StringUtils.isEmpty(styleJson.optString(JSON_FONT_COLOR)) ||
+                !StringUtils.isEmpty(styleJson.optString(JSON_FONT_OPACITY))) {
             textSymbolizer.setFill(addFill(
                     styleJson.optString(JSON_FONT_COLOR, "black"),
                     styleJson.optString(JSON_FONT_OPACITY, "1.0")));
@@ -436,7 +393,7 @@ public final class JsonStyleParserHelper {
     private void addVendorOptions(
             final String key, final PJsonObject styleJson, final Symbolizer symbolizer) {
         final String value = styleJson.optString(key);
-        if (!Strings.isNullOrEmpty(value)) {
+        if (!StringUtils.isEmpty(value)) {
             symbolizer.getOptions().put(key, value);
         }
     }
@@ -458,37 +415,26 @@ public final class JsonStyleParserHelper {
     private Font createFont(final Font defaultFont, final PJsonObject styleJson) {
 
         Expression fontFamily =
-                parseExpression(null, styleJson, JSON_FONT_FAMILY, new Function<String, String>() {
-                    @Override
-                    public String apply(final String fontFamily) {
-                        return fontFamily;
-                    }
-                });
+                parseExpression(null, styleJson, JSON_FONT_FAMILY, fontFamily1 -> fontFamily1);
         if (fontFamily == null) {
             fontFamily = defaultFont.getFamily().get(0);
         }
         List<Expression> fontFamilies = getFontExpressions(fontFamily);
 
         Expression fontSize =
-                parseExpression(null, styleJson, JSON_FONT_SIZE, new Function<String, Object>() {
-                    @Nullable
-                    @Override
-                    public Object apply(final String input) {
-                        return getPxSize(input);
-                    }
-                });
+                parseExpression(null, styleJson, JSON_FONT_SIZE, this::getPxSize);
         if (fontSize == null) {
             fontSize = defaultFont.getSize();
         }
 
         Expression fontWeight = parseExpression(null, styleJson, JSON_FONT_WEIGHT,
-                                                Functions.identity());
+                                                Function.identity());
         if (fontWeight == null) {
             fontWeight = defaultFont.getWeight();
         }
 
         Expression fontStyle = parseExpression(null, styleJson, JSON_FONT_STYLE,
-                                               Functions.identity());
+                                               Function.identity());
         if (fontStyle == null) {
             fontStyle = defaultFont.getStyle();
         }
@@ -533,7 +479,7 @@ public final class JsonStyleParserHelper {
                 styleJson.has(JSON_LABEL_X_OFFSET) ||
                 styleJson.has(JSON_LABEL_Y_OFFSET) ||
                 styleJson.has(JSON_LABEL_ROTATION))
-                && Strings.isNullOrEmpty(styleJson.optString(JSON_LABEL_PERPENDICULAR_OFFSET))) {
+                && StringUtils.isEmpty(styleJson.optString(JSON_LABEL_PERPENDICULAR_OFFSET))) {
             return createPointPlacement(styleJson);
         }
 
@@ -541,15 +487,8 @@ public final class JsonStyleParserHelper {
     }
 
     private LinePlacement createLinePlacement(final PJsonObject styleJson) {
-        Expression linePlacement = parseExpression(null, styleJson,
-                                                   JSON_LABEL_PERPENDICULAR_OFFSET,
-                                                   new Function<String, Object>() {
-                                                       @Nullable
-                                                       @Override
-                                                       public Object apply(final String input) {
-                                                           return Double.parseDouble(input);
-                                                       }
-                                                   });
+        Expression linePlacement = parseExpression(null, styleJson, JSON_LABEL_PERPENDICULAR_OFFSET,
+                                                   Double::parseDouble);
 
         if (linePlacement != null) {
             return this.styleBuilder.createLinePlacement(linePlacement);
@@ -565,33 +504,15 @@ public final class JsonStyleParserHelper {
         if (styleJson.has(JSON_LABEL_X_OFFSET) || styleJson.has(JSON_LABEL_Y_OFFSET)) {
 
             Expression xOffset =
-                    parseExpression(0.0, styleJson, JSON_LABEL_X_OFFSET, new Function<String, Double>() {
-                        @Nullable
-                        @Override
-                        public Double apply(final String input) {
-                            return Double.parseDouble(input);
-                        }
-                    });
+                    parseExpression(0.0, styleJson, JSON_LABEL_X_OFFSET, Double::parseDouble);
             Expression yOffset =
-                    parseExpression(0.0, styleJson, JSON_LABEL_Y_OFFSET, new Function<String, Double>() {
-                        @Nullable
-                        @Override
-                        public Double apply(final String input) {
-                            return Double.parseDouble(input);
-                        }
-                    });
+                    parseExpression(0.0, styleJson, JSON_LABEL_Y_OFFSET, Double::parseDouble);
 
             displacement = this.styleBuilder.createDisplacement(xOffset, yOffset);
         }
 
         Expression rotation =
-                parseExpression(0.0, styleJson, JSON_LABEL_ROTATION, new Function<String, Double>() {
-                    @Nullable
-                    @Override
-                    public Double apply(final String input) {
-                        return Double.parseDouble(input);
-                    }
-                });
+                parseExpression(0.0, styleJson, JSON_LABEL_ROTATION, Double::parseDouble);
 
         if (anchorPoint == null) {
             anchorPoint = this.styleBuilder.createAnchorPoint(0, 0);
@@ -606,21 +527,9 @@ public final class JsonStyleParserHelper {
 
     private AnchorPoint createAnchorPoint(final PJsonObject styleJson) {
         Expression anchorX =
-                parseExpression(null, styleJson, JSON_LABEL_ANCHOR_POINT_X, new Function<String, Double>() {
-                    @Nullable
-                    @Override
-                    public Double apply(final String input) {
-                        return Double.parseDouble(input);
-                    }
-                });
+                parseExpression(null, styleJson, JSON_LABEL_ANCHOR_POINT_X, Double::parseDouble);
         Expression anchorY =
-                parseExpression(null, styleJson, JSON_LABEL_ANCHOR_POINT_Y, new Function<String, Double>() {
-                    @Nullable
-                    @Override
-                    public Double apply(final String input) {
-                        return Double.parseDouble(input);
-                    }
-                });
+                parseExpression(null, styleJson, JSON_LABEL_ANCHOR_POINT_Y, Double::parseDouble);
 
         if (anchorX == null && anchorY == null && styleJson.has(JSON_LABEL_ALIGN)) {
             String labelAlign = styleJson.getString(JSON_LABEL_ALIGN);
@@ -665,13 +574,7 @@ public final class JsonStyleParserHelper {
     private Halo createHalo(final PJsonObject styleJson) {
         if (styleJson.has(JSON_HALO_RADIUS)) {
             Expression radius =
-                    parseExpression(1.0, styleJson, JSON_HALO_RADIUS, new Function<String, Double>() {
-                        @Nullable
-                        @Override
-                        public Double apply(final String input) {
-                            return Double.parseDouble(input);
-                        }
-                    });
+                    parseExpression(1.0, styleJson, JSON_HALO_RADIUS, Double::parseDouble);
 
             final Fill fill;
             if (styleJson.has(JSON_HALO_COLOR) || styleJson.has(JSON_HALO_OPACITY)) {
@@ -685,13 +588,7 @@ public final class JsonStyleParserHelper {
         // labelOutlineColor and labelOutlineWidth are aliases for halo that is used by some V2 Clients
         if (styleJson.has(JSON_LABEL_OUTLINE_COLOR) || styleJson.has(JSON_LABEL_OUTLINE_WIDTH)) {
             Expression radius =
-                    parseExpression(1.0, styleJson, JSON_LABEL_OUTLINE_WIDTH, new Function<String, Double>() {
-                        @Nullable
-                        @Override
-                        public Double apply(final String input) {
-                            return Double.parseDouble(input);
-                        }
-                    });
+                    parseExpression(1.0, styleJson, JSON_LABEL_OUTLINE_WIDTH, Double::parseDouble);
             Fill fill = addFill(styleJson.optString(JSON_LABEL_OUTLINE_COLOR, "white"), "1.0");
             return this.styleBuilder.createHalo(fill, radius);
         }
@@ -708,20 +605,8 @@ public final class JsonStyleParserHelper {
     }
 
     private Fill addFill(final String fillColor, final String fillOpacity) {
-        final Expression finalFillColor = parseProperty(fillColor, new Function<String, Object>() {
-            @Nullable
-            @Override
-            public Object apply(final String fillColor) {
-                return toColorExpression(fillColor);
-            }
-        });
-        final Expression opacity = parseProperty(fillOpacity, new Function<String, Object>() {
-            @Nullable
-            @Override
-            public Object apply(final String fillOpacity) {
-                return Double.parseDouble(fillOpacity);
-            }
-        });
+        final Expression finalFillColor = parseProperty(fillColor, this::toColorExpression);
+        final Expression opacity = parseProperty(fillOpacity, Double::parseDouble);
         return this.styleBuilder.createFill(finalFillColor, opacity);
     }
 
@@ -738,29 +623,16 @@ public final class JsonStyleParserHelper {
             return null;
         }
         Expression strokeColor =
-                parseExpression(Color.black, styleJson, JSON_STROKE_COLOR, new Function<String, Object>() {
-                    @Nullable
-                    @Override
-                    public Object apply(final String input) {
-                        return toColorExpression(input);
-                    }
-                });
+                parseExpression(Color.black, styleJson, JSON_STROKE_COLOR,
+                                this::toColorExpression);
         Expression strokeOpacity =
-                parseExpression(1.0, styleJson, JSON_STROKE_OPACITY, new Function<String, Object>() {
-                    @Nullable
-                    @Override
-                    public Object apply(final String input) {
-                        return Double.parseDouble(styleJson.getString(JSON_STROKE_OPACITY));
-                    }
-                });
+                parseExpression(1.0, styleJson, JSON_STROKE_OPACITY,
+                                (final String input) -> Double
+                                        .parseDouble(styleJson.getString(JSON_STROKE_OPACITY)));
         Expression widthExpression =
-                parseExpression(1, styleJson, JSON_STROKE_WIDTH, new Function<String, Object>() {
-                    @Nullable
-                    @Override
-                    public Object apply(final String input) {
-                        return Double.parseDouble(styleJson.getString(JSON_STROKE_WIDTH));
-                    }
-                });
+                parseExpression(1, styleJson, JSON_STROKE_WIDTH,
+                                (final String input) -> Double
+                                        .parseDouble(styleJson.getString(JSON_STROKE_WIDTH)));
 
         List<Expression> dashArray = new ArrayList<>();
         if (styleJson.has(JSON_STROKE_DASHSTYLE) && !STROKE_DASHSTYLE_SOLID.equals(
@@ -817,7 +689,7 @@ public final class JsonStyleParserHelper {
         }
 
         Expression lineCap = parseExpression(null, styleJson, JSON_STROKE_LINECAP,
-                                             Functions.identity());
+                                             Function.identity());
 
         final Stroke stroke = this.styleBuilder.createStroke(strokeColor, widthExpression);
         stroke.setLineCap(lineCap);
@@ -831,7 +703,7 @@ public final class JsonStyleParserHelper {
     @VisibleForTesting
     String getGraphicFormat(final String externalGraphicFile, final PJsonObject styleJson) {
         String mimeType = null;
-        if (!Strings.isNullOrEmpty(styleJson.optString(JSON_GRAPHIC_FORMAT))) {
+        if (!StringUtils.isEmpty(styleJson.optString(JSON_GRAPHIC_FORMAT))) {
             mimeType = styleJson.getString(JSON_GRAPHIC_FORMAT);
         } else {
             Matcher matcher = DATA_FORMAT_PATTERN.matcher(externalGraphicFile);
@@ -915,7 +787,8 @@ public final class JsonStyleParserHelper {
         return this.styleBuilder.literalExpression(staticParser.apply(propertyValue));
     }
 
-    private <T> Expression parseProperty(final String property, final Function<String, T> literalSupplier) {
+    private <T> Expression parseProperty(
+            final String property, final Function<String, T> literalSupplier) {
         if (isExpression(property)) {
             return toExpressionFromCQl(property);
         } else {

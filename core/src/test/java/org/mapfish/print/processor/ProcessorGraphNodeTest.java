@@ -1,12 +1,11 @@
 package org.mapfish.print.processor;
 
-import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.HasDefaultValue;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -20,7 +19,7 @@ public class ProcessorGraphNodeTest {
     final String bMappingName = "bool";
     Integer intVal = 1;
     String sVal = "sValue";
-    ArrayList<String> lsVal = Lists.newArrayList("one", "two");
+    List<String> lsVal = Arrays.asList("one", "two");
     double[] daVal = new double[]{1.2, 2.3};
 
     @Test

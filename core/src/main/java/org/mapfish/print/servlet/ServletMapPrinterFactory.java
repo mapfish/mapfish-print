@@ -1,6 +1,5 @@
 package org.mapfish.print.servlet;
 
-import com.google.common.base.Optional;
 import com.vividsolutions.jts.util.Assert;
 import org.apache.commons.io.DirectoryWalker;
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

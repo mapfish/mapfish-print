@@ -1,7 +1,5 @@
 package org.mapfish.print.processor.jasper;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -76,14 +74,14 @@ public final class DataSourceProcessor
         extends AbstractProcessor<DataSourceProcessor.Input, DataSourceProcessor.Output>
         implements RequireAttributes, CustomDependencies {
 
-    private Map<String, Attribute> internalAttributes = Maps.newHashMap();
-    private Map<String, Attribute> allAttributes = Maps.newHashMap();
+    private Map<String, Attribute> internalAttributes = new HashMap<>();
+    private Map<String, Attribute> allAttributes = new HashMap<>();
 
     @Autowired
     private ProcessorDependencyGraphFactory processorGraphFactory;
     private ProcessorDependencyGraph processorGraph;
     private List<Processor> processors;
-    private List<String> copyAttributes = Lists.newArrayList();
+    private List<String> copyAttributes = new ArrayList<>();
     @Autowired
     private JasperReportBuilder jasperReportBuilder;
 
@@ -215,7 +213,7 @@ public final class DataSourceProcessor
 
     private JRDataSource processInput(@Nonnull final Input input)
             throws JSONException, JRException {
-        List<Values> dataSourceValues = Lists.newArrayList();
+        List<Values> dataSourceValues = new ArrayList<>();
         for (Map<String, Object> o: input.datasource.attributesValues) {
             // copy only the required values
             Values rowValues = new Values(input.values);
@@ -229,7 +227,7 @@ public final class DataSourceProcessor
             dataSourceValues.add(rowValues);
         }
 
-        List<ForkJoinTask<Values>> futures = Lists.newArrayList();
+        List<ForkJoinTask<Values>> futures = new ArrayList<>();
         if (!dataSourceValues.isEmpty()) {
             for (Values dataSourceValue: dataSourceValues) {
                 addAttributes(input.template, dataSourceValue);

@@ -1,7 +1,5 @@
 package org.mapfish.print.map.image;
 
-import com.google.common.collect.Maps;
-import com.google.common.io.Closer;
 import com.vividsolutions.jts.util.Assert;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -37,6 +35,7 @@ import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -99,9 +98,8 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         final Graphics2D graphics = bufferedImage.createGraphics();
         final MapBounds bounds = transformer.getBounds();
         final MapContent content = new MapContent();
-        try (Closer closer = Closer.create()) {
-            final ClientHttpRequest request = requestFactory.createRequest(commonUri, HttpMethod.GET);
-            final ClientHttpResponse httpResponse = closer.register(request.execute());
+        final ClientHttpRequest request = requestFactory.createRequest(commonUri, HttpMethod.GET);
+        try (ClientHttpResponse httpResponse = request.execute()) {
             final BufferedImage image = ImageIO.read(httpResponse.getBody());
             if (image == null) {
                 return createErrorImage(paintArea);
@@ -142,7 +140,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
 
             graphics.addRenderingHints(hints);
             renderer.setJava2DHints(hints);
-            Map<String, Object> renderHints = Maps.newHashMap();
+            Map<String, Object> renderHints = new HashMap<>();
             if (transformer.isForceLongitudeFirst() != null) {
                 renderHints.put(StreamingRenderer.FORCE_EPSG_AXIS_ORDER_KEY,
                                 transformer.isForceLongitudeFirst());

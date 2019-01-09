@@ -1,8 +1,5 @@
 package org.mapfish.print.map.style.json;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -47,6 +44,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -88,7 +86,7 @@ public class MapfishStyleParserPluginTest {
 
         transformer.transform(style.get()); // assert it can be converted to SLD
 
-        final List<Rule> rules = Lists.newArrayList();
+        final List<Rule> rules = new ArrayList<>();
         style.get().accept(new AbstractStyleVisitor() {
             @Override
             public void visit(Rule rule) {
@@ -161,10 +159,10 @@ public class MapfishStyleParserPluginTest {
 
         List<Class<? extends Geometry>> allowed = Arrays.asList(geomClasses);
 
-        final ArrayList<Class<? extends Geometry>> allGeomTypes =
-                Lists.newArrayList(Point.class, MultiPoint.class, LineString.class,
-                                   LinearRing.class, MultiLineString.class,
-                                   Polygon.class, MultiPolygon.class, GeometryCollection.class);
+        final List<Class<? extends Geometry>> allGeomTypes =
+                Arrays.asList(Point.class, MultiPoint.class, LineString.class,
+                              LinearRing.class, MultiLineString.class,
+                              Polygon.class, MultiPolygon.class, GeometryCollection.class);
 
         for (Class<? extends Geometry> geomType: allGeomTypes) {
             final SimpleFeature feature =
@@ -290,7 +288,8 @@ public class MapfishStyleParserPluginTest {
     }
 
     private String getSpec(String name) throws IOException, URISyntaxException {
-        return Files.toString(getFile(name), Constants.DEFAULT_CHARSET);
+        return new String(java.nio.file.Files.readAllBytes(getFile(name).toPath()),
+                          Constants.DEFAULT_CHARSET);
     }
 
     private File getFile(String name) throws URISyntaxException {

@@ -1,8 +1,5 @@
 package org.mapfish.print.map.style.json;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.io.Files;
 import org.geotools.styling.Style;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -15,13 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.http.HttpMethod;
-import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.File;
 import java.net.URI;
+import java.util.Optional;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -87,24 +83,9 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
 
 
         final String host = "URLSLDParserPluginTest.com";
-        httpClient.registerHandler(new Predicate<URI>() {
-                                       @Override
-                                       public boolean apply(URI input) {
-                                           return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
-                                       }
-                                   }, new TestHttpClientFactory.Handler() {
-                                       @Override
-                                       public MockClientHttpRequest handleRequest(
-                                               URI uri,
-                                               HttpMethod httpMethod) throws Exception {
-                                           try {
-                                               byte[] bytes = Files.toByteArray(getFile(uri.getPath()));
-                                               return ok(uri, bytes, httpMethod);
-                                           } catch (AssertionError e) {
-                                               return error404(uri, httpMethod);
-                                           }
-                                       }
-                                   }
+        httpClient.registerHandler(
+                input -> (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host),
+                createFileHandler(URI::getPath)
         );
 
         Configuration configuration = new Configuration();

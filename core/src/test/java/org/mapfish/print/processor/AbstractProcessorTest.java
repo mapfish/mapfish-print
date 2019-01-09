@@ -1,9 +1,9 @@
 package org.mapfish.print.processor;
 
-import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.mapfish.print.config.Configuration;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -22,7 +22,7 @@ public class AbstractProcessorTest {
 
 
         Configuration configuration = new Configuration();
-        List<Throwable> errors = Lists.newArrayList();
+        List<Throwable> errors = new ArrayList<>();
         testProcessor.validate(errors, configuration);
 
 
@@ -43,7 +43,7 @@ public class AbstractProcessorTest {
 
 
         Configuration configuration = new Configuration();
-        List<Throwable> errors = Lists.newArrayList();
+        List<Throwable> errors = new ArrayList<>();
         testProcessor.validate(errors, configuration);
 
 

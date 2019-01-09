@@ -1,6 +1,5 @@
 package org.mapfish.print.processor.http;
 
-import com.google.common.base.Predicate;
 import org.json.JSONException;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -45,12 +44,7 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
-        this.httpClientFactory.registerHandler(new Predicate<URI>() {
-            @Override
-            public boolean apply(@Nullable URI input) {
-                return true;
-            }
-        }, new TestHttpClientFactory.Handler() {
+        this.httpClientFactory.registerHandler(input -> true, new TestHttpClientFactory.Handler() {
             @Override
             public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
                 return new MockClientHttpRequest(httpMethod, uri);

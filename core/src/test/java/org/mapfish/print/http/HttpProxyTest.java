@@ -1,13 +1,12 @@
 package org.mapfish.print.http;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.ByteStreams;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
+import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,6 +36,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.net.ssl.KeyManagerFactory;
@@ -111,8 +111,7 @@ public class HttpProxyTest {
         final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
         final ClientHttpResponse response = request.execute();
 
-        final String message = new String(ByteStreams.toByteArray(
-                response.getBody()), Constants.DEFAULT_CHARSET);
+        final String message = IOUtils.toString(response.getBody(), Constants.DEFAULT_ENCODING);
         assertEquals(message, HttpStatus.OK, response.getStatusCode());
 
         assertEquals(expected, message);
@@ -173,7 +172,7 @@ public class HttpProxyTest {
     public void testValidate() {
         final HttpProxy httpProxy = new HttpProxy();
 
-        List<Throwable> errors = Lists.newArrayList();
+        List<Throwable> errors = new ArrayList<>();
 
         Configuration configuration = new Configuration();
         httpProxy.validate(errors, configuration);
@@ -287,7 +286,7 @@ public class HttpProxyTest {
         httpProxy.setPort(PROXY_PORT);
         final DnsHostMatcher dnsHostMatcher = new DnsHostMatcher();
         dnsHostMatcher.setHost("google.com");
-        httpProxy.setMatchers(Lists.newArrayList(dnsHostMatcher));
+        httpProxy.setMatchers(Collections.singletonList(dnsHostMatcher));
         final String message = "Target was reached without proxy";
 
         final String path = "/nomatch";
@@ -315,7 +314,7 @@ public class HttpProxyTest {
         httpProxy.setPort(PROXY_PORT);
         final LocalHostMatcher localHostMatcher = new LocalHostMatcher();
         localHostMatcher.setReject(true);
-        httpProxy.setMatchers(Lists.newArrayList(localHostMatcher));
+        httpProxy.setMatchers(Collections.singletonList(localHostMatcher));
         final String message = "Target was reached without proxy";
 
         final String path = "/nomatch";

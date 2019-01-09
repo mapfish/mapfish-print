@@ -1,7 +1,5 @@
 package org.mapfish.print;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.runner.RunWith;
@@ -15,6 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -54,7 +53,10 @@ public abstract class AbstractApiTest {
     }
 
     protected String getPrintSpec(String file) throws IOException {
-        return Resources.toString(Resources.getResource(file), Charsets.UTF_8);
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(file)) {
+            assert is != null;
+            return IOUtils.toString(is, "UTF-8");
+        }
     }
 
     protected void setPrintSpec(String printSpec, ClientHttpRequest request) throws IOException {

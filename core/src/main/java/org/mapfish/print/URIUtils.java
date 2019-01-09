@@ -2,16 +2,12 @@ package org.mapfish.print;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.io.CharStreams;
-import com.google.common.io.Closer;
+import org.apache.commons.io.IOUtils;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -234,16 +230,8 @@ public final class URIUtils {
      */
     public static String toString(final MfClientHttpRequestFactory requestFactory, final URI uri)
             throws IOException {
-        try (Closer closer = Closer.create()) {
-            ClientHttpResponse response =
-                    closer.register(requestFactory.createRequest(uri, HttpMethod.GET).execute());
-
-            InputStream input = closer.register(response.getBody());
-            InputStreamReader reader =
-                    closer.register(new InputStreamReader(input, Constants.DEFAULT_ENCODING));
-            BufferedReader bufferedReader = closer.register(new BufferedReader(reader));
-
-            return CharStreams.toString(bufferedReader);
+        try (ClientHttpResponse response = requestFactory.createRequest(uri, HttpMethod.GET).execute()) {
+            return IOUtils.toString(response.getBody(), Constants.DEFAULT_ENCODING);
         }
     }
 

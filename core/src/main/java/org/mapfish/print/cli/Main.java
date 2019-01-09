@@ -5,8 +5,8 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.io.CharStreams;
 import com.sampullara.cli.Args;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
@@ -23,11 +23,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.List;
 
 /**
@@ -181,7 +179,7 @@ public final class Main {
             if (cli.clientConfig) {
                 outFile = getOutputStream(cli.output, ".yaml");
                 final OutputStreamWriter writer =
-                        new OutputStreamWriter(outFile, Charset.forName(Constants.DEFAULT_ENCODING));
+                        new OutputStreamWriter(outFile, Constants.DEFAULT_CHARSET);
 
                 JSONWriter json = new JSONWriter(writer);
                 json.object();
@@ -192,8 +190,7 @@ public final class Main {
 
             } else {
                 final InputStream inFile = getInputStream(cli.spec);
-                final String jsonConfiguration =
-                        CharStreams.toString(new InputStreamReader(inFile, Constants.DEFAULT_ENCODING));
+                final String jsonConfiguration = IOUtils.toString(inFile, Constants.DEFAULT_ENCODING);
                 PJsonObject jsonSpec = MapPrinter.parseSpec(jsonConfiguration);
 
                 outFile = getOutputStream(cli.output,

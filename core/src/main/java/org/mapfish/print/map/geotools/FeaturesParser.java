@@ -1,13 +1,8 @@
 package org.mapfish.print.map.geotools;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Sets;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.CharSource;
-import com.google.common.io.CharStreams;
-import com.google.common.io.Closer;
-import com.google.common.io.Files;
 import com.vividsolutions.jts.geom.Geometry;
+import org.apache.commons.io.IOUtils;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geojson.feature.FeatureJSON;
@@ -17,9 +12,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.Constants;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.PrintException;
+import org.mapfish.print.URIUtils;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -33,16 +28,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -100,16 +92,18 @@ public class FeaturesParser {
                         if (uri != null) {
                             ClientHttpRequest request =
                                     requestFactory.createRequest(new URI(uri), HttpMethod.GET);
-                            ClientHttpResponse response = request.execute();
+                            try (ClientHttpResponse response = request.execute()) {
 
-                            if (response.getStatusCode() == HttpStatus.OK) {
-                                String wkt = new String(ByteStreams.toByteArray(response.getBody()),
-                                                        Constants.DEFAULT_ENCODING);
-                                try {
-                                    return CRS.parseWKT(wkt);
-                                } catch (FactoryException e) {
-                                    LOGGER.warn("Unable to load linked CRS from geojson: \n{}\n\nWKT loaded" +
+                                if (response.getStatusCode() == HttpStatus.OK) {
+                                    final String wkt = IOUtils.toString(response.getBody(),
+                                                                        Constants.DEFAULT_ENCODING);
+                                    try {
+                                        return CRS.parseWKT(wkt);
+                                    } catch (FactoryException e) {
+                                        LOGGER.warn(
+                                                "Unable to load linked CRS from geojson: \n{}\n\nWKT loaded" +
                                                         " from:\n{}", crsJson, wkt);
+                                    }
                                 }
                             }
                         }
@@ -180,23 +174,10 @@ public class FeaturesParser {
         }
 
         final String geojsonString;
-        try (Closer closer = Closer.create()) {
-            Reader input;
-            if (url.getProtocol().equalsIgnoreCase("file")) {
-                final CharSource charSource =
-                        Files.asCharSource(new File(url.getFile()), Constants.DEFAULT_CHARSET);
-                input = closer.register(charSource.openBufferedStream());
-            } else {
-                final ClientHttpResponse response =
-                        closer.register(this.httpRequestFactory.createRequest(url.toURI(),
-                                                                              HttpMethod.GET).execute());
-
-                input = closer.register(new BufferedReader(
-                        new InputStreamReader(response.getBody(), Constants.DEFAULT_CHARSET)));
-            }
-            geojsonString = CharStreams.toString(input);
-        } catch (URISyntaxException e) {
-            throw ExceptionUtils.getRuntimeException(e);
+        if (url.getProtocol().equalsIgnoreCase("file")) {
+            geojsonString = IOUtils.toString(url, Constants.DEFAULT_CHARSET.name());
+        } else {
+            geojsonString = URIUtils.toString(this.httpRequestFactory, url);
         }
 
         return treatStringAsGeoJson(geojsonString);
@@ -252,7 +233,7 @@ public class FeaturesParser {
                     return null;
                 }
 
-                Set<String> allAttributes = Sets.newHashSet();
+                Set<String> allAttributes = new HashSet<>();
                 Class<Geometry> geomType = null;
                 for (int i = 0; i < features.length(); i++) {
                     final JSONObject feature = features.getJSONObject(i);

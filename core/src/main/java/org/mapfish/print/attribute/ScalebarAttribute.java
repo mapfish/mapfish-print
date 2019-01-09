@@ -1,7 +1,7 @@
 package org.mapfish.print.attribute;
 
 
-import com.google.common.base.Strings;
+import org.apache.commons.lang.StringUtils;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
@@ -341,7 +341,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          * @return Return the scalebar type.
          */
         public final Type getType() {
-            if (Strings.isNullOrEmpty(this.type)) {
+            if (StringUtils.isEmpty(this.type)) {
                 return null;
             } else {
                 return Type.fromString(this.type);
@@ -352,7 +352,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          * @return Return the unit to use for the scalebar.
          */
         public final DistanceUnit getUnit() {
-            if (Strings.isNullOrEmpty(this.unit)) {
+            if (StringUtils.isEmpty(this.unit)) {
                 return null;
             } else {
                 return DistanceUnit.fromString(this.unit);
@@ -363,7 +363,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          * @return Return the scalebar orientation.
          */
         public final Orientation getOrientation() {
-            if (Strings.isNullOrEmpty(this.orientation)) {
+            if (StringUtils.isEmpty(this.orientation)) {
                 return null;
             } else {
                 return Orientation.fromString(this.orientation);
@@ -381,7 +381,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          * @return Return the horizontal alignment.
          */
         public final HorizontalAlign getAlign() {
-            if (Strings.isNullOrEmpty(this.align)) {
+            if (StringUtils.isEmpty(this.align)) {
                 return null;
             } else {
                 return HorizontalAlign.fromString(this.align);
@@ -392,7 +392,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          * @return Return the vertical alignment.
          */
         public final VerticalAlign getVerticalAlign() {
-            if (Strings.isNullOrEmpty(this.verticalAlign)) {
+            if (StringUtils.isEmpty(this.verticalAlign)) {
                 return null;
             } else {
                 return VerticalAlign.fromString(this.verticalAlign);

@@ -1,8 +1,8 @@
 package org.mapfish.print.map.style.json;
 
-import com.google.common.collect.Maps;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 public class MapfishJsonStyleVersion2Test {
     @Test
     public void testResolveAllValues() {
-        Map<String, String> values = Maps.newHashMap();
+        Map<String, String> values = new HashMap<>();
         values.put("val1", "value");
         values.put("val2", "${val1}2");
         values.put("val3", "${val2}--3${val1}");

@@ -1,23 +1,23 @@
 package org.mapfish.print.servlet.fileloader;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 /**
- * Processes all {@link org.mapfish.print.servlet.fileloader.ConfigFileLoaderPlugin}s and loads the files.
+ * Processes all {@link ConfigFileLoaderPlugin}s and loads the files.
  */
 public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
     @Autowired
@@ -63,7 +63,7 @@ public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
                 return fileOptional;
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     @Override
@@ -77,7 +77,7 @@ public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
      * Return all URI schemes that are supported in the system.
      */
     public Set<String> getSupportedUriSchemes() {
-        Set<String> schemes = Sets.newHashSet();
+        Set<String> schemes = new HashSet<>();
 
         for (ConfigFileLoaderPlugin loaderPlugin: this.getLoaderPlugins()) {
             schemes.add(loaderPlugin.getUriScheme());

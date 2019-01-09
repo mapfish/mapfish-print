@@ -7,7 +7,6 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayOutputStream;
-import java.nio.file.Files;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -30,7 +29,7 @@ public class JasperReportSvgOutputFormatTest extends AbstractJasperReportOutputF
                 getFile(JasperReportSvgOutputFormatTest.class, BASE_DIR), getTaskDirectory(),
                 outputStream);
 
-        String expected = new String(Files.readAllBytes(getFile(BASE_DIR + "expectedReport.svg").toPath()));
+        String expected = getFileContent(BASE_DIR + "expectedReport.svg");
         assertEquals(expected, outputStream.toString());
     }
 }

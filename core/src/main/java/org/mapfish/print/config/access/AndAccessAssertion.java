@@ -1,6 +1,5 @@
 package org.mapfish.print.config.access;
 
-import com.google.common.collect.Lists;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,7 +68,7 @@ public final class AndAccessAssertion implements AccessAssertion {
     @Override
     public void unmarshal(final JSONObject encodedAssertion) {
         try {
-            this.predicates = Lists.newArrayList();
+            this.predicates = new ArrayList<>();
 
             JSONArray marshalData = encodedAssertion.getJSONArray(JSON_ARRAY);
             for (int i = 0; i < marshalData.length(); i++) {

@@ -1,10 +1,9 @@
 package org.mapfish.print.map.style;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Closer;
+import org.apache.commons.io.IOUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.geotools.styling.Style;
+import org.mapfish.print.config.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
@@ -12,9 +11,10 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Utilities for creating parser plugins.
@@ -26,7 +26,7 @@ public final class ParserPluginUtils {
     }
 
     /**
-     * Load data using {@link org.mapfish.print.config.Configuration#loadFile(String)} and using http.  If
+     * Load data using {@link Configuration#loadFile(String)} and using http.  If
      * data is able to be loaded it will be passed to the loadFunction to be turned into a style.
      *
      * @param clientHttpRequestFactory the factory to use for http requests
@@ -35,29 +35,30 @@ public final class ParserPluginUtils {
      */
     public static Optional<Style> loadStyleAsURI(
             final ClientHttpRequestFactory clientHttpRequestFactory, final String styleRef,
-            final Function<byte[], Optional<Style>> loadFunction) throws IOException {
+            final Function<byte[], @Nullable Optional<Style>> loadFunction) {
         HttpStatus statusCode;
         final byte[] input;
 
-        try (Closer closer = Closer.create()) {
-            URI uri;
-            try {
-                uri = new URI(styleRef);
-            } catch (URISyntaxException e) {
-                uri = new File(styleRef).toURI();
-            }
+        URI uri;
+        try {
+            uri = new URI(styleRef);
+        } catch (URISyntaxException e) {
+            uri = new File(styleRef).toURI();
+        }
 
+        try {
             final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
-            final ClientHttpResponse response = closer.register(request.execute());
-            statusCode = response.getStatusCode();
-            input = ByteStreams.toByteArray(response.getBody());
+            try (ClientHttpResponse response = request.execute()) {
+                statusCode = response.getStatusCode();
+                input = IOUtils.toByteArray(response.getBody());
+            }
         } catch (Exception e) {
-            return Optional.absent();
+            return Optional.empty();
         }
         if (statusCode == HttpStatus.OK) {
             return loadFunction.apply(input);
         } else {
-            return Optional.absent();
+            return Optional.empty();
         }
     }
 }
