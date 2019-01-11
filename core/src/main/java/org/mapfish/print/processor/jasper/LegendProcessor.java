@@ -2,7 +2,6 @@ package org.mapfish.print.processor.jasper;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.collect.Lists;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import org.mapfish.print.Constants;
@@ -32,6 +31,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -205,7 +205,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         URI imageFile = writeToFile(image, tempTaskDirectory);
 
         final ImagesSubReport subReport = new ImagesSubReport(
-                Lists.newArrayList(imageFile),
+                Collections.singletonList(imageFile),
                 new Dimension((int) Math.round(image.getWidth() * scaleFactor),
                               (int) Math.round(image.getHeight() * scaleFactor)),
                 this.dpi);

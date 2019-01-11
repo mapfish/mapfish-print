@@ -1,7 +1,7 @@
 package org.mapfish.print.servlet;
 
-import com.google.common.base.Strings;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jfree.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -117,10 +117,6 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     /* Registry keys */
     /**
-     * The json property name of the property that contains the request spec.
-     */
-    public static final String JSON_SPEC = "spec";
-    /**
      * If the job is done (value is true) or not (value is false).
      * <p></p>
      * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest,
@@ -198,20 +194,27 @@ public class MapPrinterServlet extends BaseMapServlet {
         Handler.configureProtocolHandler();
     }
 
-    @Autowired
-    private JobManager jobManager;
-    @Autowired
-    private List<ReportLoader> reportLoaders;
-    @Autowired
-    private MapPrinterFactory printerFactory;
-    @Autowired
-    private ApplicationContext context;
-    @Autowired
-    private ServletInfo servletInfo;
+    private final JobManager jobManager;
+    private final List<ReportLoader> reportLoaders;
+    private final MapPrinterFactory printerFactory;
+    private final ApplicationContext context;
+    private final ServletInfo servletInfo;
+    private final MapPrinterFactory mapPrinterFactory;
 
     private long maxCreateAndGetWaitTimeInSeconds;
+
     @Autowired
-    private MapPrinterFactory mapPrinterFactory;
+    public MapPrinterServlet(
+            final JobManager jobManager, final List<ReportLoader> reportLoaders,
+            final MapPrinterFactory printerFactory, final ApplicationContext context,
+            final ServletInfo servletInfo, final MapPrinterFactory mapPrinterFactory) {
+        this.jobManager = jobManager;
+        this.reportLoaders = reportLoaders;
+        this.printerFactory = printerFactory;
+        this.context = context;
+        this.servletInfo = servletInfo;
+        this.mapPrinterFactory = mapPrinterFactory;
+    }
 
     /**
      * Parse the print request json data.
@@ -219,7 +222,7 @@ public class MapPrinterServlet extends BaseMapServlet {
      * @param requestDataRaw the request json in string form
      * @param httpServletResponse the response object to use for returning errors if needed
      */
-    public static PJsonObject parseJson(
+    private static PJsonObject parseJson(
             final String requestDataRaw, final HttpServletResponse httpServletResponse) {
 
         try {
@@ -266,11 +269,8 @@ public class MapPrinterServlet extends BaseMapServlet {
     private static String maybeAddRequestId(final String ref, final HttpServletRequest request) {
         final Optional<String> headerName =
                 REQUEST_ID_HEADERS.stream().filter(h -> request.getHeader(h) != null).findFirst();
-        return headerName.map(s ->
-                                      ref + "@" + request.getHeader(s).replaceAll("[^a-zA-Z0-9._:-]", "_")
-        ).orElse(
-                ref
-        );
+        return headerName.map(s -> ref + "@" + request.getHeader(s).replaceAll("[^a-zA-Z0-9._:-]", "_")
+        ).orElse(ref);
     }
 
     /**
@@ -331,7 +331,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                 json.key(JSON_STATUS).value(status.getStatus().toString().toLowerCase());
                 json.key(JSON_ELAPSED_TIME).value(status.getElapsedTime());
                 json.key(JSON_WAITING_TIME).value(status.getWaitingTime());
-                if (!Strings.isNullOrEmpty(status.getError())) {
+                if (!StringUtils.isEmpty(status.getError())) {
                     json.key(JSON_ERROR).value(status.getError());
                 }
 
@@ -739,7 +739,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
 
         try {
-            if (!pretty && !Strings.isNullOrEmpty(jsonpCallback)) {
+            if (!pretty && !StringUtils.isEmpty(jsonpCallback)) {
                 writer.append(jsonpCallback).append("(");
             }
 
@@ -764,7 +764,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                 throw new ServletException(e);
             }
 
-            if (!pretty && !Strings.isNullOrEmpty(jsonpCallback)) {
+            if (!pretty && !StringUtils.isEmpty(jsonpCallback)) {
                 writer.append(");");
             }
         } finally {
@@ -777,11 +777,11 @@ public class MapPrinterServlet extends BaseMapServlet {
             final JSONObject jsonObject =
                     new JSONObject(new String(prettyPrintBuffer.toByteArray(), Constants.DEFAULT_CHARSET));
 
-            if (!Strings.isNullOrEmpty(jsonpCallback)) {
+            if (!StringUtils.isEmpty(jsonpCallback)) {
                 capabilitiesResponse.getOutputStream().print(jsonpCallback + "(");
             }
             capabilitiesResponse.getOutputStream().print(jsonObject.toString(JSON_INDENT_FACTOR));
-            if (!Strings.isNullOrEmpty(jsonpCallback)) {
+            if (!StringUtils.isEmpty(jsonpCallback)) {
                 capabilitiesResponse.getOutputStream().print(");");
             }
         }
@@ -975,7 +975,6 @@ public class MapPrinterServlet extends BaseMapServlet {
         JSONObject headers = new JSONObject();
         while (headersName.hasMoreElements()) {
             String name = headersName.nextElement().toString();
-            @SuppressWarnings("unchecked")
             Enumeration<String> e = httpServletRequest.getHeaders(name);
             while (e.hasMoreElements()) {
                 headers.append(name, e.nextElement());
@@ -997,7 +996,7 @@ public class MapPrinterServlet extends BaseMapServlet {
      * @param httpServletResponse the response object
      * @return the job reference id
      */
-    public final String createAndSubmitPrintJob(
+    private String createAndSubmitPrintJob(
             final String appId, final String format, final String requestDataRaw,
             final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse)
             throws NoSuchAppException {
@@ -1098,7 +1097,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     private void setContentType(
             final HttpServletResponse statusResponse,
             final String jsonpCallback) {
-        if (Strings.isNullOrEmpty(jsonpCallback)) {
+        if (StringUtils.isEmpty(jsonpCallback)) {
             statusResponse.setContentType("application/json; charset=utf-8");
         } else {
             statusResponse.setContentType("application/javascript; charset=utf-8");
@@ -1108,7 +1107,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     private void appendJsonpCallback(
             final String jsonpCallback,
             final PrintWriter writer) {
-        if (!Strings.isNullOrEmpty(jsonpCallback)) {
+        if (!StringUtils.isEmpty(jsonpCallback)) {
             writer.append(jsonpCallback);
             writer.append("(");
         }
@@ -1117,7 +1116,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     private void appendJsonpCallbackEnd(
             final String jsonpCallback,
             final PrintWriter writer) {
-        if (!Strings.isNullOrEmpty(jsonpCallback)) {
+        if (!StringUtils.isEmpty(jsonpCallback)) {
             writer.append(");");
         }
     }

@@ -1,8 +1,5 @@
 package org.mapfish.print.config;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.PointSymbolizer;
@@ -28,6 +25,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +53,7 @@ public class ConfigurationTest {
     public void testGetTemplate() {
 
         final Configuration configuration = new Configuration();
-        Map<String, Template> templates = Maps.newHashMap();
+        Map<String, Template> templates = new HashMap<>();
         final Template t1Template = new Template();
         templates.put("t1", t1Template);
         configuration.setTemplates(templates);
@@ -153,11 +152,11 @@ public class ConfigurationTest {
     @Test
     public void testTemplateAccess() throws Exception {
         Configuration configuration = new Configuration();
-        Map<String, Template> templates = Maps.newHashMap();
+        Map<String, Template> templates = new HashMap<>();
         Template unrestricted = new Template();
         templates.put("unrestricted", unrestricted);
         Template restricted = new Template();
-        restricted.setAccess(Lists.newArrayList("ROLE_USER", "ROLE_ADMIN"));
+        restricted.setAccess(Arrays.asList("ROLE_USER", "ROLE_ADMIN"));
         templates.put("restricted", restricted);
         configuration.setTemplates(templates);
 
@@ -168,7 +167,7 @@ public class ConfigurationTest {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         SecurityContextHolder.setContext(securityContext);
         securityContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken("user", "", Lists.newArrayList(userAuth)));
+                new UsernamePasswordAuthenticationToken("user", "", Collections.singletonList(userAuth)));
         assertCorrectTemplates(configuration, unrestricted, restricted, null);
 
         securityContext = SecurityContextHolder.createEmptyContext();
@@ -180,7 +179,7 @@ public class ConfigurationTest {
         securityContext = SecurityContextHolder.createEmptyContext();
         SecurityContextHolder.setContext(securityContext);
         securityContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken("admin", "", Lists.newArrayList(adminAuth)));
+                new UsernamePasswordAuthenticationToken("admin", "", Collections.singletonList(adminAuth)));
         assertCorrectTemplates(configuration, unrestricted, restricted, null);
 
         SecurityContextHolder.clearContext();
@@ -192,20 +191,20 @@ public class ConfigurationTest {
         securityContext = SecurityContextHolder.createEmptyContext();
         SecurityContextHolder.setContext(securityContext);
         securityContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken("other", "", Lists.newArrayList(otherAuth)));
+                new UsernamePasswordAuthenticationToken("other", "", Collections.singletonList(otherAuth)));
         assertCorrectTemplates(configuration, unrestricted, restricted, AccessDeniedException.class);
     }
 
     @Test
     public void testTemplateAccess_ConfigHasAccess() throws Exception {
         Configuration configuration = new Configuration();
-        Map<String, Template> templates = Maps.newHashMap();
+        Map<String, Template> templates = new HashMap<>();
         Template template1 = new Template();
         templates.put("template1", template1);
         Template template2 = new Template();
         templates.put("template2", template2);
         configuration.setTemplates(templates);
-        configuration.setAccess(Lists.newArrayList("ROLE_USER", "ROLE_ADMIN"));
+        configuration.setAccess(Arrays.asList("ROLE_USER", "ROLE_ADMIN"));
 
         assertAccessTemplate_ConfigSecured(configuration, AuthenticationCredentialsNotFoundException.class);
 
@@ -213,7 +212,7 @@ public class ConfigurationTest {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         SecurityContextHolder.setContext(securityContext);
         securityContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken("user", "", Lists.newArrayList(userAuth)));
+                new UsernamePasswordAuthenticationToken("user", "", Collections.singletonList(userAuth)));
         assertAccessTemplate_ConfigSecured(configuration, null);
 
         securityContext = SecurityContextHolder.createEmptyContext();
@@ -224,7 +223,7 @@ public class ConfigurationTest {
         securityContext = SecurityContextHolder.createEmptyContext();
         SecurityContextHolder.setContext(securityContext);
         securityContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken("admin", "", Lists.newArrayList(adminAuth)));
+                new UsernamePasswordAuthenticationToken("admin", "", Collections.singletonList(adminAuth)));
         assertAccessTemplate_ConfigSecured(configuration, null);
 
         SecurityContextHolder.clearContext();
@@ -235,7 +234,7 @@ public class ConfigurationTest {
         securityContext = SecurityContextHolder.createEmptyContext();
         SecurityContextHolder.setContext(securityContext);
         securityContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken("other", "", Lists.newArrayList(otherAuth)));
+                new UsernamePasswordAuthenticationToken("other", "", Collections.singletonList(otherAuth)));
         assertAccessTemplate_ConfigSecured(configuration, AccessDeniedException.class);
     }
 
@@ -326,12 +325,12 @@ public class ConfigurationTest {
 
         assertEquals(1, errors.size()); // no templates error
 
-        config.setJdbcDrivers(Sets.newHashSet("non.existant.driver.Driver"));
+        config.setJdbcDrivers(Collections.singleton("non.existant.driver.Driver"));
         errors = config.validate();
 
         assertEquals(2, errors.size());
 
-        config.setJdbcDrivers(Sets.newHashSet("org.hsqldb.jdbc.JDBCDriver"));
+        config.setJdbcDrivers(Collections.singleton("org.hsqldb.jdbc.JDBCDriver"));
         errors = config.validate();
 
         assertEquals(1, errors.size());

@@ -1,9 +1,5 @@
 package org.mapfish.print.processor.jasper;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.io.Resources;
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
@@ -24,6 +20,7 @@ import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.type.StretchTypeEnum;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.mapfish.print.Constants;
 import org.mapfish.print.PrintException;
@@ -41,11 +38,14 @@ import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,8 +62,8 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
 
     private static final int SPACE_BETWEEN_COLS = 0;
     private static final int DEFAULT_MAX_COLUMNS = 9;
-    private Map<String, TableColumnConverter<?>> columnConverterMap = Maps.newHashMap();
-    private List<TableColumnConverter<?>> converters = Lists.newArrayList();
+    private Map<String, TableColumnConverter<?>> columnConverterMap = new HashMap<>();
+    private List<TableColumnConverter<?>> converters = new ArrayList<>();
     private boolean dynamic = false;
     private Integer reportWidth = null;
     private String jasperTemplate = null;
@@ -74,7 +74,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     private String lastDetailStyle;
     private String detailStyle;
     private int maxColumns = DEFAULT_MAX_COLUMNS;
-    private Set<String> excludeColumns = Sets.newHashSet();
+    private Set<String> excludeColumns = new HashSet<>();
 
     @Autowired
     private JasperReportBuilder jasperReportBuilder;
@@ -260,7 +260,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         final String[] columnNames = jsonTable.columns;
 
         // this map needs to be linked so it keeps order
-        Map<String, Class<?>> columns = Maps.newLinkedHashMap();
+        Map<String, Class<?>> columns = new LinkedHashMap<>();
         final PArray[] jsonData = jsonTable.data;
         for (final PArray jsonRow: jsonData) {
             context.stopIfCanceled();
@@ -502,14 +502,14 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
 
     private void removeDetailBand(final JasperDesign templateDesign) {
         final JRDesignSection detailSection = (JRDesignSection) templateDesign.getDetailSection();
-        final List<JRBand> bandsList = Lists.newArrayList(detailSection.getBandsList());
+        final List<JRBand> bandsList = new ArrayList<>(detailSection.getBandsList());
         for (JRBand jrBand: bandsList) {
             detailSection.removeBand(jrBand);
         }
     }
 
     private void clearFields(final JasperDesign templateDesign) {
-        final List<JRField> fieldsList = Lists.newArrayList(templateDesign.getFieldsList());
+        final List<JRField> fieldsList = new ArrayList<>(templateDesign.getFieldsList());
         for (JRField jrField: fieldsList) {
             templateDesign.removeField(jrField);
         }
@@ -610,7 +610,9 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
 
     private byte[] loadJasperTemplate(final Configuration configuration) throws IOException {
         if (this.defaultTemplate) {
-            return Resources.toByteArray(new URL(this.jasperTemplate));
+            try (InputStream is = new URL(this.jasperTemplate).openStream()) {
+                return IOUtils.toByteArray(is);
+            }
         } else {
             return configuration.loadFile(this.jasperTemplate);
         }

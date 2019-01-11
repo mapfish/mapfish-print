@@ -1,6 +1,6 @@
 package org.mapfish.print.map.geotools;
 
-import com.google.common.base.Function;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
@@ -13,13 +13,15 @@ import org.mapfish.print.processor.Processor;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 
 /**
  * The AbstractGridCoverage2DReaderLayer class.
  */
 public abstract class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
 
-    private final Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> coverage2DReaderSupplier;
+    private final Function<MfClientHttpRequestFactory, @Nullable AbstractGridCoverage2DReader>
+            coverage2DReaderSupplier;
     private final StyleSupplier<AbstractGridCoverage2DReader> styleSupplier;
 
     /**
@@ -31,13 +33,14 @@ public abstract class AbstractGridCoverage2DReaderLayer extends AbstractGeotools
      * @param params the parameters for this layer
      */
     public AbstractGridCoverage2DReaderLayer(
-            final Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> coverage2DReader,
+            final Function<MfClientHttpRequestFactory,
+                    @Nullable AbstractGridCoverage2DReader> coverage2DReader,
             final StyleSupplier<AbstractGridCoverage2DReader> style,
             final ExecutorService executorService,
             final AbstractLayerParams params) {
         super(executorService, params);
         this.styleSupplier = style;
-        this.coverage2DReaderSupplier = coverage2DReader;
+        this.coverage2DReaderSupplier = coverage2DReader::apply;
     }
 
     @Override

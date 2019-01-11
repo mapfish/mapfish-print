@@ -1,8 +1,6 @@
 package org.mapfish.print;
 
-import com.google.common.base.Joiner;
-import com.google.common.io.BaseEncoding;
-import com.google.common.io.ByteStreams;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,6 +16,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
@@ -261,7 +261,7 @@ public class PrintApiTest extends AbstractApiTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
         assertEquals("max-age=0, must-revalidate, no-cache, no-store",
-                     Joiner.on(", ").join(response.getHeaders().get("Cache-Control")));
+                     String.join(", ", response.getHeaders().get("Cache-Control")));
 
         responseAsText = getBodyAsText(response);
         JSONObject statusResult = new JSONObject(responseAsText);
@@ -408,7 +408,7 @@ public class PrintApiTest extends AbstractApiTest {
         ClientHttpResponse exampleResp =
                 getPrintRequest(MapPrinterServlet.EXAMPLE_REQUEST_URL, HttpMethod.GET).execute();
         JSONObject examples =
-                new JSONObject(new String(ByteStreams.toByteArray(exampleResp.getBody()), "UTF-8"));
+                new JSONObject(IOUtils.toString(exampleResp.getBody(), "UTF-8"));
         return examples.getString(examples.keys().next());
     }
 
@@ -565,7 +565,8 @@ public class PrintApiTest extends AbstractApiTest {
     private void addAuthHeader(ClientHttpRequest request, String credentials)
             throws UnsupportedEncodingException {
         request.getHeaders().add("Authorization",
-                                 "Basic " + BaseEncoding.base64Url().encode(credentials.getBytes("UTF-8")));
+                                 "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(
+                                         StandardCharsets.UTF_8)));
     }
 
     private void waitUntilDoneOrError(String ref) {

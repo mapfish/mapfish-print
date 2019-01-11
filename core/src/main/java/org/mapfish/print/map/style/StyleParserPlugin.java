@@ -1,15 +1,15 @@
 package org.mapfish.print.map.style;
 
-import com.google.common.base.Optional;
 import org.geotools.styling.Style;
 import org.mapfish.print.config.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * A plugin used for loading {@link org.geotools.styling.Style} objects from a string.
+ * A plugin used for loading {@link Style} objects from a string.
  * <p>
  * The string might be json, css, url, whatever.
  */

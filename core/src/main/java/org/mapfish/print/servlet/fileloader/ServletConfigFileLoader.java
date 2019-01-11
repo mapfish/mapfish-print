@@ -1,6 +1,5 @@
 package org.mapfish.print.servlet.fileloader;
 
-import com.google.common.collect.Iterators;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
@@ -24,7 +23,7 @@ public final class ServletConfigFileLoader extends AbstractFileConfigFileLoader 
     @Override
     protected Iterator<File> resolveFiles(final URI fileURI) {
         if (fileURI.getScheme() != null && fileURI.getScheme().equals("file") && new File(fileURI).exists()) {
-            return Iterators.singletonIterator(new File(fileURI));
+            return Collections.singletonList(new File(fileURI)).iterator();
         }
         if (fileURI.toString().startsWith(PREFIX)) {
             String path = fileURI.toString().substring(PREFIX_LENGTH);
@@ -32,7 +31,7 @@ public final class ServletConfigFileLoader extends AbstractFileConfigFileLoader 
             if (realPath == null) {
                 return Collections.emptyIterator();
             }
-            return Iterators.singletonIterator(new File(realPath));
+            return Collections.singletonList(new File(realPath)).iterator();
         }
         return Collections.emptyIterator();
     }

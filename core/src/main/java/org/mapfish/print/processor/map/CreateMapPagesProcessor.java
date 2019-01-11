@@ -1,7 +1,5 @@
 package org.mapfish.print.processor.map;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -26,11 +24,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import static org.mapfish.print.Constants.PDF_DPI;
 
@@ -161,7 +159,7 @@ public class CreateMapPagesProcessor
             }
         }
 
-        final List<Map<String, Object>> mapList = Lists.newArrayList();
+        final List<Map<String, Object>> mapList = new ArrayList<>();
 
         for (int j = 0; j < nbHeight; j++) {
             for (int i = 0; i < nbWidth; i++) {
@@ -177,11 +175,7 @@ public class CreateMapPagesProcessor
                     final Envelope mapsBound = mapsBounds[i][j];
                     MapAttributeValues theMap = map.copy(
                             map.getWidth(), map.getHeight(),
-                            new Function<MapAttributeValues, Void>() {
-                                @Nullable
-                                @Override
-                                public Void apply(
-                                        @Nonnull final MapAttributeValues input) {
+                            (@Nonnull final MapAttributeValues input) -> {
                                     input.center = null;
                                     input.bbox = new double[]{
                                             mapsBound.getMinX(),
@@ -198,7 +192,7 @@ public class CreateMapPagesProcessor
                                     }
                                     return null;
                                 }
-                            });
+                    );
                     mapValues.put(MAP_KEY, theMap);
 
                     mapList.add(mapValues);

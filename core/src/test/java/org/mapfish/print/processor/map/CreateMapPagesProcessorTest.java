@@ -1,7 +1,5 @@
 package org.mapfish.print.processor.map;
 
-import com.google.common.base.Predicate;
-import com.google.common.io.Files;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,13 +14,10 @@ import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 
@@ -52,24 +47,9 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
     public void setUp() {
         final String host = "paging_processor_test";
         requestFactory.registerHandler(
-                new Predicate<URI>() {
-                    @Override
-                    public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".json")) ||
-                                input.getAuthority().contains(host + ".json");
-                    }
-                }, new TestHttpClientFactory.Handler() {
-                    @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
-                            throws Exception {
-                        try {
-                            byte[] bytes = Files.toByteArray(getFile("/map-data" + uri.getPath()));
-                            return ok(uri, bytes, httpMethod);
-                        } catch (AssertionError e) {
-                            return error404(uri, httpMethod);
-                        }
-                    }
-                }
+                input -> (("" + input.getHost()).contains(host + ".json")) ||
+                        input.getAuthority().contains(host + ".json"),
+                createFileHandler(uri -> "/map-data" + uri.getPath())
         );
     }
 

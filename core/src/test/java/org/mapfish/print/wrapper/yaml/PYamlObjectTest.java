@@ -1,11 +1,11 @@
 package org.mapfish.print.wrapper.yaml;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.junit.Test;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -14,16 +14,16 @@ import static org.junit.Assert.assertTrue;
 public class PYamlObjectTest {
     @Test
     public void testToJson() {
-        Map<String, Object> map = Maps.newHashMap();
+        Map<String, Object> map = new HashMap<>();
         map.put("att1", 1);
         map.put("att2", new Object[]{1, 2});
 
-        Map<String, Object> embedded = Maps.newHashMap();
+        Map<String, Object> embedded = new HashMap<>();
         embedded.put("embeddedAtt1", true);
-        Map<String, Object> embeddedEmbedded = Maps.newHashMap();
+        Map<String, Object> embeddedEmbedded = new HashMap<>();
         embeddedEmbedded.put("ee1", 1);
         embedded.put("embeddedAtt2", embeddedEmbedded);
-        embedded.put("embeddedAtt3", Lists.newArrayList("one", "two", "three"));
+        embedded.put("embeddedAtt3", Arrays.asList("one", "two", "three"));
         map.put("att3", embedded);
         final PJsonObject test = new PYamlObject(map, "test").toJSON();
 

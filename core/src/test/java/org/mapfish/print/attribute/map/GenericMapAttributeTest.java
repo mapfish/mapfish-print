@@ -1,6 +1,5 @@
 package org.mapfish.print.attribute.map;
 
-import com.google.common.collect.Maps;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -89,9 +88,9 @@ public class GenericMapAttributeTest {
         final TestMapAttribute att = new TestMapAttribute();
         AttributeTesting.configureAttributeForTesting(att);
 
-        Map<String, Object> defaultValue = Maps.newHashMap();
+        Map<String, Object> defaultValue = new HashMap<>();
         defaultValue.put("rotation", 1.0);
-        HashMap<Object, Object> embeddedDefaultVal = Maps.newHashMap();
+        HashMap<Object, Object> embeddedDefaultVal = new HashMap<>();
         embeddedDefaultVal.put("embeddedElem", true);
         defaultValue.put("embedded", embeddedDefaultVal);
         att.setDefault(defaultValue);

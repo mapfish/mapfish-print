@@ -1,6 +1,5 @@
 package org.mapfish.print.attribute;
 
-import com.google.common.collect.Maps;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.PrintException;
@@ -13,6 +12,7 @@ import org.mapfish.print.wrapper.yaml.PYamlArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -78,7 +78,7 @@ import javax.annotation.Nullable;
 public final class DataSourceAttribute implements Attribute {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceAttribute.class);
 
-    private Map<String, Attribute> attributes = Maps.newHashMap();
+    private Map<String, Attribute> attributes = new HashMap<>();
     private String configName;
     private PYamlArray defaults;
 

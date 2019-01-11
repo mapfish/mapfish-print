@@ -1,6 +1,5 @@
 package org.mapfish.print.processor.http;
 
-import com.google.common.base.Predicate;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mapfish.print.TestHttpClientFactory;
@@ -17,7 +16,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 
@@ -26,12 +24,7 @@ public class RestrictUrisProcessorTest {
 
     @BeforeClass
     public static void setUp() {
-        requestFactory.registerHandler(new Predicate<URI>() {
-            @Override
-            public boolean apply(@Nullable URI input) {
-                return true;
-            }
-        }, new TestHttpClientFactory.Handler() {
+        requestFactory.registerHandler(input -> true, new TestHttpClientFactory.Handler() {
             @Override
             public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
                 assertEquals("localhost", uri.getHost());

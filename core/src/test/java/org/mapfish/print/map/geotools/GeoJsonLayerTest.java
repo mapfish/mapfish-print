@@ -1,7 +1,5 @@
 package org.mapfish.print.map.geotools;
 
-import com.google.common.base.Predicate;
-import com.google.common.io.Files;
 import org.geotools.data.Query;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
@@ -24,6 +22,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.File;
 import java.net.URI;
+import java.nio.file.Files;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -137,19 +136,15 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
     public void testUrl() throws Exception {
         final String host = "GeoJsonLayerTest.com";
         this.httpRequestFactory.registerHandler(
-                new Predicate<URI>() {
-                    @Override
-                    public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
-                    }
-                }, new TestHttpClientFactory.Handler() {
+                input -> (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host),
+                new TestHttpClientFactory.Handler() {
                     @Override
                     public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
                             throws Exception {
                         try {
                             final File file = getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class,
                                                       uri.getPath().substring(1));
-                            byte[] bytes = Files.toByteArray(file);
+                            byte[] bytes = Files.readAllBytes(file.toPath());
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
                             return error404(uri, httpMethod);

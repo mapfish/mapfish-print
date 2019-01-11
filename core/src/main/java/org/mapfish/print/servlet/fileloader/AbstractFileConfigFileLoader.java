@@ -1,7 +1,5 @@
 package org.mapfish.print.servlet.fileloader;
 
-import com.google.common.base.Optional;
-import com.google.common.io.Files;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.config.WorkingDirectories;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +8,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * Abstract implementation for files that are on the local file system.
@@ -61,7 +61,7 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
         } catch (IllegalArgumentException e) {
             // ignore because it just means that this can't handle the uri
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     @Override
@@ -95,7 +95,7 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
         Optional<File> file = findFile(resolveFiles(fileURI));
 
         if (file.isPresent() && file.get().exists()) {
-            return Files.toByteArray(file.get());
+            return Files.readAllBytes(file.get().toPath());
         }
         throw new NoSuchElementException("No config file found at: " + fileURI);
     }
@@ -115,7 +115,7 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
     public final byte[] loadFile(final URI configFileUri, final String pathToSubResource) throws IOException {
         Optional<File> childFile = resolveChildFile(configFileUri, pathToSubResource);
         if (childFile.isPresent() && childFile.get().exists()) {
-            return Files.toByteArray(childFile.get());
+            return Files.readAllBytes(childFile.get().toPath());
         }
         throw new NoSuchElementException("File does not exist: " + childFile);
     }
@@ -127,11 +127,10 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
                 return Optional.of(next);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
-    private Optional<File> resolveChildFile(final URI configFileUri, final String pathToSubResource)
-            throws IOException {
+    private Optional<File> resolveChildFile(final URI configFileUri, final String pathToSubResource) {
         final Optional<File> configFileOptional = findFile(resolveFiles(configFileUri));
         if (!configFileOptional.isPresent()) {
             throw new NoSuchElementException("No configuration file found at: " + configFileUri);
@@ -169,7 +168,7 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
                                                    this.workingDirectories.getWorking());
                     return Optional.of(childFile);
                 } else {
-                    return Optional.absent();
+                    return Optional.empty();
                 }
             } catch (IllegalArgumentException e) {
                 return resolveFileAssumingPathIsFile(pathToSubResource, configFile);
@@ -196,6 +195,6 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
             }
         }
 
-        return Optional.absent();
+        return Optional.empty();
     }
 }

@@ -1,13 +1,13 @@
 package org.mapfish.print.servlet.fileloader;
 
-import com.google.common.base.Optional;
-import com.google.common.io.Files;
 import org.junit.Test;
 import org.mapfish.print.IllegalFileAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URI;
+import java.nio.file.Files;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -54,7 +54,7 @@ public class FileConfigFileLoaderTest extends AbstractConfigLoaderTest {
     @Test
     public void testLoadFile() throws Exception {
         byte[] loaded = this.loader.loadFile(CONFIG_FILE.toURI());
-        assertArrayEquals(Files.toByteArray(CONFIG_FILE), loaded);
+        assertArrayEquals(Files.readAllBytes(CONFIG_FILE.toPath()), loaded);
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -94,7 +94,7 @@ public class FileConfigFileLoaderTest extends AbstractConfigLoaderTest {
     public void testLoadFileChildResource() throws Exception {
         final URI configFileUri = CONFIG_FILE.toURI();
         final String resourceFileName = "resourceFile.txt";
-        final byte[] bytes = Files.toByteArray(getFile(FileConfigFileLoader.class, resourceFileName));
+        final byte[] bytes = getFileBytes(FileConfigFileLoader.class, resourceFileName);
 
         assertArrayEquals(bytes, this.loader.loadFile(configFileUri, resourceFileName));
         assertArrayEquals(bytes, this.loader.loadFile(configFileUri, getFile(FileConfigFileLoader.class,

@@ -1,7 +1,5 @@
 package org.mapfish.print.servlet.fileloader;
 
-import com.google.common.base.Optional;
-import com.google.common.io.Resources;
 import org.mapfish.print.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,12 +10,15 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * A plugin that loads the config resources from urls starting with prefix: {@value
- * org.mapfish.print.servlet.fileloader.ClasspathConfigFileLoader#PREFIX}://.
+ * ClasspathConfigFileLoader#PREFIX}://.
  */
 public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathConfigFileLoader.class);
@@ -33,10 +34,10 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
             try {
                 return Optional.of(new File(urlOptional.get().toURI()));
             } catch (URISyntaxException e) {
-                return Optional.absent();
+                return Optional.empty();
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     @Override
@@ -57,7 +58,7 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
                     throw ExceptionUtils.getRuntimeException(e);
                 }
             } else {
-                return Optional.absent();
+                return Optional.empty();
             }
         }
 
@@ -76,7 +77,7 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
     public byte[] loadFile(final URI fileURI) throws IOException {
         final Optional<URL> resources = loadResources(fileURI);
         if (resources.isPresent()) {
-            return Resources.toByteArray(resources.get());
+            return Files.readAllBytes(FileSystems.getDefault().getPath(resources.get().getPath()));
         }
 
         throw new NoSuchElementException(fileURI + " does not exist");
@@ -96,7 +97,7 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
     public byte[] loadFile(final URI configFileUri, final String pathToSubResource) throws IOException {
         Optional<URL> child = resolveChild(configFileUri, pathToSubResource);
         if (child.isPresent()) {
-            return Resources.toByteArray(child.get());
+            return Files.readAllBytes(FileSystems.getDefault().getPath(child.get().getPath()));
         }
         throw new NoSuchElementException(
                 "No file is found for parameters: '" + configFileUri + "' and subresource: '" +
@@ -148,15 +149,15 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
                 return Optional.of(subResource.get());
             }
         } catch (URISyntaxException e) {
-            return Optional.absent();
+            return Optional.empty();
         }
 
-        return Optional.absent();
+        return Optional.empty();
     }
 
     private Optional<URL> loadResources(final URI fileURI) {
         if (fileURI == null) {
-            return Optional.absent();
+            return Optional.empty();
         }
         if (fileURI.getScheme() != null && fileURI.getScheme().equals("file")) {
             File file;
@@ -172,11 +173,11 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
                     throw ExceptionUtils.getRuntimeException(e);
                 }
             } else {
-                return Optional.absent();
+                return Optional.empty();
             }
         }
         if (!fileURI.toString().startsWith(PREFIX)) {
-            return Optional.absent();
+            return Optional.empty();
         }
         String path = fileURI.toString().substring(PREFIX_LENGTH);
         if (path.charAt(0) == '/') {
@@ -191,6 +192,6 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
         } catch (IOException e) {
             LOGGER.warn("Unable to find resources on the path: " + fileURI);
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }

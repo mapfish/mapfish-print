@@ -1,6 +1,5 @@
 package org.mapfish.print.output;
 
-import com.google.common.io.Closer;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.repo.FileRepositoryService;
@@ -98,18 +97,17 @@ class MapfishPrintRepositoryService implements StreamRepositoryService {
     }
 
     private static final class ResponseClosingStream extends InputStream {
-        private final Closer closer;
         private final InputStream stream;
+        private final ClientHttpResponse response;
 
         private ResponseClosingStream(final ClientHttpResponse response) throws IOException {
-            this.closer = Closer.create();
-            this.closer.register(response);
-            this.stream = this.closer.register(response.getBody());
+            this.response = response;
+            this.stream = response.getBody();
         }
 
         @Override
         public void close() throws IOException {
-            this.closer.close();
+            this.response.close();
             super.close();
         }
 

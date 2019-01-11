@@ -1,7 +1,5 @@
 package org.mapfish.print.map.tiled;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -26,7 +24,9 @@ import org.springframework.http.client.ClientHttpRequest;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import javax.annotation.Nonnull;
 
@@ -103,7 +103,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
                 double gridCoverageMaxX = gridCoverageOrigin.x;
                 double gridCoverageMaxY = gridCoverageOrigin.y;
 
-                List<SingleTilePreparationInfo> tiles = Lists.newArrayList();
+                List<SingleTilePreparationInfo> tiles = new ArrayList<>();
 
                 for (double geoY = gridCoverageOrigin.y; geoY < mapGeoBounds.getMaxY();
                      geoY += tileSizeInWorld.y) {
@@ -204,7 +204,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Failed to rotate map bounds: {}", mapBounds.toString(), e);
             }
-            this.cachedRotatedMapBounds = Optional.absent();
+            this.cachedRotatedMapBounds = Optional.empty();
         }
 
         return this.cachedRotatedMapBounds;

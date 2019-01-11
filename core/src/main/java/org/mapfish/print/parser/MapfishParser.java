@@ -1,7 +1,5 @@
 package org.mapfish.print.parser;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.MissingPropertyException;
@@ -20,6 +18,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -70,7 +70,7 @@ public final class MapfishParser {
 
         final Collection<Field> allAttributes =
                 ParserUtils.getAttributes(objectToPopulate.getClass(), FILTER_NON_FINAL_FIELDS);
-        Map<String, Class<?>> missingProperties = Maps.newHashMap();
+        Map<String, Class<?>> missingProperties = new HashMap<>();
 
         final OneOfTracker oneOfTracker = new OneOfTracker();
         final RequiresTracker requiresTracker = new RequiresTracker();
@@ -154,7 +154,7 @@ public final class MapfishParser {
     private static void checkForExtraProperties(
             final boolean errorOnExtraProperties, final Class<?> paramClass,
             final PObject layer, final String[] extraPropertyToIgnore) {
-        final Collection<String> acceptableKeyValues = Sets.newHashSet();
+        final Collection<String> acceptableKeyValues = new HashSet<>();
         for (String name: getAttributeNames(paramClass, FILTER_NON_FINAL_FIELDS)) {
             acceptableKeyValues.add(name.toLowerCase());
         }
@@ -164,8 +164,7 @@ public final class MapfishParser {
             }
         }
 
-        Collection<String> extraProperties = Sets.newHashSet();
-        @SuppressWarnings("unchecked")
+        Collection<String> extraProperties = new HashSet<>();
         final Iterator<String> keys = layer.keys();
         while (keys.hasNext()) {
             String next = keys.next();
@@ -250,7 +249,6 @@ public final class MapfishParser {
         return value;
     }
 
-    @SuppressWarnings("unchecked")
     private static Object parseEnum(final Class<?> type, final String path, final String enumString) {
         // not the name, maybe the ordinal
         try {

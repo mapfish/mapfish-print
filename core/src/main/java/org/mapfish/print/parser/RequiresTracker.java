@@ -1,13 +1,13 @@
 package org.mapfish.print.parser;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.vividsolutions.jts.util.Assert;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,8 +16,8 @@ import java.util.Map;
  */
 class RequiresTracker {
     private Multimap<Field, String> dependantToRequirementsMap = HashMultimap.create();
-    private Map<String, Field> requirementToDependantMap = Maps.newHashMap();
-    private Collection<Field> dependantsInJson = Lists.newArrayList();
+    private Map<String, Field> requirementToDependantMap = new HashMap<>();
+    private Collection<Field> dependantsInJson = new ArrayList<>();
 
     /**
      * Check if field has the {@link org.mapfish.print.parser.Requires} annotation and registers it and its

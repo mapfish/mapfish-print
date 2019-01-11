@@ -1,10 +1,5 @@
 package org.mapfish.print.config;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -44,10 +39,14 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
@@ -90,15 +89,15 @@ public class Configuration implements ConfigurationObject {
     private Map<String, String> styles = new HashMap<>();
     private Map<String, Style> defaultStyle = new HashMap<>();
     private boolean throwErrorOnExtraParameters = true;
-    private List<HttpProxy> proxies = Lists.newArrayList();
+    private List<HttpProxy> proxies = new ArrayList<>();
     private PDFConfig pdfConfig = new PDFConfig();
-    private List<HttpCredential> credentials = Lists.newArrayList();
+    private List<HttpCredential> credentials = new ArrayList<>();
     private CertificateStore certificateStore;
     private String outputFilename;
     private String resourceBundle;
     private boolean defaultToSvg = false;
-    private Set<String> jdbcDrivers = Sets.newHashSet();
-    private Map<String, Style> namedStyles = Maps.newHashMap();
+    private Set<String> jdbcDrivers = new HashSet<>();
+    private Map<String, Style> namedStyles = new HashMap<>();
     private UriMatchers allowedReferers = null;
     private SmtpConfig smtp = null;
 
@@ -236,12 +235,13 @@ public class Configuration implements ConfigurationObject {
         json.key("layouts");
         json.array();
         final Map<String, Template> accessibleTemplates = getTemplates();
-        for (Map.Entry<String, Template> entry: accessibleTemplates.entrySet()) {
+        accessibleTemplates.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey))
+                .forEach(entry -> {
             json.object();
             json.key("name").value(entry.getKey());
             entry.getValue().printClientConfig(json);
             json.endObject();
-        }
+                });
         json.endArray();
         json.key("smtp").object();
         json.key("enabled").value(smtp != null);
@@ -284,22 +284,15 @@ public class Configuration implements ConfigurationObject {
     }
 
     public final Map<String, Template> getTemplates() {
-        return Maps.filterEntries(this.templates, new Predicate<Map.Entry<String, Template>>() {
-            @Override
-            public boolean apply(@Nullable final Map.Entry<String, Template> input) {
-                if (input == null) {
-                    return false;
-                }
-                try {
-                    Configuration.this.accessAssertion.assertAccess("Configuration",
-                                                                    this);
-                    input.getValue().assertAccessible(input.getKey());
-                    return true;
-                } catch (AccessDeniedException | AuthenticationCredentialsNotFoundException e) {
-                    return false;
-                }
+        return this.templates.entrySet().stream().filter(input -> {
+            try {
+                accessAssertion.assertAccess("Configuration", this);
+                input.getValue().assertAccessible(input.getKey());
+                return true;
+            } catch (AccessDeniedException | AuthenticationCredentialsNotFoundException e) {
+                return false;
             }
-        });
+        }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     /**
@@ -355,7 +348,7 @@ public class Configuration implements ConfigurationObject {
         if (styleRef != null) {
             return this.styleParser.loadStyle(this, this.clientHttpRequestFactory, styleRef);
         } else {
-            return Optional.absent();
+            return Optional.empty();
         }
 
 
@@ -451,7 +444,7 @@ public class Configuration implements ConfigurationObject {
      *         to use for that type.
      */
     public final void setDefaultStyle(final Map<String, Style> defaultStyle) {
-        this.defaultStyle = Maps.newHashMapWithExpectedSize(defaultStyle.size());
+        this.defaultStyle = new HashMap<>(defaultStyle.size());
         for (Map.Entry<String, Style> entry: defaultStyle.entrySet()) {
             String normalizedName = GEOMETRY_NAME_ALIASES.get(entry.getKey().toLowerCase());
 
@@ -492,7 +485,7 @@ public class Configuration implements ConfigurationObject {
      * @return any validation errors.
      */
     public final List<Throwable> validate() {
-        List<Throwable> validationErrors = Lists.newArrayList();
+        List<Throwable> validationErrors = new ArrayList<>();
         this.accessAssertion.validate(validationErrors, this);
 
         for (String jdbcDriver: this.jdbcDrivers) {
@@ -620,7 +613,7 @@ public class Configuration implements ConfigurationObject {
      *
      * @param access the roles needed to access this
      */
-    public final void setAccess(final ArrayList<String> access) {
+    public final void setAccess(final List<String> access) {
         final RoleAccessAssertion assertion = new RoleAccessAssertion();
         assertion.setRequiredRoles(access);
         this.accessAssertion = assertion;

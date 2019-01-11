@@ -1,7 +1,5 @@
 package org.mapfish.print.processor.map;
 
-import com.google.common.base.Predicate;
-import com.google.common.io.Files;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -44,18 +42,14 @@ public class CreateNorthArrowProcessorTest extends AbstractMapfishSpringTest {
     public void testExecute() throws Exception {
         final String host = "north_arrow";
         requestFactory.registerHandler(
-                new Predicate<URI>() {
-                    @Override
-                    public boolean apply(URI input) {
-                        return (("" + input.getHost()).contains(host + ".osm")) ||
-                                input.getAuthority().contains(host + ".osm");
-                    }
-                }, new TestHttpClientFactory.Handler() {
+                input -> (("" + input.getHost()).contains(host + ".osm")) ||
+                        input.getAuthority().contains(host + ".osm"),
+                new TestHttpClientFactory.Handler() {
                     @Override
                     public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
                             throws Exception {
                         try {
-                            byte[] bytes = Files.toByteArray(getFile("/map-data/osm" + uri.getPath()));
+                            byte[] bytes = getFileBytes("/map-data/osm" + uri.getPath());
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
                             return error404(uri, httpMethod);

@@ -1,6 +1,5 @@
 package org.mapfish.print.attribute;
 
-import com.google.common.collect.Lists;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -10,6 +9,7 @@ import org.mapfish.print.config.Template;
 import org.mockito.Mockito;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
@@ -43,7 +43,7 @@ public abstract class AbstractAttributeTest {
 
     @Test
     public void testValidate() {
-        List<Throwable> errors = Lists.newArrayList();
+        List<Throwable> errors = new ArrayList<>();
         Configuration configuration = new Configuration();
         createAttribute().validate(errors, configuration);
 

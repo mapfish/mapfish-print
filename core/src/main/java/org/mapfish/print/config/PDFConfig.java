@@ -1,8 +1,9 @@
 package org.mapfish.print.config;
 
-import com.google.common.base.Optional;
+import org.mapfish.print.OptionalUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * <p>A Configuration object for containing metadata that will be embedded in the PDF and parameters to use
@@ -13,21 +14,21 @@ import java.util.List;
  */
 public class PDFConfig implements ConfigurationObject {
     private static final String MAPFISH_PRINT = "Mapfish Print";
-    private Optional<Boolean> compressed = Optional.absent();
-    private Optional<String> title = Optional.absent();
-    private Optional<String> author = Optional.absent();
-    private Optional<String> subject = Optional.absent();
-    private Optional<String> keywords = Optional.absent();
-    private Optional<String> creator = Optional.absent();
+    private Optional<Boolean> compressed = Optional.empty();
+    private Optional<String> title = Optional.empty();
+    private Optional<String> author = Optional.empty();
+    private Optional<String> subject = Optional.empty();
+    private Optional<String> keywords = Optional.empty();
+    private Optional<String> creator = Optional.empty();
 
     PDFConfig getMergedInstance(final PDFConfig other) {
         final PDFConfig merged = new PDFConfig();
-        merged.compressed = this.compressed.or(other.compressed);
-        merged.title = this.title.or(other.title);
-        merged.author = this.author.or(other.author);
-        merged.subject = this.subject.or(other.subject);
-        merged.keywords = this.keywords.or(other.keywords);
-        merged.creator = this.creator.or(other.creator);
+        merged.compressed = OptionalUtils.or(this.compressed, other.compressed);
+        merged.title = OptionalUtils.or(this.title, other.title);
+        merged.author = OptionalUtils.or(this.author, other.author);
+        merged.subject = OptionalUtils.or(this.subject, other.subject);
+        merged.keywords = OptionalUtils.or(this.keywords, other.keywords);
+        merged.creator = OptionalUtils.or(this.creator, other.creator);
 
         return merged;
     }
@@ -38,7 +39,7 @@ public class PDFConfig implements ConfigurationObject {
     }
 
     public boolean isCompressed() {
-        return this.compressed.or(false);
+        return this.compressed.orElse(false);
     }
 
     /**
@@ -52,7 +53,7 @@ public class PDFConfig implements ConfigurationObject {
     }
 
     public String getTitle() {
-        return this.title.or(MAPFISH_PRINT);
+        return this.title.orElse(MAPFISH_PRINT);
     }
 
     /**
@@ -65,7 +66,7 @@ public class PDFConfig implements ConfigurationObject {
     }
 
     public String getAuthor() {
-        return this.author.or(MAPFISH_PRINT);
+        return this.author.orElse(MAPFISH_PRINT);
     }
 
     /**
@@ -78,7 +79,7 @@ public class PDFConfig implements ConfigurationObject {
     }
 
     public String getSubject() {
-        return this.subject.or(MAPFISH_PRINT);
+        return this.subject.orElse(MAPFISH_PRINT);
     }
 
     /**
@@ -91,7 +92,7 @@ public class PDFConfig implements ConfigurationObject {
     }
 
     public String getKeywordsAsString() {
-        return this.keywords.or(MAPFISH_PRINT);
+        return this.keywords.orElse(MAPFISH_PRINT);
     }
 
     /**
@@ -111,7 +112,7 @@ public class PDFConfig implements ConfigurationObject {
     }
 
     public String getCreator() {
-        return this.creator.or(MAPFISH_PRINT);
+        return this.creator.orElse(MAPFISH_PRINT);
     }
 
     /**

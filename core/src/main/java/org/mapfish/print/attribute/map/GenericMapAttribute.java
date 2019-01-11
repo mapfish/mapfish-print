@@ -1,7 +1,5 @@
 package org.mapfish.print.attribute.map;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import org.geotools.referencing.CRS;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,8 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Generic attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor} and {@link
@@ -111,7 +111,7 @@ public abstract class GenericMapAttribute
      */
     public final double[] getDpiSuggestions() {
         if (this.dpiSuggestions == null) {
-            List<Double> list = Lists.newArrayList();
+            List<Double> list = new ArrayList<>();
             for (double suggestion: DEFAULT_DPI_VALUES) {
                 if (suggestion <= this.maxDpi) {
                     list.add(suggestion);
@@ -379,7 +379,7 @@ public abstract class GenericMapAttribute
         }
 
         private List<MapLayer> parseLayers() {
-            List<MapLayer> layerList = Lists.newArrayList();
+            List<MapLayer> layerList = new ArrayList<>();
 
             for (int i = 0; i < this.getRawLayers().size(); i++) {
                 try {
@@ -473,7 +473,7 @@ public abstract class GenericMapAttribute
         public abstract void setRawLayers(PArray layers);
 
         public List<MapLayer> getLayers() {
-            return Lists.newArrayList(this.mapLayers);
+            return new ArrayList<>(this.mapLayers);
         }
 
         /**

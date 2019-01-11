@@ -1,8 +1,7 @@
 package org.mapfish.print.map.geotools;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 import com.vividsolutions.jts.util.Assert;
+import org.geotools.data.DataStore;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
@@ -22,8 +21,10 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 
 import static org.mapfish.print.Constants.OPACITY_PRECISION;
@@ -60,7 +61,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
     @Override
     public final Optional<MapLayer> tryAddLayer(final MapLayer newLayer) {
-        return Optional.absent();
+        return Optional.empty();
     }
 
     @Override
@@ -112,7 +113,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
             graphics2D.addRenderingHints(hints);
             renderer.setJava2DHints(hints);
-            Map<String, Object> renderHints = Maps.newHashMap();
+            Map<String, Object> renderHints = new HashMap<>();
             if (transformer.isForceLongitudeFirst() != null) {
                 renderHints.put(StreamingRenderer.FORCE_EPSG_AXIS_ORDER_KEY,
                                 transformer.isForceLongitudeFirst());
@@ -153,7 +154,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
 
     /**
-     * Get the {@link org.geotools.data.DataStore} object that contains the data for this layer.
+     * Get the {@link DataStore} object that contains the data for this layer.
      *
      * @param httpRequestFactory the factory for making http requests
      * @param transformer the map transformer

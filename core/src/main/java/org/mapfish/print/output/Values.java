@@ -1,8 +1,6 @@
 package org.mapfish.print.output;
 
-import com.google.common.collect.Maps;
 import com.vividsolutions.jts.util.Assert;
-import org.json.JSONException;
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
@@ -24,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -101,7 +100,7 @@ public final class Values {
             final Template template,
             final File taskDirectory,
             final MfClientHttpRequestFactoryImpl httpRequestFactory,
-            final File jasperTemplateBuild) throws JSONException {
+            final File jasperTemplateBuild) {
         this(jobId, requestData, template, taskDirectory, httpRequestFactory, jasperTemplateBuild, null);
     }
 
@@ -124,7 +123,7 @@ public final class Values {
             final File taskDirectory,
             final MfClientHttpRequestFactoryImpl httpRequestFactory,
             final File jasperTemplateBuild,
-            final String outputFormat) throws JSONException {
+            final String outputFormat) {
         //CHECKSTYLE:ON
         Assert.isTrue(!taskDirectory.mkdirs() || taskDirectory.exists());
 
@@ -144,7 +143,7 @@ public final class Values {
 
         final PJsonObject jsonAttributes = requestData.getJSONObject(MapPrinterServlet.JSON_ATTRIBUTES);
 
-        Map<String, Attribute> attributes = Maps.newHashMap(template.getAttributes());
+        Map<String, Attribute> attributes = new HashMap<>(template.getAttributes());
         populateFromAttributes(template, attributes, jsonAttributes);
 
         this.values.put(JOB_ID_KEY, jobId);
@@ -169,12 +168,11 @@ public final class Values {
      * @param template the template of the current request.
      * @param attributes the attributes that will be used to add values to this values object
      * @param requestJsonAttributes the json data for populating the attribute values
-     * @throws JSONException
      */
     public void populateFromAttributes(
             @Nonnull final Template template,
             @Nonnull final Map<String, Attribute> attributes,
-            @Nonnull final PObject requestJsonAttributes) throws JSONException {
+            @Nonnull final PObject requestJsonAttributes) {
         if (requestJsonAttributes.has(JSON_REQUEST_HEADERS) &&
                 requestJsonAttributes.getObject(JSON_REQUEST_HEADERS).has(JSON_REQUEST_HEADERS) &&
                 !attributes.containsKey(JSON_REQUEST_HEADERS)) {
@@ -354,11 +352,10 @@ public final class Values {
      */
     @SuppressWarnings("unchecked")
     public <T> Map<String, T> find(final Class<T> valueTypeToFind) {
-        final Map<String, Object> filtered = Maps.filterEntries(this.values,
-                                                                input -> input != null && valueTypeToFind
-                                                                        .isInstance(input.getValue()));
-
-        return (Map<String, T>) filtered;
+        return (Map<String, T>) this.values.entrySet().stream()
+                .filter(input -> valueTypeToFind.isInstance(input.getValue()))
+                .collect(
+                        Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     @Override

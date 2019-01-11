@@ -1,9 +1,7 @@
 package org.mapfish.print.processor;
 
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.base.Objects;
 import com.google.common.collect.BiMap;
-import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
 import org.apache.commons.collections.CollectionUtils;
 import org.mapfish.print.attribute.Attribute;
@@ -21,8 +19,10 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -39,7 +39,7 @@ public final class ProcessorDependencyGraphFactory {
 
     private static Set<InputValue> getInputs(final Processor<?, ?> processor) {
         final BiMap<String, String> inputMapper = processor.getInputMapperBiMap();
-        final Set<InputValue> inputs = Sets.newHashSet();
+        final Set<InputValue> inputs = new HashSet<>();
 
         final Object inputParameter = processor.createInputParameter();
         if (inputParameter != null) {
@@ -61,7 +61,7 @@ public final class ProcessorDependencyGraphFactory {
 
     private static Collection<OutputValue> getOutputValues(final Processor<?, ?> processor) {
         final Map<String, String> outputMapper = processor.getOutputMapperBiMap();
-        final Set<OutputValue> values = Sets.newHashSet();
+        final Set<OutputValue> values = new HashSet<>();
 
         final Set<String> mappings = outputMapper.keySet();
         final Class<?> paramType = processor.getOutputType();
@@ -333,21 +333,21 @@ public final class ProcessorDependencyGraphFactory {
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(this.name);
+            return Objects.hash(this.name);
         }
 
         @Override
         public boolean equals(final Object obj) {
-            if (obj == null) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null || getClass() != obj.getClass()) {
                 return false;
             }
-
-            if (this.getClass() != obj.getClass()) {
-                return false;
-            }
-
-            return Objects.equal(this.name, ((InputValue) obj).name);
+            final InputValue that = (InputValue) obj;
+            return Objects.equals(name, that.name);
         }
+
 
         @Override
         public String toString() {

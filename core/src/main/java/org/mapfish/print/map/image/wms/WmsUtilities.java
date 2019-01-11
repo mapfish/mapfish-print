@@ -1,8 +1,8 @@
 package org.mapfish.print.map.image.wms;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.geotools.data.wms.request.GetMapRequest;
@@ -189,7 +189,7 @@ public final class WmsUtilities {
                 Collection<String> values = extraParams.removeAll(key);
                 List<String> newValues = new ArrayList<>();
                 for (String value: values) {
-                    if (!Strings.isNullOrEmpty(value)) {
+                    if (!StringUtils.isEmpty(value)) {
                         value += ";dpi:" + Integer.toString(dpi);
                         newValues.add(value);
                     }

@@ -1,6 +1,5 @@
 package org.mapfish.print;
 
-import com.google.common.io.Files;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -18,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -84,7 +84,7 @@ public class MapPrinter {
      * @param newConfigFile the file containing the new configuration.
      */
     public final void setConfiguration(final File newConfigFile) throws IOException {
-        setConfiguration(newConfigFile.toURI(), Files.toByteArray(newConfigFile));
+        setConfiguration(newConfigFile.toURI(), Files.readAllBytes(newConfigFile.toPath()));
     }
 
     /**

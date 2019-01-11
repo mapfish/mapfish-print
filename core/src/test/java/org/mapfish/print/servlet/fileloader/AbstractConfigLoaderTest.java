@@ -1,6 +1,6 @@
 package org.mapfish.print.servlet.fileloader;
 
-import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -10,6 +10,7 @@ import org.mapfish.print.config.WorkingDirectories;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 
@@ -57,7 +58,7 @@ public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest
         final Configuration configuration = getConfiguration();
 
         final String resourceFileName = "resourceFile.txt";
-        final byte[] bytes = Files.toByteArray(getFile(FileConfigFileLoader.class, resourceFileName));
+        final byte[] bytes = getFileBytes(FileConfigFileLoader.class, resourceFileName);
 
         assertLoadable(bytes, this.workingDirectories.getReports());
         assertLoadable(bytes, this.workingDirectories.getWorking(configuration));
@@ -69,7 +70,7 @@ public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest
         final File testFile = new File(baseWorkingDir, "testFile");
         try {
             testFile.getParentFile().mkdirs();
-            Files.touch(testFile);
+            new FileOutputStream(testFile).close();
             assertTrue(testFile.getAbsolutePath() + " is not accessible",
                        getLoader().isAccessible(CONFIG_FILE.toURI(),
                                                 testFile.getAbsolutePath()));
@@ -87,7 +88,7 @@ public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest
         final File testFile = new File(baseWorkingDir, "testFile");
         try {
             testFile.getParentFile().mkdirs();
-            Files.write(bytes, testFile);
+            FileUtils.writeByteArrayToFile(testFile, bytes);
             assertArrayEquals(bytes, getLoader().loadFile(CONFIG_FILE.toURI(), testFile.getAbsolutePath()));
             assertArrayEquals(bytes, getLoader()
                     .loadFile(CONFIG_FILE.toURI(), testFile.getAbsoluteFile().toURI().toString()));

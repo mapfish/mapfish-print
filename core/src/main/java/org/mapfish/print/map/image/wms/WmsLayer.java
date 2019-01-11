@@ -2,8 +2,8 @@ package org.mapfish.print.map.image.wms;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.io.Closer;
 import com.vividsolutions.jts.util.Assert;
+import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapfishMapContext;
@@ -69,28 +69,23 @@ public final class WmsLayer extends AbstractSingleImageLayer {
 
         final String baseMetricName = WmsLayer.class.getName() + ".read." +
                 this.imageRequest.getURI().getHost();
-        try (Closer closer = Closer.create()) {
-            final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
-            LOGGER.info("Query the WMS image {}.", this.imageRequest.getURI());
-            final ClientHttpResponse response = closer.register(this.imageRequest.execute());
+        final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
+        LOGGER.info("Query the WMS image {}.", this.imageRequest.getURI());
+        try (ClientHttpResponse response = this.imageRequest.execute()) {
 
             Assert.isTrue(response != null, "No response, see error above");
-            Assert.equals(HttpStatus.OK, response.getStatusCode(), String.format("Http status code for %s " +
-                                                                                         "was not OK.  It " +
-                                                                                         "was: %s. The " +
-                                                                                         "response message " +
-                                                                                         "was: '%s'",
-                                                                                 this.imageRequest.getURI(),
-                                                                                 response.getStatusCode(),
-                                                                                 response.getStatusText()));
+            Assert.equals(HttpStatus.OK, response.getStatusCode(),
+                          String.format("Http status code for %s was not OK.  It was: %s. " +
+                                                "The response message was: '%s'",
+                                        this.imageRequest.getURI(), response.getStatusCode(),
+                                        response.getStatusText()));
 
             final List<String> contentType = response.getHeaders().get("Content-Type");
             if (contentType == null || contentType.size() != 1) {
                 LOGGER.debug("The WMS image {} don't return a valid content type header.",
                              this.imageRequest.getURI());
             } else if (!contentType.get(0).startsWith("image/")) {
-                byte[] data = new byte[response.getBody().available()];
-                response.getBody().read(data);
+                byte[] data = IOUtils.toByteArray(response.getBody());
                 LOGGER.debug("We get a wrong WMS image for {}, content type: {}\nresult:\n{}",
                              this.imageRequest.getURI(), contentType.get(0), new String(data, "UTF-8"));
                 this.registry.counter(baseMetricName + ".error").inc();

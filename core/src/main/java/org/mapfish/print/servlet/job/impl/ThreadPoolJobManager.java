@@ -2,7 +2,6 @@ package org.mapfish.print.servlet.job.impl;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.primitives.Longs;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.servlet.job.JobManager;
@@ -104,7 +103,7 @@ public class ThreadPoolJobManager implements JobManager {
      * requests from other users.
      */
     private Comparator<PrintJob> jobPriorityComparator =
-            (o1, o2) -> Longs.compare(o1.getEntry().getStartTime(), o2.getEntry().getStartTime());
+            Comparator.comparingLong(o -> o.getEntry().getStartTime());
     private ThreadPoolExecutor executor;
     private ScheduledExecutorService timer;
     private ScheduledExecutorService cleanUpTimer;
@@ -125,6 +124,7 @@ public class ThreadPoolJobManager implements JobManager {
 
     public final void setMaxNumberOfRunningPrintJobs(final int maxNumberOfRunningPrintJobs) {
         this.maxNumberOfRunningPrintJobs = maxNumberOfRunningPrintJobs;
+
     }
 
     public final void setMaxNumberOfWaitingJobs(final int maxNumberOfWaitingJobs) {

@@ -2,7 +2,6 @@ package org.mapfish.print.output;
 
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
 import com.vividsolutions.jts.util.AssertionFailedException;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataSource;
@@ -45,6 +44,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -349,7 +349,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                 new LocalJasperReportsContext(DefaultJasperReportsContext.getInstance());
         ctx.setClassLoader(getClass().getClassLoader());
         ctx.setExtensions(RepositoryService.class,
-                          Lists.newArrayList(
+                          Collections.singletonList(
                                   new MapfishPrintRepositoryService(httpRequestFactoryProvider.get())));
         return ctx;
     }

@@ -1,7 +1,5 @@
 package org.mapfish.print.map.style;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDTransformer;
 import org.geotools.styling.Style;
@@ -15,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 
 /**
@@ -25,10 +25,10 @@ import javax.annotation.Nonnull;
 public final class StyleParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(StyleParser.class);
     @Autowired
-    private List<StyleParserPlugin> plugins = Lists.newArrayList();
+    private List<StyleParserPlugin> plugins = new ArrayList<>();
 
     /**
-     * Load style using one of the plugins or return Optional.absent().
+     * Load style using one of the plugins or return Optional.empty().
      *
      * @param configuration the configuration for the current request.
      * @param clientHttpRequestFactory a factory for making http requests
@@ -69,6 +69,6 @@ public final class StyleParser {
                 }
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }

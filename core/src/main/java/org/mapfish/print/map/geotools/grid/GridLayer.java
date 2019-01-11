@@ -1,7 +1,6 @@
 package org.mapfish.print.map.geotools.grid;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
 import org.geotools.data.FeatureSource;
 import org.geotools.map.Layer;
 import org.mapfish.print.Constants;
@@ -24,6 +23,7 @@ import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
 
@@ -63,7 +63,7 @@ public final class GridLayer implements MapLayer {
 
     @Override
     public Optional<MapLayer> tryAddLayer(final MapLayer newLayer) {
-        return Optional.absent();
+        return Optional.empty();
     }
 
     @Override

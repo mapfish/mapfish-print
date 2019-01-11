@@ -1,8 +1,6 @@
 package org.mapfish.print.config.access;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Sets;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,7 +50,7 @@ public final class RoleAccessAssertion implements AccessAssertion {
                 Set roles = (Set) assertionRequiredRoles;
                 this.requiredRoles = Collections.unmodifiableSet(roles);
             } else {
-                this.requiredRoles = Collections.unmodifiableSet(Sets.newHashSet(assertionRequiredRoles));
+                this.requiredRoles = Collections.unmodifiableSet(new HashSet<>(assertionRequiredRoles));
             }
         }
         return this;
@@ -72,13 +70,9 @@ public final class RoleAccessAssertion implements AccessAssertion {
         } else {
             Collection<String> authorities =
                     Collections2.transform(context.getAuthentication().getAuthorities(),
-                                           new Function<GrantedAuthority, String>() {
-                                               @Nullable
-                                               @Override
-                                               public String apply(@Nullable final GrantedAuthority input) {
-                                                   return input == null ? "" : input.toString();
-                                               }
-                                           });
+                                           (@Nullable final GrantedAuthority input) -> (
+                                                   input == null ? "" : input.toString())
+                    );
             for (String acc: this.requiredRoles) {
                 if (authorities.contains(acc)) {
                     return;
@@ -110,7 +104,7 @@ public final class RoleAccessAssertion implements AccessAssertion {
     @Override
     public void unmarshal(final JSONObject encodedAssertion) {
         try {
-            this.requiredRoles = Sets.newHashSet();
+            this.requiredRoles = new HashSet<>();
             final JSONArray roles = encodedAssertion.getJSONArray(JSON_ROLES);
             for (int i = 0; i < roles.length(); i++) {
                 this.requiredRoles.add(roles.getString(i));

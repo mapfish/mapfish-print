@@ -3,6 +3,7 @@ package org.mapfish.print.config;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,6 @@ import java.util.Date;
 import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
-
-import static com.google.common.io.Files.getNameWithoutExtension;
 
 /**
  * Class for configuring the working directories and ensuring they exist correctly.
@@ -145,11 +144,11 @@ public class WorkingDirectories {
         final String parentDir = jasperFileXml.getAbsoluteFile().getParent();
         final String relativePathToFile;
         if (configurationAbsolutePath.equals(parentDir)) {
-            relativePathToFile = getNameWithoutExtension(jasperFileXml.getName());
+            relativePathToFile = FilenameUtils.getBaseName(jasperFileXml.getName());
         } else {
             final String relativePathToContainingDirectory = parentDir.substring(prefixToConfiguration);
             relativePathToFile = relativePathToContainingDirectory + File.separator +
-                    getNameWithoutExtension(jasperFileXml.getName());
+                    FilenameUtils.getBaseName(jasperFileXml.getName());
         }
 
         final File buildFile = new File(getJasperCompilation(configuration), relativePathToFile + extension);

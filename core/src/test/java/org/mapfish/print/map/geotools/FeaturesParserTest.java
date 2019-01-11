@@ -1,6 +1,5 @@
 package org.mapfish.print.map.geotools;
 
-import com.google.common.io.Files;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultEngineeringCRS;
@@ -188,7 +187,9 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
         for (File geojsonExample: getGeoJsonExamples()) {
             try {
                 int numFeatures = getNumExpectedFeatures(geojsonExample);
-                final String geojson = Files.toString(geojsonExample, Constants.DEFAULT_CHARSET);
+                final String geojson = new String(java.nio.file.Files.readAllBytes(geojsonExample.toPath()),
+                                                  Constants.DEFAULT_CHARSET);
+
                 final SimpleFeatureCollection simpleFeatureCollection =
                         featuresParser.treatStringAsGeoJson(geojson);
                 assertEquals(geojsonExample.getName(), numFeatures, simpleFeatureCollection.size());

@@ -1,6 +1,5 @@
 package org.mapfish.print.processor.http;
 
-import com.google.common.collect.Maps;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
@@ -13,6 +12,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  */
 public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(MapUriProcessor.class);
-    private final Map<Pattern, String> uriMapping = Maps.newHashMap();
+    private final Map<Pattern, String> uriMapping = new HashMap<>();
 
     /**
      * Set the uri mappings.

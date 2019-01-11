@@ -1,6 +1,7 @@
 package org.mapfish.print.map.geotools;
 
 import org.geotools.styling.Style;
+import org.mapfish.print.OptionalUtils;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.style.StyleParser;
@@ -32,9 +33,10 @@ public abstract class AbstractGridCoverageLayerPlugin {
                     final MfClientHttpRequestFactory requestFactory,
                     final T featureSource) {
                 final StyleParser parser = AbstractGridCoverageLayerPlugin.this.styleParser;
-                return template.getStyle(styleRef)
-                        .or(parser.loadStyle(template.getConfiguration(), requestFactory, styleRef))
-                        .or(template.getConfiguration().getDefaultStyle(NAME));
+                return OptionalUtils.or(
+                        () -> template.getStyle(styleRef),
+                        () -> parser.loadStyle(template.getConfiguration(), requestFactory, styleRef))
+                        .orElse(template.getConfiguration().getDefaultStyle(NAME));
             }
         };
     }

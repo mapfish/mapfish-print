@@ -3,10 +3,6 @@ package org.mapfish.print.processor.map;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.io.Closer;
-import com.google.common.io.Files;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfWriter;
@@ -18,6 +14,8 @@ import org.apache.batik.svggen.DefaultStyleHandler;
 import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.batik.transcoder.TranscoderException;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.JTS;
@@ -74,6 +72,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -209,12 +208,10 @@ public final class CreateMapProcessor
      * @param path The file.
      */
     public static void saveSvgFile(final SVGGraphics2D graphics2d, final File path) throws IOException {
-        try (Closer closer = Closer.create()) {
-            final FileOutputStream fs = closer.register(new FileOutputStream(path));
-            final OutputStreamWriter outputStreamWriter =
-                    closer.register(new OutputStreamWriter(fs, "UTF-8"));
-            Writer osw = closer.register(new BufferedWriter(outputStreamWriter));
-
+        try (FileOutputStream fs = new FileOutputStream(path);
+             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fs, "UTF-8");
+             Writer osw = new BufferedWriter(outputStreamWriter)
+        ) {
             graphics2d.stream(osw, true);
         }
     }
@@ -310,7 +307,7 @@ public final class CreateMapProcessor
             final List<URI> graphics, final Graphics g) throws IOException {
         for (URI graphic: graphics) {
             final File graphicFile = new File(graphic);
-            if (Files.getFileExtension(graphicFile.getName()).equals("svg")) {
+            if (FilenameUtils.getExtension(graphicFile.getName()).equals("svg")) {
                 try {
                     g.drawImage(SvgUtil.convertFromSvg(graphic, width, height), 0, 0, width, height, null);
                 } catch (TranscoderException e) {
@@ -369,7 +366,8 @@ public final class CreateMapProcessor
             final MapfishMapContext mapContext)
             throws Exception {
         // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
-        final List<MapLayer> layers = Lists.reverse(Lists.newArrayList(mapValues.getLayers()));
+        final List<MapLayer> layers = new ArrayList<>(mapValues.getLayers());
+        Collections.reverse(layers);
 
         final AreaOfInterest areaOfInterest = addAreaOfInterestLayer(mapValues, layers);
 
@@ -596,8 +594,8 @@ public final class CreateMapProcessor
         for (MapLayer layer: mapValues.getLayers()) {
             context.stopIfCanceled();
 
-            if ((!Strings.isNullOrEmpty(layerName) && layerName.equals(layer.getName())) ||
-                    (Strings.isNullOrEmpty(layerName) && layer instanceof AbstractFeatureSourceLayer)) {
+            if ((!StringUtils.isEmpty(layerName) && layerName.equals(layer.getName())) ||
+                    (StringUtils.isEmpty(layerName) && layer instanceof AbstractFeatureSourceLayer)) {
                 AbstractFeatureSourceLayer featureLayer = (AbstractFeatureSourceLayer) layer;
                 FeatureSource<?, ?> featureSource =
                         featureLayer.getFeatureSource(clientHttpRequestFactory, mapContext);

@@ -1,6 +1,5 @@
 package org.mapfish.print.attribute.map;
 
-import com.google.common.base.Function;
 import com.vividsolutions.jts.geom.Envelope;
 import org.json.JSONArray;
 import org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues;
@@ -10,6 +9,7 @@ import org.mapfish.print.parser.CanSatisfyOneOf;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.OneOf;
 import org.mapfish.print.parser.Requires;
+import org.mapfish.print.processor.map.CreateMapProcessor;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.opengis.referencing.FactoryException;
@@ -17,10 +17,11 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 
 /**
- * <p>The attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor} (see
+ * <p>The attributes for {@link CreateMapProcessor} (see
  * <a href="processors.html#!createMap">!createMap</a> processor).</p>
  * [[examples=verboseExample]]
  */
@@ -45,7 +46,7 @@ public final class MapAttribute extends GenericMapAttribute {
     /**
      * The value of {@link MapAttribute}.
      */
-    public class MapAttributeValues extends GenericMapAttribute.GenericMapAttributeValues {
+    public class MapAttributeValues extends GenericMapAttributeValues {
 
         private static final boolean DEFAULT_ADJUST_BOUNDS = false;
         private static final double DEFAULT_ROTATION = 0.0;
@@ -242,9 +243,9 @@ public final class MapAttribute extends GenericMapAttribute {
         }
 
         /**
-         * Creates an {@link org.mapfish.print.attribute.map.MapAttribute.OverriddenMapAttributeValues}
+         * Creates an {@link OverriddenMapAttributeValues}
          * instance with the current object and a given
-         * {@link org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues}
+         * {@link OverviewMapAttributeValues}
          * instance.
          *
          * @param paramOverrides Attributes set in this instance will override attributes in the
@@ -263,7 +264,7 @@ public final class MapAttribute extends GenericMapAttribute {
          * @param updater a function which will be called after copy is made but before postConstruct
          *         is called in order to do other configuration changes.
          */
-        public MapAttribute.MapAttributeValues copy(
+        public MapAttributeValues copy(
                 final int width, final int height,
                 @Nonnull final Function<MapAttributeValues, Void> updater) {
             MapAttributeValues copy = new MapAttributeValues(getTemplate(), width, height);
@@ -291,11 +292,11 @@ public final class MapAttribute extends GenericMapAttribute {
 
     /**
      * A wrapper around a {@link MapAttributeValues} instance and an
-     * {@link org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues}
+     * {@link OverviewMapAttributeValues}
      * instance, which is used to render the overview map.
      * <p>
      * If attributes on the
-     * {@link org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues}
+     * {@link OverviewMapAttributeValues}
      * instance are set, those attributes will be returned, otherwise the ones on {@link MapAttributeValues}.
      */
     public class OverriddenMapAttributeValues extends MapAttributeValues {

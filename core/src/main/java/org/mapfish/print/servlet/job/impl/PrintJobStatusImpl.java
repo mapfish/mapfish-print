@@ -161,6 +161,7 @@ public class PrintJobStatusImpl implements PrintJobStatus {
         if (this.completionTime != null) {
             return this.completionTime - getEntry().getStartTime();
         } else if (this.statusTime != null) {
+            // TODO: are we sure about that? Makes MapPrinterServletTest.doCreateAndPollAndGetReport unstable
             return this.statusTime - getEntry().getStartTime();
         } else {
             return System.currentTimeMillis() - getEntry().getStartTime();

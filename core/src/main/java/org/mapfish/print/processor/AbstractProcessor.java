@@ -175,7 +175,16 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     // CHECKSTYLE:OFF
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "@" + System.identityHashCode(this);
+        String result = getClass().getSimpleName();
+        final String inPrefix = getInputPrefix();
+        if (inPrefix != null) {
+            result += " in=" + inPrefix;
+        }
+        final String outPrefix = getOutputPrefix();
+        if (outPrefix != null) {
+            result += " out=" + outPrefix;
+        }
+        return result;
     }
     // CHECKSTYLE:ON
 

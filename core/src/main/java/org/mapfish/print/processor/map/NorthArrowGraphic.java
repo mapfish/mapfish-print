@@ -1,6 +1,5 @@
 package org.mapfish.print.processor.map;
 
-import com.google.common.base.Strings;
 import com.google.common.io.Closer;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
@@ -8,6 +7,7 @@ import org.apache.batik.dom.util.DOMUtilities;
 import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.apache.commons.io.output.FileWriterWithEncoding;
+import org.apache.commons.lang.StringUtils;
 import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.ImageUtils;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
@@ -87,7 +87,7 @@ public final class NorthArrowGraphic {
             final String graphicFile,
             final MfClientHttpRequestFactory clientHttpRequestFactory,
             final Closer closer) throws IOException, URISyntaxException {
-        if (Strings.isNullOrEmpty(graphicFile)) {
+        if (StringUtils.isEmpty(graphicFile)) {
             // if no graphic is set, take a default graphic
             URL file = NorthArrowGraphic.class.getResource(DEFAULT_GRAPHIC);
             InputStream inputStream = new BufferedInputStream(new FileInputStream(new File(file.toURI())));
@@ -261,7 +261,7 @@ public final class NorthArrowGraphic {
          *              </g>
          *          </svg>
          */
-        if (!Strings.isNullOrEmpty(originalWidth) && !Strings.isNullOrEmpty(originalHeight)) {
+        if (!StringUtils.isEmpty(originalWidth) && !StringUtils.isEmpty(originalHeight)) {
             Element wrapperContainer = newDocument.createElementNS(SVG_NS, "g");
             wrapperContainer.setAttributeNS(
                     null,
@@ -278,7 +278,7 @@ public final class NorthArrowGraphic {
 
             Node svgRootImported = newDocument.importNode(svgRoot, true);
             wrapperSvg.appendChild(svgRootImported);
-        } else if (Strings.isNullOrEmpty(originalWidth) && Strings.isNullOrEmpty(originalHeight)) {
+        } else if (StringUtils.isEmpty(originalWidth) && StringUtils.isEmpty(originalHeight)) {
             Element wrapperContainer = newDocument.createElementNS(SVG_NS, "g");
             wrapperContainer.setAttributeNS(
                     null,

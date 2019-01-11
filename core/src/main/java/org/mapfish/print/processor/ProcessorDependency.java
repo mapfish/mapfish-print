@@ -1,7 +1,5 @@
 package org.mapfish.print.processor;
 
-import com.google.common.collect.Sets;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,7 +28,7 @@ public class ProcessorDependency {
             final Set<String> commonInputs) {
         this.required = required;
         this.dependent = dependent;
-        this.commonInputs = Sets.newHashSet(commonInputs);
+        this.commonInputs = new HashSet<>(commonInputs);
     }
 
     /**

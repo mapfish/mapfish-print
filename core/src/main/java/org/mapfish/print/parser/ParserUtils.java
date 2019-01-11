@@ -1,16 +1,14 @@
 package org.mapfish.print.parser;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Sets;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 /**
@@ -21,51 +19,29 @@ public final class ParserUtils {
      * A filter (for the get attribute methods) that selects only the attributes that are required and
      * excludes all of those with defaults, and therefore are considered optional.
      */
-    public static final Predicate<Field> FILTER_ONLY_REQUIRED_ATTRIBUTES = new Predicate<Field>() {
-        @Override
-        public boolean apply(@Nullable final Field input) {
-            return input != null && input.getAnnotation(HasDefaultValue.class) == null &&
+    public static final Predicate<Field> FILTER_ONLY_REQUIRED_ATTRIBUTES =
+            input -> input != null && input.getAnnotation(HasDefaultValue.class) == null &&
                     !Modifier.isFinal(input.getModifiers());
-        }
-    };
     /**
      * A filter (for the get attribute methods) that selects only the attributes that are NOT required and
      * excludes all of those that are considered required.
      */
-    public static final Predicate<Field> FILTER_HAS_DEFAULT_ATTRIBUTES = new Predicate<Field>() {
-        @Override
-        public boolean apply(@Nullable final Field input) {
-            return input != null && input.getAnnotation(HasDefaultValue.class) != null;
-        }
-    };
+    public static final Predicate<Field> FILTER_HAS_DEFAULT_ATTRIBUTES =
+            input -> input != null && input.getAnnotation(HasDefaultValue.class) != null;
     /**
      * A filter (for the get attribute methods) that selects only the attributes that are non final. (Can be
      * modified)
      */
-    public static final Predicate<Field> FILTER_NON_FINAL_FIELDS = new Predicate<Field>() {
-        @Override
-        public boolean apply(@Nullable final Field input) {
-            return input != null && !Modifier.isFinal(input.getModifiers());
-        }
-    };
+    public static final Predicate<Field> FILTER_NON_FINAL_FIELDS =
+            input -> input != null && !Modifier.isFinal(input.getModifiers());
     /**
      * A filter (for the get attribute methods) that selects only the attributes that are final. (Can NOT be
      * modified)
      */
-    public static final Predicate<Field> FILTER_FINAL_FIELDS = new Predicate<Field>() {
-        @Override
-        public boolean apply(@Nullable final Field input) {
-            return input != null && Modifier.isFinal(input.getModifiers());
-        }
-    };
+    public static final Predicate<Field> FILTER_FINAL_FIELDS =
+            (@Nullable final Field input) -> input != null && Modifier.isFinal(input.getModifiers());
 
-    private static final Function<Field, String> FIELD_TO_NAME = new Function<Field, String>() {
-        @Nullable
-        @Override
-        public String apply(final Field input) {
-            return input.getName();
-        }
-    };
+    private static final Function<Field, String> FIELD_TO_NAME = Field::getName;
 
     private ParserUtils() {
         // intentionally empty.
@@ -78,8 +54,8 @@ public final class ParserUtils {
      * @param classToInspect the class under inspection.
      */
     public static Collection<Field> getAllAttributes(final Class<?> classToInspect) {
-        Set<Field> allFields = Sets.newHashSet();
-        getAllAttributes(classToInspect, allFields, Functions.identity(), field -> true);
+        Set<Field> allFields = new HashSet<>();
+        getAllAttributes(classToInspect, allFields, Function.identity(), field -> true);
         return allFields;
     }
 
@@ -93,19 +69,20 @@ public final class ParserUtils {
      */
     public static Collection<Field> getAttributes(
             final Class<?> classToInspect, final Predicate<Field> filter) {
-        Set<Field> allFields = Sets.newHashSet();
-        getAllAttributes(classToInspect, allFields, Functions.identity(), filter::test);
+        Set<Field> allFields = new HashSet<>();
+        getAllAttributes(classToInspect, allFields, Function.identity(), filter);
         return allFields;
     }
 
     private static <V> void getAllAttributes(
             final Class<?> classToInspect, final Set<V> results,
-            final Function<Field, V> map, final java.util.function.Predicate<Field> filter) {
+            final Function<Field, V> map, final Predicate<Field> filter) {
 
         if (classToInspect != null && classToInspect != Void.class) {
-            Collection<Field> filteredResults =
-                    Collections2.filter(Arrays.asList(classToInspect.getFields()), filter::test);
-            Collection<? extends V> resultsForClass = Collections2.transform(filteredResults, map);
+            Collection<? extends V> resultsForClass = Arrays.stream(classToInspect.getFields())
+                    .filter(filter)
+                    .map(map)
+                    .collect(Collectors.toList());
             results.addAll(resultsForClass);
             if (classToInspect.getSuperclass() != null) {
                 getAllAttributes(classToInspect.getSuperclass(), results, map, filter);
@@ -119,7 +96,7 @@ public final class ParserUtils {
      * @param classToInspect the class to inspect
      */
     public static Set<String> getAllAttributeNames(final Class<?> classToInspect) {
-        Set<String> allFields = Sets.newHashSet();
+        Set<String> allFields = new HashSet<>();
         getAllAttributes(classToInspect, allFields, FIELD_TO_NAME, field -> true);
         return allFields;
     }
@@ -132,8 +109,8 @@ public final class ParserUtils {
      *         collection.
      */
     public static Set<String> getAttributeNames(
-            final Class<?> classToInspect, final java.util.function.Predicate<Field> filter) {
-        Set<String> allFields = Sets.newHashSet();
+            final Class<?> classToInspect, final Predicate<Field> filter) {
+        Set<String> allFields = new HashSet<>();
         getAllAttributes(classToInspect, allFields, FIELD_TO_NAME, filter);
         return allFields;
     }

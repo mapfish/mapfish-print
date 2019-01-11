@@ -1,6 +1,5 @@
 package org.mapfish.print.test.util;
 
-import com.google.common.io.Files;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRGraphics2DExporter;
@@ -8,6 +7,8 @@ import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleGraphics2DExporterOutput;
 import net.sf.jasperreports.export.SimpleGraphics2DReportConfiguration;
 import org.apache.batik.transcoder.TranscoderException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.mapfish.print.SvgUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +94,7 @@ public final class ImageSimilarity {
             final ImageWriteParam param = next.getDefaultWriteParam();
             param.setCompressionMode(ImageWriteParam.MODE_DISABLED);
 
-            final File outputFile = new File(parentFile, Files.getNameWithoutExtension(file) + ".png");
+            final File outputFile = new File(parentFile, FilenameUtils.getBaseName(file) + ".png");
 
             out = new FileImageOutputStream(outputFile);
             next.setOutput(out);
@@ -187,12 +188,10 @@ public final class ImageSimilarity {
     public static void main(final String args[]) throws IOException {
         final String path = "core/src/test/resources/map-data";
         final File root = new File(path);
-        final Iterable<File> files = Files.fileTraverser().depthFirstPostOrder(root);
+        final Iterable<File> files = FileUtils.listFiles(root, new String[]{"png"}, true);
         for (File file: files) {
-            if (Files.getFileExtension(file.getName()).equals("png")) {
-                final BufferedImage img = ImageIO.read(file);
-                writeUncompressedImage(img, file.getAbsolutePath());
-            }
+            final BufferedImage img = ImageIO.read(file);
+            writeUncompressedImage(img, file.getAbsolutePath());
         }
     }
 

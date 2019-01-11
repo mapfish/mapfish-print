@@ -1,6 +1,5 @@
 package org.mapfish.print.http;
 
-import com.google.common.io.Closer;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
@@ -206,7 +205,6 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         private static final AtomicInteger ID_COUNTER = new AtomicInteger();
         private final HttpResponse response;
         private final int id = ID_COUNTER.incrementAndGet();
-        private Closer closer = Closer.create();
         private InputStream inputStream;
 
 
@@ -240,11 +238,13 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
                 LOGGER.error("Error occurred while trying to retrieve Http Response {} in order to close it.",
                              this.id, e);
             } finally {
-                try {
-                    this.closer.close();
-                } catch (IOException e) {
-                    LOGGER.trace("Error while closing Http Response object: {}", this.id);
-                    throw new RuntimeException(e);
+                if (this.inputStream != null) {
+                    try {
+                        this.inputStream.close();
+                    } catch (IOException e) {
+                        LOGGER.trace("Error while closing Http Response object: {}", this.id);
+                        throw new RuntimeException(e);
+                    }
                 }
 
                 LOGGER.trace("Closed Http Response object: {}", this.id);
@@ -256,7 +256,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             if (this.inputStream == null) {
                 final HttpEntity entity = this.response.getEntity();
                 if (entity != null) {
-                    this.inputStream = this.closer.register(entity.getContent());
+                    this.inputStream = entity.getContent();
                 }
 
                 if (this.inputStream == null) {

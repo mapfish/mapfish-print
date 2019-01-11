@@ -1,7 +1,6 @@
 package org.mapfish.print.config;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.io.Closer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +42,7 @@ public class ConfigurationFactory {
      */
     @VisibleForTesting
     public final Configuration getConfig(final File configFile) throws IOException {
-        try (Closer closer = Closer.create()) {
-            FileInputStream in = closer.register(new FileInputStream(configFile));
+        try (FileInputStream in = new FileInputStream(configFile)) {
             return getConfig(configFile, in);
         }
     }
@@ -62,7 +60,7 @@ public class ConfigurationFactory {
         MapfishPrintConstructor.setConfigurationUnderConstruction(configuration);
 
         final Configuration config =
-                (Configuration) this.yaml.load(new InputStreamReader(configData, "UTF-8"));
+                this.yaml.load(new InputStreamReader(configData, "UTF-8"));
         if (this.doValidation) {
             final List<Throwable> validate = config.validate();
             if (!validate.isEmpty()) {

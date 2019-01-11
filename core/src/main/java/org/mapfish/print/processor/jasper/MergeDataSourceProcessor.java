@@ -1,9 +1,5 @@
 package org.mapfish.print.processor.jasper;
 
-import com.google.common.annotations.Beta;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.vividsolutions.jts.util.Assert;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -16,7 +12,9 @@ import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.CustomDependencies;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +33,10 @@ import javax.annotation.Nullable;
  * </p>
  * [[examples=merged_datasource]]
  */
-@Beta
 public final class MergeDataSourceProcessor
         extends AbstractProcessor<MergeDataSourceProcessor.In, MergeDataSourceProcessor.Out>
         implements CustomDependencies {
-    private List<Source> sources = Lists.newArrayList();
+    private List<Source> sources = new ArrayList<>();
 
     /**
      * Constructor.
@@ -107,7 +104,7 @@ public final class MergeDataSourceProcessor
     @Nullable
     @Override
     public Out execute(final In values, final ExecutionContext context) throws Exception {
-        List<Map<String, ?>> rows = Lists.newArrayList();
+        List<Map<String, ?>> rows = new ArrayList<>();
 
         for (Source source: this.sources) {
             source.type.add(rows, values.values, source);
@@ -120,7 +117,7 @@ public final class MergeDataSourceProcessor
     @Nonnull
     @Override
     public Collection<String> getDependencies() {
-        HashSet<String> sourceKeys = Sets.newHashSet();
+        HashSet<String> sourceKeys = new HashSet<>();
         for (Source source: this.sources) {
             source.type.addValuesKeys(source, sourceKeys);
         }
@@ -144,7 +141,7 @@ public final class MergeDataSourceProcessor
             @Override
             void add(final List<Map<String, ?>> rows, final Values values, final Source source) {
 
-                Map<String, Object> row = Maps.newHashMap();
+                Map<String, Object> row = new HashMap<>();
                 for (Map.Entry<String, String> entry: source.fields.entrySet()) {
                     final Object object = values.getObject(entry.getKey(), Object.class);
                     row.put(entry.getValue(), object);
@@ -199,7 +196,7 @@ public final class MergeDataSourceProcessor
                 JRDesignField jrField = new JRDesignField();
 
                 while (dataSource.next()) {
-                    Map<String, Object> row = Maps.newHashMap();
+                    Map<String, Object> row = new HashMap<>();
                     for (Map.Entry<String, String> field: source.fields.entrySet()) {
                         jrField.setName(field.getKey());
                         row.put(field.getValue(), dataSource.getFieldValue(jrField));
@@ -275,7 +272,7 @@ public final class MergeDataSourceProcessor
     public static final class Source implements ConfigurationObject {
         String key;
         SourceType type;
-        Map<String, String> fields = Maps.newHashMap();
+        Map<String, String> fields = new HashMap<>();
 
         static Source createSource(final String key, final SourceType type) {
             Source source = new Source();

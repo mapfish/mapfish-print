@@ -1,6 +1,5 @@
 package org.mapfish.print.map.geotools;
 
-import com.google.common.collect.Lists;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -13,6 +12,7 @@ import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.processor.Processor;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
@@ -88,7 +88,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
             style = (Style) scale.getCopy();
         }
 
-        return Lists.newArrayList(new FeatureLayer(source, style));
+        return Collections.singletonList(new FeatureLayer(source, style));
     }
 
     public final void setFeatureCollection(final SimpleFeatureCollection featureCollection) {

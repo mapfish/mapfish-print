@@ -1,6 +1,5 @@
 package org.mapfish.print.processor.http.matcher;
 
-import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +9,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 
 /**
@@ -43,7 +43,7 @@ public abstract class InetHostMatcher extends HostMatcher {
             throws UnknownHostException, SocketException {
         final String host = matchInfo.getHost();
         if (host == MatchInfo.ANY_HOST) {
-            return Optional.absent();
+            return Optional.empty();
         }
 
         final InetAddress[] requestedIPs;
@@ -54,7 +54,7 @@ public abstract class InetHostMatcher extends HostMatcher {
         }
         for (InetAddress requestedIP: requestedIPs) {
             if (isInAuthorized(requestedIP)) {
-                return Optional.absent();
+                return Optional.empty();
             }
         }
         return Optional.of(false);

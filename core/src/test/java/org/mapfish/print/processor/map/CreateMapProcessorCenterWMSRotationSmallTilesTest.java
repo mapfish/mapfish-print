@@ -1,8 +1,6 @@
 package org.mapfish.print.processor.map;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Multimap;
-import com.google.common.io.Files;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -21,6 +19,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -45,13 +44,11 @@ public class CreateMapProcessorCenterWMSRotationSmallTilesTest extends AbstractM
     @DirtiesContext
     public void testExecute() throws Exception {
         requestFactory.registerHandler(
-                new Predicate<URI>() {
-                    @Override
-                    public boolean apply(URI input) {
-                        final String host = BASE_DIR + ".com";
-                        return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
-                    }
-                }, new TestHttpClientFactory.Handler() {
+                input -> {
+                    final String host = BASE_DIR + ".com";
+                    return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
+                },
+                new TestHttpClientFactory.Handler() {
                     @Override
                     public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
                             throws Exception {
@@ -59,7 +56,8 @@ public class CreateMapProcessorCenterWMSRotationSmallTilesTest extends AbstractM
 
                         try {
                             byte[] bytes =
-                                    Files.toByteArray(getTile(parameters.get("bbox").iterator().next()));
+                                    Files.readAllBytes(
+                                            getTile(parameters.get("bbox").iterator().next()).toPath());
                             return ok(uri, bytes, httpMethod);
                         } catch (AssertionError e) {
                             return error404(uri, httpMethod);

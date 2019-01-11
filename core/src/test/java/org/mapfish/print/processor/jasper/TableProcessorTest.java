@@ -1,7 +1,5 @@
 package org.mapfish.print.processor.jasper;
 
-import com.google.common.base.Predicate;
-import com.google.common.io.Resources;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.junit.Test;
@@ -16,19 +14,12 @@ import org.mapfish.print.output.Values;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.mock.http.client.MockClientHttpRequest;
-import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
-import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 
@@ -133,21 +124,8 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
 
     @Test
     public void testColumnImageConverter() throws Exception {
-        httpRequestFactory.registerHandler(new Predicate<URI>() {
-            @Override
-            public boolean apply(@Nullable URI input) {
-                return input.toString().contains("icons.com");
-            }
-        }, new TestHttpClientFactory.Handler() {
-            @Override
-            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
-                final URL imageUrl = TableProcessorTest.class.getResource("/icons" + uri.getPath());
-                final byte[] imageBytes = Resources.toByteArray(imageUrl);
-                MockClientHttpRequest request = new MockClientHttpRequest();
-                request.setResponse(new MockClientHttpResponse(imageBytes, HttpStatus.OK));
-                return request;
-            }
-        });
+        httpRequestFactory.registerHandler(input -> input.toString().contains("icons.com"),
+                                           createFileHandler(uri -> "/icons" + uri.getPath()));
 
         final String baseDir = IMAGE_CONVERTER_BASE_DIR;
         final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
@@ -168,21 +146,8 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
     @Test
     @DirtiesContext
     public void testTableConverters() throws Exception {
-        httpRequestFactory.registerHandler(new Predicate<URI>() {
-            @Override
-            public boolean apply(@Nullable URI input) {
-                return input.toString().contains("icons.com");
-            }
-        }, new TestHttpClientFactory.Handler() {
-            @Override
-            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
-                final URL imageUrl = TableProcessorTest.class.getResource("/icons" + uri.getPath());
-                final byte[] imageBytes = Resources.toByteArray(imageUrl);
-                MockClientHttpRequest request = new MockClientHttpRequest();
-                request.setResponse(new MockClientHttpResponse(imageBytes, HttpStatus.OK));
-                return request;
-            }
-        });
+        httpRequestFactory.registerHandler(input -> input.toString().contains("icons.com"),
+                                           createFileHandler(uri -> "/icons" + uri.getPath()));
 
         final String baseDir = TABLE_CONVERTERS;
         final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));

@@ -1,7 +1,5 @@
 package org.mapfish.print.processor.jasper;
 
-import com.google.common.base.Predicate;
-import com.google.common.io.Files;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
 import org.json.simple.JSONArray;
@@ -27,7 +25,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
-import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -55,12 +52,8 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
     @Test
     @DirtiesContext
     public void testBasicLegendProperties() throws Exception {
-        httpRequestFactory.registerHandler(new Predicate<URI>() {
-            @Override
-            public boolean apply(@Nullable URI input) {
-                return input != null && input.getHost().equals("legend.com");
-            }
-        }, new TestHttpClientFactory.Handler() {
+        httpRequestFactory.registerHandler(input -> input != null && input.getHost().equals("legend.com"),
+                                           new TestHttpClientFactory.Handler() {
             @Override
             public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
                 final MockClientHttpRequest request = new MockClientHttpRequest();
@@ -90,22 +83,8 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
     @Test
     @DirtiesContext
     public void testDynamicLegendProperties() throws Exception {
-        httpRequestFactory.registerHandler(new Predicate<URI>() {
-            @Override
-            public boolean apply(@Nullable URI input) {
-                return input != null && input.getHost().equals("legend.com");
-            }
-        }, new TestHttpClientFactory.Handler() {
-            @Override
-            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws IOException {
-                try {
-                    byte[] bytes = Files.toByteArray(getFile(BASE_DIR_DYNAMIC + uri.getPath()));
-                    return ok(uri, bytes, httpMethod);
-                } catch (AssertionError e) {
-                    return error404(uri, httpMethod);
-                }
-            }
-        });
+        httpRequestFactory.registerHandler(input -> input != null && input.getHost().equals("legend.com"),
+                                           createFileHandler(uri -> BASE_DIR_DYNAMIC + uri.getPath()));
         final Configuration config =
                 configurationFactory.getConfig(getFile(BASE_DIR_DYNAMIC + "config.yaml"));
         final Template template = config.getTemplate("main");
@@ -146,12 +125,8 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
     @Test
     @DirtiesContext
     public void testEmptyLegend() throws Exception {
-        httpRequestFactory.registerHandler(new Predicate<URI>() {
-            @Override
-            public boolean apply(@Nullable URI input) {
-                return input != null && input.getHost().equals("legend.com");
-            }
-        }, new TestHttpClientFactory.Handler() {
+        httpRequestFactory.registerHandler(input -> input != null && input.getHost().equals("legend.com"),
+                                           new TestHttpClientFactory.Handler() {
             @Override
             public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
                 final MockClientHttpRequest request = new MockClientHttpRequest();

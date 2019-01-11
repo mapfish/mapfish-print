@@ -1,7 +1,7 @@
 package org.mapfish.print.processor;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
+import org.apache.commons.lang.StringUtils;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.HasDefaultValue;
@@ -146,7 +146,7 @@ public final class ProcessorUtils {
         String name = outputMapper.get(field.getName());
         if (name == null) {
             name = field.getName();
-            if (!Strings.isNullOrEmpty(outputPrefix) && !outputPrefix.trim().isEmpty()) {
+            if (!StringUtils.isEmpty(outputPrefix) && !outputPrefix.trim().isEmpty()) {
                 name = outputPrefix.trim() + Character.toUpperCase(name.charAt(0)) + name.substring(1);
             }
         }

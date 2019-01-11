@@ -1,33 +1,28 @@
 package org.mapfish.print.map.style;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.io.ByteSource;
-import com.google.common.io.CharSource;
-import com.google.common.io.Closeables;
 import com.vividsolutions.jts.util.Assert;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.DefaultResourceLocator;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.mapfish.print.Constants;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Optional;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
@@ -53,27 +48,17 @@ public class SLDParserPlugin implements StyleParserPlugin {
             @Nonnull final String styleString) throws Throwable {
 
         // try to load xml
-        final ByteSource straightByteSource =
-                ByteSource.wrap(styleString.getBytes(Constants.DEFAULT_CHARSET));
-        final Optional<Style> styleOptional = tryLoadSLD(straightByteSource, null,
-                                                         clientHttpRequestFactory);
+        final Optional<Style> styleOptional = tryLoadSLD(
+                styleString.getBytes(Constants.DEFAULT_CHARSET), null, clientHttpRequestFactory);
 
         if (styleOptional.isPresent()) {
             return styleOptional;
         }
 
-        final Integer styleIndex = lookupStyleIndex(styleString).orNull();
+        final Integer styleIndex = lookupStyleIndex(styleString).orElse(null);
         final String styleStringWithoutIndexReference = removeIndexReference(styleString);
-        Function<byte[], Optional<Style>> loadFunction = new Function<byte[], Optional<Style>>() {
-            @Override
-            public Optional<Style> apply(final byte[] input) {
-                final ByteSource bytes = ByteSource.wrap(input);
-                try {
-                    return tryLoadSLD(bytes, styleIndex, clientHttpRequestFactory);
-                } catch (IOException e) {
-                    throw ExceptionUtils.getRuntimeException(e);
-                }
-            }
+        Function<byte[], Optional<Style>> loadFunction = input -> {
+            return tryLoadSLD(input, styleIndex, clientHttpRequestFactory);
         };
 
         return ParserPluginUtils.loadStyleAsURI(clientHttpRequestFactory, styleStringWithoutIndexReference,
@@ -93,21 +78,17 @@ public class SLDParserPlugin implements StyleParserPlugin {
         if (styleIdentifier > 0) {
             return Optional.of(Integer.parseInt(ref.substring(styleIdentifier + 2)) - 1);
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     private Optional<Style> tryLoadSLD(
-            final ByteSource byteSource, final Integer styleIndex,
-            final ClientHttpRequestFactory clientHttpRequestFactory) throws IOException {
+            final byte[] bytes, final Integer styleIndex,
+            final ClientHttpRequestFactory clientHttpRequestFactory) {
         Assert.isTrue(styleIndex == null || styleIndex > -1,
                       "styleIndex must be > -1 but was: " + styleIndex);
 
-        final CharSource charSource = byteSource.asCharSource(Constants.DEFAULT_CHARSET);
-        BufferedReader readerXML = null;
-        BufferedReader readerSLD = null;
         final Style[] styles;
         try {
-            readerXML = charSource.openBufferedStream();
 
             // check if the XML is valid
             // this is only done in a separate step to avoid that fatal errors show up in the logs
@@ -116,10 +97,9 @@ public class SLDParserPlugin implements StyleParserPlugin {
             dbf.setNamespaceAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             db.setErrorHandler(new ErrorHandler());
-            db.parse(new InputSource(readerXML));
+            db.parse(new ByteArrayInputStream(bytes));
 
             // then read the styles
-            readerSLD = charSource.openBufferedStream();
             final SLDParser sldParser = new SLDParser(CommonFactoryFinder.getStyleFactory());
             sldParser.setOnLineResourceLocator(new DefaultResourceLocator() {
                 @Override
@@ -143,14 +123,11 @@ public class SLDParserPlugin implements StyleParserPlugin {
                     }
                 }
             });
-            sldParser.setInput(readerSLD);
+            sldParser.setInput(new ByteArrayInputStream(bytes));
             styles = sldParser.readXML();
 
         } catch (Throwable e) {
-            return Optional.absent();
-        } finally {
-            Closeables.close(readerXML, true);
-            Closeables.close(readerSLD, true);
+            return Optional.empty();
         }
 
         if (styleIndex != null) {

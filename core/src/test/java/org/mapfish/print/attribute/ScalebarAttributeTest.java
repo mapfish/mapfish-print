@@ -1,6 +1,5 @@
 package org.mapfish.print.attribute;
 
-import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.Dimension;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -30,7 +30,7 @@ public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
     @Test
     public void testValidate() {
         ScalebarAttribute attribute = new ScalebarAttribute();
-        List<Throwable> validationErrors = Lists.newArrayList();
+        List<Throwable> validationErrors = new ArrayList<>();
         Configuration configuration = new Configuration();
         attribute.validate(validationErrors, configuration);
         // errors: width and height is not set

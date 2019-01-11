@@ -1,6 +1,5 @@
 package org.mapfish.print.processor.map;
 
-import com.google.common.collect.Lists;
 import net.sf.jasperreports.engine.JRException;
 import org.mapfish.print.attribute.NorthArrowAttribute;
 import org.mapfish.print.attribute.map.MapAttribute;
@@ -14,6 +13,7 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mapfish.print.Constants.PDF_DPI;
@@ -85,7 +85,7 @@ public class CreateNorthArrowProcessor
         if (values.northArrow.isCreateSubReport()) {
             final URI scalebarSubReport = createNorthArrowSubReport(
                     values.tempTaskDirectory, values.northArrow.getSize(),
-                    Lists.newArrayList(northArrowGraphicFile), values.map.getDpi());
+                    Collections.singletonList(northArrowGraphicFile), values.map.getDpi());
             strScalebarSubReport = scalebarSubReport.toString();
         }
 

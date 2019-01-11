@@ -3,10 +3,10 @@ package org.mapfish.print;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import org.junit.Test;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -50,7 +50,7 @@ public class URIUtilsTest {
         Multimap<String, String> newParams = HashMultimap.create();
         newParams.put("a", "n1");
         newParams.put("e", "e1");
-        Set<String> overrides = Sets.newHashSet();
+        Set<String> overrides = new HashSet<>();
         final URI updatedUrl1 = URIUtils.addParams(uri, newParams, overrides);
 
         final Multimap<String, String> updatedParams1 = URIUtils.getParameters(updatedUrl1);
@@ -69,7 +69,7 @@ public class URIUtilsTest {
         newParams.put("a", "n1");
         newParams.put("b", "nb1");
         newParams.put("e", "e1");
-        Set<String> overrides = Sets.newHashSet();
+        Set<String> overrides = new HashSet<>();
         overrides.add("a");
         final URI updatedUrl1 = URIUtils.addParams(uri, newParams, overrides);
 
