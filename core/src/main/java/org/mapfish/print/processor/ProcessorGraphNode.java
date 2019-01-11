@@ -205,7 +205,7 @@ public final class ProcessorGraphNode<In, Out> {
                     } catch (Exception e) {
                         // the processor is already canceled, so we don't care if something fails
                         this.execContext.getContext().stopIfCanceled();
-                        LOGGER.warn("Error while executing process: {}", process);
+                        LOGGER.info("Error while executing process: {}", process);
                         registry.counter(name + ".error").inc();
                         throw ExceptionUtils.getRuntimeException(e);
                     }

@@ -1,5 +1,6 @@
 package org.mapfish.print.servlet;
 
+import org.apache.commons.io.IOUtils;
 import org.mapfish.print.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,9 +75,7 @@ public abstract class BaseMapServlet {
         } catch (IOException ex) {
             throw ExceptionUtils.getRuntimeException(ex);
         } finally {
-            if (out != null) {
-                out.close();
-            }
+            IOUtils.closeQuietly(out);
         }
     }
 
@@ -96,19 +95,13 @@ public abstract class BaseMapServlet {
      * @param e the error that occurred
      */
     protected final void error(final HttpServletResponse httpServletResponse, final Throwable e) {
-        PrintWriter out = null;
-        try {
-            httpServletResponse.setContentType("text/plain");
-            httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            out = httpServletResponse.getWriter();
+        httpServletResponse.setContentType("text/plain");
+        httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        try (PrintWriter out = httpServletResponse.getWriter()) {
             out.println("Error while processing request:");
-            BaseMapServlet.LOGGER.error("Error while processing request", e);
+            LOGGER.error("Error while processing request", e);
         } catch (IOException ex) {
             throw ExceptionUtils.getRuntimeException(ex);
-        } finally {
-            if (out != null) {
-                out.close();
-            }
         }
     }
 

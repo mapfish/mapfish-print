@@ -191,13 +191,11 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
         @Override
         protected Tile compute() {
             return this.context.mdcContext(() -> {
-                ClientHttpResponse response = null;
                 final String baseMetricName = TilePreparationTask.class.getName() + ".read." +
                         this.tileRequest.getURI().getHost();
-                try {
-                    LOGGER.debug("\n\t" + this.tileRequest.getMethod() + " -- " + this.tileRequest.getURI());
-                    final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
-                    response = this.tileRequest.execute();
+                LOGGER.debug("\n\t{} -- {}", this.tileRequest.getMethod(), this.tileRequest.getURI());
+                final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
+                try (ClientHttpResponse response = this.tileRequest.execute()) {
                     final HttpStatus statusCode = response.getStatusCode();
                     if (statusCode == HttpStatus.NO_CONTENT || statusCode == HttpStatus.NOT_FOUND) {
                         if (statusCode == HttpStatus.NOT_FOUND) {
@@ -208,11 +206,9 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                         // Empty response, nothing special to do
                         return new Tile(null, getTileIndexX(), getTileIndexY());
                     } else if (statusCode != HttpStatus.OK) {
-                        String errorMessage = String.format("Error making tile request: %s\n\t" +
-                                                                    "Status: %s\n" +
-                                                                    "\toutMessage: %s",
-                                                            this.tileRequest.getURI(), statusCode,
-                                                            response.getStatusText());
+                        String errorMessage = String.format(
+                                "Error making tile request: %s\n\tStatus: %s\n\toutMessage: %s",
+                                this.tileRequest.getURI(), statusCode, response.getStatusText());
                         LOGGER.error(errorMessage);
                         this.registry.counter(baseMetricName + ".error").inc();
                         if (this.failOnError) {
@@ -223,8 +219,8 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
                     BufferedImage image = ImageIO.read(response.getBody());
                     if (image == null) {
-                        LOGGER.warn(String.format("The URL: %s is an image format that cannot be decoded",
-                                                  this.tileRequest.getURI()));
+                        LOGGER.warn("The URL: {} is an image format that cannot be decoded",
+                                    this.tileRequest.getURI());
                         image = this.errorImage;
                         this.registry.counter(baseMetricName + ".error").inc();
                     } else {
@@ -235,10 +231,6 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                 } catch (IOException e) {
                     this.registry.counter(baseMetricName + ".error").inc();
                     throw ExceptionUtils.getRuntimeException(e);
-                } finally {
-                    if (response != null) {
-                        response.close();
-                    }
                 }
             });
         }

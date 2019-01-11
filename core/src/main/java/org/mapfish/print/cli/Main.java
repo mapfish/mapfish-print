@@ -196,14 +196,12 @@ public final class Main {
                 outFile = getOutputStream(cli.output,
                                           this.mapPrinter.getOutputFormat(jsonSpec).getFileSuffix());
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Request Data: \n" + jsonSpec.getInternalObj().toString(2));
+                    LOGGER.debug("Request Data: \n{}", jsonSpec.getInternalObj().toString(2));
                 }
                 this.mapPrinter.print("main", jsonSpec, outFile);
             }
         } finally {
-            if (outFile != null) {
-                outFile.close();
-            }
+            IOUtils.closeQuietly(outFile);
         }
     }
 

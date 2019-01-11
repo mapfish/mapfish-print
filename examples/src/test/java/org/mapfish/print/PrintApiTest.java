@@ -41,64 +41,70 @@ public class PrintApiTest extends AbstractApiTest {
     @Test
     public void testListApps() throws Exception {
         ClientHttpRequest request = getPrintRequest(MapPrinterServlet.LIST_APPS_URL, HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
-        final JSONArray appIdsJson = new JSONArray(getBodyAsText(response));
-        assertTrue(appIdsJson.length() > 0);
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+            final JSONArray appIdsJson = new JSONArray(getBodyAsText(response));
+            assertTrue(appIdsJson.length() > 0);
+        }
     }
 
     @Test
     public void testListAppsJsonp() throws Exception {
         ClientHttpRequest request =
                 getPrintRequest(MapPrinterServlet.LIST_APPS_URL + "?jsonp=listApps", HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJavaScriptMediaType(), response.getHeaders().getContentType());
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJavaScriptMediaType(), response.getHeaders().getContentType());
 
-        String responseAsText = getBodyAsText(response);
-        assertTrue(responseAsText.startsWith("listApps("));
+            String responseAsText = getBodyAsText(response);
+            assertTrue(responseAsText.startsWith("listApps("));
 
-        responseAsText = responseAsText.replace("listApps(", "").replace(");", "");
-        final JSONArray appIdsJson = new JSONArray(responseAsText);
-        assertTrue(appIdsJson.length() > 0);
+            responseAsText = responseAsText.replace("listApps(", "").replace(");", "");
+            final JSONArray appIdsJson = new JSONArray(responseAsText);
+            assertTrue(appIdsJson.length() > 0);
+        }
     }
 
     @Test
     public void testGetCapabilities_NoApp() throws Exception {
         ClientHttpRequest request = getPrintRequest(MapPrinterServlet.CAPABILITIES_URL, HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
-        assertTrue(getBodyAsText(response).contains("\"app\":\"default\""));
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+            assertTrue(getBodyAsText(response).contains("\"app\":\"default\""));
+        }
     }
 
     @Test
     public void testGetCapabilities_App() throws Exception {
         ClientHttpRequest request =
                 getPrintRequest("geoext" + MapPrinterServlet.CAPABILITIES_URL, HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
-        assertTrue(getBodyAsText(response).contains("\"app\":\"geoext\""));
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+            assertTrue(getBodyAsText(response).contains("\"app\":\"geoext\""));
+        }
     }
 
     @Test
     public void testGetCapabilities_InvalidApp() throws Exception {
         ClientHttpRequest request =
                 getPrintRequest("INVALID-APP_ID" + MapPrinterServlet.CAPABILITIES_URL, HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
     }
 
     @Test
     public void testGetCapabilitiesPretty_NoApp() throws Exception {
         ClientHttpRequest request =
                 getPrintRequest(MapPrinterServlet.CAPABILITIES_URL + "?pretty=true", HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
-        assertTrue(getBodyAsText(response).contains("\n"));
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+            assertTrue(getBodyAsText(response).contains("\n"));
+        }
     }
 
     @Test
@@ -106,31 +112,34 @@ public class PrintApiTest extends AbstractApiTest {
         ClientHttpRequest request =
                 getPrintRequest(MapPrinterServlet.CAPABILITIES_URL + "?jsonp=printCapabilities",
                                 HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJavaScriptMediaType(), response.getHeaders().getContentType());
-        assertTrue(getBodyAsText(response).startsWith("printCapabilities("));
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJavaScriptMediaType(), response.getHeaders().getContentType());
+            assertTrue(getBodyAsText(response).startsWith("printCapabilities("));
+        }
     }
 
     @Test
     public void testGetCapabilitiesJsonpPretty_NoApp() throws Exception {
         ClientHttpRequest request = getPrintRequest(
                 MapPrinterServlet.CAPABILITIES_URL + "?pretty=true&jsonp=printCapabilities", HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJavaScriptMediaType(), response.getHeaders().getContentType());
-        String responseAsText = getBodyAsText(response);
-        assertTrue(responseAsText.startsWith("printCapabilities("));
-        assertTrue(responseAsText.contains("\n"));
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJavaScriptMediaType(), response.getHeaders().getContentType());
+            String responseAsText = getBodyAsText(response);
+            assertTrue(responseAsText.startsWith("printCapabilities("));
+            assertTrue(responseAsText.contains("\n"));
+        }
     }
 
     @Test
     public void testExampleRequest_NoApp() throws Exception {
         ClientHttpRequest request = getPrintRequest(MapPrinterServlet.EXAMPLE_REQUEST_URL, HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
-        checkExampleRequest(getBodyAsText(response));
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+            checkExampleRequest(getBodyAsText(response));
+        }
     }
 
     @Test
@@ -138,25 +147,27 @@ public class PrintApiTest extends AbstractApiTest {
         ClientHttpRequest request =
                 getPrintRequest(MapPrinterServlet.EXAMPLE_REQUEST_URL + "?jsonp=exampleRequest",
                                 HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJavaScriptMediaType(), response.getHeaders().getContentType());
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJavaScriptMediaType(), response.getHeaders().getContentType());
 
-        String responseAsText = getBodyAsText(response);
-        assertTrue(responseAsText.startsWith("exampleRequest("));
+            String responseAsText = getBodyAsText(response);
+            assertTrue(responseAsText.startsWith("exampleRequest("));
 
-        responseAsText = responseAsText.replace("exampleRequest(", "").replace(");", "");
-        checkExampleRequest(responseAsText);
+            responseAsText = responseAsText.replace("exampleRequest(", "").replace(");", "");
+            checkExampleRequest(responseAsText);
+        }
     }
 
     @Test
     public void testExampleRequest_App() throws Exception {
         ClientHttpRequest request =
                 getPrintRequest("geoext" + MapPrinterServlet.EXAMPLE_REQUEST_URL, HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
-        checkExampleRequest(getBodyAsText(response));
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+            checkExampleRequest(getBodyAsText(response));
+        }
     }
 
     @Test
@@ -164,15 +175,16 @@ public class PrintApiTest extends AbstractApiTest {
         ClientHttpRequest request =
                 getPrintRequest("geoext" + MapPrinterServlet.EXAMPLE_REQUEST_URL + "?jsonp=exampleRequest",
                                 HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJavaScriptMediaType(), response.getHeaders().getContentType());
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJavaScriptMediaType(), response.getHeaders().getContentType());
 
-        String responseAsText = getBodyAsText(response);
-        assertTrue(responseAsText.startsWith("exampleRequest("));
+            String responseAsText = getBodyAsText(response);
+            assertTrue(responseAsText.startsWith("exampleRequest("));
 
-        responseAsText = responseAsText.replace("exampleRequest(", "").replace(");", "");
-        checkExampleRequest(responseAsText);
+            responseAsText = responseAsText.replace("exampleRequest(", "").replace(");", "");
+            checkExampleRequest(responseAsText);
+        }
     }
 
     private void checkExampleRequest(String responseAsText) throws JSONException {
@@ -188,16 +200,18 @@ public class PrintApiTest extends AbstractApiTest {
     public void testCreateReport_WrongMethod() throws Exception {
         ClientHttpRequest request =
                 getPrintRequest("geoext" + MapPrinterServlet.REPORT_URL + ".pdf", HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.METHOD_NOT_ALLOWED, response.getStatusCode());
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.METHOD_NOT_ALLOWED, response.getStatusCode());
+        }
     }
 
     @Test
     public void testCreateReport_NoBody() throws Exception {
         ClientHttpRequest request =
                 getPrintRequest("geoext" + MapPrinterServlet.REPORT_URL + ".pdf", HttpMethod.POST);
-        response = request.execute();
-        assertNotEquals(HttpStatus.OK, response.getStatusCode());
+        try (ClientHttpResponse response = request.execute()) {
+            assertNotEquals(HttpStatus.OK, response.getStatusCode());
+        }
     }
 
     @Test
@@ -205,8 +219,9 @@ public class PrintApiTest extends AbstractApiTest {
         ClientHttpRequest request =
                 getPrintRequest("geoext" + MapPrinterServlet.REPORT_URL + ".pdf", HttpMethod.POST);
         setPrintSpec("{", request);
-        response = request.execute();
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        }
     }
 
     @Test
@@ -222,8 +237,9 @@ public class PrintApiTest extends AbstractApiTest {
         }
 
         setPrintSpec(largeRequest.toString(), request);
-        response = request.execute();
-        assertNotEquals(HttpStatus.OK, response.getStatusCode());
+        try (ClientHttpResponse response = request.execute()) {
+            assertNotEquals(HttpStatus.OK, response.getStatusCode());
+        }
     }
 
     @Test(timeout = 60000)
@@ -241,34 +257,36 @@ public class PrintApiTest extends AbstractApiTest {
     private void testCreateReport(String requestPath, String printSpec) throws Exception {
         ClientHttpRequest request = getPrintRequest(requestPath, HttpMethod.POST);
         setPrintSpec(printSpec, request);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+        final String ref;
+        final String downloadUrl;
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
 
-        String responseAsText = getBodyAsText(response);
-        JSONObject createResult = new JSONObject(responseAsText);
+            String responseAsText = getBodyAsText(response);
+            JSONObject createResult = new JSONObject(responseAsText);
 
-        String ref = createResult.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
-        String statusUrl = createResult.getString(MapPrinterServlet.JSON_STATUS_LINK);
-        String downloadUrl = createResult.getString(MapPrinterServlet.JSON_DOWNLOAD_LINK);
-        assertEquals("/print/print/status/" + ref + ".json", statusUrl);
-        assertEquals("/print/print/report/" + ref, downloadUrl);
-        response.close();
+            ref = createResult.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
+            String statusUrl = createResult.getString(MapPrinterServlet.JSON_STATUS_LINK);
+            downloadUrl = createResult.getString(MapPrinterServlet.JSON_DOWNLOAD_LINK);
+            assertEquals("/print/print/status/" + ref + ".json", statusUrl);
+            assertEquals("/print/print/report/" + ref, downloadUrl);
+        }
 
         // check status
         request = getPrintRequest(MapPrinterServlet.STATUS_URL + "/" + ref + ".json", HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
-        assertEquals("max-age=0, must-revalidate, no-cache, no-store",
-                     String.join(", ", response.getHeaders().get("Cache-Control")));
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+            assertEquals("max-age=0, must-revalidate, no-cache, no-store",
+                         String.join(", ", response.getHeaders().get("Cache-Control")));
 
-        responseAsText = getBodyAsText(response);
-        JSONObject statusResult = new JSONObject(responseAsText);
+            String responseAsText = getBodyAsText(response);
+            JSONObject statusResult = new JSONObject(responseAsText);
 
-        assertTrue(statusResult.has(MapPrinterServlet.JSON_DONE));
-        assertEquals(downloadUrl, statusResult.getString(MapPrinterServlet.JSON_DOWNLOAD_LINK));
-        response.close();
+            assertTrue(statusResult.has(MapPrinterServlet.JSON_DONE));
+            assertEquals(downloadUrl, statusResult.getString(MapPrinterServlet.JSON_DOWNLOAD_LINK));
+        }
 
         final boolean hasAppId = !requestPath.startsWith(MapPrinterServlet.REPORT_URL);
         String appId = null;
@@ -278,52 +296,53 @@ public class PrintApiTest extends AbstractApiTest {
             // app specific status option
             request = getPrintRequest(appId + MapPrinterServlet.STATUS_URL + "/" + ref + ".json",
                                       HttpMethod.GET);
-            response = request.execute();
-            assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+            try (ClientHttpResponse response = request.execute()) {
+                assertEquals(HttpStatus.OK, response.getStatusCode());
+                assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
 
-            responseAsText = getBodyAsText(response);
-            statusResult = new JSONObject(responseAsText);
+                String responseAsText = getBodyAsText(response);
+                JSONObject statusResult = new JSONObject(responseAsText);
 
-            assertTrue(statusResult.has(MapPrinterServlet.JSON_DONE));
-            assertEquals(downloadUrl, statusResult.getString(MapPrinterServlet.JSON_DOWNLOAD_LINK));
-            response.close();
+                assertTrue(statusResult.has(MapPrinterServlet.JSON_DONE));
+                assertEquals(downloadUrl, statusResult.getString(MapPrinterServlet.JSON_DOWNLOAD_LINK));
+            }
         }
 
         // check status with JSONP
         request = getPrintRequest(MapPrinterServlet.STATUS_URL + "/" + ref + ".json?jsonp=getStatus",
                                   HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJavaScriptMediaType(), response.getHeaders().getContentType());
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJavaScriptMediaType(), response.getHeaders().getContentType());
 
-        responseAsText = getBodyAsText(response);
-        assertTrue(responseAsText.startsWith("getStatus("));
+            String responseAsText = getBodyAsText(response);
+            assertTrue(responseAsText.startsWith("getStatus("));
 
-        responseAsText = responseAsText.replace("getStatus(", "").replace(");", "");
-        statusResult = new JSONObject(responseAsText);
+            responseAsText = responseAsText.replace("getStatus(", "").replace(");", "");
+            JSONObject statusResult = new JSONObject(responseAsText);
 
-        assertTrue(statusResult.has(MapPrinterServlet.JSON_DONE));
-        assertEquals(downloadUrl, statusResult.getString(MapPrinterServlet.JSON_DOWNLOAD_LINK));
-        response.close();
+            assertTrue(statusResult.has(MapPrinterServlet.JSON_DONE));
+            assertEquals(downloadUrl, statusResult.getString(MapPrinterServlet.JSON_DOWNLOAD_LINK));
+        }
 
         waitUntilDoneOrError(ref);
 
         // check download
         request = getPrintRequest(MapPrinterServlet.REPORT_URL + "/" + ref, HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
-        assertTrue(response.getBody().read() >= 0);
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
+            assertTrue(response.getBody().read() >= 0);
+        }
 
         if (hasAppId) {
             // check download with appId url
             request = getPrintRequest("/" + appId + MapPrinterServlet.REPORT_URL + "/" + ref, HttpMethod.GET);
-            response = request.execute();
-            assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
-            assertTrue(response.getBody().read() >= 0);
-
+            try (ClientHttpResponse response = request.execute()) {
+                assertEquals(HttpStatus.OK, response.getStatusCode());
+                assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
+                assertTrue(response.getBody().read() >= 0);
+            }
         }
     }
 
@@ -332,28 +351,30 @@ public class PrintApiTest extends AbstractApiTest {
         ClientHttpRequest request =
                 getPrintRequest("geoext" + MapPrinterServlet.REPORT_URL + ".docx", HttpMethod.POST);
         setPrintSpec(getPrintSpec("examples/geoext/requestData.json"), request);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+        final String ref;
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
 
-        String responseAsText = getBodyAsText(response);
-        response.close();
+            final String responseAsText = getBodyAsText(response);
+            final JSONObject createResult = new JSONObject(responseAsText);
+            ref = createResult.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
+        }
 
-        JSONObject createResult = new JSONObject(responseAsText);
-        String ref = createResult.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
 
         waitUntilDoneOrError(ref);
 
         // check status
         request = getPrintRequest(MapPrinterServlet.STATUS_URL + "/" + ref + ".json", HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
 
-        responseAsText = getBodyAsText(response);
-        JSONObject statusResult = new JSONObject(responseAsText);
+            final String responseAsText = getBodyAsText(response);
+            final JSONObject statusResult = new JSONObject(responseAsText);
 
-        assertTrue(statusResult.has(MapPrinterServlet.JSON_ERROR));
+            assertTrue(statusResult.has(MapPrinterServlet.JSON_ERROR));
+        }
     }
 
     @Test(timeout = 60000)
@@ -361,24 +382,26 @@ public class PrintApiTest extends AbstractApiTest {
         ClientHttpRequest request =
                 getPrintRequest("geoext" + MapPrinterServlet.REPORT_URL + ".png", HttpMethod.POST);
         setPrintSpec(getPrintSpec("examples/geoext/requestData.json"), request);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+        final String ref;
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
 
-        String responseAsText = getBodyAsText(response);
-        response.close();
+            final String responseAsText = getBodyAsText(response);
+            final JSONObject createResult = new JSONObject(responseAsText);
+            ref = createResult.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
+        }
 
-        JSONObject createResult = new JSONObject(responseAsText);
-        String ref = createResult.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
 
         waitUntilDoneOrError(ref);
 
         // check download
         request = getPrintRequest(MapPrinterServlet.REPORT_URL + "/" + ref, HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(MediaType.IMAGE_PNG, response.getHeaders().getContentType());
-        assertTrue(response.getBody().read() >= 0);
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(MediaType.IMAGE_PNG, response.getHeaders().getContentType());
+            assertTrue(response.getBody().read() >= 0);
+        }
     }
 
     @Test(timeout = 60000)
@@ -386,10 +409,11 @@ public class PrintApiTest extends AbstractApiTest {
         ClientHttpRequest request =
                 getPrintRequest("geoext" + MapPrinterServlet.CREATE_AND_GET_URL + ".pdf", HttpMethod.POST);
         setPrintSpec(getPrintSpec("examples/geoext/requestData.json"), request);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
-        assertTrue(response.getBody().read() >= 0);
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
+            assertTrue(response.getBody().read() >= 0);
+        }
     }
 
     @Test//(timeout = 60000)
@@ -398,10 +422,11 @@ public class PrintApiTest extends AbstractApiTest {
                 getPrintRequest(MapPrinterServlet.CREATE_AND_GET_URL + ".pdf", HttpMethod.POST);
         String example = getDefaultAppDefaultRequestSample();
         setPrintSpec(example, request);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
-        assertTrue(response.getBody().read() >= 0);
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(new MediaType("application", "pdf"), response.getHeaders().getContentType());
+            assertTrue(response.getBody().read() >= 0);
+        }
     }
 
     private String getDefaultAppDefaultRequestSample() throws IOException, URISyntaxException, JSONException {
@@ -416,24 +441,27 @@ public class PrintApiTest extends AbstractApiTest {
     public void testGetStatus_InvalidRef() throws Exception {
         ClientHttpRequest request =
                 getPrintRequest(MapPrinterServlet.STATUS_URL + "/invalid-ref-number.json", HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
     }
 
     @Test
     public void testGetDownload_InvalidRef() throws Exception {
         ClientHttpRequest request =
                 getPrintRequest(MapPrinterServlet.REPORT_URL + "/invalid-ref-number", HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
     }
 
     @Test
     public void testCancel_InvalidRef() throws Exception {
         ClientHttpRequest request =
                 getPrintRequest(MapPrinterServlet.CANCEL_URL + "/invalid-ref-number", HttpMethod.DELETE);
-        response = request.execute();
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
     }
 
     @Test
@@ -441,28 +469,30 @@ public class PrintApiTest extends AbstractApiTest {
         ClientHttpRequest request =
                 getPrintRequest("geoext" + MapPrinterServlet.REPORT_URL + ".png", HttpMethod.POST);
         setPrintSpec(getPrintSpec("examples/geoext/requestData.json"), request);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
+        final String ref;
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
 
-        String responseAsText = getBodyAsText(response);
-        response.close();
+            final String responseAsText = getBodyAsText(response);
+            final JSONObject createResult = new JSONObject(responseAsText);
+            ref = createResult.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
+        }
 
-        JSONObject createResult = new JSONObject(responseAsText);
-        String ref = createResult.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
 
         request = getPrintRequest(MapPrinterServlet.CANCEL_URL + "/" + ref, HttpMethod.DELETE);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        response.close();
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+        }
 
         request = getPrintRequest(MapPrinterServlet.STATUS_URL + "/" + ref + ".json", HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        final JSONObject statusResult = new JSONObject(
-                getBodyAsText(response));
-        assertTrue(statusResult.getBoolean(MapPrinterServlet.JSON_DONE));
-        assertEquals("task cancelled", statusResult.getString(MapPrinterServlet.JSON_ERROR));
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            final JSONObject statusResult = new JSONObject(
+                    getBodyAsText(response));
+            assertTrue(statusResult.getBoolean(MapPrinterServlet.JSON_DONE));
+            assertEquals("task cancelled", statusResult.getString(MapPrinterServlet.JSON_ERROR));
+        }
     }
 
     @Test
@@ -497,9 +527,9 @@ public class PrintApiTest extends AbstractApiTest {
         final String printSpec = getPrintSpec("examples/secured_templates/requestData.json")
                 .replace("\"A4 landscape\"", "\"secured\"");
         setPrintSpec(printSpec, request);
-        response = request.execute();
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        response.close();
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        }
 
         execCreateRequestWithAuth("jimi:jimi", HttpStatus.OK, printSpec);
         execCreateRequestWithAuth("bob:bob", HttpStatus.FORBIDDEN, printSpec);
@@ -509,26 +539,29 @@ public class PrintApiTest extends AbstractApiTest {
     @Test
     public void testCors() throws Exception {
         ClientHttpRequest request = getPrintRequest(MapPrinterServlet.LIST_APPS_URL, HttpMethod.GET);
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertFalse(response.getHeaders().containsKey("Access-Control-Allow-Origin"));
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertFalse(response.getHeaders().containsKey("Access-Control-Allow-Origin"));
+        }
 
         request = getPrintRequest(MapPrinterServlet.LIST_APPS_URL, HttpMethod.GET);
         request.getHeaders().set("Origin", "http://example.com/");
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("*", response.getHeaders().getFirst("Access-Control-Allow-Origin"));
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals("*", response.getHeaders().getFirst("Access-Control-Allow-Origin"));
+        }
 
         request = getPrintRequest(MapPrinterServlet.LIST_APPS_URL, HttpMethod.OPTIONS);
         request.getHeaders().set("Origin", "http://example.com/");
         request.getHeaders().set("Access-Control-Request-Method", "POST");
         request.getHeaders().set("Access-Control-Request-Headers", "X-Toto");
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("*", response.getHeaders().getFirst("Access-Control-Allow-Origin"));
-        assertTrue(response.getHeaders().containsKey("Access-Control-Max-Age"));
-        assertTrue(response.getHeaders().containsKey("Access-Control-Allow-Methods"));
-        assertEquals("X-Toto", response.getHeaders().getFirst("Access-Control-Allow-Headers"));
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals("*", response.getHeaders().getFirst("Access-Control-Allow-Origin"));
+            assertTrue(response.getHeaders().containsKey("Access-Control-Max-Age"));
+            assertTrue(response.getHeaders().containsKey("Access-Control-Allow-Methods"));
+            assertEquals("X-Toto", response.getHeaders().getFirst("Access-Control-Allow-Headers"));
+        }
     }
 
     private JSONArray execCapabilitiesRequestWithAut(int expectedNumberOfLayouts, String credentials)
@@ -538,16 +571,15 @@ public class PrintApiTest extends AbstractApiTest {
         if (credentials != null) {
             addAuthHeader(request, credentials);
         }
-        response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        String responseAsText = getBodyAsText(response);
-        response.close();
-
-        JSONObject infoResult = new JSONObject(responseAsText);
-        final JSONArray layouts = infoResult.getJSONArray("layouts");
-        assertEquals(expectedNumberOfLayouts, layouts.length());
-        return layouts;
+            String responseAsText = getBodyAsText(response);
+            JSONObject infoResult = new JSONObject(responseAsText);
+            final JSONArray layouts = infoResult.getJSONArray("layouts");
+            assertEquals(expectedNumberOfLayouts, layouts.length());
+            return layouts;
+        }
     }
 
     private void execCreateRequestWithAuth(String credentials, HttpStatus expectedStatus, String printSpec)
@@ -557,9 +589,9 @@ public class PrintApiTest extends AbstractApiTest {
                                 HttpMethod.POST);
         setPrintSpec(printSpec, request);
         addAuthHeader(request, credentials);
-        response = request.execute();
-        assertEquals(response.getStatusText(), expectedStatus, response.getStatusCode());
-        response.close();
+        try (ClientHttpResponse response = request.execute()) {
+            assertEquals(response.getStatusText(), expectedStatus, response.getStatusCode());
+        }
     }
 
     private void addAuthHeader(ClientHttpRequest request, String credentials)
@@ -572,29 +604,25 @@ public class PrintApiTest extends AbstractApiTest {
     private void waitUntilDoneOrError(String ref) {
         boolean done = false;
         do {
-            ClientHttpResponse response = null;
-
             try {
                 ClientHttpRequest request = getPrintRequest(
                         MapPrinterServlet.STATUS_URL + "/" + ref + ".json", HttpMethod.GET);
-                response = request.execute();
-                final JSONObject statusResult = new JSONObject(
-                        getBodyAsText(response));
-                done = statusResult.getBoolean(MapPrinterServlet.JSON_DONE);
+                try (ClientHttpResponse response = request.execute()) {
+                    final JSONObject statusResult = new JSONObject(
+                            getBodyAsText(response));
+                    done = statusResult.getBoolean(MapPrinterServlet.JSON_DONE);
 
-                if (!done) {
-                    if (statusResult.has(MapPrinterServlet.JSON_ERROR)) {
-                        done = true;
-                    } else {
-                        Thread.sleep(500);
+                    if (!done) {
+                        if (statusResult.has(MapPrinterServlet.JSON_ERROR)) {
+                            done = true;
+                        } else {
+                            Thread.sleep(500);
+                        }
+
                     }
                 }
             } catch (Exception exc) {
                 done = true;
-            } finally {
-                if (response != null) {
-                    response.close();
-                }
             }
         } while (!done);
     }

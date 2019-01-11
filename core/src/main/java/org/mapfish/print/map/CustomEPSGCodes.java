@@ -2,9 +2,7 @@ package org.mapfish.print.map;
 
 import org.geotools.factory.Hints;
 import org.geotools.referencing.factory.epsg.FactoryUsingWKT;
-import org.mapfish.print.ExceptionUtils;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -41,24 +39,16 @@ public final class CustomEPSGCodes extends FactoryUsingWKT {
      */
     @Override
     protected URL getDefinitionsURL() {
-        InputStream stream = null;
         try {
             URL url = CustomEPSGCodes.class.getResource(CUSTOM_EPSG_CODES_FILE);
             // quickly test url
-            stream = url.openStream();
-            stream.read();
-            stream.close();
+            try (InputStream stream = url.openStream()) {
+                //noinspection ResultOfMethodCallIgnored
+                stream.read();
+            }
             return url;
         } catch (Throwable e) {
             throw new AssertionError("Unable to load /epsg.properties file from root of classpath.");
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    throw ExceptionUtils.getRuntimeException(e);
-                }
-            }
         }
     }
 

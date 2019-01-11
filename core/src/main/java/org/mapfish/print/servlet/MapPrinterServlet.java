@@ -1,6 +1,7 @@
 package org.mapfish.print.servlet;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jfree.util.Log;
 import org.json.JSONArray;
@@ -344,9 +345,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         } catch (NoSuchReferenceException e) {
             error(statusResponse, e.getMessage(), HttpStatus.NOT_FOUND);
         } finally {
-            if (writer != null) {
-                writer.close();
-            }
+            IOUtils.closeQuietly(writer);
         }
     }
 
@@ -413,11 +412,8 @@ public class MapPrinterServlet extends BaseMapServlet {
             return;
         }
 
-        PrintWriter writer = null;
-        try {
-            createReportResponse.setContentType("application/json; charset=utf-8");
-
-            writer = createReportResponse.getWriter();
+        createReportResponse.setContentType("application/json; charset=utf-8");
+        try (PrintWriter writer = createReportResponse.getWriter()) {
             JSONWriter json = new JSONWriter(writer);
             json.object();
             {
@@ -429,10 +425,6 @@ public class MapPrinterServlet extends BaseMapServlet {
             json.endObject();
         } catch (JSONException | IOException e) {
             LOGGER.warn("Error generating the JSON response", e);
-        } finally {
-            if (writer != null) {
-                writer.close();
-            }
         }
     }
 
@@ -730,15 +722,10 @@ public class MapPrinterServlet extends BaseMapServlet {
 
         setContentType(capabilitiesResponse, jsonpCallback);
 
-        final Writer writer;
         final ByteArrayOutputStream prettyPrintBuffer = new ByteArrayOutputStream();
-        if (pretty) {
-            writer = new OutputStreamWriter(prettyPrintBuffer, Constants.DEFAULT_CHARSET);
-        } else {
-            writer = capabilitiesResponse.getWriter();
-        }
 
-        try {
+        try (Writer writer = pretty ? new OutputStreamWriter(prettyPrintBuffer, Constants.DEFAULT_CHARSET) :
+                capabilitiesResponse.getWriter()) {
             if (!pretty && !StringUtils.isEmpty(jsonpCallback)) {
                 writer.append(jsonpCallback).append("(");
             }
@@ -766,10 +753,6 @@ public class MapPrinterServlet extends BaseMapServlet {
 
             if (!pretty && !StringUtils.isEmpty(jsonpCallback)) {
                 writer.append(");");
-            }
-        } finally {
-            if (writer != null) {
-                writer.close();
             }
         }
 
@@ -819,7 +802,6 @@ public class MapPrinterServlet extends BaseMapServlet {
             IOException {
         MDC.remove(Processor.MDC_JOB_ID_KEY);
         setCache(getExampleResponse);
-        PrintWriter writer = null;
         try {
             final MapPrinter mapPrinter = this.printerFactory.create(appId);
             if (!checkReferer(request, mapPrinter)) {
@@ -882,16 +864,13 @@ public class MapPrinterServlet extends BaseMapServlet {
                 return;
             }
 
-            writer = getExampleResponse.getWriter();
-            appendJsonpCallback(jsonpCallback, writer);
-            writer.append(result);
-            appendJsonpCallbackEnd(jsonpCallback, writer);
+            try (PrintWriter writer = getExampleResponse.getWriter()) {
+                appendJsonpCallback(jsonpCallback, writer);
+                writer.append(result);
+                appendJsonpCallbackEnd(jsonpCallback, writer);
+            }
         } catch (NoSuchAppException e) {
             error(getExampleResponse, "No print app identified by: " + appId, HttpStatus.NOT_FOUND);
-        } finally {
-            if (writer != null) {
-                writer.close();
-            }
         }
     }
 

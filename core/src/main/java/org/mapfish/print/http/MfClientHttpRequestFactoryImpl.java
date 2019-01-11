@@ -1,5 +1,6 @@
 package org.mapfish.print.http;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
@@ -238,15 +239,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
                 LOGGER.error("Error occurred while trying to retrieve Http Response {} in order to close it.",
                              this.id, e);
             } finally {
-                if (this.inputStream != null) {
-                    try {
-                        this.inputStream.close();
-                    } catch (IOException e) {
-                        LOGGER.trace("Error while closing Http Response object: {}", this.id);
-                        throw new RuntimeException(e);
-                    }
-                }
-
+                IOUtils.closeQuietly(this.inputStream);
                 LOGGER.trace("Closed Http Response object: {}", this.id);
             }
         }
