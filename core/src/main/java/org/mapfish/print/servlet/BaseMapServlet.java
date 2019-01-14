@@ -1,6 +1,5 @@
 package org.mapfish.print.servlet;
 
-import org.apache.commons.io.IOUtils;
 import org.mapfish.print.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,20 +61,18 @@ public abstract class BaseMapServlet {
      */
     protected static void error(
             final HttpServletResponse httpServletResponse, final String message, final HttpStatus code) {
-        PrintWriter out = null;
         try {
             httpServletResponse.setContentType("text/plain");
             httpServletResponse.setStatus(code.value());
             setNoCache(httpServletResponse);
-            out = httpServletResponse.getWriter();
-            out.println("Error while processing request:");
-            out.println(message);
+            try (PrintWriter out = httpServletResponse.getWriter()) {
+                out.println("Error while processing request:");
+                out.println(message);
+            }
 
             LOGGER.error("Error while processing request: {}", message);
         } catch (IOException ex) {
             throw ExceptionUtils.getRuntimeException(ex);
-        } finally {
-            IOUtils.closeQuietly(out);
         }
     }
 

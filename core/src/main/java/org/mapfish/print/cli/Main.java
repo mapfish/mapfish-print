@@ -174,10 +174,8 @@ public final class Main {
     private void run(final CliDefinition cli) throws Exception {
         final File configFile = new File(cli.config);
         this.mapPrinter.setConfiguration(configFile);
-        OutputStream outFile = null;
-        try {
-            if (cli.clientConfig) {
-                outFile = getOutputStream(cli.output, ".yaml");
+        if (cli.clientConfig) {
+            try (OutputStream outFile = getOutputStream(cli.output, ".yaml")) {
                 final OutputStreamWriter writer =
                         new OutputStreamWriter(outFile, Constants.DEFAULT_CHARSET);
 
@@ -187,21 +185,21 @@ public final class Main {
                 json.endObject();
 
                 writer.close();
+            }
 
-            } else {
-                final InputStream inFile = getInputStream(cli.spec);
-                final String jsonConfiguration = IOUtils.toString(inFile, Constants.DEFAULT_ENCODING);
-                PJsonObject jsonSpec = MapPrinter.parseSpec(jsonConfiguration);
+        } else {
+            final InputStream inFile = getInputStream(cli.spec);
+            final String jsonConfiguration = IOUtils.toString(inFile, Constants.DEFAULT_ENCODING);
+            PJsonObject jsonSpec = MapPrinter.parseSpec(jsonConfiguration);
 
-                outFile = getOutputStream(cli.output,
-                                          this.mapPrinter.getOutputFormat(jsonSpec).getFileSuffix());
+            try (OutputStream outFile = getOutputStream(cli.output,
+                                                        this.mapPrinter.getOutputFormat(jsonSpec)
+                                                                .getFileSuffix())) {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Request Data: \n{}", jsonSpec.getInternalObj().toString(2));
                 }
                 this.mapPrinter.print("main", jsonSpec, outFile);
             }
-        } finally {
-            IOUtils.closeQuietly(outFile);
         }
     }
 
