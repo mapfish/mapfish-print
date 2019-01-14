@@ -1,7 +1,6 @@
 package org.mapfish.print.servlet;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jfree.util.Log;
 import org.json.JSONArray;
@@ -317,35 +316,33 @@ public class MapPrinterServlet extends BaseMapServlet {
             final HttpServletResponse statusResponse) {
         MDC.put(Processor.MDC_JOB_ID_KEY, referenceId);
         setNoCache(statusResponse);
-        PrintWriter writer = null;
         try {
             PrintJobStatus status = this.jobManager.getStatus(referenceId);
 
             setContentType(statusResponse, jsonpCallback);
-            writer = statusResponse.getWriter();
+            try (PrintWriter writer = statusResponse.getWriter()) {
 
-            appendJsonpCallback(jsonpCallback, writer);
-            JSONWriter json = new JSONWriter(writer);
-            json.object();
-            {
-                json.key(JSON_DONE).value(status.isDone());
-                json.key(JSON_STATUS).value(status.getStatus().toString().toLowerCase());
-                json.key(JSON_ELAPSED_TIME).value(status.getElapsedTime());
-                json.key(JSON_WAITING_TIME).value(status.getWaitingTime());
-                if (!StringUtils.isEmpty(status.getError())) {
-                    json.key(JSON_ERROR).value(status.getError());
+                appendJsonpCallback(jsonpCallback, writer);
+                JSONWriter json = new JSONWriter(writer);
+                json.object();
+                {
+                    json.key(JSON_DONE).value(status.isDone());
+                    json.key(JSON_STATUS).value(status.getStatus().toString().toLowerCase());
+                    json.key(JSON_ELAPSED_TIME).value(status.getElapsedTime());
+                    json.key(JSON_WAITING_TIME).value(status.getWaitingTime());
+                    if (!StringUtils.isEmpty(status.getError())) {
+                        json.key(JSON_ERROR).value(status.getError());
+                    }
+
+                    addDownloadLinkToJson(statusRequest, referenceId, json);
                 }
-
-                addDownloadLinkToJson(statusRequest, referenceId, json);
+                json.endObject();
+                appendJsonpCallbackEnd(jsonpCallback, writer);
             }
-            json.endObject();
-            appendJsonpCallbackEnd(jsonpCallback, writer);
         } catch (JSONException | IOException e) {
             throw ExceptionUtils.getRuntimeException(e);
         } catch (NoSuchReferenceException e) {
             error(statusResponse, e.getMessage(), HttpStatus.NOT_FOUND);
-        } finally {
-            IOUtils.closeQuietly(writer);
         }
     }
 

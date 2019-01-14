@@ -1,8 +1,8 @@
 package org.mapfish.print.map.geotools;
 
-import com.vividsolutions.jts.geom.Geometry;
 import org.geotools.data.FeatureSource;
 import org.geotools.styling.Style;
+import org.locationtech.jts.geom.Geometry;
 import org.mapfish.print.OptionalUtils;
 import org.mapfish.print.SetsUtils;
 import org.mapfish.print.config.Template;

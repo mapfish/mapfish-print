@@ -1,6 +1,6 @@
 package org.mapfish.print.map.tiled;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.client.ClientHttpRequest;
 

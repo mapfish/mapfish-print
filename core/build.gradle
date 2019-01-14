@@ -23,7 +23,7 @@ buildscript {
 task startScripts(type: CreateStartScripts) {
 }
 task print(type: JavaExec) {
-    main = "org.mapfish.print.cli.Main"
+    main = 'org.mapfish.print.cli.Main'
     classpath = sourceSets.main.runtimeClasspath
 }
 
@@ -33,13 +33,13 @@ task print(type: JavaExec) {
 distributions {
     main {
         contents {
-            from(project.file("src/dist"))
+            from(project.file('src/dist'))
 
-            into("lib") {
+            into('lib') {
                 from(jar)
                 from(project.configurations.runtime)
             }
-            into("bin") {
+            into('bin') {
                 from(startScripts)
                 fileMode = 0755
             }
@@ -48,17 +48,17 @@ distributions {
 }
 
 
-def appDir = new File(project.buildDir, "install")
+def appDir = new File(project.buildDir, 'install')
 installDist.doFirst {
     appDir.deleteDir()
 }
 tasks.withType(Javadoc) {
-    options.encoding = "utf-8"
+    options.encoding = 'utf-8'
     title = "Mapfish Print Core Module $version"
 }
 task testCLI(type: Exec) {
     dependsOn installDist
-    workingDir new File(appDir, "core/bin")
+    workingDir new File(appDir, 'core/bin')
     def cmd
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         cmd = ['cmd', '/c', 'print.bat']
@@ -70,13 +70,13 @@ task testCLI(type: Exec) {
     File configFile = file('src/test/resources/org/mapfish/print/cli/config.yaml')
     File v3ApiRequestFile = file('src/test/resources/org/mapfish/print/cli/v3Request.json')
     cmd.addAll([
-            "-config", configFile.getAbsolutePath(),
-            "-spec", v3ApiRequestFile.getAbsolutePath(),
-            "-output", outputFile.getAbsolutePath()])
+            '-config', configFile.getAbsolutePath(),
+            '-spec', v3ApiRequestFile.getAbsolutePath(),
+            '-output', outputFile.getAbsolutePath()])
     commandLine cmd
 
     doFirst {
-        println("Testing CLI application: " + workingDir)
+        println("Testing CLI application: $workingDir")
         outputFile.delete();
         assert !outputFile.exists()
     }
@@ -105,14 +105,15 @@ configurations {
     all*.exclude group: 'commons-logging'
     //obscure stack trace if we let this dependency: https://stackoverflow.com/a/15808940
     all*.exclude module: 'xercesImpl'
-    //we have jts 1.20 and 1.14 in the dependencies. We want only 1.14 (splitted in 3 libs core, example and io)
-    all*.exclude group: 'com.vividsolutions', module: 'jts'
 }
 
 dependencies {
-    def springSecurityVersion = "5.1.3.RELEASE"
+    def springSecurityVersion = '5.1.3.RELEASE'
     def slf4jVersion = '1.7.25'
     def logbackVersion = '1.2.3'
+    def jasperReportVersion = '6.7.0'
+    def metricsVersion = '4.0.5'
+    def geotoolsVersion = '20.1'
 
     compile (
             "org.springframework:spring-context:$project.springVersion",
@@ -120,16 +121,15 @@ dependencies {
             "org.springframework:spring-webmvc:$project.springVersion",
             "org.springframework.security:spring-security-config:$springSecurityVersion",
             "org.springframework.security:spring-security-web:$springSecurityVersion",
-            "com.thetransactioncompany:cors-filter:2.6",
+            'com.thetransactioncompany:cors-filter:2.6',
             //hibernate & postgres
-            "org.hibernate:hibernate-core:5.4.0.Final",
-            "org.postgresql:postgresql:42.2.5",
-            "com.vladmihalcea:hibernate-types-43:2.3.4",
+            'org.hibernate:hibernate-core:5.4.0.Final',
+            'org.postgresql:postgresql:42.2.5',
+            'com.vladmihalcea:hibernate-types-43:2.3.4',
             "org.springframework:spring-orm:$project.springVersion",
             "org.springframework:spring-jdbc:$project.springVersion",
             "org.springframework:spring-tx:$project.springVersion"
     )
-    def metricsVersion = "4.0.3"
     metrics (
             "io.dropwizard.metrics:metrics-core:$metricsVersion",
             "io.dropwizard.metrics:metrics-servlet:$metricsVersion",
@@ -138,9 +138,8 @@ dependencies {
             "io.dropwizard.metrics:metrics-jvm:$metricsVersion",
             "io.dropwizard.metrics:metrics-jmx:$metricsVersion",
             "io.dropwizard.metrics:metrics-logback:$metricsVersion",
-            "com.readytalk:metrics3-statsd:4.2.0"
+            'com.readytalk:metrics3-statsd:4.2.0'
     )
-    def geotoolsVersion = "19.0"
     geotools (
             "org.geotools:gt-epsg-hsql:$geotoolsVersion",
             "org.geotools:gt-render:$geotoolsVersion",
@@ -152,22 +151,22 @@ dependencies {
             "org.geotools:gt-cql:$geotoolsVersion"
     )
     jasper (
-            "net.sf.jasperreports:jasperreports:$project.jasperReportVersion",
+            "net.sf.jasperreports:jasperreports:$jasperReportVersion",
             "org.codehaus.groovy:groovy-all:$project.groovyVersion",
             'ar.com.fdvs:DynamicJasper:5.1.1',
-            "net.sf.jasperreports:jasperreports-fonts:6.0.0",
-            "net.sf.jasperreports:jasperreports-functions:$project.jasperReportVersion",
+            'net.sf.jasperreports:jasperreports-fonts:6.0.0',
+            "net.sf.jasperreports:jasperreports-functions:$jasperReportVersion",
             'joda-time:joda-time:2.10.1'
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile (
-            "com.google.guava:guava:27.0.1-jre",
+            'com.google.guava:guava:27.0.1-jre',
             "org.slf4j:slf4j-api:${slf4jVersion}",
             "org.slf4j:jcl-over-slf4j:${slf4jVersion}",
             'org.json:json:20180130',
             "ch.qos.logback:logback-classic:${logbackVersion}",
             'org.yaml:snakeyaml:1.23',
-            "com.github.spullara.cli-parser:cli-parser:1.1.2",
+            'com.github.spullara.cli-parser:cli-parser:1.1.2',
             'org.apache.httpcomponents:httpclient:4.5.6',
             'com.sun.mail:javax.mail:1.6.2',
             'com.amazonaws:aws-java-sdk-s3:1.11.482'
@@ -202,7 +201,7 @@ def gitRevision() {
         def proc = cmd.execute()
         return proc.getText().trim()
     } catch (Exception e) {
-        return "Error occurred while trying to execute git commandline tool: "+e
+        return 'Error occurred while trying to execute git commandline tool: ' + e
     }
 }
 
@@ -222,13 +221,13 @@ def addManifestAttribute(manifest) {
 }
 jar {
     enabled = true
-    baseName = "print-lib"
+    baseName = 'print-lib'
     addManifestAttribute(manifest)
 }
 
 def examplesDir = "${project(':examples').projectDir}/src/test/resources/examples"
 war {
-    baseName = "print-servlet"
+    baseName = 'print-servlet'
     addManifestAttribute(manifest)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
@@ -236,12 +235,12 @@ war {
 gretty {
     // configuration to serve mfp under localhost:8080/print when you run
     // ./gradlew core:jettyRun
-    servletContainer = "jetty9"
-    contextPath = "/print"
-    classPath = [file("jettyRunExtraFiles")]
-    systemProperty "path_to_examples", examplesDir
-    systemProperty "org.mortbay.jetty.Request.maxFormContentSize", "1048576"
-    httpPort = project.hasProperty("httpPort") ? project.httpPort as int : 8080
+    servletContainer = 'jetty9'
+    contextPath = '/print'
+    classPath = [file('jettyRunExtraFiles')]
+    systemProperty 'path_to_examples', examplesDir
+    systemProperty 'org.mortbay.jetty.Request.maxFormContentSize', '1048576'
+    httpPort = project.hasProperty('httpPort') ? project.httpPort as int : 8080
 }
 
 
@@ -273,25 +272,25 @@ task libSourcesJar(type: Jar) {
 
 gradle.taskGraph.whenReady {taskGraph ->
     if (taskGraph.hasTask(print)) {
-        if (project.hasProperty("printArgs")) {
+        if (project.hasProperty('printArgs')) {
             print.args printArgs.toString().split(" ").toList()
         } else {
-            throw new IllegalArgumentException("You must supply the -PprintArgs=\"...\" arguments.\nFor Example:\n\n./gradlew print " +
-                    "-PprintArgs=\"-config examples/config.yaml -spec examples/spec.json -output ./output.pdf\"\n\n")
+            throw new IllegalArgumentException('You must supply the -PprintArgs="..." arguments.\nFor Example:\n\n./gradlew print ' +
+                    '-PprintArgs="-config examples/config.yaml -spec examples/spec.json -output ./output.pdf"\n\n')
         }
     }
 }
 
 startScripts {
     // clear up the classpath because the launcher jar has it.
-    applicationName="print"
-    mainClassName = "org.mapfish.print.cli.Main"
+    applicationName = 'print'
+    mainClassName = 'org.mapfish.print.cli.Main'
     classpath = files(jar.archivePath)
-    outputDir = new File(project.buildDir, "scripts")
+    outputDir = new File(project.buildDir, 'scripts')
 
     doLast {
         fileTree(startScripts.outputDir).each {file ->
-            def encoding = "UTF-8"
+            def encoding = 'UTF-8'
             // there was a bug in the start script where all jars were listed and that failed in windows.
             // now I just have the main jar and replace it with * so that all jars in that directory
             // are loaded on classpath.
@@ -309,12 +308,12 @@ def getVersionName = { ->
 }
 
 docker {
-    baseImage "camptocamp/tomcat-logback:8.5-jre8"
+    baseImage 'camptocamp/tomcat-logback:8.5-jre8'
     maintainer 'Camptocamp "info@camptocamp.com"'
 }
 
 task unzipWar(type: Copy, dependsOn: 'war') {
-    def targetDir = new File(project.buildDir, "webapp")
+    def targetDir = new File(project.buildDir, 'webapp')
     if (!targetDir.exists()) {
         targetDir.mkdirs()
     }
@@ -323,16 +322,16 @@ task unzipWar(type: Copy, dependsOn: 'war') {
 }
 
 task createDocker(type: Docker, dependsOn: 'unzipWar') {
-    applicationName = "mapfish_print"
+    applicationName = 'mapfish_print'
     tagVersion = getVersionName()
     tag = "camptocamp/${applicationName}"
-    project.ext.set("dockerImage", "${tag}:${tagVersion}")
+    project.ext.set('dockerImage', "${tag}:${tagVersion}")
 
     doLast {
         System.out.println("Created docker image ${project.dockerImage}")
     }
 
-    addFile new File(project.buildDir, "webapp"), '${CATALINA_HOME}/webapps/ROOT'
+    addFile new File(project.buildDir, 'webapp'), '${CATALINA_HOME}/webapps/ROOT'
     addFile 'docker', '/'
     //avoid a warning because logback-classic is both in tomcat and in the webapp
     runCommand 'rm ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/logback-*.jar ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/slf4j-*.jar && ' + \

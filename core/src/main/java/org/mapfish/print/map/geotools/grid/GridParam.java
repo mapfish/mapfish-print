@@ -1,8 +1,8 @@
 package org.mapfish.print.map.geotools.grid;
 
-import com.vividsolutions.jts.util.Assert;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.IdentityTransform;
+import org.locationtech.jts.util.Assert;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.OneOf;

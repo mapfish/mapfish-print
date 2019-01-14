@@ -1,12 +1,12 @@
 package org.mapfish.print.attribute;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.vividsolutions.jts.util.Assert;
-import com.vividsolutions.jts.util.AssertionFailedException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
+import org.locationtech.jts.util.Assert;
+import org.locationtech.jts.util.AssertionFailedException;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.HasDefaultValue;

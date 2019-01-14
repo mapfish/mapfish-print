@@ -1,12 +1,12 @@
 package org.mapfish.print.attribute.map;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.util.Assert;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geojson.geom.GeometryJSON;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.util.Assert;
 import org.mapfish.print.Constants;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.opengis.feature.simple.SimpleFeature;

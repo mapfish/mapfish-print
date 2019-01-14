@@ -2,7 +2,7 @@ package org.mapfish.print.parser;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

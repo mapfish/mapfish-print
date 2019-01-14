@@ -119,7 +119,13 @@ public final class HttpRequestFetcher {
 
         @Override
         public void close() {
-            IOUtils.closeQuietly(this.body);
+            if (this.body != null) {
+                try {
+                    this.body.close();
+                } catch (IOException e) {
+                    // ignored
+                }
+            }
         }
     }
 

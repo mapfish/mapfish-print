@@ -1,9 +1,9 @@
 package org.mapfish.print.attribute.map;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
+import org.locationtech.jts.geom.Coordinate;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.map.DistanceUnit;

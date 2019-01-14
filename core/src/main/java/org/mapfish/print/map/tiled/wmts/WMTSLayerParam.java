@@ -2,8 +2,8 @@ package org.mapfish.print.map.tiled.wmts;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.vividsolutions.jts.util.Assert;
 import org.apache.commons.lang.StringUtils;
+import org.locationtech.jts.util.Assert;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.map.tiled.AbstractWMXLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;

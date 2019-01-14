@@ -1,8 +1,8 @@
 package org.mapfish.print.map.geotools.grid;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Envelope;
 import org.mapfish.print.ExceptionUtils;
 import org.opengis.referencing.cs.AxisDirection;
 
@@ -191,6 +191,11 @@ public final class LinearCoordinateSequence implements CoordinateSequence, Clone
 
     @Override
     public Object clone() {
+        return copy();
+    }
+
+    @Override
+    public CoordinateSequence copy() {
         try {
             final LinearCoordinateSequence clone = (LinearCoordinateSequence) super.clone();
             clone.numPoints = this.numPoints;
@@ -204,6 +209,5 @@ public final class LinearCoordinateSequence implements CoordinateSequence, Clone
         } catch (CloneNotSupportedException e) {
             throw ExceptionUtils.getRuntimeException(e);
         }
-
     }
 }

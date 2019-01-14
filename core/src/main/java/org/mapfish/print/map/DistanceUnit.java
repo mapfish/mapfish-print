@@ -1,6 +1,8 @@
 package org.mapfish.print.map;
 
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +10,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.measure.unit.Unit;
+import javax.measure.Unit;
 
 import static org.mapfish.print.Constants.INCH_TO_MM;
 
@@ -54,7 +56,7 @@ public enum DistanceUnit {
     /**
      * Represents the lat long degree unit.
      */
-    DEGREES(40041470.0 / 360.0, new String[]{"\u00B0", "dd", "degree", "degrees"}),
+    DEGREES(40041470.0 / 360.0, new String[]{"\u00B0", "dd", "deg", "degree", "degrees"}),
     /**
      * Represents the lat long minute unit.
      */
@@ -77,6 +79,8 @@ public enum DistanceUnit {
      * Represents the pica unit.
      */
     PC(DistanceUnit.PT, 12.0, new String[]{"pc", "pica"});
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DistanceUnit.class);
 
     /**
      * Global dictionary of every textual representations of every units.

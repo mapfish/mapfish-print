@@ -10,7 +10,6 @@ allprojects {
     version = '3.17.0'
     ext.junitVersion = "4.12"
     ext.springVersion = "5.1.4.RELEASE"
-    ext.jasperReportVersion = "6.5.1"
     ext.groovyVersion = "2.5.5"
     ext."signing.keyId" = signing_keyId
     ext."signing.secretKeyRingFile" = System.properties.get('user.home') + '/.gnupg/secring.gpg'

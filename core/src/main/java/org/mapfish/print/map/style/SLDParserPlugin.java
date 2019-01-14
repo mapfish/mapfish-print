@@ -1,10 +1,10 @@
 package org.mapfish.print.map.style;
 
-import com.vividsolutions.jts.util.Assert;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.DefaultResourceLocator;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
+import org.locationtech.jts.util.Assert;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
 import org.slf4j.Logger;

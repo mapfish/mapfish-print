@@ -1,6 +1,6 @@
 package org.mapfish.print.map.tiled.wms;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import org.mapfish.print.map.image.wms.WmsLayerParam;
 
 import java.awt.Dimension;

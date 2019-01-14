@@ -1,9 +1,9 @@
 package org.mapfish.print.attribute;
 
-import com.vividsolutions.jts.util.AssertionFailedException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.locationtech.jts.util.AssertionFailedException;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.wrapper.json.PJsonArray;

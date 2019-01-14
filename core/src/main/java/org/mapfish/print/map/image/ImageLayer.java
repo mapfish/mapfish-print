@@ -1,6 +1,5 @@
 package org.mapfish.print.map.image;
 
-import com.vividsolutions.jts.util.Assert;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -10,6 +9,7 @@ import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.MapContent;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.Style;
+import org.locationtech.jts.util.Assert;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;

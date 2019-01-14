@@ -1,7 +1,7 @@
 package org.mapfish.print.output;
 
-import com.vividsolutions.jts.util.AssertionFailedException;
 import org.junit.Test;
+import org.locationtech.jts.util.AssertionFailedException;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.config.Configuration;
