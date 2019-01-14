@@ -11,9 +11,9 @@ import net.sf.jasperreports.engine.JRRewindableDataSource;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.SimpleJasperReportsContext;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
-import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
 import net.sf.jasperreports.renderers.Renderable;
 import net.sf.jasperreports.repo.RepositoryService;
 import org.mapfish.print.Constants;
@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -58,6 +59,7 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 
 /**
@@ -102,7 +104,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
 
     private JasperFillManager getJasperFillManager(
             final MfClientHttpRequestFactoryProvider httpRequestFactoryProvider) {
-        LocalJasperReportsContext ctx = getLocalJasperReportsContext(httpRequestFactoryProvider);
+        JasperReportsContext ctx = getJasperReportsContext(httpRequestFactoryProvider);
         return JasperFillManager.getInstance(ctx);
     }
 
@@ -225,7 +227,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                     dataSource);
         }
         print.setProperty(Renderable.PROPERTY_IMAGE_DPI, String.valueOf(Math.round(maxDpi)));
-        return new Print(getLocalJasperReportsContext(
+        return new Print(getJasperReportsContext(
                 values.getObject(
                         Values.CLIENT_HTTP_REQUEST_FACTORY_KEY, MfClientHttpRequestFactoryProvider.class)),
                          print, values, maxDpi, task.getExecutionContext());
@@ -238,11 +240,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             StringBuilder wrongType = new StringBuilder();
             try {
                 while (source.next()) {
-                    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                    factory.setValidating(false);
-                    final DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-                    final byte[] bytes = configuration.loadFile(reportTemplate);
-                    final Document document = documentBuilder.parse(new ByteArrayInputStream(bytes));
+                    final Document document = parseXML(configuration, reportTemplate);
                     final NodeList parameters = document.getElementsByTagName("field");
                     JRDesignField field = new JRDesignField();
                     for (int i = 0; i < parameters.getLength(); i++) {
@@ -272,19 +270,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             }
 
             StringBuilder finalError = new StringBuilder();
-
-            if (wrongType.length() > 0) {
-                finalError.append("The following parameters are declared in ").append(reportTemplate).
-                        append(".  The class attribute in the template xml does not match the class of the " +
-                                       "actual object.").
-                        append("\nEither change the declaration in the jasper template or update the " +
-                                       "configuration so that the parameters have the correct type.\n\n").
-                        append(wrongType);
-            }
-
-            if (finalError.length() > 0) {
-                throw new AssertionFailedException(finalError.toString());
-            }
+            assertNoError(reportTemplate, wrongType, finalError);
         }
     }
 
@@ -293,11 +279,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         StringBuilder missing = new StringBuilder();
         StringBuilder wrongType = new StringBuilder();
         try {
-            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setValidating(false);
-            final DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-            final byte[] bytes = configuration.loadFile(reportTemplate);
-            final Document document = documentBuilder.parse(new ByteArrayInputStream(bytes));
+
+            final Document document = parseXML(configuration, reportTemplate);
             final NodeList parameters = document.getElementsByTagName("parameter");
             for (int i = 0; i < parameters.getLength(); i++) {
                 final Element param = (Element) parameters.item(i);
@@ -329,6 +312,11 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                     append("parameters are available for the report.\n\n").
                     append(missing);
         }
+        assertNoError(reportTemplate, wrongType, finalError);
+    }
+
+    private void assertNoError(
+            final String reportTemplate, final StringBuilder wrongType, final StringBuilder finalError) {
         if (wrongType.length() > 0) {
             finalError.append("The following parameters are declared in ").append(reportTemplate).
                     append(".  The class attribute in the template xml does not match the class of the " +
@@ -343,11 +331,19 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         }
     }
 
-    private LocalJasperReportsContext getLocalJasperReportsContext(
+    private Document parseXML(final Configuration configuration, final String reportTemplate)
+            throws ParserConfigurationException, IOException, SAXException {
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setValidating(false);
+        final DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+        final byte[] bytes = configuration.loadFile(reportTemplate);
+        return documentBuilder.parse(new ByteArrayInputStream(bytes));
+    }
+
+    private JasperReportsContext getJasperReportsContext(
             final MfClientHttpRequestFactoryProvider httpRequestFactoryProvider) {
-        LocalJasperReportsContext ctx =
-                new LocalJasperReportsContext(DefaultJasperReportsContext.getInstance());
-        ctx.setClassLoader(getClass().getClassLoader());
+        SimpleJasperReportsContext ctx =
+                new SimpleJasperReportsContext(DefaultJasperReportsContext.getInstance());
         ctx.setExtensions(RepositoryService.class,
                           Collections.singletonList(
                                   new MapfishPrintRepositoryService(httpRequestFactoryProvider.get())));
