@@ -111,23 +111,10 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
      */
     protected PrintResult withOpenOutputStream(final PrintAction function) throws Exception {
         final File reportFile = getReportFile();
-        FileOutputStream out = null;
-        BufferedOutputStream bout = null;
         final Processor.ExecutionContext executionContext;
-        try {
-            out = new FileOutputStream(reportFile);
-            bout = new BufferedOutputStream(out);
+        try (FileOutputStream out = new FileOutputStream(reportFile);
+             BufferedOutputStream bout = new BufferedOutputStream(out)) {
             executionContext = function.run(bout);
-        } finally {
-            try {
-                if (bout != null) {
-                    bout.close();
-                }
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-            }
         }
         return new PrintResult(reportFile.length(), executionContext);
     }

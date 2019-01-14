@@ -190,7 +190,7 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
                 return Optional.of(resource);
             }
         } catch (IOException e) {
-            LOGGER.warn("Unable to find resources on the path: " + fileURI);
+            LOGGER.warn("Unable to find resources on the path: {}", fileURI);
         }
         return Optional.empty();
     }

@@ -1,7 +1,6 @@
 package org.mapfish.print;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -32,16 +31,6 @@ public abstract class AbstractApiTest {
 
     @Autowired
     protected ClientHttpRequestFactory httpRequestFactory;
-
-    protected ClientHttpResponse response;
-
-    @After
-    public void tearDown() {
-        if (response != null) {
-            response.close();
-        }
-        response = null;
-    }
 
     protected ClientHttpRequest getRequest(String path, HttpMethod method) throws IOException,
             URISyntaxException {

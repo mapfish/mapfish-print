@@ -265,7 +265,7 @@ public final class CreateMapProcessor
         int height = mapContext.getMapSize().height;
 
         if ("pdf".equalsIgnoreCase(outputFormat)) {
-            com.lowagie.text.Document document = new com.lowagie.text.Document(
+            final com.lowagie.text.Document document = new com.lowagie.text.Document(
                     new com.lowagie.text.Rectangle(width, height));
             try {
                 PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(mergedGraphic));

@@ -119,13 +119,7 @@ public final class HttpRequestFetcher {
 
         @Override
         public void close() {
-            if (this.body != null) {
-                try {
-                    this.body.close();
-                } catch (IOException e) {
-                    throw new IllegalStateException(e);
-                }
-            }
+            IOUtils.closeQuietly(this.body);
         }
     }
 
