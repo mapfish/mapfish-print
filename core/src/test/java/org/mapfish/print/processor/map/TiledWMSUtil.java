@@ -1,7 +1,7 @@
 package org.mapfish.print.processor.map;
 
 import com.google.common.collect.Multimap;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.URIUtils;

@@ -1,7 +1,7 @@
 package org.mapfish.print.attribute.map;
 
-import com.vividsolutions.jts.geom.Envelope;
 import org.json.JSONArray;
+import org.locationtech.jts.geom.Envelope;
 import org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues;
 import org.mapfish.print.attribute.map.ZoomToFeatures.ZoomType;
 import org.mapfish.print.config.Template;

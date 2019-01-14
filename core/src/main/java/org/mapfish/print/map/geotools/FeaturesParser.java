@@ -1,7 +1,6 @@
 package org.mapfish.print.map.geotools;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.vividsolutions.jts.geom.Geometry;
 import org.apache.commons.io.IOUtils;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -11,6 +10,7 @@ import org.geotools.referencing.crs.DefaultEngineeringCRS;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.locationtech.jts.geom.Geometry;
 import org.mapfish.print.Constants;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.PrintException;
@@ -281,7 +281,7 @@ public class FeaturesParser {
             return Geometry.class;
         } else {
             try {
-                return (Class<Geometry>) Class.forName("com.vividsolutions.jts.geom." + geomTypeString);
+                return (Class<Geometry>) Class.forName("org.locationtech.jts.geom." + geomTypeString);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException("Unrecognized geometry type in geojson: " + geomTypeString);
             }

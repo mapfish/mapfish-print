@@ -1,7 +1,7 @@
 package org.mapfish.print.attribute.map;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.locationtech.jts.geom.Coordinate;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;

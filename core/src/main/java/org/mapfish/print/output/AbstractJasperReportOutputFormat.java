@@ -2,7 +2,6 @@ package org.mapfish.print.output;
 
 
 import com.google.common.annotations.VisibleForTesting;
-import com.vividsolutions.jts.util.AssertionFailedException;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
@@ -16,6 +15,7 @@ import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
 import net.sf.jasperreports.renderers.Renderable;
 import net.sf.jasperreports.repo.RepositoryService;
+import org.locationtech.jts.util.AssertionFailedException;
 import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapAttribute;

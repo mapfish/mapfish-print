@@ -1,11 +1,11 @@
 package org.mapfish.print.map.tiled;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.attribute.map.MapBounds;

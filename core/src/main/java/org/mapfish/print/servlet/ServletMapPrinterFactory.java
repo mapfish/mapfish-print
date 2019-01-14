@@ -1,8 +1,8 @@
 package org.mapfish.print.servlet;
 
-import com.vividsolutions.jts.util.Assert;
 import org.apache.commons.io.DirectoryWalker;
 import org.apache.commons.lang.StringUtils;
+import org.locationtech.jts.util.Assert;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;

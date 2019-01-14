@@ -2,10 +2,10 @@ package org.mapfish.print.map.image.wms;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.vividsolutions.jts.util.Assert;
 import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.locationtech.jts.util.Assert;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.HttpRequestFetcher;

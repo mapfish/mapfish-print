@@ -1,6 +1,6 @@
 package org.mapfish.print.processor.http;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
 import org.mapfish.print.http.MfClientHttpRequestFactory;

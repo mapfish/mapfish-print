@@ -1,7 +1,7 @@
 package org.mapfish.print.parser;
 
 import com.google.common.collect.Collections2;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

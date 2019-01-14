@@ -1,8 +1,7 @@
 package org.mapfish.print.map.geotools.grid;
 
 import org.junit.Test;
-
-import javax.measure.unit.NonSI;
+import si.uom.NonSI;
 
 import static org.junit.Assert.assertEquals;
 

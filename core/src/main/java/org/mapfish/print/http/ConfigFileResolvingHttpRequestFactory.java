@@ -1,6 +1,6 @@
 package org.mapfish.print.http;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.Processor;
 import org.slf4j.Logger;

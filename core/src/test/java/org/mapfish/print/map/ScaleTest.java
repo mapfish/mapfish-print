@@ -1,8 +1,8 @@
 package org.mapfish.print.map;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
+import org.locationtech.jts.geom.Coordinate;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import static org.junit.Assert.assertEquals;

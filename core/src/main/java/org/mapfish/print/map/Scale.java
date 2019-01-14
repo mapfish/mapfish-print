@@ -1,9 +1,9 @@
 package org.mapfish.print.map;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.GeodeticCalculator;
+import org.locationtech.jts.geom.Coordinate;
 import org.mapfish.print.attribute.map.GenericMapAttribute;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;

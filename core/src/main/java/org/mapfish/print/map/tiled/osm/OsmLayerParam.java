@@ -2,9 +2,9 @@ package org.mapfish.print.map.tiled.osm;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.util.Assert;
 import org.apache.commons.lang.StringUtils;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.util.Assert;
 import org.mapfish.print.map.tiled.AbstractTiledLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.wrapper.PArray;

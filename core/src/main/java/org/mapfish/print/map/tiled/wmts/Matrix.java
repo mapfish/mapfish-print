@@ -1,6 +1,6 @@
 package org.mapfish.print.map.tiled.wmts;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import org.mapfish.print.map.Scale;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 

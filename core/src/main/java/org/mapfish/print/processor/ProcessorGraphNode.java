@@ -4,7 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.output.Values;
 import org.slf4j.Logger;

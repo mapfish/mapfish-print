@@ -1,6 +1,6 @@
 package org.mapfish.print.output;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;

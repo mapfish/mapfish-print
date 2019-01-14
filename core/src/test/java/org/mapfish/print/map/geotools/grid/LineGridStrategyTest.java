@@ -1,13 +1,13 @@
 package org.mapfish.print.map.geotools.grid;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultEngineeringCRS;
 import org.junit.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineString;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.MapBounds;

@@ -1,24 +1,24 @@
 package org.mapfish.print.map.geotools.grid;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Polygon;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.renderer.lite.RendererUtilities;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Polygon;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import si.uom.NonSI;
 
 import java.awt.geom.AffineTransform;
 import javax.annotation.Nonnull;
-import javax.measure.unit.NonSI;
 
 import static org.mapfish.print.map.geotools.grid.GridLabel.Side.BOTTOM;
 import static org.mapfish.print.map.geotools.grid.GridLabel.Side.LEFT;

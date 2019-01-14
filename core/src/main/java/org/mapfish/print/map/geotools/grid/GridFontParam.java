@@ -1,6 +1,6 @@
 package org.mapfish.print.map.geotools.grid;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import org.mapfish.print.parser.HasDefaultValue;
 
 import java.awt.Font;

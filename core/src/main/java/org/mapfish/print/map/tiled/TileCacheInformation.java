@@ -1,7 +1,7 @@
 package org.mapfish.print.map.tiled;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.locationtech.jts.geom.Coordinate;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequest;

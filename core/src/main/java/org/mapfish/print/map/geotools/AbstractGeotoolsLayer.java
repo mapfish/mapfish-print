@@ -1,6 +1,5 @@
 package org.mapfish.print.map.geotools;
 
-import com.vividsolutions.jts.util.Assert;
 import org.geotools.data.DataStore;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
@@ -8,6 +7,7 @@ import org.geotools.map.MapContent;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleVisitor;
+import org.locationtech.jts.util.Assert;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.attribute.map.MapLayer;

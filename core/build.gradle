@@ -105,8 +105,6 @@ configurations {
     all*.exclude group: 'commons-logging'
     //obscure stack trace if we let this dependency: https://stackoverflow.com/a/15808940
     all*.exclude module: 'xercesImpl'
-    //we have jts 1.20 and 1.14 in the dependencies. We want only 1.14 (splitted in 3 libs core, example and io)
-    all*.exclude group: 'com.vividsolutions', module: 'jts'
 }
 
 dependencies {
@@ -115,7 +113,7 @@ dependencies {
     def logbackVersion = '1.2.3'
     def jasperReportVersion = '6.7.0'
     def metricsVersion = '4.0.5'
-    def geotoolsVersion = '19.3'
+    def geotoolsVersion = '20.1'
 
     compile (
             "org.springframework:spring-context:$project.springVersion",
