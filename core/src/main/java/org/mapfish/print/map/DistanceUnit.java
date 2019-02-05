@@ -1,8 +1,6 @@
 package org.mapfish.print.map;
 
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,8 +77,6 @@ public enum DistanceUnit {
      * Represents the pica unit.
      */
     PC(DistanceUnit.PT, 12.0, new String[]{"pc", "pica"});
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DistanceUnit.class);
 
     /**
      * Global dictionary of every textual representations of every units.
@@ -244,11 +240,7 @@ public enum DistanceUnit {
                 }
                 final DistanceUnit[] result = new DistanceUnit[list.size()];
                 list.toArray(result);
-                Arrays.sort(result, new Comparator<DistanceUnit>() {
-                    public int compare(final DistanceUnit o1, final DistanceUnit o2) {
-                        return Double.compare(o1.baseFactor, o2.baseFactor);
-                    }
-                });
+                Arrays.sort(result, Comparator.comparingDouble(o -> o.baseFactor));
                 this.allUnits = result;
             }
         }

@@ -6,7 +6,6 @@ import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.UserLayer;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,32 +39,28 @@ public final class StyleParser {
             final String styleString) {
         if (styleString != null) {
             for (StyleParserPlugin plugin: this.plugins) {
-                try {
-                    final Optional<? extends Style> style = plugin.parseStyle(
-                            configuration, clientHttpRequestFactory, styleString);
-                    if (style.isPresent()) {
-                        if (LOGGER.isDebugEnabled()) {
-                            try {
-                                final SLDTransformer transformer = new SLDTransformer();
-                                final StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory();
-                                final UserLayer userLayer = styleFactory.createUserLayer();
-                                userLayer.addUserStyle(style.get());
-                                final StyledLayerDescriptor sld = styleFactory.createStyledLayerDescriptor();
-                                sld.addStyledLayer(userLayer);
-                                if (LOGGER.isDebugEnabled()) {
-                                    LOGGER.debug("Loaded style from: \n\n '{}': \n\n{}",
-                                                 styleString, transformer.transform(sld));
-                                }
-                            } catch (Exception e) {
-                                LOGGER.debug(
-                                        "Loaded style from: \n\n '{}' \n\n<Unable to transform it to xml>",
-                                        styleString, e);
+                final Optional<? extends Style> style = plugin.parseStyle(
+                        configuration, clientHttpRequestFactory, styleString);
+                if (style.isPresent()) {
+                    if (LOGGER.isDebugEnabled()) {
+                        try {
+                            final SLDTransformer transformer = new SLDTransformer();
+                            final StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory();
+                            final UserLayer userLayer = styleFactory.createUserLayer();
+                            userLayer.addUserStyle(style.get());
+                            final StyledLayerDescriptor sld = styleFactory.createStyledLayerDescriptor();
+                            sld.addStyledLayer(userLayer);
+                            if (LOGGER.isDebugEnabled()) {
+                                LOGGER.debug("Loaded style from: \n\n '{}': \n\n{}",
+                                             styleString, transformer.transform(sld));
                             }
+                        } catch (Exception e) {
+                            LOGGER.debug(
+                                    "Loaded style from: \n\n '{}' \n\n<Unable to transform it to xml>",
+                                    styleString, e);
                         }
-                        return style;
                     }
-                } catch (Throwable t) {
-                    throw ExceptionUtils.getRuntimeException(t);
+                    return style;
                 }
             }
         }
