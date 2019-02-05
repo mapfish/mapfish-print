@@ -1,15 +1,12 @@
 package org.mapfish.print.processor.map;
 
 import org.geotools.styling.Style;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.StyleAttribute;
 import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayer;
-import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.style.StyleParserPlugin;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InputOutputValue;
@@ -42,30 +39,19 @@ public class SetStyleProcessor extends
 
     @Override
     public final Void execute(final Input values, final ExecutionContext context) {
-        try {
-            final Style style = this.mapfishJsonParser.parseStyle(
-                    values.template.getConfiguration(),
-                    values.clientHttpRequestFactoryProvider.get(),
-                    values.style.style
-            ).get();
-            for (MapLayer layer: values.map.getLayers()) {
-                context.stopIfCanceled();
-                if (layer instanceof AbstractFeatureSourceLayer) {
-                    ((AbstractFeatureSourceLayer) layer).setStyle(new StyleSupplier() {
-                        @Override
-                        public Style load(
-                                final MfClientHttpRequestFactory requestFactory,
-                                final Object featureSource) {
-                            return style;
-                        }
-                    });
-                }
+        final Style style = this.mapfishJsonParser.parseStyle(
+                values.template.getConfiguration(),
+                values.clientHttpRequestFactoryProvider.get(),
+                values.style.style
+        ).get();
+        for (MapLayer layer: values.map.getLayers()) {
+            context.stopIfCanceled();
+            if (layer instanceof AbstractFeatureSourceLayer) {
+                ((AbstractFeatureSourceLayer) layer).setStyle((requestFactory, featureSource) -> style);
             }
-
-            return null;
-        } catch (Throwable e) {
-            throw ExceptionUtils.getRuntimeException(e);
         }
+
+        return null;
     }
 
     @Override

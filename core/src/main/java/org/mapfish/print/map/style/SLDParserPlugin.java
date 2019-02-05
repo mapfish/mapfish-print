@@ -45,7 +45,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
     public final Optional<Style> parseStyle(
             @Nullable final Configuration configuration,
             @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
-            @Nonnull final String styleString) throws Throwable {
+            @Nonnull final String styleString) {
 
         // try to load xml
         final Optional<Style> styleOptional = tryLoadSLD(
@@ -57,9 +57,8 @@ public class SLDParserPlugin implements StyleParserPlugin {
 
         final Integer styleIndex = lookupStyleIndex(styleString).orElse(null);
         final String styleStringWithoutIndexReference = removeIndexReference(styleString);
-        Function<byte[], Optional<Style>> loadFunction = input -> {
-            return tryLoadSLD(input, styleIndex, clientHttpRequestFactory);
-        };
+        Function<byte[], Optional<Style>> loadFunction =
+                input -> tryLoadSLD(input, styleIndex, clientHttpRequestFactory);
 
         return ParserPluginUtils.loadStyleAsURI(clientHttpRequestFactory, styleStringWithoutIndexReference,
                                                 loadFunction);

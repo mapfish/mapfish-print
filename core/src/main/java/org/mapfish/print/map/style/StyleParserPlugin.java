@@ -28,5 +28,5 @@ public interface StyleParserPlugin {
     Optional<Style> parseStyle(
             @Nullable Configuration configuration,
             @Nonnull ClientHttpRequestFactory clientHttpRequestFactory,
-            @Nullable String styleString) throws Throwable;
+            @Nonnull String styleString);
 }

@@ -163,7 +163,7 @@ public final class JsonStyleParserHelper {
      * @param styleRules the rules
      */
     public Style createStyle(final List<Rule> styleRules) {
-        final Rule[] rulesArray = styleRules.toArray(new Rule[styleRules.size()]);
+        final Rule[] rulesArray = styleRules.toArray(new Rule[0]);
         final FeatureTypeStyle featureTypeStyle = this.styleBuilder.createFeatureTypeStyle(null, rulesArray);
         final Style style = this.styleBuilder.createStyle();
         style.featureTypeStyles().add(featureTypeStyle);
@@ -730,7 +730,7 @@ public final class JsonStyleParserHelper {
                     ClientHttpResponse httpResponse = this.requestFactory.createRequest(
                             uri, HEAD).execute();
                     List<String> contentTypes = httpResponse.getHeaders().get("Content-Type");
-                    if (contentTypes.size() == 1) {
+                    if (contentTypes != null && contentTypes.size() == 1) {
                         String contentType = contentTypes.get(0);
                         int index = contentType.lastIndexOf(";");
                         mimeType = index >= 0 ? contentType.substring(0, index) : contentType;

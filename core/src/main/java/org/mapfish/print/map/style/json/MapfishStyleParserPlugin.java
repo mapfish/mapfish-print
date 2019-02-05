@@ -484,7 +484,7 @@ public final class MapfishStyleParserPlugin implements StyleParserPlugin {
     public Optional<Style> parseStyle(
             @Nullable final Configuration configuration,
             @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
-            @Nonnull final String styleString) throws Throwable {
+            @Nonnull final String styleString) {
         final Optional<Style> styleOptional = tryParse(
                 configuration, styleString, clientHttpRequestFactory);
 
@@ -500,14 +500,13 @@ public final class MapfishStyleParserPlugin implements StyleParserPlugin {
                     } catch (Throwable e) {
                         throw ExceptionUtils.getRuntimeException(e);
                     }
-        });
+                });
     }
 
     private Optional<Style> tryParse(
             @Nullable final Configuration configuration,
             @Nonnull final String styleString,
-            @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory)
-            throws Throwable {
+            @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory) {
         final String trimmed = styleString.trim();
         if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
             final PJsonObject json = new PJsonObject(new JSONObject(styleString), "style");
