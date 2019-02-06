@@ -4,7 +4,7 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xmlns="http://www.springframework.org/schema/security"
              xsi:schemaLocation="
-        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
     <!-- needed to allow double slashes in the URLs -->
@@ -17,32 +17,17 @@
     <http use-expressions="true">
         <!-- in order to get a challenge (for capabilities for example) you need to use the print/sec/* urls -->
         <csrf disabled="true"/>
-        <intercept-url pattern="/sec/print/**" requires-channel="https" access="isAuthenticated()" />
+        <intercept-url pattern="/sec/print/**" requires-channel="https" access="isAuthenticated()"/>
         <intercept-url pattern="/**" access="permitAll()"/>
-        <http-basic />
-        <anonymous />
+        <http-basic/>
+        <anonymous/>
     </http>
 
-    <beans:bean name="bcryptEncoder"
-        class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
-
     <!--
-        This authentication manager is not really production quality.  It will work if you don't have complex
-        needs but it is recommended to use ldap or database based authentication providers, etc..
-        See http://docs.spring.io/spring-security/site/docs/3.2.5.RELEASE/reference/htmlsingle/#ns-config for some
-        help
+        This authentication manager is not authenticating anything.
+        See https://docs.spring.io/spring-security/site/docs/5.1.3.RELEASE/reference/htmlsingle/#ns-config
+        for some help
     -->
-    <authentication-manager alias="authenticationManager">
-        <authentication-provider>
-            <password-encoder ref="bcryptEncoder" />
-            <user-service>
-                <!-- password is jimi -->
-                <user name="jimi" password="$2a$10$OeKmMfVmL2IbF/3skK8l2.Gl3EqvvGhb.Pxr/K0dN7.ttPRHsOzVW"
-                    authorities="ROLE_USER, ROLE_ADMIN" />
-                <!-- password is bob -->
-                <user name="bob" password="$2a$10$D5gwUewQQSpjfZPTcj9rpuTTfmxAqNEyJ19pzC7Z9.fHSCl3jtDj."
-                    authorities="ROLE_USER" />
-            </user-service>
-        </authentication-provider>
-    </authentication-manager>
+    <beans:bean name="org.springframework.security.authenticationManager"
+                class="org.mapfish.print.servlet.NoOpAuthenticationManager"/>
 </beans:beans>
