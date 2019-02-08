@@ -196,7 +196,6 @@ public final class HttpRequestFetcher {
                 final Timer.Context timerDownload =
                         HttpRequestFetcher.this.registry.timer(baseMetricName).time();
                 try (ClientHttpResponse originalResponse = this.originalRequest.execute()) {
-                    LOGGER.debug("Caching URI resource {}", this.originalRequest.getURI());
                     this.response = new CachedClientHttpResponse(originalResponse);
                 } catch (IOException e) {
                     LOGGER.error("Request failed {}", this.originalRequest.getURI(), e);

@@ -18,7 +18,7 @@ public class NoOpAuthenticationManager implements AuthenticationManager {
         return new Authentication() {
             @Override
             public Collection<? extends GrantedAuthority> getAuthorities() {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
 
             @Override
