@@ -223,6 +223,7 @@ public class PrintJobDao {
         final CriteriaQuery<PrintJobStatusExtImpl> criteria =
                 builder.createQuery(PrintJobStatusExtImpl.class);
         final Root<PrintJobStatusExtImpl> root = criteria.from(PrintJobStatusExtImpl.class);
+        root.alias("pj");
         criteria.where(builder.equal(root.get("status"), PrintJobStatus.Status.WAITING));
         criteria.orderBy(builder.asc(root.get("entry").get("startTime")));
         final Query<PrintJobStatusExtImpl> query = getSession().createQuery(criteria);
