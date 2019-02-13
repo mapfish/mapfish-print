@@ -9,7 +9,7 @@ allprojects {
     group = 'org.mapfish.print'
     version = '3.18.1'
     ext.junitVersion = "4.12"
-    ext.springVersion = "5.1.4.RELEASE"
+    ext.springVersion = "5.1.5.RELEASE"
     ext.groovyVersion = "2.5.6"
     ext."signing.keyId" = signing_keyId
     ext."signing.secretKeyRingFile" = System.properties.get('user.home') + '/.gnupg/secring.gpg'
