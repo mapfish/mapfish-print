@@ -1,6 +1,7 @@
 package org.mapfish.print.map.geotools;
 
 import com.google.common.collect.Lists;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -88,12 +89,12 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
 
     public final void setFeatureCollection(final SimpleFeatureCollection featureCollection) {
         this.featureSourceSupplier = new FeatureSourceSupplier() {
-
             @Nonnull
             @Override
             public FeatureSource load(@Nonnull final MfClientHttpRequestFactory requestFactory,
                                       @Nonnull final MapfishMapContext mapContext) {
-                return new CollectionFeatureSource(featureCollection);
+                final SimpleFeatureCollection copy = DataUtilities.collection(featureCollection);
+                return new CollectionFeatureSource(copy);
             }
         };
     }
