@@ -336,9 +336,10 @@ public final class CreateMapProcessor
     }
 
     private void warnIfDifferentRenderType(final RenderType renderType, final MapLayer layer) {
-        if (renderType != layer.getRenderType()) {
+        if (renderType != layer.getRenderType() && layer.getRenderType() != RenderType.UNKNOWN) {
             LOGGER.info("Layer {} has {} format, storing as PNG.",
-                        layer.getName(), layer.getRenderType().toString());
+                        layer.getName().isEmpty() ? layer : layer.getName(),
+                        layer.getRenderType().toString());
         }
     }
 
@@ -578,6 +579,8 @@ public final class CreateMapProcessor
                     mapValues.setMapBounds(mapBounds);
                 }
             }
+        } else {
+            LOGGER.warn("No BBOX found for zoomToFeature");
         }
     }
 
@@ -607,10 +610,11 @@ public final class CreateMapProcessor
                 }
 
                 if (!features.isEmpty()) {
+                    final ReferencedEnvelope curBounds = features.getBounds();
                     if (bounds == null) {
-                        bounds = features.getBounds();
+                        bounds = curBounds;
                     } else {
-                        bounds.expandToInclude(features.getBounds());
+                        bounds.expandToInclude(curBounds);
                     }
                 }
             }

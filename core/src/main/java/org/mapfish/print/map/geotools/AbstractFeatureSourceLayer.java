@@ -1,5 +1,6 @@
 package org.mapfish.print.map.geotools;
 
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -93,13 +94,16 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
 
     public final void setFeatureCollection(final SimpleFeatureCollection featureCollection) {
         this.featureSourceSupplier = new FeatureSourceSupplier() {
-
             @Nonnull
             @Override
             public FeatureSource load(
                     @Nonnull final MfClientHttpRequestFactory requestFactory,
                     @Nonnull final MapfishMapContext mapContext) {
-                return new CollectionFeatureSource(featureCollection);
+                // GeoTools is not always thread safe. In particular the DefaultFeatureCollection.getBounds
+                // method. If multiple maps are sharing the same features, this would cause zoomToFeature
+                // to result in funky bboxes. To avoid that, we use a copy of the featureCollection
+                final SimpleFeatureCollection copy = DataUtilities.collection(featureCollection);
+                return new CollectionFeatureSource(copy);
             }
         };
     }
