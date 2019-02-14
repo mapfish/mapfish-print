@@ -113,7 +113,7 @@ dependencies {
     def logbackVersion = '1.2.3'
     def jasperReportVersion = '6.7.0'
     def metricsVersion = '4.0.5'
-    def geotoolsVersion = '20.1'
+    def geotoolsVersion = '20.2'
 
     compile (
             "org.springframework:spring-context:$project.springVersion",
