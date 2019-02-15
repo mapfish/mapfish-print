@@ -208,6 +208,9 @@ public final class ProcessorDependencyGraph {
                 LOGGER.debug("Starting to execute processor graph: \n{}", graph);
                 try {
                     tryExecuteNodes(graph.roots, this.execContext, false);
+                } catch (Throwable ex) {
+                    this.execContext.cancel();  // cancel all pending computations in case of error
+                    throw ex;
                 } finally {
                     LOGGER.debug("Finished executing processor graph: \n{}", graph);
                 }
