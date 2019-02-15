@@ -71,6 +71,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -209,7 +210,7 @@ public final class CreateMapProcessor
      */
     public static void saveSvgFile(final SVGGraphics2D graphics2d, final File path) throws IOException {
         try (FileOutputStream fs = new FileOutputStream(path);
-             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fs, "UTF-8");
+             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fs, StandardCharsets.UTF_8);
              Writer osw = new BufferedWriter(outputStreamWriter)
         ) {
             graphics2d.stream(osw, true);
@@ -222,7 +223,8 @@ public final class CreateMapProcessor
     }
 
     @Override
-    public Output execute(final Input param, final ExecutionContext context) throws Exception {
+    public Output execute(final Input param, final ExecutionContext context)
+            throws IOException, ParserConfigurationException, JRException {
         context.stopIfCanceled();
         MapAttributeValues mapValues = (MapAttributeValues) param.map;
         if (mapValues.zoomToFeatures != null) {
@@ -258,7 +260,7 @@ public final class CreateMapProcessor
             final File printDirectory,
             final List<URI> graphics,
             final MapfishMapContext mapContext,
-            final String outputFormat) throws IOException, JRException {
+            final String outputFormat) throws IOException {
 
         final File mergedGraphic = File.createTempFile("map-", "." + outputFormat, printDirectory);
         int width = mapContext.getMapSize().width;
@@ -364,8 +366,7 @@ public final class CreateMapProcessor
             final MfClientHttpRequestFactory clientHttpRequestFactory,
             final MapAttributeValues mapValues,
             final ExecutionContext context,
-            final MapfishMapContext mapContext)
-            throws Exception {
+            final MapfishMapContext mapContext) throws IOException, ParserConfigurationException {
         // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
         final List<MapLayer> layers = new ArrayList<>(mapValues.getLayers());
         Collections.reverse(layers);
@@ -397,7 +398,7 @@ public final class CreateMapProcessor
                     final SVGGraphics2D graphics2D = createSvgGraphics(mapContext.getMapSize());
 
                     try {
-                        Graphics2D clippedGraphics2D = createClippedGraphics(
+                        final Graphics2D clippedGraphics2D = createClippedGraphics(
                                 mapContext, areaOfInterest, graphics2D);
                         layer.render(clippedGraphics2D, clientHttpRequestFactory, mapContext, context);
 
@@ -458,7 +459,7 @@ public final class CreateMapProcessor
 
     private AreaOfInterest addAreaOfInterestLayer(
             @Nonnull final MapAttributeValues mapValues,
-            @Nonnull final List<MapLayer> layers) throws IOException {
+            @Nonnull final List<MapLayer> layers) {
         final AreaOfInterest areaOfInterest = mapValues.areaOfInterest;
         if (areaOfInterest != null && areaOfInterest.display == AreaOfInterest.AoiDisplay.RENDER) {
             FeatureLayer.FeatureLayerParam param = new FeatureLayer.FeatureLayerParam();
@@ -519,7 +520,7 @@ public final class CreateMapProcessor
         ReferencedEnvelope bounds = getFeatureBounds(clientHttpRequestFactory,
                                                      mapValues, context);
 
-        if (bounds != null && !bounds.isNull()) {
+        if (!bounds.isNull()) {
             if (mapValues.zoomToFeatures.zoomType == ZoomType.CENTER) {
                 // center the map on the center of the feature bounds
                 Coordinate center = bounds.centre();
@@ -587,13 +588,14 @@ public final class CreateMapProcessor
     /**
      * Get the bounding-box containing all features of all layers.
      */
+    @Nonnull
     private ReferencedEnvelope getFeatureBounds(
             final MfClientHttpRequestFactory clientHttpRequestFactory,
             final MapAttributeValues mapValues, final ExecutionContext context) {
         final MapfishMapContext mapContext = createMapContext(mapValues);
 
         String layerName = mapValues.zoomToFeatures.layer;
-        ReferencedEnvelope bounds = null;
+        ReferencedEnvelope bounds = new ReferencedEnvelope();
         for (MapLayer layer: mapValues.getLayers()) {
             context.stopIfCanceled();
 
@@ -611,11 +613,7 @@ public final class CreateMapProcessor
 
                 if (!features.isEmpty()) {
                     final ReferencedEnvelope curBounds = features.getBounds();
-                    if (bounds == null) {
-                        bounds = curBounds;
-                    } else {
-                        bounds.expandToInclude(curBounds);
-                    }
+                    bounds.expandToInclude(curBounds);
                 }
             }
         }
