@@ -23,7 +23,9 @@ import org.springframework.http.client.ClientHttpResponse;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
@@ -75,24 +77,29 @@ public final class WmsLayer extends AbstractSingleImageLayer {
 
             Assert.isTrue(response != null, "No response, see error above");
             Assert.equals(HttpStatus.OK, response.getStatusCode(),
-                          String.format("Http status code for %s was not OK.  It was: %s. " +
-                                                "The response message was: '%s'",
-                                        this.imageRequest.getURI(), response.getStatusCode(),
-                                        response.getStatusText()));
+                          String.format("Http status code for %s was not OK. The response message was: '%s'",
+                                        this.imageRequest.getURI(), response.getStatusText()));
 
             final List<String> contentType = response.getHeaders().get("Content-Type");
             if (contentType == null || contentType.size() != 1) {
-                LOGGER.debug("The WMS image {} don't return a valid content type header.",
+                LOGGER.debug("The WMS image {} didn't return a valid content type header.",
                              this.imageRequest.getURI());
             } else if (!contentType.get(0).startsWith("image/")) {
-                byte[] data = IOUtils.toByteArray(response.getBody());
+                final byte[] data;
+                try (InputStream body = response.getBody()) {
+                    data = IOUtils.toByteArray(body);
+                }
                 LOGGER.debug("We get a wrong WMS image for {}, content type: {}\nresult:\n{}",
-                             this.imageRequest.getURI(), contentType.get(0), new String(data, "UTF-8"));
+                             this.imageRequest.getURI(), contentType.get(0),
+                             new String(data, StandardCharsets.UTF_8));
                 this.registry.counter(baseMetricName + ".error").inc();
                 return createErrorImage(transformer.getPaintArea());
             }
 
-            final BufferedImage image = ImageIO.read(response.getBody());
+            final BufferedImage image;
+            try (InputStream body = response.getBody()) {
+                image = ImageIO.read(body);
+            }
             if (image == null) {
                 LOGGER.warn("The WMS image {} is an image format that cannot be decoded",
                             this.imageRequest.getURI());
