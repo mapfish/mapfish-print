@@ -109,7 +109,7 @@ configurations {
 
 dependencies {
     def springSecurityVersion = '5.1.4.RELEASE'
-    def slf4jVersion = '1.7.25'
+    def slf4jVersion = '1.7.26'
     def logbackVersion = '1.2.3'
     def jasperReportVersion = '6.7.0'
     def metricsVersion = '4.0.5'
