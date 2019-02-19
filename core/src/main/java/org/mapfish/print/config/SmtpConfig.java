@@ -1,6 +1,8 @@
 package org.mapfish.print.config;
 
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Email sending configuration.
@@ -11,7 +13,7 @@ public class SmtpConfig implements ConfigurationObject {
     /**
      * The default subject.
      */
-    public static final String DEFAULT_SUBJECT = "Mapfish print document";
+    public static final String DEFAULT_SUBJECT = "MapFish print document";
 
     /**
      * The default body.
@@ -23,6 +25,16 @@ public class SmtpConfig implements ConfigurationObject {
      */
     public static final String DEFAULT_BODY_STORAGE = "Please find the requested document there: {url}";
 
+    /**
+     * The default subject in case of error.
+     */
+    public static final String DEFAULT_ERROR_SUBJECT = "MapFish print error";
+
+    /**
+     * The default body in case of error.
+     */
+    public static final String DEFAULT_ERROR_BODY = "The print job failed:<br>{message}";
+
     private String fromAddress;
     private String host;
     private int port = 25;
@@ -32,6 +44,8 @@ public class SmtpConfig implements ConfigurationObject {
     private boolean ssl = false;
     private String subject = DEFAULT_SUBJECT;
     private String body = null;
+    private String errorSubject = DEFAULT_ERROR_SUBJECT;
+    private String errorBody = DEFAULT_ERROR_BODY;
     private ReportStorage storage = null;
 
     @Override
@@ -152,6 +166,7 @@ public class SmtpConfig implements ConfigurationObject {
         this.ssl = ssl;
     }
 
+    @Nonnull
     public String getSubject() {
         return subject;
     }
@@ -159,18 +174,18 @@ public class SmtpConfig implements ConfigurationObject {
     /**
      * The default email subject.
      * <br>
-     * This can be changed by the <code>smtp</code>.<code>subject</code>
-     * property in the request.
+     * This can be changed by the <code>smtp</code>.<code>subject</code> property in the request.
      *
      * @param subject The subject
      */
-    public void setSubject(final String subject) {
+    public void setSubject(@Nonnull final String subject) {
         this.subject = subject;
     }
 
     /**
      * Returns the configured body or the default value.
      */
+    @Nonnull
     public String getBody() {
         if (body == null) {
             return storage == null ? DEFAULT_BODY : DEFAULT_BODY_STORAGE;
@@ -182,11 +197,10 @@ public class SmtpConfig implements ConfigurationObject {
     /**
      * The default email body.
      * <br>
-     * This can be changed by the <code>smtp</code>.<code>body</code> property
-     * in the request.
-     *
-     * If you have setup a storage, you must put a "{url}" marker where the URL
-     * to fetch the report should be put.
+     * This can be changed by the <code>smtp</code>.<code>body</code> property in the request.
+     * <p>
+     * If you have setup a storage, you must put a "{url}" marker where the URL to fetch the report should be
+     * put.
      *
      * @param body The body
      */
@@ -194,6 +208,7 @@ public class SmtpConfig implements ConfigurationObject {
         this.body = body;
     }
 
+    @Nullable
     public ReportStorage getStorage() {
         return storage;
     }
@@ -208,5 +223,39 @@ public class SmtpConfig implements ConfigurationObject {
      */
     public void setStorage(final ReportStorage storage) {
         this.storage = storage;
+    }
+
+    @Nonnull
+    public String getErrorSubject() {
+        return errorSubject;
+    }
+
+    /**
+     * The default email subject in case of error.
+     * <br>
+     * This can be changed by the <code>smtp</code>.<code>errorSubject</code> property in the request.
+     *
+     * @param errorSubject The subject
+     */
+    public void setErrorSubject(@Nonnull final String errorSubject) {
+        this.errorSubject = errorSubject;
+    }
+
+    @Nonnull
+    public String getErrorBody() {
+        return errorBody;
+    }
+
+    /**
+     * The default email body in case of error.
+     * <br>
+     * This can be changed by the <code>smtp</code>.<code>body</code> property in the request.
+     * <p>
+     * The error message can be places in the text using a "{message}" marker.
+     *
+     * @param errorBody The body
+     */
+    public void setErrorBody(@Nonnull final String errorBody) {
+        this.errorBody = errorBody;
     }
 }

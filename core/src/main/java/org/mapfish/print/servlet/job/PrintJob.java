@@ -3,6 +3,7 @@ package org.mapfish.print.servlet.job;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import org.mapfish.print.Constants;
+import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.config.Configuration;
@@ -173,6 +174,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
                 jobTracker.onJobError();
             }
             deleteReport();
+            maybeSendError(mapPrinter.getConfiguration(), e);
             LOGGER.warn("Error executing print job {} {}\n{}",
                         this.entry.getRequestData(), canceledText, this.entry.getReferenceId(), e);
             throw e;
@@ -186,6 +188,54 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
             LOGGER.debug("Print Job {} completed in {}ms", this.entry.getReferenceId(), computationTimeMs);
             MDC.remove(Processor.MDC_JOB_ID_KEY);
         }
+    }
+
+    private void maybeSendError(final Configuration configuration, final Exception e) {
+        final PJsonObject requestData = entry.getRequestData();
+        final SmtpConfig smtp = configuration.getSmtp();
+        final PJsonObject requestSmtp = requestData.optJSONObject("smtp");
+        if (smtp == null || requestSmtp == null) {
+            return;
+        }
+        try {
+            sendErrorEmail(smtp, requestSmtp, e);
+        } catch (MessagingException sendException) {
+            LOGGER.warn("Error sending error email", sendException);
+        }
+    }
+
+    private void sendErrorEmail(
+            final SmtpConfig config, final PJsonObject request, final Exception e)
+            throws MessagingException {
+        final String to = request.getString("to");
+        final InternetAddress[] recipients = InternetAddress.parse(to);
+        final Message message = createMessage(config, recipients);
+        message.setSubject(request.optString("errorSubject", config.getErrorSubject()));
+
+        final String msg = request.optString("errorBody", config.getErrorBody()).
+                replace("{message}", ExceptionUtils.getRootCause(e).toString());
+        final MimeBodyPart html = new MimeBodyPart();
+        html.setContent(msg, "text/html; charset=utf-8");
+
+        Multipart multipart = new MimeMultipart();
+        multipart.addBodyPart(html);
+
+        message.setContent(multipart);
+
+        LOGGER.info("Emailing error to {}", to);
+        Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".email.success").time();
+        Transport.send(message);
+        timer.stop();
+    }
+
+    private Message createMessage(final SmtpConfig config, final InternetAddress[] recipients)
+            throws MessagingException {
+        final Session session = createEmailSession(config);
+        final Message message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(config.getFromAddress()));
+        message.setRecipients(
+                Message.RecipientType.TO, recipients);
+        return message;
     }
 
     private boolean maybeSendResult(
@@ -207,13 +257,9 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
             final SmtpConfig config, final PJsonObject request, final String fileName,
             final String fileExtension, final String mimeType,
             final ExecutionStats stats) throws MessagingException, IOException {
-        final Session session = createEmailSession(config);
-        final Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(config.getFromAddress()));
         final String to = request.getString("to");
         final InternetAddress[] recipients = InternetAddress.parse(to);
-        message.setRecipients(
-                Message.RecipientType.TO, recipients);
+        final Message message = createMessage(config, recipients);
         message.setSubject(request.optString("subject", config.getSubject()));
 
         String msg = request.optString("body", config.getBody());
@@ -241,7 +287,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         message.setContent(multipart);
 
         LOGGER.info("Emailing result to {}", to);
-        Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".email").time();
+        Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".email.error").time();
         Transport.send(message);
         timer.stop();
         stats.addEmailStats(recipients, config.getStorage() != null);
