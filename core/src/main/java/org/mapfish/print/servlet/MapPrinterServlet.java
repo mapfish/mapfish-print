@@ -104,7 +104,7 @@ public class MapPrinterServlet extends BaseMapServlet {
      */
     public static final String REPORT_URL = "/report";
     /**
-     * The url path to create a print task and to get a finished print.
+     * The url path to get the list of fonts available to geotools.
      */
     public static final String FONTS_URL = "/fonts";
     /**
