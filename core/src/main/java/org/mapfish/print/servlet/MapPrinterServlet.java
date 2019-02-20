@@ -1,5 +1,7 @@
 package org.mapfish.print.servlet;
 
+import net.sf.jasperreports.engine.fonts.FontFamily;
+import net.sf.jasperreports.extensions.ExtensionsEnvironment;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jfree.util.Log;
@@ -37,7 +39,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -103,7 +104,7 @@ public class MapPrinterServlet extends BaseMapServlet {
      */
     public static final String REPORT_URL = "/report";
     /**
-     * The url path to create a print task and to get a finished print.
+     * The url path to get the list of fonts available to geotools.
      */
     public static final String FONTS_URL = "/fonts";
     /**
@@ -881,10 +882,11 @@ public class MapPrinterServlet extends BaseMapServlet {
     @ResponseBody
     public final String listAvailableFonts() {
         MDC.remove(Processor.MDC_JOB_ID_KEY);
-        GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        JSONArray availableFonts = new JSONArray();
-        for (String font: e.getAvailableFontFamilyNames()) {
-            availableFonts.put(font);
+        final JSONArray availableFonts = new JSONArray();
+        final List<FontFamily> families =
+                ExtensionsEnvironment.getExtensionsRegistry().getExtensions(FontFamily.class);
+        for (FontFamily family: families) {
+            availableFonts.put(family.getName());
         }
         return availableFonts.toString();
     }
