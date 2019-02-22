@@ -169,7 +169,7 @@ dependencies {
             'com.github.spullara.cli-parser:cli-parser:1.1.5',
             'org.apache.httpcomponents:httpclient:4.5.7',
             'com.sun.mail:javax.mail:1.6.2',
-            'com.amazonaws:aws-java-sdk-s3:1.11.503'
+            'com.amazonaws:aws-java-sdk-s3:1.11.504'
     )
 
     compile (configurations.metrics) {
