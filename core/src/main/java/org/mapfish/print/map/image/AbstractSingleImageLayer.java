@@ -1,5 +1,6 @@
 package org.mapfish.print.map.image;
 
+import com.codahale.metrics.MetricRegistry;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -11,22 +12,37 @@ import org.geotools.styling.Style;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
+import org.mapfish.print.map.style.json.ColorParser;
 import org.mapfish.print.processor.Processor;
 
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
+
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
 
 /**
  * Common implementation for layers that are represented as a single grid coverage image.
  */
 public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
-
+    /**
+     * The metrics object.
+     */
+    @Nonnull
+    protected final MetricRegistry registry;
+    /**
+     * The configuration.
+     */
+    protected final Configuration configuration;
     private final StyleSupplier<GridCoverage2D> styleSupplier;
 
     /**
@@ -35,13 +51,18 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
      * @param executorService the thread pool for doing the rendering.
      * @param styleSupplier the style to use when drawing the constructed grid coverage on the map.
      * @param params the parameters for this layer
+     * @param registry the metrics object.
+     * @param configuration the configuration
      */
     protected AbstractSingleImageLayer(
             final ExecutorService executorService,
             final StyleSupplier<GridCoverage2D> styleSupplier,
-            final AbstractLayerParams params) {
+            final AbstractLayerParams params, final MetricRegistry registry,
+            final Configuration configuration) {
         super(executorService, params);
         this.styleSupplier = styleSupplier;
+        this.registry = registry;
+        this.configuration = configuration;
     }
 
     @Override
@@ -88,5 +109,22 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 
     public StyleSupplier<GridCoverage2D> getStyleSupplier() {
         return styleSupplier;
+    }
+
+    /**
+     * Create an error image.
+     *
+     * @param area The size of the image
+     */
+    protected BufferedImage createErrorImage(final Rectangle area) {
+        final BufferedImage bufferedImage = new BufferedImage(area.width, area.height, TYPE_INT_ARGB_PRE);
+        final Graphics2D graphics = bufferedImage.createGraphics();
+        try {
+            graphics.setBackground(ColorParser.toColor(this.configuration.getTransparentTileErrorColor()));
+            graphics.clearRect(0, 0, area.width, area.height);
+            return bufferedImage;
+        } finally {
+            graphics.dispose();
+        }
     }
 }

@@ -12,7 +12,6 @@ import org.mapfish.print.http.HttpRequestFetcher;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.image.AbstractSingleImageLayer;
-import org.mapfish.print.map.style.json.ColorParser;
 import org.mapfish.print.processor.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
@@ -31,16 +29,12 @@ import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 
-import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
-
 /**
  * Wms layer.
  */
 public final class WmsLayer extends AbstractSingleImageLayer {
     private static final Logger LOGGER = LoggerFactory.getLogger(WmsLayer.class);
     private final WmsLayerParam params;
-    private final MetricRegistry registry;
-    private final Configuration configuration;
     private ClientHttpRequest imageRequest;
 
     /**
@@ -58,10 +52,8 @@ public final class WmsLayer extends AbstractSingleImageLayer {
             @Nonnull final WmsLayerParam params,
             @Nonnull final MetricRegistry registry,
             @Nonnull final Configuration configuration) {
-        super(executorService, styleSupplier, params);
+        super(executorService, styleSupplier, params, registry, configuration);
         this.params = params;
-        this.registry = registry;
-        this.configuration = configuration;
     }
 
     @Override
@@ -76,6 +68,19 @@ public final class WmsLayer extends AbstractSingleImageLayer {
         try (ClientHttpResponse response = this.imageRequest.execute()) {
 
             Assert.isTrue(response != null, "No response, see error above");
+            if (response.getStatusCode() != HttpStatus.OK) {
+                final String message = String.format(
+                        "Invalid status code for %s (%d!=%d). The response was: '%s'",
+                        this.imageRequest.getURI(), response.getStatusCode().value(),
+                        HttpStatus.OK.value(), response.getStatusText());
+                this.registry.counter(baseMetricName + ".error").inc();
+                if (getFailOnError()) {
+                    throw new RuntimeException(message);
+                } else {
+                    LOGGER.info(message);
+                    return createErrorImage(transformer.getPaintArea());
+                }
+            }
             Assert.equals(HttpStatus.OK, response.getStatusCode(),
                           String.format("Http status code for %s was not OK. The response message was: '%s'",
                                         this.imageRequest.getURI(), response.getStatusText()));
@@ -112,18 +117,6 @@ public final class WmsLayer extends AbstractSingleImageLayer {
         } catch (Throwable e) {
             this.registry.counter(baseMetricName + ".error").inc();
             throw e;
-        }
-    }
-
-    private BufferedImage createErrorImage(final Rectangle area) {
-        final BufferedImage bufferedImage = new BufferedImage(area.width, area.height, TYPE_INT_ARGB_PRE);
-        final Graphics2D graphics = bufferedImage.createGraphics();
-        try {
-            graphics.setBackground(ColorParser.toColor(this.configuration.getTransparentTileErrorColor()));
-            graphics.clearRect(0, 0, area.width, area.height);
-            return bufferedImage;
-        } finally {
-            graphics.dispose();
         }
     }
 

@@ -1,5 +1,7 @@
 package org.mapfish.print.map.image;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -20,11 +22,13 @@ import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.geotools.AbstractGridCoverageLayerPlugin;
 import org.mapfish.print.map.geotools.StyleSupplier;
-import org.mapfish.print.map.style.json.ColorParser;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
@@ -51,11 +55,10 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
  * @author MaxComse on 11/08/16.
  */
 public final class ImageLayer extends AbstractSingleImageLayer {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImageLayer.class);
     private final ImageParam params;
     private final StyleSupplier<GridCoverage2D> styleSupplier;
     private final ExecutorService executorService;
-    private final Configuration configuration;
 
     /**
      * Constructor.
@@ -64,17 +67,18 @@ public final class ImageLayer extends AbstractSingleImageLayer {
      * @param styleSupplier the style to use when drawing the constructed grid coverage on the map.
      * @param params the params from the request data.
      * @param configuration the configuration.
+     * @param registry the metrics object.
      */
     protected ImageLayer(
             @Nonnull final ExecutorService executorService,
             @Nonnull final StyleSupplier<GridCoverage2D> styleSupplier,
             @Nonnull final ImageParam params,
-            @Nonnull final Configuration configuration) {
-        super(executorService, styleSupplier, params);
+            @Nonnull final Configuration configuration,
+            @Nonnull final MetricRegistry registry) {
+        super(executorService, styleSupplier, params, registry, configuration);
         this.params = params;
         this.styleSupplier = styleSupplier;
         this.executorService = executorService;
-        this.configuration = configuration;
     }
 
     @Override
@@ -98,12 +102,31 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         final Graphics2D graphics = bufferedImage.createGraphics();
         final MapBounds bounds = transformer.getBounds();
         final MapContent content = new MapContent();
+        final String baseMetricName = ImageLayer.class.getName() + ".read." +
+                commonUri.getHost();
+        final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
         final ClientHttpRequest request = requestFactory.createRequest(commonUri, HttpMethod.GET);
         try (ClientHttpResponse httpResponse = request.execute()) {
+            if (httpResponse.getStatusCode() != HttpStatus.OK) {
+                final String message = String.format(
+                        "Invalid status code for %s (%d!=%d). The response was: '%s'",
+                        commonUri, httpResponse.getStatusCode().value(),
+                        HttpStatus.OK.value(), httpResponse.getStatusText());
+                this.registry.counter(baseMetricName + ".error").inc();
+                if (getFailOnError()) {
+                    throw new RuntimeException(message);
+                } else {
+                    LOGGER.info(message);
+                    return createErrorImage(transformer.getPaintArea());
+                }
+            }
             final BufferedImage image = ImageIO.read(httpResponse.getBody());
             if (image == null) {
+                LOGGER.warn("Cannot read image from %a", commonUri);
+                this.registry.counter(baseMetricName + ".error").inc();
                 return createErrorImage(paintArea);
             }
+            timerDownload.stop();
 
             GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
             GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapProjection);
@@ -159,19 +182,6 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         }
     }
 
-    private BufferedImage createErrorImage(final Rectangle area) {
-        final BufferedImage bufferedImage = new BufferedImage(area.width, area.height, TYPE_INT_ARGB_PRE);
-        final Graphics2D graphics = bufferedImage.createGraphics();
-        try {
-            graphics.setBackground(ColorParser.toColor(this.configuration.getTransparentTileErrorColor()));
-
-            graphics.clearRect(0, 0, area.width, area.height);
-            return bufferedImage;
-        } finally {
-            graphics.dispose();
-        }
-    }
-
     @Override
     public RenderType getRenderType() {
         return RenderType.UNKNOWN;
@@ -186,6 +196,8 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         private static final String TYPE = "image";
         @Autowired
         private ForkJoinPool forkJoinPool;
+        @Autowired
+        private MetricRegistry metricRegistry;
 
         @Override
         public Set<String> getTypeNames() {
@@ -205,7 +217,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
             String styleRef = layerData.style;
             return new ImageLayer(this.forkJoinPool,
                                   super.<GridCoverage2D>createStyleSupplier(template, styleRef),
-                                  layerData, template.getConfiguration());
+                                  layerData, template.getConfiguration(), metricRegistry);
         }
     }
 
