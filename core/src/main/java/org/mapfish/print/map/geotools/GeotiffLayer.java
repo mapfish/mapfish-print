@@ -95,25 +95,26 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
                 final String geotiffUrl) throws IOException {
             final URL url = FileUtils.testForLegalFileUrl(template.getConfiguration(), new URL(geotiffUrl));
             return (final MfClientHttpRequestFactory requestFactory) -> {
-                    try {
-                        final File geotiffFile;
-                        if (url.getProtocol().equalsIgnoreCase("file")) {
-                            geotiffFile = new File(url.toURI());
-                        } else {
-                            geotiffFile = File.createTempFile("downloadedGeotiff", ".tiff");
+                try {
+                    final File geotiffFile;
+                    if (url.getProtocol().equalsIgnoreCase("file")) {
+                        geotiffFile = new File(url.toURI());
+                    } else {
+                        geotiffFile = File.createTempFile("downloadedGeotiff", ".tiff");
 
-                            final ClientHttpRequest request = requestFactory.createRequest(
-                                    url.toURI(), HttpMethod.GET);
-                            try (ClientHttpResponse httpResponse = request.execute();
-                                 FileOutputStream output = new FileOutputStream(geotiffFile)) {
-                                IOUtils.copy(httpResponse.getBody(), output);
-                            }
+                        final ClientHttpRequest request = requestFactory.createRequest(
+                                url.toURI(), HttpMethod.GET);
+                        try (ClientHttpResponse httpResponse = request.execute();
+
+                             FileOutputStream output = new FileOutputStream(geotiffFile)) {
+                            IOUtils.copy(httpResponse.getBody(), output);
                         }
-
-                        return new GeoTiffFormat().getReader(geotiffFile);
-                    } catch (Throwable t) {
-                        throw ExceptionUtils.getRuntimeException(t);
                     }
+
+                    return new GeoTiffFormat().getReader(geotiffFile);
+                } catch (Throwable t) {
+                    throw ExceptionUtils.getRuntimeException(t);
+                }
             };
         }
     }
