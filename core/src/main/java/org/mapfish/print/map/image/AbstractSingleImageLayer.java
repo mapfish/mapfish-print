@@ -1,6 +1,8 @@
 package org.mapfish.print.map.image;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -19,14 +21,23 @@ import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.style.json.ColorParser;
 import org.mapfish.print.processor.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpResponse;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
+import javax.imageio.ImageIO;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
 
@@ -34,6 +45,8 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
  * Common implementation for layers that are represented as a single grid coverage image.
  */
 public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSingleImageLayer.class);
+
     /**
      * The metrics object.
      */
@@ -125,6 +138,67 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
             return bufferedImage;
         } finally {
             graphics.dispose();
+        }
+    }
+
+    /**
+     * Fetch the given image from the web.
+     *
+     * @param request The request
+     * @param transformer The transformer
+     * @return The image
+     */
+    protected BufferedImage fetchImage(
+            @Nonnull final ClientHttpRequest request, @Nonnull final MapfishMapContext transformer)
+            throws IOException {
+        final String baseMetricName = getClass().getName() + ".read." + request.getURI().getHost();
+        final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
+        try (ClientHttpResponse httpResponse = request.execute()) {
+            if (httpResponse.getStatusCode() != HttpStatus.OK) {
+                final String message = String.format(
+                        "Invalid status code for %s (%d!=%d). The response was: '%s'",
+                        request.getURI(), httpResponse.getStatusCode().value(),
+                        HttpStatus.OK.value(), httpResponse.getStatusText());
+                this.registry.counter(baseMetricName + ".error").inc();
+                if (getFailOnError()) {
+                    throw new RuntimeException(message);
+                } else {
+                    LOGGER.info(message);
+                    return createErrorImage(transformer.getPaintArea());
+                }
+            }
+
+            final List<String> contentType = httpResponse.getHeaders().get("Content-Type");
+            if (contentType == null || contentType.size() != 1) {
+                LOGGER.debug("The image {} didn't return a valid content type header.",
+                             request.getURI());
+            } else if (!contentType.get(0).startsWith("image/")) {
+                final byte[] data;
+                try (InputStream body = httpResponse.getBody()) {
+                    data = IOUtils.toByteArray(body);
+                }
+                LOGGER.debug("We get a wrong image for {}, content type: {}\nresult:\n{}",
+                             request.getURI(), contentType.get(0),
+                             new String(data, StandardCharsets.UTF_8));
+                this.registry.counter(baseMetricName + ".error").inc();
+                return createErrorImage(transformer.getPaintArea());
+            }
+
+            final BufferedImage image = ImageIO.read(httpResponse.getBody());
+            if (image == null) {
+                LOGGER.warn("Cannot read image from %a", request.getURI());
+                this.registry.counter(baseMetricName + ".error").inc();
+                if (getFailOnError()) {
+                    throw new RuntimeException("Cannot read image from " + request.getURI());
+                } else {
+                    return createErrorImage(transformer.getPaintArea());
+                }
+            }
+            timerDownload.stop();
+            return image;
+        } catch (Throwable e) {
+            this.registry.counter(baseMetricName + ".error").inc();
+            throw e;
         }
     }
 }

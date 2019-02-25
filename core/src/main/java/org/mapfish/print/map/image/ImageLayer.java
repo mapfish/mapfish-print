@@ -1,7 +1,6 @@
 package org.mapfish.print.map.image;
 
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -24,13 +23,9 @@ import org.mapfish.print.map.geotools.AbstractGridCoverageLayerPlugin;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpResponse;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -45,7 +40,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import javax.annotation.Nonnull;
-import javax.imageio.ImageIO;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
 
@@ -55,7 +49,6 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
  * @author MaxComse on 11/08/16.
  */
 public final class ImageLayer extends AbstractSingleImageLayer {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ImageLayer.class);
     private final ImageParam params;
     private final StyleSupplier<GridCoverage2D> styleSupplier;
     private final ExecutorService executorService;
@@ -88,10 +81,6 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         final ImageParam layerParam = this.params;
         final URI commonUri = new URI(layerParam.getBaseUrl());
 
-        final Double extentMinX = layerParam.extent[0];
-        final Double extentMinY = layerParam.extent[1];
-        final Double extentMaxX = layerParam.extent[2];
-        final Double extentMaxY = layerParam.extent[3];
         final Rectangle paintArea = transformer.getPaintArea();
 
         final ReferencedEnvelope envelope = transformer.getBounds().toReferencedEnvelope(paintArea);
@@ -102,36 +91,14 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         final Graphics2D graphics = bufferedImage.createGraphics();
         final MapBounds bounds = transformer.getBounds();
         final MapContent content = new MapContent();
-        final String baseMetricName = ImageLayer.class.getName() + ".read." +
-                commonUri.getHost();
-        final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
         final ClientHttpRequest request = requestFactory.createRequest(commonUri, HttpMethod.GET);
-        try (ClientHttpResponse httpResponse = request.execute()) {
-            if (httpResponse.getStatusCode() != HttpStatus.OK) {
-                final String message = String.format(
-                        "Invalid status code for %s (%d!=%d). The response was: '%s'",
-                        commonUri, httpResponse.getStatusCode().value(),
-                        HttpStatus.OK.value(), httpResponse.getStatusText());
-                this.registry.counter(baseMetricName + ".error").inc();
-                if (getFailOnError()) {
-                    throw new RuntimeException(message);
-                } else {
-                    LOGGER.info(message);
-                    return createErrorImage(transformer.getPaintArea());
-                }
-            }
-            final BufferedImage image = ImageIO.read(httpResponse.getBody());
-            if (image == null) {
-                LOGGER.warn("Cannot read image from %a", commonUri);
-                this.registry.counter(baseMetricName + ".error").inc();
-                return createErrorImage(paintArea);
-            }
-            timerDownload.stop();
+        final BufferedImage image = fetchImage(request, transformer);
 
+        try {
             GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
             GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapProjection);
 
-            gridEnvelope.setEnvelope(extentMinX, extentMinY, extentMaxX, extentMaxY);
+            gridEnvelope.setEnvelope(layerParam.extent);
             GridCoverage2D coverage = factory.create(layerParam.getBaseUrl(), image, gridEnvelope,
                                                      null, null, null);
             Style style = this.styleSupplier.load(requestFactory, coverage);
@@ -142,24 +109,16 @@ public final class ImageLayer extends AbstractSingleImageLayer {
             StreamingRenderer renderer = new StreamingRenderer();
 
             RenderingHints hints = new RenderingHints(Collections.emptyMap());
-            hints.add(new RenderingHints(RenderingHints.KEY_ALPHA_INTERPOLATION,
-                                         RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY));
-            hints.add(new RenderingHints(RenderingHints.KEY_ANTIALIASING,
-                                         RenderingHints.VALUE_ANTIALIAS_ON));
-            hints.add(new RenderingHints(RenderingHints.KEY_COLOR_RENDERING,
-                                         RenderingHints.VALUE_COLOR_RENDER_QUALITY));
-            hints.add(new RenderingHints(RenderingHints.KEY_DITHERING,
-                                         RenderingHints.VALUE_DITHER_ENABLE));
-            hints.add(new RenderingHints(RenderingHints.KEY_FRACTIONALMETRICS,
-                                         RenderingHints.VALUE_FRACTIONALMETRICS_ON));
-            hints.add(new RenderingHints(RenderingHints.KEY_INTERPOLATION,
-                                         RenderingHints.VALUE_INTERPOLATION_BICUBIC));
-            hints.add(new RenderingHints(RenderingHints.KEY_RENDERING,
-                                         RenderingHints.VALUE_RENDER_QUALITY));
-            hints.add(new RenderingHints(RenderingHints.KEY_STROKE_CONTROL,
-                                         RenderingHints.VALUE_STROKE_PURE));
-            hints.add(new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING,
-                                         RenderingHints.VALUE_TEXT_ANTIALIAS_ON));
+            hints.put(RenderingHints.KEY_ALPHA_INTERPOLATION,
+                      RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+            hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            hints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+            hints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+            hints.put(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+            hints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            hints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            hints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+            hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
             graphics.addRenderingHints(hints);
             renderer.setJava2DHints(hints);
