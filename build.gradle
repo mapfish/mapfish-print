@@ -1,15 +1,15 @@
 defaultTasks 'build'
 
 wrapper {
-    gradleVersion = '4.10.3'
+    gradleVersion = '5.2.1'
     distributionType = Wrapper.DistributionType.ALL
 
     doLast {
         // Customize a bit the scripts.
         def jvmOpts = "-Xmx2G"
         def optsEnvVar = "DEFAULT_JVM_OPTS"
-        scriptFile.text = scriptFile.text.replace("$optsEnvVar=\"\"", "$optsEnvVar=\"$jvmOpts\"\nLANG=C")
-        batchScript.text = batchScript.text.replace("set $optsEnvVar=", "set $optsEnvVar=$jvmOpts\nset LANG=C")
+        scriptFile.text = scriptFile.text.replaceFirst(/$optsEnvVar='"[^']*"'/, "$optsEnvVar=\"$jvmOpts\"\nLANG=C")
+        batchScript.text = batchScript.text.replaceFirst(/set $optsEnvVar="[^"]*"/, "set $optsEnvVar=\"$jvmOpts\"\nset LANG=C")
     }
 }
 

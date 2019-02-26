@@ -79,6 +79,7 @@ task integrationTest(type: Test) {
         showStackTraces true
         events TestLogEvent.STANDARD_OUT
     }
+    maxHeapSize = "1G"
 }
 integrationTest.dependsOn ':core:compileJava', 'geoserverData'
 
