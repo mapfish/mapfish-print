@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
+import javax.annotation.Nonnull;
 
 /**
  * The AbstractGridCoverage2DReaderLayer class.
@@ -33,7 +34,7 @@ public abstract class AbstractGridCoverage2DReaderLayer extends AbstractGeotools
      * @param params the parameters for this layer
      */
     public AbstractGridCoverage2DReaderLayer(
-            final Function<MfClientHttpRequestFactory,
+            @Nonnull final Function<MfClientHttpRequestFactory,
                     @Nullable AbstractGridCoverage2DReader> coverage2DReader,
             final StyleSupplier<AbstractGridCoverage2DReader> style,
             final ExecutorService executorService,
