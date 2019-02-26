@@ -65,10 +65,10 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
 
         ProcessorDependencyGraph graph = template.getProcessorGraph();
-        List<ProcessorGraphNode> roots = graph.getRoots();
+        List<ProcessorGraphNode<?, ?>> roots = graph.getRoots();
 
         assertEquals(1, roots.size());
-        ProcessorGraphNode<Object, Object> rootNode = roots.get(0);
+        ProcessorGraphNode<?, ?> rootNode = roots.get(0);
         assertEquals(SetStyleProcessor.class, rootNode.getProcessor().getClass());
         assertEquals(2, rootNode.getAllProcessors().size());
     }
@@ -81,14 +81,14 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
 
         ProcessorDependencyGraph graph = template.getProcessorGraph();
-        List<ProcessorGraphNode> roots = graph.getRoots();
+        List<ProcessorGraphNode<?, ?>> roots = graph.getRoots();
 
         assertEquals(2, roots.size());
-        ProcessorGraphNode<Object, Object> rootNode1 = roots.get(0);
+        ProcessorGraphNode<?, ?> rootNode1 = roots.get(0);
         assertEquals(SetStyleProcessor.class, rootNode1.getProcessor().getClass());
         assertEquals(2, rootNode1.getAllProcessors().size());
 
-        ProcessorGraphNode<Object, Object> rootNode2 = roots.get(1);
+        ProcessorGraphNode<?, ?> rootNode2 = roots.get(1);
         assertEquals(SetStyleProcessor.class, rootNode2.getProcessor().getClass());
         assertEquals(2, rootNode2.getAllProcessors().size());
     }

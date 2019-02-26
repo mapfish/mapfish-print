@@ -26,14 +26,14 @@ import static org.mapfish.print.parser.ParserUtils.getAttributeNames;
  */
 public final class ProcessorDependencyGraph {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorDependencyGraph.class);
-    private final List<ProcessorGraphNode> roots;
+    private final List<ProcessorGraphNode<?, ?>> roots;
 
     ProcessorDependencyGraph() {
         this.roots = new ArrayList<>();
     }
 
     static void tryExecuteNodes(
-            final Collection<ProcessorGraphNode> dependencyNodes,
+            final Collection<ProcessorGraphNode<?, ?>> dependencyNodes,
             final ProcessorExecutionContext execContext,
             final boolean notStartedIsOk) {
         final List<ProcessorGraphNode.ProcessorNodeForkJoinTask<?, ?>> tasks =
@@ -94,7 +94,7 @@ public final class ProcessorDependencyGraph {
      *
      * @param node new root node.
      */
-    void addRoot(final ProcessorGraphNode node) {
+    void addRoot(final ProcessorGraphNode<?, ?> node) {
         this.roots.add(node);
     }
 
@@ -116,7 +116,7 @@ public final class ProcessorDependencyGraph {
                 final Class<?> inputParameterClass = inputParameter.getClass();
                 final Set<String> requiredAttributesDefinedInInputParameter =
                         getAttributeNames(inputParameterClass,
-                                          FILTER_ONLY_REQUIRED_ATTRIBUTES::test);
+                                          FILTER_ONLY_REQUIRED_ATTRIBUTES);
                 for (String attName: requiredAttributesDefinedInInputParameter) {
                     try {
                         if (inputParameterClass.getField(attName).getType() == Values.class) {
@@ -136,7 +136,7 @@ public final class ProcessorDependencyGraph {
         return requiredInputs;
     }
 
-    public List<ProcessorGraphNode> getRoots() {
+    public List<ProcessorGraphNode<?, ?>> getRoots() {
         return this.roots;
     }
 

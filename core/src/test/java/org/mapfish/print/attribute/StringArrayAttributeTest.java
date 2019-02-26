@@ -38,6 +38,7 @@ public class StringArrayAttributeTest extends AbstractMapfishSpringTest {
         assertArrayEquals(new String[]{"s1", "s2"}, array);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testWrongType() throws Exception {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));

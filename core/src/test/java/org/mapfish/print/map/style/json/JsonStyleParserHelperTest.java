@@ -47,6 +47,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mapfish.print.map.style.json.MapfishStyleParserPluginTest.REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON;
 
+@SuppressWarnings("deprecation")
 public class JsonStyleParserHelperTest {
 
     private static final float FLOAT_DELTA = 0.00001f;

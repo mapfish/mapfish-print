@@ -27,6 +27,7 @@ public class JsonDatasourceAttributeTest extends AbstractMapfishSpringTest {
     @Autowired
     private TestHttpClientFactory httpClientFactory;
 
+    @SuppressWarnings("unchecked")
     private <T> T getValue(
             final JsonDataSource datasource, final String expression,
             final Class<T> type) throws JRException {
@@ -34,7 +35,6 @@ public class JsonDatasourceAttributeTest extends AbstractMapfishSpringTest {
         JRDesignField field = new JRDesignField();
         field.setName(expression);
         field.setValueClass(type);
-        //noinspection unchecked
         return (T) datasource.getFieldValue(field);
     }
 

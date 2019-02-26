@@ -39,18 +39,18 @@ public class MergeDataSourceProcessorIntegrationTest extends AbstractMapfishSpri
 
         final ProcessorDependencyGraph processorGraph = template.getProcessorGraph();
 
-        final List<ProcessorGraphNode> roots = processorGraph.getRoots();
+        final List<ProcessorGraphNode<?, ?>> roots = processorGraph.getRoots();
         assertEquals(0, Collections2.filter(roots, FIND_MERGE_PROCESSOR::test).size());
         assertEquals(processorGraph.toString(), 3,
                      count(processorGraph.toString(), " -> \"MergeDataSourceProcessor"));
 
         MergeDataSourceProcessor mergeDataSourceProcessor = null;
-        List<ProcessorGraphNode<Object, Object>> allNodes = new ArrayList<>();
+        List<ProcessorGraphNode<?, ?>> allNodes = new ArrayList<>();
         for (Processor<?, ?> processor: processorGraph.getAllProcessors()) {
             if (processor instanceof MergeDataSourceProcessor) {
                 mergeDataSourceProcessor = (MergeDataSourceProcessor) processor;
             } else {
-                allNodes.add(new ProcessorGraphNode(processor, new MetricRegistry()));
+                allNodes.add(new ProcessorGraphNode<>(processor, new MetricRegistry()));
             }
         }
 
