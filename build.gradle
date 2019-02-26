@@ -1,8 +1,16 @@
 defaultTasks 'build'
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.14.1'
-    scriptFile = "generated-gradlew"
+    gradleVersion = '3.5.1'
+    distributionType = Wrapper.DistributionType.ALL
+
+    doLast {
+        // Customize a bit the scripts.
+        def jvmOpts = "-Xmx2G"
+        def optsEnvVar = "DEFAULT_JVM_OPTS"
+        scriptFile.text = scriptFile.text.replace("$optsEnvVar=\"\"", "$optsEnvVar=\"$jvmOpts\"\nLANG=C")
+        batchScript.text = batchScript.text.replace("set $optsEnvVar=", "set $optsEnvVar=$jvmOpts\nset LANG=C")
+    }
 }
 
 allprojects {
@@ -18,11 +26,12 @@ allprojects {
 
 buildscript {
     repositories {
+        mavenLocal()
         jcenter()
     }
 
     dependencies {
-        classpath 'org.akhikhl.gretty:gretty:2.0.0'
+        classpath 'org.gretty:gretty:2.3.1'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.12.0'
     }
 }
@@ -33,7 +42,7 @@ configurations.all {
     }
 }
 
-apply plugin: 'org.akhikhl.gretty'
+apply plugin: 'org.gretty'
 
 import org.akhikhl.gretty.AppStartTask
 

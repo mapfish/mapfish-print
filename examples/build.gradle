@@ -1,13 +1,14 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 apply plugin: 'war'
-apply plugin: 'org.akhikhl.gretty'
+apply plugin: 'org.gretty'
 
 def geoserverVersion = "2.8.2"
 
 repositories {
     maven { url 'http://repo.boundlessgeo.com/main' }
     maven { url 'http://maven.restlet.org' }
+    jcenter()
 }
 
 dependencies {

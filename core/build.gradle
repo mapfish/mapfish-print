@@ -2,7 +2,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 apply plugin: 'war'
 apply plugin: 'distribution'
-apply plugin: 'org.akhikhl.gretty'
+apply plugin: 'org.gretty'
 apply plugin: 'docker'
 
 defaultTasks 'build'
@@ -115,7 +115,7 @@ dependencies {
     def metricsVersion = '4.0.5'
     def geotoolsVersion = '20.2'
 
-    compile (
+    compile(
             "org.springframework:spring-context:$project.springVersion",
             "org.springframework:spring-web:$project.springVersion",
             "org.springframework:spring-webmvc:$project.springVersion",
@@ -130,7 +130,7 @@ dependencies {
             "org.springframework:spring-jdbc:$project.springVersion",
             "org.springframework:spring-tx:$project.springVersion"
     )
-    metrics (
+    metrics(
             "io.dropwizard.metrics:metrics-core:$metricsVersion",
             "io.dropwizard.metrics:metrics-servlet:$metricsVersion",
             "io.dropwizard.metrics:metrics-httpclient:$metricsVersion",
@@ -140,7 +140,7 @@ dependencies {
             "io.dropwizard.metrics:metrics-logback:$metricsVersion",
             'com.readytalk:metrics3-statsd:4.2.0'
     )
-    geotools (
+    geotools(
             "org.geotools:gt-epsg-hsql:$geotoolsVersion",
             "org.geotools:gt-render:$geotoolsVersion",
             "org.geotools:gt-geojson:$geotoolsVersion",
@@ -150,7 +150,7 @@ dependencies {
             "org.geotools:gt-svg:$geotoolsVersion",
             "org.geotools:gt-cql:$geotoolsVersion"
     )
-    jasper (
+    jasper(
             "net.sf.jasperreports:jasperreports:$jasperReportVersion",
             "org.codehaus.groovy:groovy-all:$project.groovyVersion",
             'ar.com.fdvs:DynamicJasper:5.1.1',
@@ -159,7 +159,7 @@ dependencies {
             'joda-time:joda-time:2.10.1'
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
-    compile (
+    compile(
             'com.google.guava:guava:27.0.1-jre',
             "org.slf4j:slf4j-api:${slf4jVersion}",
             "org.slf4j:jcl-over-slf4j:${slf4jVersion}",
@@ -172,16 +172,16 @@ dependencies {
             'com.amazonaws:aws-java-sdk-s3:1.11.505'
     )
 
-    compile (configurations.metrics) {
+    compile(configurations.metrics) {
         exclude module: 'httpclient'
         exclude module: 'slf4j-api'
         exclude module: 'logback-classic'
     }
-    compile (configurations.geotools)
-    compile (configurations.jasper)
+    compile(configurations.geotools)
+    compile(configurations.jasper)
 
     def batikVersion = '1.11'
-    compile (
+    compile(
             'org.apache.xmlgraphics:xmlgraphics-commons:2.3',
             "org.apache.xmlgraphics:batik-transcoder:$batikVersion",
             "org.apache.xmlgraphics:batik-bridge:$batikVersion",
@@ -219,6 +219,7 @@ def addManifestAttribute(manifest) {
             'Build-OS-Name': System.getProperty('os.name', "unknown")
     )
 }
+
 jar {
     enabled = true
     baseName = 'print-lib'
@@ -244,16 +245,11 @@ gretty {
 }
 
 
-task show << {
-    war.classpath.files.each {println it}
-//    project(":core").war.properties.each {println it}
-//      components.java.usages.iterator().next().artifacts.each {println it}
-//    publishing.getPublications().each { pub ->
-//        println("" + pub.coordinates + " - " + pub.artifacts)
-//    }
-//    sourceSets.main.classes.asFileTree.each {println it}
-//    configurations.archives.allArtifacts.each{println (it.name + " -- " + it.file)}
-//    tasks.each {println(it)}
+task show {
+}
+
+show.doLast {
+    war.classpath.files.each { println it }
 }
 
 task libJavadocJar(type: Jar, dependsOn: javadoc) {
@@ -270,7 +266,7 @@ task libSourcesJar(type: Jar) {
 }
 
 
-gradle.taskGraph.whenReady {taskGraph ->
+gradle.taskGraph.whenReady { taskGraph ->
     if (taskGraph.hasTask(print)) {
         if (project.hasProperty('printArgs')) {
             print.args printArgs.toString().split(" ").toList()
@@ -289,7 +285,7 @@ startScripts {
     outputDir = new File(project.buildDir, 'scripts')
 
     doLast {
-        fileTree(startScripts.outputDir).each {file ->
+        fileTree(startScripts.outputDir).each { file ->
             def encoding = 'UTF-8'
             // there was a bug in the start script where all jars were listed and that failed in windows.
             // now I just have the main jar and replace it with * so that all jars in that directory
@@ -334,13 +330,13 @@ task createDocker(type: Docker, dependsOn: 'unzipWar') {
     addFile new File(project.buildDir, 'webapp'), '${CATALINA_HOME}/webapps/ROOT'
     addFile 'docker', '/'
     //avoid a warning because logback-classic is both in tomcat and in the webapp
-    runCommand 'rm ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/logback-*.jar ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/slf4j-*.jar && ' + \
-            'mkdir -p ${CATALINA_HOME}/extlib/classes/org/mapfish/print && ' + \
-            'cp -r ${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes/org/mapfish/print/url ${CATALINA_HOME}/extlib/classes/org/mapfish/print/ && ' + \
-            'perl -0777 -i -pe \'s/<Valve className="ch.qos.logback.access.tomcat.LogbackValve" quiet="true"\\/>//s\' ${CATALINA_HOME}/conf/server.xml && ' + \
-            'chmod g+r -R /usr/local/tomcat/conf/ && ' + \
-            'chmod g+rw /usr/local/tomcat/temp/ && ' + \
-            'adduser www-data root'
+    runCommand 'rm ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/logback-*.jar ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/slf4j-*.jar && ' +           \
+                      'mkdir -p ${CATALINA_HOME}/extlib/classes/org/mapfish/print && ' +           \
+                      'cp -r ${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes/org/mapfish/print/url ${CATALINA_HOME}/extlib/classes/org/mapfish/print/ && ' +           \
+                      'perl -0777 -i -pe \'s/<Valve className="ch.qos.logback.access.tomcat.LogbackValve" quiet="true"\\/>//s\' ${CATALINA_HOME}/conf/server.xml && ' +           \
+                      'chmod g+r -R /usr/local/tomcat/conf/ && ' +           \
+                      'chmod g+rw /usr/local/tomcat/temp/ && ' +           \
+                      'adduser www-data root'
 
     setEnvironment('LOG_LEVEL', 'INFO')
     setEnvironment('SPRING_LOG_LEVEL', 'WARN')

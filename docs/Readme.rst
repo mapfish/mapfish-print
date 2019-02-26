@@ -41,3 +41,4 @@ After having build the documentation with `./gradlew buildDocs` the repository c
     git add -A .
     git commit -m 'Update docs'
     git push origin gh-pages
+

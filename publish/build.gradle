@@ -6,18 +6,18 @@ def jar = tasks.getByPath(':core:jar')
 artifacts {
     archives tasks.getByPath(':core:war'), tasks.getByPath(':core:libSourcesJar'),
             tasks.getByPath(':core:libJavadocJar')
-    archives (jar.archivePath) {
+    archives(jar.archivePath) {
         name 'print-lib'
         type 'jar'
         builtBy jar
     }
-    archives (distZip.archivePath) {
+    archives(distZip.archivePath) {
         name 'print-cli'
         type 'zip'
         classifier 'zip'
         builtBy distZip
     }
-    archives (distTar.archivePath) {
+    archives(distTar.archivePath) {
         name 'print-cli'
         type 'tar'
         classifier 'tar'
@@ -25,7 +25,9 @@ artifacts {
     }
 }
 
-task show << {
+task show {
+}
+show.doLast {
     println configurations.archives.files
 }
 
@@ -51,11 +53,11 @@ if (Boolean.parseBoolean(enablePublishing)) {
                 repository(url: "https://$host/service/local/staging/deploy/maven2/") {
                     authentication(userName: sonatypeUsername, password: sonatypePassword)
                 }
-                snapshotRepository(url: "https://$host/content/repositories/snapshots/")  {
+                snapshotRepository(url: "https://$host/content/repositories/snapshots/") {
                     authentication(userName: sonatypeUsername, password: sonatypePassword)
                     uniqueVersion = true
                 }
-                def extAnd = {file, ext ->
+                def extAnd = { file, ext ->
                     file.name.endsWith(ext) || file.name.endsWith(".asc") || file.name.endsWith(".pom")
                 }
                 addFilter('lib') { artifact, file ->
@@ -130,11 +132,11 @@ if (Boolean.parseBoolean(enablePublishing)) {
                         }
                         mailingLists {
                             mailingList {
-                                name ='Users'
-                                subscribe='mapfish-print-users+subscribe@googlegroups.com'
-                                unsubscribe='mapfish-print-users+unsubscribe@googlegroups.com'
-                                post='mapfish-print-users@googlegroups.com'
-                                archive='https://groups.google.com/forum/#!forum/mapfish-print-users'
+                                name = 'Users'
+                                subscribe = 'mapfish-print-users+subscribe@googlegroups.com'
+                                unsubscribe = 'mapfish-print-users+unsubscribe@googlegroups.com'
+                                post = 'mapfish-print-users@googlegroups.com'
+                                archive = 'https://groups.google.com/forum/#!forum/mapfish-print-users'
                             }
                         }
                     }

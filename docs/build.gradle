@@ -1,7 +1,6 @@
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'jetty'
 
 defaultTasks 'build'
 
@@ -9,17 +8,12 @@ defaultTasks 'build'
 dependencies {
     compile project(':core')
     compile "org.codehaus.groovy:groovy-all:$project.groovyVersion",
-    "org.springframework:spring-test:${springVersion}",
-    "org.ccil.cowan.tagsoup:tagsoup:1.2.1",
-    "com.samskivert:jmustache:1.14"
+            "org.springframework:spring-test:${springVersion}",
+            'org.ccil.cowan.tagsoup:tagsoup:1.2.1',
+            'com.samskivert:jmustache:1.14'
 }
 
 def site = new File(buildDir, "site").path
-
-jettyRun {
-    dependsOn ':docs:buildDocs'
-    webAppSourceDirectory = file(site)
-}
 
 task copyJavadocs(type: Copy) {
     dependsOn ':core:javadoc'
@@ -28,17 +22,17 @@ task copyJavadocs(type: Copy) {
 }
 
 task copySite(type: Copy) {
-    from (sourceSets.main.output.resourcesDir) {
-        exclude "pages.json", "templates/*", "templates"
+    from(sourceSets.main.output.resourcesDir) {
+        exclude 'pages.json', 'templates/*', 'templates'
     }
-    from (project(':core').webAppDir) {
-        include "favicon.ico", "mapfish_transparent.png"
+    from(project(':core').webAppDir) {
+        include 'favicon.ico', 'mapfish_transparent.png'
     }
 
     into site
 }
 
-task ('buildDocs', type: JavaExec) {
+task('buildDocs', type: JavaExec) {
     dependsOn compileGroovy
     dependsOn copyJavadocs
     dependsOn copySite
@@ -47,12 +41,12 @@ task ('buildDocs', type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
 
     def javadocs = project(':core').tasks.javadoc.destinationDir
-    def basicAppContext = "classpath*:mapfish-spring-application-context.xml"
-    def appContext = project(':core').projectDir.toURI().toString() + "/jettyRunExtraFiles/*.xml"
-    def appContext2 = project(':core').webAppDir.toURI().toString() + "/WEB-INF/mapfish-print-servlet.xml"
-    def overrideAppContext = "classpath*:mapfish-spring-application-context-override.xml"
+    def basicAppContext = 'classpath*:mapfish-spring-application-context.xml'
+    def appContext = project(':core').projectDir.toURI().toString() + '/jettyRunExtraFiles/*.xml'
+    def appContext2 = project(':core').webAppDir.toURI().toString() + '/WEB-INF/mapfish-print-servlet.xml'
+    def overrideAppContext = 'classpath*:mapfish-spring-application-context-override.xml'
     args site, javadocs, basicAppContext, appContext, appContext2, overrideAppContext
-    systemProperty "path_to_examples", "${project(':examples').projectDir}/src/test/resources/examples"
+    systemProperty 'path_to_examples', "${project(':examples').projectDir}/src/test/resources/examples"
 }
 
 build {
