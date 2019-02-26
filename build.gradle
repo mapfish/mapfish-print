@@ -1,7 +1,7 @@
 defaultTasks 'build'
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '3.5.1'
+wrapper {
+    gradleVersion = '4.10.3'
     distributionType = Wrapper.DistributionType.ALL
 
     doLast {
@@ -125,11 +125,11 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
         }
     }
 
-    sourceSets {
+    /*sourceSets {
         test {
             output.resourcesDir = output.classesDir
         }
-    }
+    }*/
 
     tasks.withType(JavaCompile) {
         options.encoding = 'utf-8'
