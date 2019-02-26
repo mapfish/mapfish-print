@@ -1,7 +1,7 @@
 defaultTasks 'build'
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.7'
+    gradleVersion = '2.14.1'
     scriptFile = "generated-gradlew"
 }
 
