@@ -91,7 +91,6 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
         reportsDir = file("$project.buildDir/reports/spotbugsReports")
         effort = "max"
         reportLevel = "high"
-        //excludeFilter = file("$rootProject.projectDir/findbugs-exclude.xml")
     }
     tasks.withType(com.github.spotbugs.SpotBugsTask) {
         reports {
@@ -123,12 +122,6 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
             exceptionFormat = 'full'
         }
     }
-
-    /*sourceSets {
-        test {
-            output.resourcesDir = output.classesDir
-        }
-    }*/
 
     tasks.withType(JavaCompile) {
         options.encoding = 'utf-8'

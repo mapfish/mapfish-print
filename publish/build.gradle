@@ -55,7 +55,6 @@ if (Boolean.parseBoolean(enablePublishing)) {
                 }
                 snapshotRepository(url: "https://$host/content/repositories/snapshots/") {
                     authentication(userName: sonatypeUsername, password: sonatypePassword)
-                    //uniqueVersion = true
                 }
                 def extAnd = { file, ext ->
                     file.name.endsWith(ext) || file.name.endsWith(".asc") || file.name.endsWith(".pom")
