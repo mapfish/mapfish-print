@@ -77,12 +77,12 @@ To list all the commandline options then execute (the current direstory is `./co
 
 .. code::
 
-  > ./gradlew print -PprintArgs="-config ../examples/config.yaml -spec ../examples/spec.json -output ./output.pdf"
+  > ./gradlew print -PprintArgs="-config ../examples/src/test/resources/examples/simple/config.yaml -spec ../examples/src/test/resources/examples/simple/requestData.json -output ./output.pdf"
 
 If you want to run in debug mode you can do the following:
 
 .. code::
-  > ./gradlew print --debug-jvm -PprintArgs="-config ../examples/config.yaml -spec ../examples/spec.json -output ./output.pdf"
+  > ./gradlew print --debug-jvm -PprintArgs="-config ../examples/src/test/resources/examples/simple/config.yaml -spec ../examples/src/test/resources/examples/simple/requestData.json -output ./output.pdf"
 
 
 Run using gretty/jettyRun
