@@ -174,6 +174,11 @@ public abstract class GenericMapAttribute
         return this.maxWidth;
     }
 
+    /**
+     * Limits the maximum width of the map.
+     *
+     * @param maxWidth the value
+     */
     public final void setMaxWidth(final Integer maxWidth) {
         this.maxWidth = maxWidth;
     }
@@ -182,22 +187,66 @@ public abstract class GenericMapAttribute
         return this.maxHeight;
     }
 
+    /**
+     * Limits the maximum height of the map.
+     *
+     * @param maxHeight the value
+     */
     public final void setMaxHeight(final Integer maxHeight) {
         this.maxHeight = maxHeight;
     }
 
+    /**
+     * The list of Zoom Levels.
+     * <p>
+     * Depending on the zoomLevelSnapStrategy, this will be used to compute the actual zoom level of the map.
+     *
+     * @param zoomLevels the value
+     */
     public final void setZoomLevels(final ZoomLevels zoomLevels) {
         this.zoomLevels = zoomLevels;
     }
 
+    /**
+     * The zoom level tolerance.
+     * <p>
+     * Used in ZoomLevelSnapStrategy.HIGHER_SCALE and ZoomLevelSnapStrategy.LOWER_SCALE to specify the cutoff
+     * value.
+     *
+     * @param zoomSnapTolerance the value
+     */
     public final void setZoomSnapTolerance(final Double zoomSnapTolerance) {
         this.zoomSnapTolerance = zoomSnapTolerance;
     }
 
+    /**
+     * The strategy to use to compute the actual zoom level to use.
+     * <p>
+     * If you specify this value, you must set the zoomLevels as well.
+     * <p>
+     * Possible values are:
+     * <ul>
+     * <li>CLOSEST_LOWER_SCALE_ON_TIE: Find the closest zoom level.  If the targetScale is directly between
+     * two zoomLevels then the smaller/higher resolution scale will be chosen.</li>
+     * <li>CLOSEST_HIGHER_SCALE_ON_TIE: Find the closest zoom level.  If the targetScale is directly
+     * between two zoomLevels then the larger/lower resolution scale will be chosen.</li>
+     * <li>HIGHER_SCALE: Always choose the zoom-level that is just higher than the target value.</li>
+     * <li>LOWER_SCALE: Always choose the zoom-level that is just lower than the target value.</li>
+     * </ul>
+     * <p>
+     *
+     * @param zoomLevelSnapStrategy the value
+     * @see ZoomLevelSnapStrategy
+     */
     public final void setZoomLevelSnapStrategy(final ZoomLevelSnapStrategy zoomLevelSnapStrategy) {
         this.zoomLevelSnapStrategy = zoomLevelSnapStrategy;
     }
 
+    /**
+     * If true, snap to geodetic scales.
+     *
+     * @param zoomSnapGeodetic the value
+     */
     public final void setZoomSnapGeodetic(final Boolean zoomSnapGeodetic) {
         this.zoomSnapGeodetic = zoomSnapGeodetic;
     }
@@ -529,7 +578,7 @@ public abstract class GenericMapAttribute
          * Return true if requestData has useNearestScale and configuration has some zoom levels defined.
          */
         public Boolean isUseNearestScale() {
-            return this.useNearestScale && GenericMapAttribute.this.zoomLevels != null;
+            return this.useNearestScale && zoomLevels != null;
         }
 
         /**
@@ -544,7 +593,7 @@ public abstract class GenericMapAttribute
         }
 
         public ZoomLevels getZoomLevels() {
-            return GenericMapAttribute.this.zoomLevels;
+            return zoomLevels;
         }
 
         public Double getZoomSnapTolerance() {
@@ -552,7 +601,7 @@ public abstract class GenericMapAttribute
         }
 
         public ZoomLevelSnapStrategy getZoomLevelSnapStrategy() {
-            return GenericMapAttribute.this.zoomLevelSnapStrategy;
+            return zoomLevelSnapStrategy;
         }
 
         public Boolean getZoomSnapGeodetic() {
