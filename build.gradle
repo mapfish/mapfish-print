@@ -1,8 +1,16 @@
 defaultTasks 'build'
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.7'
-    scriptFile = "generated-gradlew"
+wrapper {
+    gradleVersion = '5.2.1'
+    distributionType = Wrapper.DistributionType.ALL
+
+    doLast {
+        // Customize a bit the scripts.
+        def jvmOpts = "-Xmx2G"
+        def optsEnvVar = "DEFAULT_JVM_OPTS"
+        scriptFile.text = scriptFile.text.replaceFirst(/$optsEnvVar='"[^']*"'/, "$optsEnvVar=\"$jvmOpts\"\nLANG=C")
+        batchScript.text = batchScript.text.replaceFirst(/set $optsEnvVar="[^"]*"/, "set $optsEnvVar=\"$jvmOpts\"\nset LANG=C")
+    }
 }
 
 allprojects {
@@ -11,6 +19,7 @@ allprojects {
     ext.junitVersion = "4.12"
     ext.springVersion = "5.1.5.RELEASE"
     ext.groovyVersion = "2.5.6"
+    ext.spotbugVersion = '3.1.11'
     ext."signing.keyId" = signing_keyId
     ext."signing.secretKeyRingFile" = System.properties.get('user.home') + '/.gnupg/secring.gpg'
     ext."signing.password" = signing_password
@@ -18,12 +27,18 @@ allprojects {
 
 buildscript {
     repositories {
+        mavenLocal()
         jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
 
     dependencies {
-        classpath 'org.akhikhl.gretty:gretty:2.0.0'
+        classpath 'org.gretty:gretty:2.3.1'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.12.0'
+        classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.10"
+        classpath "se.bjurr.violations:violations-gradle-plugin:1.21"
     }
 }
 
@@ -33,7 +48,7 @@ configurations.all {
     }
 }
 
-apply plugin: 'org.akhikhl.gretty'
+apply plugin: 'org.gretty'
 
 import org.akhikhl.gretty.AppStartTask
 
@@ -54,44 +69,44 @@ configure(subprojects.findAll { ['core', 'examples', 'docs'].contains(it.name) }
 }
 configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     apply plugin: 'java'
-    apply plugin: 'findbugs'
+    apply plugin: 'com.github.spotbugs'
     apply plugin: 'eclipse'
     apply plugin: 'idea'
     apply plugin: 'project-report'
     apply plugin: 'checkstyle'
+    apply plugin: 'se.bjurr.violations.violations-gradle-plugin'
 
-    jar.dependsOn(checkstyleMain, findbugsMain)
+    jar.dependsOn(checkstyleMain)
 
     checkstyle {
         toolVersion = "7.8.2"
         configFile = file("$rootProject.rootDir/checkstyle_checks.xml")
         configProperties = ['basedir': project.rootDir.path]
-        ignoreFailures = false
+        ignoreFailures = true
         reportsDir = file("$project.buildDir/reports/checkstyleReports")
     }
     checkstyleTest.enabled = false
 
-    String fullVersion = System.getProperty("java.specification.version");
-    String findbugsToolVersion = "3.0.1"
-    if (fullVersion.startsWith("1.6")) {
-        findbugsToolVersion = "2.0.3"
-    }
-
-    findbugs {
-        toolVersion = findbugsToolVersion
-        ignoreFailures = false
-        reportsDir = file("$project.buildDir/reports/findbugsReports")
+    spotbugs {
+        toolVersion = "${project.spotbugVersion}"
+        ignoreFailures = true
+        reportsDir = file("$project.buildDir/reports/spotbugsReports")
         effort = "max"
         reportLevel = "high"
-        excludeFilter = file("$rootProject.projectDir/findbugs-exclude.xml")
     }
-    tasks.withType(FindBugs) {
-        reports {
-            xml.enabled = false
-            html.enabled = true
-        }
+    spotbugsTest.enabled = false
+
+    task violations(type: se.bjurr.violations.gradle.plugin.ViolationsTask) {
+        minSeverity = 'INFO'
+        detailLevel = 'VERBOSE' // PER_FILE_COMPACT, COMPACT or VERBOSE
+        maxViolations = 0
+        printViolations = true
+        violations = [
+                ["FINDBUGS", ".", ".*/reports/spotbugsReports/.*\\.xml", "Spotbugs"],
+                ["CHECKSTYLE", ".", ".*/reports/checkstyleReports/.*\\.xml", "Checkstyle"]
+        ]
     }
-    findbugsTest.enabled = false
+    check.finalizedBy violations
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -113,12 +128,6 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
         maxHeapSize = "512m"
         testLogging {
             exceptionFormat = 'full'
-        }
-    }
-
-    sourceSets {
-        test {
-            output.resourcesDir = output.classesDir
         }
     }
 

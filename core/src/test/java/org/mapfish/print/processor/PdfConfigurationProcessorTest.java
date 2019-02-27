@@ -46,7 +46,7 @@ public class PdfConfigurationProcessorTest {
     }
 
     @Test
-    public void testExec() throws Exception {
+    public void testExec() {
         Map<String, Object> attributeMap = new HashMap<>();
         final String titleKey = "titleAtt";
         String subjectKey = "subjectAtt";
@@ -104,7 +104,7 @@ public class PdfConfigurationProcessorTest {
         assertEquals("9,8 8,7", in.pdfConfig.getKeywordsAsString());
 
         pdfConfigurationProcessor.setUpdates(attributeMap);
-        in.values.put(keywordsKey, new LinkedHashSet(keywordList));
+        in.values.put(keywordsKey, new LinkedHashSet<>(keywordList));
         pdfConfigurationProcessor.execute(in, null);
         assertEquals("1,2,3", in.pdfConfig.getKeywordsAsString());
 
@@ -120,7 +120,7 @@ public class PdfConfigurationProcessorTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testExec_WrongFieldName() throws Exception {
+    public void testExec_WrongFieldName() {
         Map<String, Object> attributeMap = new HashMap<>();
         final String titleKey = "titleAtt";
         final PdfConfigurationProcessor pdfConfigurationProcessor = new PdfConfigurationProcessor();
@@ -136,7 +136,7 @@ public class PdfConfigurationProcessorTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testExec_NullValue() throws Exception {
+    public void testExec_NullValue() {
         Map<String, Object> attributeMap = new HashMap<>();
         final String titleKey = "titleAtt";
         final PdfConfigurationProcessor pdfConfigurationProcessor = new PdfConfigurationProcessor();

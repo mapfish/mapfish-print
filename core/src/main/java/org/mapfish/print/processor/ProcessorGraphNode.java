@@ -32,7 +32,7 @@ public final class ProcessorGraphNode<In, Out> {
     /**
      * The list of processors that get values from the output of this processor.
      */
-    private final Set<ProcessorGraphNode> dependencies = new HashSet<>();
+    private final Set<ProcessorGraphNode<?, ?>> dependencies = new HashSet<>();
 
     /**
      * The list of processors on which this processor gets its values from.
@@ -78,7 +78,7 @@ public final class ProcessorGraphNode<In, Out> {
         return this.requirements;
     }
 
-    protected Set<ProcessorGraphNode> getDependencies() {
+    protected Set<ProcessorGraphNode<?, ?>> getDependencies() {
         return this.dependencies;
     }
 

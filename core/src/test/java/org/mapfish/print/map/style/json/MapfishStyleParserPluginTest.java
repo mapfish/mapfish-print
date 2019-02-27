@@ -155,7 +155,8 @@ public class MapfishStyleParserPluginTest {
         assertNotNull(text);
     }
 
-    private void assertFilter(Filter geomSelectFunction, Class<? extends Geometry>... geomClasses) {
+    @SafeVarargs
+    private final void assertFilter(Filter geomSelectFunction, Class<? extends Geometry>... geomClasses) {
 
         List<Class<? extends Geometry>> allowed = Arrays.asList(geomClasses);
 
@@ -215,6 +216,7 @@ public class MapfishStyleParserPluginTest {
         return geomClass.cast(geom);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testV2ParseSymbolizersWithDefaultsAndValues() throws Throwable {
         final Style style = parseStyle("v2-style-symbolizers-default-values.json");

@@ -40,7 +40,7 @@ public abstract class AbstractGridCoverage2DReaderLayer extends AbstractGeotools
             final AbstractLayerParams params) {
         super(executorService, params);
         this.styleSupplier = style;
-        this.coverage2DReaderSupplier = coverage2DReader::apply;
+        this.coverage2DReaderSupplier = coverage2DReader;
     }
 
     @Override
