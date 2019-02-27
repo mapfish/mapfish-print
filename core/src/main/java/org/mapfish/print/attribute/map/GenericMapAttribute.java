@@ -100,6 +100,13 @@ public abstract class GenericMapAttribute
         return this.maxDpi;
     }
 
+    /**
+     * The maximum DPI allowed for maps.
+     * <p>
+     * If a request is made with a higher DPI, the request fails.
+     *
+     * @param maxDpi the value
+     */
     public final void setMaxDpi(final Double maxDpi) {
         this.maxDpi = maxDpi;
     }
