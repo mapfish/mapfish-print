@@ -38,6 +38,7 @@ buildscript {
         classpath 'org.gretty:gretty:2.3.1'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.12.0'
         classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.10"
+        classpath "se.bjurr.violations:violations-gradle-plugin:1.21"
     }
 }
 
@@ -73,6 +74,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     apply plugin: 'idea'
     apply plugin: 'project-report'
     apply plugin: 'checkstyle'
+    apply plugin: 'se.bjurr.violations.violations-gradle-plugin'
 
     jar.dependsOn(checkstyleMain)
 
@@ -80,25 +82,31 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
         toolVersion = "7.8.2"
         configFile = file("$rootProject.rootDir/checkstyle_checks.xml")
         configProperties = ['basedir': project.rootDir.path]
-        ignoreFailures = false
+        ignoreFailures = true
         reportsDir = file("$project.buildDir/reports/checkstyleReports")
     }
     checkstyleTest.enabled = false
 
     spotbugs {
         toolVersion = "${project.spotbugVersion}"
-        ignoreFailures = false
+        ignoreFailures = true
         reportsDir = file("$project.buildDir/reports/spotbugsReports")
         effort = "max"
         reportLevel = "high"
     }
-    tasks.withType(com.github.spotbugs.SpotBugsTask) {
-        reports {
-            xml.enabled = false
-            html.enabled = true
-        }
-    }
     spotbugsTest.enabled = false
+
+    task violations(type: se.bjurr.violations.gradle.plugin.ViolationsTask) {
+        minSeverity = 'INFO'
+        detailLevel = 'VERBOSE' // PER_FILE_COMPACT, COMPACT or VERBOSE
+        maxViolations = 0
+        printViolations = true
+        violations = [
+                ["FINDBUGS", ".", ".*/reports/spotbugsReports/.*\\.xml", "Spotbugs"],
+                ["CHECKSTYLE", ".", ".*/reports/checkstyleReports/.*\\.xml", "Checkstyle"]
+        ]
+    }
+    check.finalizedBy violations
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8

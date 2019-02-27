@@ -31,8 +31,6 @@ script:
   - ./gradlew build
 
 after_failure:
-  - cat core/build/reports/checkstyleReports/main.xml
-  - cat core/build/reports/spotbugsReports/main.html
   - cat core/build/reports/tests/index.html
   - sh travis/print-examples-test-output.sh
 
