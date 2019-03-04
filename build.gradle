@@ -19,7 +19,7 @@ allprojects {
     ext.junitVersion = "4.12"
     ext.springVersion = "5.1.5.RELEASE"
     ext.groovyVersion = "2.5.6"
-    ext.spotbugVersion = '3.1.11'
+    ext.spotbugVersion = '3.1.12'
     ext."signing.keyId" = signing_keyId
     ext."signing.secretKeyRingFile" = System.properties.get('user.home') + '/.gnupg/secring.gpg'
     ext."signing.password" = signing_password
