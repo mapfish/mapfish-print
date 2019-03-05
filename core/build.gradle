@@ -55,6 +55,9 @@ installDist.doFirst {
 tasks.withType(Javadoc) {
     options.encoding = 'utf-8'
     title = "Mapfish Print Core Module $version"
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
 }
 task testCLI(type: Exec) {
     dependsOn installDist
