@@ -1,150 +1,119 @@
-apply plugin: 'maven'
-
-def distZip = tasks.getByPath(':core:distZip')
-def distTar = tasks.getByPath(':core:distTar')
-def jar = tasks.getByPath(':core:jar')
-artifacts {
-    archives tasks.getByPath(':core:war'), tasks.getByPath(':core:libSourcesJar'),
-            tasks.getByPath(':core:libJavadocJar')
-    archives(jar.archivePath) {
-        name 'print-lib'
-        type 'jar'
-        builtBy jar
-    }
-    archives(distZip.archivePath) {
-        name 'print-cli'
-        type 'zip'
-        classifier 'zip'
-        builtBy distZip
-    }
-    archives(distTar.archivePath) {
-        name 'print-cli'
-        type 'tar'
-        classifier 'tar'
-        builtBy distTar
-    }
+plugins {
+    id 'maven-publish'
+    id 'signing'
 }
 
-task show {
-}
-show.doLast {
-    println configurations.archives.files
-}
+def coreProject = tasks.getByPath(':core:jar').project
 
-/*
- * This upload Archives configuration I took from:
- * http://jedicoder.blogspot.ch/2011/11/automated-gradle-project-deployment-to.html
- *
- * For deploying see section about "Create a gradle properties file"
- */
-// need to sign jars for uploading releases to maven central
 if (Boolean.parseBoolean(enablePublishing)) {
-    apply plugin: 'signing'
-    signing {
-        sign configurations.archives
-    }
+    publishing {
+        publications {
+            lib(MavenPublication) {
+                artifactId = 'print-lib'
+                from coreProject.components.java
+                artifact tasks.getByPath(':core:libSourcesJar')
+                artifact tasks.getByPath(':core:libJavadocJar')
+                setPom(pom)
+                pom {
+                    name = 'print-lib'
+                    packaging = 'jar'
+                    description = 'Library for generating PDFs and images from online webmapping services'
+                }
+            }
+            servlet(MavenPublication) {
+                artifactId = 'print-servlet'
+                from coreProject.components.web
+                //artifact tasks.getByPath(':core:war')
+                setPom(pom)
+                pom {
+                    name = 'print-servlet'
+                    packaging = 'war'
+                    description = 'Web application for generating PDFs and images from online webmapping services'
+                }
+            }
+            standalone(MavenPublication) {
+                artifactId = 'print-standalone'
+                artifact tasks.getByPath(':core:distZip')
+                setPom(pom)
+                pom {
+                    name = 'print-cli'
+                    packaging = 'pom'
+                    description = 'Application for generating PDFs and images from online webmapping services. All dependencies are included'
+                }
+            }
+        }
 
-    uploadArchives {
-        dependsOn tasks.getByPath(':core:war')
         repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-                repository(url: "https://$host/service/local/staging/deploy/maven2/") {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
-                }
-                snapshotRepository(url: "https://$host/content/repositories/snapshots/") {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
-                }
-                def extAnd = { file, ext ->
-                    file.name.endsWith(ext) || file.name.endsWith(".asc") || file.name.endsWith(".pom")
-                }
-                addFilter('lib') { artifact, file ->
-                    artifact.name.contains('print-lib') && extAnd(file, ".jar")
-                }
-                addFilter('war') { artifact, file ->
-                    artifact.name.contains('print-servlet') && extAnd(file, ".war")
-                }
-                addFilter('cli') { artifact, file ->
-                    artifact.name.contains('print-cli') && extAnd(file, ".zip")
-                }
-
-                pom('lib').project {
-                    name 'print-lib'
-                    packaging 'jar'
-                    description 'Library for generating PDFs and images from online webmapping services'
-                }
-                pom('war').project {
-                    name 'print-servlet'
-                    packaging 'war'
-                    description 'Web application for generating PDFs and images from online webmapping services'
-                }
-                pom('cli').project {
-                    name 'print-cli'
-                    packaging 'pom'
-                    description 'Application for generating PDFs and images from online webmapping services. All dependencies are included'
-                }
-
-                ['lib', 'war', 'cli'].each { filterName ->
-                    pom(filterName).project {
-                        url 'http://mapfish.github.io/mapfish-print'
-
-                        scm {
-                            url 'scm:git@github.com:mapfish/mapfish-print.git'
-                            connection 'scm:git@github.com:mapfish/mapfish-print.git'
-                            developerConnection 'scm:git@github.com:mapfish/mapfish-print.git'
-                        }
-
-                        licenses {
-                            license {
-                                name 'BSD 2-Clause License'
-                                url 'https://opensource.org/licenses/BSD-2-Clause'
-                                distribution 'repo'
-                            }
-                        }
-
-                        developers {
-                            developer {
-                                id 'jesseeichar'
-                                name 'Jesse Eichar'
-                            }
-                            developer {
-                                id 'sbrunner'
-                                name 'Stéphane Brunner'
-                            }
-                            developer {
-                                id 'tsauerwein'
-                                name 'Tobias Sauerwein'
-                            }
-                            developer {
-                                id 'geekdenz'
-                                name 'Tim-Hinnerk Heuer'
-                            }
-                            developer {
-                                id 'miblon'
-                                name 'Milo van der Linden'
-                            }
-                            developer {
-                                id 'pvalsecc'
-                                name 'Patrick Valsecchi'
-                            }
-                        }
-                        mailingLists {
-                            mailingList {
-                                name = 'Users'
-                                subscribe = 'mapfish-print-users+subscribe@googlegroups.com'
-                                unsubscribe = 'mapfish-print-users+unsubscribe@googlegroups.com'
-                                post = 'mapfish-print-users@googlegroups.com'
-                                archive = 'https://groups.google.com/forum/#!forum/mapfish-print-users'
-                            }
-                        }
-                    }
+            maven {
+                url "https://$host/service/local/staging/deploy/maven2"
+                credentials {
+                    username = sonatypeUsername
+                    password = sonatypePassword
                 }
             }
         }
     }
-} else {
-    uploadArchives << {
-        throw new IllegalStateException("Cannot upload archives because enablePublishing property is not true.  It is $enablePublishing")
+
+    signing {
+        sign publishing.publications.lib
+        sign publishing.publications.servlet
+        sign publishing.publications.standalone
+    }
+}
+
+/**
+ * Set some common values on the given POM
+ */
+private void setPom(org.gradle.api.publish.maven.MavenPom pom) {
+    pom.url = 'http://mapfish.github.io/mapfish-print'
+
+    pom.scm {
+        url = 'scm:git@github.com:mapfish/mapfish-print.git'
+        connection = 'scm:git@github.com:mapfish/mapfish-print.git'
+        developerConnection = 'scm:git@github.com:mapfish/mapfish-print.git'
+    }
+
+    pom.licenses {
+        license {
+            name = 'BSD 2-Clause License'
+            url = 'https://opensource.org/licenses/BSD-2-Clause'
+            distribution = 'repo'
+        }
+    }
+
+    pom.developers {
+        developer {
+            id = 'jesseeichar'
+            name = 'Jesse Eichar'
+        }
+        developer {
+            id = 'sbrunner'
+            name = 'Stéphane Brunner'
+        }
+        developer {
+            id = 'tsauerwein'
+            name = 'Tobias Sauerwein'
+        }
+        developer {
+            id = 'geekdenz'
+            name = 'Tim-Hinnerk Heuer'
+        }
+        developer {
+            id = 'miblon'
+            name = 'Milo van der Linden'
+        }
+        developer {
+            id = 'pvalsecc'
+            name = 'Patrick Valsecchi'
+        }
+    }
+    pom.mailingLists {
+        mailingList {
+            name = 'Users'
+            subscribe = 'mapfish-print-users+subscribe@googlegroups.com'
+            unsubscribe = 'mapfish-print-users+unsubscribe@googlegroups.com'
+            post = 'mapfish-print-users@googlegroups.com'
+            archive = 'https://groups.google.com/forum/#!forum/mapfish-print-users'
+        }
     }
 }

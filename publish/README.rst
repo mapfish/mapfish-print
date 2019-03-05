@@ -61,7 +61,7 @@ Publish Workflow
 
 .. code :: groovy
 
-  > ./gradlew uploadArchives
+  > ./gradlew publish
 
 4. Close and release:
 
