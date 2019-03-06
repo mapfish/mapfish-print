@@ -3,6 +3,8 @@ plugins {
     id 'signing'
 }
 
+apply plugin: 'de.marcphilipp.nexus-publish'
+
 def coreProject = tasks.getByPath(':core:jar').project
 
 if (Boolean.parseBoolean(enablePublishing)) {
@@ -58,6 +60,10 @@ if (Boolean.parseBoolean(enablePublishing)) {
         sign publishing.publications.lib
         sign publishing.publications.servlet
         sign publishing.publications.standalone
+    }
+
+    nexusPublishing {
+        serverUrl = uri("https://$host/service/local/")
     }
 }
 
