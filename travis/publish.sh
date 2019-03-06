@@ -30,7 +30,7 @@ then
   if [[ "${TRAVIS_TAG}" == release/* ]]
   then
     echo "Uploading to Nexus"
-    ./gradlew publish
+    ./gradlew publishToNexus
     echo "Releasing to mvnrepository"
     ./gradlew closeAndReleaseRepository
   fi

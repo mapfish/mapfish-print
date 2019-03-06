@@ -10,13 +10,10 @@ buildscript {
     dependencies {
         classpath 'org.gretty:gretty:2.3.1'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.20.0'
+        classpath 'de.marcphilipp.gradle:nexus-publish-plugin:0.2.0'
         classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:1.6.10"
         classpath "se.bjurr.violations:violations-gradle-plugin:1.21"
     }
-}
-
-plugins {
-    id 'de.marcphilipp.nexus-publish' version "0.2.0"
 }
 
 defaultTasks 'build'
@@ -149,14 +146,9 @@ if (Boolean.parseBoolean(enablePublishing)) {
 
     nexusStaging {
         packageGroup = 'org.mapfish'
-        stagingProfileId = '201d075c19938f'
         serverUrl = "https://$host/service/local/"
         username = sonatypeUsername
         password = sonatypePassword
         numberOfRetries = 200
-    }
-
-    nexusPublishing {
-        serverUrl = uri("https://$host/service/local/")
     }
 }

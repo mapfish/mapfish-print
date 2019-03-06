@@ -61,7 +61,7 @@ Publish Workflow
 
 .. code :: groovy
 
-  > ./gradlew publish
+  > ./gradlew publishToNexus
 
 4. Close and release:
 
