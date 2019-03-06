@@ -3,10 +3,6 @@
 NAME="camptocamp/mapfish_print"
 
 function publish {
-    # Setup login
-    openssl aes-256-cbc -K $encrypted_fb15e83f0f9f_key -iv $encrypted_fb15e83f0f9f_iv \
-        -in .dockercfg.enc -out ~/.dockercfg -d
-
     local version=$1
     export DOCKER_VERSION=`echo "${version}" | sed -e 's/^release\///' | sed -e 's/\//_/g'`
 
@@ -15,34 +11,28 @@ function publish {
     docker push "${NAME}:${DOCKER_VERSION}"
 }
 
-if [ "${TRAVIS_PULL_REQUEST}" != "false" ]
-then
-    echo "Not deploying image for pull requests"
-    exit 0
-fi
-
 if [ ! -y "${CIRCLE_PULL_REQUEST}" ]
 then
     echo "Not deploying image for pull requests"
     exit 0
 fi
 
-if [ "${TRAVIS_BRANCH}${CIRCLE_BRANCH}" == "master" ]
+if [ "${CIRCLE_BRANCH}" == "master" ]
 then
   publish latest
-elif [ ! -z "${TRAVIS_TAG}${CIRCLE_TAG}" ]
+elif [ ! -z "${CIRCLE_TAG}" ]
 then
-  publish "${TRAVIS_TAG}${CIRCLE_TAG}"
-  if [[ "${TRAVIS_TAG}${CIRCLE_TAG}" == release/* ]]
+  publish "${CIRCLE_TAG}"
+  if [[ "${CIRCLE_TAG}" == release/* ]]
   then
     echo "Uploading to Nexus"
     ./gradlew publishToNexus
     echo "Releasing to mvnrepository"
     ./gradlew closeAndReleaseRepository
   fi
-elif [ ! -z "${TRAVIS_BRANCH}${CIRCLE_BRANCH}" ]
+elif [ ! -z "${CIRCLE_BRANCH}" ]
 then
-  publish "${TRAVIS_BRANCH}${CIRCLE_BRANCH}"
+  publish "${CIRCLE_BRANCH}"
 else
   echo "Not deploying image"
 fi

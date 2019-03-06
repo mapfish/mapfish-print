@@ -1,0 +1,83 @@
+# Java Gradle CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-java/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+      - image: docker:17.05.0-ce-git
+
+    working_directory: ~/repo
+
+    environment:
+      TERM: dumb
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install OS dependencies
+          command: sudo apt install ttf-liberation
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v2-dependencies-{{ checksum "build.gradle" }}-{{ checksum "core/build.gradle" }}
+            # fallback to using the latest cache if no exact match is found
+            - v2-dependencies-
+
+      - run:
+          name: Getting examples
+          command: ./gradlew examples:geoserverData
+
+      - run: git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
+
+      - run: .travis/test-eof-newline
+
+      - run: ./gradlew build
+
+      - store_artifacts:
+          path: examples/build/reports
+          destination: reports
+      - store_artifacts:
+          path: core/build/reports
+          destination: reports
+
+      - save_cache:
+          paths:
+            - ~/.gradle
+            - .gradle
+          key: v2-dependencies-{{ checksum "build.gradle" }}-{{ checksum "core/build.gradle" }}
+
+      - run:
+          name: Decrypt secrets
+          command: |
+            set -e
+            mkdir -p $HOME/.gradle/
+            openssl aes-256-cbc -K $AES_KEY -iv $AES_IV -in circleci/gradle.properties.enc -out ~/.gradle/gradle.properties -d
+            openssl aes-256-cbc -K $AES_KEY -iv $AES_IV -in circleci/signing.gpg.enc -d | gpg --import
+            openssl aes-256-cbc -K $AES_KEY -iv $AES_IV -in circleci/dockercfg.enc -out ~/.dockercfg -d
+
+      - setup_remote_docker
+
+      - run:
+          name: publish
+          command: circleci/publish.sh
+workflows:
+  version: 2
+  push:
+    jobs: &jobs
+      - build
+
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+                - "3\\.\\d+/"
+    jobs: *jobs
