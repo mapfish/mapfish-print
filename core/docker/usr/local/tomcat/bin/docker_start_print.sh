@@ -9,6 +9,11 @@ fi
 
 if [[ -n "${EXTRA_JARS}" ]]
 then
+    while [[ ! -d "${EXTRA_JARS}" ]]
+    do
+      echo "Waiting for ${EXTRA_JARS} to be present"
+      sleep 1
+    done
     echo "Adding jar files:"
     cp -v "${EXTRA_JARS}"/*.jar WEB-INF/lib/
 fi
