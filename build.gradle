@@ -33,7 +33,7 @@ wrapper {
 
 allprojects {
     group = 'org.mapfish.print'
-    version = '3.18.2'
+    version = '3.18.3'
     ext.junitVersion = "4.12"
     ext.springVersion = "5.1.5.RELEASE"
     ext.groovyVersion = "2.5.6"
