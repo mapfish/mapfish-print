@@ -44,6 +44,10 @@ jobs:
       - store_artifacts:
           path: core/build/reports
           destination: reports
+      - store_test_results:
+          path: core/build/test-results
+      - store_test_results:
+          path: examples/build/test-results
 
       - save_cache:
           paths:
