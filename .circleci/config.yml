@@ -34,7 +34,7 @@ jobs:
 
       - run: git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
 
-      - run: .travis/test-eof-newline
+      - run: circleci/test-eof-newline
 
       - run: ./gradlew build
 
