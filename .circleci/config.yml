@@ -7,7 +7,6 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:8-jdk
-      - image: docker:17.05.0-ce-git
 
     working_directory: ~/repo
 
@@ -78,10 +77,10 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "0 0 * * *"
+          cron: 0 0 * * *
           filters:
             branches:
               only:
                 - master
-                - "3\\.\\d+/"
+                - /3\.\d+/
     jobs: *jobs
