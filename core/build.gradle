@@ -55,7 +55,7 @@ installDist.doFirst {
 tasks.withType(Javadoc) {
     options.encoding = 'utf-8'
     title = "Mapfish Print Core Module $version"
-    if(JavaVersion.current().isJava9Compatible()) {
+    if (JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption('html5', true)
     }
 }
@@ -77,7 +77,7 @@ task testCLI(type: Exec) {
             '-spec', v3ApiRequestFile.getAbsolutePath(),
             '-output', outputFile.getAbsolutePath()])
     commandLine cmd
-
+    environment('JAVA_OPTS', '-Xmx500m')
     doFirst {
         println("Testing CLI application: $workingDir")
         outputFile.delete();
@@ -86,6 +86,13 @@ task testCLI(type: Exec) {
     doLast {
         assert outputFile.exists()
         assert outputFile.length() > 0
+    }
+}
+test {
+    maxHeapSize = "500M"
+    reports {
+        junitXml.enabled = true
+        html.enabled = true
     }
 }
 build.dependsOn tasks.distZip, tasks.testCLI
