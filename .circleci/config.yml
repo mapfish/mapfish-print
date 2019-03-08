@@ -2,7 +2,11 @@
 #
 # Check https://circleci.com/docs/2.0/language-java/ for more details
 #
-version: 2
+version: 2.1
+
+orbs:
+  gradle: circleci/gradle@1.0.10
+
 jobs:
   build:
     docker:
@@ -20,22 +24,15 @@ jobs:
           name: Install OS dependencies
           command: sudo apt install ttf-liberation
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v2-dependencies-{{ checksum "build.gradle" }}-{{ checksum "core/build.gradle" }}
-            # fallback to using the latest cache if no exact match is found
-            - v2-dependencies-
-
-      - run:
-          name: Getting examples
-          command: ./gradlew examples:geoserverData
-
       - run: git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
 
       - run: circleci/test-eof-newline
 
-      - run: ./gradlew build
+      - gradle/with_cache:
+          steps:
+            - run:
+                name: Build
+                command: ./gradlew build
 
       - store_artifacts:
           path: examples/build/reports
@@ -47,12 +44,6 @@ jobs:
           path: core/build/test-results
       - store_test_results:
           path: examples/build/test-results
-
-      - save_cache:
-          paths:
-            - ~/.gradle
-            - .gradle
-          key: v2-dependencies-{{ checksum "build.gradle" }}-{{ checksum "core/build.gradle" }}
 
       - run:
           name: Decrypt secrets
