@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -65,6 +66,11 @@ public final class Values {
      * The key for the values object of it self.
      */
     public static final String VALUES_KEY = "values";
+
+    /**
+     * The key for the locale.
+     */
+    public static final String LOCALE_KEY = "REPORT_LOCALE";
 
     private final Map<String, Object> values = new ConcurrentHashMap<>();
 
@@ -149,6 +155,19 @@ public final class Values {
         this.values.put(JOB_ID_KEY, jobId);
 
         this.values.put(VALUES_KEY, this);
+
+        Locale locale = Locale.getDefault();
+        if (requestData.has("lang")) {
+            String[] localeSplit = requestData.getString("lang").split("_");
+            if (localeSplit.length == 1) {
+                locale = new Locale(localeSplit[0]);
+            } else if (localeSplit.length == 2) {
+                locale = new Locale(localeSplit[0], localeSplit[1]);
+            } else if (localeSplit.length > 2) {
+                locale = new Locale(localeSplit[0], localeSplit[1], localeSplit[2]);
+            }
+        }
+        this.values.put(LOCALE_KEY, locale);
     }
 
     /**
@@ -248,6 +267,7 @@ public final class Values {
         this.values.put(SUBREPORT_DIR_KEY, subReportDir);
         this.values.put(VALUES_KEY, this);
         this.values.put(JOB_ID_KEY, sourceValues.getString(JOB_ID_KEY));
+        this.values.put(LOCALE_KEY, sourceValues.getObject(LOCALE_KEY, Locale.class));
     }
 
     /**
