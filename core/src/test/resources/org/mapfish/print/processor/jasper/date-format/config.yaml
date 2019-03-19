@@ -1,0 +1,10 @@
+throwErrorOnExtraParameters: true
+
+templates:
+  main: !template
+    attributes:
+      timezone: !string
+        default: "CET"
+    processors:
+      - !dateFormat
+        pattern: "EEEEE dd MMMMM yyyy HH:mm Z"

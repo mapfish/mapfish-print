@@ -153,26 +153,12 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             throw new CancellationException();
         }
 
-        // Fill the locale
-        String localeRef = requestData.optString("lang");
-        Locale locale = Locale.getDefault();
-        if (localeRef != null) {
-            String[] localeSplit = localeRef.split("_");
-            if (localeSplit.length == 1) {
-                locale = new Locale(localeSplit[0]);
-            } else if (localeSplit.length == 2) {
-                locale = new Locale(localeSplit[0], localeSplit[1]);
-            } else if (localeSplit.length > 2) {
-                locale = new Locale(localeSplit[0], localeSplit[1], localeSplit[2]);
-            }
-        }
-        values.put("REPORT_LOCALE", locale);
-
         // Fill the resource bundle
         String resourceBundle = config.getResourceBundle();
         if (resourceBundle != null) {
             values.put("REPORT_RESOURCE_BUNDLE", ResourceBundle.getBundle(
-                    resourceBundle, locale, new ResourceBundleClassLoader(configDir)));
+                    resourceBundle, values.getObject(Values.LOCALE_KEY, Locale.class),
+                    new ResourceBundleClassLoader(configDir)));
         }
 
         ValuesLogger.log(templateName, template, values);
