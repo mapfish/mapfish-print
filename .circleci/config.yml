@@ -40,10 +40,14 @@ jobs:
       - store_artifacts:
           path: core/build/reports
           destination: reports
+      - run:
+          name: Collect test results
+          command: |
+            mkdir -p /tmp/test_results/junit
+            find . -name '*TEST-*.xml' -exec cp -v {} /tmp/test_results/junit/ \;
+          when: always
       - store_test_results:
-          path: core/build/test-results
-      - store_test_results:
-          path: examples/build/test-results
+          path: /tmp/test_results
 
       - run:
           name: Decrypt secrets
