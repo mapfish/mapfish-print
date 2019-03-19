@@ -2,7 +2,6 @@ package org.mapfish.print.processor.jasper;
 
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
-import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.processor.AbstractProcessor;
 
@@ -82,10 +81,7 @@ public class DateFormatProcessor
     @Override
     public Output execute(final Input values, final ExecutionContext context) throws Exception {
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat(
-                pattern,
-                values.values.getObject(Values.LOCALE_KEY, Locale.class)
-        );
+        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern, values.REPORT_LOCALE);
         if (values.timezone != null) {
             dateFormat.setTimeZone(TimeZone.getTimeZone(values.timezone));
         }
@@ -119,7 +115,8 @@ public class DateFormatProcessor
         /**
          * The values.
          */
-        public Values values;
+        @SuppressWarnings("checkstyle:MemberName")
+        public Locale REPORT_LOCALE;
     }
 
     /**

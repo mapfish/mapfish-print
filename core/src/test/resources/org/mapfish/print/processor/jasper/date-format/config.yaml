@@ -7,4 +7,4 @@ templates:
         default: "CET"
     processors:
       - !dateFormat
-        pattern: "EEEEE dd MMMMM yyyy HH:mm"
+        pattern: "EEEEE dd MMMMM yyyy HH:mm Z"

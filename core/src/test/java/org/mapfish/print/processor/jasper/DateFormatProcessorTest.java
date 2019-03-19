@@ -42,6 +42,6 @@ public class DateFormatProcessorTest extends AbstractMapfishSpringTest {
         final DateFormat dateFormat = values.getObject("dateFormat", DateFormat.class);
         Calendar gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         gmt.set(2018, Calendar.MARCH, 18, 9, 15, 12);
-        assertEquals("dimanche 18 mars 2018 02:15", dateFormat.format(gmt.getTime()));
+        assertEquals("dimanche 18 mars 2018 02:15 -0700", dateFormat.format(gmt.getTime()));
     }
 }

@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -190,6 +191,7 @@ public final class ProcessorDependencyGraphFactory {
         outputTypes.put(Values.OUTPUT_FORMAT_KEY, String.class);
         outputTypes.put(Values.JOB_ID_KEY, String.class);
         outputTypes.put(MapPrinterServlet.JSON_REQUEST_HEADERS, HttpRequestHeadersAttribute.Value.class);
+        outputTypes.put(Values.LOCALE_KEY, Locale.class);
 
         for (Processor processor: processors) {
             final ProcessorGraphNode<Object, Object> node =
