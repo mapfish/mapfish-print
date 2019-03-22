@@ -133,7 +133,7 @@ dependencies {
             "org.springframework.security:spring-security-web:$springSecurityVersion",
             'com.thetransactioncompany:cors-filter:2.6',
             //hibernate & postgres
-            'org.hibernate:hibernate-core:5.4.1.Final',
+            'org.hibernate:hibernate-core:5.4.2.Final',
             'org.postgresql:postgresql:42.2.5',
             'com.vladmihalcea:hibernate-types-43:2.4.2',
             "org.springframework:spring-orm:$project.springVersion",
