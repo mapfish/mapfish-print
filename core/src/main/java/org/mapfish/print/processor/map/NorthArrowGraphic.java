@@ -114,7 +114,7 @@ public final class NorthArrowGraphic {
             final Dimension targetSize, final RasterReference rasterReference,
             final Double rotation, final Color backgroundColor,
             final File workingDir) throws IOException {
-        final File path = File.createTempFile("north-arrow-", ".tiff", workingDir);
+        final File path = File.createTempFile("north-arrow-", ".png", workingDir);
 
         final BufferedImage newImage =
                 new BufferedImage(targetSize.width, targetSize.height, BufferedImage.TYPE_4BYTE_ABGR);
@@ -163,7 +163,7 @@ public final class NorthArrowGraphic {
                                         RenderingHints.VALUE_INTERPOLATION_BICUBIC);
             graphics2d.drawImage(originalImage, deltaX, deltaY, newWidth, newHeight, null);
 
-            ImageUtils.writeImage(newImage, "tiff", path);
+            ImageUtils.writeImage(newImage, "png", path);
         } finally {
             graphics2d.dispose();
         }
