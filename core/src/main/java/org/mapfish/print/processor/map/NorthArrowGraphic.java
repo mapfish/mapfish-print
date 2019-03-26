@@ -7,7 +7,7 @@ import org.apache.batik.dom.util.DOMUtilities;
 import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.apache.commons.io.output.FileWriterWithEncoding;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.ImageUtils;
 import org.mapfish.print.http.MfClientHttpRequestFactory;

@@ -1,6 +1,6 @@
 package org.mapfish.print.map.style.json;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Font;
