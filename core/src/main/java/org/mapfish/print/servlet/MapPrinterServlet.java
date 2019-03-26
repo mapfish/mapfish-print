@@ -3,7 +3,7 @@ package org.mapfish.print.servlet;
 import net.sf.jasperreports.engine.fonts.FontFamily;
 import net.sf.jasperreports.extensions.ExtensionsEnvironment;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jfree.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;

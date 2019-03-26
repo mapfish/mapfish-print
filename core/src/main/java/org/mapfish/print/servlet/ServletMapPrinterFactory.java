@@ -1,7 +1,7 @@
 package org.mapfish.print.servlet;
 
 import org.apache.commons.io.DirectoryWalker;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;

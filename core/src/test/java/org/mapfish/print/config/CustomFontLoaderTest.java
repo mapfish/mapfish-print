@@ -1,7 +1,7 @@
 package org.mapfish.print.config;
 
 import net.sf.jasperreports.engine.JasperPrint;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.output.AbstractJasperReportOutputFormat;
