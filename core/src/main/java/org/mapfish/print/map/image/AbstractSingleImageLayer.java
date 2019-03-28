@@ -12,6 +12,7 @@ import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.StatsUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
@@ -151,7 +152,8 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
     protected BufferedImage fetchImage(
             @Nonnull final ClientHttpRequest request, @Nonnull final MapfishMapContext transformer)
             throws IOException {
-        final String baseMetricName = getClass().getName() + ".read." + request.getURI().getHost();
+        final String baseMetricName = getClass().getName() + ".read." +
+                StatsUtils.quotePart(request.getURI().getHost());
         final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
         try (ClientHttpResponse httpResponse = request.execute()) {
             if (httpResponse.getStatusCode() != HttpStatus.OK) {

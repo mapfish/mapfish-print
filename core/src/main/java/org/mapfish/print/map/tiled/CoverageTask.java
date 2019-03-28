@@ -8,6 +8,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.geometry.GeneralEnvelope;
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.StatsUtils;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.style.json.ColorParser;
 import org.mapfish.print.map.tiled.TilePreparationInfo.SingleTilePreparationInfo;
@@ -192,7 +193,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
         protected Tile compute() {
             return this.context.mdcContext(() -> {
                 final String baseMetricName = TilePreparationTask.class.getName() + ".read." +
-                        this.tileRequest.getURI().getHost();
+                        StatsUtils.quotePart(this.tileRequest.getURI().getHost());
                 LOGGER.debug("\n\t{} -- {}", this.tileRequest.getMethod(), this.tileRequest.getURI());
                 final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
                 try (ClientHttpResponse response = this.tileRequest.execute()) {
