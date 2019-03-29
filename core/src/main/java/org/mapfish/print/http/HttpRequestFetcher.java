@@ -3,6 +3,7 @@ package org.mapfish.print.http;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import org.apache.commons.io.IOUtils;
+import org.mapfish.print.StatsUtils;
 import org.mapfish.print.processor.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,7 +193,8 @@ public final class HttpRequestFetcher {
         public Void call() throws Exception {
             return context.mdcContextEx(() -> {
                 final String baseMetricName =
-                        HttpRequestFetcher.class.getName() + ".read." + getURI().getHost();
+                        HttpRequestFetcher.class.getName() + ".read." +
+                                StatsUtils.quotePart(getURI().getHost());
                 final Timer.Context timerDownload =
                         HttpRequestFetcher.this.registry.timer(baseMetricName).time();
                 try (ClientHttpResponse originalResponse = this.originalRequest.execute()) {

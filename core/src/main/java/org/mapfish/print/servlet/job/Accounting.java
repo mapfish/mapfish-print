@@ -2,6 +2,7 @@ package org.mapfish.print.servlet.job;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import org.mapfish.print.StatsUtils;
 import org.mapfish.print.config.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -51,9 +52,7 @@ public class Accounting {
         protected JobTracker(final PrintJobEntry entry, final Configuration configuration) {
             this.entry = entry;
             this.configuration = configuration;
-            this.successTimer = Accounting.this.metricRegistry.timer(getClass().getName() + "." +
-                                                                             this.entry.getAppId() +
-                                                                             ".success").time();
+            this.successTimer = Accounting.this.metricRegistry.timer(getMetricName("success")).time();
         }
 
         /**
@@ -70,16 +69,18 @@ public class Accounting {
          * To be called when a job is cancelled.
          */
         public void onJobCancel() {
-            Accounting.this.metricRegistry.counter(getClass().getName() + "." +
-                                                           this.entry.getAppId() + ".cancel").inc();
+            Accounting.this.metricRegistry.counter(getMetricName("cancel")).inc();
         }
 
         /**
          * To be called when a job is on error.
          */
         public void onJobError() {
-            Accounting.this.metricRegistry.counter(getClass().getName() + "." +
-                                                           this.entry.getAppId() + ".error").inc();
+            Accounting.this.metricRegistry.counter(getMetricName("error")).inc();
+        }
+
+        private String getMetricName(final String kind) {
+            return getClass().getName() + "." + StatsUtils.quotePart(this.entry.getAppId()) + "." + kind;
         }
     }
 }

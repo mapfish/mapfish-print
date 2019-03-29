@@ -6,6 +6,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import org.mapfish.print.Constants;
 import org.mapfish.print.ImageUtils;
+import org.mapfish.print.StatsUtils;
 import org.mapfish.print.attribute.LegendAttribute.LegendAttributeValue;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
@@ -353,7 +354,8 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
             return context.mdcContextEx(() -> {
                 BufferedImage image = null;
                 final URI uri = this.icon.toURI();
-                final String metricName = LegendProcessor.class.getName() + ".read." + uri.getHost();
+                final String metricName =
+                        LegendProcessor.class.getName() + ".read." + StatsUtils.quotePart(uri.getHost());
                 try {
                     this.context.stopIfCanceled();
                     final ClientHttpRequest request = this.clientHttpRequestFactory.createRequest(
