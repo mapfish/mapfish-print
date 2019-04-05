@@ -69,6 +69,15 @@ workflows:
     jobs: &jobs
       - build
 
+  tag_push:
+    jobs: &jobs
+      - build:
+          filters:
+            tags:
+              only: /^release\/\d+\.\d+\.\d+/
+            branches:
+              ignore: /.*/
+
   nightly:
     triggers:
       - schedule:
