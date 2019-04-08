@@ -39,7 +39,7 @@ if (Boolean.parseBoolean(enablePublishing)) {
                 setPom(pom)
                 pom {
                     name = 'print-cli'
-                    packaging = 'pom'
+                    packaging = 'zip'
                     description = 'Application for generating PDFs and images from online webmapping services. All dependencies are included'
                 }
             }
