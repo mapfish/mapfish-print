@@ -52,9 +52,9 @@ public final class WmsUtilities {
             final double dpi,
             final double angle,
             final ReferencedEnvelope bounds) throws FactoryException, URISyntaxException, IOException {
-        if (commonURI == null || commonURI.getAuthority() == null )
+        if (commonURI == null || commonURI.getAuthority() == null) {
             throw new RuntimeException("Invalid WMS URI: " + commonURI);
-
+        }
         String[] authority = commonURI.getAuthority().split(":");
         URL url;
         if (authority.length == 2) {
