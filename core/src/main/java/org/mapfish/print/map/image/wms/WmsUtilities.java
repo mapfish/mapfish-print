@@ -55,7 +55,7 @@ public final class WmsUtilities {
         if (commonURI == null || commonURI.getAuthority() == null )
             throw new RuntimeException("Invalid WMS URI: " + commonURI);
 
-	String[] authority = commonURI.getAuthority().split(":");
+        String[] authority = commonURI.getAuthority().split(":");
         URL url;
         if (authority.length == 2) {
             url = new URL(
