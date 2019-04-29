@@ -38,7 +38,7 @@ dependencies {
     compile (
             "org.springframework:spring-context:$springVersion",
             "org.springframework:spring-web:$springVersion",
-            'com.itextpdf:itextpdf:5.4.4',
+            'com.itextpdf:itextpdf:5.5.13',
             'xerces:xercesImpl:2.4.0',
             'org.json:json:20080701',
             'org.jyaml:jyaml:1.3',
