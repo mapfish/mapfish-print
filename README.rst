@@ -49,8 +49,6 @@ You can as well generate a docker image using this command:
 
   > ./gradlew createDocker
 
-If you want to force the version to something custom, you can define the DOCKER_VERSION environment
-variable.
 
 To use in Eclipse
 -----------------
