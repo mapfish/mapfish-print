@@ -4,11 +4,12 @@ NAME="camptocamp/mapfish_print"
 
 function publish {
     local version=$1
-    export DOCKER_VERSION=`echo "${version}" | sed -e 's/^release\///' | sed -e 's/\//_/g'`
+    docker_version=`echo "${version}" | sed -e 's/^release\///' | sed -e 's/\//_/g'`
 
-    echo "Deploying image to docker hub for tag ${DOCKER_VERSION}"
+    echo "Deploying image to docker hub for tag ${docker_version}"
     ./gradlew --console=plain createDocker
-    docker push "${NAME}:${DOCKER_VERSION}"
+    docker tag "camptocamp/mapfish_print:latest" "camptocamp/mapfish_print:${docker_version}"
+    docker push "${NAME}:${docker_version}"
 }
 
 if [ ! -y "${CIRCLE_PULL_REQUEST}" ]

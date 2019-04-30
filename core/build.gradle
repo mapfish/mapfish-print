@@ -3,19 +3,8 @@ import org.apache.tools.ant.taskdefs.condition.Os
 apply plugin: 'war'
 apply plugin: 'distribution'
 apply plugin: 'org.gretty'
-apply plugin: 'docker'
 
 defaultTasks 'build'
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'se.transmode.gradle:gradle-docker:1.2'
-    }
-}
-
 
 // the task `run` of the gretty plugin conflicts with the task with the same
 // name of the plugin `application`. that's why the following tasks are defined
@@ -304,54 +293,11 @@ startScripts {
     }
 }
 
-def getVersionName = { ->
-    def fromEnv = System.getenv('DOCKER_VERSION')
-    if (fromEnv) {
-        return fromEnv
-    }
-    return 'latest'
+task explodedWar(type: Sync) {
+    into "${buildDir}/webapp"
+    with war
 }
 
-docker {
-    baseImage 'camptocamp/tomcat-logback:8.5-jre8'
-    maintainer 'Camptocamp "info@camptocamp.com"'
-}
-
-task unzipWar(type: Copy, dependsOn: 'war') {
-    def targetDir = new File(project.buildDir, 'webapp')
-    if (!targetDir.exists()) {
-        targetDir.mkdirs()
-    }
-    from zipTree(war.archivePath)
-    into targetDir
-}
-
-task createDocker(type: Docker, dependsOn: 'unzipWar') {
-    applicationName = 'mapfish_print'
-    tagVersion = getVersionName()
-    tag = "camptocamp/${applicationName}"
-    project.ext.set('dockerImage', "${tag}:${tagVersion}")
-
-    doLast {
-        System.out.println("Created docker image ${project.dockerImage}")
-    }
-
-    addFile new File(project.buildDir, 'webapp'), '${CATALINA_HOME}/webapps/ROOT'
-    addFile 'docker', '/'
-    //avoid a warning because logback-classic is both in tomcat and in the webapp
-    runCommand 'rm ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/logback-*.jar ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/slf4j-*.jar && ' +
-            'mkdir -p ${CATALINA_HOME}/extlib/classes/org/mapfish/print && ' +
-            'cp -r ${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes/org/mapfish/print/url ${CATALINA_HOME}/extlib/classes/org/mapfish/print/ && ' +
-            'perl -0777 -i -pe \'s/<Valve className="ch.qos.logback.access.tomcat.LogbackValve" quiet="true"\\/>//s\' ${CATALINA_HOME}/conf/server.xml && ' +
-            'chmod g+r -R /usr/local/tomcat/conf/ && ' +
-            'chmod g+rw /usr/local/tomcat/temp/ /usr/local/tomcat/webapps/ROOT/WEB-INF/lib &&' +
-            'chmod g+rw /usr/local/tomcat/webapps/ROOT/WEB-INF/classes /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/*.xml && ' +
-            'adduser www-data root'
-
-    setEnvironment('LOG_LEVEL', 'INFO')
-    setEnvironment('SPRING_LOG_LEVEL', 'WARN')
-    setEnvironment('JASPER_LOG_LEVEL', 'WARN')
-    setEnvironment('APACHE_LOG_LEVEL', 'WARN')
-    setEnvironment('SQL_LOG_LEVEL', 'WARN')
-    defaultCommand(['/usr/local/tomcat/bin/docker_start_print.sh'])
+task createDocker(type: Exec, dependsOn: 'explodedWar') {
+    commandLine 'docker', 'build', '-t', 'camptocamp/mapfish_print:latest', '.'
 }
