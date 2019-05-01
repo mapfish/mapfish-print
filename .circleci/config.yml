@@ -50,6 +50,10 @@ jobs:
           path: /tmp/test_results
 
       - run:
+          name: Don't publish for PRs from forks
+          command: '[ -n "$AES_IV" ] && circleci step halt'
+
+      - run:
           name: Decrypt secrets
           command: |
             set -e
