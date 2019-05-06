@@ -24,6 +24,7 @@ configurations {
     // need to exclude those two to get rid of stuff taken from geotools dependencies (they break the tests)
     compile.exclude group: 'org.eclipse.emf', module: 'ecore'
     compile.exclude group: 'org.eclipse.emf', module: 'common'
+    compile.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }
 
 def examplesDir = "${project(':examples').projectDir}/src/test/resources/examples"
