@@ -36,6 +36,7 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.attribute.map.ZoomLevelSnapStrategy;
 import org.mapfish.print.attribute.map.ZoomToFeatures.ZoomType;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.Template;
 import org.mapfish.print.http.HttpRequestFetcher;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.Scale;
@@ -234,6 +235,7 @@ public final class CreateMapProcessor
         final List<URI> graphics = createLayerGraphics(
                 param.tempTaskDirectory,
                 param.clientHttpRequestFactoryProvider.get(),
+                param.template.isAllowTransparency(),
                 mapValues, context, mapContext);
         context.stopIfCanceled();
 
@@ -337,8 +339,10 @@ public final class CreateMapProcessor
         return compiledReport.toURI();
     }
 
-    private void warnIfDifferentRenderType(final RenderType renderType, final MapLayer layer) {
-        if (renderType != layer.getRenderType() && layer.getRenderType() != RenderType.UNKNOWN) {
+    private void warnIfDifferentRenderType(
+            final RenderType renderType, final MapLayer layer, final boolean allowTransparency) {
+        if (allowTransparency && renderType != layer.getRenderType() &&
+                layer.getRenderType() != RenderType.UNKNOWN) {
             LOGGER.info("Layer {} has {} format, storing as PNG.",
                         layer.getName().isEmpty() ? layer : layer.getName(),
                         layer.getRenderType().toString());
@@ -364,6 +368,7 @@ public final class CreateMapProcessor
     private List<URI> createLayerGraphics(
             final File printDirectory,
             final MfClientHttpRequestFactory clientHttpRequestFactory,
+            final boolean allowTransparency,
             final MapAttributeValues mapValues,
             final ExecutionContext context,
             final MapfishMapContext mapContext) throws IOException, ParserConfigurationException {
@@ -390,7 +395,7 @@ public final class CreateMapProcessor
         final Timer.Context timer =
                 this.metricRegistry.timer(getClass().getName() + ".buildLayers").time();
         int fileNumber = 0;
-        for (LayerGroup layerGroup: LayerGroup.buildGroups(layers)) {
+        for (LayerGroup layerGroup: LayerGroup.buildGroups(layers, allowTransparency)) {
             if (layerGroup.renderType == RenderType.SVG) {
                 // render layers as SVG
                 for (MapLayer layer: layerGroup.layers) {
@@ -412,17 +417,18 @@ public final class CreateMapProcessor
                 }
             } else {
                 // render layers as raster graphic
+                final boolean needTransparency = !layerGroup.opaque && allowTransparency;
                 final BufferedImage bufferedImage = new BufferedImage(
                         (int) Math.round(mapContext.getMapSize().width * layerGroup.imageBufferScaling),
                         (int) Math.round(mapContext.getMapSize().height * layerGroup.imageBufferScaling),
-                        layerGroup.opaque ? BufferedImage.TYPE_3BYTE_BGR : BufferedImage.TYPE_4BYTE_ABGR
+                        needTransparency ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR
                 );
                 final Graphics2D graphics2D = createClippedGraphics(
                         mapContext, areaOfInterest,
                         bufferedImage.createGraphics()
                 );
                 try {
-                    if (layerGroup.opaque) {
+                    if (layerGroup.opaque || !allowTransparency) {
                         // the image is opaque and therefore needs a white background
                         final Color prevColor = graphics2D.getColor();
                         graphics2D.setColor(Color.WHITE);
@@ -434,7 +440,7 @@ public final class CreateMapProcessor
                             getTransformer(mapContext, layerGroup.imageBufferScaling);
                     for (MapLayer cur: layerGroup.layers) {
                         context.stopIfCanceled();
-                        warnIfDifferentRenderType(layerGroup.renderType, cur);
+                        warnIfDifferentRenderType(layerGroup.renderType, cur, allowTransparency);
                         cur.render(graphics2D, clientHttpRequestFactory, transformer, context);
                     }
 
@@ -644,6 +650,11 @@ public final class CreateMapProcessor
         public File tempTaskDirectory;
 
         /**
+         * The template containing this table processor.
+         */
+        public Template template;
+
+        /**
          * The output format.
          */
         @HasDefaultValue
@@ -723,28 +734,37 @@ public final class CreateMapProcessor
             this.imageBufferScaling = imageBufferScaling;
         }
 
-        public static List<LayerGroup> buildGroups(final List<MapLayer> layers) {
+        public static List<LayerGroup> buildGroups(
+                final List<MapLayer> layers, final boolean allowTransparency) {
             final List<LayerGroup> result = new ArrayList<>();
-            for (int i = 0; i < layers.size(); ) {
-                final RenderType renderType = getSupportedRenderType(layers.get(i).getRenderType());
-                final double imageBufferScaling = layers.get(i).getImageBufferScaling();
-                final LayerGroup group = new LayerGroup(renderType, imageBufferScaling);
+            if (allowTransparency) {
+                for (int i = 0; i < layers.size(); ) {
+                    final RenderType renderType = getSupportedRenderType(layers.get(i).getRenderType());
+                    final double imageBufferScaling = layers.get(i).getImageBufferScaling();
+                    final LayerGroup group = new LayerGroup(renderType, imageBufferScaling);
 
-                group.opaque = (i == 0 && renderType == RenderType.JPEG);
+                    group.opaque = (i == 0 && renderType == RenderType.JPEG);
 
-                // Merge consecutive layers of same render type and same buffer scaling (native
-                // resolution)
-                while (i < layers.size() &&
-                        getSupportedRenderType(layers.get(i).getRenderType()) == renderType &&
-                        imageBufferScaling == layers.get(i).getImageBufferScaling()) {
-                    // will always go there the first time
-                    final MapLayer toAdd = layers.get(i);
-                    group.layers.add(toAdd);
-                    group.opaque = group.opaque ||
-                            (renderType == RenderType.JPEG && toAdd.getOpacity() == 1.0);
-                    ++i;
+                    // Merge consecutive layers of same render type and same buffer scaling (native
+                    // resolution)
+                    while (i < layers.size() &&
+                            getSupportedRenderType(layers.get(i).getRenderType()) == renderType &&
+                            imageBufferScaling == layers.get(i).getImageBufferScaling()) {
+                        // will always go there the first time
+                        final MapLayer toAdd = layers.get(i);
+                        group.layers.add(toAdd);
+                        group.opaque = group.opaque ||
+                                (renderType == RenderType.JPEG && toAdd.getOpacity() == 1.0);
+                        ++i;
+                    }
+
+                    result.add(group);
                 }
-
+            } else {
+                // Merge all layers into a single JPEG image
+                final LayerGroup group = new LayerGroup(RenderType.JPEG, 1.0);
+                group.opaque = true;
+                group.layers.addAll(layers);
                 result.add(group);
             }
 

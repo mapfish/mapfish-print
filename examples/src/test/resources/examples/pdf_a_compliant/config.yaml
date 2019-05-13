@@ -1,6 +1,7 @@
 defaultToSvg: true
 templates:
   A4 landscape: !template
+    allowTransparency: false
     reportTemplate: simpleReport.jrxml
     attributes:
       map: !map
@@ -8,6 +9,6 @@ templates:
         width: 780
         height: 330
     processors:
-    - !reportBuilder
-      directory: '.'
-    - !createMap {}
+      - !reportBuilder
+        directory: '.'
+      - !createMap {}
