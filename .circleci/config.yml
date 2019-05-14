@@ -51,7 +51,7 @@ jobs:
 
       - run:
           name: Don't publish for PRs from forks
-          command: '[ -n "$AES_IV" ] && circleci step halt'
+          command: '[ -n "$AES_IV" ] && true || circleci step halt'
 
       - run:
           name: Decrypt secrets
