@@ -1,0 +1,13 @@
+defaultToSvg: true
+templates:
+  A4 landscape: !template
+    reportTemplate: simpleReport.jrxml
+    attributes:
+      map: !map
+        maxDpi: 400
+        width: 780
+        height: 330
+    processors:
+    - !reportBuilder
+      directory: '.'
+    - !createMap {}

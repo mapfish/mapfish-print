@@ -1,0 +1,39 @@
+{
+    "layout": "A4 landscape",
+    "outputFormat": "image",
+    "attributes":
+    {
+        "map":
+        {
+            "projection": "EPSG:3857",
+            "dpi": 72,
+            "rotation": 0,
+            "center": [-8235878.4938425, 4979784.7605681],
+            "scale": 26000,
+            "layers": [
+                {
+                    "type": "geojson",
+                    "geojson": "file://ny_feature.geojson",
+                    "renderAsSvg": true
+                },
+                {
+                    "baseURL": "http://localhost:8080/gs-web-app/wms",
+                    "opacity": 1,
+                    "type": "WMS",
+                    "layers": ["tiger:tiger_roads"],
+                    "imageFormat": "image/png",
+                    "styles": ["line"],
+                    "customParams":
+                    {
+                        "TRANSPARENT": "true"
+                    }
+                },
+                {
+                    "baseURL": "http://localhost:8080/examples/data/www/osm",
+                    "type": "OSM",
+                    "imageExtension": "png"
+                }
+            ]
+        }
+    }
+}
