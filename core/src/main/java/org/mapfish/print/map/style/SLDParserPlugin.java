@@ -2,8 +2,8 @@ package org.mapfish.print.map.style;
 
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.DefaultResourceLocator;
-import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
+import org.geotools.xml.styling.SLDParser;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;

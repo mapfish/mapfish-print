@@ -1,10 +1,10 @@
 package org.mapfish.print.map.image.wms;
 
-import org.geotools.data.wms.WMS1_0_0;
-import org.geotools.data.wms.WMS1_1_0;
-import org.geotools.data.wms.WMS1_1_1;
-import org.geotools.data.wms.WMS1_3_0;
-import org.geotools.data.wms.request.GetMapRequest;
+import org.geotools.ows.wms.WMS1_0_0;
+import org.geotools.ows.wms.WMS1_1_0;
+import org.geotools.ows.wms.WMS1_1_1;
+import org.geotools.ows.wms.WMS1_3_0;
+import org.geotools.ows.wms.request.GetMapRequest;
 
 import java.net.URL;
 

@@ -10,7 +10,9 @@
 
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath*:mapfish-spring-application-context.xml,classpath:mapfish-spring-security.xml,/WEB-INF/mapfish-print-printer-factory.xml,classpath*:mapfish-spring-application-context-override.xml</param-value>
+        <param-value>
+            classpath*:mapfish-spring-application-context.xml,classpath:mapfish-spring-security.xml,/WEB-INF/mapfish-print-printer-factory.xml,classpath*:mapfish-spring-application-context-override.xml
+        </param-value>
     </context-param>
 
     <listener>
@@ -26,7 +28,8 @@
     </listener>
 
     <listener>
-        <listener-class>org.mapfish.print.metrics.MapfishPrintInstrumentedFilterContextListener</listener-class>
+        <listener-class>org.mapfish.print.metrics.MapfishPrintInstrumentedFilterContextListener
+        </listener-class>
     </listener>
 
     <filter>

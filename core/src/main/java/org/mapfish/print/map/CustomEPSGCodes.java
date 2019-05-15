@@ -1,7 +1,7 @@
 package org.mapfish.print.map;
 
-import org.geotools.factory.Hints;
 import org.geotools.referencing.factory.epsg.FactoryUsingWKT;
+import org.geotools.util.factory.Hints;
 
 import java.io.InputStream;
 import java.net.URL;
