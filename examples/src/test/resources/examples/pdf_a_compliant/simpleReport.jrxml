@@ -10,6 +10,8 @@
 	<property name="net.sf.jasperreports.export.pdfa.icc.profile.path" value="AdobeRGB1998.icc"/>
 	<style name="Default" isDefault="true" fontName="DejaVu Sans"/>
 	<parameter name="mapSubReport" class="java.lang.String"/>
+	<parameter name="scalebarGraphic" class="java.lang.String"/>
+	<parameter name="northArrowGraphic" class="java.lang.String"/>
 	<title>
 		<band height="390" splitType="Stretch">
 			<staticText>
@@ -23,6 +25,23 @@
 				<reportElement x="0" y="51" width="780" height="330" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d"/>
 				<subreportExpression><![CDATA[$P{mapSubReport}]]></subreportExpression>
 			</subreport>
+			<image>
+				<reportElement x="540" y="341" width="240" height="40" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d"/>
+				<imageExpression class="net.sf.jasperreports.engine.JRRenderable">
+					<![CDATA[net.sf.jasperreports.renderers.BatikRenderer.getInstance(new java.io.File(new java.net.URI($P{scalebarGraphic})))]]>
+				</imageExpression>
+			</image>
+			<image>
+				<reportElement x="0" y="51" width="50" height="50" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression class="net.sf.jasperreports.engine.JRRenderable">
+					<![CDATA[net.sf.jasperreports.renderers.BatikRenderer.getInstance(new java.io.File(new java.net.URI($P{northArrowGraphic})))]]>
+				</imageExpression>
+			</image>
 		</band>
 	</title>
 </jasperReport>
