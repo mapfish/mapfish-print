@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 
+import static java.awt.image.BufferedImage.TYPE_3BYTE_BGR;
 import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
 import static org.mapfish.print.Constants.PDF_DPI;
 
@@ -439,7 +440,7 @@ public class ScalebarGraphic {
             final BufferedImage bufferedImage = new BufferedImage(
                     (int) Math.round(scalebarParams.getSize().width * dpiRatio),
                     (int) Math.round(scalebarParams.getSize().height * dpiRatio),
-                    TYPE_4BYTE_ABGR);
+                    template.isAllowTransparency() ? TYPE_4BYTE_ABGR : TYPE_3BYTE_BGR);
             final Graphics2D graphics2D = bufferedImage.createGraphics();
 
             try {

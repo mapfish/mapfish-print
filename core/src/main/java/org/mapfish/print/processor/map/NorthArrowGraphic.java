@@ -64,6 +64,7 @@ public final class NorthArrowGraphic {
      * @param rotation The rotation to apply.
      * @param workingDir The directory in which the graphic is created.
      * @param clientHttpRequestFactory The request factory.
+     * @param allowTransparency True is transparency is allowed
      * @return The path to the created graphic.
      */
     public static URI create(
@@ -72,13 +73,15 @@ public final class NorthArrowGraphic {
             final Color backgroundColor,
             final Double rotation,
             final File workingDir,
-            final MfClientHttpRequestFactory clientHttpRequestFactory) throws Exception {
+            final MfClientHttpRequestFactory clientHttpRequestFactory,
+            final boolean allowTransparency) throws Exception {
         try (Closer closer = Closer.create()) {
             final RasterReference input = loadGraphic(graphicFile, clientHttpRequestFactory, closer);
             if (graphicFile == null || graphicFile.toLowerCase().trim().endsWith("svg")) {
                 return createSvg(targetSize, input, rotation, backgroundColor, workingDir);
             } else {
-                return createRaster(targetSize, input, rotation, backgroundColor, workingDir);
+                return createRaster(targetSize, input, rotation, backgroundColor, workingDir,
+                                    allowTransparency);
             }
         }
     }
@@ -113,11 +116,13 @@ public final class NorthArrowGraphic {
     private static URI createRaster(
             final Dimension targetSize, final RasterReference rasterReference,
             final Double rotation, final Color backgroundColor,
-            final File workingDir) throws IOException {
+            final File workingDir, final boolean allowTransparency) throws IOException {
         final File path = File.createTempFile("north-arrow-", ".png", workingDir);
 
         final BufferedImage newImage =
-                new BufferedImage(targetSize.width, targetSize.height, BufferedImage.TYPE_4BYTE_ABGR);
+                new BufferedImage(targetSize.width, targetSize.height,
+                                  allowTransparency ? BufferedImage.TYPE_4BYTE_ABGR :
+                                          BufferedImage.TYPE_3BYTE_BGR);
         final Graphics2D graphics2d = newImage.createGraphics();
         try {
             final BufferedImage originalImage = ImageIO.read(rasterReference.inputStream);
@@ -129,8 +134,10 @@ public final class NorthArrowGraphic {
             }
 
             // set background color
-            graphics2d.setColor(backgroundColor);
-            graphics2d.fillRect(0, 0, targetSize.width, targetSize.height);
+            if (backgroundColor.getAlpha() > 0) {
+                graphics2d.setColor(backgroundColor);
+                graphics2d.fillRect(0, 0, targetSize.width, targetSize.height);
+            }
 
             // scale the original image to fit the new size
             int newWidth;
@@ -199,16 +206,18 @@ public final class NorthArrowGraphic {
     private static void setSvgBackground(
             final Color backgroundColor, final Dimension targetSize,
             final Document newDocument, final SVGElement newSvgRoot) {
-        final Element rect = newDocument.createElementNS(SVG_NS, "rect");
-        rect.setAttributeNS(null, "x", "0");
-        rect.setAttributeNS(null, "y", "0");
-        rect.setAttributeNS(null, "width", Integer.toString(targetSize.width));
-        rect.setAttributeNS(null, "height", Integer.toString(targetSize.height));
-        String bgColor = ColorParser.toRGB(backgroundColor);
-        rect.setAttributeNS(null, "fill", bgColor);
-        String opacity = Double.toString(backgroundColor.getAlpha() / 255.0);
-        rect.setAttributeNS(null, "fill-opacity", opacity);
-        newSvgRoot.appendChild(rect);
+        if (backgroundColor.getAlpha() > 0) {
+            final Element rect = newDocument.createElementNS(SVG_NS, "rect");
+            rect.setAttributeNS(null, "x", "0");
+            rect.setAttributeNS(null, "y", "0");
+            rect.setAttributeNS(null, "width", Integer.toString(targetSize.width));
+            rect.setAttributeNS(null, "height", Integer.toString(targetSize.height));
+            String bgColor = ColorParser.toRGB(backgroundColor);
+            rect.setAttributeNS(null, "fill", bgColor);
+            String opacity = Double.toString(backgroundColor.getAlpha() / 255.0);
+            rect.setAttributeNS(null, "fill-opacity", opacity);
+            newSvgRoot.appendChild(rect);
+        }
     }
 
     /**

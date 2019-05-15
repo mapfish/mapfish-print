@@ -46,8 +46,10 @@ public abstract class ScalebarDrawer {
 
         // draw the background box
         this.graphics2d.setTransform(transform);
-        this.graphics2d.setColor(this.params.getBackgroundColor());
-        this.graphics2d.fillRect(0, 0, this.settings.getSize().width, this.settings.getSize().height);
+        if (this.params.getBackgroundColor().getAlpha() > 0) {
+            this.graphics2d.setColor(this.params.getBackgroundColor());
+            this.graphics2d.fillRect(0, 0, this.settings.getSize().width, this.settings.getSize().height);
+        }
 
         //draw the labels
         this.graphics2d.setColor(this.params.getFontColor());

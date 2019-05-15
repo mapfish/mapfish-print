@@ -384,7 +384,8 @@ public class Template implements ConfigurationObject, HasConfiguration {
     }
 
     /**
-     * If set to false (defaults to true), the generated maps will not contain any transparent images.
+     * If set to false (defaults to true), the generated maps, scalebar and north arrow will not contain any
+     * transparent images.
      * <p>
      * This is needed in case you want to output PDF/A-1a reports.
      * <p>
