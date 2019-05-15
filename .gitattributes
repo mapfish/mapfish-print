@@ -13,3 +13,4 @@
 *.woff binary
 *.jks binary
 *.enc binary
+*.icc binary

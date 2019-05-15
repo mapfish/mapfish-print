@@ -47,6 +47,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private Map<String, Attribute> attributes = new HashMap<>();
     private List<Processor> processors = new ArrayList<>();
     private boolean mapExport;
+    private boolean allowTransparency = true;
 
     private String jdbcUrl;
     private String jdbcUser;
@@ -65,8 +66,8 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
     /**
      * The default output file name of the report (takes precedence over {@link
-     * Configuration#setOutputFilename(String)}).  This can be overridden by the
-     * outputFilename parameter in the request JSON.
+     * Configuration#setOutputFilename(String)}).  This can be overridden by the outputFilename parameter in
+     * the request JSON.
      * <p>
      * This can be a string and can also have a date section in the string that will be filled when the report
      * is created for example a section with ${&lt;dateFormatString&gt;} will be replaced with the current
@@ -378,4 +379,22 @@ public class Template implements ConfigurationObject, HasConfiguration {
         this.mapExport = mapExport;
     }
 
+    public boolean isAllowTransparency() {
+        return allowTransparency;
+    }
+
+    /**
+     * If set to false (defaults to true), the generated maps, scalebar and north arrow will not contain any
+     * transparent images.
+     * <p>
+     * This is needed in case you want to output PDF/A-1a reports.
+     * <p>
+     * If you don't allow transparency, all layers are merged into a single JPEG layer at the requested
+     * resolution: WMTS tiles will be downscaled and vector layers will be rendered as bitmaps.
+     *
+     * @param allowTransparency the value
+     */
+    public void setAllowTransparency(final boolean allowTransparency) {
+        this.allowTransparency = allowTransparency;
+    }
 }

@@ -59,6 +59,7 @@ public class ExamplesTest {
     public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";
     public static final String TEST_SPRING_XML =
             "classpath:test-http-request-factory-application-context.xml";
+    public static final String[] BITMAP_FORMATS = {"png", "jpeg", "tiff"};
     private static final Logger LOGGER = LoggerFactory.getLogger(ExamplesTest.class);
     private static final String REQUEST_DATA_FILE = "requestData(-.*)?.json";
     private static final String CONFIG_FILE = "config.yaml";
@@ -175,7 +176,7 @@ public class ExamplesTest {
 
         for (File example: Objects.requireNonNull(examplesDir.listFiles())) {
             if (example.isDirectory() && exampleFilter.matcher(example.getName()).matches()) {
-                testsRan += runExample(example, errors);
+                testsRan += runExample(example, errors, true);
             }
         }
 
@@ -217,14 +218,14 @@ public class ExamplesTest {
     }
 
     @Test
-    public void testOne() {
+    public void testPDFA() {
         final File examplesDir = getFile(ExamplesTest.class, "/examples");
         Map<String, Throwable> errors = new HashMap<>();
-        runExample(new File(examplesDir, "datasource_dynamic_tables"), errors);
+        runExample(new File(examplesDir, "pdf_a_compliant"), errors, false);
         reportErrors(errors, 1);
     }
 
-    private int runExample(File example, Map<String, Throwable> errors) {
+    private int runExample(File example, Map<String, Throwable> errors, boolean forceBitmap) {
         int testsRan = 0;
         try {
             final File configFile = new File(example, CONFIG_FILE);
@@ -250,7 +251,7 @@ public class ExamplesTest {
 
                         testsRan++;
                         String outputFormat = jsonSpec.getInternalObj().getString("outputFormat");
-                        if (!ArrayUtils.contains(new String[]{"png", "jpeg", "tiff"}, outputFormat)) {
+                        if (forceBitmap && !ArrayUtils.contains(BITMAP_FORMATS, outputFormat)) {
                             jsonSpec.getInternalObj().put("outputFormat", "png");
                             outputFormat = "png";
                         }
@@ -278,22 +279,25 @@ public class ExamplesTest {
 
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
 
-                        File expectedOutputDir = new File(example, "expected_output");
-                        File expectedOutput = getExpectedOutput(outputFormat, requestFile, expectedOutputDir);
-                        if (!expectedOutput.exists()) {
-                            errors.put(
-                                    example.getName() + " (" + requestFile.getName() + ")",
-                                    new Exception("File not found: " + expectedOutput.toString()));
-                        }
+                        if (ArrayUtils.contains(BITMAP_FORMATS, outputFormat)) {
+                            File expectedOutputDir = new File(example, "expected_output");
+                            File expectedOutput =
+                                    getExpectedOutput(outputFormat, requestFile, expectedOutputDir);
+                            if (!expectedOutput.exists()) {
+                                errors.put(
+                                        example.getName() + " (" + requestFile.getName() + ")",
+                                        new Exception("File not found: " + expectedOutput.toString()));
+                            }
 
-                        int similarity = 50;
-                        File file = new File(expectedOutputDir, "image-similarity.txt");
-                        if (file.isFile()) {
-                            String similarityString = new String(Files.readAllBytes(file.toPath()),
-                                                                 Constants.DEFAULT_CHARSET);
-                            similarity = Integer.parseInt(similarityString.trim());
+                            int similarity = 50;
+                            File file = new File(expectedOutputDir, "image-similarity.txt");
+                            if (file.isFile()) {
+                                String similarityString = new String(Files.readAllBytes(file.toPath()),
+                                                                     Constants.DEFAULT_CHARSET);
+                                similarity = Integer.parseInt(similarityString.trim());
+                            }
+                            new ImageSimilarity(expectedOutput).assertSimilarity(image, similarity);
                         }
-                        new ImageSimilarity(expectedOutput).assertSimilarity(image, similarity);
                     }
                 } catch (Throwable e) {
                     errors.put(String.format("%s (%s)", example.getName(), requestFile.getName()), e);

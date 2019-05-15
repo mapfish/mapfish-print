@@ -42,7 +42,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
         URI file = NorthArrowGraphic.create(
                 new Dimension(200, 200),
                 "file://" + getFile(BASE_DIR + "NorthArrow.png").toString(),
-                this.bgColor, 0.0, getTaskDirectory(), this.requestFactoryWrapper);
+                this.bgColor, 0.0, getTaskDirectory(), this.requestFactoryWrapper, true);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow-png-square-down.png"))
                 .assertSimilarity(new File(file), 0);
@@ -53,7 +53,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
         URI file = NorthArrowGraphic.create(
                 new Dimension(50, 50),
                 "file://" + getFile(BASE_DIR + "NorthArrow.png").toString(),
-                this.bgColor, 0.0, getTaskDirectory(), this.requestFactoryWrapper);
+                this.bgColor, 0.0, getTaskDirectory(), this.requestFactoryWrapper, true);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow-png-square-up.png"))
                 .assertSimilarity(new File(file), 0);
@@ -64,7 +64,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
         URI file = NorthArrowGraphic.create(
                 new Dimension(200, 200),
                 "file://" + getFile(BASE_DIR + "NorthArrow.png").toString(),
-                this.bgColor, 45.0, getTaskDirectory(), this.requestFactoryWrapper);
+                this.bgColor, 45.0, getTaskDirectory(), this.requestFactoryWrapper, true);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow-png-square-45-down.png"))
                 .assertSimilarity(new File(file), 0);
@@ -75,7 +75,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
         URI file = NorthArrowGraphic.create(
                 new Dimension(50, 50),
                 "file://" + getFile(BASE_DIR + "NorthArrow.png").toString(),
-                this.bgColor, 45.0, getTaskDirectory(), this.requestFactoryWrapper);
+                this.bgColor, 45.0, getTaskDirectory(), this.requestFactoryWrapper, true);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow-png-square-45-up.png"))
                 .assertSimilarity(new File(file), 0);
@@ -86,7 +86,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
         URI file = NorthArrowGraphic.create(
                 new Dimension(200, 200),
                 "file://" + getFile(BASE_DIR + "NorthArrow_10.png").toString(),
-                this.bgColor, 0.0, getTaskDirectory(), this.requestFactoryWrapper);
+                this.bgColor, 0.0, getTaskDirectory(), this.requestFactoryWrapper, true);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow_10-png-nosquare-down.png"))
                 .assertSimilarity(new File(file), 0);
@@ -97,7 +97,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
         URI file = NorthArrowGraphic.create(
                 new Dimension(50, 50),
                 "file://" + getFile(BASE_DIR + "NorthArrow_10.png").toString(),
-                this.bgColor, 0.0, getTaskDirectory(), this.requestFactoryWrapper);
+                this.bgColor, 0.0, getTaskDirectory(), this.requestFactoryWrapper, true);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow_10-png-nosquare-up.png"))
                 .assertSimilarity(new File(file), 0);
@@ -108,7 +108,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
         URI file = NorthArrowGraphic.create(
                 new Dimension(200, 200),
                 "file://" + getFile(BASE_DIR + "NorthArrow_10.png").toString(),
-                this.bgColor, Math.PI / 4, getTaskDirectory(), this.requestFactoryWrapper);
+                this.bgColor, Math.PI / 4, getTaskDirectory(), this.requestFactoryWrapper, true);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow_10-png-nosquare-45-down.png"))
                 .assertSimilarity(new File(file), 0);
@@ -119,7 +119,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
         URI file = NorthArrowGraphic.create(
                 new Dimension(50, 50),
                 "file://" + getFile(BASE_DIR + "NorthArrow_10.png").toString(),
-                this.bgColor, Math.PI / 4, getTaskDirectory(), this.requestFactoryWrapper);
+                this.bgColor, Math.PI / 4, getTaskDirectory(), this.requestFactoryWrapper, true);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow_10-png-nosquare-45-up.png"))
                 .assertSimilarity(new File(file), 0);
@@ -131,7 +131,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
         URI file = NorthArrowGraphic.create(
                 new Dimension(200, 200),
                 "file://" + getFile(BASE_DIR + "NorthArrow.png").toString(),
-                backgroundColor, 0.0, getTaskDirectory(), this.requestFactoryWrapper);
+                backgroundColor, 0.0, getTaskDirectory(), this.requestFactoryWrapper, true);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow-png-bg-square-down.png"))
                 .assertSimilarity(new File(file), 0);
@@ -142,7 +142,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
         URI file = NorthArrowGraphic.create(
                 new Dimension(200, 200),
                 "file://" + getFile(BASE_DIR + "NorthArrow.svg").toString(),
-                this.bgColor, 90.0, getTaskDirectory(), this.requestFactoryWrapper);
+                this.bgColor, 90.0, getTaskDirectory(), this.requestFactoryWrapper, true);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow.png"))
                 .assertSimilarity(file, 200, 200, 4);
@@ -153,7 +153,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
         URI file = NorthArrowGraphic.create(
                 new Dimension(200, 200),
                 "file://" + getFile(BASE_DIR + "NorthArrow_10.svg").toString(),
-                this.bgColor, Math.PI / 2, getTaskDirectory(), this.requestFactoryWrapper);
+                this.bgColor, Math.PI / 2, getTaskDirectory(), this.requestFactoryWrapper, true);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow_10.png"))
                 .assertSimilarity(file, 200, 200, 70);
@@ -165,7 +165,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
         URI file = NorthArrowGraphic.create(
                 new Dimension(200, 200),
                 "file://" + getFile(BASE_DIR + "NorthArrow.svg").toString(),
-                backgroundColor, Math.PI / 2, getTaskDirectory(), this.requestFactoryWrapper);
+                backgroundColor, Math.PI / 2, getTaskDirectory(), this.requestFactoryWrapper, true);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow-bg.png"))
                 .assertSimilarity(file, 200, 200, 5);
@@ -177,7 +177,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
         URI file = NorthArrowGraphic.create(
                 new Dimension(200, 200),
                 "file://" + getFile(BASE_DIR + "NorthArrow_10.svg").toString(),
-                backgroundColor, Math.PI / 2, getTaskDirectory(), this.requestFactoryWrapper);
+                backgroundColor, Math.PI / 2, getTaskDirectory(), this.requestFactoryWrapper, true);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow_10-bg.png")).assertSimilarity(
                 file, 200, 200, 70);
@@ -187,7 +187,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
     public void testCreateDefaultGraphic() throws Exception {
         URI file = NorthArrowGraphic.create(
                 new Dimension(200, 200), null,
-                this.bgColor, Math.PI / 2, getTaskDirectory(), this.requestFactoryWrapper);
+                this.bgColor, Math.PI / 2, getTaskDirectory(), this.requestFactoryWrapper, true);
 
         new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow_10-default.png"))
                 .assertSimilarity(file, 200, 200, 70);

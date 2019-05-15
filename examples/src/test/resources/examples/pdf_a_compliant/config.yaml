@@ -1,0 +1,31 @@
+defaultToSvg: true
+templates:
+  A4 landscape: !template
+    allowTransparency: false
+    reportTemplate: simpleReport.jrxml
+    attributes:
+      map: !map
+        maxDpi: 400
+        width: 780
+        height: 330
+      scalebar: !scalebar
+        width: 240
+        height: 40
+        createSubReport: false
+        default:
+          backgroundColor: "rgb(214, 214, 214)"
+          align: "right"
+      northArrowDef: !northArrow
+        size: 50
+        createSubReport: false
+        default:
+          graphic: "file://NorthArrow_10.svg"
+          backgroundColor: "rgb(214, 214, 214)"
+    processors:
+      - !reportBuilder
+        directory: '.'
+      - !createMap {}
+      - !createScalebar {}
+      - !createNorthArrow
+        inputMapper:
+          northArrowDef: northArrow

@@ -100,6 +100,7 @@ public class CreateScalebarProcessor
          * The path to the temporary directory for the print task.
          */
         public File tempTaskDirectory;
+
         /**
          * The containing template.
          */

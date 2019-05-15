@@ -87,6 +87,7 @@ public class CreateOverviewMapProcessor
         CreateMapProcessor.Input mapProcessorValues = this.mapProcessor.createInputParameter();
         mapProcessorValues.clientHttpRequestFactoryProvider = values.clientHttpRequestFactoryProvider;
         mapProcessorValues.tempTaskDirectory = values.tempTaskDirectory;
+        mapProcessorValues.template = values.template;
 
         MapAttribute.OverriddenMapAttributeValues mapParams =
                 ((MapAttribute.MapAttributeValues) values.map).getWithOverrides(
