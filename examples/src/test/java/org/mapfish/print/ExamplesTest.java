@@ -4,7 +4,6 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -27,6 +26,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -205,7 +206,9 @@ public class ExamplesTest {
                 errorReport.append(exampleName.toString().replaceAll(".", "="));
                 errorReport.append('\n');
                 errorReport.append("Failed with the error:\n");
-                errorReport.append(ExceptionUtils.getFullStackTrace(error.getValue()));
+                final StringWriter sw = new StringWriter();
+                error.getValue().printStackTrace(new PrintWriter(sw));
+                errorReport.append(sw.toString());
                 errorReport.append('\n');
             }
             errorReport.append("\n\n");

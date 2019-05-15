@@ -1,9 +1,9 @@
 package org.mapfish.print.map.geotools;
 
 import org.eclipse.emf.common.util.URI;
-import org.geotools.xml.impl.HTTPURIHandler;
 import org.geotools.xml.resolver.SchemaCache;
 import org.geotools.xml.resolver.SchemaResolver;
+import org.geotools.xsd.impl.HTTPURIHandler;
 import org.mapfish.print.config.WorkingDirectories;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

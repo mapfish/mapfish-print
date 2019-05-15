@@ -1,11 +1,11 @@
 package org.mapfish.print.map.style;
 
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.SLDTransformer;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.UserLayer;
+import org.geotools.xml.styling.SLDTransformer;
 import org.mapfish.print.config.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

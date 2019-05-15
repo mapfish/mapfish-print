@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    compile "org.geoserver.web:gs-web-app:$geoserverVersion"
+    compileOnly "org.geoserver.web:gs-web-app:$geoserverVersion"
     testCompile(
             project(':core')
     )
@@ -40,7 +40,7 @@ task geoserverOriginalData(type: Copy) {
     description "Extract the Geoserver web app jar file"
 
     from {
-        def path = configurations.compile.find { it.name.startsWith("gs-web-app") }
+        def path = configurations.compileOnly.find { it.name.startsWith("gs-web-app") }
         zipTree(file(path))
     }
     into "$buildDir/geoserver/"

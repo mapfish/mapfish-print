@@ -1,15 +1,12 @@
 package org.mapfish.print;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,17 +17,11 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-        ExamplesTest.DEFAULT_SPRING_XML,
-        ExamplesTest.TEST_SPRING_XML
-})
 public abstract class AbstractApiTest {
 
     protected static final String PRINT_SERVER = "http://localhost:8080/print/";
 
-    @Autowired
-    protected ClientHttpRequestFactory httpRequestFactory;
+    protected ClientHttpRequestFactory httpRequestFactory = new MfClientHttpRequestFactoryImpl(10, 10);
 
     protected ClientHttpRequest getRequest(String path, HttpMethod method) throws IOException,
             URISyntaxException {
