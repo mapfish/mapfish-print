@@ -77,4 +77,3 @@ Docker daily build
 ------------------
 
 1. Create a branch for the new version x.y
-2. Activate the daily build in Travis for this branch: https://travis-ci.org/mapfish/mapfish-print/settings
