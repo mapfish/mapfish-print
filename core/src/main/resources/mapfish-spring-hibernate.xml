@@ -4,7 +4,7 @@
        xmlns:tx="http://www.springframework.org/schema/tx" default-lazy-init="true"
        xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd" >
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
     <bean id="mfSessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
         <property name="dataSource" ref="mfDataSource"/>
@@ -19,19 +19,20 @@
             </list>
         </property>
         <property name="hibernateProperties">
-          <value>
-            hibernate.hbm2ddl.auto=update
-            hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-            <!-- hibernate.show_sql=true -->
-          </value>
+            <value>
+                hibernate.hbm2ddl.auto=update
+                hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+                hibernate.default_schema=${db.schema}
+                <!-- hibernate.show_sql=true -->
+            </value>
         </property>
     </bean>
 
     <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
         <property name="sessionFactory" ref="mfSessionFactory"/>
     </bean>
-    <tx:annotation-driven transaction-manager="transactionManager" />
+    <tx:annotation-driven transaction-manager="transactionManager"/>
 
-    <bean id="printJobDao" class="org.mapfish.print.servlet.job.impl.hibernate.PrintJobDao" />
+    <bean id="printJobDao" class="org.mapfish.print.servlet.job.impl.hibernate.PrintJobDao"/>
 
 </beans>
