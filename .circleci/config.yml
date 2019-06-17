@@ -75,7 +75,7 @@ workflows:
       - build
 
   tag_push:
-    jobs: &jobs
+    jobs:
       - build:
           filters:
             tags:
