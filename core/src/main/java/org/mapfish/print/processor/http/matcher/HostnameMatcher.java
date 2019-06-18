@@ -75,7 +75,6 @@ public final class HostnameMatcher extends HostMatcher {
         if (this.allowSubDomains && !match) {
             match = host.toLowerCase().endsWith("." + this.host);
         }
-        LOGGER.debug("Configured !hostnameMatch '{}' matches requested '{}': {}", this.host, host, match);
         return match;
     }
 
