@@ -136,8 +136,7 @@ public final class MapfishParser {
             final Method method = objectToPopulate.getClass().getMethod(POST_CONSTRUCT_METHOD_NAME);
             method.invoke(objectToPopulate);
         } catch (NoSuchMethodException e) {
-            LOGGER.debug("No {} method on parameter object of class {}", POST_CONSTRUCT_METHOD_NAME,
-                         paramClassName);
+            // ignored
         } catch (InvocationTargetException e) {
             final Throwable targetException = e.getTargetException();
             if (targetException instanceof RuntimeException) {

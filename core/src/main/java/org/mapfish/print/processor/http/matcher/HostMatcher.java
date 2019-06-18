@@ -39,8 +39,6 @@ public abstract class HostMatcher extends AbstractMatcher {
             if (this.pathRegex != null && matchInfo.getPath() != MatchInfo.ANY_PATH) {
                 Matcher matcher = Pattern.compile(this.pathRegex).matcher(matchInfo.getPath());
                 if (!matcher.matches()) {
-                    LOGGER.debug("pathRegex '{}' is not matching '{}'", this.pathRegex,
-                                 matchInfo.getPath());
                     return false;
                 }
             }
