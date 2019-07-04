@@ -57,8 +57,8 @@ public class LabelRenderer {
             /* Supported itext fonts: COURIER, HELVETICA, TIMES_ROMAN */
             String fontFamily = style.optString("fontFamily", "HELVETICA");
             if (!"COURIER".equalsIgnoreCase(fontFamily)
-                    || !"HELVETICA".equalsIgnoreCase(fontFamily)
-                    || !"TIMES_ROMAN".equalsIgnoreCase(fontFamily)) {
+                    && !"HELVETICA".equalsIgnoreCase(fontFamily)
+                    && !"TIMES_ROMAN".equalsIgnoreCase(fontFamily)) {
 
                 LOGGER.info("Font: '"+ fontFamily +
                         "' not supported, supported fonts are 'HELVETICA', " +
