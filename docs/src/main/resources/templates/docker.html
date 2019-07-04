@@ -84,7 +84,8 @@ ADD {MyApps} ${CATALINA_HOME}/webapps/ROOT/print-apps/
 </h4>
 
 <p>
-  You can enable multi-instance by adding those to CATALINA_OPTS:
+  In this mode several instances of the print will collaborate together to handle the print jobs.
+  The state is stored in a database. You need to add the following parameters to CATALINA_OPTS:
 </p>
 <ul>
   <li><code>-Ddb.username=...</code>: The PostgresQL username</li>
@@ -94,7 +95,8 @@ ADD {MyApps} ${CATALINA_HOME}/webapps/ROOT/print-apps/
 </ul>
 
 <p>
-  The container will then automatically wait on the DB to be up before starting tomcat.
+  The necessary tables are created automatically (print_accountings, print_job_results, print_job_statuses).
+  In this mode the container will wait for the database to be reachable before actually starting the tomcat server.
 </p>
 
 <p>The DB polling can be tuned with those two environment variables:</p>
