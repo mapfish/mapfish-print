@@ -182,11 +182,11 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
                 LOGGER.debug("We get a wrong image for {}, content type: {}\nresult:\n{}",
                              request.getURI(), contentType.get(0),
                              new String(data, StandardCharsets.UTF_8));
-                this.registry.counter(baseMetricName + ".error").inc();             
+                this.registry.counter(baseMetricName + ".error").inc();
                 if (getFailOnError()) {
                     throw new RuntimeException("Wrong content-type : " + contentType.get(0));
                 } else {
-                	return createErrorImage(transformer.getPaintArea());
+                    return createErrorImage(transformer.getPaintArea());
                 }
             }
 
