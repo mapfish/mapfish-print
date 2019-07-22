@@ -1,0 +1,39 @@
+# Java Gradle CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-java/ for more details
+#
+version: 2.1
+
+orbs:
+  gradle: circleci/gradle@1.0.10
+
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+    working_directory: ~/repo
+
+    environment:
+      TERM: dumb
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install OS dependencies
+          command: sudo apt install ttf-liberation
+
+      # - run: git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
+
+      - gradle/with_cache:
+          steps:
+            - run:
+                name: Build
+                command: ./gradlew build
+
+workflows:
+  version: 2
+  push:
+    jobs:
+      - build
