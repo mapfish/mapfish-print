@@ -144,8 +144,9 @@ public class MapPrinter {
 
                     final TreeSet<String> fontPaths = config.getFonts();
                     if (fontPaths != null) {
+                        String backSlashCompatiblePath = configDir.getPath().replace("\\", "/");
                         for (String fontPath : fontPaths) {
-                            fontPath = fontPath.replaceAll("\\$\\{configDir\\}", configDir.getPath());
+                            fontPath = fontPath.replaceAll("\\$\\{configDir\\}", backSlashCompatiblePath);
                             File fontFile = new File(fontPath);
                             if (fontFile.isDirectory()) {
                                 FontFactory.registerDirectory(fontPath, true);
