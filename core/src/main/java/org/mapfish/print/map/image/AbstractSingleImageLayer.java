@@ -183,7 +183,11 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
                              request.getURI(), contentType.get(0),
                              new String(data, StandardCharsets.UTF_8));
                 this.registry.counter(baseMetricName + ".error").inc();
-                return createErrorImage(transformer.getPaintArea());
+                if (getFailOnError()) {
+                    throw new RuntimeException("Wrong content-type : " + contentType.get(0));
+                } else {
+                    return createErrorImage(transformer.getPaintArea());
+                }
             }
 
             final BufferedImage image = ImageIO.read(httpResponse.getBody());
