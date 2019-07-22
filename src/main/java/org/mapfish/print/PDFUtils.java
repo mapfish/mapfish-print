@@ -28,6 +28,7 @@ import com.itextpdf.text.Chunk;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.BaseFont;
@@ -674,22 +675,12 @@ public class PDFUtils {
         return image;
     }
 
-    public static BaseFont getBaseFont(String fontFamily, String fontSize,
-            String fontWeight) {
-        Font.FontFamily myFontValue;
-        float myFontSize;
-        int myFontWeight;
-        if (fontFamily.toUpperCase().contains("COURIER")) {
-            myFontValue = Font.FontFamily.COURIER;
-        } else if (fontFamily.toUpperCase().contains("HELVETICA")) {
-            myFontValue = Font.FontFamily.HELVETICA;
-        } else if (fontFamily.toUpperCase().contains("ROMAN")) {
-            myFontValue = Font.FontFamily.TIMES_ROMAN;
-        } else {
-            myFontValue = Font.FontFamily.HELVETICA;
-        }
-        myFontSize = (float) Double.parseDouble(fontSize.toLowerCase()
+    public static BaseFont getBaseFont(String font, String fontEncoding, String fontFamily,
+    		String fontSize, String fontWeight) {
+        float myFontSize = (float) Double.parseDouble(fontSize.toLowerCase()
                 .replaceAll("px", ""));
+        
+        int myFontWeight;
         if (fontWeight.toUpperCase().contains("NORMAL")) {
             myFontWeight = Font.NORMAL;
         } else if (fontWeight.toUpperCase().contains("BOLD")) {
@@ -699,7 +690,24 @@ public class PDFUtils {
         } else {
             myFontWeight = Font.NORMAL;
         }
-        Font pdfFont = new Font(myFontValue, myFontSize, myFontWeight);
+
+    	Font pdfFont;
+    	if (font != null && FontFactory.isRegistered(font)) {
+    		pdfFont = FontFactory.getFont(font, fontEncoding, myFontSize, myFontWeight);
+    	}
+    	else {
+	        Font.FontFamily myFontValue;
+	        if (fontFamily.toUpperCase().contains("COURIER")) {
+	            myFontValue = Font.FontFamily.COURIER;
+	        } else if (fontFamily.toUpperCase().contains("HELVETICA")) {
+	            myFontValue = Font.FontFamily.HELVETICA;
+	        } else if (fontFamily.toUpperCase().contains("ROMAN")) {
+	            myFontValue = Font.FontFamily.TIMES_ROMAN;
+	        } else {
+	            myFontValue = Font.FontFamily.HELVETICA;
+	        }
+	        pdfFont = new Font(myFontValue, myFontSize, myFontWeight);
+    	}
         return pdfFont.getCalculatedBaseFont(false);
     }
 
