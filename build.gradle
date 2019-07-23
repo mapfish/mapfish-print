@@ -8,7 +8,7 @@ defaultTasks 'test', 'interactiveTest', 'jar', 'war', 'imageMagickWar', 'standal
 
 allprojects {
 group = 'org.mapfish.print'
-    version = '2.1.4'
+    version = '2.1.5'
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
