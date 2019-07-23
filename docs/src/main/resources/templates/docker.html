@@ -92,7 +92,21 @@ ADD {MyApps} ${CATALINA_HOME}/webapps/ROOT/print-apps/
   <li><code>-Ddb.password=...</code>: The PostgresQL password</li>
   <li><code>-Ddb.host=...</code>: The PostgresQL host name</li>
   <li><code>-Ddb.name=...</code>: The PostgresQL database name</li>
+  <li><code>-Ddb.port=...</code>: The PostgresQL database port (Default value =5432) </li>
 </ul>
+
+<p>
+  Example:
+</p>
+
+<p>
+  <code>
+    docker run  --name mapfish-print-test -p 8080:8080   \
+    -e TOMCAT_LOG_TYPE='json' \
+    -e CATALINA_OPTS="-Ddb.name=mydb -Ddb.host=myserver -Ddb.username=myuser -Ddb.password=mypwd -Ddb.port=5432" \
+    mydockerhub/mapfish-print:latest
+  </code>
+</p>
 
 <p>
   The necessary tables are created automatically (print_accountings, print_job_results, print_job_statuses).

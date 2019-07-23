@@ -21,8 +21,9 @@ public abstract class WaitDB {
         while (true) {
             try {
                 Class.forName("org.postgresql.Driver");
-                DriverManager.getConnection("jdbc:postgresql://" + System.getProperty("db.host") + ":5432/" +
-                                                    System.getProperty("db.name"),
+                DriverManager.getConnection("jdbc:postgresql://" + System.getProperty("db.host") +
+                                            ":" + System.getProperty("db.port", "5432") + "/" +
+                                            System.getProperty("db.name"),
                                             System.getProperty("db.username"),
                                             System.getProperty("db.password"));
                 System.out.println("Opened database successfully. Running in multi-instance mode");
