@@ -89,7 +89,5 @@ workflows:
           cron: 0 0 * * *
           filters:
             branches:
-              only:
-                - master
-                - /3\.\d+/
+              only: /master|3\.\d+/
     jobs: *jobs
