@@ -38,14 +38,13 @@ Credential Configuration
 
 .. code ::
 
-  # server to publish to
+  # publishing credentials
   enablePublishing=true
-  host=oss.sonatype.org
+  sonatypeUsername=<sonatype username>
+  sonatypePassword=<sonatype password>
   # gpg configuration information
   signing_keyId=<id of the gpg key to use for the deploy>
   signing_password=<password for gpg key that applies to the keyId>
-  sonatypeUsername=<sonatype username>
-  sonatypePassword=<sonatype password>
 
 Publish Workflow
 ----------------

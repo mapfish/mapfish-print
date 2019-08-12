@@ -63,7 +63,9 @@ if (Boolean.parseBoolean(enablePublishing)) {
     }
 
     nexusPublishing {
-        serverUrl = uri("https://$host/service/local/")
+        repositories {
+            sonatype()
+        }
     }
 }
 
