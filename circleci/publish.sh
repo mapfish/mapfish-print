@@ -12,7 +12,7 @@ function publish {
     docker push "${NAME}:${docker_version}"
 }
 
-if [ ! -y "${CIRCLE_PULL_REQUEST}" ]
+if [ ! -z "${CIRCLE_PULL_REQUEST}" ]
 then
     echo "Not deploying image for pull requests"
     exit 0
