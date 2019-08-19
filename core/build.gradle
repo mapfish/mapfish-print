@@ -122,7 +122,7 @@ dependencies {
             //hibernate & postgres
             'org.hibernate:hibernate-core:5.4.4.Final',
             'org.postgresql:postgresql:42.2.6',
-            'com.vladmihalcea:hibernate-types-52:2.5.0',
+            'com.vladmihalcea:hibernate-types-52:2.5.1',
             'com.mchange:c3p0:0.9.5.4',
             "org.springframework:spring-orm:$project.springVersion",
             "org.springframework:spring-jdbc:$project.springVersion",
