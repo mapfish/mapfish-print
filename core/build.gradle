@@ -118,7 +118,7 @@ dependencies {
             "org.springframework:spring-webmvc:$project.springVersion",
             "org.springframework.security:spring-security-config:$springSecurityVersion",
             "org.springframework.security:spring-security-web:$springSecurityVersion",
-            'com.thetransactioncompany:cors-filter:2.6',
+            'com.thetransactioncompany:cors-filter:2.8',
             //hibernate & postgres
             'org.hibernate:hibernate-core:5.4.4.Final',
             'org.postgresql:postgresql:42.2.6',
