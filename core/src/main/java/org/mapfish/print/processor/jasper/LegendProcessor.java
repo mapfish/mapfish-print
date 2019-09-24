@@ -11,6 +11,7 @@ import org.mapfish.print.attribute.LegendAttribute.LegendAttributeValue;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.http.Utils;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.slf4j.Logger;
@@ -374,8 +375,14 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                             LOGGER.warn(
                                     "Failed to load image from: {} due to server side error.\n" +
                                             "\tResponse Code: {}\n" +
-                                            "\tResponse Text: {}",
-                                    this.icon, httpResponse.getStatusCode(), httpResponse.getStatusText());
+                                            "\tResponse Text: {}\n" +
+                                            "\tWith Headers:\n\t{}",
+                                    this.icon, httpResponse.getStatusCode(), httpResponse.getStatusText(),
+                                    String.join(
+                                        "\n\t",
+                                        Utils.getPrintableHeadersList(httpResponse.getHeaders())
+                                    )
+                            );
                         }
                     }
                 } catch (Exception e) {
