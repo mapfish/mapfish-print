@@ -17,6 +17,7 @@ import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.http.Utils;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
@@ -158,14 +159,16 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
         try (ClientHttpResponse httpResponse = request.execute()) {
             if (httpResponse.getStatusCode() != HttpStatus.OK) {
                 final String message = String.format(
-                        "Invalid status code for %s (%d!=%d). The response was: '%s'",
+                        "Invalid status code for %s (%d!=%d).\nThe response was: '%s'\nWith Headers:\n%s",
                         request.getURI(), httpResponse.getStatusCode().value(),
-                        HttpStatus.OK.value(), httpResponse.getStatusText());
+                        HttpStatus.OK.value(), httpResponse.getStatusText(),
+                        String.join("\n", Utils.getPrintableHeadersList(httpResponse.getHeaders()))
+                );
                 this.registry.counter(baseMetricName + ".error").inc();
                 if (getFailOnError()) {
                     throw new RuntimeException(message);
                 } else {
-                    LOGGER.info(message);
+                    LOGGER.warn(message);
                     return createErrorImage(transformer.getPaintArea());
                 }
             }
