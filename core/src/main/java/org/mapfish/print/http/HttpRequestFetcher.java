@@ -228,7 +228,6 @@ public final class HttpRequestFetcher {
                         }
                     };
                     HttpRequestFetcher.this.registry.counter(baseMetricName + ".error").inc();
-                    throw e;
                 } finally {
                     timerDownload.stop();
                 }
