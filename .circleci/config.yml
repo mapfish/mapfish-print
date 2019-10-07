@@ -21,6 +21,8 @@ jobs:
       - checkout
 
       - run:
+          command: sudo apt update
+      - run:
           name: Install OS dependencies
           command: sudo apt install ttf-liberation
 
