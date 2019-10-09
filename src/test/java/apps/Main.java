@@ -19,11 +19,14 @@
 
 package apps;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFImageWriter;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.tools.imageio.ImageIOUtil;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * An example of using the PagePanel class to show PDFs. For more advanced
@@ -36,49 +39,19 @@ public class Main {
 
 
     public static void main(final String[] args) throws IOException {
-        String color = "rgba";
         PDDocument document = null;
             try
             {
-                document = PDDocument.load( "/tmp/print-out.pdf" );
+                document = PDDocument.load( new File("/tmp/print-out.pdf"));
 
+                ImageType imageType = ImageType.ARGB;
 
-                int imageType = 24;
-                if ("bilevel".equalsIgnoreCase(color))
+                PDFRenderer pdfRenderer = new PDFRenderer(document);
+                int pageCounter = 0;
+                while (pageCounter < 3)
                 {
-                    imageType = BufferedImage.TYPE_BYTE_BINARY;
-                }
-                else if ("indexed".equalsIgnoreCase(color))
-                {
-                    imageType = BufferedImage.TYPE_BYTE_INDEXED;
-                }
-                else if ("gray".equalsIgnoreCase(color))
-                {
-                    imageType = BufferedImage.TYPE_BYTE_GRAY;
-                }
-                else if ("rgb".equalsIgnoreCase(color))
-                {
-                    imageType = BufferedImage.TYPE_INT_RGB;
-                }
-                else if ("rgba".equalsIgnoreCase(color))
-                {
-                    imageType = BufferedImage.TYPE_INT_ARGB;
-                }
-                else
-                {
-                    System.err.println( "Error: the number of bits per pixel must be 1, 8 or 24." );
-                    System.exit( 2 );
-                }
-
-                //Make the call
-                PDFImageWriter imageWriter = new PDFImageWriter();
-                boolean success = imageWriter.writeImage(document, "png", "",
-                        1, 3, "/tmp/img--", imageType, 56);
-                if (!success)
-                {
-                    System.err.println( "Error: no writer found for image format '"
-                            + "png" + "'" );
-                    System.exit(1);
+                    BufferedImage bim = pdfRenderer.renderImageWithDPI(pageCounter, 56, imageType);
+                    ImageIOUtil.writeImage(bim, "/tmp/img--" + (pageCounter++) + ".png", 56);
                 }
             }
             catch (Exception e)
