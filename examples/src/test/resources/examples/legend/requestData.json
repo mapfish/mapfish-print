@@ -1,0 +1,35 @@
+{
+    "layout": "A4 portrait",
+    "outputFormat": "pdf",
+    "attributes": {
+        "map": {
+            "bbox": [100, -1, 106, 1.538],
+            "projection": "CRS:84",
+            "dpi": 144,
+            "rotation": 0,
+            "layers": [
+                {
+                  "type": "geojson",
+                  "style": "polygon",
+                  "geoJson":   "http://localhost:8080/examples/data/www/test-data/simple-squares-geojson.json"
+                }
+            ]
+        },
+        "legend": {
+            "name": "",
+            "classes": [{
+                "name": "Arbres",
+                "icons": ["http://localhost:8080/examples/data/www/legends/legend1.png"]
+            }, {
+                "name": "Peturbations",
+                "icons": ["http://localhost:8080/examples/data/www/legends/legend2.png"]
+            }, {
+                "name": "Points de vente",
+                "icons": ["http://localhost:8080/examples/data/www/legends/legend3.png"]
+            }, {
+                "name": "Alea",
+                "icons": ["http://localhost:8080/examples/data/www/legends/legend4.png"]
+            }]
+        }
+    }
+}
