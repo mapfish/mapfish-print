@@ -289,7 +289,7 @@ public class ExamplesTest {
                                         new Exception("File not found: " + expectedOutput.toString()));
                             }
 
-                            int similarity = 50;
+                            int similarity = 30;
                             File file = new File(expectedOutputDir, "image-similarity.txt");
                             if (file.isFile()) {
                                 String similarityString = new String(Files.readAllBytes(file.toPath()),

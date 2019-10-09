@@ -192,15 +192,16 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     private URI createSubReport(
             final BufferedImage originalImage, final double originalImageDPI, final File tempTaskDirectory)
             throws IOException, JRException {
-        assert this.maxWidth != null;
-
-        double scaleFactor = Constants.PDF_DPI / originalImageDPI;
         BufferedImage image = originalImage;
-        if (image.getWidth() * scaleFactor > this.maxWidth) {
-            if (this.scaled) {
-                image = scaleToMaxWidth(image, scaleFactor);
-            } else {
-                image = cropToMaxWidth(image, scaleFactor);
+        double scaleFactor = 1;
+        if (this.maxWidth != null) {
+            scaleFactor = Constants.PDF_DPI / originalImageDPI;
+            if (image.getWidth() * scaleFactor > this.maxWidth) {
+                if (this.scaled) {
+                    image = scaleToMaxWidth(image, scaleFactor);
+                } else {
+                    image = cropToMaxWidth(image, scaleFactor);
+                }
             }
         }
 
@@ -394,11 +395,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                     LegendProcessor.this.metricRegistry.counter(metricName + ".error").inc();
                 }
 
-                String report = null;
-                if (LegendProcessor.this.maxWidth != null) {
-                    // if a max width is given, create a sub-report containing the cropped graphic
-                    report = createSubReport(image, this.iconDPI, this.tempTaskDirectory).toString();
-                }
+                String report = createSubReport(image, this.iconDPI, this.tempTaskDirectory).toString();
                 return new Object[]{null, image, report, this.level};
             });
         }
