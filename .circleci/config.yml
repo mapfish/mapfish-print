@@ -38,10 +38,13 @@ jobs:
 
       - store_artifacts:
           path: examples/build/reports
-          destination: reports
+          destination: reports/examples
       - store_artifacts:
           path: core/build/reports
-          destination: reports
+          destination: reports/core
+      - store_artifacts:
+          path: examples/build/resources/test/examples
+          destination: examples
       - run:
           name: Collect test results
           command: |
