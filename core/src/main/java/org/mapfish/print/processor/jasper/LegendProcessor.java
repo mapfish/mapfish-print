@@ -230,7 +230,11 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         final double factor = this.maxWidth / scaleFactor / image.getWidth();
         final BufferedImage result = new BufferedImage(
                 (int) Math.round(image.getWidth() * factor),
-                (int) Math.round(image.getHeight() * factor), image.getType());
+                (int) Math.round(image.getHeight() * factor),
+                (image.getType() == BufferedImage.TYPE_BYTE_INDEXED ||
+                image.getType() == BufferedImage.TYPE_BYTE_BINARY)  ?
+                BufferedImage.TYPE_4BYTE_ABGR : image.getType()
+        );
         AffineTransform at = new AffineTransform();
         at.scale(factor, factor);
         AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
