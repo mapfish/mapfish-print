@@ -108,7 +108,7 @@ configurations {
 
 dependencies {
     def springSecurityVersion = '5.2.0.RELEASE'
-    def slf4jVersion = '1.7.28'
+    def slf4jVersion = '1.7.29'
     def metricsVersion = '4.1.1'
     def geotoolsVersion = '21.1'
 
