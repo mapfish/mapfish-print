@@ -11,6 +11,7 @@
         <property name="password" value="${db.password}"/>
         <property name="minPoolSize" value="1"/>
         <property name="numHelperThreads" value="1"/>
+        <property name="maxIdleTime" value="30"/>
     </bean>
 
     <!-- Force the job manager the support clustering, by not taking submitted jobs automatically as its own.
