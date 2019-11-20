@@ -60,7 +60,7 @@ Publish Workflow
 
 .. code :: groovy
 
-  > ./gradlew publishToNexus
+  > ./gradlew publishToSonatype
 
 4. Close and release:
 

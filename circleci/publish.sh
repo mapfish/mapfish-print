@@ -27,7 +27,7 @@ then
   if [[ "${CIRCLE_TAG}" == release/* ]]
   then
     echo "Uploading to Nexus"
-    ./gradlew publishToNexus
+    ./gradlew publishToSonatype
     echo "Releasing to mvnrepository"
     ./gradlew closeAndReleaseRepository
   fi
