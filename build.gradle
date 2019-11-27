@@ -55,7 +55,7 @@ configure(subprojects.findAll { ['core', 'examples', 'docs'].contains(it.name) }
         mavenCentral()
         maven { url "https://dl.bintray.com/readytalk/maven" }
         maven { url "http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts" }
-        maven { url "http://maven.geo-solutions.it" }
+        maven { url "https://repo.boundlessgeo.com/main/" }
         maven { url "https://jaspersoft.artifactoryonline.com/jaspersoft/jr-ce-releases" }
         maven { url "https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/" }
     }
