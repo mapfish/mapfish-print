@@ -21,6 +21,7 @@ import org.mapfish.print.servlet.job.JobManager;
 import org.mapfish.print.servlet.job.NoSuchReferenceException;
 import org.mapfish.print.servlet.job.PrintJobStatus;
 import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
+import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.mapfish.print.servlet.job.loader.ReportLoader;
 import org.mapfish.print.url.data.Handler;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -202,7 +203,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     private final ServletInfo servletInfo;
     private final MapPrinterFactory mapPrinterFactory;
 
-    private long maxCreateAndGetWaitTimeInSeconds;
+    private long maxCreateAndGetWaitTimeInSeconds = ThreadPoolJobManager.DEFAULT_TIMEOUT_IN_SECONDS;
 
     @Autowired
     public MapPrinterServlet(

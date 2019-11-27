@@ -43,11 +43,13 @@ import javax.annotation.PreDestroy;
  * A JobManager backed by a {@link java.util.concurrent.ThreadPoolExecutor}.
  */
 public class ThreadPoolJobManager implements JobManager {
+    /**
+     * Default timeout for the duration of a print job.
+     */
+    public static final long DEFAULT_TIMEOUT_IN_SECONDS = 600L;
     private static final Logger LOGGER = LoggerFactory.getLogger(ThreadPoolJobManager.class);
-
     private static final int DEFAULT_MAX_WAITING_JOBS = 5000;
     private static final long DEFAULT_THREAD_IDLE_TIME = 60L;
-    private static final long DEFAULT_TIMEOUT_IN_SECONDS = 600L;
     private static final long DEFAULT_ABANDONED_TIMEOUT_IN_SECONDS = 120L;
     private static final boolean DEFAULT_OLD_FILES_CLEAN_UP = true;
     private static final long DEFAULT_CLEAN_UP_INTERVAL_IN_SECONDS = 86400;
