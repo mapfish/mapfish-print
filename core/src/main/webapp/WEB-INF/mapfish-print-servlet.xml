@@ -11,7 +11,7 @@
                                   location="classpath:mapfish-spring.properties"/>
 
     <bean name="CurrentAPI" class="org.mapfish.print.servlet.MapPrinterServlet">
-        <property name="maxCreateAndGetWaitTimeInSeconds" value="30" />
+        <property name="maxCreateAndGetWaitTimeInSeconds" value="${printTimeout}"/>
         <property name="cacheDuration" value="${cacheDuration}"/>
     </bean>
 
