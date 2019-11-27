@@ -11,7 +11,6 @@ import javax.servlet.FilterRegistration;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
@@ -22,7 +21,6 @@ import javax.servlet.descriptor.JspConfigDescriptor;
  * dependencies.
  */
 // CHECKSTYLE:OFF
-@SuppressWarnings("deprecation")
 public final class CliServletContext implements ServletContext {
     @Override
     public String getContextPath() {
@@ -181,12 +179,7 @@ public final class CliServletContext implements ServletContext {
     }
 
     @Override
-    public ServletRegistration.Dynamic addJspFile(final String servletName, final String jspFile) {
-        return null;
-    }
-
-    @Override
-    public <T extends Servlet> T createServlet(final Class<T> clazz) throws ServletException {
+    public <T extends Servlet> T createServlet(final Class<T> clazz) {
         return null;
     }
 
@@ -217,7 +210,7 @@ public final class CliServletContext implements ServletContext {
     }
 
     @Override
-    public <T extends Filter> T createFilter(final Class<T> clazz) throws ServletException {
+    public <T extends Filter> T createFilter(final Class<T> clazz) {
         return null;
     }
 
@@ -267,7 +260,7 @@ public final class CliServletContext implements ServletContext {
     }
 
     @Override
-    public <T extends EventListener> T createListener(final Class<T> clazz) throws ServletException {
+    public <T extends EventListener> T createListener(final Class<T> clazz) {
         return null;
     }
 
@@ -289,35 +282,5 @@ public final class CliServletContext implements ServletContext {
     @Override
     public String getVirtualServerName() {
         return null;
-    }
-
-    @Override
-    public int getSessionTimeout() {
-        return 0;
-    }
-
-    @Override
-    public void setSessionTimeout(final int sessionTimeout) {
-
-    }
-
-    @Override
-    public String getRequestCharacterEncoding() {
-        return null;
-    }
-
-    @Override
-    public void setRequestCharacterEncoding(final String encoding) {
-
-    }
-
-    @Override
-    public String getResponseCharacterEncoding() {
-        return null;
-    }
-
-    @Override
-    public void setResponseCharacterEncoding(final String encoding) {
-
     }
 }
