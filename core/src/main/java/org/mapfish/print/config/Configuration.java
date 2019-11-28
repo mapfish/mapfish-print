@@ -29,6 +29,8 @@ import org.mapfish.print.map.style.json.ColorParser;
 import org.mapfish.print.processor.http.matcher.URIMatcher;
 import org.mapfish.print.processor.http.matcher.UriMatchers;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -58,6 +60,7 @@ import javax.annotation.PostConstruct;
  */
 public class Configuration implements ConfigurationObject {
     private static final Map<String, String> GEOMETRY_NAME_ALIASES;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
 
     static {
         HashMap<String, String> map = new HashMap<>();
@@ -315,8 +318,7 @@ public class Configuration implements ConfigurationObject {
             this.accessAssertion.assertAccess("Configuration", this);
             template.assertAccessible(name);
         } else {
-            throw new IllegalArgumentException(String.format("Template '%s' does not exist.  Options are: " +
-                                                                     "%s", name, this.templates.keySet()));
+            LOGGER.warn("Template '%s' does not exist.  Options are: %s", name, this.templates.keySet());
         }
         return template;
     }

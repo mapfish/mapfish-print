@@ -70,7 +70,7 @@ public abstract class BaseMapServlet {
                 out.println(message);
             }
 
-            LOGGER.error("Error while processing request: {}", message);
+            LOGGER.warn("Error while processing request: {}", message);
         } catch (IOException ex) {
             throw ExceptionUtils.getRuntimeException(ex);
         }
@@ -96,7 +96,7 @@ public abstract class BaseMapServlet {
         httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         try (PrintWriter out = httpServletResponse.getWriter()) {
             out.println("Error while processing request:");
-            LOGGER.error("Error while processing request", e);
+            LOGGER.warn("Error while processing request", e);
         } catch (IOException ex) {
             throw ExceptionUtils.getRuntimeException(ex);
         }
