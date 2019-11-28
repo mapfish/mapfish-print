@@ -15,7 +15,7 @@ services:
 - docker
 
 jdk:
-- oraclejdk8
+- oraclejdk9
 
 # Don't run eval ./gradlew assemble"
 install:
@@ -40,3 +40,8 @@ deploy:
     repo: mapfish/mapfish-print
     java: oraclejdk8
     all_branches: true
+
+notifications:
+  email:
+    recipients:
+      - stephane.brunner@camptocamp.com
