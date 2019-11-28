@@ -176,7 +176,11 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         protected Response executeInternal(@Nonnull final HttpHeaders headers) throws IOException {
             CURRENT_CONFIGURATION.set(this.configuration);
 
-            LOGGER.debug("Preparing request {} {}: {}", this.getMethod(), this.getURI(), headers);
+            LOGGER.debug(
+                "Preparing request {} {}: {}", this.getMethod(), this.getURI(),
+                Utils.getPrintableHeadersList(headers)
+            );
+
             for (Map.Entry<String, List<String>> entry: headers.entrySet()) {
                 String headerName = entry.getKey();
                 if (!headerName.equalsIgnoreCase(HTTP.CONTENT_LEN) &&
