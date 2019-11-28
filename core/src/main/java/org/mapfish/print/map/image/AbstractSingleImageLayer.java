@@ -157,13 +157,29 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
                 StatsUtils.quotePart(request.getURI().getHost());
         final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
         try (ClientHttpResponse httpResponse = request.execute()) {
+            final List<String> contentType = httpResponse.getHeaders().get("Content-Type");
+            String stringBody = null;
+            if (contentType == null || contentType.size() != 1) {
+                LOGGER.debug("The image {} didn't return a valid content type header.",
+                             request.getURI());
+            } else if (!contentType.get(0).startsWith("image/")) {
+                final byte[] data;
+                try (InputStream body = httpResponse.getBody()) {
+                    data = IOUtils.toByteArray(body);
+                }
+                stringBody = new String(data, StandardCharsets.UTF_8);
+            }
+
             if (httpResponse.getStatusCode() != HttpStatus.OK) {
-                final String message = String.format(
+                String message = String.format(
                         "Invalid status code for %s (%d!=%d).\nThe response was: '%s'\nWith Headers:\n%s",
                         request.getURI(), httpResponse.getStatusCode().value(),
                         HttpStatus.OK.value(), httpResponse.getStatusText(),
                         String.join("\n", Utils.getPrintableHeadersList(httpResponse.getHeaders()))
                 );
+                if (stringBody != null) {
+                    message += "\nContent:\n" + stringBody;
+                }
                 this.registry.counter(baseMetricName + ".error").inc();
                 if (getFailOnError()) {
                     throw new RuntimeException(message);
@@ -173,18 +189,11 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
                 }
             }
 
-            final List<String> contentType = httpResponse.getHeaders().get("Content-Type");
-            if (contentType == null || contentType.size() != 1) {
-                LOGGER.debug("The image {} didn't return a valid content type header.",
-                             request.getURI());
-            } else if (!contentType.get(0).startsWith("image/")) {
-                final byte[] data;
-                try (InputStream body = httpResponse.getBody()) {
-                    data = IOUtils.toByteArray(body);
-                }
-                LOGGER.debug("We get a wrong image for {}, content type: {}\nresult:\n{}",
-                             request.getURI(), contentType.get(0),
-                             new String(data, StandardCharsets.UTF_8));
+            if (stringBody != null) {
+                LOGGER.debug(
+                    "We get a wrong image for {}, content type: {}\nresult:\n{}",
+                    request.getURI(), contentType.get(0), stringBody
+                );
                 this.registry.counter(baseMetricName + ".error").inc();
                 if (getFailOnError()) {
                     throw new RuntimeException("Wrong content-type : " + contentType.get(0));
