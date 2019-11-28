@@ -37,6 +37,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 /**
@@ -60,13 +61,7 @@ public class ConfigurationTest {
         assertEquals(t1Template, configuration.getTemplate("t1"));
         assertEquals(1, configuration.getTemplates().size());
         assertEquals(t1Template, configuration.getTemplates().values().iterator().next());
-
-        try {
-            configuration.getTemplate("Doesn't exist");
-            fail("Exception should have been thrown");
-        } catch (Exception e) {
-            // good
-        }
+        assertNull(configuration.getTemplate("Doesn't exist"));
     }
 
     @Test

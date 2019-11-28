@@ -1005,6 +1005,9 @@ public class MapPrinterServlet extends BaseMapServlet {
         final MapPrinter mapPrinter = this.mapPrinterFactory.create(appId);
         checkReferer(httpServletRequest, mapPrinter);
         final Template template = mapPrinter.getConfiguration().getTemplate(templateName);
+        if (template == null) {
+            return null;
+        }
 
         PrintJobEntryImpl jobEntry = new PrintJobEntryImpl(ref, specJson, System.currentTimeMillis());
         jobEntry.configureAccess(template, this.context);
