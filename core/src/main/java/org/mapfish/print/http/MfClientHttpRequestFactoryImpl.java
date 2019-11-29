@@ -178,7 +178,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
 
             LOGGER.debug(
                 "Preparing request {} {}: {}", this.getMethod(), this.getURI(),
-                Utils.getPrintableHeadersList(headers)
+                String.join("\n", Utils.getPrintableHeadersList(headers))
             );
 
             for (Map.Entry<String, List<String>> entry: headers.entrySet()) {
