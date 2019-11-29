@@ -172,8 +172,10 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 
             if (httpResponse.getStatusCode() != HttpStatus.OK) {
                 String message = String.format(
-                        "Invalid status code for %s (%d!=%d).\nThe response was: '%s'\nWith Headers:\n%s",
-                        request.getURI(), httpResponse.getStatusCode().value(),
+                        "Invalid status code for %s (%d!=%d).With request headers:\n%s\n" +
+                        "The response was: '%s'\nWith response headers:\n%s",
+                        request.getURI(), Utils.getPrintableHeadersList(request.getHeaders()),
+                        httpResponse.getStatusCode().value(),
                         HttpStatus.OK.value(), httpResponse.getStatusText(),
                         String.join("\n", Utils.getPrintableHeadersList(httpResponse.getHeaders()))
                 );

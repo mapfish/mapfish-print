@@ -14,7 +14,7 @@ public final class Utils {
     }
 
     private static final List<String> AUTH_HEADERS = Arrays.asList(
-        new String[]{"cookie", "set-cookie", "authorization"}
+        new String[]{"cookie", "set-cookie", "authorization", "x-csrf-token"}
     );
 
     /**
