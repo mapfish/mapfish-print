@@ -22,14 +22,16 @@ public final class GridParam extends AbstractLayerParams {
      * Grid label default format pattern for the unit (if valueFormat is used).
      */
     public static final String DEFAULT_UNIT_FORMAT = " %s";
-    private static final int DEFAULT_POINTS_IN_GRID_LINE = 10000;
-    private static final int DEFAULT_HALO_RADIUS = 1;
-    private static final int DEFAULT_INDENT = 5;
-    private static final String DEFAULT_HALO_COLOR = "#FFF";
-    private static final String DEFAULT_LABEL_COLOR = "#444";
-    private static final String DEFAULT_GRID_COLOR = "gray";
+    public static final int DEFAULT_POINTS_IN_GRID_LINE = 10000;
+    public static final int DEFAULT_HALO_RADIUS = 1;
+    public static final int DEFAULT_INDENT = 5;
+    public static final String DEFAULT_HALO_COLOR = "#FFF";
+    public static final String DEFAULT_LABEL_COLOR = "#444";
+    public static final String DEFAULT_GRID_COLOR = "gray";
     /**
-     * The type of grid to render.  By default it is LINES
+     * The type of grid to render.
+     * <p></p>
+     * Can be LINES or POINTS. Default is LINES.
      */
     @HasDefaultValue
     public GridType gridType = GridType.LINES;
@@ -83,7 +85,7 @@ public final class GridParam extends AbstractLayerParams {
      * The number of points that will be in the grid line (if the gridType is LINES).  If the line will be
      * curved (for certain projections) then the more points the smoother the curve.
      * <p></p>
-     * The default number of points is {@value #DEFAULT_POINTS_IN_GRID_LINE}.
+     * The default number of points is {@value DEFAULT_POINTS_IN_GRID_LINE}.
      */
     @HasDefaultValue
     public int pointsInLine = DEFAULT_POINTS_IN_GRID_LINE;

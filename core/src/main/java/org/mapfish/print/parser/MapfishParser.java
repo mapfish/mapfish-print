@@ -44,7 +44,7 @@ import static org.mapfish.print.parser.ParserUtils.getAttributeNames;
  */
 public final class MapfishParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(MapfishParser.class);
-    private static final String POST_CONSTRUCT_METHOD_NAME = "postConstruct";
+    public static final String POST_CONSTRUCT_METHOD_NAME = "postConstruct";
 
     private MapfishParser() {
     }

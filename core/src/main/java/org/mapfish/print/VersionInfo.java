@@ -37,7 +37,9 @@ public class VersionInfo {
     @PostConstruct
     public final void init() {
         this.attrs = getAttributes();
-        LOGGER.warn("Starting print version {} ({})", getVersion(), getGitHash());
+        if (this.attrs != null) {
+            LOGGER.warn("Starting print version {} ({})", getVersion(), getGitHash());
+        }
     }
 
     /**
@@ -64,7 +66,8 @@ public class VersionInfo {
     }
 
     private Attributes getAttributes() {
-        if (this.servletContext == null) {
+        if (this.servletContext == null ||
+                this.servletContext.getClass().getSimpleName().startsWith("Mock")) {
             return null;
         }
         try {

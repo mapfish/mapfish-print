@@ -17,14 +17,13 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
- * A plugin that loads the config resources from urls starting with prefix: {@value
- * ClasspathConfigFileLoader#PREFIX}://.
+ * A plugin that loads the config resources from urls starting with prefix: {@value #PREFIX}://.
  */
 public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClasspathConfigFileLoader.class);
 
-    private static final String PREFIX = "classpath";
-    private static final int PREFIX_LENGTH = (PREFIX + "://").length();
+    public static final String PREFIX = "classpath";
+    public static final int PREFIX_LENGTH = (PREFIX + "://").length();
 
     @Override
     public Optional<File> toFile(final URI fileUri) {

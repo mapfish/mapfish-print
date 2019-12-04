@@ -9,13 +9,12 @@ import java.util.Iterator;
 import javax.servlet.ServletContext;
 
 /**
- * A plugin that loads the config resources from urls starting with prefix: {@value
- * org.mapfish.print.servlet.fileloader.ServletConfigFileLoader#PREFIX}://.
+ * A plugin that loads the config resources from urls starting with prefix: {@value #PREFIX}://.
  */
 public final class ServletConfigFileLoader extends AbstractFileConfigFileLoader {
 
-    private static final String PREFIX = "servlet";
-    private static final int PREFIX_LENGTH = (PREFIX + "://").length();
+    public static final String PREFIX = "servlet";
+    public static final int PREFIX_LENGTH = (PREFIX + "://").length();
 
     @Autowired
     private ServletContext servletContext;

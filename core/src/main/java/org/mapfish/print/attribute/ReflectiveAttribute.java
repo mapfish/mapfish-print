@@ -203,7 +203,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      * </ul>
      * <p></p>
      * If there is a public
-     * <code>{@value MapfishParser#POST_CONSTRUCT_METHOD_NAME}()</code>
+     * <code>{@value org.mapfish.print.parser.MapfishParser#POST_CONSTRUCT_METHOD_NAME}()</code>
      * method then it will be called after the fields are all set.
      * <p></p>
      * In the case where the a parameter type is a normal POJO (not a special case like PJsonObject, URL,

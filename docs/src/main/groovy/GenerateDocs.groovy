@@ -21,6 +21,8 @@ import org.springframework.beans.BeanUtils
 import org.springframework.mock.web.MockServletContext
 import org.springframework.web.context.support.XmlWebApplicationContext
 
+import java.lang.reflect.Modifier
+
 class GenerateDocs {
     static def javadocParser;
     static HashMultimap<String, Record> plugins = HashMultimap.create()
@@ -266,17 +268,19 @@ class GenerateDocs {
     private static Collection<Detail> findAllAttributes(Class cls, String beanName) {
         def details = []
         ParserUtils.getAllAttributes(cls).each { att ->
-            def desc = cleanUpCodeTags(javadocParser.findFieldDescription(beanName, cls, att))
-            def required = att.getAnnotation(HasDefaultValue.class) == null
-            def annotations = att.getAnnotations().collect { it.toString() }
-            def rec = new Detail([
-                    title      : att.name,
-                    desc       : desc,
-                    required   : required,
-                    annotations: annotations
-            ])
+            if (!Modifier.isStatic(att.getModifiers())) {
+                def desc = cleanUpCodeTags(javadocParser.findFieldDescription(beanName, cls, att))
+                def required = att.getAnnotation(HasDefaultValue.class) == null
+                def annotations = att.getAnnotations().collect { it.toString() }
+                def rec = new Detail([
+                        title      : att.name,
+                        desc       : desc,
+                        required   : required,
+                        annotations: annotations
+                ])
 
-            details << rec
+                details << rec
+            }
         }
         details.sort({ a, b -> a.title <=> b.title })
         return details
