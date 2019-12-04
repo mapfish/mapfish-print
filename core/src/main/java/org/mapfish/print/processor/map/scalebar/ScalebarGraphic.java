@@ -142,7 +142,7 @@ public class ScalebarGraphic {
 
     /**
      * Called when the position of the labels and their content is known.
-     * <p></p>
+     *
      * Creates the drawer which draws the scalebar.
      */
     private static void doLayout(

@@ -24,7 +24,7 @@ public final class FileUtils {
     /**
      * Check if the url is a file url which is either relative to the configuration directory or refers to a
      * file in the configuration directory.
-     * <p></p>
+     *
      * The correct file url is returned or the original if not a file url.  If an illegal file url (one that
      * does not refer to a file within the configuration directory or is relative to the configuration
      * directory) then an exception is thrown.

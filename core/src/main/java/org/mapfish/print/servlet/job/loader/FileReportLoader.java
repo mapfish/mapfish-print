@@ -9,7 +9,7 @@ import java.net.URI;
 
 /**
  * Loads reports from file uris.
- * <p></p>
+ *
  */
 public class FileReportLoader implements ReportLoader {
     @Override

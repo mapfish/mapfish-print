@@ -76,7 +76,7 @@ public abstract class TileCacheInformation {
      * Get the resolution that the layer uses for its calculations.  The map isn't always at a resolution that
      * a tiled layer supports so a scale is chosen for the layer that is close to the map scale. This method
      * returns the layer's scale.
-     * <p></p>
+     *
      * This is used for calculating the bounds of tiles, the size number and indices of the tiles to be
      * returned.
      */
@@ -104,7 +104,7 @@ public abstract class TileCacheInformation {
     /**
      * Calculate the minx and miny coordinate of the tile that is the minx and miny tile.  It is the starting
      * point of counting tiles to render.
-     * <p></p>
+     *
      * This equates to the minX and minY of the GridCoverage as well.
      *
      * @param envelope the area that will be displayed.
@@ -147,7 +147,7 @@ public abstract class TileCacheInformation {
 
     /**
      * Return the image to draw in place of a tile that is missing.
-     * <p></p>
+     *
      * If this method returns null nothing will be drawn at the location of the missing image.
      */
     @Nullable

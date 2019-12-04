@@ -130,7 +130,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     /**
      * Set strategies for converting the textual representation of each column to some other object (image,
      * other text, etc...).
-     * <p></p>
+     *
      * Note: The type returned by the column converter must match the type in the jasper template.
      *
      * @param columnConverters Map from column name -&gt; {@link TableColumnConverter}
@@ -142,7 +142,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     /**
      * Set strategies for converting the textual representation of each cell to some other object (image,
      * other text, etc...).
-     * <p></p>
+     *
      * This is similar to the converters specified for a particular column. The difference is that these
      * converters are applied to every cell of the table (except for the cells of those columns that are
      * assigned a specific converter).

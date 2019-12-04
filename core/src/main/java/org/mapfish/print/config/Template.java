@@ -351,7 +351,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     /**
      * The roles required to access this template.  If empty or not set then it is a <em>public</em> template.
      * If there are many roles then a user must have one of the roles in order to access the template.
-     * <p></p>
+     *
      * The security (how authentication/authorization is done) is configured in the
      * /WEB-INF/classes/mapfish-spring-security.xml
      * <p>

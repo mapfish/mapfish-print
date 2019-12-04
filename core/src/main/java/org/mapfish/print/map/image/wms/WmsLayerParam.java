@@ -24,7 +24,7 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
     /**
      * The wms layer to request in the GetMap request.  The order is important.  It is the order that they
      * will appear in the request.
-     * <p></p>
+     *
      * As with the WMS specification, the first layer will be the first layer drawn on the map (the
      * bottom/base layer) of the map.  This means that layer at position 0 in the array will covered by layer
      * 1 (where not transparent) and so on.
@@ -66,7 +66,7 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
 
     /**
      * The HTTP verb to use for fetching the images. Can be either "GET" (the default) or "POST".
-     * <p></p>
+     *
      * In case of "POST", the parameters are send in the body of the request using an
      * "application/x-www-form-urlencoded" content type. This can be used when the parameters are too long.
      * Tested only with GeoServer.

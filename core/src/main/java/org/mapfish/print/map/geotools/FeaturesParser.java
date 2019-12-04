@@ -41,7 +41,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Parser for GeoJson features collection.
- * <p></p>
+ *
  * Created by Stéphane Brunner on 16/4/14.
  */
 public class FeaturesParser {

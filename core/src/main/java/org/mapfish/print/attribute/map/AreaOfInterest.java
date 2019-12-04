@@ -44,7 +44,7 @@ public final class AreaOfInterest {
     public String style;
     /**
      * If true the Area of Interest will be rendered as SVG (if display == RENDER).
-     * <p></p>
+     *
      * (will default to {@link org.mapfish.print.config.Configuration#defaultStyle}).
      */
     @HasDefaultValue

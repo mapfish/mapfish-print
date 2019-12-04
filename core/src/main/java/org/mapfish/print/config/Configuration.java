@@ -56,7 +56,7 @@ import javax.annotation.PostConstruct;
 
 /**
  * The Main Configuration Bean.
- * <p></p>
+ *
  */
 public class Configuration implements ConfigurationObject {
     private static final Map<String, String> GEOMETRY_NAME_ALIASES;
@@ -219,7 +219,7 @@ public class Configuration implements ConfigurationObject {
     /**
      * Configuration for proxying http requests.  Each proxy can be configured with authentication and with
      * the uris that they apply to.
-     * <p></p>
+     *
      * See {@link org.mapfish.print.http.HttpProxy} for details on how to configure them.
      *
      * @param proxies the proxy configuration objects
@@ -605,7 +605,7 @@ public class Configuration implements ConfigurationObject {
      * The roles required to access this configuration/app.  If empty or not set then it is a
      * <em>public</em> app.  If there are many roles then a user must have one of the roles in order to
      * access the configuration/app.
-     * <p></p>
+     *
      * The security (how authentication/authorization is done) is configured in the
      * /WEB-INF/classes/mapfish-spring-security.xml
      * <p>

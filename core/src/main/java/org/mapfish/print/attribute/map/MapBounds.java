@@ -31,7 +31,7 @@ public abstract class MapBounds {
 
     /**
      * Create a {@link org.geotools.geometry.jts.ReferencedEnvelope} representing the bounds.
-     * <p></p>
+     *
      *
      * @param paintArea the size of the map that will be drawn (at 72 DPI).
      */
@@ -39,7 +39,7 @@ public abstract class MapBounds {
 
     /**
      * Create a {@link org.geotools.geometry.jts.ReferencedEnvelope} representing the bounds.
-     * <p></p>
+     *
      *
      * @param paintArea the size of the map that will be drawn.
      */

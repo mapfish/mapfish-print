@@ -66,7 +66,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *    }
  * }
  * </code></pre>
- * <p></p>
+ *
  * <h2 id="stylev2">Mapfish JSON Style Version 2 <a class="headerlink" href="#stylev2">¶</a></h2>
  * <p>
  * Version 2 uses the same property names as version 1 but has a different structure. The layout is as
@@ -217,7 +217,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * </ul>
  * </li>
  * </ul>
- * <p></p>
+ *
  * <h2 id="config">Configuration Elements <a class="headerlink" href="#config">¶</a></h2>
  * The items in the list below are the properties that can be set on the different symbolizers. In brackets
  * list the symbolizers the values can apply to.
@@ -338,7 +338,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * it will be assumed that the geometry is a line and this property defines how far from the center of the
  * line the label should be drawn.</li>
  * </ul>
- * <p></p>
+ *
  * <h2 id="labels">Labelling: <a class="headerlink" href="#labels">¶</a></h2>
  * <p>
  * Labelling in this style format is done by defining a text symbolizer ("type":"text").  All text symbolizers
@@ -460,7 +460,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * <a href="http://docs.geotools.org/latest/userguide/library/render/style.html#textsymbolizer">GeoTools
  * documentation</a>.
  * </p>
- * <p></p>
+ *
  * <h2>ECQL references:</h2>
  * <ul>
  * <li><a href="http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#ecql-expr">

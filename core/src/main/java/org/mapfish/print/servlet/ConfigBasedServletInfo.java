@@ -4,7 +4,7 @@ import java.util.UUID;
 
 /**
  * A servlet info that can be configured through the spring configuration (or programmatically).
- * <p></p>
+ *
  * A default random id will be created by default.
  */
 public final class ConfigBasedServletInfo implements ServletInfo {

@@ -5,7 +5,7 @@ import org.mapfish.print.servlet.job.PrintJobResult;
 
 /**
  * A PrintJob implementation that write results to files.
- * <p></p>
+ *
  */
 public class FilePrintJob extends PrintJob {
     @Override

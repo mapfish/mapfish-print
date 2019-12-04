@@ -30,16 +30,16 @@ public final class GridParam extends AbstractLayerParams {
     public static final String DEFAULT_GRID_COLOR = "gray";
     /**
      * The type of grid to render.
-     * <p></p>
+     *
      * Can be LINES or POINTS. Default is LINES.
      */
     @HasDefaultValue
     public GridType gridType = GridType.LINES;
     /**
      * The x,y spacing between grid lines.
-     * <p></p>
+     *
      * Either {@link #spacing} or {@link #numberOfLines}
-     * <p></p>
+     *
      * If spacing is defined then {@link #origin} must also be defined
      */
     @OneOf("spacing")
@@ -48,7 +48,7 @@ public final class GridParam extends AbstractLayerParams {
 
     /**
      * The x,y point of grid origin.
-     * <p></p>
+     *
      * This is required if {@link #spacing} is defined.
      */
     @HasDefaultValue
@@ -56,7 +56,7 @@ public final class GridParam extends AbstractLayerParams {
 
     /**
      * The x,y number of grid lines.
-     * <p></p>
+     *
      * The x is the number of lines that run vertically along the page.
      */
     @OneOf("spacing")
@@ -64,18 +64,18 @@ public final class GridParam extends AbstractLayerParams {
     /**
      * The style name of a style to apply to the features during rendering.  The style name must map to a
      * style in the template or the configuration objects.
-     * <p></p>
+     *
      * If no style is defined then the default grid style will be used.  The default will depend if the type
      * is point or line and will respect {@link #gridColor} and {@link #haloColor} and {@link #haloRadius}. If
      * {@link #gridType} is {@link GridType#POINTS} then the style will be crosses with a haloRadius sized
      * halo around the cross.  If {@link GridType#LINES} then the style will be a dashed line with no halo.
-     * <p></p>
+     *
      */
     @HasDefaultValue
     public String style;
     /**
      * Indicates if the layer is rendered as SVG.
-     * <p></p>
+     *
      * (will default to {@link org.mapfish.print.config.Configuration#defaultToSvg}).
      */
     @HasDefaultValue
@@ -84,7 +84,7 @@ public final class GridParam extends AbstractLayerParams {
     /**
      * The number of points that will be in the grid line (if the gridType is LINES).  If the line will be
      * curved (for certain projections) then the more points the smoother the curve.
-     * <p></p>
+     *
      * The default number of points is {@value DEFAULT_POINTS_IN_GRID_LINE}.
      */
     @HasDefaultValue

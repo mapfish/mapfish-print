@@ -132,7 +132,7 @@ public final class DataSourceProcessor
      * All the processors that will executed for each value retrieved from the {@link
      * org.mapfish.print.output.Values} object with the datasource name.  All output values from the processor
      * graph will be the datasource values.
-     * <p></p>
+     *
      * <p>
      * Each value retrieved from values with the datasource name will be the input of the processor graph and
      * all the output values for that execution will be the values of a single row in the datasource. The

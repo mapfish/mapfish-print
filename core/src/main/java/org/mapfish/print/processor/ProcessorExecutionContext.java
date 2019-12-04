@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Contains information shared across all nodes being executed.
- * <p></p>
+ *
  */
 public final class ProcessorExecutionContext {
     private final Values values;
