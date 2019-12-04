@@ -43,7 +43,8 @@ installDist.doFirst {
 }
 tasks.withType(Javadoc) {
     options.encoding = 'utf-8'
-    options.addStringOption('Xwerror', '-quiet')  // make javadoc fail on warnings
+//    options.addStringOption('Xwerror', '-quiet')  // make javadoc fail on warnings
+//    options.addStringOption('Xdoclint', 'all')
     title = "Mapfish Print Core Module $version"
     if (JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption('html5', true)
