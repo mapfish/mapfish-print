@@ -18,7 +18,7 @@ import javax.servlet.ServletContext;
 
 /**
  * Class for configuring the working directories and ensuring they exist correctly.
- * <p></p>
+ *
  */
 public class WorkingDirectories {
     private static final String TASK_DIR_PREFIX = "task-";

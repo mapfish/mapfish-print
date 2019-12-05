@@ -13,7 +13,7 @@ import java.awt.Rectangle;
 
 /**
  * Represent the map bounds with a bounding box.
- * <p></p>
+ *
  * Created by Jesse on 3/26/14.
  */
 public final class BBoxMapBounds extends MapBounds {

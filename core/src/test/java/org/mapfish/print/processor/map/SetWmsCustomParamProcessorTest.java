@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic test of the set param to WMS layers processor.
- * <p></p>
+ *
  * Created by Jesse on 3/26/14.
  */
 public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {

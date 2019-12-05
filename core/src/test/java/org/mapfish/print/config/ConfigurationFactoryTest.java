@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Test ConfigurationFactory.
- * <p></p>
+ *
  */
 
 @ContextConfiguration(locations = {ConfigurationFactoryTest.TEST_SPRING_XML})

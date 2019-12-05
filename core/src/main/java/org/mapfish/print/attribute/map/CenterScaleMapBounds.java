@@ -17,7 +17,7 @@ import static org.mapfish.print.Constants.PDF_DPI;
 
 /**
  * Represent Map Bounds with a center location and a scale of the map.
- * <p></p>
+ *
  * Created by Jesse on 3/26/14.
  */
 public final class CenterScaleMapBounds extends MapBounds {

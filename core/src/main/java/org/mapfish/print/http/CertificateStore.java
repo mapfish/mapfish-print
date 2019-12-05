@@ -15,7 +15,7 @@ import javax.net.ssl.TrustManagerFactory;
 
 /**
  * A configuration object for configuring a custom certificate/trust store.
- * <p></p>
+ *
  * It is a uri to a java jks keystore file along with the password for unlocking the store.
  */
 public final class CertificateStore implements ConfigurationObject, HasConfiguration {

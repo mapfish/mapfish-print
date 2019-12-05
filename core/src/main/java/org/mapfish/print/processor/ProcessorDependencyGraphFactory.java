@@ -31,7 +31,7 @@ import static org.mapfish.print.parser.ParserUtils.getAllAttributes;
 
 /**
  * Class for constructing {@link org.mapfish.print.processor.ProcessorDependencyGraph} instances.
- * <p></p>
+ *
  */
 public final class ProcessorDependencyGraphFactory {
 

@@ -29,7 +29,7 @@ import java.util.Optional;
  *       host : www.camptocamp.com
  *       port : 80
  * </code></pre>
- * <p></p>
+ *
  * Example 4: Accept www.camptocamp.com urls with paths that start with /print/.
  * <p>
  * If the regular expression give does not start with / then it will be added because all paths start with /

@@ -189,7 +189,7 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     // CHECKSTYLE:ON
 
     /**
-     * Default implementation of {@link ExecutionContext}.
+     * Default implementation of {@link org.mapfish.print.processor.Processor.ExecutionContext}.
      */
     public static final class Context implements ExecutionContext {
         private final String jobId;

@@ -96,7 +96,7 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
     public String imageExtension = "png";
     /**
      * Custom query parameters to use when making http requests. {@link #customParams}.
-     * <p></p>
+     *
      * The json should look something like:
      * <pre><code>
      * {

@@ -45,7 +45,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
      * The pdf metadata property -&gt; attribute name map.  The keys must be one of the values in {@link
      * org.mapfish.print.config.PDFConfig} and the values must be the name of the attribute to obtain the the
      * data from.  Example Configuration:
-     * <p></p>
+     *
      * <pre><code>
      * processors:
      *   - !updatePdfConfig
@@ -53,10 +53,10 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
      *       title: "titleAttribute"
      *       subject: "subjectAttribute"
      * </code></pre>
-     * <p></p>
+     *
      * The type of the attribute must be of the correct type, for example title mus be a string, keywords must
      * be an array of strings, compress must be a boolean.
-     * <p></p>
+     *
      * If the value is within the attribute output object then you can use dot separators for each level. For
      * example suppose there is a custom attribute: myconfig, if and it has a property title then the
      * configuration would be:
@@ -65,7 +65,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
      *   - updatePdfConfig
      *     updates: {title: :myconfig.title"}
      * </code></pre>
-     * <p></p>
+     *
      * For more power a "format" can be defined.  The format is a printf style format string which will be
      * called with a single value that is identified by the value key/path.  In this case the short hand key:
      * value can't be used instead it is as follows:
@@ -310,7 +310,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
         /**
          * The key to use to look up the value in the values object.  It can be a path that can reach into
          * nested objects.
-         * <p></p>
+         *
          * Examples 1 a simple lookup key: "key" Example 2 a path.  First part (before .) is the lookup key,
          * the second part is the field name to load: "key.fieldName"
          *
@@ -323,7 +323,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
         /**
          * The replacement format.  It is a printf style format.  The documentation is in the Formatter class
          * (just google/bing java.util.Formatter).
-         * <p></p>
+         *
          * Example: "Report for %s"
          *
          * @param format the update format.  There can only be a single value.

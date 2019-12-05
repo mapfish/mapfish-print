@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 /**
  * Represents an attribute passed in from a web-client to be used to populate the report.  It reads a value
  * from the request data
- * <p></p>
+ *
  */
 public interface Attribute extends ConfigurationObject {
 

@@ -6,7 +6,7 @@ import com.codahale.metrics.httpclient.HttpClientMetricNameStrategy;
 /**
  * Used as a factory for the spring configuration for configuring the {@link
  * com.codahale.metrics.httpclient.InstrumentedHttpClients}.
- * <p></p>
+ *
  */
 public final class MetricsNameStrategyFactory {
     private MetricsNameStrategyFactory() {

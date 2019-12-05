@@ -15,7 +15,6 @@ public final class FloatingPointUtil {
      *
      * @param f1 Float 1.
      * @param f2 Float 2.
-     * @return
      */
     public static boolean equals(final float f1, final float f2) {
         return Math.abs(f1 - f2) <= EPSILON;
@@ -27,7 +26,6 @@ public final class FloatingPointUtil {
      *
      * @param d1 Double 1.
      * @param d2 Double 2.
-     * @return
      */
     public static boolean equals(final double d1, final double d2) {
         return Math.abs(d1 - d2) <= EPSILON;

@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Basic test of the Map processor.
- * <p></p>
+ *
  * Created by MaxComse on 11/09/16.
  */
 public class CreateMapProcessorImageLayerTest1 extends AbstractMapfishSpringTest {

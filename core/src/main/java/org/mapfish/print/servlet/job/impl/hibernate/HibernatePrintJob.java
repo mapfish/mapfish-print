@@ -11,7 +11,7 @@ import java.net.URISyntaxException;
 
 /**
  * A PrintJob implementation that write results to the database.
- * <p></p>
+ *
  */
 public class HibernatePrintJob extends PrintJob {
     @Override

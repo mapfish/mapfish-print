@@ -32,10 +32,10 @@ import static org.mapfish.print.parser.ParserUtils.getAttributeNames;
  * org.mapfish.print.map.MapLayerFactoryPlugin} instances and into
  * {@link org.mapfish.print.attribute.ReflectiveAttribute}
  * value objects
- * <p></p>
+ *
  * Essentially it maps the keys in the json object to public fields in the object obtained from the {@link
  * org.mapfish.print.map.MapLayerFactoryPlugin#createParameter()} method.
- * <p></p>
+ *
  * There is a more explicit explanation in
  * {@link org.mapfish.print.attribute.ReflectiveAttribute#createValue(org.mapfish.print.config.Template)}
  *
@@ -44,7 +44,7 @@ import static org.mapfish.print.parser.ParserUtils.getAttributeNames;
  */
 public final class MapfishParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(MapfishParser.class);
-    private static final String POST_CONSTRUCT_METHOD_NAME = "postConstruct";
+    public static final String POST_CONSTRUCT_METHOD_NAME = "postConstruct";
 
     private MapfishParser() {
     }

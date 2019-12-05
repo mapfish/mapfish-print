@@ -20,7 +20,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Represents one node in the Processor dependency graph ({@link ProcessorDependencyGraph}).
- * <p></p>
+ *
  *
  * @param <In> Same as {@link Processor} <em>In</em> parameter
  * @param <Out> Same as {@link Processor} <em>Out</em> parameter

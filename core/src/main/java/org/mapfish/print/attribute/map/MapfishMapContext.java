@@ -104,7 +104,6 @@ public final class MapfishMapContext {
      * Round the size of a rectangle with double values.
      *
      * @param rectangle The rectangle.
-     * @return
      */
     public static Dimension rectangleDoubleToDimension(final Rectangle2D.Double rectangle) {
         return new Dimension(
@@ -367,8 +366,6 @@ public final class MapfishMapContext {
     /**
      * Return the root context which is this context or the context found by recursively calling
      * parent.getRootContext().
-     *
-     * @return
      */
     @Nonnull
     public MapfishMapContext getRootContext() {

@@ -32,6 +32,7 @@
         </module>
         <module name="JavadocVariable">
             <property name="scope" value="protected"/>
+            <property name="ignoreNamePattern" value="^[A-Z_]*$"/>
         </module>
         <module name="JavadocStyle"/>
         <module name="ConstantName"/>

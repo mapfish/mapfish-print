@@ -29,7 +29,7 @@ import static org.mapfish.print.Constants.PDF_DPI;
 
 /**
  * Basic test of the Map processor.
- * <p></p>
+ *
  * Created by Jesse on 3/26/14.
  */
 public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractMapfishSpringTest {

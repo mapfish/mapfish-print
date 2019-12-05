@@ -27,7 +27,7 @@ import static org.junit.Assert.fail;
 
 /**
  * Test building processor graphs.
- * <p></p>
+ *
  */
 public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTest {
     private static final String EXECUTION_TRACKER = "executionOrder";

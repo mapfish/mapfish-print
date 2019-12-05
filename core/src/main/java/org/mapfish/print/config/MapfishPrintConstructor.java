@@ -13,13 +13,13 @@ import java.util.Map;
 /**
  * The interface to SnakeYaml that is responsible for creating the different objects during parsing the config
  * yaml files.
- * <p></p>
+ *
  * The objects are created using spring dependency injection so that the methods are correctly wired using
  * spring.
- * <p></p>
+ *
  * If an object has the interface HashConfiguration then this class will inject the configuration object after
  * creating the object.
- * <p></p>
+ *
  */
 public final class MapfishPrintConstructor extends Constructor {
     private static final String CONFIGURATION_TAG = "configuration";

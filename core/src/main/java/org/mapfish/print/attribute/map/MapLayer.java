@@ -14,7 +14,7 @@ public interface MapLayer {
 
     /**
      * Attempt to add the layer this layer so that both can be rendered as a single layer.
-     * <p></p>
+     *
      * For example: 2 WMS layers from the same WMS server can be combined into a single WMS layer and the map
      * can be rendered with a single WMS request.
      *

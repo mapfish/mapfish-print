@@ -39,7 +39,6 @@ public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryP
      *         a proxy class.
      * @param matchers The matchers.
      * @param headers The headers.
-     * @return
      */
     public static MfClientHttpRequestFactory createFactoryWrapper(
             final MfClientHttpRequestFactory requestFactory,

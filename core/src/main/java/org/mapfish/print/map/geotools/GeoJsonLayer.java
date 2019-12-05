@@ -104,7 +104,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
     public static class GeoJsonParam extends AbstractVectorLayerParam {
         /**
          * A geojson formatted string or url to the geoJson or the raw GeoJSON data.
-         * <p></p>
+         *
          * The url can be a file url, however if it is it must be relative to the configuration directory.
          */
         @HasDefaultValue

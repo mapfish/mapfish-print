@@ -10,7 +10,7 @@ import java.net.URI;
 
 /**
  * Loads reports from hibernate uris.
- * <p></p>
+ *
  */
 public class HibernateReportLoader implements ReportLoader {
 
