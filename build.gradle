@@ -27,7 +27,7 @@ allprojects {
     group = 'org.mapfish.print'
     version = '3.21.0'
     ext.junitVersion = "4.12"
-    ext.springVersion = "5.2.1.RELEASE"
+    ext.springVersion = "5.2.2.RELEASE"
     ext.groovyVersion = "2.5.8"
     ext.spotbugVersion = '3.1.12'
     ext."signing.keyId" = signing_keyId
