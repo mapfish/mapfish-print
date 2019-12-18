@@ -1,13 +1,16 @@
 *~
 /bin/
-*/bin
+/*/bin
 /.classpath
+/*/.classpath
 /.gradle/
 /.project
-*/.settings/
+/*/.project
+/.settings
+/*/.settings/
 /examples/*.jasper
 
-core/gradle/
+/core/gradle/
 /core/gradlew
 /generated-gradlew
 /generated-gradlew.bat
@@ -15,7 +18,4 @@ core/gradle/
 *.iml
 
 /build/
-/core/build/
-/docs/build
-/examples/build/
-/publish/build
+/*/build/
