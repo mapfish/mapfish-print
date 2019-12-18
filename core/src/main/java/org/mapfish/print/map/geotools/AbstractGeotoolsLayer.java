@@ -74,6 +74,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             final Graphics2D graphics2D,
             final MfClientHttpRequestFactory clientHttpRequestFactory,
             final MapfishMapContext transformer, final Processor.ExecutionContext context) {
+        java.awt.geom.AffineTransform originalTransform = graphics2D.getTransform();
 
         MapfishMapContext layerTransformer = getLayerTransformer(transformer);
 
@@ -125,6 +126,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
             final ReferencedEnvelope mapArea = layerTransformer.getBounds().toReferencedEnvelope(paintArea);
             renderer.paint(graphics2D, paintArea, mapArea);
+            graphics2D.setTransform(originalTransform);
         } catch (Exception e) {
             throw ExceptionUtils.getRuntimeException(e);
         } finally {
