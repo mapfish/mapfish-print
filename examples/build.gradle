@@ -56,8 +56,8 @@ task geoserverData(type: Copy, dependsOn: geoserverOriginalData) {
 farm {
     // configuration to start a server running mfp, geoserver and the web-app
     // containing test data. start with `./gradlew examples:farmRun`
-    systemProperty 'path_to_examples', examplesDir
-    jvmArgs = ['-Xmx1G', "-DGEOSERVER_DATA_DIR=$buildDir/geoserver/data"]
+    systemProperty "path_to_examples", examplesDir
+    jvmArgs = ["-Xmx500m", "-DGEOSERVER_DATA_DIR=$buildDir/geoserver/data"]
     scanInterval = 0
 
     webapp "org.geoserver.web:gs-web-app:$geoserverVersion"
@@ -79,7 +79,11 @@ task integrationTest(type: Test) {
         showStackTraces true
         events TestLogEvent.STANDARD_OUT
     }
-    maxHeapSize = "1G"
+    maxHeapSize = "750M"
+    reports {
+        junitXml.enabled = true
+        html.enabled = true
+    }
 }
 integrationTest.dependsOn ':core:compileJava', 'geoserverData'
 
