@@ -90,4 +90,5 @@ integrationTest.dependsOn ':core:compileJava', 'geoserverData'
 afterEvaluate {
     build.dependsOn project.tasks['farmIntegrationTest']
     farmRun.dependsOn geoserverData
+    farmBeforeIntegrationTest.dependsOn geoserverData
 }
