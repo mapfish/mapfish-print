@@ -21,14 +21,6 @@ defaultTasks 'build'
 wrapper {
     gradleVersion = '5.2.1'
     distributionType = Wrapper.DistributionType.ALL
-
-    doLast {
-        // Customize a bit the scripts.
-        def jvmOpts = "-Xmx2G"
-        def optsEnvVar = "DEFAULT_JVM_OPTS"
-        scriptFile.text = scriptFile.text.replaceFirst(/$optsEnvVar='"[^']*"'/, "$optsEnvVar=\"$jvmOpts\"\nLANG=C")
-        batchScript.text = batchScript.text.replaceFirst(/set $optsEnvVar="[^"]*"/, "set $optsEnvVar=\"$jvmOpts\"\nset LANG=C")
-    }
 }
 
 allprojects {
@@ -64,7 +56,7 @@ configure(subprojects.findAll { ['core', 'examples', 'docs'].contains(it.name) }
         maven { url "https://dl.bintray.com/readytalk/maven" }
         maven { url "http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts" }
         maven { url "http://maven.geo-solutions.it" }
-        maven { url "https://jaspersoft.artifactoryonline.com/jaspersoft/jr-ce-releases" }
+        maven { url "http://jaspersoft.artifactoryonline.com/jaspersoft/jr-ce-releases" }
         maven { url "https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/" }
     }
 }
