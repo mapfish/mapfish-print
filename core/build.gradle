@@ -74,6 +74,7 @@ task testCLI(type: Exec) {
             "-spec", v3ApiRequestFile.getAbsolutePath(),
             "-output", outputFile.getAbsolutePath()])
     commandLine cmd
+    environment('JAVA_OPTS', '-Xmx500m')
 
     doFirst {
         println("Testing CLI application: " + workingDir)
@@ -83,6 +84,13 @@ task testCLI(type: Exec) {
     doLast {
         assert outputFile.exists()
         assert outputFile.length() > 0
+    }
+}
+test {
+    maxHeapSize = "500M"
+    reports {
+        junitXml.enabled = true
+        html.enabled = true
     }
 }
 build.dependsOn tasks.distZip, tasks.testCLI
