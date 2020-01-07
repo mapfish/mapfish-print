@@ -26,7 +26,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -232,13 +231,13 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                 (int) Math.round(image.getWidth() * factor),
                 (int) Math.round(image.getHeight() * factor),
                 (image.getType() == BufferedImage.TYPE_BYTE_INDEXED ||
-                image.getType() == BufferedImage.TYPE_BYTE_BINARY)  ?
-                BufferedImage.TYPE_4BYTE_ABGR : image.getType()
+                        image.getType() == BufferedImage.TYPE_BYTE_BINARY) ?
+                        BufferedImage.TYPE_4BYTE_ABGR : image.getType()
         );
-        AffineTransform at = new AffineTransform();
-        at.scale(factor, factor);
-        AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
-        return scaleOp.filter(image, result);
+        AffineTransform at = AffineTransform.getScaleInstance(factor, factor);
+        final Graphics2D g = result.createGraphics();
+        g.drawRenderedImage(image, at);
+        return result;
     }
 
     private URI writeToFile(final BufferedImage image, final File tempTaskDirectory) throws IOException {
@@ -384,8 +383,8 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                                             "\tWith Headers:\n\t{}",
                                     this.icon, httpResponse.getStatusCode(), httpResponse.getStatusText(),
                                     String.join(
-                                        "\n\t",
-                                        Utils.getPrintableHeadersList(httpResponse.getHeaders())
+                                            "\n\t",
+                                            Utils.getPrintableHeadersList(httpResponse.getHeaders())
                                     )
                             );
                         }
