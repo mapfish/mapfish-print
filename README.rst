@@ -1,6 +1,3 @@
-.. image:: https://circleci.com/gh/mapfish/mapfish-print/tree/master.svg?style=svg
-    :target: https://circleci.com/gh/mapfish/mapfish-print/tree/master
-
 Please read the documentation available here:
 http://mapfish.github.io/mapfish-print/
 
@@ -82,6 +79,7 @@ To list all the commandline options then execute (the current direstory is `./co
 If you want to run in debug mode you can do the following:
 
 .. code::
+
   > ./gradlew print --debug-jvm -PprintArgs="-config ../examples/src/test/resources/examples/simple/config.yaml -spec ../examples/src/test/resources/examples/simple/requestData.json -output ./output.pdf"
 
 

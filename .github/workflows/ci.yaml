@@ -1,0 +1,153 @@
+name: CI
+
+on:
+  push:
+  schedule:
+    - cron:  '0 0 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    name: CI
+    env:
+      SUMMON_PROVIDER: /usr/local/bin/gopass
+    steps:
+      - run: echo ${{ github.ref }}
+
+      - uses: actions/checkout@v1
+
+      - name: Get tag
+        id: tag2
+        uses: frabert/replace-string-action@v1.1
+        with:
+          pattern: 'refs/tags/(.*)'
+          string: '{{ github.ref }}'
+          replace-with: '$1'
+        if: "startsWith(github.ref, 'refs/tags/')"
+      - run: echo --${{ steps.tag2.outputs.replaced }}--
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 8.0.232
+      - run: java -version
+
+      - run: sudo apt update
+      - name: Install OS dependencies
+        run: sudo apt install fonts-liberation
+
+      - run: git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
+      - run: ci/test-eof-newline
+
+      - uses: camptocamp/initialise-gopass-summon-action@v1
+        with:
+          large-secret-passphrase: ${{secrets.LARGE_SECRET_PASSPHRASE}}
+          github-gopass-ci-token: ${{secrets.GITHUB_GOPASS_CI_TOKEN}}
+      - run: gpg --export-secret-keys --armor D121AF2DFA8E140688BD968930C9B913FD42EF13 > CI.asc
+
+      - run: ./gradlew build
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Reports examples
+          path: examples/build/reports
+        if: always()
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Reports core
+          path: core/build/reports
+        if: always()
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Examples
+          path: examples/build/resources/test/examples
+        if: always()
+
+      - name: Collect test results
+        run: |
+          mkdir -p /tmp/test_results/junit
+          find . -name '*TEST-*.xml' -exec cp -v {} /tmp/test_results/junit/ \;
+        if: failure()
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Test results
+          path: /tmp/test_results
+        if: failure()
+
+      - run: mkdir -p ~/.docker
+      - name: Decrypt secrets
+        run: summon --environment dockerhub bash -c 'envsubst < ci/docker-config.json.tmpl > ~/.docker/config.json'
+
+      - name: publish
+        run: ci/publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: ./gradlew :core:libSourcesJar
+        if: "startsWith(github.ref, 'refs/tags/')"
+      - run: ./gradlew :core:libJavadocJar
+        if: "startsWith(github.ref, 'refs/tags/')"
+      - id: version
+        run: echo "##[set-output name=version;]$(grep version build.gradle|sed "s/ \+version = .\(.*\)./\1/g")"
+      - id: tag
+        run: echo "##[set-output name=tag;]$(echo github.ref|sed 's%refs/tags/%%g')"
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ steps.tag.outputs.tag }}
+          draft: false
+          prerelease: false
+        if: "startsWith(github.ref, 'refs/tags/')"
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./core/build/libs/print-servlet-${{ steps.version.outputs.version }}.war
+          asset_name: print-servlet-${{ steps.version.outputs.version }}.war
+          asset_content_type: application/java-archive
+        if: "startsWith(github.ref, 'refs/tags/')"
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./core/build/distributions/core-${{ steps.version.outputs.version }}.zip
+          asset_name: print-cli-${{ steps.version.outputs.version }}.zip
+          asset_content_type: application/zip
+        if: "startsWith(github.ref, 'refs/tags/')"
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./core/build/libs/print-lib-${{ steps.version.outputs.version }}.jar
+          asset_name: print-lib-${{ steps.version.outputs.version }}.jar
+          asset_content_type: application/java-archive
+        if: "startsWith(github.ref, 'refs/tags/')"
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./core/build/libs/print-lib-${{ steps.version.outputs.version }}-sources.jar
+          asset_name: print-lib-${{ steps.version.outputs.version }}-sources.jar
+          asset_content_type: application/java-archive
+        if: "startsWith(github.ref, 'refs/tags/')"
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./core/build/libs/print-lib-${{ steps.version.outputs.version }}-javadoc.jar
+          asset_name: print-lib-${{ steps.version.outputs.version }}-javadoc.jar
+          asset_content_type: application/java-archive
+        if: "startsWith(github.ref, 'refs/tags/')"

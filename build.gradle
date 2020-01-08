@@ -9,8 +9,6 @@ buildscript {
 
     dependencies {
         classpath 'org.gretty:gretty:3.0.1'
-        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2'
-        classpath 'de.marcphilipp.gradle:nexus-publish-plugin:0.4.0'
         classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:2.0.0"
         classpath "se.bjurr.violations:violations-gradle-plugin:1.39"
     }
@@ -30,9 +28,6 @@ allprojects {
     ext.springVersion = "5.2.3.RELEASE"
     ext.groovyVersion = "2.5.9"
     ext.spotbugVersion = '3.1.12'
-    ext."signing.keyId" = signing_keyId
-    ext."signing.secretKeyRingFile" = System.properties.get('user.home') + '/.gnupg/secring.gpg'
-    ext."signing.password" = signing_password
 }
 
 configurations.all {
@@ -57,7 +52,6 @@ configure(subprojects.findAll { ['core', 'examples', 'docs'].contains(it.name) }
         maven { url "http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts" }
         maven { url "https://repo.boundlessgeo.com/main/" }
         maven { url "https://jaspersoft.artifactoryonline.com/jaspersoft/jr-ce-releases" }
-        maven { url "https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/" }
     }
 }
 configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
@@ -131,16 +125,4 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
         options.encoding = 'utf-8'
     }
 
-}
-
-if (Boolean.parseBoolean(enablePublishing)) {
-    apply plugin: 'io.codearte.nexus-staging'
-
-    nexusStaging {
-        packageGroup = 'org.mapfish'
-        serverUrl = "https://$host/service/local/"
-        username = sonatypeUsername
-        password = sonatypePassword
-        numberOfRetries = 200
-    }
 }
