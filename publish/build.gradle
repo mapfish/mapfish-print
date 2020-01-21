@@ -3,11 +3,8 @@ plugins {
     id 'signing'
 }
 
-apply plugin: 'de.marcphilipp.nexus-publish'
-
 def coreProject = tasks.getByPath(':core:jar').project
-
-if (Boolean.parseBoolean(enablePublishing)) {
+if (Boolean.parseBoolean("true")) {
     publishing {
         publications {
             lib(MavenPublication) {
@@ -47,10 +44,14 @@ if (Boolean.parseBoolean(enablePublishing)) {
 
         repositories {
             maven {
-                url "https://$host/service/local/staging/deploy/maven2"
-                credentials {
-                    username = sonatypeUsername
-                    password = sonatypePassword
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/mapfish/mapfish-print")
+                credentials(HttpHeaderCredentials) {
+                    name = "authorization"
+                    value = "Bearer " + System.getenv("GITHUB_TOKEN")
+                }
+                authentication {
+                    header(HttpHeaderAuthentication)
                 }
             }
         }
@@ -60,12 +61,7 @@ if (Boolean.parseBoolean(enablePublishing)) {
         sign publishing.publications.lib
         sign publishing.publications.servlet
         sign publishing.publications.standalone
-    }
-
-    nexusPublishing {
-        repositories {
-            sonatype()
-        }
+        useInMemoryPgpKeys(new File('CI.asc').text, "")
     }
 }
 
