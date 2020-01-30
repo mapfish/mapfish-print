@@ -37,6 +37,10 @@ jobs:
                 command: ./gradlew build
 
       - store_artifacts:
+          path: core/build/classes/actual
+          destination: test/results
+          when: always
+      - store_artifacts:
           path: examples/build/reports
           destination: reports
       - store_artifacts:
