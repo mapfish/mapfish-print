@@ -31,7 +31,7 @@ def main():
             subprocess.check_call(["./gradlew", "publish"])
 
     elif branch_match:
-        publish(branch_match.group(1))
+        publish(branch_match.group(1).replace('/', '_'))
 
     else:
         print("Not deploying image")
