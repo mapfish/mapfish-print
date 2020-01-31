@@ -15,7 +15,7 @@ def clean(tag_=lambda tag: tag):
         "https://hub.docker.com/v2/users/login/",
         headers={"Content-Type": "application/json"},
         data=json.dumps(
-            {"username": os.environ["DOCKER_USERNAME"], "password": os.environ["DOCKER_PASSWORD"]}
+            {"username": os.environ["USERNAME"], "password": os.environ["PASSWORD"]}
         ),
     ).json()["token"]
 
