@@ -7,6 +7,13 @@ jobs:
   clean:
     runs-on: ubuntu-18.04
     name: Clean docker hub tags
+    env:
+      SUMMON_PROVIDER: /usr/local/bin/gopass
     steps:
       - uses: actions/checkout@v1
-      - run: ci/clean-dockerhub-tag
+      - uses: camptocamp/initialise-gopass-summon-action@v1
+        with:
+          large-secret-passphrase: ${{secrets.LARGE_SECRET_PASSPHRASE}}
+          github-gopass-ci-token: ${{secrets.GITHUB_GOPASS_CI_TOKEN}}
+      - name: Clean docker hub tags
+        run: summon --environment dockerhub_user_pass ci/clean-dockerhub-tag
