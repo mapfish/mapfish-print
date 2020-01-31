@@ -11,4 +11,4 @@ jobs:
     runs-on: ubuntu-18.04
     name: Backport
     steps:
-      - uses: sbrunner/backport-action@master
+      - uses: camptocamp/backport-action@master
