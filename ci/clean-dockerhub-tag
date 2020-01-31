@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import json
+import os
+import re
+import subprocess
+import sys
+
+import requests
+
+
+def clean(tag_=lambda tag: tag):
+    token = requests.post(
+        "https://hub.docker.com/v2/users/login/",
+        headers={"Content-Type": "application/json"},
+        data=json.dumps(
+            {"username": os.environ["DOCKER_USERNAME"], "password": os.environ["DOCKER_PASSWORD"]}
+        ),
+    ).json()["token"]
+
+    with open(os.environ["GITHUB_EVENT_PATH"]) as event_file:
+        ref = json.loads(event_file.read())["ref"]
+
+    response = requests.delete(
+        "https://hub.docker.com/v2/repositories/camptocamp/mapfish_print/tags/{tag}/".format(tag=ref,),
+        headers={"Authorization": "JWT " + token,},
+    )
+    if not response.ok:
+        print(response.text)
+        sys.exit(2)
+
+
+clean()

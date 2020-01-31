@@ -1,0 +1,12 @@
+name: Clean docker hub tags
+
+on:
+  delete
+
+jobs:
+  clean:
+    runs-on: ubuntu-18.04
+    name: Clean docker hub tags
+    steps:
+      - uses: actions/checkout@v1
+      - run: ci/clean-dockerhub-tag
