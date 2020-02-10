@@ -10,7 +10,7 @@ buildscript {
     dependencies {
         classpath 'org.gretty:gretty:3.0.1'
         classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:2.0.0"
-        classpath "se.bjurr.violations:violations-gradle-plugin:1.39"
+        classpath "se.bjurr.violations:violations-gradle-plugin:1.40"
     }
 }
 
