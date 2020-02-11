@@ -4,6 +4,11 @@ http://mapfish.github.io/mapfish-print/
 For support or questions post on the mailing list:
 https://groups.google.com/forum/#!forum/mapfish-print-users
 
+Prerequisites
+-------------
+
+Building mapfish-print requires java 8 and gradle 5.5.1.
+
 Build
 -----
 

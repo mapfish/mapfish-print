@@ -44,6 +44,7 @@ jobs:
           github-gopass-ci-token: ${{secrets.GITHUB_GOPASS_CI_TOKEN}}
       - run: gpg --export-secret-keys --armor D121AF2DFA8E140688BD968930C9B913FD42EF13 > CI.asc
 
+      - run: echo "enablePublishing=true" > gradle.properties
       - run: ./gradlew build
 
       - uses: actions/upload-artifact@v1
