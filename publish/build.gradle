@@ -4,7 +4,7 @@ plugins {
 }
 
 def coreProject = tasks.getByPath(':core:jar').project
-if (Boolean.parseBoolean("true")) {
+if (enablePublishing.toBoolean()) {
     publishing {
         publications {
             lib(MavenPublication) {
