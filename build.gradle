@@ -103,7 +103,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     dependencies {
         testCompile(
                 "junit:junit:${project.junitVersion}",
-                'org.mockito:mockito-core:3.3.0',
+                'org.mockito:mockito-core:3.3.1',
                 "org.springframework:spring-test:${springVersion}"
         )
 
