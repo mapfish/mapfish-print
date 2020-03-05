@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+import os
+import re
+import subprocess
+
+
+def publish(docker_version):
+    print("Deploying image to docker hub for tag " + docker_version)
+    subprocess.check_call(["./gradlew", "--console=plain", "createDocker"])
+    image_name = "camptocamp/mapfish_print:" + docker_version
+    subprocess.check_call(["docker", "tag", "camptocamp/mapfish_print:latest", image_name])
+    subprocess.check_call(["docker", "push", image_name])
+
+
+def main():
+    if os.environ.get("GITHUB_EVENT_NAME") == "pull_request":
+        print("Not deploying image for pull requests")
+        exit(0)
+
+    branch_match = re.match("^refs/heads/(.*)$", os.environ["GITHUB_REF"])
+    tag_match = re.match("^refs/tags/(.*)$", os.environ["GITHUB_REF"])
+    if branch_match and branch_match.group(1) == "master":
+        publish("latest")
+
+    elif tag_match:
+        release_match = re.match("^release/(.*)$", tag_match.group(1))
+        publish(release_match.group(1) if release_match else tag_match.group(1))
+        if release_match:
+            print("Publishing")
+            subprocess.check_call(["./gradlew", "publish"])
+
+    elif branch_match:
+        publish(branch_match.group(1).replace('/', '_'))
+
+    else:
+        print("Not deploying image")
+
+
+if __name__ == "__main__":
+    main()
