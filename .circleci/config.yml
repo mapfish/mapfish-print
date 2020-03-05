@@ -24,7 +24,7 @@ jobs:
           command: sudo apt update
       - run:
           name: Install OS dependencies
-          command: sudo apt install ttf-liberation
+          command: sudo apt install fonts-liberation
 
       - run: git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
 
