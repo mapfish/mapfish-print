@@ -1,21 +1,31 @@
-name: Continuous integration
+name: Rebuild
 
 on:
   push:
+  schedule:
+    - cron:  '0 0 * * *'
 
 jobs:
-  build:
+  rebuild:
     runs-on: ubuntu-18.04
     timeout-minutes: 20
-    name: Continuous integration
+    name: Rebuild
 
     env:
       SUMMON_PROVIDER: /usr/local/bin/gopass
+
+    strategy:
+      fail-fast: false
+      matrix:
+        branch:
+          - 'master'
 
     steps:
       - run: echo ${{ github.ref }}
 
       - uses: actions/checkout@v1
+        with:
+          ref: ${{ matrix.branch }}
 
       - name: Get tag
         id: tag2
