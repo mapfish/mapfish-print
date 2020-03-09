@@ -14,6 +14,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -201,6 +202,34 @@ public final class HttpRequestFetcher {
                     context.stopIfCanceled();
                     this.response = new CachedClientHttpResponse(originalResponse);
                 } catch (IOException e) {
+                    LOGGER.warn("Request failed {}", this.originalRequest.getURI(), e);
+                    this.response = new AbstractClientHttpResponse() {
+                        @Override
+                        public HttpHeaders getHeaders() {
+                            return new HttpHeaders();
+                        }
+
+                        @Override
+                        public InputStream getBody() {
+                            return StreamUtils.emptyInput();
+                        }
+
+                        @Override
+                        public int getRawStatusCode() {
+                            return 500;
+                        }
+
+                        @Override
+                        public String getStatusText() {
+                            return e.getMessage();
+                        }
+
+                        @Override
+                        public void close() {
+                        }
+                    };
+                    HttpRequestFetcher.this.registry.counter(baseMetricName + ".error").inc();
+                } catch (EOFException e) {
                     LOGGER.warn("Request failed {}", this.originalRequest.getURI(), e);
                     this.response = new AbstractClientHttpResponse() {
                         @Override
