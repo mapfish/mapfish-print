@@ -22,7 +22,7 @@ def clean():
     with open(os.environ["GITHUB_EVENT_PATH"]) as event_file:
         ref = json.loads(event_file.read())["ref"]
 
-    print("Delete image 'camptocamp/{}:{}'.".format(docker_image, ref))
+    print("Delete image 'camptocamp/mapfish_print:{}'.".format(ref))
 
     response = requests.head(
         "https://hub.docker.com/v2/repositories/camptocamp/mapfish_print/tags/{tag}/".format(
