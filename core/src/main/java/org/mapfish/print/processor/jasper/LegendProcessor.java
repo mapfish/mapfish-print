@@ -26,6 +26,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -227,17 +228,29 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
     private BufferedImage scaleToMaxWidth(final BufferedImage image, final double scaleFactor) {
         final double factor = this.maxWidth / scaleFactor / image.getWidth();
+
+        final BufferedImage inter = (image.getType() == BufferedImage.TYPE_BYTE_INDEXED ||
+            image.getType() == BufferedImage.TYPE_BYTE_BINARY) ? new BufferedImage(
+                (int) Math.round(image.getWidth()),
+                (int) Math.round(image.getHeight()),
+                BufferedImage.TYPE_4BYTE_ABGR
+            ) : image;
+        if (image.getType() == BufferedImage.TYPE_BYTE_INDEXED ||
+            image.getType() == BufferedImage.TYPE_BYTE_BINARY) {
+            inter.createGraphics().drawImage(image, 0, 0, null);
+        }
+
         final BufferedImage result = new BufferedImage(
                 (int) Math.round(image.getWidth() * factor),
                 (int) Math.round(image.getHeight() * factor),
                 (image.getType() == BufferedImage.TYPE_BYTE_INDEXED ||
-                        image.getType() == BufferedImage.TYPE_BYTE_BINARY) ?
-                        BufferedImage.TYPE_4BYTE_ABGR : image.getType()
+                image.getType() == BufferedImage.TYPE_BYTE_BINARY) ?
+                BufferedImage.TYPE_4BYTE_ABGR : image.getType()
         );
-        AffineTransform at = AffineTransform.getScaleInstance(factor, factor);
-        final Graphics2D g = result.createGraphics();
-        g.drawRenderedImage(image, at);
-        return result;
+        AffineTransform at = new AffineTransform();
+        at.scale(factor, factor);
+        AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BICUBIC);
+        return scaleOp.filter(inter, result);
     }
 
     private URI writeToFile(final BufferedImage image, final File tempTaskDirectory) throws IOException {
