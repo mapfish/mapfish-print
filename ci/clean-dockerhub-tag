@@ -10,7 +10,7 @@ import sys
 import requests
 
 
-def clean(tag_=lambda tag: tag):
+def clean():
     token = requests.post(
         "https://hub.docker.com/v2/users/login/",
         headers={"Content-Type": "application/json"},
@@ -21,6 +21,23 @@ def clean(tag_=lambda tag: tag):
 
     with open(os.environ["GITHUB_EVENT_PATH"]) as event_file:
         ref = json.loads(event_file.read())["ref"]
+
+    print("Delete image 'camptocamp/{}:{}'.".format(docker_image, ref))
+
+    response = requests.head(
+        "https://hub.docker.com/v2/repositories/camptocamp/mapfish_print/tags/{tag}/".format(
+            tag=ref,
+        ),
+        headers={"Authorization": "JWT " + token},
+    )
+    if response.status_code == 404:
+        return
+
+    if not response.ok:
+        print("Error checking image 'camptocamp/{}:{}' status.".format(docker_image, tag))
+        print(response.text)
+        fail = True
+        return
 
     response = requests.delete(
         "https://hub.docker.com/v2/repositories/camptocamp/mapfish_print/tags/{tag}/".format(tag=ref,),

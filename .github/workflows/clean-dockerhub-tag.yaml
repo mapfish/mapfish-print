@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v1
       - uses: camptocamp/initialise-gopass-summon-action@v1
         with:
-          large-secret-passphrase: ${{secrets.LARGE_SECRET_PASSPHRASE}}
+          ci-gpg-private-key: ${{secrets.CI_GPG_PRIVATE_KEY}}
           github-gopass-ci-token: ${{secrets.GITHUB_GOPASS_CI_TOKEN}}
       - name: Clean docker hub tags
         run: summon --environment dockerhub_user_pass ci/clean-dockerhub-tag
