@@ -28,7 +28,7 @@ allprojects {
     ext.springVersion = "5.2.4.RELEASE"
     ext.groovyVersion = "3.0.2"
     ext.spotbugVersion = '3.1.12'
-    ext.jasperreportVersion = "6.12.1"
+    ext.jasperreportVersion = "6.12.2"
 }
 
 configurations.all {
