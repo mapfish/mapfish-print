@@ -48,7 +48,7 @@ import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
  *
  * Or run the tests with the following task (which automatically starts the server):
  *
- * ./gradlew examples:farmIntegrationTest
+ * ./gradlew examples:geoserver
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {

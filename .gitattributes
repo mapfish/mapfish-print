@@ -14,3 +14,12 @@
 *.jks binary
 *.enc binary
 *.icc binary
+*.gpg binary
+*.qix binary
+*.shp binary
+*.shx binary
+*.dbf binary
+*.fix binary
+*.jpg binary
+*.gif binary
+*.ico binary

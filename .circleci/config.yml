@@ -30,6 +30,8 @@ jobs:
 
       - run: circleci/test-eof-newline
 
+      - setup_remote_docker
+
       - gradle/with_cache:
           steps:
             - run:
@@ -71,8 +73,6 @@ jobs:
             openssl aes-256-cbc -K $AES_KEY -iv $AES_IV -in circleci/signing.gpg.enc -d | gpg --import || true
             openssl aes-256-cbc -K $AES_KEY -iv $AES_IV -in circleci/signing.gpg.enc -d > ~/.gnupg/secring.gpg
             openssl aes-256-cbc -K $AES_KEY -iv $AES_IV -in circleci/dockercfg.enc -out ~/.dockercfg -d
-
-      - setup_remote_docker
 
       - run:
           name: publish

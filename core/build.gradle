@@ -303,5 +303,5 @@ task explodedWar(type: Sync) {
 }
 
 task createDocker(type: Exec, dependsOn: 'explodedWar') {
-    commandLine 'docker', 'build', '-t', 'camptocamp/mapfish_print:latest', '.'
+    commandLine 'docker', 'build', '--tag=camptocamp/mapfish_print:latest', '.'
 }

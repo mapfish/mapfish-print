@@ -39,16 +39,16 @@
       "name": "",
        "classes": [{
         "name": "Arbres",
-        "icons": ["http://localhost:8080/examples/data/www/legends/arbres.png"]
+        "icons": ["http://localhost:8090/www/legends/arbres.png"]
       }, {
         "name": "Peturbations",
-        "icons": ["http://localhost:8080/examples/data/www/legends/perturbations.png"]
+        "icons": ["http://localhost:8090/www/legends/perturbations.png"]
       }, {
         "name": "Points de vente",
-        "icons": ["http://localhost:8080/examples/data/www/legends/points-de-vente.png"]
+        "icons": ["http://localhost:8090/www/legends/points-de-vente.png"]
       }, {
         "name": "Stationement",
-        "icons": ["http://localhost:8080/examples/data/www/legends/stationement.png"]
+        "icons": ["http://localhost:8090/www/legends/stationement.png"]
       }]
     },
     "map": {
