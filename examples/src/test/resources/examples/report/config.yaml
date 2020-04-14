@@ -26,7 +26,7 @@ templates:
                 default:
                     layers:
                     -   type: wms
-                        baseURL: "http://localhost:8080/gs-web-app/wms"
+                        baseURL: "http://localhost:8090/wms"
                         layers: [tiger-ny]
                         imageFormat: "image/png"
             style: !style

@@ -18,7 +18,7 @@ templates:
           rotation: 0
           layers:
             - type: WMS
-              baseURL: "http://localhost:8080/gs-web-app/wms"
+              baseURL: "http://localhost:8090/wms"
               opacity: 1
               layers: ["tiger:tiger_roads"]
               imageFormat: "image/png"
@@ -26,7 +26,7 @@ templates:
               customParams:
                 TRANSPARENT: "true"
             - type: "OSM"
-              baseURL: "http://localhost:8080/examples/data/www/osm/"
+              baseURL: "http://localhost:8090/www/osm/"
               imageExtension: "png"
     processors: &PROCESSORS
       - !restrictUris

@@ -29,7 +29,7 @@ found in docs/build/site. It creates it from three sources:
 Updating the online documentation
 =================================
 
-The [online documentation](http://mapfish.github.io/mapfish-print-doc/) lives in the branch gh-pages of the
+The [online documentation](https://mapfish.github.io/mapfish-print-doc/) lives in the branch gh-pages of the
 repository [<https://github.com/mapfish/mapfish-print-doc>](https://github.com/mapfish/mapfish-print-doc).
 After having build the documentation with ./gradlew buildDocs the repository can be updated with the following
 commands:

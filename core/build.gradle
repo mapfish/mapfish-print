@@ -112,7 +112,7 @@ dependencies {
     def springSecurityVersion = '5.3.1.RELEASE'
     def slf4jVersion = '1.7.30'
     def metricsVersion = '4.1.5'
-    def geotoolsVersion = '22.2'
+    def geotoolsVersion = '22.3'
 
     compile(
             "org.springframework:spring-context:$project.springVersion",
@@ -303,5 +303,5 @@ task explodedWar(type: Sync) {
 }
 
 task createDocker(type: Exec, dependsOn: 'explodedWar') {
-    commandLine 'docker', 'build', '-t', 'camptocamp/mapfish_print:latest', '.'
+    commandLine 'docker', 'build', '--tag=camptocamp/mapfish_print:latest', '.'
 }

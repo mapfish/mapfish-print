@@ -69,7 +69,7 @@ if (enablePublishing.toBoolean()) {
  * Set some common values on the given POM
  */
 private void setPom(org.gradle.api.publish.maven.MavenPom pom) {
-    pom.url = 'http://mapfish.github.io/mapfish-print'
+    pom.url = 'https://mapfish.github.io/mapfish-print'
 
     pom.scm {
         url = 'scm:git@github.com:mapfish/mapfish-print.git'

@@ -1,4 +1,4 @@
-Please read the documentation available here: <http://mapfish.github.io/mapfish-print/>
+Please read the documentation available here: <https://mapfish.github.io/mapfish-print/>
 
 For support or questions post on the community mailing list:
 <https://groups.google.com/forum/#!forum/mapfish-print-users>
@@ -25,7 +25,7 @@ This will build three artifacts: print-servlet-xxx.war, print-lib.jar, print-sta
 
 The build also builds the documentation in the docs/build/site folder. To deploy the documentation it should
 simply be copied to the gh-pages branch and then committed GitHub will automatically build the updated site
-at: <http://mapfish.github.io/mapfish-print/>
+at: <https://mapfish.github.io/mapfish-print/>
 
 If you only want to build the docs simply run:
 
