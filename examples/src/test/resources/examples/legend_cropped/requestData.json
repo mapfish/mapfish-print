@@ -11,7 +11,7 @@
                 {
                   "type": "geojson",
                   "style": "polygon",
-                  "geoJson":   "http://localhost:8080/examples/data/www/test-data/simple-squares-geojson.json"
+                  "geoJson":   "http://localhost:8090/www/test-data/simple-squares-geojson.json"
                 }
             ]
         },
@@ -19,16 +19,16 @@
             "name": "",
             "classes": [{
                 "name": "Arbres",
-                "icons": ["http://localhost:8080/examples/data/www/legends/legend1.png"]
+                "icons": ["http://localhost:8090/www/legends/legend1.png"]
             }, {
                 "name": "Peturbations",
-                "icons": ["http://localhost:8080/examples/data/www/legends/legend2.png"]
+                "icons": ["http://localhost:8090/www/legends/legend2.png"]
             }, {
                 "name": "Points de vente",
-                "icons": ["http://localhost:8080/examples/data/www/legends/legend3.png"]
+                "icons": ["http://localhost:8090/www/legends/legend3.png"]
             }, {
                 "name": "Alea",
-                "icons": ["http://localhost:8080/examples/data/www/legends/legend4.png"]
+                "icons": ["http://localhost:8090/www/legends/legend4.png"]
             }]
         }
     }
