@@ -6,7 +6,7 @@ apply plugin: 'org.gretty'
 def geoserverVersion = "2.8.2"
 
 repositories {
-    maven { url 'http://repo.boundlessgeo.com/main' }
+    maven { url 'https://repo.osgeo.org/repository/release' }
     maven { url 'http://maven.restlet.org' }
     jcenter()
 }
