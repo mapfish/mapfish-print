@@ -90,7 +90,7 @@ build.dependsOn tasks.distZip, tasks.testCLI
 
 configurations {
     compile.transitive = true
-    compile.exclude module: 'jai_core'
+    compile.exclude module: 'jai-core'
 
     metrics {
         description = 'Libraries for measuring performance and load.  See http://metrics.codahale.com/'

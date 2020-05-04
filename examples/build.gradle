@@ -6,7 +6,7 @@ apply plugin: 'org.gretty'
 def geoserverVersion = "2.8.2"
 
 repositories {
-    maven { url 'http://repo.boundlessgeo.com/main' }
+    maven { url 'https://repo.osgeo.org/repository/release' }
     maven { url 'http://maven.restlet.org' }
     jcenter()
 }
@@ -19,7 +19,7 @@ dependencies {
 }
 
 configurations {
-    compile.exclude module: 'jai_core'
+    compile.exclude module: 'jai-core'
 
     // need to exclude those two to get rid of stuff taken from geotools dependencies (they break the tests)
     compile.exclude group: 'org.eclipse.emf', module: 'ecore'
