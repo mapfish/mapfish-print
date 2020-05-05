@@ -25,7 +25,7 @@ allprojects {
     group = 'org.mapfish.print'
     version = '3.22.0'
     ext.junitVersion = "4.13"
-    ext.springVersion = "5.2.5.RELEASE"
+    ext.springVersion = "5.2.6.RELEASE"
     ext.groovyVersion = "3.0.2"
     ext.spotbugVersion = '3.1.12'
     ext.jasperreportVersion = "6.12.2"
