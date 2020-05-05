@@ -160,7 +160,7 @@ dependencies {
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile(
-            'com.google.guava:guava:28.2-jre',
+            'com.google.guava:guava:29.0-jre',
             "org.slf4j:slf4j-api:${slf4jVersion}",
             "org.slf4j:jcl-over-slf4j:${slf4jVersion}",
             'org.json:json:20190722',
