@@ -37,7 +37,7 @@
                 {
                   "type": "geojson",
                   "style": "polygon",
-                  "geoJson":   "http://localhost:8080/examples/data/www/test-data/simple-squares-geojson.json"
+                  "geoJson":   "http://localhost:8090/www/test-data/simple-squares-geojson.json"
                 }
             ]
         }

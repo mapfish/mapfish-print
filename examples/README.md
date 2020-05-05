@@ -7,7 +7,7 @@ many of the mapfish-print options as possible.
 
 To run the integration tests:
 
-    ./gradlew examples:farmIntegrationTest
+    ./gradlew examples:geoserver
 
 The task is a gradle test task and more details on how to run single tests or subgroups of tests can be
 understood by referring to:
