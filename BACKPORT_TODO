@@ -1,0 +1,14 @@
+Error on backporting to branch 3.15, error on cherry picking ['08ac7b196702f2f69c394b697c199785d1b366b7']:
+error: could not apply 08ac7b19... Use Docker container for Geoserver instead of repo
+hint: after resolving the conflicts, mark the corrected paths
+hint: with 'git add <paths>' or 'git rm <paths>'
+hint: and commit the result with 'git commit'
+
+
+
+to continue do:
+git fetch
+git checkout backport/1257-to-3.15
+git reset --hard HEAD^
+git cherry-pick 08ac7b196702f2f69c394b697c199785d1b366b7
+git push origin backport/1257-to-3.15 --force
