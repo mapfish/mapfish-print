@@ -41,6 +41,10 @@ jobs:
           destination: test/results
           when: always
       - store_artifacts:
+          path: core/build/resources/actual/
+          destination: test-actual
+          when: always
+      - store_artifacts:
           path: examples/build/reports
           destination: reports
       - store_artifacts:
