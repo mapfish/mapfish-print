@@ -11,7 +11,7 @@
       "layers": [
         {
           "type": "WMTS",
-          "baseURL": "http://localhost:8080/gs-web-app/gwc/service/wmts",
+          "baseURL": "http://localhost:8090/gwc/service/wmts",
           "opacity": 1.0,
           "layer": "tiger-ny",
           "version": "1.0.0",
@@ -58,7 +58,7 @@
           }],
           "imageFormat": "image/png"
         }, {
-          "baseURL": "http://localhost:8080/gs-web-app/wms",
+          "baseURL": "http://localhost:8090/wms",
           "opacity": 1,
           "type": "WMS",
           "layers": ["tiger:tiger_roads"],

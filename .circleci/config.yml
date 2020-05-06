@@ -9,8 +9,8 @@ orbs:
 
 jobs:
   build:
-    docker:
-      - image: circleci/openjdk:8-jdk
+    machine:
+      image: ubuntu-1604:201903-01
 
     working_directory: ~/repo
 
@@ -39,21 +39,15 @@ jobs:
       - store_artifacts:
           path: core/build/classes/actual
           destination: test/results
-          when: always
+      - store_artifacts:
+          path: core/build/resources/actual/
+          destination: test-actual
       - store_artifacts:
           path: examples/build/reports
           destination: reports
       - store_artifacts:
           path: core/build/reports
           destination: reports
-      - run:
-          name: Collect test results
-          command: |
-            mkdir -p /tmp/test_results/junit
-            find . -name '*TEST-*.xml' -exec cp -v {} /tmp/test_results/junit/ \;
-          when: always
-      - store_test_results:
-          path: /tmp/test_results
 
       - run:
           name: Don't publish for PRs from forks
@@ -68,8 +62,6 @@ jobs:
             openssl aes-256-cbc -K $AES_KEY -iv $AES_IV -in circleci/signing.gpg.enc -d | gpg --import || true
             openssl aes-256-cbc -K $AES_KEY -iv $AES_IV -in circleci/signing.gpg.enc -d > ~/.gnupg/secring.gpg
             openssl aes-256-cbc -K $AES_KEY -iv $AES_IV -in circleci/dockercfg.enc -out ~/.dockercfg -d
-
-      - setup_remote_docker
 
       - run:
           name: publish

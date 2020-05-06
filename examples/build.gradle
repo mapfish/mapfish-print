@@ -3,16 +3,12 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 apply plugin: 'war'
 apply plugin: 'org.gretty'
 
-def geoserverVersion = "2.8.2"
-
 repositories {
-    maven { url 'http://repo.boundlessgeo.com/main' }
-    maven { url 'http://maven.restlet.org' }
+    maven { url 'https://maven.restlet.org' }
     jcenter()
 }
 
 dependencies {
-    compileOnly "org.geoserver.web:gs-web-app:$geoserverVersion"
     testCompile(
             project(':core')
     )
@@ -29,6 +25,22 @@ configurations {
 
 def examplesDir = "${project(':examples').projectDir}/src/test/resources/examples"
 
+task geoserverRun(type: Exec) {
+    description 'Run GeoServer with test data'
+    commandLine 'docker', 'run', '--rm', '--name=geoserver', '--publish=8090:8080', "--volume=${projectDir}/geoserver-data:/mnt/geoserver_datadir", '--detach', 'camptocamp/geoserver'
+}
+
+task geoserverSleep(type: Exec) {
+    commandLine 'sleep', '10'
+    dependsOn 'geoserverRun'
+}
+
+task geoserver(type: Exec) {
+    description 'Run and wait for GeoServer with test data'
+    commandLine 'curl', 'http://localhost:8090/web/', '--output', '/dev/null'
+    dependsOn 'geoserverSleep'
+}
+
 gretty {
     // configuration to serve a web-app containing test data required for
     // the integration tests
@@ -36,38 +48,19 @@ gretty {
     integrationTestTask = 'integrationTest'
 }
 
-task geoserverOriginalData(type: Copy) {
-    description "Extract the Geoserver web app jar file"
-
-    from {
-        def path = configurations.compileOnly.find { it.name.startsWith("gs-web-app") }
-        zipTree(file(path))
-    }
-    into "$buildDir/geoserver/"
-}
-
-task geoserverData(type: Copy, dependsOn: geoserverOriginalData) {
-    description 'Append additional data to GeoServer'
-
-    from fileTree('src/test/resources/data/')
-
-    into 'build/geoserver/data/'
-}
-
 farm {
     // configuration to start a server running mfp, geoserver and the web-app
     // containing test data. start with `./gradlew examples:farmRun`
     systemProperty 'path_to_examples', examplesDir
-    jvmArgs = ['-Xmx500M', "-DGEOSERVER_DATA_DIR=$buildDir/geoserver/data"]
+    jvmArgs = ['-Xmx500M']
     scanInterval = 0
 
-    webapp "org.geoserver.web:gs-web-app:$geoserverVersion"
     webapp ':core'
     webapp ':examples'
 }
 
 // prevent that the tests target can be directly called. the integration tests
-// must be run with `./gradlew examples:farmIntegrationTest` to make sure the
+// must be run with `./gradlew examples:geoserver` to make sure the
 // server is running
 test {}
 test.onlyIf { false }
@@ -85,10 +78,13 @@ task integrationTest(type: Test) {
         junitXml.enabled = true
         html.enabled = true
     }
+//    dependsOn ':core:compileJava', 'geoserver', 'farmIntegrationTest'
 }
-integrationTest.dependsOn ':core:compileJava', 'geoserverData'
+integrationTest.dependsOn ':core:compileJava', 'geoserver'
 
 afterEvaluate {
     build.dependsOn project.tasks['farmIntegrationTest']
-    farmRun.dependsOn geoserverData
+    farmRun.dependsOn geoserver
+    farmBeforeIntegrationTest.dependsOn geoserver
+//    build.dependsOn project.tasks['integrationTest']
 }

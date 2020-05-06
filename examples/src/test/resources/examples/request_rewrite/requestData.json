@@ -12,7 +12,7 @@
       "scale": 25000,
       "layers": [
         {
-          "baseURL": "http://lh/gs-web-app/wms",
+          "baseURL": "http://lh/wms",
           "opacity": 1,
           "type": "WMS",
           "layers": ["tiger:tiger_roads"],
