@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
  * <p>
  * Or run the tests with the following task (which automatically starts the servers):
  * <p>
- * ./gradlew examples:farmIntegrationTest
+ * ./gradlew examples:geoserver
  */
 public class PrintApiTest extends AbstractApiTest {
 

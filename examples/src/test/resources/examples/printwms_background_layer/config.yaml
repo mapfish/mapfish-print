@@ -18,7 +18,7 @@ templates:
         default:
           layers:
             - type: "WMTS"
-              baseURL: "http://localhost:8080/gs-web-app/gwc/service/wmts"
+              baseURL: "http://localhost:8090/gwc/service/wmts"
               opacity: 1.0
               layer: "tiger-ny"
               version: "1.0.0"
