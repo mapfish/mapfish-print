@@ -18,5 +18,5 @@ templates:
         - !mapUri
             mapping:
               (https?)://c2c/(.*): "http://www.camptocamp.com/$2"
-              (https?)://lh/(.*): "http://localhost:8080/$2"
+              (https?)://lh/(.*): "http://localhost:8090/$2"
     - !createMap {}

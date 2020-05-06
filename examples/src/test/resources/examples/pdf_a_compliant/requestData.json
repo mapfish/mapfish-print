@@ -17,7 +17,7 @@
                     "renderAsSvg": true
                 },
                 {
-                    "baseURL": "http://localhost:8080/gs-web-app/wms",
+                    "baseURL": "http://localhost:8090/wms",
                     "opacity": 1,
                     "type": "WMS",
                     "layers": ["tiger:tiger_roads"],
@@ -29,7 +29,7 @@
                     }
                 },
                 {
-                    "baseURL": "http://localhost:8080/examples/data/www/osm",
+                    "baseURL": "http://localhost:8090/www/osm",
                     "type": "OSM",
                     "imageExtension": "png"
                 }
