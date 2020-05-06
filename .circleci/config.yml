@@ -9,8 +9,8 @@ orbs:
 
 jobs:
   build:
-    docker:
-      - image: circleci/openjdk:8-jdk
+    machine:
+      image: ubuntu-1604:201903-01
 
     working_directory: ~/repo
 
@@ -29,8 +29,6 @@ jobs:
       - run: git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
 
       - run: circleci/test-eof-newline
-
-      - setup_remote_docker
 
       - gradle/with_cache:
           steps:
