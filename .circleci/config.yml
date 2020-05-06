@@ -93,12 +93,3 @@ workflows:
               only: /^release\/\d+\.\d+\.\d+/
             branches:
               ignore: /.*/
-
-  nightly:
-    triggers:
-      - schedule:
-          cron: 0 0 * * *
-          filters:
-            branches:
-              only: /master|3\.\d+/
-    jobs: *jobs
