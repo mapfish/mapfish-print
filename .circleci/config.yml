@@ -39,25 +39,15 @@ jobs:
       - store_artifacts:
           path: core/build/classes/actual
           destination: test/results
-          when: always
       - store_artifacts:
           path: core/build/resources/actual/
           destination: test-actual
-          when: always
       - store_artifacts:
           path: examples/build/reports
           destination: reports
       - store_artifacts:
           path: core/build/reports
           destination: reports
-      - run:
-          name: Collect test results
-          command: |
-            mkdir -p /tmp/test_results/junit
-            find . -name '*TEST-*.xml' -exec cp -v {} /tmp/test_results/junit/ \;
-          when: always
-      - store_test_results:
-          path: /tmp/test_results
 
       - run:
           name: Don't publish for PRs from forks
