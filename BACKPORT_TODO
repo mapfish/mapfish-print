@@ -1,0 +1,18 @@
+Error on backporting to branch 3.15, error on cherry picking ['69f6e64899847b2d4d7aaf7807049dd0de8a30bd', '131536096d613348ad3c86b5738d9c4a3617b85b', 'd9aa4a99a19be629911d1bc521d2c12fd6b4e120', 'ef0558593494d12df9d3eef942c4ce2ac101160c', '92bda52b013118ad4af8eceb52b6933e86ab4eef']:
+error: could not apply 69f6e648... Use Docker container for Geoserver instead of repo
+hint: after resolving the conflicts, mark the corrected paths
+hint: with 'git add <paths>' or 'git rm <paths>'
+hint: and commit the result with 'git commit'
+
+
+
+to continue do:
+git fetch
+git checkout backport/1284-to-3.15
+git reset --hard HEAD^
+git cherry-pick 69f6e64899847b2d4d7aaf7807049dd0de8a30bd
+git cherry-pick 131536096d613348ad3c86b5738d9c4a3617b85b
+git cherry-pick d9aa4a99a19be629911d1bc521d2c12fd6b4e120
+git cherry-pick ef0558593494d12df9d3eef942c4ce2ac101160c
+git cherry-pick 92bda52b013118ad4af8eceb52b6933e86ab4eef
+git push origin backport/1284-to-3.15 --force
