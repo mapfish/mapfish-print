@@ -109,7 +109,6 @@ configurations {
 }
 
 dependencies {
-    def springSecurityVersion = '5.3.2.RELEASE'
     def slf4jVersion = '1.7.30'
     def metricsVersion = '4.1.7'
     def geotoolsVersion = '22.3'
@@ -118,8 +117,8 @@ dependencies {
             "org.springframework:spring-context:$project.springVersion",
             "org.springframework:spring-web:$project.springVersion",
             "org.springframework:spring-webmvc:$project.springVersion",
-            "org.springframework.security:spring-security-config:$springSecurityVersion",
-            "org.springframework.security:spring-security-web:$springSecurityVersion",
+            "org.springframework.security:spring-security-config:$project.springVersion",
+            "org.springframework.security:spring-security-web:$project.springVersion",
             'com.thetransactioncompany:cors-filter:2.9',
             //hibernate & postgres
             'org.hibernate:hibernate-core:5.4.15.Final',
