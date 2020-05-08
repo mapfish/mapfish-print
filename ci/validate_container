@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 set -eux
 container_name=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 
@@ -11,7 +11,7 @@ docker run --detach  --rm --network none --name $container_name camptocamp/mapfi
 sleep 15
 
 http_code=$(docker exec  $container_name curl -sL -w "%{http_code}" -I localhost:8080/metrics/healthcheck -o /dev/null)
-if [[ $http_code != 501 ]] ; then 
+if [[ $http_code != 501 ]] ; then
   echo "container unhealthy"
   cleanup
   exit 1
@@ -33,4 +33,3 @@ else
   cleanup
   exit 1
 fi
-
