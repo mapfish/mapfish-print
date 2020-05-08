@@ -7,7 +7,7 @@ import subprocess
 
 def publish(docker_version):
     print("Deploying image to docker hub for tag " + docker_version)
-    subprocess.check_call(["./gradlew", "--console=plain", "createDocker"])
+    subprocess.check_call(["./gradlew", "--console=plain", "validateDocker"])
     image_name = "camptocamp/mapfish_print:" + docker_version
     subprocess.check_call(["docker", "tag", "camptocamp/mapfish_print:latest", image_name])
     subprocess.check_call(["docker", "push", image_name])

@@ -1,0 +1,36 @@
+#!/bin/bash 
+set -eux
+container_name=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+
+function cleanup(){
+  docker rm -f $container_name
+}
+
+docker run --detach  --rm --network none --name $container_name camptocamp/mapfish_print:latest
+# let the container initialize
+sleep 15
+
+http_code=$(docker exec  $container_name curl -sL -w "%{http_code}" -I localhost:8080/metrics/healthcheck -o /dev/null)
+if [[ $http_code != 501 ]] ; then 
+  echo "container unhealthy"
+  cleanup
+  exit 1
+else
+  echo "1st check ok"
+  cleanup
+fi
+
+
+docker run --detach --rm --name $container_name camptocamp/mapfish_print:latest
+sleep 15
+http_code=$(docker exec $container_name curl -sL -w "%{http_code}" -I localhost:8080/metrics/healthcheck -o /dev/null)
+if [[ $http_code = 501 ]] ; then
+  echo "container healthy"
+  cleanup
+  exit 0
+else
+  echo "container unhealthy"
+  cleanup
+  exit 1
+fi
+
