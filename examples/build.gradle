@@ -23,6 +23,17 @@ configurations {
     compile.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }
 
+def  getTempDir() {
+    try {
+        def cmd = "mktemp -d"
+        def proc = cmd.execute()
+        return proc.getText().trim()
+    } catch (Exception e) {
+        return 'Error occurred while trying to execute "mktemp -d": ' + e
+    }
+}
+
+
 def tmpDir = getTempDir()
 
 
