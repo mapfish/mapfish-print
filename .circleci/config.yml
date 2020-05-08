@@ -73,7 +73,7 @@ workflows:
       - build
 
   tag_push:
-    jobs: &jobs
+    jobs:
       - build:
           filters:
             tags:
@@ -87,7 +87,5 @@ workflows:
           cron: 0 0 * * *
           filters:
             branches:
-              only:
-                - master
-                - /3\.\d+/
+              only: /master|3\.\d+/
     jobs: *jobs
