@@ -127,5 +127,3 @@ afterEvaluate {
     farmBeforeIntegrationTest.dependsOn geoserver
 //    build.dependsOn project.tasks['integrationTest']
 }
-
-
