@@ -3,15 +3,6 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 apply plugin: 'war'
 apply plugin: 'org.gretty'
 
-getTempDir = { ->
-    stdout = new ByteArrayOutputStream()
-    exec {
-        commandLine 'mktemp', '-d'
-        standardOutput = stdout
-    }
-    return stdout.toString().trim()
-}
-
 repositories {
     maven { url 'https://maven.restlet.org' }
     jcenter()
@@ -32,26 +23,20 @@ configurations {
     compile.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }
 
-task createTmpDir(Type: Exec) {
-     doLast {
-          createTmpDir.ext.tmpDir = getTempDir()
-          println("${createTmpDir.ext.tmpDir}")
-     }
-}
+def tmpDir = getTempDir()
 
 
 def examplesDir = "${project(':examples').projectDir}/src/test/resources/examples"
 
 task copyExamplesToTmpDir(type: Copy){
-    dependsOn 'createTmpDir'
     from "${projectDir}/geoserver-data"
-    to "${createTmpDir.tmpDir}"
+    into "${tmpDir}"
 }
 
 
 task geoserverRun(type: Exec) {
     description 'Run GeoServer with test data'
-    commandLine 'docker', 'run', '--rm', '--name=geoserver', '--publish=8090:8080', "--volume=${createTmpDir.tmpDir}:/mnt/geoserver_datadir", '--detach', 'camptocamp/geoserver'
+    commandLine 'docker', 'run', '--rm', '--name=geoserver', '--publish=8090:8080', "--volume=${tmpDir}:/mnt/geoserver_datadir", '--detach', 'camptocamp/geoserver'
     dependsOn 'copyExamplesToTmpDir'
 
 }
@@ -77,7 +62,7 @@ gretty {
 farm {
     // configuration to start a server running mfp, geoserver and the web-app
     // containing test data. start with `./gradlew examples:farmRun`
-    systemProperty 'path_to_examples', tmpExamplesDir
+    systemProperty 'path_to_examples', examplesDir
     jvmArgs = ['-Xmx500M']
     scanInterval = 0
 
