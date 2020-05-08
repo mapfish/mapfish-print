@@ -63,6 +63,22 @@ task geoserver(type: Exec) {
     dependsOn 'geoserverSleep'
 }
 
+task geoserverCleanup(type: Exec) {
+    description 'Run and wait for GeoServer with test data'
+    commandLine 'docker', 'exec', 'geoserver', 'rm', '-r', '/mnt/geoserver_datadir/logs'
+}
+
+task geoserverKillContainer(type: Exec) {
+    description 'Run and wait for GeoServer with test data'
+     commandLine 'docker', 'rm', '-f', 'geoserver'
+}
+geoserverCleanup.finalizedBy 'geoserverKillContainer'
+task geoserverRemoveTmpDir(type: Exec) {
+    description 'Run and wait for GeoServer with test data'
+    commandLine 'rm' ,'-r', "${tmpDir}"
+}
+geoserverKillContainer.finalizedBy 'geoserverRemoveTmpDir'
+
 gretty {
     // configuration to serve a web-app containing test data required for
     // the integration tests
@@ -103,6 +119,7 @@ task integrationTest(type: Test) {
 //    dependsOn ':core:compileJava', 'geoserver', 'farmIntegrationTest'
 }
 integrationTest.dependsOn ':core:compileJava', 'geoserver'
+integrationTest.finalizedBy 'geoserverCleanup'
 
 afterEvaluate {
     build.dependsOn project.tasks['farmIntegrationTest']
@@ -110,3 +127,5 @@ afterEvaluate {
     farmBeforeIntegrationTest.dependsOn geoserver
 //    build.dependsOn project.tasks['integrationTest']
 }
+
+
