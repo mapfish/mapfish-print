@@ -8,7 +8,7 @@ defaultTasks 'build'
 dependencies {
     compile project(':core')
     compile "org.codehaus.groovy:groovy-all:$project.groovyVersion",
-            "org.springframework:spring-test:${springVersion}",
+            "org.springframework:spring-test:${project(':core').springVersion}",
             'org.ccil.cowan.tagsoup:tagsoup:1.2.1',
             'com.samskivert:jmustache:1.15'
 }

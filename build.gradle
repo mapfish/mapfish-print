@@ -25,7 +25,6 @@ allprojects {
     group = 'org.mapfish.print'
     version = '3.23.0'
     ext.junitVersion = "4.13"
-    ext.springVersion = "5.2.2.RELEASE"
     ext.groovyVersion = "3.0.3"
     ext.spotbugVersion = '3.1.12'
     ext.jasperreportVersion = "6.12.2"
@@ -106,7 +105,6 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
         testCompile(
                 "junit:junit:${project.junitVersion}",
                 'org.mockito:mockito-core:3.3.3',
-                "org.springframework:spring-test:${springVersion}"
         )
 
     }
