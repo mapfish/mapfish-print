@@ -70,14 +70,14 @@ task geoserverCleanup(type: Exec) {
 
 task geoserverKillContainer(type: Exec) {
     description 'Run and wait for GeoServer with test data'
-     commandLine 'docker', 'rm', '-f', 'geoserver'
+    commandLine 'docker', 'rm', '-f', 'geoserver'
+    dependsOn 'geoserverCleanup'
 }
-geoserverCleanup.finalizedBy 'geoserverKillContainer'
 task geoserverRemoveTmpDir(type: Exec) {
     description 'Run and wait for GeoServer with test data'
     commandLine 'rm' ,'-r', "${tmpDir}"
+    dependsOn 'geoserverKillContainer'
 }
-geoserverKillContainer.finalizedBy 'geoserverRemoveTmpDir'
 
 gretty {
     // configuration to serve a web-app containing test data required for
