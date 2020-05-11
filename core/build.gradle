@@ -43,8 +43,6 @@ installDist.doFirst {
 }
 tasks.withType(Javadoc) {
     options.encoding = 'utf-8'
-//    options.addStringOption('Xwerror', '-quiet')  // make javadoc fail on warnings
-//    options.addStringOption('Xdoclint', 'all')
     title = "Mapfish Print Core Module $version"
     if (JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption('html5', true)
@@ -102,10 +100,14 @@ configurations {
         description = 'Dependencies for the jasper reports generation'
     }
 
-    //want to use the slf4j bridge instead
+    // Want to use the slf4j bridge instead
     all*.exclude group: 'commons-logging'
-    //obscure stack trace if we let this dependency: https://stackoverflow.com/a/15808940
+    // Obscure stack trace if we let this dependency: https://stackoverflow.com/a/15808940
     all*.exclude module: 'xercesImpl'
+}
+
+ext {
+    springVersion = '5.2.2.RELEASE'
 }
 
 dependencies {
@@ -114,20 +116,21 @@ dependencies {
     def geotoolsVersion = '22.3'
 
     compile(
-            "org.springframework:spring-context:$project.springVersion",
-            "org.springframework:spring-web:$project.springVersion",
-            "org.springframework:spring-webmvc:$project.springVersion",
-            "org.springframework.security:spring-security-config:$project.springVersion",
-            "org.springframework.security:spring-security-web:$project.springVersion",
+            "org.springframework:spring-context:$springVersion",
+            "org.springframework:spring-web:$springVersion",
+            "org.springframework:spring-webmvc:$springVersion",
+            "org.springframework.security:spring-security-config:$springVersion",
+            "org.springframework.security:spring-security-web:$springVersion",
             'com.thetransactioncompany:cors-filter:2.9',
-            //hibernate & postgres
+            // Hibernate & Postgres
             'org.hibernate:hibernate-core:5.4.15.Final',
             'org.postgresql:postgresql:42.2.12',
             'com.vladmihalcea:hibernate-types-52:2.9.9',
             'com.mchange:c3p0:0.9.5.5',
-            "org.springframework:spring-orm:$project.springVersion",
-            "org.springframework:spring-jdbc:$project.springVersion",
-            "org.springframework:spring-tx:$project.springVersion"
+            "org.springframework:spring-orm:$springVersion",
+            "org.springframework:spring-jdbc:$springVersion",
+            "org.springframework:spring-tx:$springVersion",
+            "org.springframework:spring-test:$springVersion",
     )
     metrics(
             "io.dropwizard.metrics:metrics-core:$metricsVersion",
@@ -235,7 +238,7 @@ war {
 }
 
 gretty {
-    // configuration to serve mfp under localhost:8080/print when you run
+    // Configuration to serve mfp under localhost:8080/print when you run
     // ./gradlew core:jettyRun
     servletContainer = 'jetty9'
     contextPath = '/print'
@@ -279,7 +282,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 }
 
 startScripts {
-    // clear up the classpath because the launcher jar has it.
+    // Clear up the classpath because the launcher jar has it.
     applicationName = 'print'
     mainClassName = 'org.mapfish.print.cli.Main'
     classpath = files(jar.archivePath)
@@ -288,7 +291,7 @@ startScripts {
     doLast {
         fileTree(startScripts.outputDir).each { file ->
             def encoding = 'UTF-8'
-            // there was a bug in the start script where all jars were listed and that failed in windows.
+            // There was a bug in the start script where all jars were listed and that failed in windows.
             // now I just have the main jar and replace it with * so that all jars in that directory
             // are loaded on classpath.
             file.setText(file.getText(encoding).replace(jar.archivePath.name, '*'), encoding)
