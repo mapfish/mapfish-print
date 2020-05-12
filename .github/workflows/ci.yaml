@@ -97,7 +97,7 @@ jobs:
       - id: version
         run: echo "##[set-output name=version;]$(grep version build.gradle|sed "s/ \+version = .\(.*\)./\1/g")"
       - id: tag
-        run: echo "##[set-output name=tag;]$(echo github.ref|sed 's%refs/tags/%%g')"
+        run: echo "##[set-output name=tag;]$(echo ${{ github.ref }}|sed 's%refs/tags/%%g')"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
