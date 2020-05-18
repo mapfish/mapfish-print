@@ -164,7 +164,7 @@ dependencies {
             "org.slf4j:jcl-over-slf4j:${slf4jVersion}",
             'org.json:json:20190722',
             'ch.qos.logback:logback-classic:1.2.3',
-            'org.yaml:snakeyaml:1.26',
+            'org.yaml:snakeyaml:1.25',
             'com.github.spullara.cli-parser:cli-parser:1.1.5',
             'org.apache.httpcomponents:httpclient:4.5.12',
             'com.sun.mail:javax.mail:1.6.2',
