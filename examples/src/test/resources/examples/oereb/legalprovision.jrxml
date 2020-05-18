@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.10.0.final using JasperReports Library version 6.10.0-unknown  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TocReport" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="493" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" whenResourceMissingType="Empty" uuid="6e74177b-d551-4a75-ae51-6cdde3f284ce">
+	<property name="net.sf.jasperreports.bookmarks.data.source.parameter" value="REPORT_DATA_SOURCE"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<property name="net.sf.jasperreports.print.create.bookmarks" value="true"/>
+	<style name="Default" isDefault="true" fontName="Cadastra" fontSize="8"/>
+	<subDataset name="references" uuid="7c45ffd9-c32a-45ff-b1ca-91b7e5a0a680">
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+	</subDataset>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<parameter name="TOC_Appendices" class="java.util.Map"/>
+	<parameter name="Theme_Text" class="java.lang.String"/>
+	<field name="TextAtWebDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<field name="Title" class="java.lang.String"/>
+	<field name="OfficialNumber" class="java.lang.String"/>
+	<field name="OfficialTitle" class="java.lang.String"/>
+	<field name="Abbreviation" class="java.lang.String"/>
+	<detail>
+		<band height="14">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<printWhenExpression><![CDATA[$F{Title} != null || $F{OfficialTitle} != null]]></printWhenExpression>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true" hyperlinkType="Reference">
+				<reportElement x="190" y="0" width="110" height="10" uuid="179b7611-a023-4e6c-bd26-1f128b45058d">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[((ArrayList)$P{TOC_Appendices}.get($P{Theme_Text})).add($F{Title}.equals("") ? $F{OfficialTitle} : $F{Title}) ? "" : ""]]></textFieldExpression>
+				<hyperlinkReferenceExpression><![CDATA[((ArrayList)$P{TOC_Appendices}.get($P{Theme_Text})).add($F{Title}.equals("") ? $F{OfficialTitle} : $F{Title}) ? "" : ""]]></hyperlinkReferenceExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true" bookmarkLevel="2">
+				<reportElement stretchType="ContainerHeight" x="0" y="0" width="300" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" forecolor="#000000" uuid="114a9f86-a715-4eb3-a8a3-5b17bad23c1a">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+				</reportElement>
+				<box bottomPadding="3"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="8"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{Title}.equals("") || $F{Title} == null ? ($F{OfficialTitle}.equals("") || $F{OfficialTitle} == null ? "-" :   $F{OfficialTitle}): $F{Title}) + (($F{Abbreviation}.equals("") || $F{Abbreviation} == null) ? "" : " (" + $F{Abbreviation} + ")") + (($F{OfficialNumber}.equals("") || $F{OfficialNumber} == null) ? "" : ", " + $F{OfficialNumber})]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="9">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<subreport>
+				<reportElement stretchType="ContainerBottom" mode="Transparent" x="0" y="0" width="300" height="9" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="aea2a6e2-1814-4099-b8e4-6e588177db99">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$F{TextAtWebDataSource}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["textatweb.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.10.0.final using JasperReports Library version 6.10.0-unknown  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="topiclegend" pageWidth="299" pageHeight="20" columnWidth="273" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="6477891d-f5c5-456f-a115-e91b2a2768c6">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<style name="Default" isDefault="true" fontName="Cadastra" fontSize="8.5"/>
+	<field name="Name" class="java.lang.String"/>
+	<field name="OfficeAtWeb" class="java.lang.String"/>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" mode="Transparent" x="0" y="0" width="300" height="13" isRemoveLineWhenBlank="true" uuid="083811f5-8641-45e8-84c7-ed0819bc3237">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box bottomPadding="2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true" hyperlinkType="Reference">
+				<reportElement positionType="Float" stretchType="ContainerBottom" isPrintRepeatedValues="false" x="0" y="13" width="300" height="7" isPrintInFirstWholeBand="true" forecolor="#4C8FBA" uuid="43b94d8c-f86f-417d-83ec-78e70dcb55f8">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.spacingBefore" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[!$F{OfficeAtWeb}.equals("") || $F{OfficeAtWeb}!= null]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="1"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="Cadastra" size="6"/>
+					<paragraph leftIndent="8" spacingAfter="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OfficeAtWeb}]]></textFieldExpression>
+				<hyperlinkReferenceExpression><![CDATA[$F{OfficeAtWeb}]]></hyperlinkReferenceExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

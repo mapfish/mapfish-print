@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.4.0.final using JasperReports Library version 6.4.1  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="topiclegend" pageWidth="299" pageHeight="20" columnWidth="273" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="6477891d-f5c5-456f-a115-e91b2a2768c6">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="Geom_Type" class="java.lang.String"/>
+	<field name="AreaShare" class="java.lang.String"/>
+	<field name="LengthShare" class="java.lang.String"/>
+	<field name="NrOfPoints" class="java.lang.String"/>
+	<field name="SymbolRef" class="java.lang.String"/>
+	<field name="Information" class="java.lang.String"/>
+	<field name="PartInPercent" class="java.lang.String"/>
+	<field name="Geom_Type" class="java.lang.String"/>
+	<detail>
+		<band height="17" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<image onErrorType="Blank">
+				<reportElement x="0" y="2" width="18" height="9" uuid="b9ef005c-0354-4c25-92dc-0121e89d814c">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.2"/>
+				</box>
+				<imageExpression><![CDATA[$F{SymbolRef}]]></imageExpression>
+			</image>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="27" y="0" width="174" height="17" uuid="5f9a91b3-6ee9-4982-a8db-35245b462c2a">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement verticalAlignment="Top">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Information}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="101" y="0" width="150" height="17" uuid="0f8b4f0d-278c-4906-b608-181ff2add08e">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<printWhenExpression><![CDATA["AreaShare".equals($F{Geom_Type})]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="html">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{AreaShare}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="101" y="0" width="150" height="17" uuid="0f8b4f0d-278c-4906-b608-181ff2add08e">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<printWhenExpression><![CDATA["LengthShare".equals($F{Geom_Type})]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="html">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{LengthShare}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="101" y="0" width="150" height="17" uuid="0f8b4f0d-278c-4906-b608-181ff2add08e">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<printWhenExpression><![CDATA["NrOfPoints".equals($F{Geom_Type})]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="html">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NrOfPoints}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="157" y="0" width="143" height="17" uuid="80654d47-cb87-4690-a7ca-82730f9bb384">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA["AreaShare".equals($F{Geom_Type})]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PartInPercent}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
