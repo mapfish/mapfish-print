@@ -226,18 +226,10 @@ templates:
             directory: '.'
         - !configureHttpRequests
             httpProcessors:
-            - !mapUri # NEEDED FOR DOCKER ENVIRONMENT
-                mapping:
-                  (https?)://localhost:6543/(.*): "http://oereb-server:8080/$2"
             - !forwardHeaders
                 headers:
                 - Referer
             - !restrictUris
-                matchers:
-                - !dnsMatch    # NEEDED FOR DOCKER ENVIRONMENT
-                  host: oereb-server
-                  port: 8080
-                  reject: false
                 - !ipMatch
                   ip: 10.0.0.0
                   mask: 255.0.0.0
