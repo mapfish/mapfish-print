@@ -1,7 +1,7 @@
 {
     "attributes": {
         "BaseData": "Daten der amtlichen Vermessung. Stand der amtlichen Vermessung: 18.05.2020.",
-        "CantonalLogoRef": "http://localhost:6543/oereb/image/logo/canton/de.png",
+        "CantonalLogoRef": "http://localhost:8090/www/oereb/logo_canton.png",
         "Certification": "Referenz zur kantonsspezifischen Gesetzesgrundlage bez\u00fcglich Beglaubigungen.",
         "CertificationAtWeb": "https://oereb.bl.ch/certification/de",
         "ConcernedTheme": [
@@ -36,7 +36,7 @@
             }
         ],
         "ExtractIdentifier": "19451afe-2d5b-4c06-ad13-3b99b3404b73",
-        "FederalLogoRef": "http://localhost:6543/oereb/image/logo/confederation/de.png",
+        "FederalLogoRef": "http://localhost:8090/www/oereb/logo_confederation.png",
         "Footer": "18.05.2020   13:05:05   19451afe-2d5b-4c06-ad13-3b99b3404b73",
         "GeneralInformation": "Der Inhalt des Katasters wird als bekannt vorausgesetzt. Der Kanton --HIER MUSS DER KANTONSNAME STEHEN--- ist f\u00fcr die Genauigkeit und Verl\u00e4sslichkeit der gesetzgebenden Dokumenten in elektronischer Form nicht haftbar. Der Auszug hat rein informativen Charakter und begr\u00fcndet insbesondere keine Rechten und Pflichten. Rechtsverbindlich sind diejenigen Dokumente, welche rechtskr\u00e4ftig verabschiedet oder ver\u00f6ffentlicht worden sind. Mit der Beglaubigung des Auszuges wird die \u00dcbereinstimmung des Auszuges mit dem Kataster zum Zeitpunkt des Auszuges best\u00e4tigt.",
         "Glossary": [
@@ -113,8 +113,8 @@
                 "Title": "WaV"
             }
         ],
-        "LogoPLRCadastreRef": "http://localhost:6543/oereb/image/logo/oereb/de.png",
-        "MunicipalityLogoRef": "http://localhost:6543/oereb/image/municipality/2771.png",
+        "LogoPLRCadastreRef": "http://localhost:8090/www/oereb/de.png",
+        "MunicipalityLogoRef": "http://localhost:8090/www/oereb/2771.png",
         "NotConcernedTheme": [
             {
                 "Code": "LandUsePlans",
@@ -179,7 +179,7 @@
         "RealEstate_Municipality": "Oberwil (BL)",
         "RealEstate_Number": "70",
         "RealEstate_PlanForLandRegisterMainPage": {
-            "ReferenceWMS": "https://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&STYLES=default&SRS=EPSG%3A2056&BBOX=2608564.1173571427%2C1261670.8114999998%2C2609194.3826428573%2C1262028.7715&WIDTH=2055&HEIGHT=1169&FORMAT=image%2Fpng&LAYERS=ch.swisstopo-vd.amtliche-vermessung",
+            "ReferenceWMS": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&STYLES=default&SRS=EPSG%3A2056&BBOX=2608564.1173571427%2C1261670.8114999998%2C2609194.3826428573%2C1262028.7715&WIDTH=2055&HEIGHT=1169&FORMAT=image%2Fpng&LAYERS=ch.swisstopo-vd.amtliche-vermessung",
             "layerIndex": 0,
             "layerOpacity": 1.0,
             "max_NS95": {
@@ -307,7 +307,7 @@
                         "Geom_Type": "AreaShare",
                         "Information": "Belastet, untersuchungsbed\u00fcrftig",
                         "PartInPercent": "32.6%",
-                        "SymbolRef": "http://localhost:6543/oereb/image/symbol/ContaminatedPublicTransportSites/1/StaoTyp2.png",
+                        "SymbolRef": "http://localhost:8090/www/oereb/StaoTyp2.png",
                         "TypeCode": "StaoTyp2",
                         "TypeCodelist": ""
                     }
@@ -328,7 +328,7 @@
                 "baseLayers": {
                     "layers": [
                         {
-                            "baseURL": "https://wms.geo.admin.ch/",
+                            "baseURL": "http://wms.geo.admin.ch/",
                             "customParams": {
                                 "TRANSPARENT": "true"
                             },
@@ -341,7 +341,7 @@
                             "type": "wms"
                         },
                         {
-                            "baseURL": "https://wms.geo.admin.ch/",
+                            "baseURL": "http://wms.geo.admin.ch/",
                             "customParams": {
                                 "TRANSPARENT": "true"
                             },
@@ -355,7 +355,7 @@
                         }
                     ]
                 },
-                "legend": "https://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
+                "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
             },
             {
                 "Geom_Type": "LengthShare",
@@ -408,7 +408,7 @@
                         "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
                         "TextAtWeb": [
                             {
-                                "URL": "https://www.bav.admin.ch/dam/bav/de/dokumente/das-bav/finanzierung/faktenblatt_fernverkehr_konzessionierung.pdf.download.pdf/d_Faktenblatt_Fernverkehr_und_Konzessionierung%20.pdf"
+                                "URL": "http://www.bav.admin.ch/dam/bav/de/dokumente/das-bav/finanzierung/faktenblatt_fernverkehr_konzessionierung.pdf.download.pdf/d_Faktenblatt_Fernverkehr_und_Konzessionierung%20.pdf"
                             }
                         ],
                         "Title": "B61001"
@@ -419,7 +419,7 @@
                         "Geom_Type": "LengthShare",
                         "Information": "Belastet, \u00fcberwachungsbed\u00fcrftig",
                         "LengthShare": "164 m",
-                        "SymbolRef": "http://localhost:6543/oereb/image/symbol/ContaminatedPublicTransportSites/1/StaoTyp3.png",
+                        "SymbolRef": "http://localhost:8090/www/oereb/StaoTyp3.png",
                         "TypeCode": "StaoTyp3",
                         "TypeCodelist": ""
                     }
@@ -440,7 +440,7 @@
                 "baseLayers": {
                     "layers": [
                         {
-                            "baseURL": "https://wms.geo.admin.ch/",
+                            "baseURL": "http://wms.geo.admin.ch/",
                             "customParams": {
                                 "TRANSPARENT": "true"
                             },
@@ -453,7 +453,7 @@
                             "type": "wms"
                         },
                         {
-                            "baseURL": "https://wms.geo.admin.ch/",
+                            "baseURL": "http://wms.geo.admin.ch/",
                             "customParams": {
                                 "TRANSPARENT": "true"
                             },
@@ -467,7 +467,7 @@
                         }
                     ]
                 },
-                "legend": "https://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
+                "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
             },
             {
                 "Geom_Type": "NrOfPoints",
@@ -531,7 +531,7 @@
                         "Geom_Type": "NrOfPoints",
                         "Information": "Belastet, keine sch\u00e4dlichen oder l\u00e4stigen Einwirkungen zu erwarten",
                         "NrOfPoints": "2",
-                        "SymbolRef": "http://localhost:6543/oereb/image/symbol/ContaminatedPublicTransportSites/1/StaoTyp1.png",
+                        "SymbolRef": "http://localhost:8090/www/oereb/StaoTyp1.png",
                         "TypeCode": "StaoTyp1",
                         "TypeCodelist": ""
                     }
@@ -552,7 +552,7 @@
                 "baseLayers": {
                     "layers": [
                         {
-                            "baseURL": "https://wms.geo.admin.ch/",
+                            "baseURL": "http://wms.geo.admin.ch/",
                             "customParams": {
                                 "TRANSPARENT": "true"
                             },
@@ -565,7 +565,7 @@
                             "type": "wms"
                         },
                         {
-                            "baseURL": "https://wms.geo.admin.ch/",
+                            "baseURL": "http://wms.geo.admin.ch/",
                             "customParams": {
                                 "TRANSPARENT": "true"
                             },
@@ -579,7 +579,7 @@
                         }
                     ]
                 },
-                "legend": "https://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
+                "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
             },
             {
                 "Geom_Type": "AreaShare",
@@ -644,7 +644,7 @@
                         "Geom_Type": "AreaShare",
                         "Information": "Belastet, keine sch\u00e4dlichen oder l\u00e4stigen Einwirkungen zu erwarten",
                         "PartInPercent": "22.3%",
-                        "SymbolRef": "http://localhost:6543/oereb/image/symbol/GroundwaterProtectionZones/1/StaoTyp2.png",
+                        "SymbolRef": "http://localhost:8090/www/oereb/StaoTyp2.png",
                         "TypeCode": "StaoTyp2",
                         "TypeCodelist": ""
                     }
@@ -663,7 +663,7 @@
                 "baseLayers": {
                     "layers": [
                         {
-                            "baseURL": "https://wms.geo.admin.ch/",
+                            "baseURL": "http://wms.geo.admin.ch/",
                             "customParams": {
                                 "TRANSPARENT": "true"
                             },
@@ -676,7 +676,7 @@
                             "type": "wms"
                         },
                         {
-                            "baseURL": "https://wms.geo.admin.ch/",
+                            "baseURL": "http://wms.geo.admin.ch/",
                             "customParams": {
                                 "TRANSPARENT": "true"
                             },
@@ -690,7 +690,7 @@
                         }
                     ]
                 },
-                "legend": "https://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
+                "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
             },
             {
                 "Geom_Type": "LengthShare",
@@ -783,7 +783,7 @@
                         "Lawstatus_Text": "in Kraft",
                         "OfficialNumber": "SR 700",
                         "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
-                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "ResponsibleOffice_OfficeAtWeb": "https://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
                         "TextAtWeb": [
                             {
                                 "URL": "http://www.lexfind.ch/dtah/167348/2"
@@ -802,7 +802,7 @@
                         "Lawstatus_Text": "in Kraft",
                         "OfficialNumber": "",
                         "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
-                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "ResponsibleOffice_OfficeAtWeb": "https://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
                         "TextAtWeb": [
                             {
                                 "URL": "https://oereb-gr-preview.000.ch/api/attachments/197"
@@ -817,7 +817,7 @@
                         "Lawstatus_Text": "in Kraft",
                         "OfficialNumber": "",
                         "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
-                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "ResponsibleOffice_OfficeAtWeb": "https://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
                         "TextAtWeb": [
                             {
                                 "URL": "https://oereb-gr-preview.000.ch/api/attachments/198"
@@ -861,7 +861,7 @@
                         "Geom_Type": "LengthShare",
                         "Information": "Belastet, keine sch\u00e4dlichen oder l\u00e4stigen Einwirkungen zu erwarten",
                         "LengthShare": "101 m",
-                        "SymbolRef": "http://localhost:6543/oereb/image/symbol/ForestPerimeters/1/StaoTyp2.png",
+                        "SymbolRef": "http://localhost:8090/www/oereb/StaoTyp2.png",
                         "TypeCode": "StaoTyp2",
                         "TypeCodelist": ""
                     },
@@ -869,7 +869,7 @@
                         "Geom_Type": "LengthShare",
                         "Information": "Belastet, weder \u00fcberwachungs- noch sanierungsbed\u00fcrftig",
                         "LengthShare": "101 m",
-                        "SymbolRef": "http://localhost:6543/oereb/image/symbol/ForestPerimeters/1/StaoTyp1.png",
+                        "SymbolRef": "http://localhost:8090/www/oereb/StaoTyp1.png",
                         "TypeCode": "StaoTyp1",
                         "TypeCodelist": ""
                     }
@@ -888,7 +888,7 @@
                 "baseLayers": {
                     "layers": [
                         {
-                            "baseURL": "https://wms.geo.admin.ch/",
+                            "baseURL": "http://wms.geo.admin.ch/",
                             "customParams": {
                                 "TRANSPARENT": "true"
                             },
@@ -901,7 +901,7 @@
                             "type": "wms"
                         },
                         {
-                            "baseURL": "https://wms.geo.admin.ch/",
+                            "baseURL": "http://wms.geo.admin.ch/",
                             "customParams": {
                                 "TRANSPARENT": "true"
                             },
@@ -915,7 +915,7 @@
                         }
                     ]
                 },
-                "legend": "https://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
+                "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
             }
         ],
         "RealEstate_Type": "RealEstate",
@@ -932,7 +932,7 @@
         "baseLayers": {
             "layers": [
                 {
-                    "baseURL": "https://wms.geo.admin.ch/",
+                    "baseURL": "http://wms.geo.admin.ch/",
                     "customParams": {
                         "TRANSPARENT": "true"
                     },
@@ -1178,6 +1178,6 @@
         "nbTocPages": 2
     },
     "lang": "de",
-    "layout": "A4 portrait",
+    "layout": "oereb template",
     "outputFormat": "png"
 }

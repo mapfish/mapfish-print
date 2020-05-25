@@ -4,7 +4,7 @@ resourceBundle: Report
 defaultToSvg: true
 
 templates:
-    A4 portrait: !template
+    oereb template: !template
         reportTemplate: pdfextract.jrxml
         outputFilename: ${yyyyMMddhhmmss}_extract
         allowTransparency: false
@@ -230,6 +230,7 @@ templates:
                 headers:
                 - Referer
             - !restrictUris
+                matchers:
                 - !ipMatch
                   ip: 10.0.0.0
                   mask: 255.0.0.0
