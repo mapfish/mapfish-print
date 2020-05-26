@@ -1,0 +1,1183 @@
+{
+    "attributes": {
+        "BaseData": "Daten der amtlichen Vermessung. Stand der amtlichen Vermessung: 18.05.2020.",
+        "CantonalLogoRef": "http://localhost:8090/www/oereb/logo_canton.png",
+        "Certification": "Referenz zur kantonsspezifischen Gesetzesgrundlage bez\u00fcglich Beglaubigungen.",
+        "CertificationAtWeb": "https://oereb.bl.ch/certification/de",
+        "ConcernedTheme": [
+            {
+                "Code": "ContaminatedPublicTransportSites",
+                "Text": "Kataster der belasteten Standorte im Bereich des \u00f6ffentlichen Verkehrs"
+            },
+            {
+                "Code": "GroundwaterProtectionZones",
+                "Text": "Grundwasserschutzzonen"
+            },
+            {
+                "Code": "ForestPerimeters",
+                "Text": "Statische Waldgrenzen"
+            }
+        ],
+        "CreationDate": "18.05.2020",
+        "Display_Certification": true,
+        "Display_RealEstate_SubunitOfLandRegister": true,
+        "ExclusionOfLiability": [
+            {
+                "Content": "Der Kataster der belasteten Standorte (KbS) wurde anhand der vom Bundesamt f\u00fcr Umwelt BAFU festgelegten Kriterien erstellt und wird fortw\u00e4hrend aufgrund neuer Erkenntnisse (z.B. Untersuchungen) aktualisiert. Die im KbS eingetragenen Fl\u00e4chen k\u00f6nnen vom tats\u00e4chlichen Ausmass der Belastung abweichen. Erscheint ein Grundst\u00fcck nicht im KbS, besteht keine absolute Gew\u00e4hr, dass das Areal frei von jeglichen Abfall- oder Schadstoffbelastungen ist. Bahnbetrieblich, milit\u00e4risch und f\u00fcr die Luftfahrt genutzte Standorte liegen im Zust\u00e4ndigkeitsbereich des Bundes.F\u00fcr weitere Informationen wenden Sie sich an die kantonale Altlastenfachstelle: E-Mail Adresse und/oder Webseite",
+                "Title": "Haftungsausschluss Kataster der belasteten Standorte (KbS) vel tincidunt velit congue sed"
+            },
+            {
+                "Content": "Curabitur eros mauris, tincidunt et felis nec, sagittis imperdiet metus. Nulla ac massa sollicitudin, egestas erat eget, sodales mauris. Quisque nulla ante, laoreet ut massa in, auctor ullamcorper massa. Etiam tortor nisi, luctus eu nisi vel, elementum euismod sem. Cras convallis ut felis et tristique. Mauris erat eros, vehicula sit amet ipsum vitae, lobortis ultricies libero. Pellentesque euismod massa nec risus iaculis porta. Vivamus et sollicitudin quam. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ut tempus justo",
+                "Title": "DE Morbi et ligula tempor, pulvinar sapien quis, mattis mi. Nam luctus fringilla nunc, vel tincidunt velit congue sed Morbi et ligula tempor, pulvinar sapien quis, mattis mi"
+            },
+            {
+                "Content": "2Curabitur eros mauris, tincidunt et felis nec, sagittis imperdiet metus. Nulla ac massa sollicitudin, egestas erat eget, sodales mauris. Quisque nulla ante, laoreet ut massa in, auctor ullamcorper massa. Etiam tortor nisi, luctus eu nisi vel, elementum euismod sem. Cras convallis ut felis et tristique. Mauris erat eros, vehicula sit amet ipsum vitae, lobortis ultricies libero. Pellentesque euismod massa nec risus iaculis porta. Vivamus et sollicitudin quam. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ut tempus justo",
+                "Title": "2DE Morbi et ligula tempor"
+            }
+        ],
+        "ExtractIdentifier": "19451afe-2d5b-4c06-ad13-3b99b3404b73",
+        "FederalLogoRef": "http://localhost:8090/www/oereb/logo_confederation.png",
+        "Footer": "18.05.2020   13:05:05   19451afe-2d5b-4c06-ad13-3b99b3404b73",
+        "GeneralInformation": "Der Inhalt des Katasters wird als bekannt vorausgesetzt. Der Kanton --HIER MUSS DER KANTONSNAME STEHEN--- ist f\u00fcr die Genauigkeit und Verl\u00e4sslichkeit der gesetzgebenden Dokumenten in elektronischer Form nicht haftbar. Der Auszug hat rein informativen Charakter und begr\u00fcndet insbesondere keine Rechten und Pflichten. Rechtsverbindlich sind diejenigen Dokumente, welche rechtskr\u00e4ftig verabschiedet oder ver\u00f6ffentlicht worden sind. Mit der Beglaubigung des Auszuges wird die \u00dcbereinstimmung des Auszuges mit dem Kataster zum Zeitpunkt des Auszuges best\u00e4tigt.",
+        "Glossary": [
+            {
+                "Content": "Verordnung vom 26. August 1998 \u00fcber die Sanierung von belasteten Standorten (Altlasten-Verordnung) (SR 814.680)",
+                "Title": "AltlV"
+            },
+            {
+                "Content": "Gemeindenummer aus amtlichem Gemeindeverzeichnis",
+                "Title": "BFS-Nr."
+            },
+            {
+                "Content": "Eidgen\u00f6ssischer Grundst\u00fccksidentifikator",
+                "Title": "E-GRID"
+            },
+            {
+                "Content": "Eisenbahngesetz vom 20. Dezember 1957 (SR 742.101)",
+                "Title": "EBG"
+            },
+            {
+                "Content": "Bundesgesetz vom 24. Januar 1991 \u00fcber den Schutz der Gew\u00e4sser (Gew\u00e4sserschutzgesetz) (SR 814.20)",
+                "Title": "GSchG"
+            },
+            {
+                "Content": "Gew\u00e4sserschutzverordnung vom 28. Oktober 1998 (SR 814.201)",
+                "Title": "GSchV"
+            },
+            {
+                "Content": "Bundesgesetz vom 21. Dezember 1948 \u00fcber die Luftfahrt (Luftfahrtgesetz) (SR 748.0)",
+                "Title": "LFG"
+            },
+            {
+                "Content": "L\u00e4rmschutz-Verordnung vom 15. Dezember 1986 (SR 814.41)",
+                "Title": "LSV"
+            },
+            {
+                "Content": "Bundesgesetz vom 8. M\u00e4rz 1960 \u00fcber die Nationalstrassen (SR 725.11)",
+                "Title": "NSG"
+            },
+            {
+                "Content": "Nationalstrassenverordnung vom 7. November 2007 (SR 725.111)",
+                "Title": "NSV"
+            },
+            {
+                "Content": "\u00d6ffentlich-rechtliche Beschr\u00e4nkung des Grundeigentums",
+                "Title": "\u00d6REB"
+            },
+            {
+                "Content": "Kataster der \u00f6ffentlich-rechtlichen Eigentumsbeschr\u00e4nkungen",
+                "Title": "\u00d6REB-Kataster"
+            },
+            {
+                "Content": "Verordnung vom 2. September 2009 \u00fcber den Kataster der \u00f6ffentlich-rechtlichen Eigentumsbeschr\u00e4nkungen (SR 510.622.4)",
+                "Title": "\u00d6REBKV"
+            },
+            {
+                "Content": "Bundesgesetz vom 22. Juni 1979 \u00fcber die Raumplanung (Raumplanungsgesetz) (SR 700)",
+                "Title": "RPG"
+            },
+            {
+                "Content": "Bundesgesetz vom 7. Oktober 1983 \u00fcber den Umweltschutz (Umweltschutzgesetz) (SR 814.01)",
+                "Title": "USG"
+            },
+            {
+                "Content": "Verordnung vom 23. November 1994 \u00fcber die Infrastruktur der Luftfahrt (RS 748.131.1)",
+                "Title": "VIL"
+            },
+            {
+                "Content": "Bundesgesetz vom 4. Oktober 1991 \u00fcber den Wald (Waldgesetz) (SR 921.0)",
+                "Title": "WaG"
+            },
+            {
+                "Content": "Verordnung vom 30. November 1992 \u00fcber den Wald (Waldverordnung) (SR 921.01)",
+                "Title": "WaV"
+            }
+        ],
+        "LogoPLRCadastreRef": "http://localhost:8090/www/oereb/de.png",
+        "MunicipalityLogoRef": "http://localhost:8090/www/oereb/2771.png",
+        "NotConcernedTheme": [
+            {
+                "Code": "LandUsePlans",
+                "Text": "Nutzungsplanung (kantonal/kommunal)"
+            },
+            {
+                "Code": "MotorwaysProjectPlaningZones",
+                "Text": "Projektierungszonen Nationalstrassen"
+            },
+            {
+                "Code": "RailwaysBuildingLines",
+                "Text": "Baulinien Eisenbahnanlagen"
+            },
+            {
+                "Code": "RailwaysProjectPlanningZones",
+                "Text": "Projektierungszonen Eisenbahnanlagen"
+            },
+            {
+                "Code": "AirportsProjectPlanningZones",
+                "Text": "Projektierungszonen Flughafenanlagen"
+            },
+            {
+                "Code": "AirportsBuildingLines",
+                "Text": "Baulinien Flughafenanlagen"
+            },
+            {
+                "Code": "AirportsSecurityZonePlans",
+                "Text": "Sicherheitszonenplan"
+            },
+            {
+                "Code": "ContaminatedSites",
+                "Text": "Kataster der belasteten Standorte"
+            },
+            {
+                "Code": "ContaminatedCivilAviationSites",
+                "Text": "Kataster der belasteten Standorte im Bereich der zivilen Flugpl\u00e4tze"
+            },
+            {
+                "Code": "GroundwaterProtectionSites",
+                "Text": "Grundwasserschutzareale"
+            },
+            {
+                "Code": "NoiseSensitivityLevels",
+                "Text": "L\u00e4rmempfindlichkeitsstufen (in Nutzungszonen)"
+            },
+            {
+                "Code": "ForestDistanceLines",
+                "Text": "Waldabstandslinien"
+            }
+        ],
+        "PLRCadastreAuthority_City": "Wabern",
+        "PLRCadastreAuthority_Name": "\u00d6REB-Katasteraufsichtsbeh\u00f6rde",
+        "PLRCadastreAuthority_Number": 264,
+        "PLRCadastreAuthority_OfficeAtWeb": "https://www.cadastre.ch/en/oereb.html",
+        "PLRCadastreAuthority_PostalCode": 3084,
+        "PLRCadastreAuthority_Street": "Seftigenstrasse",
+        "RealEstate_Canton": "BL",
+        "RealEstate_EGRID": "CH113928077734",
+        "RealEstate_FosNr": 2771,
+        "RealEstate_IdentDN": "BL0200002771",
+        "RealEstate_LandRegistryArea": "35121 m\u00b2",
+        "RealEstate_Municipality": "Oberwil (BL)",
+        "RealEstate_Number": "70",
+        "RealEstate_PlanForLandRegisterMainPage": {
+            "ReferenceWMS": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&STYLES=default&SRS=EPSG%3A2056&BBOX=2608564.1173571427%2C1261670.8114999998%2C2609194.3826428573%2C1262028.7715&WIDTH=2055&HEIGHT=1169&FORMAT=image%2Fpng&LAYERS=ch.swisstopo-vd.amtliche-vermessung",
+            "layerIndex": 0,
+            "layerOpacity": 1.0,
+            "max_NS95": {
+                "coordinates": [
+                    2609194.3826428573,
+                    1262028.7715
+                ],
+                "crs": "EPSG:2056"
+            },
+            "min_NS95": {
+                "coordinates": [
+                    2608564.1173571427,
+                    1261670.8114999998
+                ],
+                "crs": "EPSG:2056"
+            }
+        },
+        "RealEstate_RestrictionOnLandownership": [
+            {
+                "Geom_Type": "AreaShare",
+                "Hints": [],
+                "Information": "",
+                "Laws": [
+                    {
+                        "Abbreviation": "AltlV",
+                        "Canton": "",
+                        "DocumentType": "Law",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "SR 700",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "http://www.lexfind.ch/dtah/167348/2"
+                            }
+                        ],
+                        "Title": "Bundesgesetz \u00fcber die Raumplanung (Raumplanungsgesetz, RPG)"
+                    },
+                    {
+                        "Abbreviation": "USG",
+                        "Canton": "",
+                        "DocumentType": "Law",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "SR 814.01",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "http://www.admin.ch/ch/d/sr/c814_01.html"
+                            }
+                        ],
+                        "Title": "Umweltschutzgesetz"
+                    },
+                    {
+                        "Abbreviation": "AltlV",
+                        "Canton": "",
+                        "DocumentType": "Law",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "SR 814.680",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "http://www.admin.ch/ch/d/sr/c814_680.html"
+                            }
+                        ],
+                        "Title": "Altlasten-Verordnung"
+                    }
+                ],
+                "Lawstatus_Code": "inForce",
+                "Lawstatus_Text": "in Kraft",
+                "LegalProvisions": [
+                    {
+                        "Canton": "BL",
+                        "DocumentType": "LegalProvision",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "https://www.bav.admin.ch/dam/bav/de/dokumente/das-bav/finanzierung/faktenblatt_fernverkehr_konzessionierung.pdf.download.pdf/d_Faktenblatt_Fernverkehr_und_Konzessionierung%20.pdf"
+                            }
+                        ],
+                        "Title": "B61001"
+                    },
+                    {
+                        "Canton": "GR",
+                        "DocumentType": "LegalProvision",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "07.447",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "https://oereb-gr-preview.000.ch/api/attachments/214"
+                            }
+                        ],
+                        "Title": "Revision Ortsplanung"
+                    },
+                    {
+                        "Canton": "GR",
+                        "DocumentType": "LegalProvision",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "07.447",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "https://oereb-gr-preview.000.ch/api/attachments/213"
+                            }
+                        ],
+                        "Title": "Revision Ortsplanung"
+                    }
+                ],
+                "Legend": [
+                    {
+                        "AreaShare": "11432 m\u00b2",
+                        "Geom_Type": "AreaShare",
+                        "Information": "Belastet, untersuchungsbed\u00fcrftig",
+                        "PartInPercent": "32.6%",
+                        "SymbolRef": "http://localhost:8090/www/oereb/StaoTyp2.png",
+                        "TypeCode": "StaoTyp2",
+                        "TypeCodelist": ""
+                    }
+                ],
+                "OtherLegend": [],
+                "ResponsibleOffice": [
+                    {
+                        "Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html"
+                    }
+                ],
+                "Split_SubTheme": true,
+                "SubTheme": "SubTheme1 - de",
+                "SymbolRef": "",
+                "Theme_Code": "ContaminatedPublicTransportSites",
+                "Theme_Text": "Kataster der belasteten Standorte im Bereich des \u00f6ffentlichen Verkehrs",
+                "TypeCode": "",
+                "baseLayers": {
+                    "layers": [
+                        {
+                            "baseURL": "http://wms.geo.admin.ch/",
+                            "customParams": {
+                                "TRANSPARENT": "true"
+                            },
+                            "imageFormat": "image/png",
+                            "layers": [
+                                "ch.bav.kataster-belasteter-standorte-oev.oereb"
+                            ],
+                            "opacity": 0.75,
+                            "styles": "default",
+                            "type": "wms"
+                        },
+                        {
+                            "baseURL": "http://wms.geo.admin.ch/",
+                            "customParams": {
+                                "TRANSPARENT": "true"
+                            },
+                            "imageFormat": "image/png",
+                            "layers": [
+                                "ch.swisstopo-vd.amtliche-vermessung"
+                            ],
+                            "opacity": 1.0,
+                            "styles": "default",
+                            "type": "wms"
+                        }
+                    ]
+                },
+                "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
+            },
+            {
+                "Geom_Type": "LengthShare",
+                "Hints": [],
+                "Information": "",
+                "Laws": [
+                    {
+                        "Abbreviation": "USG",
+                        "Canton": "",
+                        "DocumentType": "Law",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "SR 814.01",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "http://www.admin.ch/ch/d/sr/c814_01.html"
+                            }
+                        ],
+                        "Title": "Umweltschutzgesetz"
+                    },
+                    {
+                        "Abbreviation": "AltlV",
+                        "Canton": "",
+                        "DocumentType": "Law",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "SR 814.680",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "http://www.admin.ch/ch/d/sr/c814_680.html"
+                            }
+                        ],
+                        "Title": "Altlasten-Verordnung"
+                    }
+                ],
+                "Lawstatus_Code": "inForce",
+                "Lawstatus_Text": "in Kraft",
+                "LegalProvisions": [
+                    {
+                        "Canton": "BL",
+                        "DocumentType": "LegalProvision",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "http://www.bav.admin.ch/dam/bav/de/dokumente/das-bav/finanzierung/faktenblatt_fernverkehr_konzessionierung.pdf.download.pdf/d_Faktenblatt_Fernverkehr_und_Konzessionierung%20.pdf"
+                            }
+                        ],
+                        "Title": "B61001"
+                    }
+                ],
+                "Legend": [
+                    {
+                        "Geom_Type": "LengthShare",
+                        "Information": "Belastet, \u00fcberwachungsbed\u00fcrftig",
+                        "LengthShare": "164 m",
+                        "SymbolRef": "http://localhost:8090/www/oereb/StaoTyp3.png",
+                        "TypeCode": "StaoTyp3",
+                        "TypeCodelist": ""
+                    }
+                ],
+                "OtherLegend": [],
+                "ResponsibleOffice": [
+                    {
+                        "Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html"
+                    }
+                ],
+                "Split_SubTheme": true,
+                "SubTheme": "SubTheme3 - de",
+                "SymbolRef": "",
+                "Theme_Code": "ContaminatedPublicTransportSites",
+                "Theme_Text": "Kataster der belasteten Standorte im Bereich des \u00f6ffentlichen Verkehrs",
+                "TypeCode": "",
+                "baseLayers": {
+                    "layers": [
+                        {
+                            "baseURL": "http://wms.geo.admin.ch/",
+                            "customParams": {
+                                "TRANSPARENT": "true"
+                            },
+                            "imageFormat": "image/png",
+                            "layers": [
+                                "ch.bav.kataster-belasteter-standorte-oev.oereb"
+                            ],
+                            "opacity": 0.75,
+                            "styles": "default",
+                            "type": "wms"
+                        },
+                        {
+                            "baseURL": "http://wms.geo.admin.ch/",
+                            "customParams": {
+                                "TRANSPARENT": "true"
+                            },
+                            "imageFormat": "image/png",
+                            "layers": [
+                                "ch.swisstopo-vd.amtliche-vermessung"
+                            ],
+                            "opacity": 1.0,
+                            "styles": "default",
+                            "type": "wms"
+                        }
+                    ]
+                },
+                "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
+            },
+            {
+                "Geom_Type": "NrOfPoints",
+                "Hints": [],
+                "Information": "",
+                "Laws": [
+                    {
+                        "Abbreviation": "USG",
+                        "Canton": "",
+                        "DocumentType": "Law",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "SR 814.01",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "http://www.admin.ch/ch/d/sr/c814_01.html"
+                            }
+                        ],
+                        "Title": "Umweltschutzgesetz"
+                    },
+                    {
+                        "Abbreviation": "AltlV",
+                        "Canton": "",
+                        "DocumentType": "Law",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "SR 814.680",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "http://www.admin.ch/ch/d/sr/c814_680.html"
+                            }
+                        ],
+                        "Title": "Altlasten-Verordnung"
+                    }
+                ],
+                "Lawstatus_Code": "inForce",
+                "Lawstatus_Text": "in Kraft",
+                "LegalProvisions": [
+                    {
+                        "Canton": "BL",
+                        "DocumentType": "LegalProvision",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "https://www.bav.admin.ch/dam/bav/de/dokumente/das-bav/finanzierung/faktenblatt_fernverkehr_konzessionierung.pdf.download.pdf/d_Faktenblatt_Fernverkehr_und_Konzessionierung%20.pdf"
+                            }
+                        ],
+                        "Title": "B61001"
+                    }
+                ],
+                "Legend": [
+                    {
+                        "Geom_Type": "NrOfPoints",
+                        "Information": "Belastet, keine sch\u00e4dlichen oder l\u00e4stigen Einwirkungen zu erwarten",
+                        "NrOfPoints": "2",
+                        "SymbolRef": "http://localhost:8090/www/oereb/StaoTyp1.png",
+                        "TypeCode": "StaoTyp1",
+                        "TypeCodelist": ""
+                    }
+                ],
+                "OtherLegend": [],
+                "ResponsibleOffice": [
+                    {
+                        "Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html"
+                    }
+                ],
+                "Split_SubTheme": true,
+                "SubTheme": "SubTheme2 - de",
+                "SymbolRef": "",
+                "Theme_Code": "ContaminatedPublicTransportSites",
+                "Theme_Text": "Kataster der belasteten Standorte im Bereich des \u00f6ffentlichen Verkehrs",
+                "TypeCode": "",
+                "baseLayers": {
+                    "layers": [
+                        {
+                            "baseURL": "http://wms.geo.admin.ch/",
+                            "customParams": {
+                                "TRANSPARENT": "true"
+                            },
+                            "imageFormat": "image/png",
+                            "layers": [
+                                "ch.bav.kataster-belasteter-standorte-oev.oereb"
+                            ],
+                            "opacity": 0.75,
+                            "styles": "default",
+                            "type": "wms"
+                        },
+                        {
+                            "baseURL": "http://wms.geo.admin.ch/",
+                            "customParams": {
+                                "TRANSPARENT": "true"
+                            },
+                            "imageFormat": "image/png",
+                            "layers": [
+                                "ch.swisstopo-vd.amtliche-vermessung"
+                            ],
+                            "opacity": 1.0,
+                            "styles": "default",
+                            "type": "wms"
+                        }
+                    ]
+                },
+                "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
+            },
+            {
+                "Geom_Type": "AreaShare",
+                "Hints": [],
+                "Information": "",
+                "Laws": [
+                    {
+                        "Abbreviation": "USG",
+                        "Canton": "",
+                        "DocumentType": "Law",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "SR 814.01",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "http://www.admin.ch/ch/d/sr/c814_01.html"
+                            }
+                        ],
+                        "Title": "Umweltschutzgesetz"
+                    },
+                    {
+                        "Abbreviation": "AltlV",
+                        "Canton": "",
+                        "DocumentType": "Law",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "SR 814.680",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "http://www.admin.ch/ch/d/sr/c814_680.html"
+                            }
+                        ],
+                        "Title": "Altlasten-Verordnung"
+                    }
+                ],
+                "Lawstatus_Code": "inForce",
+                "Lawstatus_Text": "in Kraft",
+                "LegalProvisions": [
+                    {
+                        "Canton": "BL",
+                        "DocumentType": "LegalProvision",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "https://www.bav.admin.ch/dam/bav/de/dokumente/das-bav/finanzierung/faktenblatt_fernverkehr_konzessionierung.pdf.download.pdf/d_Faktenblatt_Fernverkehr_und_Konzessionierung%20.pdf"
+                            }
+                        ],
+                        "Title": "B61001"
+                    }
+                ],
+                "Legend": [
+                    {
+                        "AreaShare": "7824 m\u00b2",
+                        "Geom_Type": "AreaShare",
+                        "Information": "Belastet, keine sch\u00e4dlichen oder l\u00e4stigen Einwirkungen zu erwarten",
+                        "PartInPercent": "22.3%",
+                        "SymbolRef": "http://localhost:8090/www/oereb/StaoTyp2.png",
+                        "TypeCode": "StaoTyp2",
+                        "TypeCodelist": ""
+                    }
+                ],
+                "OtherLegend": [],
+                "ResponsibleOffice": [
+                    {
+                        "Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html"
+                    }
+                ],
+                "SymbolRef": "",
+                "Theme_Code": "GroundwaterProtectionZones",
+                "Theme_Text": "Grundwasserschutzzonen",
+                "TypeCode": "",
+                "baseLayers": {
+                    "layers": [
+                        {
+                            "baseURL": "http://wms.geo.admin.ch/",
+                            "customParams": {
+                                "TRANSPARENT": "true"
+                            },
+                            "imageFormat": "image/png",
+                            "layers": [
+                                "ch.bav.kataster-belasteter-standorte-oev.oereb"
+                            ],
+                            "opacity": 1.0,
+                            "styles": "default",
+                            "type": "wms"
+                        },
+                        {
+                            "baseURL": "http://wms.geo.admin.ch/",
+                            "customParams": {
+                                "TRANSPARENT": "true"
+                            },
+                            "imageFormat": "image/png",
+                            "layers": [
+                                "ch.swisstopo-vd.amtliche-vermessung"
+                            ],
+                            "opacity": 1.0,
+                            "styles": "default",
+                            "type": "wms"
+                        }
+                    ]
+                },
+                "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
+            },
+            {
+                "Geom_Type": "LengthShare",
+                "Hints": [
+                    {
+                        "Canton": "",
+                        "DocumentType": "Hint",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "http://example.com/goodhint1"
+                            }
+                        ],
+                        "Title": "Guter Ratschlag"
+                    },
+                    {
+                        "Canton": "",
+                        "DocumentType": "Hint",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "http://example.com/goodhint2"
+                            }
+                        ],
+                        "Title": "Guter Ratschlag"
+                    },
+                    {
+                        "Canton": "",
+                        "DocumentType": "Hint",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "http://example.com/goodhint3"
+                            }
+                        ],
+                        "Title": "Seht guter Ratschlag mit langem titel: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras convallis venenatis posuere. Nunc sollicitudin fermentum bibendum. Nulla ut massa enim. Sed rhoncus euismod venenatis"
+                    }
+                ],
+                "Information": "",
+                "Laws": [
+                    {
+                        "Abbreviation": "KRG",
+                        "Canton": "GR",
+                        "DocumentType": "Law",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "BR 801.100",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "https://www.gr-lex.gr.ch/frontend/versions/pdf_file_with_annex/2936?locale=de"
+                            }
+                        ],
+                        "Title": "Raumplanungsgesetz f\u00fcr den Kanton Graub\u00fcnden"
+                    },
+                    {
+                        "Abbreviation": "KRVO",
+                        "Canton": "GR",
+                        "DocumentType": "Law",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "BR 801.110",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "https://www.gr-lex.gr.ch/frontend/versions/pdf_file_with_annex/2934?locale=de"
+                            }
+                        ],
+                        "Title": "Raumplanungsverordnung f\u00fcr den Kanton Graub\u00fcnden"
+                    },
+                    {
+                        "Abbreviation": "RPG",
+                        "Canton": "",
+                        "DocumentType": "Law",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "SR 700",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "https://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "http://www.lexfind.ch/dtah/167348/2"
+                            }
+                        ],
+                        "Title": "Bundesgesetz \u00fcber die Raumplanung (Raumplanungsgesetz, RPG)"
+                    }
+                ],
+                "Lawstatus_Code": "inForce",
+                "Lawstatus_Text": "in Kraft",
+                "LegalProvisions": [
+                    {
+                        "Canton": "GR",
+                        "DocumentType": "LegalProvision",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "https://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "https://oereb-gr-preview.000.ch/api/attachments/197"
+                            }
+                        ],
+                        "Title": "Baugesetz, 3891.100"
+                    },
+                    {
+                        "Canton": "GR",
+                        "DocumentType": "LegalProvision",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "https://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "https://oereb-gr-preview.000.ch/api/attachments/198"
+                            }
+                        ],
+                        "Title": "Baugesetz, 3891.100"
+                    },
+                    {
+                        "Canton": "GR",
+                        "DocumentType": "LegalProvision",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "https://oereb-gr-preview.000.ch/api/attachments/213"
+                            }
+                        ],
+                        "Title": "Revision Ortsplanung, 07.447"
+                    },
+                    {
+                        "Canton": "GR",
+                        "DocumentType": "LegalProvision",
+                        "Lawstatus_Code": "inForce",
+                        "Lawstatus_Text": "in Kraft",
+                        "OfficialNumber": "",
+                        "ResponsibleOffice_Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "ResponsibleOffice_OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html",
+                        "TextAtWeb": [
+                            {
+                                "URL": "https://oereb-gr-preview.000.ch/api/attachments/214"
+                            }
+                        ],
+                        "Title": "Revision Ortsplanung, 07.447"
+                    }
+                ],
+                "Legend": [
+                    {
+                        "Geom_Type": "LengthShare",
+                        "Information": "Belastet, keine sch\u00e4dlichen oder l\u00e4stigen Einwirkungen zu erwarten",
+                        "LengthShare": "101 m",
+                        "SymbolRef": "http://localhost:8090/www/oereb/StaoTyp2.png",
+                        "TypeCode": "StaoTyp2",
+                        "TypeCodelist": ""
+                    },
+                    {
+                        "Geom_Type": "LengthShare",
+                        "Information": "Belastet, weder \u00fcberwachungs- noch sanierungsbed\u00fcrftig",
+                        "LengthShare": "101 m",
+                        "SymbolRef": "http://localhost:8090/www/oereb/StaoTyp1.png",
+                        "TypeCode": "StaoTyp1",
+                        "TypeCodelist": ""
+                    }
+                ],
+                "OtherLegend": [],
+                "ResponsibleOffice": [
+                    {
+                        "Name": "Bundesamt f\u00fcr Verkehr BAV",
+                        "OfficeAtWeb": "http://www.bav.admin.ch/themen/verkehrspolitik/00709/index.html"
+                    }
+                ],
+                "SymbolRef": "",
+                "Theme_Code": "ForestPerimeters",
+                "Theme_Text": "Statische Waldgrenzen",
+                "TypeCode": "",
+                "baseLayers": {
+                    "layers": [
+                        {
+                            "baseURL": "http://wms.geo.admin.ch/",
+                            "customParams": {
+                                "TRANSPARENT": "true"
+                            },
+                            "imageFormat": "image/png",
+                            "layers": [
+                                "ch.bav.kataster-belasteter-standorte-oev.oereb"
+                            ],
+                            "opacity": 1.0,
+                            "styles": "default",
+                            "type": "wms"
+                        },
+                        {
+                            "baseURL": "http://wms.geo.admin.ch/",
+                            "customParams": {
+                                "TRANSPARENT": "true"
+                            },
+                            "imageFormat": "image/png",
+                            "layers": [
+                                "ch.swisstopo-vd.amtliche-vermessung"
+                            ],
+                            "opacity": 1.0,
+                            "styles": "default",
+                            "type": "wms"
+                        }
+                    ]
+                },
+                "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
+            }
+        ],
+        "RealEstate_Type": "RealEstate",
+        "ThemeWithoutData": [
+            {
+                "Code": "MotorwaysBuildingLines",
+                "Text": "Baulinien Nationalstrassen"
+            },
+            {
+                "Code": "ContaminatedMilitarySites",
+                "Text": "Kataster der belasteten Standorte im Bereich des Milit\u00e4rs"
+            }
+        ],
+        "baseLayers": {
+            "layers": [
+                {
+                    "baseURL": "http://wms.geo.admin.ch/",
+                    "customParams": {
+                        "TRANSPARENT": "true"
+                    },
+                    "imageFormat": "image/png",
+                    "layers": [
+                        "ch.swisstopo-vd.amtliche-vermessung"
+                    ],
+                    "opacity": 1.0,
+                    "styles": "default",
+                    "type": "wms"
+                }
+            ]
+        },
+        "features": {
+            "features": {
+                "features": [
+                    {
+                        "geometry": {
+                            "coordinates": [
+                                [
+                                    [
+                                        [
+                                            2608901.529,
+                                            1261990.655
+                                        ],
+                                        [
+                                            2608898.665,
+                                            1261991.598
+                                        ],
+                                        [
+                                            2608895.798,
+                                            1261992.53
+                                        ],
+                                        [
+                                            2608892.928,
+                                            1261993.452
+                                        ],
+                                        [
+                                            2608890.054,
+                                            1261994.363
+                                        ],
+                                        [
+                                            2608880.256,
+                                            1261996.496
+                                        ],
+                                        [
+                                            2608873.932,
+                                            1261998.379
+                                        ],
+                                        [
+                                            2608867.594,
+                                            1262000.213
+                                        ],
+                                        [
+                                            2608861.242,
+                                            1262001.998
+                                        ],
+                                        [
+                                            2608854.876,
+                                            1262003.733
+                                        ],
+                                        [
+                                            2608848.497,
+                                            1262005.419
+                                        ],
+                                        [
+                                            2608844.698,
+                                            1262006.399
+                                        ],
+                                        [
+                                            2608796.844,
+                                            1261780.919
+                                        ],
+                                        [
+                                            2608799.632,
+                                            1261780.327
+                                        ],
+                                        [
+                                            2608782.789,
+                                            1261700.967
+                                        ],
+                                        [
+                                            2608782.961,
+                                            1261700.722
+                                        ],
+                                        [
+                                            2608783.177,
+                                            1261700.516
+                                        ],
+                                        [
+                                            2608783.43,
+                                            1261700.357
+                                        ],
+                                        [
+                                            2608783.71,
+                                            1261700.251
+                                        ],
+                                        [
+                                            2608784.005,
+                                            1261700.202
+                                        ],
+                                        [
+                                            2608855.37,
+                                            1261693.184
+                                        ],
+                                        [
+                                            2608870.718,
+                                            1261765.538
+                                        ],
+                                        [
+                                            2608943.776,
+                                            1261750.037
+                                        ],
+                                        [
+                                            2608952.331,
+                                            1261796.603
+                                        ],
+                                        [
+                                            2608961.92,
+                                            1261847.725
+                                        ],
+                                        [
+                                            2608969.845,
+                                            1261889.377
+                                        ],
+                                        [
+                                            2608975.711,
+                                            1261920.203
+                                        ],
+                                        [
+                                            2608913.546,
+                                            1261933.412
+                                        ],
+                                        [
+                                            2608912.328,
+                                            1261934.762
+                                        ],
+                                        [
+                                            2608911.162,
+                                            1261936.157
+                                        ],
+                                        [
+                                            2608910.049,
+                                            1261937.595
+                                        ],
+                                        [
+                                            2608908.991,
+                                            1261939.073
+                                        ],
+                                        [
+                                            2608907.988,
+                                            1261940.59
+                                        ],
+                                        [
+                                            2608907.043,
+                                            1261942.144
+                                        ],
+                                        [
+                                            2608906.157,
+                                            1261943.731
+                                        ],
+                                        [
+                                            2608905.331,
+                                            1261945.351
+                                        ],
+                                        [
+                                            2608904.566,
+                                            1261947.0
+                                        ],
+                                        [
+                                            2608903.863,
+                                            1261948.677
+                                        ],
+                                        [
+                                            2608903.223,
+                                            1261950.379
+                                        ],
+                                        [
+                                            2608902.648,
+                                            1261952.104
+                                        ],
+                                        [
+                                            2608909.114,
+                                            1261982.572
+                                        ],
+                                        [
+                                            2608909.22,
+                                            1261983.241
+                                        ],
+                                        [
+                                            2608909.256,
+                                            1261983.918
+                                        ],
+                                        [
+                                            2608909.221,
+                                            1261984.594
+                                        ],
+                                        [
+                                            2608909.115,
+                                            1261985.263
+                                        ],
+                                        [
+                                            2608908.941,
+                                            1261985.918
+                                        ],
+                                        [
+                                            2608908.699,
+                                            1261986.551
+                                        ],
+                                        [
+                                            2608908.393,
+                                            1261987.155
+                                        ],
+                                        [
+                                            2608908.026,
+                                            1261987.724
+                                        ],
+                                        [
+                                            2608907.601,
+                                            1261988.252
+                                        ],
+                                        [
+                                            2608907.124,
+                                            1261988.733
+                                        ],
+                                        [
+                                            2608901.529,
+                                            1261990.655
+                                        ]
+                                    ]
+                                ]
+                            ],
+                            "type": "MultiPolygon"
+                        },
+                        "properties": {},
+                        "type": "Feature"
+                    }
+                ],
+                "type": "FeatureCollection"
+            }
+        },
+        "isReduced": true,
+        "nbTocPages": 2
+    },
+    "lang": "de",
+    "layout": "oereb template",
+    "outputFormat": "png"
+}

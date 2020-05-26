@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.1.final using JasperReports Library version 6.1.1  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="titlepage" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="493" leftMargin="51" rightMargin="51" topMargin="28" bottomMargin="20" uuid="8ffd7940-5d69-45af-b3ac-fa15a5db24b6">
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<style name="Default" isDefault="true" fontName="Cadastra" fontSize="8"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+	<parameter name="isReduced" class="java.lang.Boolean"/>
+	<parameter name="FederalLogoRef" class="java.lang.String"/>
+	<parameter name="CantonalLogoRef" class="java.lang.String"/>
+	<parameter name="MunicipalityLogoRef" class="java.lang.String"/>
+	<parameter name="PLRCadastreAuthority_Name" class="java.lang.String"/>
+	<parameter name="PLRCadastreAuthority_Street" class="java.lang.String"/>
+	<parameter name="PLRCadastreAuthority_Number" class="java.lang.String"/>
+	<parameter name="PLRCadastreAuthority_PostalCode" class="java.lang.String"/>
+	<parameter name="PLRCadastreAuthority_City" class="java.lang.String"/>
+	<parameter name="LogoPLRCadastreRef" class="java.lang.String"/>
+	<parameter name="CreationDate" class="java.lang.String"/>
+	<parameter name="ExtractIdentifier" class="java.lang.String"/>
+	<parameter name="Footer" class="java.lang.String"/>
+	<parameter name="Signature" class="java.lang.String"/>
+	<parameter name="RealEstate_Number" class="java.lang.String"/>
+	<parameter name="RealEstate_EGRID" class="java.lang.String"/>
+	<parameter name="RealEstate_Municipality" class="java.lang.String"/>
+	<parameter name="RealEstate_FosNr" class="java.lang.String"/>
+	<parameter name="RealEstate_LandRegistryArea" class="java.lang.String"/>
+	<parameter name="RealEstate_SubunitOfLandRegister" class="java.lang.String"/>
+	<parameter name="Display_Certification" class="java.lang.Boolean"/>
+	<parameter name="Display_RealEstate_SubunitOfLandRegister" class="java.lang.Boolean"/>
+	<parameter name="mapSubReport" class="java.lang.String"/>
+	<parameter name="scalebarSubReport" class="java.lang.String"/>
+	<parameter name="northArrowSubReport" class="java.lang.String"/>
+	<parameter name="Certification" class="java.lang.String"/>
+	<parameter name="CertificationAtWeb" class="java.lang.String"/>
+	<title>
+		<band height="735">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<image scaleImage="RetainShape" hAlign="Center">
+				<reportElement x="0" y="0" width="124" height="40" uuid="7c892221-cb02-4698-a783-5dfda810a3c1">
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="mm"/>
+					<property name="local_mesure_unity" value="mm"/>
+					<property name="local_mesure_unitwidth" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.width" value="mm"/>
+					<property name="local_mesure_unitheight" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{FederalLogoRef}]]></imageExpression>
+			</image>
+			<image hAlign="Center">
+				<reportElement x="170" y="0" width="85" height="28" uuid="efa95ff7-66be-479e-a5d4-7a972cc2bd40">
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{CantonalLogoRef}]]></imageExpression>
+			</image>
+			<image hAlign="Center" onErrorType="Blank">
+				<reportElement x="269" y="0" width="85" height="28" uuid="a8102cb1-b343-41c0-9145-27029e01f557">
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="mm"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{MunicipalityLogoRef}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement stretchType="RelativeToTallestObject" x="269" y="29" width="85" height="15" uuid="82dfa141-758a-44fd-acc3-49cf1bef6c7d">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Cadastra" size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{RealEstate_Municipality}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="54" width="493" height="1" uuid="80768121-cc91-49e4-b862-c48d76eca58b">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="mm"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.2" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<image hAlign="Center">
+				<reportElement x="394" y="0" width="99" height="28" uuid="99ddf2bf-e690-4e1c-8eb3-63603a47bcf9">
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{LogoPLRCadastreRef}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="0" y="472" width="493" height="17" uuid="e6e5ab1e-49d6-4b4b-b852-d5c8e78ff672">
+					<property name="com.jaspersoft.studio.unit.x" value="cm"/>
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box bottomPadding="2">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{RealEstateLabel}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="193" y="472" width="300" height="17" uuid="1efcde4f-be46-49d8-8223-297d81bb148b">
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{RealEstate_Number}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="697" width="100" height="12" uuid="e0c1f775-61b3-41c4-a7ec-b8e68adeeb11">
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+					<printWhenExpression><![CDATA[$P{Display_Certification}]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font fontName="Cadastra" size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{CertificationLabel}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="725" width="493" height="10" uuid="f8b5d9a5-d842-43c8-b8d7-a8b68f697303">
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+					<printWhenExpression><![CDATA[$P{Display_Certification}]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font fontName="Cadastra" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{StampDateSignature}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement isPrintRepeatedValues="false" x="0" y="709" width="490" height="12" uuid="5090c0e3-b8c0-4df8-9447-d203a7d6a664">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<printWhenExpression><![CDATA[$P{Display_Certification}]]></printWhenExpression>
+				</reportElement>
+				<textElement markup="html">
+					<font fontName="Cadastra" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Certification} + (($P{CertificationAtWeb} == null) ? null : ", <a href='"+$P{CertificationAtWeb}+"' style=\"color:#4C8FBA\">"+$P{CertificationAtWeb}+"</a>")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="506" width="493" height="17" uuid="b1be1539-699e-4517-9297-bca1bb7db679">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box bottomPadding="1">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{MunicipalityLabel}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="489" width="493" height="17" uuid="f98aab4e-e92d-4173-ae93-8f4b81fa1fd6">
+					<property name="com.jaspersoft.studio.unit.x" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box bottomPadding="1">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{EGRID}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="193" y="506" width="300" height="17" uuid="3dcd1a9c-a8a9-427c-bc92-76df18584c3c">
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.x" value="mm"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{RealEstate_Municipality} +" (" +$P{RealEstate_FosNr}+")"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="523" width="493" height="17" uuid="22ad5f4f-d1eb-4eef-ad76-4458ea1734df">
+					<property name="com.jaspersoft.studio.unit.x" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+					<printWhenExpression><![CDATA[$P{Display_RealEstate_SubunitOfLandRegister} == false]]></printWhenExpression>
+				</reportElement>
+				<box bottomPadding="1">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{PropertyAreaLabel}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="193" y="523" width="300" height="17" uuid="c4b72298-a4f3-4641-8a67-e39b309c492c">
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+					<printWhenExpression><![CDATA[$P{Display_RealEstate_SubunitOfLandRegister} == false]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{RealEstate_LandRegistryArea}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="540" width="493" height="17" uuid="22ad5f4f-d1eb-4eef-ad76-4458ea1734df">
+					<property name="com.jaspersoft.studio.unit.x" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+					<printWhenExpression><![CDATA[$P{Display_RealEstate_SubunitOfLandRegister}]]></printWhenExpression>
+				</reportElement>
+				<box bottomPadding="1">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{PropertyAreaLabel}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="193" y="540" width="300" height="17" uuid="c4b72298-a4f3-4641-8a67-e39b309c492c">
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+					<printWhenExpression><![CDATA[$P{Display_RealEstate_SubunitOfLandRegister}]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{RealEstate_LandRegistryArea}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="523" width="493" height="17" uuid="eea52ed0-9480-42f2-affc-6295ac727898">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<printWhenExpression><![CDATA[$P{Display_RealEstate_SubunitOfLandRegister}]]></printWhenExpression>
+				</reportElement>
+				<box bottomPadding="1">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{CadastreLabel}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="193" y="523" width="300" height="17" uuid="21952a7d-f2e7-4421-b1ad-dad328683e6b">
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.x" value="mm"/>
+					<printWhenExpression><![CDATA[$P{Display_RealEstate_SubunitOfLandRegister}]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($P{RealEstate_SubunitOfLandRegister}.equals( "" )) ? $R{NoneGiven} : $P{RealEstate_SubunitOfLandRegister}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="603" width="493" height="17" uuid="e76937fd-554b-4f00-8ffd-90b86cef8a09">
+					<property name="com.jaspersoft.studio.unit.x" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.width" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+				</reportElement>
+				<box bottomPadding="1">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{CreationDateLabel}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="193" y="489" width="300" height="17" uuid="cf0c5b01-a2a9-4c4f-84f5-c677600e053c">
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{RealEstate_EGRID}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="193" y="603" width="300" height="17" uuid="80f1e41d-de38-4d0b-a5d3-bb27e4c0945e">
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CreationDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="586" width="493" height="17" uuid="0f93a209-d84d-40fb-bf93-7e32ab58897f">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+				</reportElement>
+				<box bottomPadding="1">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.2" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{PDFExtractIdLabel}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="193" y="586" width="300" height="17" uuid="d885e18b-7990-42da-b16f-065d96799b95">
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.x" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{ExtractIdentifier}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="false">
+				<reportElement x="0" y="85" width="493" height="65" uuid="b988c468-a5ad-430c-89da-c7c949f88426">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Cadastra" size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{isReduced} ? $R{ReducedPublicLawRestrictionsPDFExtract} : $R{FullPublicLawRestrictionsPDFExtract}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement x="0" y="164" width="493" height="280" uuid="3902d7cb-c85b-4b02-931d-28be7edf5696">
+					<property name="com.jaspersoft.studio.unit.x" value="cm"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<subreport>
+					<reportElement x="0" y="0" width="493" height="280" uuid="c2c685e2-6d43-4306-a30d-723a4d260214">
+						<property name="com.jaspersoft.studio.unit.x" value="cm"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<printWhenExpression><![CDATA[($P{mapSubReport} != null || !$P{mapSubReport}.equals( "" ))]]></printWhenExpression>
+					</reportElement>
+					<subreportExpression><![CDATA[$P{mapSubReport}]]></subreportExpression>
+				</subreport>
+			</frame>
+			<subreport>
+				<reportElement x="20" y="420" width="100" height="15" uuid="97516c4b-cd5c-4d73-bb49-572fa9a0ae9f">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<subreportExpression><![CDATA[$P{scalebarSubReport}]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement key="" mode="Transparent" x="62" y="395" width="17" height="17" uuid="084c6066-1790-4393-ab18-2bf4c06e8efe">
+					<property name="com.jaspersoft.studio.unit.width" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<subreportExpression><![CDATA[$P{northArrowSubReport}]]></subreportExpression>
+			</subreport>
+			<textField>
+				<reportElement x="0" y="620" width="493" height="17" uuid="31fad4c5-0743-461e-bfd0-26f16b41fc16">
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.x" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.width" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+				</reportElement>
+				<box bottomPadding="1">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{ResponsibleAuthorityLabel}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="0" y="620" width="493" height="38" uuid="665204be-fbc2-4efd-9280-8c24a0498dbb">
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="0.2"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Cadastra" size="9" isBold="false"/>
+					<paragraph leftIndent="192"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PLRCadastreAuthority_Name}+'\n'+$P{PLRCadastreAuthority_Street} +' '+$P{PLRCadastreAuthority_Number}+'\n'+$P{PLRCadastreAuthority_PostalCode}+' '+$P{PLRCadastreAuthority_City}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageFooter>
+		<band height="10">
+			<line>
+				<reportElement x="0" y="0" width="493" height="1" uuid="e7567aff-0a24-4119-af79-ab63b073c947">
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.8"/>
+				</graphicElement>
+			</line>
+			<textField evaluationTime="Master" isBlankWhenNull="true">
+				<reportElement x="385" y="1" width="108" height="8" uuid="eb3d34fb-8441-4b46-8130-7ff4f6060e9c">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Cadastra" size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[String.format($R{PageLabel}, $V{MASTER_CURRENT_PAGE}, $V{MASTER_TOTAL_PAGES})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="1" width="280" height="8" uuid="da7412c1-4c91-468a-b794-ecdeffd44184">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Cadastra" size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Footer}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>
