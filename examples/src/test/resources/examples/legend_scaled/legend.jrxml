@@ -12,7 +12,7 @@
 	<detail>
 		<band height="15" splitType="Prevent">
 			<printWhenExpression><![CDATA[!$F{name}.equals("")]]></printWhenExpression>
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight">
 				<reportElement x="0" y="0" width="185" height="13" uuid="804c03e8-4edc-4888-8dba-0c683717bfeb"/>
 				<textElement>
 					<font isBold="true"/>
