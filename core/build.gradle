@@ -199,13 +199,8 @@ dependencies {
 }
 
 def gitRevision() {
-    try {
-        def cmd = "git rev-parse HEAD"
-        def proc = cmd.execute()
-        return proc.getText().trim()
-    } catch (Exception e) {
-        return 'Error occurred while trying to execute git commandline tool: ' + e
-    }
+    def gitRev = System.getenv('GIT_HEAD')
+    return gitRev != null ? gitRev : 'git rev-parse HEAD'.execute().text
 }
 
 compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
@@ -247,7 +242,6 @@ gretty {
     systemProperty 'org.mortbay.jetty.Request.maxFormContentSize', '1048576'
     httpPort = project.hasProperty('httpPort') ? project.httpPort as int : 8080
 }
-
 
 task show {
 }
@@ -302,11 +296,4 @@ startScripts {
 task explodedWar(type: Sync) {
     into "${buildDir}/webapp"
     with war
-}
-
-task createDocker(type: Exec, dependsOn: 'explodedWar') {
-    commandLine 'docker', 'build', '--tag=camptocamp/mapfish_print:latest', '.'
-}
-task validateDocker(type: Exec, dependsOn: 'createDocker') {
-    commandLine '../ci/validate_container'
 }

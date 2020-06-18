@@ -1,7 +1,10 @@
-FROM camptocamp/tomcat-logback:8.5-jre8
+FROM mapfish_print_builder AS builder
+
+
+FROM camptocamp/tomcat-logback:8.5-jre8 AS runner
 LABEL maintainer="info@camptocamp.com"
 
-COPY build/webapp ${CATALINA_HOME}/webapps/ROOT
+COPY --from=builder /src/core/build/webapp ${CATALINA_HOME}/webapps/ROOT/
 COPY docker /
 
 RUN rm ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/logback-*.jar ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/slf4j-*.jar && \
@@ -19,4 +22,11 @@ ENV LOG_LEVEL=INFO \
     APACHE_LOG_LEVEL=WARN \
     SQL_LOG_LEVEL=WARN
 
-CMD ["/usr/local/tomcat/bin/docker_start_print.sh"]
+CMD ["/usr/local/tomcat/bin/docker-start-print"]
+
+FROM runner AS tester
+
+COPY jettyRunExtraFiles/mapfish-spring-application-context-override-acceptencetests.xml \
+    webapps/ROOT/WEB-INF/classes/mapfish-spring-application-context-override.xml
+
+FROM runner AS final

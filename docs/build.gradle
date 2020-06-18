@@ -4,7 +4,6 @@ apply plugin: 'idea'
 
 defaultTasks 'build'
 
-//configurations.compile.transitive = false
 dependencies {
     compile project(':core')
     compile "org.codehaus.groovy:groovy-all:$project.groovyVersion",

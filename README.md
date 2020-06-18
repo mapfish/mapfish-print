@@ -10,7 +10,7 @@ company, and use their appropriate channel.
 Prerequisites
 =============
 
-Building mapfish-print requires java 8 and gradle 5.5.1.
+Building mapfish-print requires make and Docker.
 
 Build
 =====
@@ -18,7 +18,7 @@ Build
 Execute the following command():
 
 ``` {.sourceCode .}
-> ./gradlew build
+> make build
 ```
 
 This will build three artifacts: print-servlet-xxx.war, print-lib.jar, print-standalone.jar
@@ -49,12 +49,6 @@ The following command will build and upload all artifacts to the maven central r
 
 ``` {.sourceCode .}
 > ./gradlew uploadArchives -DsshPassphrase=...
-```
-
-You can as well generate a docker image using this command:
-
-``` {.sourceCode .}
-> ./gradlew createDocker
 ```
 
 To use in Eclipse

@@ -18,7 +18,7 @@ templates:
           rotation: 0
           layers:
             - type: WMS
-              baseURL: "http://localhost:8090/wms"
+              baseURL: "http://geoserver:8080/wms"
               opacity: 1
               layers: ["tiger:tiger_roads"]
               imageFormat: "image/png"
@@ -26,12 +26,14 @@ templates:
               customParams:
                 TRANSPARENT: "true"
             - type: "OSM"
-              baseURL: "http://localhost:8090/www/osm/"
+              baseURL: "http://geoserver:8080/www/osm/"
               imageExtension: "png"
     processors: &PROCESSORS
       - !restrictUris
         matchers:
-         - !localMatch {}
+         - !dnsMatch
+           host: geoserver
+           port: 8080
          - !dnsMatch
            host: mapfish.org
            port: 80

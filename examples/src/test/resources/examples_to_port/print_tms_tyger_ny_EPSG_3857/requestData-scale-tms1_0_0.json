@@ -13,7 +13,7 @@
             "layers":
             [
                 {
-                    "baseURL": "http://localhost:8090/gwc/service/tms/",
+                    "baseURL": "http://geoserver:8080/gwc/service/tms/",
                     "opacity": 1,
                     "singleTile": false,
                     "type": "TMS",
@@ -55,7 +55,7 @@
                     "format": "png"
                 },
                 {
-                    "baseURL": "http://localhost:8090/wms",
+                    "baseURL": "http://geoserver:8080/wms",
                     "opacity": 1,
                     "type": "WMS",
                     "layers":

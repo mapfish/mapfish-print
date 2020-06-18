@@ -1,0 +1,18 @@
+---
+
+version: '2.1'
+
+services:
+  geoserver:
+    image: camptocamp/geoserver:2.17
+    volumes:
+      - /tmp/geoserver-data:/mnt/geoserver_datadir
+
+  print:
+    image: mapfish_print_tester
+    volumes:
+      - ./examples/src/test/resources/examples:/usr/local/tomcat/webapps/ROOT/print-apps
+
+  tests:
+    image: mapfish_print_builder
+    command: sleep infinity

@@ -8,7 +8,7 @@
       "dpi": 128,
       "layers": [
         {
-          "geoJson": "http://localhost:8090/tiger/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tiger:tiger_roads&maxFeatures=1000000&outputFormat=application%2Fjson&srsName=EPSG:3857",
+          "geoJson": "http://geoserver:8080/tiger/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=tiger:tiger_roads&maxFeatures=1000000&outputFormat=application%2Fjson&srsName=EPSG:3857",
           "style": {
             "version": "2",
             "strokeColor": "gray",
@@ -60,7 +60,7 @@
             "[NAME = 'Shubert Aly']": {
               "symbolizers": [
                 {
-                  "externalGraphic": "http://localhost:8090/www/icons/men-at-work.jpeg",
+                  "externalGraphic": "http://geoserver:8080/www/icons/men-at-work.jpeg",
                   "graphicWidth": 32,
                   "graphicOpacity" : 1.0,
                   "graphicFormat" : "image/jpeg",

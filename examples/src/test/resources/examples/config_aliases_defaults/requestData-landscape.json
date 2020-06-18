@@ -9,7 +9,7 @@
       "center": [-8235878.4938425, 4979784.7605681],
       "scale": 26000,
       "layers": [{
-          "baseURL": "http://localhost:8090/wms",
+          "baseURL": "http://geoserver:8080/wms",
           "opacity": 1,
           "type": "WMS",
           "layers": ["tiger:tiger_roads"],

@@ -1,4 +1,5 @@
 * text whitespace=trailing-space,tab-in-indent,cr-at-eol,tabwidth=4 eol=lf
+Makefile text whitespace=indent-with-non-tab,tabwidth=2
 *.jrxml text whitespace=indent-with-non-tab,tabwidth=2
 *.rst text conflict-marker-size=100
 *.md text conflict-marker-size=100

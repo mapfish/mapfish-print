@@ -259,8 +259,8 @@ public class ExamplesTest {
 
                         JSONObject headers = new JSONObject();
                         headers.append("Cookie", "examplesTestCookie=value");
-                        headers.append("Referer", "http://localhost:8080/print");
-                        headers.append("Host", "localhost");
+                        headers.append("Referer", "http://print:8080/print");
+                        headers.append("Host", "print");
                         headers.append("User-Agent",
                                        "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:31.0) Gecko/20100101 " +
                                                "Firefox/31.0");
@@ -275,6 +275,7 @@ public class ExamplesTest {
 
                         jsonSpec.getJSONObject(JSON_ATTRIBUTES).getInternalObj().put(
                                 JSON_REQUEST_HEADERS, headersAttribute);
+                        // TODO do a real request
                         this.mapPrinter.print("main", jsonSpec, out);
 
                         BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));

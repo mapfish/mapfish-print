@@ -1,8 +1,5 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
-apply plugin: 'war'
-apply plugin: 'org.gretty'
-
 repositories {
     maven { url 'https://maven.restlet.org' }
     jcenter()
@@ -10,7 +7,7 @@ repositories {
 
 dependencies {
     testCompile(
-            project(':core')
+        project(':core'),
     )
 }
 
@@ -23,78 +20,9 @@ configurations {
     compile.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }
 
-def  getTempDir() {
-    try {
-        def cmd = "mktemp -d"
-        def proc = cmd.execute()
-        return proc.getText().trim()
-    } catch (Exception e) {
-        return 'Error occurred while trying to execute "mktemp -d": ' + e
-    }
-}
-
-
-def tmpDir = getTempDir()
-
-
-def examplesDir = "${project(':examples').projectDir}/src/test/resources/examples"
-
-task copyExamplesToTmpDir(type: Copy){
-    from "${projectDir}/geoserver-data"
-    into "${tmpDir}"
-}
-
-
-task geoserverRun(type: Exec) {
-    description 'Run GeoServer with test data'
-    commandLine 'docker', 'run', '--rm', '--name=geoserver', '--publish=8090:8080', "--volume=${tmpDir}:/mnt/geoserver_datadir", '--detach', 'camptocamp/geoserver'
-    dependsOn 'copyExamplesToTmpDir'
-
-}
-
-task geoserverSleep(type: Exec) {
-    commandLine 'sleep', '10'
-    dependsOn 'geoserverRun'
-}
-
 task geoserver(type: Exec) {
     description 'Run and wait for GeoServer with test data'
-    commandLine 'curl', 'http://localhost:8090/web/', '--output', '/dev/null'
-    dependsOn 'geoserverSleep'
-}
-
-task geoserverCleanup(type: Exec) {
-    description 'Run and wait for GeoServer with test data'
-    commandLine 'docker', 'exec', 'geoserver', 'rm', '-r', '/mnt/geoserver_datadir/logs'
-}
-
-task geoserverKillContainer(type: Exec) {
-    description 'Run and wait for GeoServer with test data'
-    commandLine 'docker', 'rm', '-f', 'geoserver'
-    dependsOn 'geoserverCleanup'
-}
-task geoserverRemoveTmpDir(type: Exec) {
-    description 'Run and wait for GeoServer with test data'
-    commandLine 'rm' ,'-r', "${tmpDir}"
-    dependsOn 'geoserverKillContainer'
-}
-
-gretty {
-    // configuration to serve a web-app containing test data required for
-    // the integration tests
-    servletContainer = 'jetty9'
-    integrationTestTask = 'integrationTest'
-}
-
-farm {
-    // configuration to start a server running mfp, geoserver and the web-app
-    // containing test data. start with `./gradlew examples:farmRun`
-    systemProperty 'path_to_examples', examplesDir
-    jvmArgs = ['-Xmx500M']
-    scanInterval = 0
-
-    webapp ':core'
-    webapp ':examples'
+    commandLine 'curl', 'http://geoserver:8080/web/', '--output', '/dev/null'
 }
 
 // prevent that the tests target can be directly called. the integration tests
@@ -116,14 +44,5 @@ task integrationTest(type: Test) {
         junitXml.enabled = true
         html.enabled = true
     }
-//    dependsOn ':core:compileJava', 'geoserver', 'farmIntegrationTest'
 }
 integrationTest.dependsOn ':core:compileJava', 'geoserver'
-integrationTest.finalizedBy 'geoserverCleanup'
-
-afterEvaluate {
-    build.dependsOn project.tasks['farmIntegrationTest']
-    farmRun.dependsOn geoserver
-    farmBeforeIntegrationTest.dependsOn geoserver
-//    build.dependsOn project.tasks['integrationTest']
-}

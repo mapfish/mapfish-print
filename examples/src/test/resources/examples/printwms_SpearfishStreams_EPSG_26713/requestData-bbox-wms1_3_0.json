@@ -10,7 +10,7 @@
       "layers": [{
         "type": "WMS",
         "layers": ["sf:streams"],
-        "baseURL": "http://localhost:8090/wms",
+        "baseURL": "http://geoserver:8080/wms",
         "imageFormat": "image/png",
         "version": "1.3.0",
         "customParams":{"TRANSPARENT":"true","EXCEPTIONS":"INIMAGE"}

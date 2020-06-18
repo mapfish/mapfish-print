@@ -6,10 +6,9 @@ import subprocess
 
 
 def publish(docker_version):
-    print("Deploying image to docker hub for tag " + docker_version)
-    subprocess.check_call(["./gradlew", "--console=plain", "validateDocker"])
+    print("Deploying image to Docker hub for tag " + docker_version)
     image_name = "camptocamp/mapfish_print:" + docker_version
-    subprocess.check_call(["docker", "tag", "camptocamp/mapfish_print:latest", image_name])
+    subprocess.check_call(["docker", "tag", "camptocamp/mapfish_print", image_name])
     subprocess.check_call(["docker", "push", image_name])
 
 
@@ -31,7 +30,7 @@ def main():
             subprocess.check_call(["./gradlew", "publish"])
 
     elif branch_match:
-        publish(branch_match.group(1).replace('/', '_'))
+        publish(branch_match.group(1).replace("/", "_"))
 
     else:
         print("Not deploying image")
