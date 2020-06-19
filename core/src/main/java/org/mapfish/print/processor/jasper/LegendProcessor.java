@@ -373,33 +373,37 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                 BufferedImage image = null;
                 final URI uri = this.icon.toURI();
                 final String metricName =
-                        LegendProcessor.class.getName() + ".read." + StatsUtils.quotePart(uri.getHost());
+                    LegendProcessor.class.getName() + ".read." + StatsUtils.quotePart(uri.getHost());
                 try {
-                    this.context.stopIfCanceled();
-                    final ClientHttpRequest request = this.clientHttpRequestFactory.createRequest(
+                    if (this.icon.getProtocol().equals("data")) {
+                        image = ImageIO.read(this.icon);
+                    } else {
+                        this.context.stopIfCanceled();
+                        final ClientHttpRequest request = this.clientHttpRequestFactory.createRequest(
                             uri, HttpMethod.GET);
-                    final Timer.Context timer = LegendProcessor.this.metricRegistry.timer(metricName).time();
-                    try (ClientHttpResponse httpResponse = request.execute()) {
-                        if (httpResponse.getStatusCode() == HttpStatus.OK) {
-                            image = ImageIO.read(httpResponse.getBody());
-                            if (image == null) {
-                                LOGGER.warn("The URL: {} is NOT an image format that can be decoded",
-                                            this.icon);
+                        final Timer.Context timer = LegendProcessor.this.metricRegistry.timer(metricName).time();
+                        try (ClientHttpResponse httpResponse = request.execute()) {
+                            if (httpResponse.getStatusCode() == HttpStatus.OK) {
+                                image = ImageIO.read(httpResponse.getBody());
+                                if (image == null) {
+                                    LOGGER.warn("The URL: {} is NOT an image format that can be decoded",
+                                        this.icon);
+                                } else {
+                                    timer.stop();
+                                }
                             } else {
-                                timer.stop();
-                            }
-                        } else {
-                            LOGGER.warn(
+                                LOGGER.warn(
                                     "Failed to load image from: {} due to server side error.\n" +
-                                            "\tResponse Code: {}\n" +
-                                            "\tResponse Text: {}\n" +
-                                            "\tWith Headers:\n\t{}",
+                                        "\tResponse Code: {}\n" +
+                                        "\tResponse Text: {}\n" +
+                                        "\tWith Headers:\n\t{}",
                                     this.icon, httpResponse.getStatusCode(), httpResponse.getStatusText(),
                                     String.join(
-                                            "\n\t",
-                                            Utils.getPrintableHeadersList(httpResponse.getHeaders())
+                                        "\n\t",
+                                        Utils.getPrintableHeadersList(httpResponse.getHeaders())
                                     )
-                            );
+                                );
+                            }
                         }
                     }
                 } catch (Exception e) {
