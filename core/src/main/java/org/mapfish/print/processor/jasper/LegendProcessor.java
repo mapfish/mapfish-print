@@ -381,7 +381,8 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
                         this.context.stopIfCanceled();
                         final ClientHttpRequest request = this.clientHttpRequestFactory.createRequest(
                             uri, HttpMethod.GET);
-                        final Timer.Context timer = LegendProcessor.this.metricRegistry.timer(metricName).time();
+                        final Timer.Context timer =
+                            LegendProcessor.this.metricRegistry.timer(metricName).time();
                         try (ClientHttpResponse httpResponse = request.execute()) {
                             if (httpResponse.getStatusCode() == HttpStatus.OK) {
                                 image = ImageIO.read(httpResponse.getBody());
