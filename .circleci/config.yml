@@ -21,6 +21,8 @@ jobs:
       - checkout
 
       - run:
+          command: sudo rm /etc/apt/sources.list.d/*.list
+      - run:
           command: sudo apt update
       - run:
           name: Install OS dependencies
