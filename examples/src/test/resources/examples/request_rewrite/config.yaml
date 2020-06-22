@@ -17,6 +17,5 @@ templates:
         httpProcessors:
         - !mapUri
             mapping:
-              (https?)://c2c/(.*): "http://www.camptocamp.com/$2"
               (https?)://lh/(.*): "http://localhost:8090/$2"
     - !createMap {}
