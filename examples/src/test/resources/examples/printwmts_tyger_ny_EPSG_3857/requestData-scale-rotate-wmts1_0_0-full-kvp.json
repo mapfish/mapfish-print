@@ -10,7 +10,7 @@
       "scale": 25000,
       "layers": [
         {
-          "baseURL": "http://localhost:8090/wms",
+          "baseURL": "http://geoserver:8080/wms",
           "opacity": 1,
           "type": "WMS",
           "layers": ["tiger:tiger_roads"],
@@ -21,7 +21,7 @@
           }
         }, {
           "type": "WMTS",
-          "baseURL": "http://localhost:8090/gwc/service/wmts",
+          "baseURL": "http://geoserver:8080/gwc/service/wmts",
           "opacity": 1.0,
           "layer": "tiger-ny",
           "version": "1.0.0",

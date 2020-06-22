@@ -269,8 +269,8 @@ public class PrintApiTest extends AbstractApiTest {
             ref = createResult.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
             String statusUrl = createResult.getString(MapPrinterServlet.JSON_STATUS_LINK);
             downloadUrl = createResult.getString(MapPrinterServlet.JSON_DOWNLOAD_LINK);
-            assertEquals("/print/print/status/" + ref + ".json", statusUrl);
-            assertEquals("/print/print/report/" + ref, downloadUrl);
+            assertEquals("/print/status/" + ref + ".json", statusUrl);
+            assertEquals("/print/report/" + ref, downloadUrl);
         }
 
         // check status
@@ -515,7 +515,7 @@ public class PrintApiTest extends AbstractApiTest {
         ClientHttpRequest request = getRequest(path, HttpMethod.GET);
         HttpURLConnection urlConnection = (HttpURLConnection) request.getURI().toURL().openConnection();
         assertEquals(HttpStatus.FOUND.value(), urlConnection.getResponseCode());
-        assertEquals("https://localhost:8443/print/" + path, urlConnection.getHeaderField("Location"));
+        assertEquals("https://print:8443/" + path, urlConnection.getHeaderField("Location"));
         urlConnection.disconnect();
     }
 

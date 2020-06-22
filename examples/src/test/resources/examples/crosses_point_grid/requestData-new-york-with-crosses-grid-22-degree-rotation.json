@@ -22,7 +22,7 @@
           }
         },
         {
-          "baseURL": "http://localhost:8090/wms",
+          "baseURL": "http://geoserver:8080/wms",
           "opacity": 1,
           "type": "WMS",
           "layers": ["tiger-ny"],

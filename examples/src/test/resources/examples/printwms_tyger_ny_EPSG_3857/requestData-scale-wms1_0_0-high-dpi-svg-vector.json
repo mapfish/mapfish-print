@@ -8,11 +8,11 @@
     "layers": [
       {
         "type": "geojson",
-        "geojson": "http://localhost:8090/www/geojson/ny-roads-3857.json",
+        "geojson": "http://geoserver:8080/www/geojson/ny-roads-3857.json",
         "renderAsSvg": true
       },
       {
-        "baseURL": "http://localhost:8090/wms",
+        "baseURL": "http://geoserver:8080/wms",
         "customParams": {"TRANSPARENT": "true"},
         "imageFormat": "image/png",
         "layers": ["tiger-ny"],

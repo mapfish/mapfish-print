@@ -18,3 +18,5 @@
 /examples/geoserver-data/security/version.properties
 /examples/geoserver-data/workspaces/default.xml
 /examples/geoserver-data/wps.xml
+
+/CI.asc

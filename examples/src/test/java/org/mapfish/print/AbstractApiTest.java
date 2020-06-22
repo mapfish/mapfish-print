@@ -19,7 +19,7 @@ import java.util.Map;
 
 public abstract class AbstractApiTest {
 
-    protected static final String PRINT_SERVER = "http://localhost:8080/print/";
+    protected static final String PRINT_SERVER = "http://print:8080/";
 
     protected ClientHttpRequestFactory httpRequestFactory = new MfClientHttpRequestFactoryImpl(10, 10);
 

@@ -74,7 +74,8 @@ class GenerateDocs {
 
         springAppContext.stop()
 
-        def gitRev = 'git rev-parse HEAD'.execute().text
+        def gitRev = System.getenv('GIT_HEAD')
+        gitRev = gitRev != null ? gitRev : 'git rev-parse HEAD'.execute().text
         Map<String, String> version = new HashMap<String, String>();
         version.put("short", gitRev.substring(0, 8));
         version.put("long", gitRev);

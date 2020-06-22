@@ -124,5 +124,4 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     tasks.withType(Javadoc) {
         options.encoding = 'utf-8'
     }
-
 }
