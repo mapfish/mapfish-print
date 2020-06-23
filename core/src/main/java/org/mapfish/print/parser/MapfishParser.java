@@ -4,6 +4,7 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.MissingPropertyException;
 import org.mapfish.print.attribute.PrimitiveAttribute;
+import org.mapfish.print.url.data.Handler;
 import org.mapfish.print.wrapper.ObjectMissingException;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
@@ -214,7 +215,7 @@ public final class MapfishParser {
             value = layer.getArray(name);
         } else if (type == URL.class) {
             try {
-                value = new URL(layer.getString(name));
+                value = new URL(null, layer.getString(name), new Handler());
             } catch (MalformedURLException e) {
                 throw ExceptionUtils.getRuntimeException(e);
             }
@@ -301,7 +302,7 @@ public final class MapfishParser {
             value = array.getArray(i);
         } else if (type == URL.class) {
             try {
-                value = new URL(array.getString(i));
+                value = new URL(null, array.getString(i), new Handler());
             } catch (MalformedURLException e) {
                 throw ExceptionUtils.getRuntimeException(e);
             }
