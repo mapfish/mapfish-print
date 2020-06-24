@@ -11,6 +11,7 @@ buildscript {
         classpath 'org.gretty:gretty:3.0.3'
         classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:2.0.0"
         classpath "se.bjurr.violations:violations-gradle-plugin:1.40"
+        classpath 'org.owasp:dependency-check-gradle:5.3.2'
     }
 }
 
@@ -28,6 +29,11 @@ allprojects {
     ext.groovyVersion = "3.0.4"
     ext.spotbugVersion = '3.1.12'
     ext.jasperreportVersion = "6.13.0"
+
+    apply plugin: 'org.owasp.dependencycheck'
+    dependencyCheck {
+        outputDirectory = "security-report"
+    }
 }
 
 configurations.all {
@@ -37,6 +43,7 @@ configurations.all {
 }
 
 apply plugin: 'org.gretty'
+apply plugin: 'org.owasp.dependencycheck'
 
 import org.akhikhl.gretty.AppStartTask
 
