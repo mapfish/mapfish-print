@@ -436,7 +436,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
             assertEquals("/print/report/" + ref, downloadURL);
 
             timeElapsed = statusJson.getInt(MapPrinterServlet.JSON_ELAPSED_TIME);
-            assertTrue(lastTimeElapsed <= timeElapsed);
+            assertTrue("lastTimeElapsed: " + lastTimeElapsed + ", timeElapsed: " + timeElapsed, lastTimeElapsed <= timeElapsed);
             lastTimeElapsed = timeElapsed;
 
             reportReady = statusJson.getBool(MapPrinterServlet.JSON_DONE);

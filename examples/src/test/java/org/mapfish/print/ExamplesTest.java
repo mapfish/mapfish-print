@@ -1,18 +1,37 @@
 package org.mapfish.print;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.core.util.StatusPrinter;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Pattern;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.RunListener;
+import org.locationtech.jts.util.Assert;
+import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.url.data.Handler;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -22,24 +41,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URL;
-import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.regex.Pattern;
-import javax.imageio.ImageIO;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
+import ch.qos.logback.core.util.StatusPrinter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mapfish.print.servlet.MapPrinterServlet.JSON_ATTRIBUTES;
-import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
 
 /**
  * To run this test make sure that the test GeoServer is running:
@@ -162,9 +168,11 @@ public class ExamplesTest {
             }
         }
 
-        assertEquals(String.format("All example directory names must match the pattern: '%s'.  " +
-                                           "The following fail that test: %s", namePattern, errors), 0,
-                     errors.length());
+        assertEquals(String.format(
+            "All example directory names must match the pattern: '%s'.  " +
+            "The following fail that test: %s", namePattern, errors),
+            0, errors.length()
+        );
     }
 
     @Test
@@ -255,30 +263,45 @@ public class ExamplesTest {
                             jsonSpec.getInternalObj().put("outputFormat", "png");
                             outputFormat = "png";
                         }
-                        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-                        JSONObject headers = new JSONObject();
-                        headers.append("Cookie", "examplesTestCookie=value");
-                        headers.append("Referer", "http://print:8080/print");
-                        headers.append("Host", "print");
-                        headers.append("User-Agent",
-                                       "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:31.0) Gecko/20100101 " +
-                                               "Firefox/31.0");
-                        headers.append("Accept",
-                                       "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-                        headers.append("Accept-Language", "en-US,en;q=0.5");
-                        headers.append("Accept-Encoding", "gzip, deflate");
-                        headers.append("Connection", "keep-alive");
-                        headers.append("Cache-Control", "max-age=0");
-                        JSONObject headersAttribute = new JSONObject();
-                        headersAttribute.put(JSON_REQUEST_HEADERS, headers);
+                        URL url = new URL(
+                            AbstractApiTest.PRINT_SERVER + "print/" + example.getName() +
+                            MapPrinterServlet.CREATE_AND_GET_URL + "." + outputFormat
+                        );
+                        URLConnection connection = url.openConnection();
+                        HttpURLConnection http = (HttpURLConnection)connection;
+                        http.setRequestMethod("POST");
+                        http.setDoInput(true);
+                        http.setDoOutput(true);
+                        byte[] data = requestData.getBytes(StandardCharsets.UTF_8);
+                        http.setFixedLengthStreamingMode(data.length);
+                        http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                        connection.setRequestProperty("Referer", "http://print:8080");
+                        connection.setRequestProperty("Cache-Control", "max-age=0");
+                        http.connect();
+                        try (OutputStream os = http.getOutputStream()) {
+                            os.write(data);
+                        }
+                        int responseCode = http.getResponseCode();
 
-                        jsonSpec.getJSONObject(JSON_ATTRIBUTES).getInternalObj().put(
-                                JSON_REQUEST_HEADERS, headersAttribute);
-                        // TODO do a real request
-                        this.mapPrinter.print("main", jsonSpec, out);
+                        InputStream inputStr = connection.getInputStream();
+                        if (responseCode != 200) {
+                            String encoding = connection.getContentEncoding() == null ? "UTF-8"
+                                    : connection.getContentEncoding();
+                            String response = IOUtils.toString(inputStr, encoding);
+                            Assert.isTrue(false, response);
+                        }
 
-                        BufferedImage image = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
+                        Map<String, String> content_types = new HashMap<String, String>();
+                        content_types.put("png", "image/png");
+                        content_types.put("jpg", "image/jpeg");
+                        content_types.put("jpeg", "image/jpeg");
+                        content_types.put("tif", "image/tiff");
+                        content_types.put("tiff", "image/tiff");
+                        content_types.put("pdf", "application/pdf");
+                        Assert.equals(content_types.get(outputFormat), http.getHeaderField("Content-Type"));
+
+                        BufferedImage image = ImageIO.read(connection.getInputStream());
 
                         if (ArrayUtils.contains(BITMAP_FORMATS, outputFormat)) {
                             File expectedOutputDir = new File(example, "expected_output");
