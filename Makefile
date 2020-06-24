@@ -2,6 +2,9 @@ GIT_HEAD_ARG = --build-arg=GIT_HEAD=$(shell git rev-parse HEAD)
 
 .PHONY: build
 build:
+	# Requred and not nesseerly exists
+	touch CI.asc
+
 	docker build $(GIT_HEAD_ARG) --target=builder --tag=mapfish_print_builder .
 	docker build $(GIT_HEAD_ARG) .
 

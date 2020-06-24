@@ -17,3 +17,4 @@ examples/*.jasper
 
 build/
 */build/
+examples/geoserver-data

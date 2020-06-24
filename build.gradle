@@ -8,7 +8,6 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.gretty:gretty:3.0.3'
         classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:2.0.0"
         classpath "se.bjurr.violations:violations-gradle-plugin:1.40"
         classpath 'org.owasp:dependency-check-gradle:5.3.2'
@@ -42,13 +41,7 @@ configurations.all {
     }
 }
 
-apply plugin: 'org.gretty'
 apply plugin: 'org.owasp.dependencycheck'
-
-import org.akhikhl.gretty.AppStartTask
-
-task appRun(type: AppStartTask) {
-}
 
 configure(subprojects.findAll { ['core', 'examples', 'docs'].contains(it.name) }) {
     repositories {
@@ -113,7 +106,6 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
                 "junit:junit:${project.junitVersion}",
                 'org.mockito:mockito-core:3.3.3',
         )
-
     }
 
     test {

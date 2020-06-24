@@ -9,22 +9,26 @@ ENV GIT_HEAD=${GIT_HEAD}
 
 WORKDIR /src
 
-COPY gradle/ /src/gradle/
-COPY gradle.properties build.gradle settings.gradle CI.asc /src/
-COPY core/build.gradle /src/core/
-COPY examples/build.gradle /src/examples/
-COPY docs/build.gradle /src/docs/
-COPY publish/build.gradle /src/publish/
-RUN gradle dependencies
-
-COPY . ./
-
-RUN mkdir -p /usr/local/tomcat/webapps/ROOT/print-apps
+COPY gradle/ ./gradle/
+COPY gradle.properties build.gradle settings.gradle CI.asc ./
+COPY examples/build.gradle ./examples/
+COPY docs/build.gradle ./docs/
+COPY publish/build.gradle ./publish/
+COPY core ./core
+COPY checkstyle_* ./
 
 # '&& touch success || true' is a trick to be able to get out some artifacts
-RUN gradle build :core:explodedWar :core:libSourcesJar :core:libJavadocJar && touch success || true
+RUN gradle :core:build :core:explodedWar :core:libSourcesJar :core:libJavadocJar && touch success || true
 
+COPY publish ./publish
+
+RUN [ -e success ] &&  gradle :publish:build && touch success-publish || true
+
+COPY examples ./examples
+COPY docs ./docs
+
+RUN [ -e success ] && gradle :examples:build :docs:build && touch success-examples-docs || true
 
 FROM builder AS test-builder
 
-RUN [ -e success ]
+RUN [ -e success ] && [ -e success-publish ] && [ -e success-examples-docs ]

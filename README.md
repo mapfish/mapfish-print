@@ -42,25 +42,12 @@ The test (part of the build) requires the 'Liberation Sans' font, which can be d
 
 </div>
 
-Deploy
-======
+Create new stabilisation branch
+===============================
 
-The following command will build and upload all artifacts to the maven central repository.
-
-``` {.sourceCode .}
-> ./gradlew uploadArchives -DsshPassphrase=...
-```
-
-To use in Eclipse
-=================
-
-Create Eclipse project metadata:
-
-``` {.sourceCode .}
-> ./gradlew eclipse
-```
-
-Import project into Eclipse
+- Create a new branch name x.y from master.
+- Create a new label names 'backport x.y'.
+- On the master branch update the `.github/workflows/rebuild.yaml` file by adding the new branch name.
 
 Run from commandline
 ====================
@@ -84,15 +71,16 @@ If you want to run in debug mode you can do the following:
 > ./gradlew print --debug-jvm -PprintArgs="-config ../examples/src/test/resources/examples/simple/config.yaml -spec ../examples/src/test/resources/examples/simple/requestData.json -output ./output.pdf"
 ```
 
-Run using gretty/jettyRun
-=========================
+To use in Eclipse
+=================
 
-The following command will run mapfish print using gretty/jetty. The default port is 8080, but can be changed
-using -PhttpPort="..." parameter.
+Create Eclipse project metadata:
 
 ``` {.sourceCode .}
-> ./gradlew jettyRun -PhttpPort=8090
+> ./gradlew eclipse
 ```
+
+Import project into Eclipse
 
 Run in Eclipse
 ==============
