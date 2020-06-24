@@ -4,7 +4,14 @@ FROM mapfish_print_builder AS builder
 FROM camptocamp/tomcat-logback:8.5-jre8 AS runner
 LABEL maintainer="info@camptocamp.com"
 
+RUN \
+  apt-get update && \
+  apt-get install --assume-yes --no-install-recommends fonts-liberation fonts-dejavu && \
+  apt-get clean && \
+  rm --recursive --force /var/lib/apt/lists/*
+
 COPY --from=builder /src/core/build/webapp ${CATALINA_HOME}/webapps/ROOT/
+COPY --from=builder /src/examples/build/classes/java/test/org/mapfish/print/HumanAlphaSerie.class ${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes/org/mapfish/print/
 COPY docker /
 
 RUN rm ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/logback-*.jar ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/slf4j-*.jar && \

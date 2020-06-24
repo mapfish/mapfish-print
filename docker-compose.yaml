@@ -16,3 +16,5 @@ services:
   tests:
     image: mapfish_print_builder
     command: sleep infinity
+    volumes:
+      - ./examples/src/test/resources/examples:/src/examples/src/test/resources/examples
