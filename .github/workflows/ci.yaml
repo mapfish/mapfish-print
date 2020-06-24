@@ -57,11 +57,10 @@ jobs:
       - run: docker cp mapfish-print_tests_1:/src/examples/build/ examples/build/
         if: always()
 
-      - run: make acceptance-tests-down
-
       - run: docker-compose logs
         if: failure()
-      - run: docker-compose down
+
+      - run: make acceptance-tests-down
 
       - uses: actions/upload-artifact@v1
         with:

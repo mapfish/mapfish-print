@@ -113,7 +113,6 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
                 "junit:junit:${project.junitVersion}",
                 'org.mockito:mockito-core:3.3.3',
         )
-
     }
 
     test {
