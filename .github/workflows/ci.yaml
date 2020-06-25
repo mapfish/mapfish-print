@@ -64,17 +64,17 @@ jobs:
         with:
           name: Test results
           path: core/build/resources/actual
-        if: always()
+        if: failure()
       - uses: actions/upload-artifact@v1
         with:
           name: Reports examples
           path: examples/build/reports
-        if: always()
+        if: failure()
       - uses: actions/upload-artifact@v1
         with:
           name: Reports core
           path: core/build/reports
-        if: always()
+        if: failure()
       - uses: actions/upload-artifact@v1
         with:
           name: Examples
