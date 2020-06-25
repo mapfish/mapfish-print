@@ -13,6 +13,7 @@ buildscript {
         classpath 'de.marcphilipp.gradle:nexus-publish-plugin:0.2.0'
         classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:2.0.0"
         classpath "se.bjurr.violations:violations-gradle-plugin:1.26"
+        classpath 'org.owasp:dependency-check-gradle:5.3.2'
     }
 }
 
@@ -33,6 +34,11 @@ allprojects {
     ext."signing.keyId" = signing_keyId
     ext."signing.secretKeyRingFile" = System.properties.get('user.home') + '/.gnupg/secring.gpg'
     ext."signing.password" = signing_password
+
+    apply plugin: 'org.owasp.dependencycheck'
+    dependencyCheck {
+        outputDirectory = "security-report"
+    }
 }
 
 configurations.all {
@@ -42,6 +48,7 @@ configurations.all {
 }
 
 apply plugin: 'org.gretty'
+apply plugin: 'org.owasp.dependencycheck'
 
 import org.akhikhl.gretty.AppStartTask
 
