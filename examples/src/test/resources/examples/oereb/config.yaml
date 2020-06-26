@@ -1,0 +1,345 @@
+throwErrorOnExtraParameters: false
+
+resourceBundle: Report
+defaultToSvg: true
+
+templates:
+    oereb template: !template
+        reportTemplate: pdfextract.jrxml
+        outputFilename: ${yyyyMMddhhmmss}_extract
+        allowTransparency: false
+        attributes:
+            CreationDate: !string {}
+            Signature: !string &optStr
+                default: ''
+            ConcernedTheme: !datasource
+                attributes:
+                    Code: !string {}
+                    Text: !string {} #/definitions/LocalisedText
+            NotConcernedTheme: !datasource
+                default:
+                  - Code: 'Code not concerned'
+                    Text: 'Theme theme not concerned'
+                attributes:
+                    Code: !string {}
+                    Text: !string {} #/definitions/LocalisedText
+            ThemeWithoutData: !datasource
+                default:
+                  - Code: 'Code without data'
+                    Text: 'Theme without data'
+                attributes:
+                    Code: !string {}
+                    Text: !string {} #/definitions/LocalisedText
+            isReduced: !boolean {}
+            nbTocPages: !integer {}
+            LogoPLRCadastre: *optStr
+            LogoPLRCadastreRef: *optStr
+            FederalLogo: *optStr
+            FederalLogoRef: *optStr
+            CantonalLogo: *optStr
+            CantonalLogoRef: *optStr
+            MunicipalityLogo: *optStr
+            MunicipalityLogoRef: *optStr
+            ExtractIdentifier: !string {}
+            Certification: *optStr #/definitions/MultilingualMText
+            CertificationAtWeb: *optStr #/definitions/MultilingualMText
+            Footer: !string {}
+            QRCode: *optStr
+            QRCodeRef: *optStr
+            GeneralInformation: !string #/definitions/MultilingualMText
+                default: 'Disclaimer'
+            BaseData: !string {} #/definitions/MultilingualMText
+            Glossary: !datasource
+                default:
+                  - Title: 'No term'
+                    Content: 'No definition'
+                attributes:
+                    Title: !string {} #/definitions/MultilingualText
+                    Content: !string {} #/definitions/MultilingualText
+            RealEstate_Number: !string {}
+            RealEstate_IdentDN: !string {}
+            RealEstate_EGRID: !string {}
+            RealEstate_Type: !string {}
+            RealEstate_Canton: !string {}
+            RealEstate_Municipality: !string {}
+            RealEstate_SubunitOfLandRegister: *optStr
+            Display_RealEstate_SubunitOfLandRegister: !boolean
+                default: true
+            Display_Certification: !boolean
+                default: true
+            RealEstate_FosNr: !string {}
+            RealEstate_MetadataOfGeographicalBaseData: *optStr
+            RealEstate_LandRegistryArea: !string {}
+            RealEstate_RestrictionOnLandownership: !datasource
+                default: []
+                attributes:
+                    Legend: !datasource
+                        attributes:
+                            TypeCode: *optStr #/definitions/RestrictiontypeCode
+                            TypeCodelist: *optStr
+                            Geom_Type: !string {}
+                            AreaShare: *optStr #/definitions/AreaShare
+                            PartInPercent: *optStr
+                            LengthShare: *optStr
+                            NrOfPoints: *optStr
+                            SymbolRef: *optStr
+                            Information: *optStr #/definitions/MultilingualMText
+                    OtherLegend: !datasource
+                        default: []
+                        attributes:
+                            TypeCode: *optStr #/definitions/RestrictiontypeCode
+                            SymbolRef: *optStr
+                            LegendText: *optStr #/definitions/MultilingualMText
+                    Geom_Type: *optStr
+                    Theme_Code: *optStr
+                    Theme_Text: *optStr #/definitions/LocalisedText
+                    SubTheme: *optStr
+                    Split_SubTheme: !boolean
+                        default: false
+                    Lawstatus_Code: *optStr
+                    Lawstatus_Text: *optStr #/definitions/LocalisedText
+                    Symbol: *optStr
+                    legend: !string {}
+                    map: !map
+                        maxDpi: 254
+                        dpiSuggestions: [144, 254]
+                        width: 493
+                        height: 280
+                        default:
+                            projection: "EPSG:2056"
+                            dpi: 144
+                            zoomToFeatures:
+                                minScale: 0
+                                minMargin: 10 # This value must be the same as the pyramid_oereb print buffer.
+                    baseLayers: !staticLayers {}
+
+                    ResponsibleOffice_Name: *optStr #/definitions/MultilingualText
+                    ResponsibleOffice_OfficeAtWeb: *optStr #/definitions/WebReference
+                    ResponsibleOffice_UID: *optStr #/definitions/UID
+                    ResponsibleOffice_Line1: *optStr
+                    ResponsibleOffice_Line2: *optStr
+                    ResponsibleOffice_Street: *optStr
+                    ResponsibleOffice_Number: *optStr
+                    ResponsibleOffice_PostalCode: *optStr
+                    ResponsibleOffice_City: *optStr
+                    LegalProvisions: !datasource
+                        default: []
+                        attributes: &lpra
+                            TextAtWeb: !datasource
+                                default: []
+                                attributes:
+                                    URL: *optStr #/definitions/MultilingualUri
+                            Lawstatus_Code: *optStr
+                            Lawstatus_Text: *optStr #/definitions/LocalisedText
+                            Number: *optStr #/definitions/ArticleNumber
+                            Text: *optStr #/definitions/MultilingualMText
+                            Title: *optStr #/definitions/MultilingualText
+                            OfficialTitle: *optStr #/definitions/MultilingualText
+                            Abbreviation: *optStr #/definitions/MultilingualText
+                            OfficialNumber: *optStr
+                            Canton: *optStr #/definitions/CantonCode
+                            Municipality: *optStr #/definitions/MunicipalityCode
+                            ResponsibleOffice_Name: !string {} #/definitions/MultilingualText
+                            ResponsibleOffice_OfficeAtWeb: *optStr #/definitions/WebReference
+                            ResponsibleOffice_UID: *optStr #/definitions/UID
+                            ResponsibleOffice_Line1: *optStr
+                            ResponsibleOffice_Line2: *optStr
+                            ResponsibleOffice_Street: *optStr
+                            ResponsibleOffice_Number: *optStr
+                            ResponsibleOffice_PostalCode: *optStr
+                            ResponsibleOffice_City: *optStr
+                            OfficialNumber: *optStr #/definitions/CantonCode
+                            ArticleNumber: *optStr #array of /definitions/ArticleNumber
+                    Hints: !datasource
+                        default: []
+                        attributes: *lpra
+                    Laws: !datasource
+                        default: []
+                        attributes: *lpra
+                    ResponsibleOffice: !datasource
+                        default: []
+                        attributes:
+                            Name: !string {}
+                            OfficeAtWeb: *optStr
+            ExclusionOfLiability: !datasource
+                default: []
+                attributes:
+                    Title: !string {} #/definitions/MultilingualText
+                    Content: !string {} #/definitions/MultilingualText
+            PLRCadastreAuthority_Name: !string {} #/definitions/MultilingualText
+            PLRCadastreAuthority_OfficeAtWeb: *optStr #/definitions/WebReference
+            PLRCadastreAuthority_UID: *optStr #/definitions/UID
+            PLRCadastreAuthority_Line1: *optStr
+            PLRCadastreAuthority_Line2: *optStr
+            PLRCadastreAuthority_Street: !string {}
+            PLRCadastreAuthority_Number: !string {}
+            PLRCadastreAuthority_PostalCode: !string {}
+            PLRCadastreAuthority_City: !string {}
+            MultiPageTOC: !boolean
+                default: false
+
+            northArrow: !northArrow
+                size: 17
+                default:
+                    graphic: "file:///north.svg"
+            scalebar: !scalebar
+                width: 100
+                height: 15
+                default:
+                  fontSize: 6
+                  align: "center"
+                  padding: 2
+                  lineWidth: 1
+                  backgroundColor: "rgb(255, 255, 255)"
+            features: !features {}
+            map: !map
+                maxDpi: 254
+                dpiSuggestions: [144, 254]
+                width: 493
+                height: 280
+                default:
+                    projection: "EPSG:2056"
+                    dpi: 144
+                    zoomToFeatures:
+                        minScale: 0
+                        minMargin: 10 # This value must be the same as the pyramid_oereb print buffer.
+            baseLayers: !staticLayers {}
+            overlayLayers: !staticLayers
+                default:
+                    layers:
+                    -   type: geoJson
+            style: !style
+                default:
+                    style:
+                        version: 2
+                        '*':
+                            symbolizers:
+                            -   type: polygon
+                                fillColor: "#ff0000"
+                                fillOpacity: 0.0
+                                strokeColor: "#e60000"
+                                strokeOpacity: 0.60
+                                strokeWidth: 5
+
+        processors:
+        - !reportBuilder # compile all reports in current directory
+            directory: '.'
+        - !configureHttpRequests
+            httpProcessors:
+            - !forwardHeaders
+                headers:
+                - Referer
+            - !restrictUris
+                matchers:
+                - !ipMatch
+                  ip: 10.0.0.0
+                  mask: 255.0.0.0
+                  reject: true
+                - !ipMatch
+                  ip: 172.16.0.0
+                  mask: 255.240.0.0
+                  reject: true
+                - !ipMatch
+                  ip: 192.168.0.0
+                  mask: 255.255.0.0
+                  reject: true
+                - !acceptAll {}
+        - !addOverlayLayers
+            inputMapper:
+                overlayLayers: staticLayers
+        - !addBackgroundLayers
+            inputMapper:
+                baseLayers: staticLayers
+        - !setStyle {}
+        - !setFeatures {}
+        - !createMap {}
+        - !createNorthArrow {}
+        - !createScalebar {}
+        - !createDataSource
+            processors: []
+            inputMapper:
+                ConcernedTheme: datasource
+            outputMapper:
+                jrDataSource: ConcernedThemeDataSource
+        - !createDataSource
+            processors: []
+            inputMapper:
+                NotConcernedTheme: datasource
+            outputMapper:
+                jrDataSource: NotConcernedThemeDataSource
+        - !createDataSource
+            processors: []
+            inputMapper:
+                ThemeWithoutData: datasource
+            outputMapper:
+                jrDataSource: ThemeWithoutDataDataSource
+        - !createDataSource
+            processors: []
+            inputMapper:
+                Glossary: datasource
+            outputMapper:
+                jrDataSource: GlossaryDataSource
+        - !createDataSource
+            copyAttributes: [overlayLayers, style, features]
+            processors:
+            - !createDataSource
+                processors: []
+                inputMapper:
+                    Legend: datasource
+                outputMapper:
+                    jrDataSource: LegendDataSource
+            - !createDataSource
+                processors: []
+                inputMapper:
+                    OtherLegend: datasource
+                outputMapper:
+                    jrDataSource: OtherLegendDataSource
+            - !createDataSource
+                processors: &dsrc
+                - !createDataSource
+                    processors: []
+                    inputMapper:
+                        TextAtWeb: datasource
+                    outputMapper:
+                        jrDataSource: TextAtWebDataSource
+                inputMapper:
+                    LegalProvisions: datasource
+                outputMapper:
+                    jrDataSource: LegalProvisionsDataSource
+            - !createDataSource
+                processors: *dsrc
+                inputMapper:
+                    Hints: datasource
+                outputMapper:
+                    jrDataSource: HintsDataSource
+            - !createDataSource
+                processors: *dsrc
+                inputMapper:
+                    Laws: datasource
+                outputMapper:
+                    jrDataSource: LawsDataSource
+            - !createDataSource
+                processors: []
+                inputMapper:
+                    ResponsibleOffice: datasource
+                outputMapper:
+                    jrDataSource: ResponsibleOfficeDataSource
+            - !addOverlayLayers
+                inputMapper:
+                    overlayLayers: staticLayers
+            - !addBackgroundLayers
+                inputMapper:
+                    baseLayers: staticLayers
+            - !setStyle {}
+            - !setFeatures {}
+            - !createMap {}
+            inputMapper:
+                RealEstate_RestrictionOnLandownership: datasource
+            outputMapper:
+                jrDataSource: RealEstate_RestrictionOnLandownershipDataSource
+        - !createDataSource
+            processors: []
+            inputMapper:
+                ExclusionOfLiability: datasource
+            outputMapper:
+                jrDataSource: ExclusionOfLiabilityDataSource

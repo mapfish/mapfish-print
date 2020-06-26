@@ -5,7 +5,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,7 +16,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+
 import javax.annotation.PostConstruct;
+
 
 /**
  * Strategy/plug-in for loading {@link Configuration} objects.
@@ -32,7 +37,19 @@ public class ConfigurationFactory {
     @PostConstruct
     public final void init() {
         MapfishPrintConstructor constructor = new MapfishPrintConstructor(this.context);
-        this.yaml = new Yaml(constructor);
+
+        LoaderOptions loaderOptions = new LoaderOptions();
+        String maxAliases = System.getenv("PRINT_YAML_MAX_ALIASES");
+        if (maxAliases != null) {
+            loaderOptions.setMaxAliasesForCollections(Integer.parseInt(maxAliases));
+        }
+        Representer representer = new Representer();
+        DumperOptions dumperOptions = new DumperOptions();
+        dumperOptions.setDefaultFlowStyle(representer.getDefaultFlowStyle());
+        dumperOptions.setDefaultScalarStyle(representer.getDefaultScalarStyle());
+        dumperOptions.setAllowReadOnlyProperties(representer.getPropertyUtils().isAllowReadOnlyProperties());
+        dumperOptions.setTimeZone(representer.getTimeZone());
+        this.yaml = new Yaml(constructor, representer, dumperOptions, loaderOptions);
     }
 
     /**

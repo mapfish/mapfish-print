@@ -12,9 +12,13 @@ services:
     image: mapfish_print_tester
     volumes:
       - ./examples/src/test/resources/examples:/usr/local/tomcat/webapps/ROOT/print-apps
+    environment:
+      PRINT_YAML_MAX_ALIASES: 200
 
   tests:
     image: mapfish_print_builder
     command: sleep infinity
     volumes:
       - ./examples/src/test/resources/examples:/src/examples/src/test/resources/examples
+    environment:
+      PRINT_YAML_MAX_ALIASES: 200
