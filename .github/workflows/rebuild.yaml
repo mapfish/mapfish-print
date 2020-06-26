@@ -36,6 +36,9 @@ jobs:
         if: "startsWith(github.ref, 'refs/tags/')"
       - run: echo --${{ steps.tag2.outputs.replaced }}--
 
+      - name: Install Cadastra fonts for OEREB example for branch 3.23
+        run: sudo cp -r examples/src/test/resources/examples/oereb/fonts/Cadastra/ /usr/share/fonts/truetype/
+
       - run: git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
       - run: ci/test-eof-newline
 
