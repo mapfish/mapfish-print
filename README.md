@@ -48,6 +48,7 @@ Create new stabilisation branch
 - Create a new branch name x.y from master.
 - Create a new label names 'backport x.y'.
 - On the master branch update the `.github/workflows/rebuild.yaml` file by adding the new branch name.
+- On the master branch update the `.github/workflows/audit.yaml` file by adding the new branch name.
 
 Run from commandline
 ====================
@@ -108,3 +109,11 @@ Credits
 > :   <https://www.yourkit.com/java/profiler/index.jsp>
 >
 Thanks to [YourKit](https://www.yourkit.com/java/profiler/index.jsp) for letting us use their Java profiler!
+
+Published artifacts
+===================
+
+[Docker](https://hub.docker.com/r/camptocamp/mapfish-print)
+
+[war and jar from version 3.23](https://github.com/orgs/mapfish/packages)
+[war and jar before version 3.23](https://mvnrepository.com/artifact/org.mapfish.print)
