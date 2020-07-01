@@ -27,7 +27,7 @@ RUN [ -e success ] &&  gradle :publish:build && touch success-publish || true
 COPY examples ./examples
 COPY docs ./docs
 
-RUN [ -e success ] && gradle :examples:build :docs:build && touch success-examples-docs || true
+RUN [ -e success ] && gradle :examples:build buildDocs && touch success-examples-docs || true
 
 FROM builder AS test-builder
 
