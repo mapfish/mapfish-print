@@ -1,5 +1,9 @@
 # Known breaking changes
 
+## Version 3.24
+
+- Removing JsonP support.
+
 ## Version 3.13
 
 - If throwErrorOnExtraParameters is set to true and the JSON contains extra attributes,

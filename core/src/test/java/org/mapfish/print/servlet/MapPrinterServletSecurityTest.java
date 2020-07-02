@@ -110,7 +110,7 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
         while (!done) {
             MockHttpServletRequest servletStatusRequest = new MockHttpServletRequest("GET", statusURL);
             MockHttpServletResponse servletStatusResponse = new MockHttpServletResponse();
-            servlet.getStatus(ref, null, servletStatusRequest, servletStatusResponse);
+            servlet.getStatus(ref, servletStatusRequest, servletStatusResponse);
 
             String contentAsString = servletStatusResponse.getContentAsString();
 

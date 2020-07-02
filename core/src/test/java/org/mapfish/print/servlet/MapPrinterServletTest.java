@@ -84,7 +84,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final HttpServletRequest request = new MockHttpServletRequest();
         final MockHttpServletResponse getExampleResponseImplicit = new MockHttpServletResponse();
-        this.servlet.getExampleRequest("", request, getExampleResponseImplicit);
+        this.servlet.getExampleRequest(request, getExampleResponseImplicit);
         assertEquals(HttpStatus.OK.value(), getExampleResponseImplicit.getStatus());
         final PJsonObject createResponseJson =
                 parseJSONObjectFromString(getExampleResponseImplicit.getContentAsString());
@@ -95,7 +95,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertTrue(obj.length() > 0);
 
         final MockHttpServletResponse getExampleResponseExplicit = new MockHttpServletResponse();
-        this.servlet.getExampleRequest(DEFAULT_CONFIGURATION_FILE_KEY, "", request,
+        this.servlet.getExampleRequest(DEFAULT_CONFIGURATION_FILE_KEY, request,
                                        getExampleResponseExplicit);
         assertEquals(HttpStatus.OK.value(), getExampleResponseExplicit.getStatus());
         final PJsonObject createResponseJson2 =
@@ -103,31 +103,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertTrue(createResponseJson2.size() > 0);
 
         final MockHttpServletResponse getExampleResponseNotFound = new MockHttpServletResponse();
-        this.servlet.getExampleRequest("DoesNotExist", "", request, getExampleResponseNotFound);
+        this.servlet.getExampleRequest("DoesNotExist", request, getExampleResponseNotFound);
         assertEquals(HttpStatus.NOT_FOUND.value(), getExampleResponseNotFound.getStatus());
-    }
-
-    @Test
-    public void testExampleRequest_Jsonp() throws Exception {
-        setUpConfigFiles();
-
-        final HttpServletRequest request = new MockHttpServletRequest();
-        final MockHttpServletResponse getExampleResponseImplicit = new MockHttpServletResponse();
-        this.servlet.getExampleRequest("exampleRequest", request, getExampleResponseImplicit);
-        assertEquals(HttpStatus.OK.value(), getExampleResponseImplicit.getStatus());
-
-        final String contentAsString = getExampleResponseImplicit.getContentAsString();
-        assertTrue(contentAsString.startsWith("exampleRequest("));
-        assertTrue(contentAsString.endsWith(");"));
-
-        final MockHttpServletResponse getExampleResponseExplicit = new MockHttpServletResponse();
-        this.servlet.getExampleRequest(DEFAULT_CONFIGURATION_FILE_KEY, "", request,
-                                       getExampleResponseExplicit);
-        assertEquals(HttpStatus.OK.value(), getExampleResponseExplicit.getStatus());
-
-        final String contentAsString2 = getExampleResponseImplicit.getContentAsString();
-        assertTrue(contentAsString2.startsWith("exampleRequest("));
-        assertTrue(contentAsString2.endsWith(");"));
     }
 
     @Test
@@ -137,7 +114,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         final MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("referer", "http://www.example.com/toto");
         final MockHttpServletResponse getExampleResponseImplicit = new MockHttpServletResponse();
-        this.servlet.getExampleRequest("referer", "", request, getExampleResponseImplicit);
+        this.servlet.getExampleRequest("referer", request, getExampleResponseImplicit);
         assertEquals(HttpStatus.OK.value(), getExampleResponseImplicit.getStatus());
     }
 
@@ -148,7 +125,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         final MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("referer", "http://www.google.com/");
         final MockHttpServletResponse getExampleResponseImplicit = new MockHttpServletResponse();
-        this.servlet.getExampleRequest("referer", "", request, getExampleResponseImplicit);
+        this.servlet.getExampleRequest("referer", request, getExampleResponseImplicit);
         assertEquals(HttpStatus.FORBIDDEN.value(), getExampleResponseImplicit.getStatus());
     }
 
@@ -163,7 +140,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
             } catch (Exception e) {
                 throw new AssertionError(e);
             }
-        }, false);
+        });
     }
 
     @Test(timeout = 60000)
@@ -178,7 +155,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
             } catch (Exception e) {
                 throw new AssertionError(e);
             }
-        }, false);
+        });
     }
 
     @Test(timeout = 60000)
@@ -193,7 +170,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
             } catch (Exception e) {
                 throw new AssertionError(e);
             }
-        }, false);
+        });
     }
 
     @Test(timeout = 60000)
@@ -208,7 +185,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
             } catch (Exception e) {
                 throw new AssertionError(e);
             }
-        }, false);
+        });
     }
 
     @Test(timeout = 60000)
@@ -222,7 +199,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
             } catch (Exception e) {
                 throw new AssertionError(e);
             }
-        }, true);
+        });
     }
 
     @Test(timeout = 60000)
@@ -241,7 +218,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
             } catch (Exception e) {
                 throw new AssertionError(e);
             }
-        }, false);
+        });
     }
 
     @Test(timeout = 60000)
@@ -283,7 +260,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
                     } catch (Exception e) {
                         throw new AssertionError(e);
                     }
-                }, false);
+                });
 
         assertEquals(2, request.getHeaders().size());
         assertArrayEquals(new Object[]{"CookieValue", "CookieValue2"},
@@ -384,7 +361,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     }
 
     private String doCreateAndPollAndGetReport(
-            Function<MockHttpServletRequest, MockHttpServletResponse> createReport, boolean checkJsonp)
+            Function<MockHttpServletRequest, MockHttpServletResponse> createReport)
             throws URISyntaxException, IOException, InterruptedException, ServletException {
         setUpConfigFiles();
 
@@ -419,15 +396,9 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
             MockHttpServletRequest servletStatusRequest = new MockHttpServletRequest("GET", statusURL);
             addHeaders(servletStatusRequest);
             MockHttpServletResponse servletStatusResponse = new MockHttpServletResponse();
-            final String jsonp = (checkJsonp) ? "getStatus" : "";
-            servlet.getStatus(ref, jsonp, servletStatusRequest, servletStatusResponse);
+            servlet.getStatus(ref, servletStatusRequest, servletStatusResponse);
 
             String contentAsString = servletStatusResponse.getContentAsString();
-            if (checkJsonp) {
-                assertTrue(contentAsString.startsWith("getStatus("));
-                assertTrue(contentAsString.endsWith(");"));
-                contentAsString = contentAsString.replace("getStatus(", "").replace(");", "");
-            }
 
             final PJsonObject statusJson = parseJSONObjectFromString(contentAsString);
             assertTrue(statusJson.toString(), statusJson.has(MapPrinterServlet.JSON_DONE));
@@ -453,7 +424,6 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertCorrectResponse(servletGetReportResponse);
 
         return ref;
-
     }
 
     private void addHeaders(MockHttpServletRequest servletStatusRequest) {
@@ -511,7 +481,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
         final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
-        servlet.getStatus(ref, "", statusRequest, statusResponse);
+        servlet.getStatus(ref, statusRequest, statusResponse);
 
         final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
         assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
@@ -559,7 +529,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
         final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
-        servlet.getStatus(ref, "", statusRequest, statusResponse);
+        servlet.getStatus(ref, statusRequest, statusResponse);
 
         final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
         assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
@@ -593,7 +563,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
         final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
-        servlet.getStatus(ref, "", statusRequest, statusResponse);
+        servlet.getStatus(ref, statusRequest, statusResponse);
 
         final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
         assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
@@ -617,7 +587,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
                     } catch (Exception e) {
                         throw new AssertionError(e);
                     }
-                }, false);
+                });
 
         // ... then cancel
         MockHttpServletResponse servletCancelResponse = new MockHttpServletResponse();
@@ -626,7 +596,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
         final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
-        servlet.getStatus(ref, "", statusRequest, statusResponse);
+        servlet.getStatus(ref, statusRequest, statusResponse);
 
         final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
         assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
@@ -666,7 +636,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
         final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
-        servlet.getStatus(ref, "", statusRequest, statusResponse);
+        servlet.getStatus(ref, statusRequest, statusResponse);
 
         final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
         assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
@@ -726,7 +696,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
         final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
-        servlet.getStatus(ref, "", statusRequest, statusResponse);
+        servlet.getStatus(ref, statusRequest, statusResponse);
 
         final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
         assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
@@ -762,7 +732,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
             final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
             final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
-            servlet.getStatus(ref, "", statusRequest, statusResponse);
+            servlet.getStatus(ref, statusRequest, statusResponse);
             final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
             assertNotEquals("cancelled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
         }
@@ -938,11 +908,10 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         setUpConfigFiles();
 
         String ref = "invalid-ref";
-        MockHttpServletRequest servletStatusRequest = new MockHttpServletRequest("GET",
-                                                                                 "/print/status/" + ref +
-                                                                                         ".json");
+        MockHttpServletRequest servletStatusRequest = new MockHttpServletRequest(
+            "GET", "/print/status/" + ref + ".json");
         MockHttpServletResponse servletStatusResponse = new MockHttpServletResponse();
-        servlet.getStatus(ref, "", servletStatusRequest, servletStatusResponse);
+        servlet.getStatus(ref, servletStatusRequest, servletStatusResponse);
 
         assertEquals(HttpStatus.NOT_FOUND.value(), servletStatusResponse.getStatus());
     }
@@ -964,7 +933,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         setUpConfigFiles();
         final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
         final HttpServletRequest request = new MockHttpServletRequest();
-        this.servlet.getCapabilities(false, "", request, servletResponse);
+        this.servlet.getCapabilities(false, request, servletResponse);
         assertEquals(HttpStatus.OK.value(), servletResponse.getStatus());
 
         final String contentAsString = servletResponse.getContentAsString();
@@ -1001,7 +970,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         setUpConfigFiles();
         final HttpServletRequest request = new MockHttpServletRequest();
         final MockHttpServletResponse servletResponse = new MockHttpServletResponse();
-        this.servlet.getCapabilities(true, "", request, servletResponse);
+        this.servlet.getCapabilities(true, request, servletResponse);
         assertEquals(HttpStatus.OK.value(), servletResponse.getStatus());
 
         final String contentAsString = servletResponse.getContentAsString();
@@ -1035,7 +1004,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final HttpServletRequest request = new MockHttpServletRequest();
         final MockHttpServletResponse defaultGetInfoResponse = new MockHttpServletResponse();
-        this.servlet.getCapabilities("default", false, "", request, defaultGetInfoResponse);
+        this.servlet.getCapabilities("default", false, request, defaultGetInfoResponse);
         assertEquals(HttpStatus.OK.value(), defaultGetInfoResponse.getStatus());
 
         final String contentAsString = defaultGetInfoResponse.getContentAsString();
@@ -1046,7 +1015,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("A4 Landscape", a4LandscapeLayout.getString("name"));
 
         final MockHttpServletResponse app2GetInfoResponse = new MockHttpServletResponse();
-        this.servlet.getCapabilities("app2", false, "", request, app2GetInfoResponse);
+        this.servlet.getCapabilities("app2", false, request, app2GetInfoResponse);
         assertEquals(HttpStatus.OK.value(), app2GetInfoResponse.getStatus());
 
         final PJsonObject app2GetInfoJson = parseJSONObjectFromString(
@@ -1056,52 +1025,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("main", mainLayout.getString("name"));
 
         final MockHttpServletResponse noSuchGetInfoResponse = new MockHttpServletResponse();
-        this.servlet.getCapabilities("NoSuch", false, "", request, noSuchGetInfoResponse);
+        this.servlet.getCapabilities("NoSuch", false, request, noSuchGetInfoResponse);
         assertEquals(HttpStatus.NOT_FOUND.value(), noSuchGetInfoResponse.getStatus());
-    }
-
-    @Test
-    public void testGetCapabilitiesWithAppId_NotPrettyAndJsonp() throws Exception {
-        final HashMap<String, String> configFiles = new HashMap<>();
-        configFiles.put("default", getFile(MapPrinterServletTest.class,
-                                           "config.yaml").getAbsolutePath());
-        configFiles.put("app2", getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class,
-                                        CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.BASE_DIR +
-                                                "config.yaml").
-                getAbsolutePath());
-        printerFactory.setConfigurationFiles(configFiles);
-
-        final HttpServletRequest request = new MockHttpServletRequest();
-        final MockHttpServletResponse defaultGetInfoResponse = new MockHttpServletResponse();
-        this.servlet.getCapabilities("default", false, "printConfig",
-                                     request, defaultGetInfoResponse);
-        assertEquals(HttpStatus.OK.value(), defaultGetInfoResponse.getStatus());
-
-        final String contentAsString = defaultGetInfoResponse.getContentAsString();
-        assertTrue(contentAsString.startsWith("printConfig("));
-        assertTrue(contentAsString.endsWith(");"));
-    }
-
-    @Test
-    public void testGetCapabilitiesWithAppId_PrettyAndJsonp() throws Exception {
-        final HashMap<String, String> configFiles = new HashMap<>();
-        configFiles.put("default", getFile(MapPrinterServletTest.class,
-                                           "config.yaml").getAbsolutePath());
-        configFiles.put("app2", getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class,
-                                        CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.BASE_DIR +
-                                                "config.yaml").
-                getAbsolutePath());
-        printerFactory.setConfigurationFiles(configFiles);
-
-        final HttpServletRequest request = new MockHttpServletRequest();
-        final MockHttpServletResponse defaultGetInfoResponse = new MockHttpServletResponse();
-        this.servlet.getCapabilities("default", true, "printConfig",
-                                     request, defaultGetInfoResponse);
-        assertEquals(HttpStatus.OK.value(), defaultGetInfoResponse.getStatus());
-
-        final String contentAsString = defaultGetInfoResponse.getContentAsString();
-        assertTrue(contentAsString.startsWith("printConfig("));
-        assertTrue(contentAsString.endsWith(");"));
     }
 
     @Test
@@ -1116,7 +1041,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         printerFactory.setConfigurationFiles(configFiles);
 
         final MockHttpServletResponse listAppIdsResponse = new MockHttpServletResponse();
-        this.servlet.listAppIds("", listAppIdsResponse);
+        this.servlet.listAppIds(listAppIdsResponse);
         assertEquals(HttpStatus.OK.value(), listAppIdsResponse.getStatus());
 
         final String contentAsString = listAppIdsResponse.getContentAsString();
@@ -1126,26 +1051,6 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         Set<String> expected = SetsUtils.create("default", "app2");
         assertTrue(expected.contains(appIdsJson.getString(0)));
         assertTrue(expected.contains(appIdsJson.getString(1)));
-    }
-
-    @Test
-    public void testListAppIds_Jsonp() throws Exception {
-        final HashMap<String, String> configFiles = new HashMap<>();
-        configFiles.put("default", getFile(MapPrinterServletTest.class,
-                                           "config.yaml").getAbsolutePath());
-        configFiles.put("app2", getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class,
-                                        CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.BASE_DIR +
-                                                "config.yaml").
-                getAbsolutePath());
-        printerFactory.setConfigurationFiles(configFiles);
-
-        final MockHttpServletResponse listAppIdsResponse = new MockHttpServletResponse();
-        this.servlet.listAppIds("listAppIds", listAppIdsResponse);
-        assertEquals(HttpStatus.OK.value(), listAppIdsResponse.getStatus());
-
-        final String contentAsString = listAppIdsResponse.getContentAsString();
-        assertTrue(contentAsString.startsWith("listAppIds("));
-        assertTrue(contentAsString.endsWith(");"));
     }
 
     @Test(timeout = 60000)
@@ -1205,7 +1110,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final MockHttpServletRequest statusRequest = new MockHttpServletRequest();
         final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
-        servlet.getStatus(ref2, "", statusRequest, statusResponse);
+        servlet.getStatus(ref2, statusRequest, statusResponse);
 
         final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
         assertEquals("false", statusJson.getString(MapPrinterServlet.JSON_DONE));
