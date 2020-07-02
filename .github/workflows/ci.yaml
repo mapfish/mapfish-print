@@ -168,3 +168,22 @@ jobs:
           asset_name: print-lib-${{ steps.version.outputs.version }}-javadoc.jar
           asset_content_type: application/java-archive
         if: startsWith(github.ref, 'refs/tags/') && github.repository == 'mapfish/mapfish-print'
+
+      # Update the documentation
+      - uses: actions/checkout@v2
+        with:
+          repository: mapfish/mapfish-print-doc
+          token: ${{ secrets.GITHUB_GOPASS_CI_TOKEN }}
+          path: mapfish-print-doc
+        if: github.ref == 'refs/heads/master'
+      - name: Publish documentation
+        run: |
+          cd ${GITHUB_WORKSPACE}/mapfish-print-doc
+          git config user.email "ci@camptocamp.com"
+          git config user.name "CI"
+          git rm --ignore-unmatch -rqf .
+          docker cp builder:/src/docs/build/site/. .
+          git add -A .
+          git commit -m 'Update docs'
+          git push origin gh-pages
+        if: github.ref == 'refs/heads/master'

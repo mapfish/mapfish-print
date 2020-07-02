@@ -115,5 +115,6 @@ Published artifacts
 
 [Docker](https://hub.docker.com/r/camptocamp/mapfish-print)
 
-[war and jar from version 3.23](https://github.com/orgs/mapfish/packages)
-[war and jar before version 3.23](https://mvnrepository.com/artifact/org.mapfish.print)
+[War and jar from version 3.23](https://github.com/orgs/mapfish/packages)
+
+[War and jar before version 3.23](https://mvnrepository.com/artifact/org.mapfish.print)
