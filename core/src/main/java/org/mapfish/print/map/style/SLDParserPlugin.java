@@ -94,6 +94,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
             // by setting a custom error handler.
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
+            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             db.setErrorHandler(new ErrorHandler());
             db.parse(new ByteArrayInputStream(bytes));

@@ -121,7 +121,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * If the job is done (value is true) or not (value is false).
      *
-     * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest,
+     * Part of the {@link #getStatus(String, javax.servlet.http.HttpServletRequest,
      * javax.servlet.http.HttpServletResponse)} response.
      */
     public static final String JSON_DONE = "done";
@@ -134,7 +134,7 @@ public class MapPrinterServlet extends BaseMapServlet {
      * <li>cancelled</li>
      * <li>error</li>
      * </ul>
-     * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest,
+     * Part of the {@link #getStatus(String, javax.servlet.http.HttpServletRequest,
      * javax.servlet.http.HttpServletResponse)} response
      */
     public static final String JSON_STATUS = "status";
@@ -142,14 +142,14 @@ public class MapPrinterServlet extends BaseMapServlet {
      * The elapsed time in ms from the point the job started. If the job is finished, this is the duration it
      * took to process the job.
      *
-     * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest,
+     * Part of the {@link #getStatus(String, javax.servlet.http.HttpServletRequest,
      * javax.servlet.http.HttpServletResponse)} response.
      */
     public static final String JSON_ELAPSED_TIME = "elapsedTime";
     /**
      * A rough estimate for the time in ms the job still has to wait in the queue until it starts processing.
      *
-     * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest,
+     * Part of the {@link #getStatus(String, javax.servlet.http.HttpServletRequest,
      * javax.servlet.http.HttpServletResponse)} response.
      */
     public static final String JSON_WAITING_TIME = "waitingTime";
@@ -271,7 +271,8 @@ public class MapPrinterServlet extends BaseMapServlet {
     private static String maybeAddRequestId(final String ref, final HttpServletRequest request) {
         final Optional<String> headerName =
                 REQUEST_ID_HEADERS.stream().filter(h -> request.getHeader(h) != null).findFirst();
-        return headerName.map(s -> ref + "@" + request.getHeader(s).replaceAll("[^a-zA-Z0-9._:-]", "_")
+        return headerName.map(
+            s -> ref + "@" + request.getHeader(s).replaceAll("[^a-zA-Z0-9._:-]", "_")
         ).orElse(ref);
     }
 
@@ -284,7 +285,6 @@ public class MapPrinterServlet extends BaseMapServlet {
      *
      * @param appId the app ID
      * @param referenceId the job reference
-     * @param jsonpCallback if given the result is returned with a function call wrapped around it
      * @param statusRequest the request object
      * @param statusResponse the response object
      */
@@ -292,10 +292,9 @@ public class MapPrinterServlet extends BaseMapServlet {
     public final void getStatusSpecificAppId(
             @SuppressWarnings("unused") @PathVariable final String appId,
             @PathVariable final String referenceId,
-            @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
             final HttpServletRequest statusRequest,
             final HttpServletResponse statusResponse) {
-        getStatus(referenceId, jsonpCallback, statusRequest, statusResponse);
+        getStatus(referenceId, statusRequest, statusResponse);
     }
 
     /**
@@ -306,14 +305,12 @@ public class MapPrinterServlet extends BaseMapServlet {
      * </code></pre>
      *
      * @param referenceId the job reference
-     * @param jsonpCallback if given the result is returned with a function call wrapped around it
      * @param statusRequest the request object
      * @param statusResponse the response object
      */
     @RequestMapping(value = STATUS_URL + "/{referenceId:\\S+}.json", method = RequestMethod.GET)
     public final void getStatus(
             @PathVariable final String referenceId,
-            @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
             final HttpServletRequest statusRequest,
             final HttpServletResponse statusResponse) {
         MDC.put(Processor.MDC_JOB_ID_KEY, referenceId);
@@ -321,10 +318,8 @@ public class MapPrinterServlet extends BaseMapServlet {
         try {
             PrintJobStatus status = this.jobManager.getStatus(referenceId);
 
-            setContentType(statusResponse, jsonpCallback);
+            setContentType(statusResponse);
             try (PrintWriter writer = statusResponse.getWriter()) {
-
-                appendJsonpCallback(jsonpCallback, writer);
                 JSONWriter json = new JSONWriter(writer);
                 json.object();
                 {
@@ -339,7 +334,6 @@ public class MapPrinterServlet extends BaseMapServlet {
                     addDownloadLinkToJson(statusRequest, referenceId, json);
                 }
                 json.endObject();
-                appendJsonpCallbackEnd(jsonpCallback, writer);
             }
         } catch (JSONException | IOException e) {
             throw ExceptionUtils.getRuntimeException(e);
@@ -638,22 +632,18 @@ public class MapPrinterServlet extends BaseMapServlet {
     /**
      * To get (in JSON) the information about the available formats and CO.
      *
-     * @param jsonpCallback if given the result is returned with a function call wrapped around it
      * @param listAppsResponse the response object
      */
     @RequestMapping(value = LIST_APPS_URL, method = RequestMethod.GET)
     public final void listAppIds(
-            @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
             final HttpServletResponse listAppsResponse) throws ServletException,
             IOException {
         MDC.remove(Processor.MDC_JOB_ID_KEY);
         setCache(listAppsResponse);
         Set<String> appIds = this.printerFactory.getAppIds();
 
-        setContentType(listAppsResponse, jsonpCallback);
+        setContentType(listAppsResponse);
         try (PrintWriter writer = listAppsResponse.getWriter()) {
-            appendJsonpCallback(jsonpCallback, writer);
-
             JSONWriter json = new JSONWriter(writer);
             try {
                 json.array();
@@ -664,8 +654,6 @@ public class MapPrinterServlet extends BaseMapServlet {
             } catch (JSONException e) {
                 throw new ServletException(e);
             }
-
-            appendJsonpCallbackEnd(jsonpCallback, writer);
         }
     }
 
@@ -673,18 +661,16 @@ public class MapPrinterServlet extends BaseMapServlet {
      * To get (in JSON) the information about the available formats and CO.
      *
      * @param pretty if true then pretty print the capabilities
-     * @param jsonpCallback if given the result is returned with a function call wrapped around it
      * @param request the request
      * @param capabilitiesResponse the response object
      */
     @RequestMapping(value = CAPABILITIES_URL, method = RequestMethod.GET)
     public final void getCapabilities(
             @RequestParam(value = "pretty", defaultValue = "false") final boolean pretty,
-            @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
             final HttpServletRequest request,
             final HttpServletResponse capabilitiesResponse) throws ServletException,
             IOException {
-        getCapabilities(DEFAULT_CONFIGURATION_FILE_KEY, pretty, jsonpCallback, request, capabilitiesResponse);
+        getCapabilities(DEFAULT_CONFIGURATION_FILE_KEY, pretty, request, capabilitiesResponse);
     }
 
     /**
@@ -693,7 +679,6 @@ public class MapPrinterServlet extends BaseMapServlet {
      * @param appId the name of the "app" or in other words, a mapping to the configuration file for
      *         this request.
      * @param pretty if true then pretty print the capabilities
-     * @param jsonpCallback if given the result is returned with a function call wrapped around it
      * @param request the request
      * @param capabilitiesResponse the response object
      */
@@ -701,7 +686,6 @@ public class MapPrinterServlet extends BaseMapServlet {
     public final void getCapabilities(
             @PathVariable final String appId,
             @RequestParam(value = "pretty", defaultValue = "false") final boolean pretty,
-            @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
             final HttpServletRequest request,
             final HttpServletResponse capabilitiesResponse) throws ServletException,
             IOException {
@@ -719,16 +703,12 @@ public class MapPrinterServlet extends BaseMapServlet {
             return;
         }
 
-        setContentType(capabilitiesResponse, jsonpCallback);
+        setContentType(capabilitiesResponse);
 
         final ByteArrayOutputStream prettyPrintBuffer = new ByteArrayOutputStream();
 
         try (Writer writer = pretty ? new OutputStreamWriter(prettyPrintBuffer, Constants.DEFAULT_CHARSET) :
                 capabilitiesResponse.getWriter()) {
-            if (!pretty && !StringUtils.isEmpty(jsonpCallback)) {
-                writer.append(jsonpCallback).append("(");
-            }
-
             JSONWriter json = new JSONWriter(writer);
             try {
                 json.object();
@@ -749,53 +729,38 @@ public class MapPrinterServlet extends BaseMapServlet {
             } catch (JSONException e) {
                 throw new ServletException(e);
             }
-
-            if (!pretty && !StringUtils.isEmpty(jsonpCallback)) {
-                writer.append(");");
-            }
         }
 
         if (pretty) {
             final JSONObject jsonObject =
                     new JSONObject(new String(prettyPrintBuffer.toByteArray(), Constants.DEFAULT_CHARSET));
-
-            if (!StringUtils.isEmpty(jsonpCallback)) {
-                capabilitiesResponse.getOutputStream().print(jsonpCallback + "(");
-            }
             capabilitiesResponse.getOutputStream().print(jsonObject.toString(JSON_INDENT_FACTOR));
-            if (!StringUtils.isEmpty(jsonpCallback)) {
-                capabilitiesResponse.getOutputStream().print(");");
-            }
         }
     }
 
     /**
      * Get a sample request for the app.  An empty response may be returned if there is not example request.
      *
-     * @param jsonpCallback if given the result is returned with a function call wrapped around it
      * @param request the request object
      * @param getExampleResponse the response object
      */
     @RequestMapping(value = EXAMPLE_REQUEST_URL, method = RequestMethod.GET)
     public final void getExampleRequest(
-            @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
             final HttpServletRequest request,
             final HttpServletResponse getExampleResponse) throws IOException {
-        getExampleRequest(DEFAULT_CONFIGURATION_FILE_KEY, jsonpCallback, request, getExampleResponse);
+        getExampleRequest(DEFAULT_CONFIGURATION_FILE_KEY, request, getExampleResponse);
     }
 
     /**
      * Get a sample request for the app.  An empty response may be returned if there is not example request.
      *
      * @param appId the id of the app to get the request for.
-     * @param jsonpCallback if given the result is returned with a function call wrapped around it
      * @param request the request object
      * @param getExampleResponse the response object
      */
     @RequestMapping(value = "{appId}" + EXAMPLE_REQUEST_URL, method = RequestMethod.GET)
     public final void getExampleRequest(
             @PathVariable final String appId,
-            @RequestParam(value = "jsonp", defaultValue = "") final String jsonpCallback,
             final HttpServletRequest request,
             final HttpServletResponse getExampleResponse) throws
             IOException {
@@ -827,7 +792,7 @@ public class MapPrinterServlet extends BaseMapServlet {
                         jsonObject.remove(JSON_APP);
                         requestData = jsonObject.toString(JSON_INDENT_FACTOR);
 
-                        setContentType(getExampleResponse, jsonpCallback);
+                        setContentType(getExampleResponse);
                     } catch (JSONException e) {
                         // ignore, return raw text
                     }
@@ -864,9 +829,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             }
 
             try (PrintWriter writer = getExampleResponse.getWriter()) {
-                appendJsonpCallback(jsonpCallback, writer);
                 writer.append(result);
-                appendJsonpCallbackEnd(jsonpCallback, writer);
             }
         } catch (NoSuchAppException e) {
             error(getExampleResponse, "No print app identified by: " + appId, HttpStatus.NOT_FOUND);
@@ -1076,31 +1039,7 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     }
 
-    private void setContentType(
-            final HttpServletResponse statusResponse,
-            final String jsonpCallback) {
-        if (StringUtils.isEmpty(jsonpCallback)) {
-            statusResponse.setContentType("application/json; charset=utf-8");
-        } else {
-            statusResponse.setContentType("application/javascript; charset=utf-8");
-        }
+    private void setContentType(final HttpServletResponse statusResponse) {
+        statusResponse.setContentType("application/json; charset=utf-8");
     }
-
-    private void appendJsonpCallback(
-            final String jsonpCallback,
-            final PrintWriter writer) {
-        if (!StringUtils.isEmpty(jsonpCallback)) {
-            writer.append(jsonpCallback);
-            writer.append("(");
-        }
-    }
-
-    private void appendJsonpCallbackEnd(
-            final String jsonpCallback,
-            final PrintWriter writer) {
-        if (!StringUtils.isEmpty(jsonpCallback)) {
-            writer.append(");");
-        }
-    }
-
 }
