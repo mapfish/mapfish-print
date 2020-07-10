@@ -74,7 +74,11 @@ public final class CertificateStore implements ConfigurationObject, HasConfigura
 
     private SSLContext createSslContext() {
         try {
-            SSLContext newSslContext = SSLContext.getInstance("TLS");
+            String sslProtocol = System.getenv("PRINT_SSL_PROTOCOL");
+            if (sslProtocol == null) {
+                sslProtocol = "TLSv1.2";
+            }
+            SSLContext newSslContext = SSLContext.getInstance(sslProtocol);
 
             KeyStore ks = KeyStore.getInstance("JKS");
 
