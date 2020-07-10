@@ -112,7 +112,7 @@ ext {
 dependencies {
     def slf4jVersion = '1.7.30'
     def metricsVersion = '4.1.10.1'
-    def geotoolsVersion = '22.3'
+    def geotoolsVersion = '23.1'
 
     compile(
             "org.springframework:spring-context:$springVersion",
