@@ -1,5 +1,6 @@
 package org.mapfish.print.config;
 
+import com.google.common.collect.Sets;
 import org.geotools.styling.Style;
 import org.json.JSONException;
 import org.json.JSONWriter;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import javax.annotation.Nonnull;
 
 import static org.mapfish.print.OptionalUtils.or;
@@ -52,6 +54,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private String jdbcUrl;
     private String jdbcUser;
     private String jdbcPassword;
+    private Set<String> jdbcDrivers = Sets.newHashSet();
     private volatile ProcessorDependencyGraph processorGraph;
     private Map<String, String> styles = new HashMap<>();
     private Configuration configuration;
@@ -205,6 +208,14 @@ public class Template implements ConfigurationObject, HasConfiguration {
         this.jdbcUrl = jdbcUrl;
     }
 
+    public final Set<String> getJdbcDrivers() {
+        return this.jdbcDrivers;
+    }
+
+    public final void setJdbcDrivers(final Set<String> jdbcDrivers) {
+        this.jdbcDrivers = jdbcDrivers;
+    }
+
     public final String getJdbcUser() {
         return this.jdbcUser;
     }
@@ -304,6 +315,18 @@ public class Template implements ConfigurationObject, HasConfiguration {
             validationErrors.add(t);
         }
 
+        for (String jdbcDriver : getJdbcDrivers()) {
+            try {
+               Class.forName(jdbcDriver);
+            } catch (ClassNotFoundException e) {
+               validationErrors.add(new ConfigurationException(
+                        "Unable to load JDBC driver: " + jdbcDriver +
+                                " ensure that the web application has the jar on its classpath"));
+            }
+
+
+
+        }
         if (getJdbcUrl() != null) {
 
             Connection connection = null;
