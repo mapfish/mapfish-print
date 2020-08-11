@@ -169,6 +169,17 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         checkRequiredValues(config, values, template.getReportTemplate());
 
         final JasperPrint print;
+
+        for (String jdbcDriver : template.getJdbcDrivers()) {
+            try {
+                Class.forName(jdbcDriver);
+            } catch (ClassNotFoundException e) {
+                throw new AssertionError(
+                        String.format("Unable to load JDBC driver: " + jdbcDriver +
+                                " ensure that the web application has the jar on its classpath"));
+            }
+
+        }
         if (template.getJdbcUrl() != null) {
             Connection connection;
             if (template.getJdbcUser() != null) {
