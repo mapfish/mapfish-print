@@ -161,8 +161,12 @@ public class PrintApiTest extends AbstractApiTest {
         }
 
         setPrintSpec(largeRequest.toString(), request);
-        try (ClientHttpResponse response = request.execute()) {
-            assertNotEquals(HttpStatus.OK, response.getStatusCode());
+        try {
+            try (ClientHttpResponse response = request.execute()) {
+                assertNotEquals(HttpStatus.OK, response.getStatusCode());
+            }
+        } catch (java.net.SocketException e) {
+            // Exception => OK
         }
     }
 
