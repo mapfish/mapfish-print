@@ -36,7 +36,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *   "styleProperty": "_gx_style",
  *   "1": {
  *     "fillColor": "#FF0000",
- *     "fillOpacity":0,
+ *     "fillOpacity": 0,
  *     "rotation": "30",
  *
  *     "externalGraphic": "mark.png"
@@ -45,9 +45,10 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *     "pointRadius": 5,
  *
  *     "strokeColor": "#FFA829",
- *     "strokeOpacity":1,
- *     "strokeWidth":5,
+ *     "strokeOpacity": 1,
+ *     "strokeWidth": 5,
  *     "strokeLinecap": "round",
+ *     "strokeLinejoin": "round"
  *     "strokeDashstyle": "dot",
  *
  *     "fontColor": "#000000",
@@ -93,7 +94,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *       // values defined in symbolizer will override defaults
  *       "type": "point",
  *       "fillColor": "#FF0000",
- *       "fillOpacity":0,
+ *       "fillOpacity": 0,
  *       "rotation": "30",
  *       "externalGraphic": "mark.png",
  *
@@ -102,25 +103,26 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *       "pointRadius": 5,
  *
  *       "strokeColor": "${val1}",
- *       "strokeOpacity":1,
- *       "strokeWidth":5,
+ *       "strokeOpacity": 1,
+ *       "strokeWidth": 5,
  *       "strokeLinecap": "round",
+ *       "strokeLinejoin": "round"
  *       "strokeDashstyle": "dot"
  *     }, {
  *       "type": "line",
  *       "strokeColor": "${val1}",
- *       "strokeOpacity":1,
- *       "strokeWidth":5,
+ *       "strokeOpacity": 1,
+ *       "strokeWidth": 5,
  *       "strokeLinecap": "round",
  *       "strokeDashstyle": "dot"
  *     }, {
  *       "type": "polygon",
  *       "fillColor": "#FF0000",
- *       "fillOpacity":0,
+ *       "fillOpacity": 0,
  *
  *       "strokeColor": "${val1}",
- *       "strokeOpacity":1,
- *       "strokeWidth":5,
+ *       "strokeOpacity": 1,
+ *       "strokeWidth": 5,
  *       "strokeLinecap": "round",
  *       "strokeDashstyle": "dot"
  *     }, {
@@ -135,7 +137,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *       "haloRadius": "3.0",
  *       "label": "[name]",
  *       "fillColor": "#FF0000",
- *       "fillOpacity":0,
+ *       "fillOpacity": 0,
  *       "labelAlign": "cm",
  *       "labelRotation": "45",
  *       "labelXOffset": "-25.0",
@@ -275,6 +277,15 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * </p>
  * </li>
  * <li>
+ * <strong>strokeLinejoin</strong> (ECQL) - (line, polygon) the style to controls how line strings
+ * should be joined together.
+ * <p>
+ * Options: arcs, bevel, miter, miter-clip, round, see the SGV documentation about stroke-linejoin
+ * For more informations.
+ * Default is miter
+ * </p>
+ * </li>
+ * <li>
  * <strong>strokeDashstyle</strong> - (line, point, polygon) A string describing how to draw the
  * line or an array of floats describing the line lengths and space lengths:
  * <ul>
@@ -287,6 +298,9 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * strokeWidth]</li>
  * <li>{string containing spaces to delimit array elements} - Example: [1 2 3 1 2]</li>
  * </ul>
+ * </li>
+ * <li>
+ * <strong>strokeDashoffset</strong> - (line, point, polygon) A number representing where to start the dash.
  * </li>
  * <li><strong>fontColor</strong> (ECQL) - (text) the color of the text drawn</li>
  * <li><strong>fontFamily</strong> (ECQL) - (text) the font of the text drawn</li>

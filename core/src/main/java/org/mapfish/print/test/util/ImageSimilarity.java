@@ -61,7 +61,7 @@ public final class ImageSimilarity {
         if (maskFile.exists()) {
             this.maskImage = ImageIO.read(maskFile);
             assert this.maskImage.getSampleModel().getNumBands() == 1;
-        } else {
+        } else if (this.expectedImage != null) {
             this.maskImage = new BufferedImage(
                     this.expectedImage.getWidth(), this.expectedImage.getHeight(),
                     BufferedImage.TYPE_BYTE_GRAY);
@@ -73,9 +73,15 @@ public final class ImageSimilarity {
             } finally {
                 graphics.dispose();
             }
+        } else {
+            this.maskImage = null;
         }
-        this.diffImage = new BufferedImage(
-                this.expectedImage.getWidth(), this.expectedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+        if (this.expectedImage != null) {
+            this.diffImage = new BufferedImage(
+                    this.expectedImage.getWidth(), this.expectedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+        } else {
+            this.diffImage = null;
+        }
     }
 
     /**

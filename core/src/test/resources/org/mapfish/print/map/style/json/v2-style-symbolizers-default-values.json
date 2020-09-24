@@ -1,22 +1,22 @@
 {
-  "version" : "2",
-  "val1" : "#0F0",
-  "minScale" : 100,
-  "maxScale" : 1000,
-  "fillColor":"#FF0000",
-  "[att < 3]" : {
-    "maxScale" : 1000000,
-    "rotation" : "30",
+  "version": "2",
+  "val1": "#0F0",
+  "minScale": 100,
+  "maxScale": 1000,
+  "fillColor": "#FF0000",
+  "[att < 3]": {
+    "maxScale": 1000000,
+    "rotation": "30",
     "graphicOpacity": 0.6,
-    "symbolizers" : [
+    "symbolizers": [
       {
-        "type" : "point",
+        "type": "point",
         "graphicName": "circle",
         "graphicOpacity": 0.4,
-        "strokeColor":"${val1}"
+        "strokeColor": "${val1}"
       },
       {
-        "type" : "line"
+        "type": "line"
       }
     ]
   }
