@@ -12,8 +12,8 @@ templates:
         zoomLevels: !zoomLevels
           scales: [50000, 100000, 500000, 1000000]
     processors:
-    - !reportBuilder
-        directory: "."
-    - !createMap
+      - !reportBuilder
+        directory: '.'
+      - !createMap
         outputMapper:
-            mapSubReport: mapWrongName
+          mapSubReport: mapWrongName

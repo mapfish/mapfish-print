@@ -1,4 +1,3 @@
-
 templates:
   main: !template
     attributes:
@@ -12,4 +11,4 @@ templates:
           lockUnits: true
           intervals: 4
           font: Liberation Sans
-          fontColor: "#cccccc"
+          fontColor: '#cccccc'

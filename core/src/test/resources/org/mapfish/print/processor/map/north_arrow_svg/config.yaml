@@ -1,6 +1,6 @@
 templates:
   main: !template
-    reportTemplate: "dummy.jxml"
+    reportTemplate: 'dummy.jxml'
     attributes:
       map: !map
         width: 780
@@ -13,11 +13,11 @@ templates:
       northArrowDef: !northArrow
         size: 200
         default:
-          graphic: "file://NorthArrow_10.svg"
+          graphic: 'file://NorthArrow_10.svg'
     processors:
-    - !createMap {}
-    - !createNorthArrow
+      - !createMap {}
+      - !createNorthArrow
         inputMapper:
-            northArrowDef: northArrow
+          northArrowDef: northArrow
         outputMapper:
-            northArrowSubReport: northArrowOut
+          northArrowSubReport: northArrowOut

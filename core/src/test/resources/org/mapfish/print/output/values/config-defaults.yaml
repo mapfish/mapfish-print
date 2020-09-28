@@ -6,9 +6,9 @@ templates:
     attributes:
       legend: !legend
         default:
-          name: "legendName"
+          name: 'legendName'
       title: !string
-        default: "title"
+        default: 'title'
       count: !integer
         default: 134
       ratio: !float
@@ -19,19 +19,17 @@ templates:
           name: !string {}
           count: !integer {}
         default:
-          - name: "name"
+          - name: 'name'
             count: 3
             table:
               columns:
-                - "id"
-                - "name"
-                - "icon"
+                - 'id'
+                - 'name'
+                - 'icon'
               data:
-                -
-                  - 1
-                  - "blah"
-                  - "icon_pan"
-                -
-                  - 2
-                  - "blip"
-                  - "icon_zoomin"
+                - - 1
+                  - 'blah'
+                  - 'icon_pan'
+                - - 2
+                  - 'blip'
+                  - 'icon_zoomin'

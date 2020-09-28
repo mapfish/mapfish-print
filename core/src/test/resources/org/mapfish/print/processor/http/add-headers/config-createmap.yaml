@@ -5,5 +5,5 @@ templates:
         width: 500
         height: 100
     processors:
-    - !addHeaders {}
-    - !createMap {}
+      - !addHeaders {}
+      - !createMap {}

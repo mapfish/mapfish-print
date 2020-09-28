@@ -1,6 +1,6 @@
 templates:
   main: !template
-    reportTemplate: "dummy.jxml"
+    reportTemplate: 'dummy.jxml'
     attributes:
       map: !map
         width: 780
@@ -17,7 +17,7 @@ templates:
         default:
           font: Arial
     processors:
-    - !createMap
+      - !createMap
         outputMapper:
-            mapSubReport: mapSubReport
-    - !createScalebar {}
+          mapSubReport: mapSubReport
+      - !createScalebar {}

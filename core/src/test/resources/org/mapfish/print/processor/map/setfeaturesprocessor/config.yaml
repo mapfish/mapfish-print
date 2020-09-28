@@ -2,7 +2,7 @@ throwErrorOnExtraParameters: true
 
 templates:
   main: !template
-    reportTemplate: "dummy.jxml"
+    reportTemplate: 'dummy.jxml'
     attributes:
       features: !features {}
       map1: !map
@@ -10,8 +10,8 @@ templates:
         height: 100
         maxDpi: 400
     processors:
-    - !setFeatures
+      - !setFeatures
         inputMapper:
           map1: map
-    - !createMap
-        inputMapper: {map1: map}
+      - !createMap
+        inputMapper: { map1: map }

@@ -5,11 +5,11 @@ templates:
     attributes:
       table: !table {}
     processors:
-    - !reportBuilder # compile all reports in current directory
-      directory: '.'
-    - !prepareTable
-      converters:
-      - !urlImage
-          urlExtractor: <img src="([^"]+)".*
-          urlGroup: 1
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !prepareTable
+        converters:
+          - !urlImage
+            urlExtractor: <img src="([^"]+)".*
+            urlGroup: 1
     tableData: tableDataSource

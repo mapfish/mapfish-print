@@ -7,7 +7,7 @@ templates:
         maxDpi: 400
         default:
           bbox: [95, -1, 110, 2]
-          projection: "CRS:84"
+          projection: 'CRS:84'
           dpi: 80
           rotation: 10
           layers:
@@ -16,37 +16,55 @@ templates:
               geoJson:
                 type: FeatureCollection
                 features:
-                - type: Feature
-                  geometry:
-                    type: Polygon
-                    coordinates: [
-                      [ [102.0, 0.0], [103.0, 0.0], [103.0, 1.0],
-                        [102.0, 1.0], [102.0, 0.0] ]
-                    ]
-                  properties:
-                    prop0: value1
-                    prop1: 1.0
-                - type: Feature
-                  geometry:
-                    type: Polygon
-                    coordinates: [
-                      [ [104.0, 0.0], [105.0, 0.0], [105.0, 1.0],
-                        [104.0, 1.0], [104.0, 0.0] ]
-                    ]
-                  properties:
-                    prop0: value0
-                    prop1: 0.0
-                - type: Feature
-                  geometry:
-                    type: Polygon
-                    coordinates: [
-                      [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
-                        [100.0, 1.0], [100.0, 0.0] ]
-                    ]
-                  properties:
-                    prop0: value0
-                    prop1:
-                      this: that
+                  - type: Feature
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        [
+                          [
+                            [102.0, 0.0],
+                            [103.0, 0.0],
+                            [103.0, 1.0],
+                            [102.0, 1.0],
+                            [102.0, 0.0],
+                          ],
+                        ]
+                    properties:
+                      prop0: value1
+                      prop1: 1.0
+                  - type: Feature
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        [
+                          [
+                            [104.0, 0.0],
+                            [105.0, 0.0],
+                            [105.0, 1.0],
+                            [104.0, 1.0],
+                            [104.0, 0.0],
+                          ],
+                        ]
+                    properties:
+                      prop0: value0
+                      prop1: 0.0
+                  - type: Feature
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        [
+                          [
+                            [100.0, 0.0],
+                            [101.0, 0.0],
+                            [101.0, 1.0],
+                            [100.0, 1.0],
+                            [100.0, 0.0],
+                          ],
+                        ]
+                    properties:
+                      prop0: value0
+                      prop1:
+                        this: that
       overviewMap: !overviewMap
         width: 200
         height: 100

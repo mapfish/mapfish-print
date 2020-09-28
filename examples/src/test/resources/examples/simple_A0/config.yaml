@@ -5,12 +5,12 @@ templates:
     reportTemplate: report.jrxml
     attributes:
       title: !string
-        default: "Countries"
+        default: 'Countries'
       map: !map
         maxDpi: 150
         width: 3320
         height: 2289
     processors:
-    - !reportBuilder
-      directory: '.'
-    - !createMap {}
+      - !reportBuilder
+        directory: '.'
+      - !createMap {}

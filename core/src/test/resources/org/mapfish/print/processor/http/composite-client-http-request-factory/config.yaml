@@ -5,7 +5,7 @@ templates:
         httpProcessors:
           - !mapUri
             mapping:
-              (.+?)://localhost(.*) : "$1://127.0.0.1$2"
+              (.+?)://localhost(.*): '$1://127.0.0.1$2'
           - !useHttpForHttps
             portMapping:
               8443: 9999

@@ -5,7 +5,7 @@ templates:
     attributes:
       field1: !boolean {}
       field2: !boolean {}
-      field3: !boolean {default: false}
+      field3: !boolean { default: false }
     processors:
-    - !reportBuilder
-        directory: "."
+      - !reportBuilder
+        directory: '.'

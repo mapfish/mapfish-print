@@ -1,6 +1,6 @@
 throwErrorOnExtraParameters: true
-transparentTileErrorColor: "rgba(78, 78, 255, 125)"
-opaqueTileErrorColor: "rgba(255, 155, 155, 0)"
+transparentTileErrorColor: 'rgba(78, 78, 255, 125)'
+opaqueTileErrorColor: 'rgba(255, 155, 155, 0)'
 
 templates:
   A4 portrait: !template
@@ -11,11 +11,11 @@ templates:
         maxHeight: 330
         maxDpi: 400
     processors:
-    - !reportBuilder
-      directory: '.'
-    - !configureHttpRequests
+      - !reportBuilder
+        directory: '.'
+      - !configureHttpRequests
         httpProcessors:
-        - !mapUri
+          - !mapUri
             mapping:
-              (https?)://lh/(.*): "http://geoserver:8080/$2"
-    - !createMap {}
+              (https?)://lh/(.*): 'http://geoserver:8080/$2'
+      - !createMap {}

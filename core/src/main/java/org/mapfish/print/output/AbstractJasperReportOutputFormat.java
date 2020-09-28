@@ -249,7 +249,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                             final String type = param.getAttribute("class");
                             Class<?> clazz = Class.forName(type);
                             if (!clazz.isInstance(record)) {
-                                wrongType.append("\t* ").append(name).append(" : ")
+                                wrongType.append("\t* ").append(name).append(": ")
                                         .append(record.getClass().getName());
                                 wrongType.append(" expected type: ").append(type).append("\n");
                             }
@@ -291,7 +291,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                     Class<?> clazz = Class.forName(type);
                     Object value = values.getObject(name, Object.class);
                     if (!clazz.isInstance(value)) {
-                        wrongType.append("\t* ").append(name).append(" : ")
+                        wrongType.append("\t* ").append(name).append(": ")
                                 .append(value.getClass().getName());
                         wrongType.append(" expected type: ").append(type).append("\n");
                     }

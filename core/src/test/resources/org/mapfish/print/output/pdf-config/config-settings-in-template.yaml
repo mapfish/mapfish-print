@@ -3,11 +3,11 @@ templates:
   main: !template
     pdfConfig: !pdfConfig
       compressed: true
-      title: "Template Title"
-      author: "Template Author"
-      subject: "Template Subject"
-      keywords: ["Template Keywords"]
-      creator: "Template Creator"
+      title: 'Template Title'
+      author: 'Template Author'
+      subject: 'Template Subject'
+      keywords: ['Template Keywords']
+      creator: 'Template Creator'
     reportTemplate: simple-map.jrxml
     attributes:
       map: !map
@@ -19,6 +19,6 @@ templates:
         zoomLevels: !zoomLevels
           scales: [50000, 100000, 500000, 1000000]
     processors:
-    - !reportBuilder
-        directory: "."
-    - !createMap {}
+      - !reportBuilder
+        directory: '.'
+      - !createMap {}

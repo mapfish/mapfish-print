@@ -1,65 +1,65 @@
 throwErrorOnExtraParameters: true
 
 templates:
-    report: !template
-        reportTemplate: report.jrxml
+  report: !template
+    reportTemplate: report.jrxml
 
+    attributes:
+      title: !string {}
+      datasource: !datasource
         attributes:
-            title: !string {}
-            datasource: !datasource
-                attributes:
-                    features: !features {}
-                    map: !map
-                        maxDpi: 254
-                        width: 780
-                        height: 330
-                        default:
-                            projection: "EPSG:3857"
-                            dpi: 72
-                            zoomToFeatures:
-                                minScale: 2000
-            overlayLayers: !staticLayers
-                default:
-                    layers:
-                    -   type: geoJson
-            backgroundLayers: !staticLayers
-                default:
-                    layers:
-                    -   type: wms
-                        baseURL: "http://geoserver:8080/wms"
-                        layers: [tiger-ny]
-                        imageFormat: "image/png"
-            style: !style
-                default:
-                    style:
-                        version: 2
-                        "[type='parcel']":
-                            symbolizers:
-                            - type: polygon
-                              fillColor: "#ff0000"
-                        "[type='click']":
-                            symbolizers:
-                            - type: point
-                              fillColor: "#00ff00"
-                              pointRadius: 10
+          features: !features {}
+          map: !map
+            maxDpi: 254
+            width: 780
+            height: 330
+            default:
+              projection: 'EPSG:3857'
+              dpi: 72
+              zoomToFeatures:
+                minScale: 2000
+      overlayLayers: !staticLayers
+        default:
+          layers:
+            - type: geoJson
+      backgroundLayers: !staticLayers
+        default:
+          layers:
+            - type: wms
+              baseURL: 'http://geoserver:8080/wms'
+              layers: [tiger-ny]
+              imageFormat: 'image/png'
+      style: !style
+        default:
+          style:
+            version: 2
+            "[type='parcel']":
+              symbolizers:
+                - type: polygon
+                  fillColor: '#ff0000'
+            "[type='click']":
+              symbolizers:
+                - type: point
+                  fillColor: '#00ff00'
+                  pointRadius: 10
 
+    processors:
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createDataSource
+        copyAttributes:
+          - overlayLayers
+          - backgroundLayers
+          - style
         processors:
-        - !reportBuilder # compile all reports in current directory
-            directory: '.'
-        - !createDataSource
-            copyAttributes:
-            - overlayLayers
-            - backgroundLayers
-            - style
-            processors:
-            - !addBackgroundLayers
-                inputMapper:
-                    backgroundLayers: staticLayers
-            - !addOverlayLayers
-                inputMapper:
-                    overlayLayers: staticLayers
-            - !setStyle {}
-            - !setFeatures {}
-            - !createMap {}
+          - !addBackgroundLayers
+            inputMapper:
+              backgroundLayers: staticLayers
+          - !addOverlayLayers
+            inputMapper:
+              overlayLayers: staticLayers
+          - !setStyle {}
+          - !setFeatures {}
+          - !createMap {}
 
-        tableData: jrDataSource
+    tableData: jrDataSource

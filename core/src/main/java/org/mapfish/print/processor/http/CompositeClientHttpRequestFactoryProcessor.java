@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  * <pre><code>
  * - !mapUri
  *   mapping:
- *     (http)://localhost(.*) : "$1://127.0.0.1$2"
+ *     (http)://localhost(.*): "$1://127.0.0.1$2"
  *   outputMapper: {clientHttpRequestFactoryProvider: clientHttpRequestFactoryMapped}
  * - !forwardHeaders
  *   all: true
@@ -51,7 +51,7 @@ import javax.annotation.Nullable;
  *   httpProcessors:
  *     - !mapUri
  *       mapping:
- *         (http)://localhost(.*) : "$1://127.0.0.1$2"
+ *         (http)://localhost(.*): "$1://127.0.0.1$2"
  *     - !forwardHeaders
  *       all: true
  *     - !restrictUris

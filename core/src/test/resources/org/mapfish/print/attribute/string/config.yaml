@@ -4,7 +4,7 @@ templates:
     reportTemplate: simple-map.jrxml
     attributes:
       field1: !string {}
-      field2: !string {maxLength: 15}
+      field2: !string { maxLength: 15 }
     processors:
-    - !reportBuilder
-        directory: "."
+      - !reportBuilder
+        directory: '.'

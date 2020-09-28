@@ -3,5 +3,5 @@ templates:
   main: !template
     reportTemplate: simple-map.jrxml
     processors:
-    - !reportBuilder
-        directory: "."
+      - !reportBuilder
+        directory: '.'

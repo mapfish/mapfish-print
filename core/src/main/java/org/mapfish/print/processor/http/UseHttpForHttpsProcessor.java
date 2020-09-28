@@ -26,8 +26,8 @@ import java.util.regex.Pattern;
  * - !useHttpForHttps
  *   hosts: [localhost, www.camptocamp.com]
  *   portMapping:
- *     443 : 80
- *     8443 : 8080
+ *     443: 80
+ *     8443: 8080
  * </code></pre>
  *
  * <p>Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor}

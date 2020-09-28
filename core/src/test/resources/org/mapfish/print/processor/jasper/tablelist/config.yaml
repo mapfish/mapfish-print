@@ -7,11 +7,11 @@ templates:
         attributes:
           table: !table {}
     processors:
-    - !reportBuilder # compile all reports in current directory
-      directory: '.'
-    - !createDataSource
-      reportTemplate: table.jrxml
-      reportKey: reportTemplate
-      processors:
-        - !prepareTable {}
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createDataSource
+        reportTemplate: table.jrxml
+        reportKey: reportTemplate
+        processors:
+          - !prepareTable {}
     tableData: jrDataSource

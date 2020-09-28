@@ -49,6 +49,6 @@ templates:
 smtp:
   fromAddress: toto@camptocamp.com
   host: localhost
-  body: "Please find the requested document there: {url}"
+  body: 'Please find the requested document there: {url}'
   storage: !s3reportStorage
     bucket: test-bucket

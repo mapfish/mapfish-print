@@ -1,0 +1,297 @@
+{
+  "attributes": {
+    "map": {
+      "center": [
+        0,
+        0
+      ],
+      "dpi": 128,
+      "layers": [
+        {
+          "geoJson": {
+            "type": "FeatureCollection",
+            "features": [
+              {
+                "type": "Feature",
+                "properties": {
+                  "type": "join-miter"
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      -700,
+                      500
+                    ],
+                    [
+                      -600,
+                      100
+                    ],
+                    [
+                      -500,
+                      500
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "type": "join-round"
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      -400,
+                      500
+                    ],
+                    [
+                      -300,
+                      100
+                    ],
+                    [
+                      -200,
+                      500
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "type": "join-bevel"
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      -100,
+                      500
+                    ],
+                    [
+                      0,
+                      100
+                    ],
+                    [
+                      100,
+                      500
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "type": "join-miter-clip"
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      200,
+                      500
+                    ],
+                    [
+                      300,
+                      100
+                    ],
+                    [
+                      400,
+                      500
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "type": "join-arcs"
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      500,
+                      500
+                    ],
+                    [
+                      600,
+                      100
+                    ],
+                    [
+                      700,
+                      500
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "type": "none"
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      -700,
+                      -500
+                    ],
+                    [
+                      -600,
+                      -100
+                    ],
+                    [
+                      -500,
+                      -500
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "type": "cap-butt"
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      -400,
+                      -500
+                    ],
+                    [
+                      -300,
+                      -100
+                    ],
+                    [
+                      -200,
+                      -500
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "type": "cap-round"
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      -100,
+                      -500
+                    ],
+                    [
+                      0,
+                      -100
+                    ],
+                    [
+                      100,
+                      -500
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "type": "cap-square"
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      200,
+                      -500
+                    ],
+                    [
+                      300,
+                      -100
+                    ],
+                    [
+                      400,
+                      -500
+                    ]
+                  ]
+                }
+              }
+            ]
+          },
+          "style": {
+            "styleProperty": "type",
+            "version": "1",
+            "join-miter": {
+              "strokeColor": "blue",
+              "strokeOpacity": 1,
+              "strokeDashstyle": "solid",
+              "strokeLinejoin": "miter",
+              "strokeWidth": 20
+            },
+            "join-round": {
+              "strokeColor": "blue",
+              "strokeOpacity": 1,
+              "strokeDashstyle": "solid",
+              "strokeLinejoin": "round",
+              "strokeWidth": 20
+            },
+            "join-bevel": {
+              "strokeColor": "blue",
+              "strokeOpacity": 1,
+              "strokeDashstyle": "solid",
+              "strokeLinejoin": "bevel",
+              "strokeWidth": 20
+            },
+            "join-miter-clip": {
+              "strokeColor": "blue",
+              "strokeOpacity": 1,
+              "strokeDashstyle": "solid",
+              "strokeLinejoin": "miter-clip",
+              "strokeWidth": 20
+            },
+            "join-arcs": {
+              "strokeColor": "blue",
+              "strokeOpacity": 1,
+              "strokeDashstyle": "solid",
+              "strokeLinejoin": "arcs",
+              "strokeWidth": 20
+            },
+            "cap-butt": {
+              "strokeColor": "green",
+              "strokeOpacity": 1,
+              "strokeDashstyle": "solid",
+              "strokeLinecap": "butt",
+              "strokeWidth": 20
+            },
+            "cap-round": {
+              "strokeColor": "green",
+              "strokeOpacity": 1,
+              "strokeDashstyle": "solid",
+              "strokeLinecap": "round",
+              "strokeWidth": 20
+            },
+            "cap-square": {
+              "strokeColor": "green",
+              "strokeOpacity": 1,
+              "strokeDashstyle": "solid",
+              "strokeLinecap": "square",
+              "strokeWidth": 20
+            },
+            "none": {
+              "strokeColor": "gray",
+              "strokeWidth": 20
+            }
+          },
+          "type": "geojson"
+        }
+      ],
+      "projection": "EPSG:3857",
+      "rotation": 0,
+      "scale": 10000
+    }
+  },
+  "layout": "A4 landscape",
+  "outputFormat": "pdf"
+}

@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  * to localhost instead of myhost.com</p>
  * <pre><code>
  * - !mapUri
- *   mapping: {(http)://myhost.com(.*) : "$1://localhost$2"}
+ *   mapping: {(http)://myhost.com(.*): "$1://localhost$2"}
  * </code></pre>
  *
  * <p>Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor}

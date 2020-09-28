@@ -16,11 +16,11 @@ templates:
         height: 500
         maxDpi: 400
     processors:
-    - !forwardHeaders
+      - !forwardHeaders
         headers: ['Cookies']
-    - !reportBuilder # compile all reports in current directory
+      - !reportBuilder # compile all reports in current directory
         directory: '.'
-    - !createMap
+      - !createMap
         prefix: geojson
-    - !createMap
+      - !createMap
         prefix: image

@@ -6,16 +6,23 @@
       "projection": "EPSG:3857",
       "dpi": 72,
       "rotation": 0,
-      "center": [-8233518.5005945, 4980320.4059228],
+      "center": [
+        -8233518.5005945,
+        4980320.4059228
+      ],
       "scale": 25000,
       "layers": [
         {
           "baseURL": "http://geoserver:8080/wms",
           "opacity": 1,
           "type": "WMS",
-          "layers": ["tiger:tiger_roads"],
+          "layers": [
+            "tiger:tiger_roads"
+          ],
           "imageFormat": "image/png",
-          "styles": ["line"],
+          "styles": [
+            "line"
+          ],
           "customParams": {
             "TRANSPARENT": "true"
           }
@@ -24,7 +31,9 @@
           "baseURL": "http://geoserver:8080/wms",
           "opacity": 1,
           "type": "WMS",
-          "layers": ["tiger-ny"],
+          "layers": [
+            "tiger-ny"
+          ],
           "imageFormat": "image/png",
           "customParams": {
             "TRANSPARENT": "true"

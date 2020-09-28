@@ -1,6 +1,6 @@
 templates:
   main: !template
     attributes:
-     att: !configInjectionAttribute {}
+      att: !configInjectionAttribute {}
     processors:
-    - !configInjectionProcessor {}
+      - !configInjectionProcessor {}

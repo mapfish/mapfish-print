@@ -53,7 +53,7 @@
                 {
                   "type": "text",
                   "label": "[NAME]",
-                  "haloRadius" : "3"
+                  "haloRadius": "3"
                 }
               ]
             },
@@ -62,8 +62,8 @@
                 {
                   "externalGraphic": "http://geoserver:8080/www/icons/men-at-work.jpeg",
                   "graphicWidth": 32,
-                  "graphicOpacity" : 1.0,
-                  "graphicFormat" : "image/jpeg",
+                  "graphicOpacity": 1,
+                  "graphicFormat": "image/jpeg",
                   "type": "point"
                 }
               ]

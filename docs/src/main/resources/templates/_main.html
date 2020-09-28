@@ -1,168 +1,221 @@
 <!DOCTYPE html>
-<html lang="en" >
-<head>
-  <meta charset="utf-8">
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>MapFish Print 3 Documentation - {{pageTitle}}</title>
+    <title>MapFish Print 3 Documentation - {{pageTitle}}</title>
 
     <link rel="stylesheet" href="css/sphinx_rtd_theme.css" type="text/css" />
-    <link rel="stylesheet" href="css/readthedocs-doc-embed.css" type="text/css" />
+    <link
+      rel="stylesheet"
+      href="css/readthedocs-doc-embed.css"
+      type="text/css"
+    />
     <link rel="stylesheet" href="css/custom.css" type="text/css" />
+  </head>
 
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-
-
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-
+  <body class="wy-body-for-nav" role="document">
+    <div class="wy-grid-for-nav">
+      <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+        <div class="wy-side-scroll">
+          <div class="wy-side-nav-search">
             <a href="index.html" class="icon icon-home"> MapFish Print 3</a>
+          </div>
+
+          <div
+            class="wy-menu wy-menu-vertical"
+            data-spy="affix"
+            role="navigation"
+            aria-label="main navigation"
+          >
+            <ul class="current">
+              <li class="toctree-l1 {{current_index}}">
+                <a
+                  class="reference internal {{current_index}}"
+                  href="index.html"
+                  >Introduction</a
+                >
+              </li>
+              <li class="toctree-l1 {{current_jasperreports}}">
+                <a
+                  class="reference internal {{current_jasperreports}}"
+                  href="jasperreports.html"
+                  >JasperReports</a
+                >
+              </li>
+              <li class="toctree-l1 {{current_api}}">
+                <a class="reference internal {{current_api}}" href="api.html"
+                  >Web API</a
+                >
+              </li>
+              <li class="toctree-l1 {{current_attributes}}">
+                <a
+                  class="reference internal {{current_attributes}}"
+                  href="attributes.html"
+                  >Attributes</a
+                >
+                {{sub_nav_attributes}}
+              </li>
+              <li class="toctree-l1 {{current_configuration}}">
+                <a
+                  class="reference internal {{current_configuration}}"
+                  href="configuration.html"
+                  >Configuration</a
+                >
+                {{sub_nav_configuration}}
+              </li>
+              <li class="toctree-l1 {{current_layers}}">
+                <a
+                  class="reference internal {{current_layers}}"
+                  href="layers.html"
+                  >Map Layers</a
+                >
+                {{sub_nav_layers}}
+              </li>
+              <li class="toctree-l1 {{current_processors}}">
+                <a
+                  class="reference internal {{current_processors}}"
+                  href="processors.html"
+                  >Processors</a
+                >
+                {{sub_nav_processors}}
+              </li>
+              <li class="toctree-l1 {{current_fileloaders}}">
+                <a
+                  class="reference internal {{current_fileloaders}}"
+                  href="fileloaders.html"
+                  >File-Loaders</a
+                >
+                {{sub_nav_fileloaders}}
+              </li>
+              <li class="toctree-l1 {{current_outputformats}}">
+                <a
+                  class="reference internal {{current_outputformats}}"
+                  href="outputformats.html"
+                  >Output Formats</a
+                >
+                {{sub_nav_outputformats}}
+              </li>
+              <li class="toctree-l1 {{current_styles}}">
+                <a
+                  class="reference internal {{current_styles}}"
+                  href="styles.html"
+                  >Styles</a
+                >
+                {{sub_nav_styles}}
+              </li>
+              <li class="toctree-l1 {{current_tableimages}}">
+                <a
+                  class="reference internal {{current_tableimages}}"
+                  href="tableimages.html"
+                  >Images in tables</a
+                >
+              </li>
+              <li class="toctree-l1 {{current_download}}">
+                <a
+                  class="reference internal {{current_download}}"
+                  href="download.html"
+                  >Download</a
+                >
+              </li>
+              <li class="toctree-l1 {{current_docker}}">
+                <a
+                  class="reference internal {{current_docker}}"
+                  href="docker.html"
+                  >Docker</a
+                >
+              </li>
+            </ul>
+          </div>
         </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-
-
-
-                <ul class="current">
-<li class="toctree-l1 {{current_index}}">
-  <a class="reference internal {{current_index}}" href="index.html">Introduction</a>
-</li>
-<li class="toctree-l1 {{current_jasperreports}}">
-  <a class="reference internal {{current_jasperreports}}" href="jasperreports.html">JasperReports</a>
-</li>
-<li class="toctree-l1 {{current_api}}">
-  <a class="reference internal {{current_api}}" href="api.html">Web API</a>
-</li>
-<li class="toctree-l1 {{current_attributes}}">
-  <a class="reference internal {{current_attributes}}" href="attributes.html">Attributes</a>
-  {{sub_nav_attributes}}
-</li>
-<li class="toctree-l1 {{current_configuration}}">
-  <a class="reference internal {{current_configuration}}" href="configuration.html">Configuration</a>
-  {{sub_nav_configuration}}
-</li>
-<li class="toctree-l1 {{current_layers}}">
-  <a class="reference internal {{current_layers}}" href="layers.html">Map Layers</a>
-  {{sub_nav_layers}}
-</li>
-<li class="toctree-l1 {{current_processors}}">
-  <a class="reference internal {{current_processors}}" href="processors.html">Processors</a>
-  {{sub_nav_processors}}
-</li>
-<li class="toctree-l1 {{current_fileloaders}}">
-  <a class="reference internal {{current_fileloaders}}" href="fileloaders.html">File-Loaders</a>
-  {{sub_nav_fileloaders}}
-</li>
-<li class="toctree-l1 {{current_outputformats}}">
-  <a class="reference internal {{current_outputformats}}" href="outputformats.html">Output Formats</a>
-  {{sub_nav_outputformats}}
-</li>
-<li class="toctree-l1 {{current_styles}}">
-  <a class="reference internal {{current_styles}}" href="styles.html">Styles</a>
-  {{sub_nav_styles}}
-</li>
-<li class="toctree-l1 {{current_tableimages}}">
-  <a class="reference internal {{current_tableimages}}" href="tableimages.html">Images in tables</a>
-</li>
-<li class="toctree-l1 {{current_download}}">
-  <a class="reference internal {{current_download}}" href="download.html">Download</a>
-</li>
-<li class="toctree-l1 {{current_docker}}">
-  <a class="reference internal {{current_docker}}" href="docker.html">Docker</a>
-</li>
-</ul>
-
-
-
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">MapFish Print 3</a>
       </nav>
 
+      <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+        <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MapFish Print 3</a>
+        </nav>
 
+        <div class="wy-nav-content">
+          <div class="rst-content">
+            <div role="navigation" aria-label="breadcrumbs navigation">
+              <ul class="wy-breadcrumbs">
+                <li><a href="index.html">Docs</a> &raquo;</li>
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
+                <li>{{pageTitle}}</li>
+                <li class="wy-breadcrumbs-aside">
+                  <a
+                    href="https://github.com/mapfish/mapfish-print"
+                    class="fa fa-github"
+                  >
+                    mapfish/mapfish-print</a
+                  >
+                </li>
+              </ul>
+              <hr />
+            </div>
+            <div
+              role="main"
+              class="document"
+              itemscope="itemscope"
+              itemtype="http://schema.org/Article"
+            >
+              <div itemprop="articleBody">
+                <h1>{{pageTitle}}</h1>
+                {{content}}
+              </div>
+            </div>
+            <footer>
+              <hr />
 
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-
-    <li>{{pageTitle}}</li>
-      <li class="wy-breadcrumbs-aside">
-
-
-            <a href="https://github.com/mapfish/mapfish-print" class="fa fa-github"> mapfish/mapfish-print</a>
-
-
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             <h1>{{pageTitle}}</h1>
-             {{content}}
-
-
-
-           </div>
+              <div role="contentinfo">
+                <p>
+                  <a
+                    href="http://www.camptocamp.com/geospatial/"
+                    target="_blank"
+                    >Camptocamp</a
+                  >
+                  <br />
+                  <span class="commit">
+                    Revision
+                    <code
+                      ><a
+                        href="https://github.com/mapfish/mapfish-print/commit/{{version.long}}"
+                        target="_blank"
+                        >{{version.short}}</a
+                      ></code
+                    >.
+                  </span>
+                </p>
+              </div>
+              Theme based on a
+              <a href="https://github.com/snide/sphinx_rtd_theme">template</a>
+              provided by <a href="https://readthedocs.org">Read the Docs</a>.
+            </footer>
           </div>
-          <footer>
-
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        <a href="http://www.camptocamp.com/geospatial/" target="_blank">Camptocamp</a> <br>
-        <span class="commit">
-          Revision <code><a href="https://github.com/mapfish/mapfish-print/commit/{{version.long}}" target="_blank">{{version.short}}</a></code>.
-        </span>
-
-
-    </p>
-  </div>
-  Theme based on a <a href="https://github.com/snide/sphinx_rtd_theme">template</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-
-</footer>
-
         </div>
-      </div>
+      </section>
+    </div>
 
-    </section>
-
-  </div>
-
-
-
-      <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/3.3.0/jquery-migrate.min.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.10.2/underscore-min.js"></script>
-      <script type="text/javascript" src="js/theme.js"></script>
-      <script type="text/javascript">
-        jQuery(function () {
-            SphinxRtdTheme.StickyNav.enable();
-        });
-      </script>
-
-</body>
+    <script
+      type="text/javascript"
+      src="https://code.jquery.com/jquery-3.5.1.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/3.3.0/jquery-migrate.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.10.2/underscore-min.js"
+    ></script>
+    <script type="text/javascript" src="js/theme.js"></script>
+    <script type="text/javascript">
+      jQuery(function () {
+        SphinxRtdTheme.StickyNav.enable();
+      });
+    </script>
+  </body>
 </html>
