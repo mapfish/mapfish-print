@@ -5,7 +5,7 @@ templates:
     attributes:
       table: !table {}
     processors:
-    - !reportBuilder # compile all reports in current directory
-      directory: '.'
-    - !prepareTable {}
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !prepareTable {}
     tableData: tableDataSource

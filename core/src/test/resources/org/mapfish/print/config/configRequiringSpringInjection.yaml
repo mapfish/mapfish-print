@@ -3,4 +3,4 @@ templates:
     attributes:
       att: !springInjectionAttribute {}
     processors:
-    - !springInjectionProcessor {}
+      - !springInjectionProcessor {}

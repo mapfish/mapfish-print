@@ -36,5 +36,5 @@ templates:
         height: 500
         maxDpi: 400
     processors:
-    - !createMap
-        inputMapper: {geojsonMap: map}
+      - !createMap
+        inputMapper: { geojsonMap: map }

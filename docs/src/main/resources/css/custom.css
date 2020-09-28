@@ -6,7 +6,8 @@
   letter-spacing: 1px;
 }
 
-.document h1, .document h3 {
+.document h1,
+.document h3 {
   margin-top: 10px;
 }
 

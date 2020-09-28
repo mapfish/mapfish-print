@@ -3,8 +3,8 @@ templates:
     processors:
       - !addHeaders
         matchers:
-        - !localMatch {}
+          - !localMatch {}
         headers:
-          Cookie : [cookie-value, cookie-value2]
-          Header2 : [header2-value]
+          Cookie: [cookie-value, cookie-value2]
+          Header2: [header2-value]
       - !addHeadersTestProcessor {}

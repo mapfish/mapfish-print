@@ -1,16 +1,16 @@
 throwErrorOnExtraParameters: true
 
 templates:
-    plain: !template
-        mapExport: true
-        attributes:
-          map: !map
-            maxWidth: 1000
-            maxHeight: 1000
-            maxDpi: 400
-            zoomSnapTolerance: 0.025
-            zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
-            zoomLevels: !zoomLevels
-              scales: [5000, 10000, 50000, 110000, 500000, 1000000]
-        processors:
-        - !createMap {}
+  plain: !template
+    mapExport: true
+    attributes:
+      map: !map
+        maxWidth: 1000
+        maxHeight: 1000
+        maxDpi: 400
+        zoomSnapTolerance: 0.025
+        zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
+        zoomLevels: !zoomLevels
+          scales: [5000, 10000, 50000, 110000, 500000, 1000000]
+    processors:
+      - !createMap {}

@@ -11,8 +11,8 @@ templates:
           rotation: 0
           useAdjustBounds: true
           layers:
-          - type: "geojson"
-            style: "point"
+            - type: 'geojson'
+              style: 'point'
     processors:
-    - !setStyle {}
-    - !createMap {}
+      - !setStyle {}
+      - !createMap {}

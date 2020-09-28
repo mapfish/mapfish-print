@@ -1,10 +1,10 @@
 pdfConfig: !pdfConfig
   compressed: true
-  title: "Config Title"
-  author: "Config Author"
-  subject: "Config Subject"
-  keywords: ["Config Keywords"]
-  creator: "Config Creator"
+  title: 'Config Title'
+  author: 'Config Author'
+  subject: 'Config Subject'
+  keywords: ['Config Keywords']
+  creator: 'Config Creator'
 
 throwErrorOnExtraParameters: true
 templates:
@@ -20,6 +20,6 @@ templates:
         zoomLevels: !zoomLevels
           scales: [50000, 100000, 500000, 1000000]
     processors:
-    - !reportBuilder
-        directory: "."
-    - !createMap {}
+      - !reportBuilder
+        directory: '.'
+      - !createMap {}

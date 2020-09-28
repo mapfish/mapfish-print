@@ -5,11 +5,11 @@ templates:
     attributes:
       table: !table {}
     processors:
-    - !reportBuilder
-      directory: '.'
-    - !prepareTable
-      columns:
-        icon: !urlImage
-          urlExtractor: (.*)
-      dynamic: true
-      excludeColumns: ["exclude"]
+      - !reportBuilder
+        directory: '.'
+      - !prepareTable
+        columns:
+          icon: !urlImage
+            urlExtractor: (.*)
+        dynamic: true
+        excludeColumns: ['exclude']

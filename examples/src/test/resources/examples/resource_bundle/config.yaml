@@ -11,6 +11,6 @@ templates:
         width: 780
         height: 330
     processors:
-    - !reportBuilder
-      directory: '.'
-    - !createMap {}
+      - !reportBuilder
+        directory: '.'
+      - !createMap {}

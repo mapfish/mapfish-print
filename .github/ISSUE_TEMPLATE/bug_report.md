@@ -4,18 +4,17 @@ about: Create a report to help us improve
 title: ''
 labels: ''
 assignees: ''
-
 ---
 
 **Context**
-* MapFish print version: ?
-* Java version: ?
-* OS: ?
+
+- MapFish print version: ?
+- Java version: ?
+- OS: ?
 
 **Describe the bug**
 
 <!-- A clear and concise description of what the bug is. -->
-
 
 **How to reproduce**
 

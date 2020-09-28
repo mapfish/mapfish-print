@@ -9,6 +9,6 @@ templates:
         width: 780
         height: 330
     processors:
-    - !reportBuilder # compile all reports in current directory
-      directory: '.'
-    - !createMap {}
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createMap {}

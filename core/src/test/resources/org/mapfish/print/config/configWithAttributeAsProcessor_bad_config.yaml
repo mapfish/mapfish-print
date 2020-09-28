@@ -1,5 +1,4 @@
-
 templates:
   main: !template
     processors:
-    - !springInjectionAttribute {}
+      - !springInjectionAttribute {}

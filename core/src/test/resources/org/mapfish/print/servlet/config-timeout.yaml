@@ -13,10 +13,10 @@ templates:
         height: 500
         maxDpi: 400
     processors:
-    - !sleeper {} # sleepy processor for timeout tests
-    - !reportBuilder # compile all reports in current directory
+      - !sleeper {} # sleepy processor for timeout tests
+      - !reportBuilder # compile all reports in current directory
         directory: '.'
-    - !createMap
+      - !createMap
         prefix: geojson
-    - !createMap
+      - !createMap
         prefix: image

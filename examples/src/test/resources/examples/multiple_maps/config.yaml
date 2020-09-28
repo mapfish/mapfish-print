@@ -1,13 +1,13 @@
 throwErrorOnExtraParameters: true
-transparentTileErrorColor: "rgba(78, 78, 255, 125)"
-opaqueTileErrorColor: "rgba(255, 155, 155, 0)"
+transparentTileErrorColor: 'rgba(78, 78, 255, 125)'
+opaqueTileErrorColor: 'rgba(255, 155, 155, 0)'
 
 templates:
   A4 portrait: !template
     reportTemplate: report.jrxml
     attributes:
       title: !string
-        default: "Countries"
+        default: 'Countries'
       mapDef1: !map
         maxDpi: 400
         width: 200
@@ -17,18 +17,18 @@ templates:
         width: 500
         height: 505
     processors:
-    - !reportBuilder
-      directory: '.'
-    - !createMap
-      inputMapper:
-        mapDef1: map
-      outputMapper:
-        mapSubReport: mapSubReport1
-        mapContext: mapContext1
+      - !reportBuilder
+        directory: '.'
+      - !createMap
+        inputMapper:
+          mapDef1: map
+        outputMapper:
+          mapSubReport: mapSubReport1
+          mapContext: mapContext1
 
-    - !createMap
-      inputMapper:
-        mapDef2: map
-      outputMapper:
-        mapSubReport: mapSubReport2
-        mapContext: mapContext2
+      - !createMap
+        inputMapper:
+          mapDef2: map
+        outputMapper:
+          mapSubReport: mapSubReport2
+          mapContext: mapContext2

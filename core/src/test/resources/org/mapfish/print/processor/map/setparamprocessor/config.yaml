@@ -1,6 +1,6 @@
 templates:
   main: !template
-    reportTemplate: "dummy.jxml"
+    reportTemplate: 'dummy.jxml'
     attributes:
       customP1: !string {}
       customP2: !string {}
@@ -13,12 +13,12 @@ templates:
         zoomLevels: !zoomLevels
           scales: [5000, 10000, 50000, 110000, 500000, 1000000]
     processors:
-    - !setWmsCustomParam
+      - !setWmsCustomParam
         paramName: customP1
         inputMapper:
           customP1: value
-    - !setWmsCustomParam
+      - !setWmsCustomParam
         paramName: customP2
         inputMapper:
           customP2: value
-    - !createMap {}
+      - !createMap {}

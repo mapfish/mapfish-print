@@ -1,6 +1,6 @@
 templates:
   main: !template
-    reportTemplate: "dummy.jxml"
+    reportTemplate: 'dummy.jxml'
     attributes:
       map: !map
         width: 630
@@ -17,13 +17,13 @@ templates:
       staticLayers: !staticLayers
         default:
           layers:
-            - type: "grid"
+            - type: 'grid'
               numberOfLines: [10, 10]
               labelColor: rgba(0,0,0,0)
               haloColor: rgba(0,0,0,0)
     processors:
-    - !addOverlayLayers {}
-    - !createMap {}
-    - !createOverviewMap
+      - !addOverlayLayers {}
+      - !createMap {}
+      - !createOverviewMap
         outputMapper:
-            layerGraphics: overviewMapLayerGraphics
+          layerGraphics: overviewMapLayerGraphics

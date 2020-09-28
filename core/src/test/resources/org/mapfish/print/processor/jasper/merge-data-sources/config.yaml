@@ -16,30 +16,30 @@ templates:
           displayName: !string {}
           table: !table {}
     processors:
-    - !reportBuilder # compile all reports in current directory
-      directory: '.'
-    - !createMap {}
-    - !createDataSource
-      reportTemplate: table.jrxml
-      reportKey: reportTemplate
-      processors:
-        - !prepareTable {}
-    - !prepareLegend {}
-    - !mergeDataSources
-      sources:
-        - !mergeSource
-          type: SINGLE
-          fields: # name the column data so there is consistence in all rows
-            mapSubReport: subReportPath
-        - !mergeSource
-          type: SINGLE
-          fields: # name the column data so there is consistence in all rows
-            legendSubReport: subReportPath
-        - !mergeSource
-          key: jrDataSource
-          type: DATASOURCE
-          fields:
-            displayName: displayName
-            table: datasource # main.jrxml uses the name "datasource" so we need to use that mapping here
-            reportTemplate: subReportPath
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createMap {}
+      - !createDataSource
+        reportTemplate: table.jrxml
+        reportKey: reportTemplate
+        processors:
+          - !prepareTable {}
+      - !prepareLegend {}
+      - !mergeDataSources
+        sources:
+          - !mergeSource
+            type: SINGLE
+            fields: # name the column data so there is consistence in all rows
+              mapSubReport: subReportPath
+          - !mergeSource
+            type: SINGLE
+            fields: # name the column data so there is consistence in all rows
+              legendSubReport: subReportPath
+          - !mergeSource
+            key: jrDataSource
+            type: DATASOURCE
+            fields:
+              displayName: displayName
+              table: datasource # main.jrxml uses the name "datasource" so we need to use that mapping here
+              reportTemplate: subReportPath
     tableData: mergedDataSource

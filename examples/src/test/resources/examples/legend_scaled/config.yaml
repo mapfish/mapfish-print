@@ -10,11 +10,11 @@ templates:
         height: 330
       legend: !legend {}
     processors:
-    - !reportBuilder # compile all reports in current directory
-      directory: '.'
-    - !createMap {}
-    - !prepareLegend # create a datasource for the report with the 'legend' attribute
-      maxWidth: 148
-      dpi: 80
-      scaled: true
-      template: legend.jrxml
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createMap {}
+      - !prepareLegend # create a datasource for the report with the 'legend' attribute
+        maxWidth: 148
+        dpi: 80
+        scaled: true
+        template: legend.jrxml

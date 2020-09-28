@@ -1,6 +1,6 @@
 templates:
   main: !template
-    reportTemplate: "dummy.jxml"
+    reportTemplate: 'dummy.jxml'
     attributes:
       map: !map
         width: 780
@@ -16,7 +16,7 @@ templates:
         maxDpi: 400
         style: file://overview-map.sld
     processors:
-    - !createMap {}
-    - !createOverviewMap
+      - !createMap {}
+      - !createOverviewMap
         outputMapper:
-            layerGraphics: overviewMapLayerGraphics
+          layerGraphics: overviewMapLayerGraphics

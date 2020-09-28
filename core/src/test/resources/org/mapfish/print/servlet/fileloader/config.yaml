@@ -5,8 +5,8 @@ templates:
     attributes:
       tableList: !tableList {}
     processors:
-    - !prepareTableList
-      inputMapper: {tableList: tableList}
-      dynamicReport: {}
-      dynamicReportDirectory: "subreports"
-      outputMapper: {tableList: tableList}
+      - !prepareTableList
+        inputMapper: { tableList: tableList }
+        dynamicReport: {}
+        dynamicReportDirectory: 'subreports'
+        outputMapper: { tableList: tableList }

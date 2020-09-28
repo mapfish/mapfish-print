@@ -1,7 +1,6 @@
 name: Clean docker hub tags
 
-on:
-  delete
+on: delete
 
 jobs:
   clean:
