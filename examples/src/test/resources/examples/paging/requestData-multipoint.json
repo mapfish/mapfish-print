@@ -6,10 +6,17 @@
       "projection": "EPSG:3857",
       "dpi": 72,
       "areaOfInterest": {
-        "area" : {
+        "area": {
           "type": "MultiPoint",
           "coordinates": [
-            [-8233000, 4979000], [-8234000, 4981000]
+            [
+              -8233000,
+              4979000
+            ],
+            [
+              -8234000,
+              4981000
+            ]
           ]
         }
       },
@@ -17,11 +24,16 @@
       "layers": [
         {
           "type": "WMS",
-          "layers": ["tiger-ny"],
+          "layers": [
+            "tiger-ny"
+          ],
           "baseURL": "http://geoserver:8080/wms",
           "imageFormat": "image/png",
           "version": "1.1.1",
-          "customParams": {"TRANSPARENT": "true", "EXCEPTIONS": "INIMAGE"}
+          "customParams": {
+            "TRANSPARENT": "true",
+            "EXCEPTIONS": "INIMAGE"
+          }
         }
       ]
     }

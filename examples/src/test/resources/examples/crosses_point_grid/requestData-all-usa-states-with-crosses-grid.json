@@ -15,22 +15,34 @@
         {
           "type": "grid",
           "gridType": "points",
-          "numberOfLines": [5,5],
+          "numberOfLines": [
+            5,
+            5
+          ],
           "renderAsSvg": true,
-          "haloColor" : "#CCFFCC",
-          "labelColor" : "black",
+          "haloColor": "#CCFFCC",
+          "labelColor": "black",
           "labelFormat": "%1.0f %s",
           "indent": 10,
-          "haloRadius" : 4,
-          "font" : {
-            "name" : ["Liberation Sans", "Helvetica", "Nimbus Sans L", "Liberation Sans", "FreeSans", "Sans-serif"],
-            "size" : 8,
-            "style" : "BOLD"
+          "haloRadius": 4,
+          "font": {
+            "name": [
+              "Liberation Sans",
+              "Helvetica",
+              "Nimbus Sans L",
+              "Liberation Sans",
+              "FreeSans",
+              "Sans-serif"
+            ],
+            "size": 8,
+            "style": "BOLD"
           }
         },
         {
           "type": "WMS",
-          "layers": ["topp:states"],
+          "layers": [
+            "topp:states"
+          ],
           "baseURL": "http://geoserver:8080/wms",
           "imageFormat": "image/png",
           "version": "1.3.0"

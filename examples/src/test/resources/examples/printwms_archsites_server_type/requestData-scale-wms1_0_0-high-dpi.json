@@ -6,7 +6,10 @@
       "projection": "EPSG:26713",
       "dpi": 300,
       "rotation": 0,
-      "center": [602602, 4915620],
+      "center": [
+        602602,
+        4915620
+      ],
       "scale": 258000,
       "layers": [
         {
@@ -17,7 +20,6 @@
           "layers": [
             "sf:archsites"
           ],
-
           "imageFormat": "image/png",
           "customParams": {
             "TRANSPARENT": "true"

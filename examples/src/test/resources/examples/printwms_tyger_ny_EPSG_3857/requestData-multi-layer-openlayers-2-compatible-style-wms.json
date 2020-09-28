@@ -6,7 +6,12 @@
       "projection": "EPSG:3857",
       "dpi": 72,
       "rotation": 0,
-      "center": [-8240656,4969880, -8235548,4973782],
+      "center": [
+        -8240656,
+        4969880,
+        -8235548,
+        4973782
+      ],
       "scale": 25000,
       "layers": [
         {
@@ -19,10 +24,10 @@
             "tiger:tiger_roads",
             "tiger:poi"
           ],
-
           "imageFormat": "image/png",
-          "styles": [""],
-
+          "styles": [
+            ""
+          ],
           "customParams": {
             "TRANSPARENT": "true"
           }

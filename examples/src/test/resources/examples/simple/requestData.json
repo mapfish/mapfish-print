@@ -4,7 +4,10 @@
   "attributes": {
     "map": {
       "longitudeFirst": true,
-      "center": [5, 45],
+      "center": [
+        5,
+        45
+      ],
       "scale": 100000000,
       "projection": "EPSG:4326",
       "dpi": 72,
@@ -18,7 +21,7 @@
             "*": {
               "symbolizers": [
                 {
-                  "type" : "polygon",
+                  "type": "polygon",
                   "fillColor": "#5E7F99",
                   "fillOpacity": 1,
                   "strokeColor": "#CC1D18",
