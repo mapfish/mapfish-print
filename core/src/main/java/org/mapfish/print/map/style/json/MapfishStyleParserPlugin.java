@@ -32,25 +32,25 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * </p>
  * <pre><code>
  * {
- *   "version" : "1",
- *   "styleProperty":"_gx_style",
+ *   "version": "1",
+ *   "styleProperty": "_gx_style",
  *   "1": {
- *     "fillColor":"#FF0000",
+ *     "fillColor": "#FF0000",
  *     "fillOpacity":0,
- *     "rotation" : "30",
+ *     "rotation": "30",
  *
- *     "externalGraphic" : "mark.png"
+ *     "externalGraphic": "mark.png"
  *     "graphicName": "circle",
  *     "graphicOpacity": 0.4,
  *     "pointRadius": 5,
  *
- *     "strokeColor":"#FFA829",
+ *     "strokeColor": "#FFA829",
  *     "strokeOpacity":1,
  *     "strokeWidth":5,
- *     "strokeLinecap":"round",
- *     "strokeDashstyle":"dot",
+ *     "strokeLinecap": "round",
+ *     "strokeDashstyle": "dot",
  *
- *     "fontColor":"#000000",
+ *     "fontColor": "#000000",
  *     "fontFamily": "sans-serif",
  *     "fontSize": "12px",
  *     "fontStyle": "normal",
@@ -74,58 +74,58 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * </p>
  * <pre><code>
  * {
- *   "version" : "2",
+ *   "version": "2",
  *   // shared values can be declared here (at top level)
  *   // and used in form ${constName} later in json
- *   "val1" : "#FFA829",
+ *   "val1": "#FFA829",
  *   // default values for properties can be defined here
- *   " strokeDashstyle" : "dot"
- *   "[population &gt; 300]" : {
+ *   " strokeDashstyle": "dot"
+ *   "[population &gt; 300]": {
  *     // default values for current rule can be defined here
  *     // they will override default values defined at
  *     // higher level
- *     "rotation" : "30",
+ *     "rotation": "30",
  *
  *     //min and max scale denominator are optional
- *     "maxScale" : 1000000,
- *     "minScale" : 100000,
- *     "symbolizers" : [{
+ *     "maxScale": 1000000,
+ *     "minScale": 100000,
+ *     "symbolizers": [{
  *       // values defined in symbolizer will override defaults
- *       "type" : "point",
- *       "fillColor":"#FF0000",
+ *       "type": "point",
+ *       "fillColor": "#FF0000",
  *       "fillOpacity":0,
- *       "rotation" : "30",
- *       "externalGraphic" : "mark.png",
+ *       "rotation": "30",
+ *       "externalGraphic": "mark.png",
  *
  *       "graphicName": "circle",
  *       "graphicOpacity": 0.4,
  *       "pointRadius": 5,
  *
- *       "strokeColor":"${val1}",
+ *       "strokeColor": "${val1}",
  *       "strokeOpacity":1,
  *       "strokeWidth":5,
- *       "strokeLinecap":"round",
- *       "strokeDashstyle":"dot"
+ *       "strokeLinecap": "round",
+ *       "strokeDashstyle": "dot"
  *     }, {
- *       "type" : "line",
- *       "strokeColor":"${val1}",
+ *       "type": "line",
+ *       "strokeColor": "${val1}",
  *       "strokeOpacity":1,
  *       "strokeWidth":5,
- *       "strokeLinecap":"round",
- *       "strokeDashstyle":"dot"
+ *       "strokeLinecap": "round",
+ *       "strokeDashstyle": "dot"
  *     }, {
- *       "type" : "polygon",
- *       "fillColor":"#FF0000",
+ *       "type": "polygon",
+ *       "fillColor": "#FF0000",
  *       "fillOpacity":0,
  *
- *       "strokeColor":"${val1}",
+ *       "strokeColor": "${val1}",
  *       "strokeOpacity":1,
  *       "strokeWidth":5,
- *       "strokeLinecap":"round",
- *       "strokeDashstyle":"dot"
+ *       "strokeLinecap": "round",
+ *       "strokeDashstyle": "dot"
  *     }, {
- *       "type" : "text",
- *       "fontColor":"#000000",
+ *       "type": "text",
+ *       "fontColor": "#000000",
  *       "fontFamily": "sans-serif",
  *       "fontSize": "12px",
  *       "fontStyle": "normal",
@@ -134,7 +134,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  *       "haloOpacity": "0.7",
  *       "haloRadius": "3.0",
  *       "label": "[name]",
- *       "fillColor":"#FF0000",
+ *       "fillColor": "#FF0000",
  *       "fillOpacity":0,
  *       "labelAlign": "cm",
  *       "labelRotation": "45",
@@ -231,11 +231,11 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * The items below with (ECQL) can have ECQL expressions.
  * </p>
  * <ul>
- * <li><strong>fillColor</strong>(ECQL) - (polygon, point, text) The color used to fill the point
+ * <li><strong>fillColor</strong> (ECQL) - (polygon, point, text) The color used to fill the point
  * graphic, polygon or text.</li>
- * <li><strong>fillOpacity</strong>(ECQL) - (polygon,  point, text) The opacity used when fill the
+ * <li><strong>fillOpacity</strong> (ECQL) - (polygon,  point, text) The opacity used when fill the
  * point graphic, polygon or text.</li>
- * <li><strong>rotation</strong>(ECQL) - (point) The rotation of the point graphic</li>
+ * <li><strong>rotation</strong> (ECQL) - (point) The rotation of the point graphic</li>
  * <li>
  * <strong>externalGraphic</strong> - (point) one of the two options for declaring the point
  * graphic to use.  This can be a URL to the icon to use or, if just a string it will be assumed to refer to a
@@ -243,7 +243,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * subdirectory) will be allowed.
  * </li>
  * <li>
- * <strong>graphicName</strong>(ECQL) - (point) one of the two options for declaring the point
+ * <strong>graphicName</strong> (ECQL) - (point) one of the two options for declaring the point
  * graphic to use.  This is the default and will be a square if not specified. The option are any of the
  * Geotools Marks.
  * <p>Geotools has by default 3 types of marks:</p>
@@ -256,18 +256,18 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * the code number of thecharacter to render for the point.</li>
  * </ul>
  * </li>
- * <li><strong>graphicOpacity</strong>(ECQL) - (point) the opacity to use when drawing the point
+ * <li><strong>graphicOpacity</strong> (ECQL) - (point) the opacity to use when drawing the point
  * graphic</li>
- * <li><strong>pointRadius</strong>(ECQL) - (point) the size at which to draw the point graphic</li>
+ * <li><strong>pointRadius</strong> (ECQL) - (point) the size at which to draw the point graphic</li>
  * <li>
- * <strong>strokeColor</strong>(ECQL) - (line, point, polygon) the color to use when drawing a line
+ * <strong>strokeColor</strong> (ECQL) - (line, point, polygon) the color to use when drawing a line
  * or the outline of a polygon or point graphic
  * </li>
- * <li><strong>strokeOpacity</strong>(ECQL) - (line, point, polygon) the opacity to use when drawing
+ * <li><strong>strokeOpacity</strong> (ECQL) - (line, point, polygon) the opacity to use when drawing
  * the line/stroke</li>
- * <li><strong>strokeWidth</strong>(ECQL) - (line, point, polygon) the widh of the line/stroke</li>
+ * <li><strong>strokeWidth</strong> (ECQL) - (line, point, polygon) the widh of the line/stroke</li>
  * <li>
- * <strong>strokeLinecap</strong>(ECQL) - (line, point, polygon) the style used when drawing the
+ * <strong>strokeLinecap</strong> (ECQL) - (line, point, polygon) the style used when drawing the
  * end of a line.
  * <p>
  * Options:  butt (sharp square edge), round (rounded edge), and square (slightly elongated square edge).
@@ -288,16 +288,16 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * <li>{string containing spaces to delimit array elements} - Example: [1 2 3 1 2]</li>
  * </ul>
  * </li>
- * <li><strong>fontColor</strong>(ECQL) - (text) the color of the text drawn</li>
- * <li><strong>fontFamily</strong>(ECQL) - (text) the font of the text drawn</li>
- * <li><strong>fontSize</strong>(ECQL) - (text) the font size of the text drawn</li>
- * <li><strong>fontStyle</strong>(ECQL) - (text) the font style of the text drawn</li>
- * <li><strong>fontWeight</strong>(ECQL) - (text) the font weight of the text drawn</li>
- * <li><strong>haloColor</strong>(ECQL) - (text) the color of the halo around the text</li>
- * <li><strong>haloOpacity</strong>(ECQL) - (text) the opacity of the halo around the text</li>
- * <li><strong>haloRadius</strong>(ECQL) - (text) the radius of the halo around the text</li>
+ * <li><strong>fontColor</strong> (ECQL) - (text) the color of the text drawn</li>
+ * <li><strong>fontFamily</strong> (ECQL) - (text) the font of the text drawn</li>
+ * <li><strong>fontSize</strong> (ECQL) - (text) the font size of the text drawn</li>
+ * <li><strong>fontStyle</strong> (ECQL) - (text) the font style of the text drawn</li>
+ * <li><strong>fontWeight</strong> (ECQL) - (text) the font weight of the text drawn</li>
+ * <li><strong>haloColor</strong> (ECQL) - (text) the color of the halo around the text</li>
+ * <li><strong>haloOpacity</strong> (ECQL) - (text) the opacity of the halo around the text</li>
+ * <li><strong>haloRadius</strong> (ECQL) - (text) the radius of the halo around the text</li>
  * <li>
- * <strong>label</strong>(ECQL) - (text) the expression used to create the label e.  See the
+ * <strong>label</strong> (ECQL) - (text) the expression used to create the label e.  See the
  * section on labelling for more details
  * </li>
  * <li>
@@ -321,28 +321,28 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * </ul>
  * </li>
  *
- * <li><strong>labelRotation</strong>(ECQL) - (Point Placement) the rotation of the label</li>
- * <li><strong>labelXOffset</strong>(ECQL) - (Point Placement) the amount to offset the label along the
+ * <li><strong>labelRotation</strong> (ECQL) - (Point Placement) the rotation of the label</li>
+ * <li><strong>labelXOffset</strong> (ECQL) - (Point Placement) the amount to offset the label along the
  * x axis.  negative number offset to the left</li>
- * <li><strong>labelYOffset</strong>(ECQL) - (Point Placement) the amount to offset the label along the
+ * <li><strong>labelYOffset</strong> (ECQL) - (Point Placement) the amount to offset the label along the
  * y axis.  negative number offset to the top of the printing</li>
- * <li><strong>labelAnchorPointX</strong>(ECQL) - (Point Placement) The point along the x axis that the
+ * <li><strong>labelAnchorPointX</strong> (ECQL) - (Point Placement) The point along the x axis that the
  * label is started at anchored). Offset and rotation is relative to this point.  Only one of
  * labelAnchorPointX/Y or labelAlign will be respected, since they are both ways of defining the anchor
  * Point</li>
- * <li><strong>labelAnchorPointY</strong>(ECQL) - (Point Placement) The point along the y axis that the
+ * <li><strong>labelAnchorPointY</strong> (ECQL) - (Point Placement) The point along the y axis that the
  * label is started at (anchored). Offset and rotation is relative to this point.  Only one of
  * labelAnchorPointX/Y or labelAlign will be respected, since they are both ways of defining the anchor
  * Point</li>
- * <li><strong>labelPerpendicularOffset</strong>(ECQL) - (Line Placement) If this property is defined
+ * <li><strong>labelPerpendicularOffset</strong> (ECQL) - (Line Placement) If this property is defined
  * it will be assumed that the geometry is a line and this property defines how far from the center of the
  * line the label should be drawn.</li>
  * </ul>
  *
  * <h2 id="labels">Labelling: <a class="headerlink" href="#labels">¶</a></h2>
  * <p>
- * Labelling in this style format is done by defining a text symbolizer ("type":"text").  All text symbolizers
- * consist of:
+ * Labelling in this style format is done by defining a text symbolizer ("type": "text").  All text
+ * symbolizers consist of:
  * </p>
  * <ul>
  * <li><a href="#labelproperties">Label Property</a></li>
@@ -400,7 +400,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * <p><strong>Point Placement</strong></p>
  * <p>
  * Point placement defines an <em>anchor point</em> which is the point to draw the text relative to. For
- * example an anchor point of 0.5, 0.5 ("labelAnchorPointX" : "0.5", "labelAnchorPointY" : "0.5") would
+ * example an anchor point of 0.5, 0.5 ("labelAnchorPointX": "0.5", "labelAnchorPointY": "0.5") would
  * position the start of the label at the center of the geometry.
  * </p>
  * <p>
@@ -444,11 +444,11 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * <p>Example</p>
  * <pre><code>
  * {
- *   "version" : "2",
- *   "*" : {
- *     "symbolizers" : [{
- *       "type" : "text",
- *       "fontColor":"#000000",
+ *   "version": "2",
+ *   "*": {
+ *     "symbolizers": [{
+ *       "type": "text",
+ *       "fontColor": "#000000",
  *       "label": "[name]",
  *       "goodnessOfFit": 0.1,
  *       "spaceAround": 10
@@ -461,7 +461,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * documentation</a>.
  * </p>
  *
- * <h2>ECQL references:</h2>
+ * <h2>ECQL references</h2>
  * <ul>
  * <li><a href="http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#ecql-expr">
  * http://docs.geoserver.org/stable/en/user/filter/ecql_reference.html#ecql-expr</a></li>

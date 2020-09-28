@@ -3,5 +3,5 @@ templates:
     processors:
       - !mapUri
         mapping:
-          (http)://localhost(.*) : "$1://127.0.0.1$2"
+          (http)://localhost(.*): "$1://127.0.0.1$2"
       - !mapUriTestProcessor {}

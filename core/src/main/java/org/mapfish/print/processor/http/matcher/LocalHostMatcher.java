@@ -18,12 +18,12 @@ import java.util.List;
  * <p>Example 2: Accept any localhost url (port == -1 accepts any port)</p>
  * <pre><code>
  *     - localMatch
- *       port : -1
+ *       port: -1
  * </code></pre>
  * <p>Example 3: Accept any localhost url on port 80 only</p>
  * <pre><code>
  *     - localMatch
- *       port : 80
+ *       port: 80
  * </code></pre>
  * <p>Example 4: Accept localhost urls with paths that start with /print/.</p>
  * <p>
@@ -32,7 +32,7 @@ import java.util.List;
  * </p>
  * <pre><code>
  *     - localMatch
- *       pathRegex : /print/.+
+ *       pathRegex: /print/.+
  * </code></pre>
  * [[examples=http_processors]]
  */

@@ -18,19 +18,19 @@ import java.util.Optional;
  * <p>Example 1: Accept any www.camptocamp.com url</p>
  * <pre><code>
  *     - !dnsMatch
- *       host : www.camptocamp.com
+ *       host: www.camptocamp.com
  * </code></pre>
  * <p>Example 2: Accept any www.camptocamp.com url (port == -1 accepts any port)</p>
  * <pre><code>
  *     - !dnsMatch
- *       host : www.camptocamp.com
- *       port : -1
+ *       host: www.camptocamp.com
+ *       port: -1
  * </code></pre>
  * <p>Example 3: Accept any www.camptocamp.com url on port 80 only</p>
  * <pre><code>
  *     - !dnsMatch
- *       host : www.camptocamp.com
- *       port : 80
+ *       host: www.camptocamp.com
+ *       port: 80
  * </code></pre>
  *
  * Example 4: Accept www.camptocamp.com urls with paths that start with /print/.
@@ -40,8 +40,8 @@ import java.util.Optional;
  *
  * <pre><code>
  *     - !dnsMatch
- *       host : www.camptocamp.com
- *       pathRegex : /print/.+
+ *       host: www.camptocamp.com
+ *       pathRegex: /print/.+
  * </code></pre>
  * [[examples=http_processors]]
  */

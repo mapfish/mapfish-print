@@ -46,8 +46,8 @@ import java.net.URI;
  * - !restrictUris
  *   matchers:
  *     - !ipMatch
- *       ip : 192.178.0.0
- *       mask : 255.255.0.0
+ *       ip: 192.178.0.0
+ *       mask: 255.255.0.0
  *       reject: true
  *     - !acceptAll
  * </code></pre>

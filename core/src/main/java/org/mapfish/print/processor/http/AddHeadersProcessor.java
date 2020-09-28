@@ -21,8 +21,8 @@ import java.util.Map;
  * <pre><code>
  * - !addHeaders
  *   headers:
- *     Cookie : [cookie-value, cookie-value2]
- *     Header2 : header2-value
+ *     Cookie: [cookie-value, cookie-value2]
+ *     Header2: header2-value
  * </code></pre>
  *
  * <p>Can be applied conditionally using matchers, like in {@link RestrictUrisProcessor}
