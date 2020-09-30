@@ -15,11 +15,9 @@ import java.util.Base64;
  */
 public class DataUrlConnection extends URLConnection {
     /**
-     * Must be overridden.
-     *
      * @param url the data url
      */
-    protected DataUrlConnection(final URL url) {
+    public DataUrlConnection(final URL url) {
         super(url);
     }
 
