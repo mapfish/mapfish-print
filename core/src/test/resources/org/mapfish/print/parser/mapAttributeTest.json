@@ -1,9 +1,9 @@
 {
-  "toIgnore" : "ignored",
-  "s" : "string",
+  "toIgnore": "ignored",
+  "s": "string",
   "defs": "newValue",
-  "bigI" : 11,
-  "littleI" : 1,
+  "bigI": 11,
+  "littleI": 1,
   "bigD": 12.0,
   "littleD": 2.0,
   "bigF": 13.0,
@@ -14,18 +14,43 @@
     "poField": "fieldValue"
   },
   "url": "http://localhost:8080",
-  "pa": [1,"hi", {"faField":3}],
-  "sa": ["s1", "s2"],
-  "ba": [true, false],
-  "oa": [{"f":1}, {"b":2}],
-  "da": [2.1, 2.2],
+  "pa": [
+    1,
+    "hi",
+    {
+      "faField": 3
+    }
+  ],
+  "sa": [
+    "s1",
+    "s2"
+  ],
+  "ba": [
+    true,
+    false
+  ],
+  "oa": [
+    {
+      "f": 1
+    },
+    {
+      "b": 2
+    }
+  ],
+  "da": [
+    2.1,
+    2.2
+  ],
   "e": {
-    "embeddedValue" : "embeddedValue"
+    "embeddedValue": "embeddedValue"
   },
-  "ea" : [{
-    "embeddedValue" : "embeddedValue2",
-    "embeddedDefault" : "updateddef"
-  },{
-    "embeddedValue" : "embeddedValue3"
-  }]
+  "ea": [
+    {
+      "embeddedValue": "embeddedValue2",
+      "embeddedDefault": "updateddef"
+    },
+    {
+      "embeddedValue": "embeddedValue3"
+    }
+  ]
 }

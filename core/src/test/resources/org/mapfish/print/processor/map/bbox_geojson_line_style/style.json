@@ -1,24 +1,24 @@
 {
   "version": "1",
-  "styleProperty":"prop0",
-  "value0":{
-    "fillColor":"green",
-    "fillOpacity":1,
-    "strokeColor":"#FFA829",
-    "strokeOpacity":1,
-    "strokeWidth":5,
-    "strokeLinecap":"round",
-    "strokeDashstyle":"solid",
-    "pointRadius":5
+  "styleProperty": "prop0",
+  "value0": {
+    "fillColor": "green",
+    "fillOpacity": 1,
+    "strokeColor": "#FFA829",
+    "strokeOpacity": 1,
+    "strokeWidth": 5,
+    "strokeLinecap": "round",
+    "strokeDashstyle": "solid",
+    "pointRadius": 5
   },
-  "value1":{
-    "fillColor":"blue",
-    "fillOpacity":1,
-    "strokeColor":"#FFA829",
-    "strokeOpacity":1,
-    "strokeWidth":5,
-    "strokeLinecap":"round",
-    "strokeDashstyle":"dash",
-    "pointRadius":5
+  "value1": {
+    "fillColor": "blue",
+    "fillOpacity": 1,
+    "strokeColor": "#FFA829",
+    "strokeOpacity": 1,
+    "strokeWidth": 5,
+    "strokeLinecap": "round",
+    "strokeDashstyle": "dash",
+    "pointRadius": 5
   }
 }
