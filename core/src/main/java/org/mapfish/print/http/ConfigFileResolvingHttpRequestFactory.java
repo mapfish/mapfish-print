@@ -3,6 +3,8 @@ package org.mapfish.print.http;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.Processor;
+import org.mapfish.print.url.data.DataUrlConnection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -23,7 +25,6 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nonnull;
 
-import org.mapfish.print.url.data.DataUrlConnection;
 
 /**
  * This request factory will attempt to load resources using
@@ -114,8 +115,10 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
                 if ("data".equals(this.uri.getScheme())) {
                     final DataUrlConnection duc = new DataUrlConnection(this.uri.toURL());
                     final InputStream is = duc.getInputStream();
-                    final ConfigFileResolverHttpResponse response = new ConfigFileResolverHttpResponse(is, headers);
-                    LOGGER.debug("Resolved request: {} using DataUrlConnection.", this.uri.getSchemeSpecificPart());
+                    final ConfigFileResolverHttpResponse response =
+                      new ConfigFileResolverHttpResponse(is, headers);
+                    LOGGER.debug("Resolved request: {} using DataUrlConnection.",
+                      this.uri.getSchemeSpecificPart());
                     return response;
                 }
                 if (this.httpMethod == HttpMethod.GET) {
