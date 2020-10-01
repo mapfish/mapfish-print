@@ -313,8 +313,9 @@ public class ExamplesTest {
                                         new Exception("File not found: " + expectedOutput.toString()));
                             }
 
-                            int similarity = 30;
-                            File file = new File(expectedOutputDir, "image-similarity.txt");
+                            int similarity = 0;
+                            File file = new File(expectedOutputDir, "image-similarity-" + requestFile.getName() + ".txt");
+                            System.out.println("Use similarity file: " + file.getName());
                             if (file.isFile()) {
                                 String similarityString = new String(Files.readAllBytes(file.toPath()),
                                                                      Constants.DEFAULT_CHARSET);
@@ -335,20 +336,8 @@ public class ExamplesTest {
     }
 
     private File getExpectedOutput(String outputFormat, File requestFile, File expectedOutputDir) {
-        File platformSpecificDir;
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            platformSpecificDir = new File(expectedOutputDir, "win");
-        } else if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-            platformSpecificDir = new File(expectedOutputDir, "mac");
-        } else {
-            platformSpecificDir = new File(expectedOutputDir, "linux");
-        }
-
         final String imageName = requestFile.getName().replace(".json",
                                                                "." + outputFormat);
-        if (new File(platformSpecificDir, imageName).exists()) {
-            return new File(platformSpecificDir, imageName);
-        }
         return new File(expectedOutputDir, imageName);
     }
 
