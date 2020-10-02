@@ -12,7 +12,7 @@
       "dpi": 300,
       "layers": [
         {
-          "baseURL": "http://geoserver:8080/web/resources/org.geoserver.web.GeoServerBasePage/img/logo.png",
+          "baseURL": "http://geoserver:8080/www/GeoServer.png",
           "extent": [
             4392836.015549079,
             7861166.1739889495,
