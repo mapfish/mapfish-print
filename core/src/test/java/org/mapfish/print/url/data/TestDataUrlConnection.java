@@ -11,7 +11,7 @@ public class TestDataUrlConnection {
     @Test
     public void testGetContentType() throws MalformedURLException {
         Handler.configureProtocolHandler();
-        assertEquals("image/svg+xml;base64",
+        assertEquals("image/svg+xml",
                      new DataUrlConnection(new URL("data:image/svg+xml;base64,PHN2")).getContentType());
         assertEquals("image/svg+xml",
                      new DataUrlConnection(new URL("data:image/svg+xml,PHN2")).getContentType());
