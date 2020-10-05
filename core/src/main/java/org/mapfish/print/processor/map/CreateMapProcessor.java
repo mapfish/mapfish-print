@@ -742,30 +742,32 @@ public final class CreateMapProcessor
                 final List<MapLayer> layers, final boolean allowTransparency) {
             final List<LayerGroup> result = new ArrayList<>();
             if (allowTransparency) {
+                LOGGER.debug("Building groups of layers");
                 for (int i = 0; i < layers.size(); ) {
                     final RenderType renderType = getSupportedRenderType(layers.get(i).getRenderType());
                     final double imageBufferScaling = layers.get(i).getImageBufferScaling();
                     final LayerGroup group = new LayerGroup(renderType, imageBufferScaling);
-
+                    MapLayer l = layers.get(i);
+                    LOGGER.debug("New group for layer {}, {}", l.getRenderType(), l.getImageBufferScaling());
                     group.opaque = (i == 0 && renderType == RenderType.JPEG);
 
                     // Merge consecutive layers of same render type and same buffer scaling (native
                     // resolution)
-                    while (i < layers.size() &&
-                            getSupportedRenderType(layers.get(i).getRenderType()) == renderType &&
-                            imageBufferScaling == layers.get(i).getImageBufferScaling()) {
+                    while (i < layers.size() && (l = layers.get(i)) != null &&
+                        getSupportedRenderType(l.getRenderType()) == renderType &&
+                            imageBufferScaling == l.getImageBufferScaling()) {
                         // will always go there the first time
-                        final MapLayer toAdd = layers.get(i);
-                        group.layers.add(toAdd);
+                        LOGGER.debug("Adding layer {} to the group", l.getName());
+                        group.layers.add(l);
                         group.opaque = group.opaque ||
-                                (renderType == RenderType.JPEG && toAdd.getOpacity() == 1.0);
+                                (renderType == RenderType.JPEG && l.getOpacity() == 1.0);
                         ++i;
                     }
 
                     result.add(group);
                 }
             } else {
-                // Merge all layers into a single JPEG image
+                LOGGER.debug("Merging together all layers as a JPEG image of scaling 1");
                 final LayerGroup group = new LayerGroup(RenderType.JPEG, 1.0);
                 group.opaque = true;
                 group.layers.addAll(layers);

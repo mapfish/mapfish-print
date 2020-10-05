@@ -106,9 +106,13 @@ public class WMTSLayer extends AbstractTiledLayer {
             super(bounds, paintArea, dpi, WMTSLayer.this.param);
             double diff = Double.POSITIVE_INFINITY;
             final double targetResolution = bounds.getScale(paintArea, dpi).getResolution();
+            LOGGER.debug("Computing imageBufferScaling of layer {} at target resolution {}",
+                         WMTSLayer.this.getName(), targetResolution);
 
             for (Matrix m: WMTSLayer.this.param.matrices) {
                 final double resolution = m.getResolution(this.bounds.getProjection());
+                LOGGER.debug("Checking tile resolution {} ({} scaling)", resolution,
+                             targetResolution / resolution);
                 final double delta = Math.abs(resolution - targetResolution);
                 if (delta < diff) {
                     diff = delta;
@@ -116,6 +120,7 @@ public class WMTSLayer extends AbstractTiledLayer {
                     WMTSLayer.this.imageBufferScaling = targetResolution / resolution;
                 }
             }
+            LOGGER.debug("The best imageBufferScaling is {}", WMTSLayer.this.imageBufferScaling);
 
             if (this.matrix == null) {
                 throw new IllegalArgumentException("Unable to find a matrix for the resolution: " +
