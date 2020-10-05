@@ -232,10 +232,14 @@ public final class CreateMapProcessor
             zoomToFeatures(param.clientHttpRequestFactoryProvider.get(), mapValues, context);
         }
         final MapfishMapContext mapContext = createMapContext(mapValues);
+        boolean allowTransparency = param.template.isAllowTransparency();
+        if (mapValues.mergeLayers != null) {
+            allowTransparency = !mapValues.mergeLayers;
+        }
         final List<URI> graphics = createLayerGraphics(
                 param.tempTaskDirectory,
                 param.clientHttpRequestFactoryProvider.get(),
-                param.template.isAllowTransparency(),
+                allowTransparency,
                 mapValues, context, mapContext);
         context.stopIfCanceled();
 

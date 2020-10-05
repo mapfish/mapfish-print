@@ -402,7 +402,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
         this.mapExport = mapExport;
     }
 
-    public boolean isAllowTransparency() {
+    public final boolean isAllowTransparency() {
         return allowTransparency;
     }
 

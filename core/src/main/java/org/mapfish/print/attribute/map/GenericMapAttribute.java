@@ -385,6 +385,13 @@ public abstract class GenericMapAttribute
         private List<MapLayer> mapLayers;
 
         /**
+         * Whether to merge all layers into one.
+         * This is great to reduce pdf size but need layers having the same imagebufferscaling.
+         * Also see the allowTransparency option of the print config.
+         */
+        public Boolean mergeLayers;
+
+        /**
          * Constructor.
          *
          * @param template the template this map is part of.

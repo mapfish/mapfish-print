@@ -65,6 +65,7 @@ public class GenericMapAttributeTest {
         assertElem(required, "useAdjustBounds", "boolean", "null", false);
         assertElem(required, "longitudeFirst", "boolean", "null", false);
         assertElem(required, "dpiSensitiveStyle", "boolean", "true", false);
+        assertElem(required, "mergeLayers", "boolean", "false", false);
         assertEmbedded(required, false, "embedded");
         assertEmbedded(required, true, "optionalEmbedded");
 
