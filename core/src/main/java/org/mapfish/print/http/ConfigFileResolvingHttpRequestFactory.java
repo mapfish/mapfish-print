@@ -4,6 +4,7 @@ import org.locationtech.jts.util.Assert;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.Processor;
 
+import org.mapfish.print.url.data.DataUrlConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -112,11 +113,14 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
                     return executeCallbacksAndRequest(this.request);
                 }
                 if ("data".equals(this.uri.getScheme())) {
-                    final InputStream is = this.uri.toURL().openStream();
+                    final DataUrlConnection duc = new DataUrlConnection(this.uri.toURL());
+                    final InputStream is = duc.getInputStream();
+                    final String contentType = duc.getContentType();
+                    final HttpHeaders responseHeaders = new HttpHeaders();
+                    responseHeaders.set("Content-Type", contentType);
                     final ConfigFileResolverHttpResponse response =
-                      new ConfigFileResolverHttpResponse(is, headers);
-                    LOGGER.debug("Resolved request: {} using DataUrlConnection.",
-                      this.uri.getSchemeSpecificPart());
+                      new ConfigFileResolverHttpResponse(is, responseHeaders);
+                    LOGGER.debug("Resolved request using DataUrlConnection: {}", contentType);
                     return response;
                 }
                 if (this.httpMethod == HttpMethod.GET) {
