@@ -386,10 +386,11 @@ public abstract class GenericMapAttribute
 
         /**
          * Whether to merge all layers into one.
-         * This is great to reduce pdf size but need layers having the same imagebufferscaling.
+         * This is great to reduce pdf size but needs layers having an imagebufferscaling of 1.
          * Also see the allowTransparency option of the print config.
          */
-        public Boolean mergeLayers;
+        @HasDefaultValue
+        public Boolean pdfA = null;
 
         /**
          * Constructor.

@@ -233,8 +233,8 @@ public final class CreateMapProcessor
         }
         final MapfishMapContext mapContext = createMapContext(mapValues);
         boolean allowTransparency = param.template.isAllowTransparency();
-        if (mapValues.mergeLayers != null) {
-            allowTransparency = !mapValues.mergeLayers;
+        if (mapValues.pdfA != null) {
+            allowTransparency = !mapValues.pdfA;
         }
         final List<URI> graphics = createLayerGraphics(
                 param.tempTaskDirectory,
