@@ -753,10 +753,11 @@ public final class CreateMapProcessor
 
                     // Merge consecutive layers of same render type and same buffer scaling (native
                     // resolution)
-                    while (i < layers.size() && (l = layers.get(i)) != null &&
-                        getSupportedRenderType(l.getRenderType()) == renderType &&
-                            imageBufferScaling == l.getImageBufferScaling()) {
+                    while (i < layers.size() &&
+                        getSupportedRenderType(layers.get(i).getRenderType()) == renderType &&
+                            imageBufferScaling == layers.get(i).getImageBufferScaling()) {
                         // will always go there the first time
+                        l = layers.get(i);
                         LOGGER.debug("Adding layer {} to the group", l.getName());
                         group.layers.add(l);
                         group.opaque = group.opaque ||
