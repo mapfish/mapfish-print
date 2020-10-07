@@ -440,7 +440,7 @@ public class ScalebarGraphic {
             final BufferedImage bufferedImage = new BufferedImage(
                     (int) Math.round(scalebarParams.getSize().width * dpiRatio),
                     (int) Math.round(scalebarParams.getSize().height * dpiRatio),
-                    template.isAllowTransparency() ? TYPE_4BYTE_ABGR : TYPE_3BYTE_BGR);
+                    template.isPdfA() ? TYPE_3BYTE_BGR : TYPE_4BYTE_ABGR);
             final Graphics2D graphics2D = bufferedImage.createGraphics();
 
             try {

@@ -1,7 +1,7 @@
 defaultToSvg: true
 templates:
   A4 landscape: !template
-    allowTransparency: false
+    pdfA: true
     reportTemplate: simpleReport.jrxml
     attributes:
       map: !map

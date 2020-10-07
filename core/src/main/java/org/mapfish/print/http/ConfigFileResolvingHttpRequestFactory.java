@@ -3,6 +3,8 @@ package org.mapfish.print.http;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.Processor;
+
+import org.mapfish.print.url.data.DataUrlConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nonnull;
+
 
 /**
  * This request factory will attempt to load resources using
@@ -109,13 +112,25 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
                     LOGGER.debug("Executing http request: {}", this.request.getURI());
                     return executeCallbacksAndRequest(this.request);
                 }
+                if ("data".equals(this.uri.getScheme())) {
+                    final DataUrlConnection duc = new DataUrlConnection(this.uri.toURL());
+                    final InputStream is = duc.getInputStream();
+                    final String contentType = duc.getContentType();
+                    final HttpHeaders responseHeaders = new HttpHeaders();
+                    responseHeaders.set("Content-Type", contentType);
+                    final ConfigFileResolverHttpResponse response =
+                      new ConfigFileResolverHttpResponse(is, responseHeaders);
+                    LOGGER.debug("Resolved request using DataUrlConnection: {}", contentType);
+                    return response;
+                }
                 if (this.httpMethod == HttpMethod.GET) {
                     final String uriString = this.uri.toString();
                     final Configuration configuration = ConfigFileResolvingHttpRequestFactory.this.config;
                     try {
                         final byte[] bytes = configuration.loadFile(uriString);
+                        final InputStream is = new ByteArrayInputStream(bytes);
                         final ConfigFileResolverHttpResponse response =
-                                new ConfigFileResolverHttpResponse(bytes, headers);
+                                new ConfigFileResolverHttpResponse(is, headers);
                         LOGGER.debug("Resolved request: {} using mapfish print config file loaders.",
                                      uriString);
                         return response;
@@ -162,14 +177,14 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
         }
 
         private class ConfigFileResolverHttpResponse implements ClientHttpResponse {
+            private final InputStream is;
             private final HttpHeaders headers;
-            private final byte[] bytes;
 
             ConfigFileResolverHttpResponse(
-                    final byte[] bytes,
+                    final InputStream is,
                     final HttpHeaders headers) {
                 this.headers = headers;
-                this.bytes = bytes;
+                this.is = is;
             }
 
             @Override
@@ -194,7 +209,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
 
             @Override
             public InputStream getBody() {
-                return new ByteArrayInputStream(this.bytes);
+                return this.is;
             }
 
             @Override

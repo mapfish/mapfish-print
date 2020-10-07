@@ -9,6 +9,7 @@ import org.mapfish.print.IllegalFileAccessException;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
+import org.mapfish.print.url.data.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,9 @@ import static org.junit.Assert.assertEquals;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSpringTest {
 
+    static {
+        Handler.configureProtocolHandler();
+    }
     private static final String BASE_DIR = "/org/mapfish/print/servlet/";
     private static final String HOST = "host.com";
 
@@ -40,7 +44,7 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
     @Before
     public void setUp() throws Exception {
         requestFactory.registerHandler(input -> true,
-                                       createFileHandler(URI::getPath)
+                createFileHandler(URI::getPath)
         );
 
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
@@ -153,5 +157,20 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
         final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
 
         request.execute();
+    }
+
+    @Test
+    public void testCreateRequestDataGet() throws Exception {
+        final URI uri = new URI(
+                "data:image/png;base64,iVBORw0KGgoAAA" +
+                        "ANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4" +
+                        "//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU" +
+                        "5ErkJggg==");
+        final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
+        final ClientHttpResponse response = request.execute();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        final byte[] actual = IOUtils.toByteArray(response.getBody());
+        assertEquals(85, actual.length);
     }
 }

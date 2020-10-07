@@ -19,7 +19,7 @@ public class DataUrlConnection extends URLConnection {
      *
      * @param url the data url
      */
-    protected DataUrlConnection(final URL url) {
+    public DataUrlConnection(final URL url) {
         super(url);
     }
 
@@ -52,7 +52,7 @@ public class DataUrlConnection extends URLConnection {
 
     @Override
     public String getContentType() {
-        return getFullContentType().replace(";base64,", ",");
+        return getFullContentType().replace(";base64", "");
     }
 
     /**

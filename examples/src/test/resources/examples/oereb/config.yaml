@@ -7,7 +7,7 @@ templates:
     oereb template: !template
         reportTemplate: pdfextract.jrxml
         outputFilename: ${yyyyMMddhhmmss}_extract
-        allowTransparency: false
+        pdfA: true
         attributes:
             CreationDate: !string {}
             Signature: !string &optStr

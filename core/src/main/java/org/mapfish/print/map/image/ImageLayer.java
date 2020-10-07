@@ -52,6 +52,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
     private final ImageParam params;
     private final StyleSupplier<GridCoverage2D> styleSupplier;
     private final ExecutorService executorService;
+    private RenderType renderType;
 
     /**
      * Constructor.
@@ -72,6 +73,8 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         this.params = params;
         this.styleSupplier = styleSupplier;
         this.executorService = executorService;
+        this.renderType = RenderType.fromMimeType(params.imageFormat);
+
     }
 
     @Override
@@ -143,7 +146,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
 
     @Override
     public RenderType getRenderType() {
-        return RenderType.UNKNOWN;
+        return this.renderType;
     }
 
     /**
@@ -202,6 +205,11 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         @HasDefaultValue
         public String style = Constants.Style.Raster.NAME;
 
+        /**
+         * The format of the image. for example image/png, image/jpeg, etc...
+         */
+        @HasDefaultValue
+        public String imageFormat = "";
 
         /**
          * Validate the properties have the correct values.

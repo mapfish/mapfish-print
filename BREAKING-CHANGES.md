@@ -1,5 +1,10 @@
 # Known breaking changes
 
+## Version 3.25
+
+- The allowTransparency property is renamed to pdfA. It is now also possible to pass that value
+  at impression time.
+
 ## Version 3.24
 
 - Removing JsonP support.
