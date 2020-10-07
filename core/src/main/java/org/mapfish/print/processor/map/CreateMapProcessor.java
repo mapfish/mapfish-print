@@ -232,14 +232,14 @@ public final class CreateMapProcessor
             zoomToFeatures(param.clientHttpRequestFactoryProvider.get(), mapValues, context);
         }
         final MapfishMapContext mapContext = createMapContext(mapValues);
-        boolean allowTransparency = param.template.isAllowTransparency();
+        boolean pdfA = param.template.isPdfA();
         if (mapValues.pdfA != null) {
-            allowTransparency = !mapValues.pdfA;
+            pdfA = mapValues.pdfA;
         }
         final List<URI> graphics = createLayerGraphics(
                 param.tempTaskDirectory,
                 param.clientHttpRequestFactoryProvider.get(),
-                allowTransparency,
+                pdfA,
                 mapValues, context, mapContext);
         context.stopIfCanceled();
 
@@ -372,7 +372,7 @@ public final class CreateMapProcessor
     private List<URI> createLayerGraphics(
             final File printDirectory,
             final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final boolean allowTransparency,
+            final boolean pdfA,
             final MapAttributeValues mapValues,
             final ExecutionContext context,
             final MapfishMapContext mapContext) throws IOException, ParserConfigurationException {
@@ -399,7 +399,7 @@ public final class CreateMapProcessor
         final Timer.Context timer =
                 this.metricRegistry.timer(getClass().getName() + ".buildLayers").time();
         int fileNumber = 0;
-        for (LayerGroup layerGroup: LayerGroup.buildGroups(layers, allowTransparency)) {
+        for (LayerGroup layerGroup: LayerGroup.buildGroups(layers, pdfA)) {
             if (layerGroup.renderType == RenderType.SVG) {
                 // render layers as SVG
                 for (MapLayer layer: layerGroup.layers) {
@@ -421,7 +421,7 @@ public final class CreateMapProcessor
                 }
             } else {
                 // render layers as raster graphic
-                final boolean needTransparency = !layerGroup.opaque && allowTransparency;
+                final boolean needTransparency = !layerGroup.opaque && !pdfA;
                 final BufferedImage bufferedImage = new BufferedImage(
                         (int) Math.round(mapContext.getMapSize().width * layerGroup.imageBufferScaling),
                         (int) Math.round(mapContext.getMapSize().height * layerGroup.imageBufferScaling),
@@ -432,7 +432,7 @@ public final class CreateMapProcessor
                         bufferedImage.createGraphics()
                 );
                 try {
-                    if (layerGroup.opaque || !allowTransparency) {
+                    if (layerGroup.opaque || pdfA) {
                         // the image is opaque and therefore needs a white background
                         final Color prevColor = graphics2D.getColor();
                         graphics2D.setColor(Color.WHITE);
@@ -444,7 +444,7 @@ public final class CreateMapProcessor
                             getTransformer(mapContext, layerGroup.imageBufferScaling);
                     for (MapLayer cur: layerGroup.layers) {
                         context.stopIfCanceled();
-                        warnIfDifferentRenderType(layerGroup.renderType, cur, allowTransparency);
+                        warnIfDifferentRenderType(layerGroup.renderType, cur, !pdfA);
                         cur.render(graphics2D, clientHttpRequestFactory, transformer, context);
                     }
 
@@ -739,9 +739,9 @@ public final class CreateMapProcessor
         }
 
         public static List<LayerGroup> buildGroups(
-                final List<MapLayer> layers, final boolean allowTransparency) {
+                final List<MapLayer> layers, final boolean mergeAsJPEGWithScale1) {
             final List<LayerGroup> result = new ArrayList<>();
-            if (allowTransparency) {
+            if (!mergeAsJPEGWithScale1) {
                 LOGGER.debug("Building groups of layers");
                 for (int i = 0; i < layers.size(); ) {
                     final RenderType renderType = getSupportedRenderType(layers.get(i).getRenderType());

@@ -79,7 +79,7 @@ public class CreateNorthArrowProcessor
                 values.map.getRotation(),
                 values.tempTaskDirectory,
                 values.clientHttpRequestFactoryProvider.get(),
-                values.template.isAllowTransparency());
+                !values.template.isPdfA());
 
         context.stopIfCanceled();
 

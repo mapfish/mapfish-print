@@ -49,7 +49,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     private Map<String, Attribute> attributes = new HashMap<>();
     private List<Processor> processors = new ArrayList<>();
     private boolean mapExport;
-    private boolean allowTransparency = true;
+    private boolean pdfA = false;
 
     private String jdbcUrl;
     private String jdbcUser;
@@ -402,22 +402,22 @@ public class Template implements ConfigurationObject, HasConfiguration {
         this.mapExport = mapExport;
     }
 
-    public final boolean isAllowTransparency() {
-        return allowTransparency;
+    public final boolean isPdfA() {
+        return pdfA;
     }
 
     /**
-     * If set to false (defaults to true), the generated maps, scalebar and north arrow will not contain any
+     * If set to true (defaults to false), the generated maps, scalebar and north arrow will not contain any
      * transparent images.
      * <p>
      * This is needed in case you want to output PDF/A-1a reports.
      * <p>
-     * If you don't allow transparency, all layers are merged into a single JPEG layer at the requested
+     * In pdfA mode, all layers are merged into a single JPEG layer at the requested
      * resolution: WMTS tiles will be downscaled and vector layers will be rendered as bitmaps.
      *
-     * @param allowTransparency the value
+     * @param pdfA the value
      */
-    public void setAllowTransparency(final boolean allowTransparency) {
-        this.allowTransparency = allowTransparency;
+    public void setPdfA(final boolean pdfA) {
+        this.pdfA = pdfA;
     }
 }
