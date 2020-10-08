@@ -168,7 +168,8 @@ dependencies {
             'org.apache.httpcomponents:httpclient:4.5.8',
             'com.sun.mail:javax.mail:1.6.2',
             'com.amazonaws:aws-java-sdk-s3:1.11.559',
-            'com.adobe.xmp:xmpcore:6.1.10'
+            'com.adobe.xmp:xmpcore:6.1.10',
+            'io.sentry:sentry-logback:1.7.7'
     )
 
     compile(configurations.metrics) {

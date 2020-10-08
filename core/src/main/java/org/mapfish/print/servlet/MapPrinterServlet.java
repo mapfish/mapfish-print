@@ -2,6 +2,8 @@ package org.mapfish.print.servlet;
 
 import net.sf.jasperreports.engine.fonts.FontFamily;
 import net.sf.jasperreports.extensions.ExtensionsEnvironment;
+import io.sentry.Sentry;
+import io.sentry.SentryOptions;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.util.Log;
@@ -215,6 +217,19 @@ public class MapPrinterServlet extends BaseMapServlet {
         this.context = context;
         this.servletInfo = servletInfo;
         this.mapPrinterFactory = mapPrinterFactory;
+
+        SentryOptions options = new SentryOptions();
+        options.setBeforeSend(
+            (event, hint) -> {
+                if (event.getLogger() == "org.hibernate.engine.jdbc.spi.SqlExceptionHelper"
+                    && (event.getMessage() == "ERROR: could not obtain lock on row in relation \"print_job_statuses\""
+                    || event.getMessage() == "SQL Error: 0, SQLState: 55P03")) {
+                    return null;
+                }
+                return event;
+            }
+        );
+        Sentry.init(options);
     }
 
     /**
