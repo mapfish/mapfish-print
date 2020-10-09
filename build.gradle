@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:2.0.0"
+        classpath "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.5.1"
         classpath "se.bjurr.violations:violations-gradle-plugin:1.47"
         classpath 'org.owasp:dependency-check-gradle:6.0.2'
     }
@@ -26,7 +26,7 @@ allprojects {
     version = '3.25.0'
     ext.junitVersion = "4.13.1"
     ext.groovyVersion = "3.0.6"
-    ext.spotbugVersion = '3.1.12'
+    ext.spotbugsVersion = '4.1.4'
     ext.jasperreportVersion = "6.15.0"
 
     apply plugin: 'org.owasp.dependencycheck'
@@ -76,7 +76,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     checkstyleTest.enabled = false
 
     spotbugs {
-        toolVersion = "${project.spotbugVersion}"
+        toolVersion = "${project.spotbugsVersion}"
         ignoreFailures = true
         reportsDir = file("$project.buildDir/reports/spotbugsReports")
         effort = "max"
