@@ -170,7 +170,7 @@ dependencies {
             'com.github.spullara.cli-parser:cli-parser:1.1.5',
             'org.apache.httpcomponents:httpclient:4.5.13',
             'com.sun.mail:javax.mail:1.6.2',
-            'com.amazonaws:aws-java-sdk-s3:1.11.878',
+            'com.amazonaws:aws-java-sdk-s3:1.11.879',
             'com.adobe.xmp:xmpcore:6.1.10'
     )
 
