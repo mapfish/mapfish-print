@@ -18,6 +18,7 @@ jobs:
       matrix:
         branch:
           - '3.23'
+          - '3.24444'
 
     steps:
       - run: echo ${{ github.ref }}
