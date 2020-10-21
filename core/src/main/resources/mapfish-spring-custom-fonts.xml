@@ -10,7 +10,9 @@
                <!-- Custom fonts can be listed here.
                E.g. a font in `/WEB-INF/classes/fonts/MyFont.ttf` can be referenced with `fonts/MyFont.ttf`.
                 -->
-                <!-- <value>fonts/MyFont.ttf</value> -->
+                <value>fonts/FontAwesome5FreeRegular.ttf</value>
+                <value>fonts/FontAwesome5FreeBold.ttf</value>
+                <value>fonts/FontAwesome5Brands.ttf</value>
             </util:set>
         </constructor-arg>
     </bean>
