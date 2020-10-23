@@ -43,6 +43,6 @@ public class JasperReportSvgOutputFormatTest extends AbstractJasperReportOutputF
         writer.close();
 
         String expected = getFileContent(BASE_DIR + "expectedReport.svg");
-        assertEquals(expected, outputStream.toString());
+        assertEquals(actual.toString(), expected, outputStream.toString());
     }
 }

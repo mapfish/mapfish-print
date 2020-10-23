@@ -1,5 +1,9 @@
 # Known breaking changes
 
+## Version 3.26
+
+- Upgrade to Java 11 and Tomcat 9.0
+
 ## Version 3.25
 
 - The allowTransparency property is renamed to pdfA. It is now also possible to pass that value

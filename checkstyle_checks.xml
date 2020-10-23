@@ -52,7 +52,7 @@
         <module name="UnusedImports"/>
         <module name="ImportOrder">
             <property name="groups"
-                      value="/^ar\./,/^ch\./,/^com\./,/^net\./,/^org\./,/^si\./,/^java\./,/^javax\./"/>
+                      value="/^ar\./,/^ch\./,/^com\./,/^io\./,/^net\./,/^org\./,/^si\./,/^java\./,/^javax\./"/>
             <property name="option" value="bottom"/>
             <property name="sortStaticImportsAlphabetically" value="true"/>
         </module>

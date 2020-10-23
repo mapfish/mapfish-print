@@ -1,12 +1,13 @@
 FROM mapfish_print_builder AS builder
 
 
-FROM camptocamp/tomcat-logback:8.5-jre8 AS runner
+FROM camptocamp/tomcat-logback:9.0-jre11 AS runner
 LABEL maintainer="info@camptocamp.com"
 
 RUN \
   apt-get update && \
-  apt-get install --assume-yes --no-install-recommends fonts-liberation fonts-dejavu && \
+  apt-get install --assume-yes --no-install-recommends curl \
+    fonts-liberation fonts-dejavu libfreetype6 libfontconfig1 && \
   apt-get clean && \
   rm --recursive --force /var/lib/apt/lists/*
 

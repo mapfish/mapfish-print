@@ -192,7 +192,7 @@ dependencies {
     )
 
     providedCompile('javax.servlet:javax.servlet-api:4.0.1')
-    compileOnly "com.github.spotbugs:spotbugs-annotations:$project.spotbugVersion"
+    compileOnly "com.github.spotbugs:spotbugs-annotations:$project.spotbugsVersion"
 
     testCompile group: 'de.saly', name: 'javamail-mock2-fullmock', version: '0.5-beta4'
 }

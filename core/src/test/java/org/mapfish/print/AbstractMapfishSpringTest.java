@@ -173,8 +173,7 @@ public abstract class AbstractMapfishSpringTest {
         } else if (fullVersion.startsWith("1.8")) {
             javaVersion = 8;
         } else {
-            throw new RuntimeException(
-                    fullVersion + " is not yet supported in the tests.  Update this switch");
+            javaVersion = Integer.parseInt(fullVersion);
         }
 
         String platformVersionName = "expectedSimpleImage" + classifier + "-" + normalizedOSName() +
