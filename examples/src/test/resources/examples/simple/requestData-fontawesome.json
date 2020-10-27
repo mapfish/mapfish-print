@@ -1,0 +1,104 @@
+{
+  "layout": "A4 portrait",
+  "outputFormat": "pdf",
+  "attributes": {
+    "map": {
+      "projection": "EPSG:3857",
+      "rotation": 0,
+      "scale": 10000,
+      "center": [
+        0,
+        0
+      ],
+      "dpi": 128,
+      "layers": [
+        {
+          "type": "geojson",
+          "geoJson": {
+            "type": "FeatureCollection",
+            "features": [
+              {
+                "type": "Feature",
+                "properties": {
+                  "type": "free"
+                },
+                "geometry": {
+                  "type": "Point",
+                  "coordinates": [
+                    -100,
+                    0
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "type": "free2"
+                },
+                "geometry": {
+                  "type": "Point",
+                  "coordinates": [
+                    0,
+                    0
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "type": "brands"
+                },
+                "geometry": {
+                  "type": "Point",
+                  "coordinates": [
+                    100,
+                    0
+                  ]
+                }
+              }
+            ]
+          },
+          "style": {
+            "version": "2",
+            "[type = 'free']": {
+              "symbolizers": [
+                {
+                  "fontFamily": "Font Awesome 5 Free",
+                  "fontColor": "#333333",
+                  "fontSize": "20px",
+                  "fontWeight": "900",
+                  "label": "\uf0a4",
+                  "type": "Text"
+                }
+              ]
+            },
+            "[type = 'free2']": {
+              "symbolizers": [
+                {
+                  "fontFamily": "Font Awesome 5 Free",
+                  "fontColor": "#333333",
+                  "fontSize": "20px",
+                  "fontWeight": "400",
+                  "label": "\uf0a4",
+                  "type": "Text"
+                }
+              ]
+            },
+            "[type = 'brands']": {
+              "symbolizers": [
+                {
+                  "fontFamily": "Font Awesome 5 Brands",
+                  "fontColor": "#333333",
+                  "fontSize": "20px",
+                  "fontWeight": "900",
+                  "label": "\uf425",
+                  "type": "Text"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

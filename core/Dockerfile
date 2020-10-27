@@ -12,7 +12,7 @@ LABEL maintainer="info@camptocamp.com"
 RUN \
   apt-get update && \
   apt-get install --assume-yes --no-install-recommends curl \
-  fonts-liberation fonts-dejavu libfreetype6 libfontconfig1 && \
+  fonts-liberation fonts-dejavu fontconfig && \
   apt-get clean && \
   rm --recursive --force /var/lib/apt/lists/*
 
@@ -37,7 +37,6 @@ ENV LOG_LEVEL=INFO \
   CATALINA_OPTS= \
   DEFAULT_LOG_LEVEL=INFO \
   TOMCAT_LOG_LEVEL=INFO \
-  LOG_LEVEL=INFO \
   SENTRY_LOG_LEVEL=ERROR \
   SENTRY_REPORTING_LOG_LEVEL=WARN \
   TOMCAT_LOG_TYPE=classic \
