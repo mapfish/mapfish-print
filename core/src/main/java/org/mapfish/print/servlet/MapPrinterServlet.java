@@ -6,7 +6,6 @@ import net.sf.jasperreports.extensions.ExtensionsEnvironment;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.util.Log;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -39,11 +38,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -56,8 +58,10 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -182,6 +186,38 @@ public class MapPrinterServlet extends BaseMapServlet {
      * the request JSON data for those processors.
      */
     public static final String JSON_REQUEST_HEADERS = "requestHeaders";
+    /**
+     * The JSON key in the request spec that contains the Jasper report fonts.
+     */
+    public static final String JSON_OUTPUT_JASPERREPORT_FONTS = "jasperreportFonts";
+    /**
+     * The JSON key in the request spec that contains the font config fonts.
+     */
+    public static final String JSON_OUTPUT_FONTS = "fonts";
+    /**
+     * The JSON key in the request spec that contains the java font family name.
+     */
+    public static final String JSON_OUTPUT_FONT_FAMILY = "family";
+    /**
+     * The JSON key in the request spec that contains the font families names.
+     */
+    public static final String JSON_OUTPUT_FONTCONFIG = "fontconfig";
+    /**
+     * The JSON key in the request spec that contains the font families names.
+     */
+    public static final String JSON_OUTPUT_FONTCONFIG_FAMILIES = "families";
+    /**
+     * The JSON key in the request spec that contains the font name.
+     */
+    public static final String JSON_OUTPUT_FONTCONFIG_NAME = "name";
+    /**
+     * The JSON key in the request spec that contains the font styles.
+     */
+    public static final String JSON_OUTPUT_FONTCONFIG_STYLES = "styles";
+    /**
+     * The JSON key in the request spec that contains the font weight.
+     */
+    public static final String JSON_OUTPUT_FONTCONFIG_WEIGHT = "weight";
     private static final Logger LOGGER = LoggerFactory.getLogger(MapPrinterServlet.class);
     private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\$\\{(\\S+)}");
     private static final int JSON_INDENT_FACTOR = 4;
@@ -430,7 +466,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             return;
         }
 
-        createReportResponse.setContentType("application/json; charset=utf-8");
+        setContentType(createReportResponse);
         try (PrintWriter writer = createReportResponse.getWriter()) {
             JSONWriter json = new JSONWriter(writer);
             json.object();
@@ -861,23 +897,151 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
     }
 
+
+    static class FontConfigDescription {
+        String[] family;
+        String[] style;
+        String name;
+        int weight;
+    }
+
+    final List<FontConfigDescription> listFontConfigFonts(final String familly) {
+        List<FontConfigDescription> descriptions = new ArrayList<FontConfigDescription>();
+        InputStreamReader inputStreamReader = null;
+        try {
+            String[] commands = {"fc-list", "-b", familly};
+            Process process = Runtime.getRuntime().exec(commands);
+
+            inputStreamReader = new InputStreamReader(process.getInputStream(), "utf-8");
+            BufferedReader stdInput = new BufferedReader(inputStreamReader);
+            String inputLine = null;
+            FontConfigDescription description = null;
+            while ((inputLine = stdInput.readLine()) != null) {
+                if (inputLine.startsWith("Pattern ")) {
+                    description = new FontConfigDescription();
+                    descriptions.add(description);
+                } else if (description != null) {
+                    String[] splitted = inputLine.trim().split(": ");
+                    if (splitted[0].equals("family")) {
+                        description.family = splitted[1].substring(1, splitted[1].length() - 4)
+                            .split(Pattern.quote("\"(s) \""));
+                    } else if (splitted[0].equals("style")) {
+                        description.style = splitted[1].substring(1, splitted[1].length() - 4)
+                            .split(Pattern.quote("\"(s) \""));
+                    } else if (splitted[0].equals("fullname")) {
+                        description.name = splitted[1].substring(1, splitted[1].length() - 4);
+                    } else if (splitted[0].equals("weight")) {
+                        int weight = Integer.parseInt(splitted[1]
+                            .substring(0, splitted[1].length() - 6));
+                        // See more informations:
+                        // https://work.lisk.in/2020/07/18/font-weight-300.html
+                        // https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight
+                        // #Common_weight_name_mapping
+                        if (weight < 20) {
+                            description.weight = 100;
+                        } else if (weight < 45) {
+                            description.weight = 200;
+                        } else if (weight < 65) {
+                            description.weight = 300;
+                        } else if (weight < 90) {
+                            description.weight = 400;
+                        } else if (weight < 140) {
+                            description.weight = 500;
+                        } else if (weight < 190) {
+                            description.weight = 600;
+                        } else if (weight < 203) {
+                            description.weight = 700;
+                        } else if (weight < 208) {
+                            description.weight = 800;
+                        } else {
+                            description.weight = 900;
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.error("Unable to get font config font list", e);
+        } finally {
+            if (inputStreamReader != null) {
+                try {
+                    inputStreamReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Unable to close stream", e);
+                }
+            }
+        }
+        return descriptions;
+    }
+
     /**
      * List the available fonts on the system.
      *
-     * @return the list of available fonts in the system.  The result is a JSON Array that just lists the font
-     *         family names available.
+     * @param response the response object
      */
     @RequestMapping(value = FONTS_URL)
-    @ResponseBody
-    public final String listAvailableFonts() {
+    public final void listAvailableFonts(final HttpServletResponse response) {
         MDC.remove(Processor.MDC_JOB_ID_KEY);
-        final JSONArray availableFonts = new JSONArray();
-        final List<FontFamily> families =
-                ExtensionsEnvironment.getExtensionsRegistry().getExtensions(FontFamily.class);
-        for (FontFamily family: families) {
-            availableFonts.put(family.getName());
+
+        setContentType(response);
+        try (PrintWriter writer = response.getWriter()) {
+            JSONWriter json = new JSONWriter(writer);
+            json.object();
+            json.key(JSON_OUTPUT_JASPERREPORT_FONTS);
+            json.array();
+
+            final List<FontFamily> families = ExtensionsEnvironment.getExtensionsRegistry()
+                .getExtensions(FontFamily.class);
+            for (FontFamily family : families) {
+                json.value(family.getName());
+            }
+            json.endArray();
+
+            final Set<String> fontFamilies = new HashSet<String>();
+            GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            for (Font font : graphicsEnvironment.getAllFonts()) {
+                fontFamilies.add(font.getFamily());
+            }
+            json.key(JSON_OUTPUT_FONTS);
+            json.array();
+            for (String family : fontFamilies) {
+                json.object();
+                json.key(JSON_OUTPUT_FONT_FAMILY).value(family);
+                json.key(JSON_OUTPUT_FONTCONFIG);
+                json.array();
+                for (FontConfigDescription description: listFontConfigFonts(family)) {
+                    json.object();
+                    if (description.family != null) {
+                        json.key(JSON_OUTPUT_FONTCONFIG_FAMILIES);
+                        json.array();
+                        for (String fam: description.family) {
+                            json.value(fam);
+                        }
+                        json.endArray();
+                    }
+                    if (description.name != null) {
+                        json.key(JSON_OUTPUT_FONTCONFIG_NAME).value(description.name);
+                    }
+                    if (description.style != null) {
+                        json.key(JSON_OUTPUT_FONTCONFIG_STYLES);
+                        json.array();
+                        for (String style: description.style) {
+                            json.value(style);
+                        }
+                        json.endArray();
+                    }
+                    if (description.weight != 0) {
+                        json.key(JSON_OUTPUT_FONTCONFIG_WEIGHT).value(description.weight);
+                    }
+                    json.endObject();
+                }
+                json.endArray();
+                json.endObject();
+            }
+            json.endArray();
+            json.endObject();
+        } catch (JSONException | IOException e) {
+            throw ExceptionUtils.getRuntimeException(e);
         }
-        return availableFonts.toString();
     }
 
     /**
