@@ -11,6 +11,8 @@ services:
     image: mapfish_print_tester
     volumes:
       - ./examples/src/test/resources/examples:/usr/local/tomcat/webapps/ROOT/print-apps
+    ports:
+      - 8080:8080
     environment:
       PRINT_YAML_MAX_ALIASES: 200
       LOG_LEVEL: DEBUG

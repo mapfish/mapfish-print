@@ -353,13 +353,6 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
                      body.getContent());
     }
 
-    @Test
-    public void testListFonts() {
-        String fonts = servlet.listAvailableFonts();
-        JSONArray fontsJson = new JSONArray(fonts);
-        assertTrue(fonts, fontsJson.length() > 0);
-    }
-
     private String doCreateAndPollAndGetReport(
             Function<MockHttpServletRequest, MockHttpServletResponse> createReport)
             throws URISyntaxException, IOException, InterruptedException, ServletException {
