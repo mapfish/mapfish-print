@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.FontTools;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.config.Configuration;
@@ -39,13 +40,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -58,10 +55,8 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -897,82 +892,6 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
     }
 
-
-    static class FontConfigDescription {
-        String[] family;
-        String[] style;
-        String name;
-        int weight;
-    }
-
-    final List<FontConfigDescription> listFontConfigFonts(final String familly) {
-        List<FontConfigDescription> descriptions = new ArrayList<FontConfigDescription>();
-        InputStreamReader inputStreamReader = null;
-        try {
-            String[] commands = {"fc-list", "-b", familly};
-            Process process = Runtime.getRuntime().exec(commands);
-
-            inputStreamReader = new InputStreamReader(process.getInputStream(), "utf-8");
-            BufferedReader stdInput = new BufferedReader(inputStreamReader);
-            String inputLine = null;
-            FontConfigDescription description = null;
-            while ((inputLine = stdInput.readLine()) != null) {
-                if (inputLine.startsWith("Pattern ")) {
-                    description = new FontConfigDescription();
-                    descriptions.add(description);
-                } else if (description != null) {
-                    String[] splitted = inputLine.trim().split(": ");
-                    if (splitted[0].equals("family")) {
-                        description.family = splitted[1].substring(1, splitted[1].length() - 4)
-                            .split(Pattern.quote("\"(s) \""));
-                    } else if (splitted[0].equals("style")) {
-                        description.style = splitted[1].substring(1, splitted[1].length() - 4)
-                            .split(Pattern.quote("\"(s) \""));
-                    } else if (splitted[0].equals("fullname")) {
-                        description.name = splitted[1].substring(1, splitted[1].length() - 4);
-                    } else if (splitted[0].equals("weight")) {
-                        int weight = Integer.parseInt(splitted[1]
-                            .substring(0, splitted[1].length() - 6));
-                        // See more informations:
-                        // https://work.lisk.in/2020/07/18/font-weight-300.html
-                        // https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight
-                        // #Common_weight_name_mapping
-                        if (weight < 20) {
-                            description.weight = 100;
-                        } else if (weight < 45) {
-                            description.weight = 200;
-                        } else if (weight < 65) {
-                            description.weight = 300;
-                        } else if (weight < 90) {
-                            description.weight = 400;
-                        } else if (weight < 140) {
-                            description.weight = 500;
-                        } else if (weight < 190) {
-                            description.weight = 600;
-                        } else if (weight < 203) {
-                            description.weight = 700;
-                        } else if (weight < 208) {
-                            description.weight = 800;
-                        } else {
-                            description.weight = 900;
-                        }
-                    }
-                }
-            }
-        } catch (IOException e) {
-            LOGGER.error("Unable to get font config font list", e);
-        } finally {
-            if (inputStreamReader != null) {
-                try {
-                    inputStreamReader.close();
-                } catch (IOException e) {
-                    LOGGER.error("Unable to close stream", e);
-                }
-            }
-        }
-        return descriptions;
-    }
-
     /**
      * List the available fonts on the system.
      *
@@ -996,19 +915,14 @@ public class MapPrinterServlet extends BaseMapServlet {
             }
             json.endArray();
 
-            final Set<String> fontFamilies = new HashSet<String>();
-            GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            for (Font font : graphicsEnvironment.getAllFonts()) {
-                fontFamilies.add(font.getFamily());
-            }
             json.key(JSON_OUTPUT_FONTS);
             json.array();
-            for (String family : fontFamilies) {
+            for (String family : FontTools.FONT_FAMILIES) {
                 json.object();
                 json.key(JSON_OUTPUT_FONT_FAMILY).value(family);
                 json.key(JSON_OUTPUT_FONTCONFIG);
                 json.array();
-                for (FontConfigDescription description: listFontConfigFonts(family)) {
+                for (FontTools.FontConfigDescription description: FontTools.listFontConfigFonts(family)) {
                     json.object();
                     if (description.family != null) {
                         json.key(JSON_OUTPUT_FONTCONFIG_FAMILIES);
