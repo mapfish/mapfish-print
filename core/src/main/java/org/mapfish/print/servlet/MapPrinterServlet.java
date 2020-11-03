@@ -218,8 +218,36 @@ public class MapPrinterServlet extends BaseMapServlet {
         this.servletInfo = servletInfo;
         this.mapPrinterFactory = mapPrinterFactory;
 
+        String sentryDsn_ = null;
         if (System.getenv().containsKey("SENTRY_URL")) {
+            sentryDsn_ = System.getenv("SENTRY_URL");
+        } else if (System.getenv().containsKey("SENTRY_DSN")) {
+            sentryDsn_ = System.getenv("SENTRY_DSN");
+        } else if (System.getProperties().contains("sentry.dsn")) {
+            sentryDsn_ = System.getProperty("sentry.dsn");
+        }
+        if (sentryDsn_ != null) {
+            final String sentryDsn = sentryDsn_;
             Sentry.init(options -> {
+                options.setDsn(sentryDsn);
+                if (System.getenv().containsKey("SENTRY_CLIENT_RELEASE")) {
+                    options.setRelease(System.getenv("SENTRY_CLIENT_RELEASE"));
+                }
+                if (System.getenv().containsKey("SENTRY_CLIENT_ENVIRONMENT")) {
+                    options.setEnvironment(System.getenv("SENTRY_CLIENT_ENVIRONMENT"));
+                }
+                if (System.getenv().containsKey("SENTRY_TAG_SERVICE")) {
+                    options.setServerName(System.getenv("SENTRY_TAG_SERVICE"));
+                }
+                if (System.getProperties().contains("sentry.release")) {
+                    options.setRelease(System.getProperty("sentry.release"));
+                }
+                if (System.getProperties().contains("sentry.environment")) {
+                    options.setEnvironment(System.getProperty("sentry.environment"));
+                }
+                if (System.getProperties().contains("sentry.servername")) {
+                    options.setServerName(System.getProperty("sentry.servername"));
+                }
                 options.setBeforeSend(
                     (event, hint) -> {
                         LOGGER.debug(
