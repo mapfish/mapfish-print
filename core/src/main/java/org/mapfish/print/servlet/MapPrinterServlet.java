@@ -222,6 +222,10 @@ public class MapPrinterServlet extends BaseMapServlet {
             Sentry.init(options -> {
                 options.setBeforeSend(
                     (event, hint) -> {
+                        LOGGER.debug(
+                            "Sentry event, logger: %s, message: %s",
+                            event.getLogger(), event.getMessage().toString()
+                        );
                         if (event.getLogger().equals("org.hibernate.engine.jdbc.spi.SqlExceptionHelper")
                             && (event.getMessage().toString().equals(
                             "ERROR: could not obtain lock on row in relation \"print_job_statuses\"")
