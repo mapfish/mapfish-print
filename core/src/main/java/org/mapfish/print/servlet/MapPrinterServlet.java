@@ -218,16 +218,16 @@ public class MapPrinterServlet extends BaseMapServlet {
         this.servletInfo = servletInfo;
         this.mapPrinterFactory = mapPrinterFactory;
 
-        String sentryDsn_ = null;
+        String sentryDsnTemp = null;
         if (System.getenv().containsKey("SENTRY_URL")) {
-            sentryDsn_ = System.getenv("SENTRY_URL");
+            sentryDsnTemp = System.getenv("SENTRY_URL");
         } else if (System.getenv().containsKey("SENTRY_DSN")) {
-            sentryDsn_ = System.getenv("SENTRY_DSN");
+            sentryDsnTemp = System.getenv("SENTRY_DSN");
         } else if (System.getProperties().contains("sentry.dsn")) {
-            sentryDsn_ = System.getProperty("sentry.dsn");
+            sentryDsnTemp = System.getProperty("sentry.dsn");
         }
-        if (sentryDsn_ != null) {
-            final String sentryDsn = sentryDsn_;
+        if (sentryDsnTemp != null) {
+            final String sentryDsn = sentryDsnTemp;
             Sentry.init(options -> {
                 options.setDsn(sentryDsn);
                 if (System.getenv().containsKey("SENTRY_CLIENT_RELEASE")) {
