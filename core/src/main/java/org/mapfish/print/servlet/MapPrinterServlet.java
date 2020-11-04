@@ -218,46 +218,22 @@ public class MapPrinterServlet extends BaseMapServlet {
         this.servletInfo = servletInfo;
         this.mapPrinterFactory = mapPrinterFactory;
 
-        String sentryDsnTemp = null;
-        if (System.getenv().containsKey("SENTRY_URL")) {
-            sentryDsnTemp = System.getenv("SENTRY_URL");
-        } else if (System.getenv().containsKey("SENTRY_DSN")) {
-            sentryDsnTemp = System.getenv("SENTRY_DSN");
-        } else if (System.getProperties().contains("sentry.dsn")) {
-            sentryDsnTemp = System.getProperty("sentry.dsn");
-        }
-        if (sentryDsnTemp != null) {
-            final String sentryDsn = sentryDsnTemp;
+        boolean enableSentry = System.getProperties().contains("sentry.dsn");
+        enableSentry |= System.getenv().containsKey("SENTRY_URL");
+        enableSentry |= System.getenv().containsKey("SENTRY_DSN");
+        if (enableSentry) {
             Sentry.init(options -> {
-                options.setDsn(sentryDsn);
-                if (System.getenv().containsKey("SENTRY_CLIENT_RELEASE")) {
-                    options.setRelease(System.getenv("SENTRY_CLIENT_RELEASE"));
-                }
-                if (System.getenv().containsKey("SENTRY_CLIENT_ENVIRONMENT")) {
-                    options.setEnvironment(System.getenv("SENTRY_CLIENT_ENVIRONMENT"));
-                }
-                if (System.getenv().containsKey("SENTRY_TAG_SERVICE")) {
-                    options.setServerName(System.getenv("SENTRY_TAG_SERVICE"));
-                }
-                if (System.getProperties().contains("sentry.release")) {
-                    options.setRelease(System.getProperty("sentry.release"));
-                }
-                if (System.getProperties().contains("sentry.environment")) {
-                    options.setEnvironment(System.getProperty("sentry.environment"));
-                }
-                if (System.getProperties().contains("sentry.servername")) {
-                    options.setServerName(System.getProperty("sentry.servername"));
-                }
+                options.setEnableExternalConfiguration(true);
                 options.setBeforeSend(
                     (event, hint) -> {
-                        LOGGER.debug(
-                            "Sentry event, logger: %s, message: %s",
-                            event.getLogger(), event.getMessage().toString()
+                        LOGGER.info(
+                            "Sentry event, logger: {}, message: {}",
+                            event.getLogger(), event.getMessage().getMessage()
                         );
                         if (event.getLogger().equals("org.hibernate.engine.jdbc.spi.SqlExceptionHelper")
-                            && (event.getMessage().toString().equals(
+                            && (event.getMessage().getMessage().equals(
                             "ERROR: could not obtain lock on row in relation \"print_job_statuses\"")
-                            || event.getMessage().toString().equals("SQL Error: 0, SQLState: 55P03"))) {
+                            || event.getMessage().getMessage().equals("SQL Error: 0, SQLState: 55P03"))) {
                             return null;
                         }
                         return event;
