@@ -67,6 +67,11 @@ If you want to run in debug mode you can do the following:
 ```{.sourceCode .}
 > ./gradlew print --debug-jvm -PprintArgs="-config ../examples/src/test/resources/examples/simple/config.yaml -spec ../examples/src/test/resources/examples/simple/requestData.json -output ./output.pdf"
 ```
+# Run in Jetty
+
+> ./gradlew jettyRun -PhttpPort=8093
+> open http://localhost:8093/print
+
 
 # To use in Eclipse
 

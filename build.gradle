@@ -11,6 +11,7 @@ buildscript {
         classpath "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.5.1"
         classpath "se.bjurr.violations:violations-gradle-plugin:1.47"
         classpath 'org.owasp:dependency-check-gradle:6.0.2'
+        classpath 'org.gretty:gretty:3.0.3'
     }
 }
 
@@ -41,7 +42,13 @@ configurations.all {
     }
 }
 
+apply plugin: 'org.gretty'
 apply plugin: 'org.owasp.dependencycheck'
+
+import org.akhikhl.gretty.AppStartTask
+
+task appRun(type: AppStartTask) {
+}
 
 configure(subprojects.findAll { ['core', 'examples', 'docs'].contains(it.name) }) {
     repositories {

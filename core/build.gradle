@@ -2,6 +2,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 apply plugin: 'war'
 apply plugin: 'distribution'
+apply plugin: 'org.gretty'
 
 defaultTasks 'build'
 
@@ -225,10 +226,22 @@ jar {
     addManifestAttribute(manifest)
 }
 
+def examplesDir = "${project(':examples').projectDir}/src/test/resources/examples"
 war {
     baseName = 'print-servlet'
     addManifestAttribute(manifest)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+gretty {
+    // Configuration to serve mfp under localhost:8080/print when you run
+    // ./gradlew core:jettyRun
+    servletContainer = 'jetty9'
+    contextPath = '/print'
+    classPath = [file('jettyRunExtraFiles')]
+    systemProperty 'path_to_examples', examplesDir
+    systemProperty 'org.mortbay.jetty.Request.maxFormContentSize', '1048576'
+    httpPort = project.hasProperty('httpPort') ? project.httpPort as int : 8080
 }
 
 task show {
