@@ -41,9 +41,11 @@ jobs:
           java-version: 8
       - run: java -version
 
-      - run: sudo apt update
       - name: Install OS dependencies
-        run: sudo apt install fonts-liberation
+        run: |
+          sudo rm /etc/apt/sources.list.d/*.list
+          sudo apt update
+          sudo apt install fonts-liberation
 
       - run: git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
       - run: ci/test-eof-newline
