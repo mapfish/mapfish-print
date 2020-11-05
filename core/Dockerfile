@@ -1,5 +1,10 @@
 FROM mapfish_print_builder AS builder
 
+# This is necessary for sentry to work properly
+# otherwise the custom Sentry initialization in MapPrinterServlet is lost
+# we want to be able to filter the events in MapPrinterServlet
+# The sentry jars that will be used are coming from extlib.
+RUN rm /src/core/build/webapp/WEB-INF/lib/sentry-*.jar
 
 FROM camptocamp/tomcat-logback:9.0-jre11 AS runner
 LABEL maintainer="info@camptocamp.com"
