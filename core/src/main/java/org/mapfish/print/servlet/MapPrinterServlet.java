@@ -218,14 +218,22 @@ public class MapPrinterServlet extends BaseMapServlet {
         this.servletInfo = servletInfo;
         this.mapPrinterFactory = mapPrinterFactory;
 
-        if (System.getenv().containsKey("SENTRY_URL")) {
+        boolean enableSentry = System.getProperties().contains("sentry.dsn");
+        enableSentry |= System.getenv().containsKey("SENTRY_URL");
+        enableSentry |= System.getenv().containsKey("SENTRY_DSN");
+        if (enableSentry) {
             Sentry.init(options -> {
+                options.setEnableExternalConfiguration(true);
                 options.setBeforeSend(
                     (event, hint) -> {
+                        LOGGER.info(
+                            "Sentry event, logger: {}, message: {}",
+                            event.getLogger(), event.getMessage().getMessage()
+                        );
                         if (event.getLogger().equals("org.hibernate.engine.jdbc.spi.SqlExceptionHelper")
-                            && (event.getMessage().toString().equals(
+                            && (event.getMessage().getMessage().equals(
                             "ERROR: could not obtain lock on row in relation \"print_job_statuses\"")
-                            || event.getMessage().toString().equals("SQL Error: 0, SQLState: 55P03"))) {
+                            || event.getMessage().getMessage().equals("SQL Error: 0, SQLState: 55P03"))) {
                             return null;
                         }
                         return event;

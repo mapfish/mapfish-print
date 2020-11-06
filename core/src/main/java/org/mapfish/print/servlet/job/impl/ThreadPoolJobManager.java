@@ -587,6 +587,8 @@ public class ThreadPoolJobManager implements JobManager {
                         }
                     }
                 }
+            } catch (javax.persistence.PessimisticLockException e) {
+              // Ignore error on pessimistic locking
             } catch (Throwable t) {
                 LOGGER.error("Error while polling/updating registry", t);
             }
