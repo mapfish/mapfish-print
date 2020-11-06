@@ -9,19 +9,18 @@
   <a href="https://hub.docker.com/r/camptocamp/mapfish_print/"
     >repository with images</a
   >
-  that can be used. You can use it directly with a data-only container exporting
-  a <code>VOLUME</code> containing your print apps in
+  that can be used.
+</p>
+<p>
+  You can mount your print apps in
   <code>/usr/local/tomcat/webapps/ROOT/print-apps</code>.
 </p>
 <p>
-  Or you can derive another image from it and add your own configurations in it
-  with a <code>Dockerfile</code>
-  like that:
+  You can mount additionnal font in
+  <code>core/docker/usr/share/fonts/truetype/<font-name>/</code>,
+  and verity that she is correctly installed by opening the view
+  <code>[base URL]/print/fonts<code>.
 </p>
-<pre>
-FROM camptocamp/mapfish_print:{version}
-ADD {MyApps} ${CATALINA_HOME}/webapps/ROOT/print-apps/
-</pre>
 
 <h4 id="docker_tunings">
   Tunings

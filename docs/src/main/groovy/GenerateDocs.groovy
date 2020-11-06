@@ -27,10 +27,8 @@ class GenerateDocs {
     static def javadocParser;
     static HashMultimap<String, Record> plugins = HashMultimap.create()
     static def examplePattern = ~/\[\[examples=(.*?)]]/
-    static def Set<String> availableExamples = null
 
     public static void main(String[] args) {
-        GenerateDocs.availableExamples = initExamples()
         javadocParser = new Javadoc7Parser(javadocDir: new File(args[1]))
 
         XmlWebApplicationContext springAppContext = new XmlWebApplicationContext()
@@ -309,13 +307,6 @@ class GenerateDocs {
             examples.addAll(rawExamples.split(","));
         }
         examples = examples.collect { it.trim() }
-        examples.each { example ->
-            if (!(example in GenerateDocs.availableExamples)) {
-                throw new Exception(
-                        "Example " + example + " does not exist in " +
-                                System.getProperty("path_to_examples"));
-            }
-        }
         return examples;
     }
 
@@ -325,17 +316,6 @@ class GenerateDocs {
                 .replaceAll("<div class=\"highlight\"><pre><br>", "<div class=\"highlight\"><pre>")
                 .replaceAll("</code></pre>", "</pre></div>")
                 .replaceAll("<br> </pre></div>", "</pre></div>")
-    }
-
-    static Set<String> initExamples() {
-        final File examplesDir = new File(System.getProperty("path_to_examples"))
-        def examples = []
-
-        examplesDir.eachFileRecurse(FileType.DIRECTORIES) { dir ->
-            examples << dir.getName()
-        }
-
-        return examples.toSet()
     }
 
     static class Record {

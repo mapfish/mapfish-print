@@ -3,6 +3,7 @@
 ## Version 3.26
 
 - Upgrade to Java 11 and Tomcat 9.0
+- Update the font view
 
 ## Version 3.25
 

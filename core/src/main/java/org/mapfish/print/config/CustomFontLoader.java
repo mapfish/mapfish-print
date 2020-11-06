@@ -38,6 +38,7 @@ public final class CustomFontLoader {
 
         for (String path: paths) {
             try {
+                LOGGER.debug("Loading font {}", path);
                 loadFont(path);
             } catch (FontFormatException e) {
                 throw new ConfigurationException("Font could not be created " + path, e);
@@ -54,6 +55,7 @@ public final class CustomFontLoader {
                 ExtensionsEnvironment.getExtensionsRegistry().getExtensions(FontFamily.class);
         for (FontFamily family: families) {
             for (int style = 0; style <= 3; ++style) {
+                LOGGER.debug("Registered font family {} style {}", family.getName(), style);
                 final Font font = FontUtil.getInstance(DefaultJasperReportsContext.getInstance())
                         .getAwtFontFromBundles(family.getName(), style, 10.0f, null, true);
                 if (font != null && ge.registerFont(font)) {

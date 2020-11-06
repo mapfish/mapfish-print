@@ -4,9 +4,6 @@ RUN apt update
 RUN apt install --yes fonts-liberation gettext curl
 RUN gradle --version
 
-ARG GIT_HEAD
-ENV GIT_HEAD=${GIT_HEAD}
-
 WORKDIR /src
 
 COPY gradle/ ./gradle/
@@ -19,6 +16,9 @@ COPY checkstyle_* ./
 
 # '&& touch success || true' is a trick to be able to get out some artifacts
 RUN gradle :core:build :core:explodedWar :core:libSourcesJar :core:libJavadocJar && touch success || true
+
+ARG GIT_HEAD
+ENV GIT_HEAD=${GIT_HEAD}
 
 COPY publish ./publish
 
