@@ -1,8 +1,12 @@
 .git
 .github
+.gitignore
+.gitattributes
 Makefile
 Dockerfile
-build/Dockerfile
+*/Dockerfile
+.dockerignore
+*/.dockerignore
 ci
 
 */bin
@@ -13,8 +17,12 @@ ci
 */.project
 .settings
 */.settings/
-examples/*.jasper
-
 build/
 */build/
+
+examples/*.jasper
+examples/src/test/resources/examples_to_port
+examples/src/test/resources/examples
 examples/geoserver-data
+
+core/docker

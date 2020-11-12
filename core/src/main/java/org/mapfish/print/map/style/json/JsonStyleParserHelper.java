@@ -26,6 +26,7 @@ import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.FontTools;
 import org.mapfish.print.SetsUtils;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.DistanceUnit;
@@ -48,6 +49,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -416,23 +418,23 @@ public final class JsonStyleParserHelper {
 
     private Font createFont(final Font defaultFont, final PJsonObject styleJson) {
 
+        Expression fontWeight = parseExpression(null, styleJson, JSON_FONT_WEIGHT,
+                                                Function.identity());
+        if (fontWeight == null) {
+            fontWeight = defaultFont.getWeight();
+        }
+
         Expression fontFamily =
                 parseExpression(null, styleJson, JSON_FONT_FAMILY, fontFamily1 -> fontFamily1);
         if (fontFamily == null) {
             fontFamily = defaultFont.getFamily().get(0);
         }
-        List<Expression> fontFamilies = getFontExpressions(fontFamily);
+        List<Expression> fontFamilies = getFontExpressions(fontFamily, fontWeight);
 
         Expression fontSize =
                 parseExpression(null, styleJson, JSON_FONT_SIZE, this::getPxSize);
         if (fontSize == null) {
             fontSize = defaultFont.getSize();
-        }
-
-        Expression fontWeight = parseExpression(null, styleJson, JSON_FONT_WEIGHT,
-                                                Function.identity());
-        if (fontWeight == null) {
-            fontWeight = defaultFont.getWeight();
         }
 
         Expression fontStyle = parseExpression(null, styleJson, JSON_FONT_STYLE,
@@ -452,7 +454,7 @@ public final class JsonStyleParserHelper {
         return font;
     }
 
-    private List<Expression> getFontExpressions(final Expression fontFamily) {
+    private List<Expression> getFontExpressions(final Expression fontFamily, final Expression fontWeight) {
         List<Expression> fontFamilies = new LinkedList<>();
         if (fontFamily instanceof Literal) {
             String fonts = (String) ((Literal) fontFamily).getValue();
@@ -466,7 +468,69 @@ public final class JsonStyleParserHelper {
                 } else if (font.equalsIgnoreCase("monospace")) {
                     font = "Monospaced";
                 }
-                fontFamilies.add(this.styleBuilder.literalExpression(font));
+
+                if (!FontTools.FONT_FAMILIES.contains(font)) {
+                    List<FontTools.FontConfigDescription> listFontConfigFonts =
+                        FontTools.listFontConfigFonts(font);
+                    int weight = -1;
+                    if (fontWeight instanceof Literal) {
+                        String stringWeight = (String) ((Literal) fontWeight).getValue();
+                        // See also: https://developer.mozilla.org/fr/docs/Web/CSS/font-weight#Valeurs
+                        if (stringWeight.equals("normal")) {
+                            weight = 400;
+                        } else if (stringWeight.equals("bold")) {
+                            weight = 700;
+                        } else {
+                            try {
+                                weight = Integer.parseInt(stringWeight);
+                            } catch (NumberFormatException e) {
+                                LOGGER.warn("Wrong weight {}", stringWeight);
+                            }
+                        }
+                        if (weight != -1) {
+                            LOGGER.debug("Search eqivalent font for '{}' with weight {}", font, weight);
+                        }
+                    }
+                    boolean match = false;
+                    int currentDiff = 10000;
+                    Set<String> families = new HashSet<>();
+                    for (FontTools.FontConfigDescription fcd: listFontConfigFonts) {
+                        for (String family: fcd.family) {
+                            if (FontTools.FONT_FAMILIES.contains(family)) {
+                                match = true;
+                                if (weight == -1) {
+                                    families.add(family);
+                                } else {
+                                    int newDiff = Math.abs(fcd.weight - weight);
+                                    if (newDiff == currentDiff) {
+                                        LOGGER.debug("Match font '{}' with weight {}", family, fcd.weight);
+                                        families.add(family);
+                                    } else if (newDiff < currentDiff) {
+                                        LOGGER.debug("Reset match");
+                                        LOGGER.debug("Match font '{}' with weight {}", family, fcd.weight);
+                                        families.clear();
+                                        families.add(family);
+                                        currentDiff = newDiff;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    for (String family: families) {
+                        if (weight == -1) {
+                            LOGGER.info("Use font '{}' in place of font '{}'", family, font);
+                        } else {
+                            LOGGER.info("Use font '{}' in place of font '{}', with weight {}",
+                                family, font, weight);
+                        }
+                        fontFamilies.add(this.styleBuilder.literalExpression(family));
+                    }
+                    if (!match) {
+                        fontFamilies.add(this.styleBuilder.literalExpression(font));
+                    }
+                } else {
+                    fontFamilies.add(this.styleBuilder.literalExpression(font));
+                }
             }
         } else {
             fontFamilies.add(fontFamily);

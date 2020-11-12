@@ -27,7 +27,8 @@ acceptance-tests-up:
 .PHONY: acceptance-tests-run
 acceptance-tests-run:
 	docker-compose exec -T tests gradle :examples:integrationTest
-	ci/validate_container
+	ci/check-fonts
+	ci/validate-container
 
 .PHONY: acceptance-tests-down
 acceptance-tests-down:

@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+
+import requests
+
+
+def main():
+    responce = requests.get("http://localhost:8080/print/fonts")
+
+    assert responce.ok, responce.status_code
+    assert (
+        responce.headers["Content-Type"] == "application/json;charset=utf-8"
+    ), responce.headers["Content-Type"]
+    fonts_result = responce.json()
+
+    fonts = [
+        "DejaVu Sans",
+        "DejaVu Serif",
+        "DejaVu Sans Mono",
+        "JasperReports Icons",
+        "Cadastra",
+    ]
+    for font in fonts:
+        assert font in fonts_result["jasperreportFonts"], "{} not in [{}]".format(
+            font, ", ".join(fonts_result["jasperreportFonts"])
+        )
+
+    fonts = {
+        "Font Awesome 5 Free Solid": [
+            {
+                "families": ["Font Awesome 5 Free", "Font Awesome 5 Free Solid"],
+                "name": "Font Awesome 5 Free Solid",
+                "styles": ["Solid"],
+                "weight": 900,
+            }
+        ],
+        "Font Awesome 5 Free Regular": [
+            {
+                "families": ["Font Awesome 5 Free", "Font Awesome 5 Free Regular"],
+                "name": "Font Awesome 5 Free Regular",
+                "styles": ["Regular"],
+                "weight": 400,
+            }
+        ],
+        "Font Awesome 5 Brands Regular": [
+            {
+                "families": ["Font Awesome 5 Brands", "Font Awesome 5 Brands Regular"],
+                "name": "Font Awesome 5 Brands Regular",
+                "styles": ["Regular"],
+                "weight": 400,
+            }
+        ],
+        "Cadastra": [],
+    }
+
+    for font, fontconfig in fonts.items():
+        font_result = [f for f in fonts_result["fonts"] if f["family"] == font]
+        assert len(font_result) == 1
+        assert font_result[0]["fontconfig"] == fontconfig, "Invalid {}: ".format(
+            font
+        ) + str(font_result[0]["fontconfig"])
+
+
+if __name__ == "__main__":
+    main()
