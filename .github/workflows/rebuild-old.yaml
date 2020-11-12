@@ -1,4 +1,5 @@
-name: Rebuild
+---
+name: Rebuild old
 
 on:
   schedule:
@@ -8,7 +9,7 @@ jobs:
   rebuild:
     runs-on: ubuntu-18.04
     timeout-minutes: 20
-    name: Rebuild
+    name: Rebuild old
 
     env:
       SUMMON_PROVIDER: /usr/local/bin/gopass

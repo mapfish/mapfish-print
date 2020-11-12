@@ -1,3 +1,4 @@
+---
 name: Clean docker hub tags
 
 on: delete
