@@ -34,7 +34,7 @@ jobs:
       - uses: camptocamp/initialise-gopass-summon-action@v1
         with:
           ci-gpg-private-key: ${{secrets.CI_GPG_PRIVATE_KEY}}
-          github-gopass-ci-token: ${{secrets.GITHUB_GOPASS_CI_TOKEN}}
+          github-gopass-ci-token: ${{secrets.GOPASS_CI_GITHUB_TOKEN}}
         if: env.SECRETS == 'TRUE'
       - run: gpg --export-secret-keys --armor D121AF2DFA8E140688BD968930C9B913FD42EF13 > CI.asc
         if: env.SECRETS == 'TRUE'
@@ -173,7 +173,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository: mapfish/mapfish-print-doc
-          token: ${{ secrets.GITHUB_GOPASS_CI_TOKEN }}
+          token: ${{ secrets.GOPASS_CI_GITHUB_TOKEN }}
           path: mapfish-print-doc
         if: github.ref == 'refs/heads/master' && env.SECRETS == 'TRUE'
       - name: Publish documentation
