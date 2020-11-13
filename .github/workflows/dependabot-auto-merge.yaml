@@ -19,7 +19,7 @@ on:
 jobs:
   auto-merge:
     name: Auto merge Dependabot updates
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     timeout-minutes: 5
 
     steps:
