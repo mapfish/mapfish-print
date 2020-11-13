@@ -39,8 +39,8 @@ def main() -> None:
         headers={"Content-Type": "application/json"},
         data=json.dumps(
             {
-                "username": subprocess.check_call(["gopass", "gs/ci/dockerhub/username"]),
-                "password": subprocess.check_call(["gopass", "gs/ci/dockerhub/password"]),
+                "username": subprocess.check_output(["gopass", "gs/ci/dockerhub/username"]).decode(),
+                "password": subprocess.check_output(["gopass", "gs/ci/dockerhub/password"]).decode(),
             }
         ),
     ).json()["token"]
