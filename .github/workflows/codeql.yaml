@@ -10,6 +10,7 @@ jobs:
   CodeQL-Build:
     runs-on: ubuntu-latest
     name: Code scanning
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
