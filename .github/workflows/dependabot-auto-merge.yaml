@@ -20,6 +20,8 @@ jobs:
   auto-merge:
     name: Auto merge Dependabot updates
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+
     steps:
       - name: Auto merge
         uses: ridedott/dependabot-auto-merge-action@master

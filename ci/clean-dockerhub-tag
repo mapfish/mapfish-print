@@ -3,49 +3,55 @@
 
 import json
 import os
-import re
 import subprocess
 import sys
 
 import requests
 
 
-def clean():
+def clean(image: str, tag: str, token: str) -> None:
+    print("Delete image '{image}:{tag}'.".format(image=image, tag=tag))
+
+    response = requests.head(
+        "https://hub.docker.com/v2/repositories/{image}/tags/{tag}/".format(image=image, tag=tag),
+        headers={"Authorization": "JWT " + token},
+    )
+    if response.status_code == 404:
+        return
+    if not response.ok:
+        print("Error checking image '{image}:{tag}' status.".format(image=image, tag=tag))
+        print(response.text)
+        sys.exit(2)
+
+    response = requests.delete(
+        "https://hub.docker.com/v2/repositories/{image}/tags/{tag}/".format(image=image, tag=tag),
+        headers={"Authorization": "JWT " + token},
+    )
+    if not response.ok:
+        print("Error on deleting tag: " + tag)
+        print(response.text)
+        sys.exit(2)
+
+
+def main() -> None:
     token = requests.post(
         "https://hub.docker.com/v2/users/login/",
         headers={"Content-Type": "application/json"},
         data=json.dumps(
-            {"username": os.environ["USERNAME"], "password": os.environ["PASSWORD"]}
+            {
+                "username": subprocess.check_call(["gopass", "gs/ci/dockerhub/username"]),
+                "password": subprocess.check_call(["gopass", "gs/ci/dockerhub/password"]),
+            }
         ),
     ).json()["token"]
 
     with open(os.environ["GITHUB_EVENT_PATH"]) as event_file:
         ref = json.loads(event_file.read())["ref"]
 
-    print("Delete image 'camptocamp/mapfish_print:{}'.".format(ref))
+    ref = ref.replace("/", "_")
 
-    response = requests.head(
-        "https://hub.docker.com/v2/repositories/camptocamp/mapfish_print/tags/{tag}/".format(
-            tag=ref,
-        ),
-        headers={"Authorization": "JWT " + token},
-    )
-    if response.status_code == 404:
-        return
-
-    if not response.ok:
-        print("Error checking image 'camptocamp/{}:{}' status.".format(docker_image, tag))
-        print(response.text)
-        fail = True
-        return
-
-    response = requests.delete(
-        "https://hub.docker.com/v2/repositories/camptocamp/mapfish_print/tags/{tag}/".format(tag=ref,),
-        headers={"Authorization": "JWT " + token,},
-    )
-    if not response.ok:
-        print(response.text)
-        sys.exit(2)
+    clean("camptocamp/mapfish_print", ref, token)
 
 
-clean()
+if __name__ == "__main__":
+    main()

@@ -11,6 +11,8 @@ jobs:
   backport:
     runs-on: ubuntu-18.04
     name: Backport
+    timeout-minutes: 5
+
     steps:
       - uses: camptocamp/backport-action@master
         with:

@@ -5,8 +5,9 @@ on: delete
 
 jobs:
   clean:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     name: Clean docker hub tags
+    timeout-minutes: 5
     env:
       SUMMON_PROVIDER: /usr/local/bin/gopass
     steps:
@@ -16,4 +17,4 @@ jobs:
           ci-gpg-private-key: ${{secrets.CI_GPG_PRIVATE_KEY}}
           github-gopass-ci-token: ${{secrets.GITHUB_GOPASS_CI_TOKEN}}
       - name: Clean docker hub tags
-        run: summon --environment dockerhub_user_pass ci/clean-dockerhub-tag
+        run: ci/clean-dockerhub-tag
