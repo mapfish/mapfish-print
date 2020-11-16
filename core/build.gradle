@@ -164,7 +164,7 @@ dependencies {
             'com.google.guava:guava:30.0-jre',
             "org.slf4j:slf4j-api:${slf4jVersion}",
             "org.slf4j:jcl-over-slf4j:${slf4jVersion}",
-            'org.json:json:20200518',
+            'org.json:json:20201115',
             'ch.qos.logback:logback-classic:1.2.3',
             'org.yaml:snakeyaml:1.27',
             'com.github.spullara.cli-parser:cli-parser:1.1.5',
