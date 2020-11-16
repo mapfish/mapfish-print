@@ -4,11 +4,18 @@ import os
 import subprocess
 
 exit_code = 0
-FNULL = open(os.devnull, 'w')
+FNULL = open(os.devnull, "w")
 
-for filename in subprocess.check_output(["git", "ls-files"]).split("\n"):
-    if os.path.isfile(filename) and not filename.startswith('.idea/'):
-        if subprocess.call("git check-attr -a '{}' | grep ' text: set'".format(filename), shell=True, stdout=FNULL) == 0:
+for filename in subprocess.check_output(["git", "ls-files"]).decode().split("\n"):
+    if os.path.isfile(filename) and not filename.startswith(".idea/"):
+        if (
+            subprocess.call(
+                "git check-attr -a '{}' | grep ' text: set'".format(filename),
+                shell=True,
+                stdout=FNULL,
+            )
+            == 0
+        ):
             size = os.stat(filename).st_size
             if size != 0:
                 with open(filename) as f:
