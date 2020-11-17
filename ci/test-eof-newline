@@ -4,11 +4,11 @@ import os
 import subprocess
 import sys
 
-exit_code = 0
 FNULL = open(os.devnull, "w")
 
 
 def main():
+    exit_code = 0
     for filename in subprocess.check_output(["git", "ls-files"]).split("\n"):
         if os.path.isfile(filename) and not filename.startswith(".idea/"):
             if (
