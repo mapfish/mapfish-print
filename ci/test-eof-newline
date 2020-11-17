@@ -2,24 +2,31 @@
 
 import os
 import subprocess
+import sys
 
 exit_code = 0
 FNULL = open(os.devnull, "w")
 
-for filename in subprocess.check_output(["git", "ls-files"]).decode().split("\n"):
-    if os.path.isfile(filename) and not filename.startswith(".idea/"):
-        if (
-            subprocess.call(
-                "git check-attr -a '{}' | grep ' text: set'".format(filename), shell=True, stdout=FNULL
-            )
-            == 0
-        ):
-            size = os.stat(filename).st_size
-            if size != 0:
-                with open(filename) as f:
-                    f.seek(size - 1)
-                    if ord(f.read()) != ord("\n"):
-                        print("No new line at end of '{}' file.".format(filename))
-                        exit_code = 2
 
-exit(exit_code)
+def main():
+    for filename in subprocess.check_output(["git", "ls-files"]).split("\n"):
+        if os.path.isfile(filename) and not filename.startswith(".idea/"):
+            if (
+                subprocess.call(
+                    "git check-attr -a '{}' | grep ' text: set'".format(filename), shell=True, stdout=FNULL
+                )
+                == 0
+            ):
+                size = os.stat(filename).st_size
+                if size != 0:
+                    with open(filename) as f:
+                        f.seek(size - 1)
+                        if ord(f.read()) != ord("\n"):
+                            print("No new line at end of '{}' file.".format(filename))
+                            exit_code = 2
+
+    sys.exit(exit_code)
+
+
+if __name__ == "__main__":
+    main()
