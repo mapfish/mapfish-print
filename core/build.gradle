@@ -171,7 +171,7 @@ dependencies {
             'org.apache.httpcomponents:httpclient:4.5.13',
             'com.sun.mail:javax.mail:1.6.2',
             'com.amazonaws:aws-java-sdk-s3:1.11.902',
-            'com.adobe.xmp:xmpcore:6.1.10',
+            'com.adobe.xmp:xmpcore:6.1.11',
             'io.sentry:sentry-logback:3.1.3'
     )
 
