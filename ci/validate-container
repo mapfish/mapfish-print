@@ -12,6 +12,7 @@ sleep 15
 server_status=$(docker logs $container_name 2>&1 | grep 'INFO  org.apache.catalina.startup.Catalina - Server startup')
 if [[ -z "${server_status}" ]] ; then
   echo "container unhealthy"
+  docker logs $container_name
   cleanup
   exit 1
 else
