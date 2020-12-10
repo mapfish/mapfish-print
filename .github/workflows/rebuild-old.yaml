@@ -18,6 +18,9 @@ jobs:
       fail-fast: false
       matrix:
         branch:
+          - '3.20'
+          - '3.21'
+          - '3.22'
           - '3.23'
 
     steps:
@@ -48,13 +51,11 @@ jobs:
           sudo apt update
           sudo apt install fonts-liberation
 
-      - run: git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
-      - run: ci/test-eof-newline
-
-      - uses: camptocamp/initialise-gopass-summon-action@v1
+      - uses: camptocamp/initialise-gopass-summon-action@v2
         with:
           ci-gpg-private-key: ${{secrets.CI_GPG_PRIVATE_KEY}}
           github-gopass-ci-token: ${{secrets.GOPASS_CI_GITHUB_TOKEN}}
+          patterns: docker
       - run: gpg --export-secret-keys --armor D121AF2DFA8E140688BD968930C9B913FD42EF13 > CI.asc
 
       - name: Install Cadastra fonts for OEREB example

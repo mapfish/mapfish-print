@@ -278,10 +278,10 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         multipart.addBodyPart(html);
 
         if (config.getStorage() == null) {
-            final MimeBodyPart attachement = new MimeBodyPart();
-            attachement.attachFile(getReportFile(), mimeType, null);
-            attachement.setFileName(fileName + "." + fileExtension);
-            multipart.addBodyPart(attachement);
+            final MimeBodyPart attachment = new MimeBodyPart();
+            attachment.attachFile(getReportFile(), mimeType, null);
+            attachment.setFileName(fileName + "." + fileExtension);
+            multipart.addBodyPart(attachment);
         }
 
         message.setContent(multipart);
@@ -333,7 +333,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
      * set on {@link org.springframework.security.core.context.SecurityContextHolder} when the thread starts
      * executing.
      *
-     * @param securityContext the conext object
+     * @param securityContext the context object
      */
     public final void setSecurityContext(final SecurityContext securityContext) {
         this.securityContext = SecurityContextHolder.createEmptyContext();

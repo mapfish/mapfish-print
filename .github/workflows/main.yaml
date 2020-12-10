@@ -3,7 +3,6 @@ name: Continuous integration
 
 on:
   push:
-  pull_request:
 
 jobs:
   build:
@@ -13,11 +12,10 @@ jobs:
     if: "!startsWith(github.event.head_commit.message, '[skip ci] ')"
 
     env:
-      SUMMON_PROVIDER: /usr/local/bin/gopass
       SECRETS: ${{ secrets.SECRETS }}
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Get tag
         id: tag2
@@ -29,19 +27,23 @@ jobs:
         if: "startsWith(github.ref, 'refs/tags/')"
       - run: echo --${{ steps.tag2.outputs.replaced }}--
 
-      - run: git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
-      - run: ci/test-eof-newline
-
-      - uses: camptocamp/initialise-gopass-summon-action@v1
+      - uses: camptocamp/initialise-gopass-summon-action@v2
         with:
           ci-gpg-private-key: ${{secrets.CI_GPG_PRIVATE_KEY}}
           github-gopass-ci-token: ${{secrets.GOPASS_CI_GITHUB_TOKEN}}
+          patterns: pypi docker
         if: env.SECRETS == 'TRUE'
       - run: gpg --export-secret-keys --armor D121AF2DFA8E140688BD968930C9B913FD42EF13 > CI.asc
         if: env.SECRETS == 'TRUE'
 
       - run: echo "enablePublishing=true" > gradle.properties
         if: env.SECRETS == 'TRUE'
+
+      - run: echo "${HOME}/.local/bin" >> ${GITHUB_PATH}
+      - run: python3 -m pip install --user --requirement=ci/requirements.txt
+
+      - name: Checks
+        run: c2cciutils-checks
 
       - run: make build
       - run: make acceptance-tests-up
@@ -93,15 +95,8 @@ jobs:
           path: /tmp/test_results
         if: failure()
 
-      - run: mkdir -p ~/.docker
-      - name: Decrypt secrets
-        run: summon --environment dockerhub bash -c 'envsubst < ci/docker-config.json.tmpl > ~/.docker/config.json'
-        if: env.SECRETS == 'TRUE'
-
-      - name: publish
-        run: ci/publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish
+        run: c2cciutils-publish
         if: env.SECRETS == 'TRUE'
 
       - id: version

@@ -73,12 +73,12 @@ public class AddOverlayLayersTest extends AbstractMapfishSpringTest {
 
     private void assertImage(
             Values values, int numberOfLayers, String graphicsValueKey, String imageName,
-            int width, int height, int tollerance) throws IOException, TranscoderException {
+            int width, int height, int tolerance) throws IOException, TranscoderException {
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject(graphicsValueKey, List.class);
         assertEquals(numberOfLayers, layerGraphics.size());
 
         new ImageSimilarity(getFile(BASE_DIR + imageName))
-                .assertSimilarity(layerGraphics, width, height, tollerance);
+                .assertSimilarity(layerGraphics, width, height, tolerance);
     }
 }

@@ -305,9 +305,9 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         assertEquals("text/html; charset=utf-8", body.getContentType());
         assertEquals("Please find the requested document in attachment", body.getContent());
 
-        final BodyPart attachement = multipart.getBodyPart(1);
-        assertEquals("image/png; name=test-report.png", attachement.getContentType());
-        final InputStream content = (InputStream) attachement.getContent();
+        final BodyPart attachment = multipart.getBodyPart(1);
+        assertEquals("image/png; name=test-report.png", attachment.getContentType());
+        final InputStream content = (InputStream) attachment.getContent();
         new ImageSimilarity(getFile(MapPrinterServletTest.class, "expectedSimpleImage.png"))
                 .assertSimilarity(IOUtils.toByteArray(content), 1);
     }

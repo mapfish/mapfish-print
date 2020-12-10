@@ -11,21 +11,19 @@ jobs:
     timeout-minutes: 30
     name: Rebuild
 
-    env:
-      SUMMON_PROVIDER: /usr/local/bin/gopass
-
     strategy:
       fail-fast: false
       matrix:
         branch:
-          - '3.25'
           - '3.24'
-          - 'master'
+          - '3.25'
+          - '3.26'
+          - master
 
     steps:
       - run: echo ${{ github.ref }}
 
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           ref: ${{ matrix.branch }}
 
@@ -39,16 +37,19 @@ jobs:
         if: "startsWith(github.ref, 'refs/tags/')"
       - run: echo --${{ steps.tag2.outputs.replaced }}--
 
-      - run: git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
-      - run: ci/test-eof-newline
-
-      - uses: camptocamp/initialise-gopass-summon-action@v1
+      - uses: camptocamp/initialise-gopass-summon-action@v2
         with:
           ci-gpg-private-key: ${{secrets.CI_GPG_PRIVATE_KEY}}
           github-gopass-ci-token: ${{secrets.GOPASS_CI_GITHUB_TOKEN}}
+          patterns: docker
+
       - run: gpg --export-secret-keys --armor D121AF2DFA8E140688BD968930C9B913FD42EF13 > CI.asc
 
       - run: echo "enablePublishing=true" > gradle.properties
+
+      - run: echo "${HOME}/.local/bin" >> ${GITHUB_PATH}
+      - run: python3 -m pip install --user --requirement=ci/requirements.txt
+
       - run: make build
 
       # Extract artifacts
@@ -79,14 +80,8 @@ jobs:
           path: /tmp/test_results
         if: failure()
 
-      - run: mkdir -p ~/.docker
-      - name: Decrypt secrets
-        run: summon --environment dockerhub bash -c 'envsubst < ci/docker-config.json.tmpl > ~/.docker/config.json'
-
-      - name: publish
-        run: ci/publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish
+        run: c2cciutils-publish --branch=${{matrix.branch}}
 
       - run: ./gradlew :core:libSourcesJar
         if: "startsWith(github.ref, 'refs/tags/')"

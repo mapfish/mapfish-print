@@ -54,18 +54,18 @@ public final class FontTools {
     }
 
     /**
-     * Get matched font from a font familly name.
+     * Get matched font from a font family name.
      *
-     * @param familly the font family name.
-     * @return The matched cont conig atributes.
+     * @param family the font family name.
+     * @return The matched cont config attributes.
      */
-    public static List<FontConfigDescription> listFontConfigFonts(final String familly) {
+    public static List<FontConfigDescription> listFontConfigFonts(final String family) {
         List<FontConfigDescription> descriptions = new ArrayList<>();
         if (SystemUtils.IS_OS_LINUX) {
             InputStreamReader inputStreamReader = null;
             BufferedReader stdInput = null;
             try {
-                String[] commands = {"fc-list", "-b", familly};
+                String[] commands = {"fc-list", "-b", family};
                 Process process = Runtime.getRuntime().exec(commands);
 
                 inputStreamReader = new InputStreamReader(process.getInputStream(), "utf-8");
@@ -77,19 +77,19 @@ public final class FontTools {
                         description = new FontConfigDescription();
                         descriptions.add(description);
                     } else if (description != null) {
-                        String[] splitted = inputLine.trim().split(": ");
-                        if (splitted[0].equals("family")) {
-                            description.family = splitted[1].substring(1, splitted[1].length() - 4)
+                        String[] split = inputLine.trim().split(": ");
+                        if (split[0].equals("family")) {
+                            description.family = split[1].substring(1, split[1].length() - 4)
                                 .split(Pattern.quote("\"(s) \""));
-                        } else if (splitted[0].equals("style")) {
-                            description.style = splitted[1].substring(1, splitted[1].length() - 4)
+                        } else if (split[0].equals("style")) {
+                            description.style = split[1].substring(1, split[1].length() - 4)
                                 .split(Pattern.quote("\"(s) \""));
-                        } else if (splitted[0].equals("fullname")) {
-                            description.name = splitted[1].substring(1, splitted[1].length() - 4);
-                        } else if (splitted[0].equals("weight")) {
-                            int weight = Integer.parseInt(splitted[1]
-                                .substring(0, splitted[1].length() - 6));
-                            // See more informations:
+                        } else if (split[0].equals("fullname")) {
+                            description.name = split[1].substring(1, split[1].length() - 4);
+                        } else if (split[0].equals("weight")) {
+                            int weight = Integer.parseInt(split[1]
+                                .substring(0, split[1].length() - 6));
+                            // See more information:
                             // https://work.lisk.in/2020/07/18/font-weight-300.html
                             // https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight
                             // #Common_weight_name_mapping

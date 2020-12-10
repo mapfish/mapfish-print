@@ -208,7 +208,7 @@ public class Configuration implements ConfigurationObject {
     }
 
     /**
-     * Get the http proxies used by in all requests in this syste.
+     * Get the http proxies used by in all requests in this system.
      *
      * @see org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory
      */
@@ -341,7 +341,7 @@ public class Configuration implements ConfigurationObject {
     }
 
     /**
-     * Return the named style ot Optional.absent() if there is not a style with the given name.
+     * Return the named style of Optional.absent() if there is not a style with the given name.
      *
      * @param styleName the name of the style to look up
      */
