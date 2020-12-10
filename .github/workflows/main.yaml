@@ -1,30 +1,20 @@
-name: Rebuild
+name: Continuous integration
 
 on:
-  schedule:
-    - cron: '0 0 * * *'
+  push:
 
 jobs:
-  rebuild:
+  build:
     runs-on: ubuntu-18.04
-    timeout-minutes: 20
-    name: Rebuild
+    timeout-minutes: 40
+    name: Continuous integration
+    if: "!startsWith(github.event.head_commit.message, '[skip ci] ')"
 
     env:
-      SUMMON_PROVIDER: /usr/local/bin/gopass
-
-    strategy:
-      fail-fast: false
-      matrix:
-        branch:
-          - '3.23'
+      SECRETS: ${{ secrets.SECRETS }}
 
     steps:
-      - run: echo ${{ github.ref }}
-
-      - uses: actions/checkout@v1
-        with:
-          ref: ${{ matrix.branch }}
+      - uses: actions/checkout@v2
 
       - name: Get tag
         id: tag2
@@ -36,50 +26,67 @@ jobs:
         if: "startsWith(github.ref, 'refs/tags/')"
       - run: echo --${{ steps.tag2.outputs.replaced }}--
 
-      - uses: actions/setup-java@v1
-        with:
-          java-version: 8
-      - run: java -version
-
-      - run: sudo apt update
-      - name: Install OS dependencies
-        run: sudo apt install fonts-liberation
-
-      - run: git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
-      - run: ci/test-eof-newline
-
-      - uses: camptocamp/initialise-gopass-summon-action@v1
+      - uses: camptocamp/initialise-gopass-summon-action@v2
         with:
           ci-gpg-private-key: ${{secrets.CI_GPG_PRIVATE_KEY}}
           github-gopass-ci-token: ${{secrets.GOPASS_CI_GITHUB_TOKEN}}
+          patterns: pypi docker
+        if: env.SECRETS == 'TRUE'
       - run: gpg --export-secret-keys --armor D121AF2DFA8E140688BD968930C9B913FD42EF13 > CI.asc
-
-      - name: Install Cadastra fonts for OEREB example
-        run: sudo cp -r examples/src/test/resources/examples/oereb/fonts/Cadastra/ /usr/share/fonts/truetype/
+        if: env.SECRETS == 'TRUE'
 
       - run: echo "enablePublishing=true" > gradle.properties
-      - run: ./gradlew build
+        if: env.SECRETS == 'TRUE'
+
+      - run: |
+          sudo rm /etc/apt/sources.list.d/*.list
+          sudo apt-get update
+          sudo apt-get install python3-wheel python3-setuptools
+
+      - run: echo "${HOME}/.local/bin" >> ${GITHUB_PATH}
+      - run: python3 -m pip install --user --requirement=ci/requirements.txt
+
+      - name: Checks
+        run: c2cciutils-checks
+
+      - run: make build
+      - run: make acceptance-tests-up
+      - run: make acceptance-tests-run
+
+      # Extract artifacts
+      - run: docker run --rm --detach --name=builder mapfish_print_builder
+        if: always()
+      - run: docker cp builder:/src/core/build/ core/build/
+        if: always()
+
+      - run: docker cp mapfish-print_tests_1:/src/examples/build/ examples/build/
+        if: always()
+
+      - run: docker-compose logs
+        if: failure()
+
+      - run: make acceptance-tests-down
 
       - uses: actions/upload-artifact@v1
         with:
           name: Test results
           path: core/build/resources/actual
-        if: always()
+        if: failure()
       - uses: actions/upload-artifact@v1
         with:
           name: Reports examples
           path: examples/build/reports
-        if: always()
+        if: failure()
       - uses: actions/upload-artifact@v1
         with:
           name: Reports core
           path: core/build/reports
-        if: always()
+        if: failure()
       - uses: actions/upload-artifact@v1
         with:
           name: Examples
           path: examples/build/resources/test/examples
-        if: always()
+        if: failure()
 
       - name: Collect test results
         run: |
@@ -92,23 +99,14 @@ jobs:
           path: /tmp/test_results
         if: failure()
 
-      - run: mkdir -p ~/.docker
-      - name: Decrypt secrets
-        run: summon --environment dockerhub bash -c 'envsubst < ci/docker-config.json.tmpl > ~/.docker/config.json'
+      - name: Publish
+        run: c2cciutils-publish
+        if: env.SECRETS == 'TRUE'
 
-      - name: publish
-        run: ci/publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - run: ./gradlew :core:libSourcesJar
-        if: "startsWith(github.ref, 'refs/tags/')"
-      - run: ./gradlew :core:libJavadocJar
-        if: "startsWith(github.ref, 'refs/tags/')"
       - id: version
         run: echo "##[set-output name=version;]$(grep version build.gradle|sed "s/ \+version = .\(.*\)./\1/g")"
       - id: tag
-        run: echo "##[set-output name=tag;]$(echo github.ref|sed 's%refs/tags/%%g')"
+        run: echo "##[set-output name=tag;]$(echo ${{ github.ref }}|sed 's%refs/tags/%%g')"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -119,7 +117,7 @@ jobs:
           release_name: Release ${{ steps.tag.outputs.tag }}
           draft: false
           prerelease: false
-        if: "startsWith(github.ref, 'refs/tags/')"
+        if: startsWith(github.ref, 'refs/tags/') && env.SECRETS == 'TRUE'
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.1
         env:
@@ -129,7 +127,7 @@ jobs:
           asset_path: ./core/build/libs/print-servlet-${{ steps.version.outputs.version }}.war
           asset_name: print-servlet-${{ steps.version.outputs.version }}.war
           asset_content_type: application/java-archive
-        if: "startsWith(github.ref, 'refs/tags/')"
+        if: startsWith(github.ref, 'refs/tags/') && env.SECRETS == 'TRUE'
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.1
         env:
@@ -139,7 +137,7 @@ jobs:
           asset_path: ./core/build/distributions/core-${{ steps.version.outputs.version }}.zip
           asset_name: print-cli-${{ steps.version.outputs.version }}.zip
           asset_content_type: application/zip
-        if: "startsWith(github.ref, 'refs/tags/')"
+        if: startsWith(github.ref, 'refs/tags/') && env.SECRETS == 'TRUE'
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.1
         env:
@@ -149,7 +147,7 @@ jobs:
           asset_path: ./core/build/libs/print-lib-${{ steps.version.outputs.version }}.jar
           asset_name: print-lib-${{ steps.version.outputs.version }}.jar
           asset_content_type: application/java-archive
-        if: "startsWith(github.ref, 'refs/tags/')"
+        if: startsWith(github.ref, 'refs/tags/') && env.SECRETS == 'TRUE'
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.1
         env:
@@ -159,7 +157,7 @@ jobs:
           asset_path: ./core/build/libs/print-lib-${{ steps.version.outputs.version }}-sources.jar
           asset_name: print-lib-${{ steps.version.outputs.version }}-sources.jar
           asset_content_type: application/java-archive
-        if: "startsWith(github.ref, 'refs/tags/')"
+        if: startsWith(github.ref, 'refs/tags/') && env.SECRETS == 'TRUE'
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.1
         env:
@@ -169,4 +167,23 @@ jobs:
           asset_path: ./core/build/libs/print-lib-${{ steps.version.outputs.version }}-javadoc.jar
           asset_name: print-lib-${{ steps.version.outputs.version }}-javadoc.jar
           asset_content_type: application/java-archive
-        if: "startsWith(github.ref, 'refs/tags/')"
+        if: startsWith(github.ref, 'refs/tags/') && env.SECRETS == 'TRUE'
+
+      # Update the documentation
+      - uses: actions/checkout@v2
+        with:
+          repository: mapfish/mapfish-print-doc
+          token: ${{ secrets.GOPASS_CI_GITHUB_TOKEN }}
+          path: mapfish-print-doc
+        if: github.ref == 'refs/heads/master' && env.SECRETS == 'TRUE'
+      - name: Publish documentation
+        run: |
+          cd ${GITHUB_WORKSPACE}/mapfish-print-doc
+          git config user.email "ci@camptocamp.com"
+          git config user.name "CI"
+          git rm --ignore-unmatch -rqf .
+          docker cp builder:/src/docs/build/site/. .
+          git add -A .
+          git commit -m 'Update docs'
+          git push origin gh-pages
+        if: github.ref == 'refs/heads/master' && env.SECRETS == 'TRUE'

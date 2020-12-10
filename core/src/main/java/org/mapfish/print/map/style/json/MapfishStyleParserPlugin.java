@@ -281,7 +281,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * should be joined together.
  * <p>
  * Options: arcs, bevel, miter, miter-clip, round, see the SGV documentation about stroke-linejoin
- * For more informations.
+ * For more information.
  * Default is miter
  * </p>
  * </li>

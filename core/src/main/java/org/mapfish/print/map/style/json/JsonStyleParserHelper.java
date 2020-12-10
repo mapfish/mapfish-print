@@ -488,7 +488,7 @@ public final class JsonStyleParserHelper {
                             }
                         }
                         if (weight != -1) {
-                            LOGGER.debug("Search eqivalent font for '{}' with weight {}", font, weight);
+                            LOGGER.debug("Search equivalent font for '{}' with weight {}", font, weight);
                         }
                     }
                     boolean match = false;

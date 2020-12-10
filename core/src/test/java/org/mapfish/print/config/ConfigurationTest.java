@@ -320,7 +320,7 @@ public class ConfigurationTest {
 
         assertEquals(1, errors.size()); // no templates error
 
-        config.setJdbcDrivers(Collections.singleton("non.existant.driver.Driver"));
+        config.setJdbcDrivers(Collections.singleton("non.existent.driver.Driver"));
         errors = config.validate();
 
         assertEquals(2, errors.size());
