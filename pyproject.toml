@@ -1,0 +1,11 @@
+[tool.black]
+line-length = 110
+target-version = ['py38']
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = false
+use_parentheses = true
+line_length = 110
+known_first_party = ['c2cciutils']
