@@ -458,7 +458,7 @@ public class ThreadPoolJobManager implements JobManager {
                                              "task cancelled (timeout)", true);
                     }
                     notifyIfStopped();
-                } catch (NoSuchReferenceException e) { // shouldnt'// really happen
+                } catch (NoSuchReferenceException e) { // shouldn't really happen
                     throw ExceptionUtils.getRuntimeException(e);
                 }
             }

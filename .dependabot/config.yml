@@ -70,3 +70,9 @@ update_configs:
     allowed_updates:
       - match:
           update_type: security
+  - package_manager: python
+    directory: /ci
+    update_schedule: live
+    automerged_updates:
+      - match:
+          update_type: all

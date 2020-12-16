@@ -7,7 +7,7 @@ import java.util.Map;
 
 
 /**
- * Network utils classe.
+ * Network utils class.
  */
 public final class Utils {
     private Utils() {

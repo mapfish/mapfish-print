@@ -35,9 +35,9 @@ public class ResourceBundleClassLoader extends ClassLoader {
     public InputStream getResourceAsStream(final String resource) {
         try {
             final InputStream is = super.getResourceAsStream(resource);
-            byte[] ba = new byte[is.available()];
-            is.read(ba);
-            return new ByteArrayInputStream(new String(ba, "utf-8").getBytes("iso-8859-1"));
+            byte[] bytes = new byte[is.available()];
+            is.read(bytes);
+            return new ByteArrayInputStream(new String(bytes, "utf-8").getBytes("iso-8859-1"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
