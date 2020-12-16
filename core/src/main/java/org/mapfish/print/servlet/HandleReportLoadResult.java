@@ -35,7 +35,7 @@ public interface HandleReportLoadResult<R> {
      * Called when a print succeeded.
      *
      * @param successfulPrintResult the result
-     * @param httpServletResponse the http reponse
+     * @param httpServletResponse the http response
      * @param reportURI the uri to the report
      * @param loader the loader for loading the report.
      */

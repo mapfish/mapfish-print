@@ -4,13 +4,13 @@ import requests
 
 
 def main():
-    responce = requests.get("http://localhost:8080/print/fonts")
+    response = requests.get("http://localhost:8080/print/fonts")
 
-    assert responce.ok, responce.status_code
-    assert (
-        responce.headers["Content-Type"] == "application/json;charset=utf-8"
-    ), responce.headers["Content-Type"]
-    fonts_result = responce.json()
+    assert response.ok, response.status_code
+    assert response.headers["Content-Type"] == "application/json;charset=utf-8", response.headers[
+        "Content-Type"
+    ]
+    fonts_result = response.json()
 
     fonts = [
         "DejaVu Sans",
@@ -55,9 +55,9 @@ def main():
     for font, fontconfig in fonts.items():
         font_result = [f for f in fonts_result["fonts"] if f["family"] == font]
         assert len(font_result) == 1
-        assert font_result[0]["fontconfig"] == fontconfig, "Invalid {}: ".format(
-            font
-        ) + str(font_result[0]["fontconfig"])
+        assert font_result[0]["fontconfig"] == fontconfig, "Invalid {}: ".format(font) + str(
+            font_result[0]["fontconfig"]
+        )
 
 
 if __name__ == "__main__":

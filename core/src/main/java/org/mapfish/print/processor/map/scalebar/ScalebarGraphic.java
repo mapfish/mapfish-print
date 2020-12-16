@@ -380,7 +380,7 @@ public class ScalebarGraphic {
      * @param mapContext The context of the map for which the scalebar is created.
      * @param scalebarParams The scalebar parameters.
      * @param tempFolder The directory in which the graphic file is created.
-     * @param template The template that containts the scalebar processor
+     * @param template The template that contains the scalebar processor
      */
     public final URI render(
             final MapfishMapContext mapContext,

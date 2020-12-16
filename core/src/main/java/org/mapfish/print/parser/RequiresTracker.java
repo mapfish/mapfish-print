@@ -49,9 +49,9 @@ class RequiresTracker {
             this.dependantsInJson.add(field);
         }
 
-        final Field dependant = this.requirementToDependantMap.get(field.getName());
-        if (dependant != null) {
-            this.dependantToRequirementsMap.remove(dependant, field.getName());
+        final Field dependent = this.requirementToDependantMap.get(field.getName());
+        if (dependent != null) {
+            this.dependantToRequirementsMap.remove(dependent, field.getName());
         }
     }
 

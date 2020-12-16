@@ -118,7 +118,7 @@ public interface PObject {
     Float optFloat(String key);
 
     /**
-     * Get a property as a float or Default vaule.
+     * Get a property as a float or Default value.
      *
      * @param key the property name
      * @param defaultValue default value

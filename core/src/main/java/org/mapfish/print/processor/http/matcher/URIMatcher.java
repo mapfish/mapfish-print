@@ -14,7 +14,7 @@ public interface URIMatcher extends ConfigurationObject {
      * Check if the uri is matching.
      *
      * @param matchInfo the matching information to check
-     * @return true if the uri is matching or false otherwis
+     * @return true if the uri is matching or false otherwise
      */
     boolean matches(MatchInfo matchInfo)
             throws UnknownHostException, SocketException, MalformedURLException;
