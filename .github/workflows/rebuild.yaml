@@ -81,7 +81,7 @@ jobs:
         if: failure()
 
       - name: Publish
-        run: c2cciutils-publish --branch=${{matrix.branch}}
+        run: c2cciutils-publish --type=rebuild --branch=${{ matrix.branch }}
 
       - run: ./gradlew :core:libSourcesJar
         if: "startsWith(github.ref, 'refs/tags/')"
