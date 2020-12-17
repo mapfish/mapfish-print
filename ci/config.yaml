@@ -1,0 +1,20 @@
+version:
+  tag_to_version_re:
+    - from: release/([0-9]+\.[0-9]+\.[0-9]+)
+      to: \1
+
+checks:
+  required_workflows:
+    audit.yaml: False
+    rebuild.yaml: False
+    clean.yaml: False
+    dependabot-auto-merge.yaml: False
+  versions: False
+  codespell: False
+
+publish:
+  pypi:
+    packages: []
+  docker:
+    images:
+      - name: camptocamp/mapfish_print
