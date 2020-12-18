@@ -9,7 +9,9 @@ checks:
       steps: []
     rebuild.yaml:
       steps: []
-    rebuild-old.yaml:
+    rebuild-3-23.yaml:
+      steps: []
+    rebuild-3-20-3-22.yaml:
       steps: []
   codespell:
     ignore_re:

@@ -21,8 +21,6 @@ jobs:
           - master
 
     steps:
-      - run: echo ${{ github.ref }}
-
       - uses: actions/checkout@v2
         with:
           ref: ${{ matrix.branch }}
