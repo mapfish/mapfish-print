@@ -1,5 +1,5 @@
 ---
-name: Rebuild old
+name: Rebuild 3.23
 
 on:
   schedule:
@@ -7,9 +7,9 @@ on:
 
 jobs:
   rebuild:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
     timeout-minutes: 20
-    name: Rebuild old
+    name: Rebuild 3.23
 
     env:
       SUMMON_PROVIDER: /usr/local/bin/gopass
@@ -18,15 +18,10 @@ jobs:
       fail-fast: false
       matrix:
         branch:
-          - '3.20'
-          - '3.21'
-          - '3.22'
           - '3.23'
 
     steps:
-      - run: echo ${{ github.ref }}
-
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           ref: ${{ matrix.branch }}
 
@@ -43,7 +38,6 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 8
-      - run: java -version
 
       - name: Install OS dependencies
         run: |
@@ -57,6 +51,20 @@ jobs:
           github-gopass-ci-token: ${{secrets.GOPASS_CI_GITHUB_TOKEN}}
           patterns: docker
       - run: gpg --export-secret-keys --armor D121AF2DFA8E140688BD968930C9B913FD42EF13 > CI.asc
+
+      - run: |
+          sudo rm /etc/apt/sources.list.d/*.list
+          sudo apt-get update
+          sudo apt-get install python3-wheel python3-setuptools
+
+      - run: echo "${HOME}/.local/bin" >> ${GITHUB_PATH}
+      - run: python3 -m pip install --user --requirement=ci/requirements.txt
+
+      - name: Checks
+        run: c2cciutils-checks
+
+      - name: Install Cadastra fonts for OEREB example
+        run: sudo cp -r examples/src/test/resources/examples/oereb/fonts/Cadastra/ /usr/share/fonts/truetype/
 
       - run: echo "enablePublishing=true" > gradle.properties
       - run: ./gradlew build
@@ -92,6 +100,8 @@ jobs:
           name: Test results
           path: /tmp/test_results
         if: failure()
+
+      - run: ./gradlew --console=plain validateDocker
 
       - name: Publish
         run: c2cciutils-publish --type=rebuild --branch=${{ matrix.branch }}
