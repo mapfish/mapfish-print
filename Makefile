@@ -10,6 +10,7 @@ build:
 
 	docker build $(GIT_HEAD_ARG) --target=runner --tag=camptocamp/mapfish_print core
 	docker build $(GIT_HEAD_ARG) --target=tester --tag=mapfish_print_tester core
+	docker build $(GIT_HEAD_ARG) --target=watcher --tag=mapfish_print_watcher core
 
 .PHONY: acceptance-tests-up
 acceptance-tests-up:

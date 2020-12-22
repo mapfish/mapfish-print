@@ -58,4 +58,12 @@ FROM runner AS tester
 COPY jettyRunExtraFiles/mapfish-spring-application-context-override-acceptencetests.xml \
   webapps/ROOT/WEB-INF/classes/mapfish-spring-application-context-override.xml
 
+FROM runner AS watcher
+
+RUN apt update && \
+    apt install --yes python3-pip rsync && \
+    apt-get clean && \
+    rm --recursive --force /var/lib/apt/lists/*
+RUN python3 -m pip --disable-pip-version-check --no-cache-dir install inotify
+
 FROM runner AS final
