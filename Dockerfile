@@ -32,3 +32,5 @@ RUN [ -e success ] && gradle :examples:build buildDocs && touch success-examples
 FROM builder AS test-builder
 
 RUN [ -e success ] && [ -e success-publish ] && [ -e success-examples-docs ]
+
+VOLUME [ "/src/core" ]

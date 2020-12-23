@@ -1,0 +1,19 @@
+---
+version: '2.1'
+
+services:
+  builder:
+    image: mapfish_print_builder
+    volumes:
+      - ./core:/src/core
+    command:
+      - gradle
+      - --continuous
+      - :core:classes
+
+  print:
+    image: mapfish_print_watcher
+    command:
+      - /usr/local/tomcat/bin/docker-start-watch
+    volumes_from:
+      - builder
