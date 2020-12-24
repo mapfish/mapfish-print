@@ -172,7 +172,6 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
     protected abstract void extraValidation(
             List<Throwable> validationErrors, Configuration configuration);
 
-    // CHECKSTYLE:OFF
     @Override
     public String toString() {
         String result = getClass().getSimpleName();
@@ -186,7 +185,6 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
         }
         return result;
     }
-    // CHECKSTYLE:ON
 
     /**
      * Default implementation of {@link org.mapfish.print.processor.Processor.ExecutionContext}.

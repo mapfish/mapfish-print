@@ -121,7 +121,6 @@ public final class Values {
      * @param jasperTemplateBuild the directory where the jasper templates are compiled to
      * @param outputFormat the output format
      */
-    //CHECKSTYLE:OFF
     public Values(
             final String jobId,
             final PJsonObject requestData,
@@ -130,7 +129,6 @@ public final class Values {
             final MfClientHttpRequestFactoryImpl httpRequestFactory,
             final File jasperTemplateBuild,
             final String outputFormat) {
-        //CHECKSTYLE:ON
         Assert.isTrue(!taskDirectory.mkdirs() || taskDirectory.exists());
 
         // add task dir. to values so that all processors can access it

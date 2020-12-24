@@ -78,7 +78,6 @@ public abstract class HostMatcher extends AbstractMatcher {
     @Override
     public abstract String toString();
 
-    // CHECKSTYLE:OFF
     // Don't run checkstyle on generated methods
     @Override
     public int hashCode() {
@@ -113,6 +112,4 @@ public abstract class HostMatcher extends AbstractMatcher {
         }
         return true;
     }
-    // CHECKSTYLE:ON
-
 }

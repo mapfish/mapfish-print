@@ -140,7 +140,6 @@ final class OneOfTracker {
             this.isCanSatisfy = isCanSatisfy;
         }
 
-        // CHECKSTYLE:OFF
         @Override
         public boolean equals(final Object o) {
             if (this == o) {
@@ -163,6 +162,5 @@ final class OneOfTracker {
         public int hashCode() {
             return field.hashCode();
         }
-        // CHECKSTYLE:ON
     }
 }
