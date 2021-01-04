@@ -1,6 +1,5 @@
 package org.mapfish.print.attribute;
 
-
 /**
  * <p>Attribute that reads a string from the request data.</p>
  * [[examples=verboseExample]]
@@ -48,7 +47,8 @@ public class StringAttribute extends PrimitiveAttribute<String> {
             String text = (String) value;
             if (text.length() > this.maxLength) {
                 throw new IllegalArgumentException(
-                        "text contains more than " + this.maxLength + " characters");
+                    "text contains more than " + this.maxLength + " characters"
+                );
             }
         }
     }

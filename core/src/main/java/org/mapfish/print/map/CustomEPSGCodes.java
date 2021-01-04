@@ -1,16 +1,15 @@
 package org.mapfish.print.map;
 
-import org.geotools.referencing.factory.epsg.FactoryUsingWKT;
-import org.geotools.util.factory.Hints;
-
 import java.io.InputStream;
 import java.net.URL;
-
+import org.geotools.referencing.factory.epsg.FactoryUsingWKT;
+import org.geotools.util.factory.Hints;
 
 /**
  * This class is an authority factory that allows defining custom EPSG codes.
  */
 public final class CustomEPSGCodes extends FactoryUsingWKT {
+
     /**
      * The path to the file containing the custom epsg codes.
      */
@@ -51,5 +50,4 @@ public final class CustomEPSGCodes extends FactoryUsingWKT {
             throw new AssertionError("Unable to load /epsg.properties file from root of classpath.");
         }
     }
-
 }

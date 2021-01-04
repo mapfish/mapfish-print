@@ -1,10 +1,9 @@
 package org.mapfish.print.map.tiled;
 
+import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.client.ClientHttpRequest;
-
-import java.util.List;
 
 /**
  * Tile Preparation Task Result.
@@ -31,9 +30,14 @@ public class TilePreparationInfo {
      * @param mapProjection map projection
      */
     public TilePreparationInfo(
-            final List<SingleTilePreparationInfo> singleTiles, final int imageWidth, final int imageHeight,
-            final Coordinate gridCoverageOrigin, final double gridCoverageMaxX, final double gridCoverageMaxY,
-            final CoordinateReferenceSystem mapProjection) {
+        final List<SingleTilePreparationInfo> singleTiles,
+        final int imageWidth,
+        final int imageHeight,
+        final Coordinate gridCoverageOrigin,
+        final double gridCoverageMaxX,
+        final double gridCoverageMaxY,
+        final CoordinateReferenceSystem mapProjection
+    ) {
         this.singleTiles = singleTiles;
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
@@ -75,6 +79,7 @@ public class TilePreparationInfo {
      * Information per tile (x, y and request).
      */
     public static class SingleTilePreparationInfo {
+
         private final int tileIndexX;
         private final int tileIndexY;
         private ClientHttpRequest tileRequest;
@@ -87,7 +92,10 @@ public class TilePreparationInfo {
          * @param tileRequest tile request
          */
         public SingleTilePreparationInfo(
-                final int tileIndexX, final int tileIndexY, final ClientHttpRequest tileRequest) {
+            final int tileIndexX,
+            final int tileIndexY,
+            final ClientHttpRequest tileRequest
+        ) {
             super();
             this.tileIndexX = tileIndexX;
             this.tileIndexY = tileIndexY;

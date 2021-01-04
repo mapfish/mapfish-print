@@ -4,7 +4,6 @@ package org.mapfish.print.servlet.job;
  * Manages and Executes Print Jobs.
  */
 public interface JobManager {
-
     /**
      * Submit a new job for execution.
      *
@@ -27,5 +26,4 @@ public interface JobManager {
      * @throws NoSuchReferenceException
      */
     PrintJobStatus getStatus(String referenceId) throws NoSuchReferenceException;
-
 }

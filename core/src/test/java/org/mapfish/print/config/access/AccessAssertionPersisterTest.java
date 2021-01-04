@@ -1,24 +1,25 @@
 package org.mapfish.print.config.access;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+
+import java.util.List;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-
 public class AccessAssertionPersisterTest extends AbstractMapfishSpringTest {
+
     @Autowired
     private AccessAssertionPersister persister;
+
     @Autowired
     private List<AccessAssertion> accessAssertions;
 
     @Test
     public void testMarshalUnmarshal() {
-        for (AccessAssertion assertion: this.accessAssertions) {
+        for (AccessAssertion assertion : this.accessAssertions) {
             try {
                 final JSONObject marshalled = persister.marshal(assertion);
                 final AccessAssertion unmarshalled = persister.unmarshal(marshalled);
@@ -30,9 +31,9 @@ public class AccessAssertionPersisterTest extends AbstractMapfishSpringTest {
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new AssertionError(
-                        "Marshalling or unmarshalling access assertion: " + assertion.getClass() + " failed");
+                    "Marshalling or unmarshalling access assertion: " + assertion.getClass() + " failed"
+                );
             }
         }
     }
-
 }

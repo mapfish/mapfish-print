@@ -1,16 +1,15 @@
 package org.mapfish.print.processor.jasper;
 
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.ConfigurationException;
-import org.mapfish.print.parser.HasDefaultValue;
-import org.mapfish.print.processor.AbstractProcessor;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import javax.annotation.Nullable;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ConfigurationException;
+import org.mapfish.print.parser.HasDefaultValue;
+import org.mapfish.print.processor.AbstractProcessor;
 
 /**
  * A processor that creates a date formatter that can be used in Jasper.
@@ -52,7 +51,7 @@ import javax.annotation.Nullable;
  * </code></pre>
  */
 public class DateFormatProcessor
-        extends AbstractProcessor<DateFormatProcessor.Input, DateFormatProcessor.Output> {
+    extends AbstractProcessor<DateFormatProcessor.Input, DateFormatProcessor.Output> {
 
     private String pattern;
 
@@ -65,7 +64,9 @@ public class DateFormatProcessor
 
     @Override
     protected void extraValidation(
-            final List<Throwable> validationErrors, final Configuration configuration) {
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {
         if (pattern == null) {
             validationErrors.add(new ConfigurationException("'pattern' is mandatory"));
         }
@@ -80,7 +81,6 @@ public class DateFormatProcessor
     @Nullable
     @Override
     public Output execute(final Input values, final ExecutionContext context) throws Exception {
-
         SimpleDateFormat dateFormat = new SimpleDateFormat(pattern, values.REPORT_LOCALE);
         if (values.timezone != null) {
             dateFormat.setTimeZone(TimeZone.getTimeZone(values.timezone));
@@ -103,6 +103,7 @@ public class DateFormatProcessor
      * The Input of the processor.
      */
     public static final class Input {
+
         /**
          * The timezone to use.
          * <p>
@@ -123,6 +124,7 @@ public class DateFormatProcessor
      * The output of the processor.
      */
     public static final class Output {
+
         /**
          * The date formatter.
          */

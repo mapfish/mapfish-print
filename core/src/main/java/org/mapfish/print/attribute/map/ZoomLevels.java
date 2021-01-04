@@ -1,17 +1,16 @@
 package org.mapfish.print.attribute.map;
 
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.ConfigurationException;
-import org.mapfish.print.config.ConfigurationObject;
-import org.mapfish.print.map.DistanceUnit;
-import org.mapfish.print.map.Scale;
+import static org.mapfish.print.Constants.PDF_DPI;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
-
-import static org.mapfish.print.Constants.PDF_DPI;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ConfigurationException;
+import org.mapfish.print.config.ConfigurationObject;
+import org.mapfish.print.map.DistanceUnit;
+import org.mapfish.print.map.Scale;
 
 /**
  * <p>Encapsulates a sorted set of scale denominators representing the allowed scales.</p>
@@ -24,6 +23,7 @@ import static org.mapfish.print.Constants.PDF_DPI;
  * [[examples=datasource_many_dynamictables_legend]]
  */
 public final class ZoomLevels implements ConfigurationObject {
+
     private double[] scaleDenominators;
 
     /**
@@ -49,12 +49,12 @@ public final class ZoomLevels implements ConfigurationObject {
      */
     public void setScales(final double[] newScaleDenominators) {
         TreeSet<Double> sortedSet = new TreeSet<>(Collections.reverseOrder());
-        for (final double newScaleDenominator: newScaleDenominators) {
+        for (final double newScaleDenominator : newScaleDenominators) {
             sortedSet.add(newScaleDenominator);
         }
         this.scaleDenominators = new double[sortedSet.size()];
         int i = 0;
-        for (Double scaleDenominator: sortedSet) {
+        for (Double scaleDenominator : sortedSet) {
             this.scaleDenominators[i] = scaleDenominator;
             i++;
         }
@@ -101,12 +101,12 @@ public final class ZoomLevels implements ConfigurationObject {
         return Arrays.hashCode(scaleDenominators);
     }
 
-
     @Override
     public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (scaleDenominators == null || scaleDenominators.length == 0) {
-            validationErrors.add(new ConfigurationException(
-                    "There are no scales defined in " + getClass().getName()));
+            validationErrors.add(
+                new ConfigurationException("There are no scales defined in " + getClass().getName())
+            );
         }
     }
 

@@ -1,5 +1,12 @@
 package org.mapfish.print.processor.map.scalebar;
 
+import java.awt.Dimension;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Collections;
+import java.util.List;
+import javax.xml.parsers.ParserConfigurationException;
 import net.sf.jasperreports.engine.JRException;
 import org.mapfish.print.attribute.ScalebarAttribute;
 import org.mapfish.print.attribute.map.MapfishMapContext;
@@ -9,21 +16,13 @@ import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.jasper.ImagesSubReport;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
 
-import java.awt.Dimension;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.Collections;
-import java.util.List;
-import javax.xml.parsers.ParserConfigurationException;
-
 /**
  * <p>Processor to create a scalebar for a map.</p>
  * <p>See also: <a href="attributes.html#!scalebar">!scalebar</a> attribute</p>
  * [[examples=verboseExample,print_osm_new_york_EPSG_3857,print_osm_new_york_nosubreports]]
  */
 public class CreateScalebarProcessor
-        extends AbstractProcessor<CreateScalebarProcessor.Input, CreateScalebarProcessor.Output> {
+    extends AbstractProcessor<CreateScalebarProcessor.Input, CreateScalebarProcessor.Output> {
 
     /**
      * Constructor.
@@ -34,8 +33,9 @@ public class CreateScalebarProcessor
 
     @Override
     protected void extraValidation(
-            final List<Throwable> validationErrors, final Configuration configuration) {
-    }
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {}
 
     @Override
     public final Input createInputParameter() {
@@ -53,8 +53,11 @@ public class CreateScalebarProcessor
         String strScalebarSubReport = null;
         if (values.scalebar.isCreateSubReport()) {
             final URI scalebarSubReport = createScalebarSubReport(
-                    values.tempTaskDirectory, values.scalebar.getSize(),
-                    Collections.singletonList(scalebarGraphicFile), values.mapContext.getDPI());
+                values.tempTaskDirectory,
+                values.scalebar.getSize(),
+                Collections.singletonList(scalebarGraphicFile),
+                values.mapContext.getDPI()
+            );
             strScalebarSubReport = scalebarSubReport.toString();
         }
 
@@ -67,15 +70,18 @@ public class CreateScalebarProcessor
     }
 
     private URI createScalebarSubReport(
-            final File printDirectory,
-            final Dimension size,
-            final List<URI> graphics,
-            final double dpi) throws IOException, JRException {
+        final File printDirectory,
+        final Dimension size,
+        final List<URI> graphics,
+        final double dpi
+    ) throws IOException, JRException {
         final ImagesSubReport subReport = new ImagesSubReport(graphics, size, dpi);
 
-        final File compiledReport = File.createTempFile("scalebar-report-",
-                                                        JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT,
-                                                        printDirectory);
+        final File compiledReport = File.createTempFile(
+            "scalebar-report-",
+            JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT,
+            printDirectory
+        );
         subReport.compile(compiledReport);
 
         return compiledReport.toURI();

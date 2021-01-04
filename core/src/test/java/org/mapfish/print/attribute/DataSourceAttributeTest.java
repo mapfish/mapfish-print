@@ -1,5 +1,10 @@
 package org.mapfish.print.attribute;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Map;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
@@ -8,12 +13,6 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class DataSourceAttributeTest extends AbstractMapfishSpringTest {
 
@@ -27,13 +26,15 @@ public class DataSourceAttributeTest extends AbstractMapfishSpringTest {
 
         final Map<String, Attribute> attributes = template.getAttributes();
 
-        PJsonObject jsonData =
-                parseJSONObjectFromFile(DataSourceAttributeTest.class, "datasource/requestData.json");
+        PJsonObject jsonData = parseJSONObjectFromFile(
+            DataSourceAttributeTest.class,
+            "datasource/requestData.json"
+        );
         final Values values = new Values();
         values.populateFromAttributes(template, attributes, jsonData);
 
         final Class<DataSourceAttribute.DataSourceAttributeValue> type =
-                DataSourceAttribute.DataSourceAttributeValue.class;
+            DataSourceAttribute.DataSourceAttributeValue.class;
         final DataSourceAttribute.DataSourceAttributeValue value = values.getObject("datasource", type);
         assertNotNull(value);
 

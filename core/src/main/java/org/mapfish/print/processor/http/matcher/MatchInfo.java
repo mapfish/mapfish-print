@@ -1,16 +1,16 @@
 package org.mapfish.print.processor.http.matcher;
 
+import java.net.MalformedURLException;
+import java.net.URI;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.auth.AuthScope;
 import org.springframework.http.HttpMethod;
-
-import java.net.MalformedURLException;
-import java.net.URI;
 
 /**
  * Information required for performing a request match.
  */
 public final class MatchInfo {
+
     /**
      * A value representing all and any schemes.
      */
@@ -67,14 +67,15 @@ public final class MatchInfo {
      */
     // CSOFF: ParameterNumber
     public MatchInfo(
-            final String scheme,
-            final String host,
-            final int port,
-            final String path,
-            final String query,
-            final String fragment,
-            final String realm,
-            final HttpMethod method) {
+        final String scheme,
+        final String host,
+        final int port,
+        final String path,
+        final String query,
+        final String fragment,
+        final String realm,
+        final HttpMethod method
+    ) {
         // CSON: ParameterNumber
         this.scheme = scheme;
         this.host = host;
@@ -102,8 +103,16 @@ public final class MatchInfo {
             }
         }
 
-        return new MatchInfo(uri.getScheme(), uri.getHost(), newPort, uri.getPath(), uri.getQuery(),
-                             uri.getFragment(), ANY_REALM, method);
+        return new MatchInfo(
+            uri.getScheme(),
+            uri.getHost(),
+            newPort,
+            uri.getPath(),
+            uri.getQuery(),
+            uri.getFragment(),
+            ANY_REALM,
+            method
+        );
     }
 
     /**
@@ -113,16 +122,27 @@ public final class MatchInfo {
      */
     @SuppressWarnings("StringEquality")
     public static MatchInfo fromAuthScope(final AuthScope authscope) {
-        String newScheme = StringUtils.equals(authscope.getScheme(), AuthScope.ANY_SCHEME) ? ANY_SCHEME :
-                authscope.getScheme();
-        String newHost = StringUtils.equals(authscope.getHost(), AuthScope.ANY_HOST) ? ANY_HOST :
-                authscope.getHost();
+        String newScheme = StringUtils.equals(authscope.getScheme(), AuthScope.ANY_SCHEME)
+            ? ANY_SCHEME
+            : authscope.getScheme();
+        String newHost = StringUtils.equals(authscope.getHost(), AuthScope.ANY_HOST)
+            ? ANY_HOST
+            : authscope.getHost();
         int newPort = authscope.getPort() == AuthScope.ANY_PORT ? ANY_PORT : authscope.getPort();
-        String newRealm = StringUtils.equals(authscope.getRealm(), AuthScope.ANY_REALM) ? ANY_REALM :
-                authscope.getRealm();
+        String newRealm = StringUtils.equals(authscope.getRealm(), AuthScope.ANY_REALM)
+            ? ANY_REALM
+            : authscope.getRealm();
 
-        return new MatchInfo(newScheme, newHost, newPort, ANY_PATH, ANY_QUERY,
-                             ANY_FRAGMENT, newRealm, ANY_METHOD);
+        return new MatchInfo(
+            newScheme,
+            newHost,
+            newPort,
+            ANY_PATH,
+            ANY_QUERY,
+            ANY_FRAGMENT,
+            newRealm,
+            ANY_METHOD
+        );
     }
 
     private static String valOrAny(final String val) {
@@ -162,9 +182,13 @@ public final class MatchInfo {
      */
     @Override
     public String toString() {
-        String result = String.format("%s://%s:%s/%s", valOrAny(this.scheme), valOrAny(this.host),
-                                      this.port != ANY_PORT ? Integer.toString(this.port) : "*",
-                                      valOrAny(this.path));
+        String result = String.format(
+            "%s://%s:%s/%s",
+            valOrAny(this.scheme),
+            valOrAny(this.host),
+            this.port != ANY_PORT ? Integer.toString(this.port) : "*",
+            valOrAny(this.path)
+        );
         if (this.method != ANY_METHOD) {
             result = this.method + " " + result;
         }

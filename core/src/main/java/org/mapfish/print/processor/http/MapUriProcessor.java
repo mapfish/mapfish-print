@@ -1,14 +1,5 @@
 package org.mapfish.print.processor.http;
 
-import org.mapfish.print.ExceptionUtils;
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
-import org.mapfish.print.http.MfClientHttpRequestFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpRequest;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,6 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequest;
 
 /**
  * <p>This processor maps uris submitted to the {@link org.mapfish.print.http.MfClientHttpRequestFactory} to
@@ -33,6 +32,7 @@ import java.util.regex.Pattern;
  * ).</p> [[examples=http_processors]]
  */
 public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProcessor {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MapUriProcessor.class);
     private final Map<Pattern, String> uriMapping = new HashMap<>();
 
@@ -46,7 +46,7 @@ public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProce
      */
     public void setMapping(final Map<String, String> mapping) {
         this.uriMapping.clear();
-        for (Map.Entry<String, String> entry: mapping.entrySet()) {
+        for (Map.Entry<String, String> entry : mapping.entrySet()) {
             Pattern pattern = Pattern.compile(entry.getKey());
             this.uriMapping.put(pattern, entry.getValue());
         }
@@ -54,16 +54,18 @@ public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProce
 
     @Override
     public MfClientHttpRequestFactory createFactoryWrapper(
-            final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
-            final MfClientHttpRequestFactory requestFactory) {
+        final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
+        final MfClientHttpRequestFactory requestFactory
+    ) {
         return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory, matchers, false) {
             @Override
             protected ClientHttpRequest createRequest(
-                    final URI uri,
-                    final HttpMethod httpMethod,
-                    final MfClientHttpRequestFactory requestFactory) throws IOException {
+                final URI uri,
+                final HttpMethod httpMethod,
+                final MfClientHttpRequestFactory requestFactory
+            ) throws IOException {
                 final String uriString = uri.toString();
-                for (Map.Entry<Pattern, String> entry: MapUriProcessor.this.uriMapping.entrySet()) {
+                for (Map.Entry<Pattern, String> entry : MapUriProcessor.this.uriMapping.entrySet()) {
                     Matcher matcher = entry.getKey().matcher(uriString);
                     if (matcher.matches()) {
                         LOGGER.debug("URI {} matched {}", uriString, entry.getKey());
@@ -84,7 +86,9 @@ public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProce
 
     @Override
     protected void extraValidation(
-            final List<Throwable> validationErrors, final Configuration configuration) {
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {
         super.extraValidation(validationErrors, configuration);
         if (this.uriMapping.isEmpty()) {
             validationErrors.add(new IllegalArgumentException("No uri mappings were defined"));

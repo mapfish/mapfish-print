@@ -1,9 +1,8 @@
 package org.mapfish.print.config.access;
 
+import java.util.List;
 import org.json.JSONObject;
 import org.mapfish.print.config.Configuration;
-
-import java.util.List;
 
 /**
  * This assertion always allows access.
@@ -50,5 +49,4 @@ public final class AlwaysAllowAssertion implements AccessAssertion {
     public AccessAssertion copy() {
         return new AlwaysAllowAssertion();
     }
-
 }

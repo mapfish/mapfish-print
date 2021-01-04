@@ -1,14 +1,13 @@
 package org.mapfish.print.processor.http;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.ProcessorUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * <p>A processor that wraps several {@link AbstractClientHttpRequestFactoryProcessor}s.</p>
@@ -60,8 +59,9 @@ import javax.annotation.Nullable;
  * [[examples=http_processors]]
  */
 public final class CompositeClientHttpRequestFactoryProcessor
-        extends AbstractProcessor<CompositeClientHttpRequestFactoryProcessor.Input, Void>
-        implements HttpProcessor<CompositeClientHttpRequestFactoryProcessor.Input> {
+    extends AbstractProcessor<CompositeClientHttpRequestFactoryProcessor.Input, Void>
+    implements HttpProcessor<CompositeClientHttpRequestFactoryProcessor.Input> {
+
     private List<HttpProcessor> httpProcessors = new ArrayList<>();
 
     /**
@@ -83,8 +83,9 @@ public final class CompositeClientHttpRequestFactoryProcessor
     @SuppressWarnings("unchecked")
     @Override
     public MfClientHttpRequestFactory createFactoryWrapper(
-            final Input input,
-            final MfClientHttpRequestFactory requestFactory) {
+        final Input input,
+        final MfClientHttpRequestFactory requestFactory
+    ) {
         MfClientHttpRequestFactory finalRequestFactory = requestFactory;
         // apply the parts in reverse so that the last part is the inner most wrapper (will be last to be
         // called)
@@ -98,16 +99,24 @@ public final class CompositeClientHttpRequestFactoryProcessor
 
     @Override
     protected void extraValidation(
-            final List<Throwable> validationErrors,
-            final Configuration configuration) {
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {
         if (this.httpProcessors.isEmpty()) {
-            validationErrors.add(new IllegalStateException("There are no composite elements for this " +
-                                                                   "processor"));
+            validationErrors.add(
+                new IllegalStateException("There are no composite elements for this " + "processor")
+            );
         } else {
-            for (Object part: this.httpProcessors) {
+            for (Object part : this.httpProcessors) {
                 if (!(part instanceof HttpProcessor)) {
-                    validationErrors.add(new IllegalStateException("One of the parts of " + getClass()
-                            .getSimpleName() + " is not a " + HttpProcessor.class.getSimpleName()));
+                    validationErrors.add(
+                        new IllegalStateException(
+                            "One of the parts of " +
+                            getClass().getSimpleName() +
+                            " is not a " +
+                            HttpProcessor.class.getSimpleName()
+                        )
+                    );
                 }
             }
         }
@@ -121,18 +130,17 @@ public final class CompositeClientHttpRequestFactoryProcessor
 
     @Nullable
     @Override
-    public Void execute(
-            final Input values,
-            final ExecutionContext context) {
-        values.clientHttpRequestFactoryProvider.set(createFactoryWrapper(
-                values, values.clientHttpRequestFactoryProvider.get()));
+    public Void execute(final Input values, final ExecutionContext context) {
+        values.clientHttpRequestFactoryProvider.set(
+            createFactoryWrapper(values, values.clientHttpRequestFactoryProvider.get())
+        );
         return null;
     }
 
     @Override
     public void toString(final StringBuilder builder, final int indent, final String parent) {
         super.toString(builder, indent, parent);
-        for (HttpProcessor sub: this.httpProcessors) {
+        for (HttpProcessor sub : this.httpProcessors) {
             sub.toString(builder, indent + 1, this.toString());
         }
     }
@@ -141,6 +149,7 @@ public final class CompositeClientHttpRequestFactoryProcessor
      * The input.
      */
     public static class Input extends ClientHttpFactoryProcessorParam {
+
         /**
          * The values.
          */

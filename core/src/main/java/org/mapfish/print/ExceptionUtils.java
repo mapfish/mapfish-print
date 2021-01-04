@@ -1,13 +1,11 @@
 package org.mapfish.print;
 
-
 /**
  * Util class for exception handling.
  */
 public final class ExceptionUtils {
 
-    private ExceptionUtils() {
-    }
+    private ExceptionUtils() {}
 
     /**
      * Returns a {@link RuntimeException} for the given exception.

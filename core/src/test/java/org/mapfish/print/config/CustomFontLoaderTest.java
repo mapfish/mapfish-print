@@ -1,5 +1,10 @@
 package org.mapfish.print.config;
 
+import static org.junit.Assert.assertTrue;
+
+import java.awt.GraphicsEnvironment;
+import java.io.IOException;
+import java.util.Map;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
@@ -10,17 +15,13 @@ import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.GraphicsEnvironment;
-import java.io.IOException;
-import java.util.Map;
-
-import static org.junit.Assert.assertTrue;
-
 public class CustomFontLoaderTest extends AbstractMapfishSpringTest {
 
     public static final String BASE_DIR = "font/";
+
     @Autowired
     ConfigurationFactory configurationFactory;
+
     @Autowired
     private Map<String, OutputFormat> outputFormat;
 
@@ -41,15 +42,22 @@ public class CustomFontLoaderTest extends AbstractMapfishSpringTest {
      * Tests that a custom-loaded font can be used.
      */
     public void testPrint() throws Exception {
-        final Configuration config =
-                configurationFactory.getConfig(getFile(CustomFontLoaderTest.class, BASE_DIR + "config.yaml"));
+        final Configuration config = configurationFactory.getConfig(
+            getFile(CustomFontLoaderTest.class, BASE_DIR + "config.yaml")
+        );
         PJsonObject requestData = loadJsonRequestData();
 
-        final AbstractJasperReportOutputFormat format =
-                (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
-        JasperPrint print = format.getJasperPrint("test", requestData, config,
-                                                  getFile(CustomFontLoaderTest.class, BASE_DIR),
-                                                  getTaskDirectory()).print;
+        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get(
+                "pngOutputFormat"
+            );
+        JasperPrint print = format.getJasperPrint(
+            "test",
+            requestData,
+            config,
+            getFile(CustomFontLoaderTest.class, BASE_DIR),
+            getTaskDirectory()
+        )
+            .print;
         ImageSimilarity.exportReportToImage(print, 0);
         // no error, ok
     }

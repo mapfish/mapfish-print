@@ -1,5 +1,11 @@
 package org.mapfish.print.processor.map;
 
+import static org.junit.Assert.assertEquals;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,26 +22,24 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ForkJoinPool;
-
-import static org.junit.Assert.assertEquals;
-
 /**
  * Basic test of the Map processor.
  *
  * Created by Jesse on 3/26/14.
  */
 public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
+
     public static final String BASE_DIR = "paging_processor_test/";
+
     @Autowired
     ForkJoinPool forkJoinPool;
+
     @Autowired
     private ConfigurationFactory configurationFactory;
+
     @Autowired
     private TestHttpClientFactory requestFactory;
+
     @Autowired
     private Map<String, OutputFormat> outputFormat;
 
@@ -47,9 +51,10 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
     public void setUp() {
         final String host = "paging_processor_test";
         requestFactory.registerHandler(
-                input -> (("" + input.getHost()).contains(host + ".json")) ||
-                        input.getAuthority().contains(host + ".json"),
-                createFileHandler(uri -> "/map-data" + uri.getPath())
+            input ->
+                (("" + input.getHost()).contains(host + ".json")) ||
+                input.getAuthority().contains(host + ".json"),
+            createFileHandler(uri -> "/map-data" + uri.getPath())
         );
     }
 
@@ -59,8 +64,9 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
         Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         PJsonObject requestData = loadJsonRequestData();
 
-        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat)
-                this.outputFormat.get("pngOutputFormat");
+        final AbstractJasperReportOutputFormat format = (AbstractJasperReportOutputFormat) this.outputFormat.get(
+                "pngOutputFormat"
+            );
         testPrint(config, requestData, "default-aoi", format, 40);
 
         getAreaOfInterest(requestData).put("display", "CLIP");
@@ -124,17 +130,28 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
     }
 
     private void testPrint(
-            Configuration config, PJsonObject requestData, String testName,
-            AbstractJasperReportOutputFormat format, double tolerance) throws Exception {
-        JasperPrint print = format.getJasperPrint("test", requestData, config, config.getDirectory(),
-                                                  getTaskDirectory()).print;
+        Configuration config,
+        PJsonObject requestData,
+        String testName,
+        AbstractJasperReportOutputFormat format,
+        double tolerance
+    ) throws Exception {
+        JasperPrint print = format.getJasperPrint(
+            "test",
+            requestData,
+            config,
+            config.getDirectory(),
+            getTaskDirectory()
+        )
+            .print;
 
         assertEquals(7, print.getPages().size());
         for (int i = 0; i < print.getPages().size(); i++) {
             BufferedImage reportImage = ImageSimilarity.exportReportToImage(print, i);
-            new ImageSimilarity(getFile(String.format("%soutput/%s/expected-page-%s.png",
-                                                      BASE_DIR, testName, i)))
-                    .assertSimilarity(reportImage, tolerance);
+            new ImageSimilarity(
+                getFile(String.format("%soutput/%s/expected-page-%s.png", BASE_DIR, testName, i))
+            )
+            .assertSimilarity(reportImage, tolerance);
         }
     }
 }

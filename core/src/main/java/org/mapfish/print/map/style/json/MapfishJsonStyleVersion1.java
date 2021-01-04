@@ -1,5 +1,11 @@
 package org.mapfish.print.map.style.json;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.PointSymbolizer;
@@ -25,13 +31,6 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Function;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 /**
  * The strategy for parsing the Mapfish json style version 1.
  */
@@ -49,15 +48,16 @@ public final class MapfishJsonStyleVersion1 {
     private final JsonStyleParserHelper parserHelper;
 
     MapfishJsonStyleVersion1(
-            @Nonnull final PJsonObject json,
-            @Nonnull final StyleBuilder styleBuilder,
-            @Nullable final Configuration configuration,
-            @Nonnull final ClientHttpRequestFactory requestFactory,
-            @Nonnull final String defaultGeomAttName) {
+        @Nonnull final PJsonObject json,
+        @Nonnull final StyleBuilder styleBuilder,
+        @Nullable final Configuration configuration,
+        @Nonnull final ClientHttpRequestFactory requestFactory,
+        @Nonnull final String defaultGeomAttName
+    ) {
         this.json = json;
         this.sldStyleBuilder = styleBuilder;
-        this.parserHelper = new JsonStyleParserHelper(configuration, requestFactory, this.sldStyleBuilder,
-                                                      true);
+        this.parserHelper =
+            new JsonStyleParserHelper(configuration, requestFactory, this.sldStyleBuilder, true);
         this.geometryProperty = defaultGeomAttName;
     }
 
@@ -67,22 +67,22 @@ public final class MapfishJsonStyleVersion1 {
         return this.parserHelper.createStyle(styleRules);
     }
 
-
     /**
      * Creates SLD rules for each old style.
      */
     private List<Rule> getStyleRules(final String styleProperty) {
         final List<Rule> styleRules = new ArrayList<>(this.json.size());
 
-        for (Iterator<String> iterator = this.json.keys(); iterator.hasNext(); ) {
+        for (Iterator<String> iterator = this.json.keys(); iterator.hasNext();) {
             String styleKey = iterator.next();
-            if (styleKey.equals(JSON_STYLE_PROPERTY) ||
-                    styleKey.equals(MapfishStyleParserPlugin.JSON_VERSION)) {
+            if (
+                styleKey.equals(JSON_STYLE_PROPERTY) || styleKey.equals(MapfishStyleParserPlugin.JSON_VERSION)
+            ) {
                 continue;
             }
             PJsonObject styleJson = this.json.getJSONObject(styleKey);
             final List<Rule> currentRules = createStyleRule(styleKey, styleJson, styleProperty);
-            for (Rule currentRule: currentRules) {
+            for (Rule currentRule : currentRules) {
                 if (currentRule != null) {
                     styleRules.add(currentRule);
                 }
@@ -93,10 +93,10 @@ public final class MapfishJsonStyleVersion1 {
     }
 
     private List<Rule> createStyleRule(
-            final String styleKey,
-            final PJsonObject styleJson,
-            final String styleProperty) {
-
+        final String styleKey,
+        final PJsonObject styleJson,
+        final String styleProperty
+    ) {
         final PointSymbolizer pointSymbolizer = this.parserHelper.createPointSymbolizer(styleJson);
         final LineSymbolizer lineSymbolizer = this.parserHelper.createLineSymbolizer(styleJson);
         final PolygonSymbolizer polygonSymbolizer = this.parserHelper.createPolygonSymbolizer(styleJson);
@@ -113,30 +113,48 @@ public final class MapfishJsonStyleVersion1 {
         }
 
         return Arrays.asList(
-                createGeometryFilteredRule(pointSymbolizer, styleKey, styleProperty, Point.class,
-                                           MultiPoint.class,
-                                           GeometryCollection.class),
-                createGeometryFilteredRule(lineSymbolizer, styleKey, styleProperty, LineString.class,
-                                           MultiLineString.class,
-                                           LinearRing.class, GeometryCollection.class),
-                createGeometryFilteredRule(polygonSymbolizer, styleKey, styleProperty, Polygon.class,
-                                           MultiPolygon.class,
-                                           GeometryCollection.class),
-                textRule);
+            createGeometryFilteredRule(
+                pointSymbolizer,
+                styleKey,
+                styleProperty,
+                Point.class,
+                MultiPoint.class,
+                GeometryCollection.class
+            ),
+            createGeometryFilteredRule(
+                lineSymbolizer,
+                styleKey,
+                styleProperty,
+                LineString.class,
+                MultiLineString.class,
+                LinearRing.class,
+                GeometryCollection.class
+            ),
+            createGeometryFilteredRule(
+                polygonSymbolizer,
+                styleKey,
+                styleProperty,
+                Polygon.class,
+                MultiPolygon.class,
+                GeometryCollection.class
+            ),
+            textRule
+        );
     }
 
     @SafeVarargs
     private final Rule createGeometryFilteredRule(
-            final Symbolizer symb,
-            final String styleKey,
-            final String styleProperty,
-            final Class<? extends Geometry>... geomClass) {
+        final Symbolizer symb,
+        final String styleKey,
+        final String styleProperty,
+        final Class<? extends Geometry>... geomClass
+    ) {
         if (symb != null) {
             Expression geomProperty = this.sldStyleBuilder.attributeExpression(this.geometryProperty);
             final Function geometryTypeFunction =
-                    this.sldStyleBuilder.getFilterFactory().function("geometryType", geomProperty);
+                this.sldStyleBuilder.getFilterFactory().function("geometryType", geomProperty);
             final ArrayList<Filter> geomOptions = new ArrayList<>(geomClass.length);
-            for (Class<? extends Geometry> requiredType: geomClass) {
+            for (Class<? extends Geometry> requiredType : geomClass) {
                 Expression expr = this.sldStyleBuilder.literalExpression(requiredType.getSimpleName());
                 geomOptions.add(this.sldStyleBuilder.getFilterFactory().equals(geometryTypeFunction, expr));
             }

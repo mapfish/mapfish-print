@@ -1,5 +1,9 @@
 package org.mapfish.print.map.geotools;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.map.GridReaderLayer;
@@ -10,18 +14,12 @@ import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.processor.Processor;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.function.Function;
-
 /**
  * The AbstractGridCoverage2DReaderLayer class.
  */
 public abstract class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
 
-    private final Function<MfClientHttpRequestFactory, @Nullable AbstractGridCoverage2DReader>
-            coverage2DReaderSupplier;
+    private final Function<MfClientHttpRequestFactory, @Nullable AbstractGridCoverage2DReader> coverage2DReaderSupplier;
     private final StyleSupplier<AbstractGridCoverage2DReader> styleSupplier;
 
     /**
@@ -33,11 +31,11 @@ public abstract class AbstractGridCoverage2DReaderLayer extends AbstractGeotools
      * @param params the parameters for this layer
      */
     public AbstractGridCoverage2DReaderLayer(
-            final Function<MfClientHttpRequestFactory,
-                    @Nullable AbstractGridCoverage2DReader> coverage2DReader,
-            final StyleSupplier<AbstractGridCoverage2DReader> style,
-            final ExecutorService executorService,
-            final AbstractLayerParams params) {
+        final Function<MfClientHttpRequestFactory, @Nullable AbstractGridCoverage2DReader> coverage2DReader,
+        final StyleSupplier<AbstractGridCoverage2DReader> style,
+        final ExecutorService executorService,
+        final AbstractLayerParams params
+    ) {
         super(executorService, params);
         this.styleSupplier = style;
         this.coverage2DReaderSupplier = coverage2DReader;
@@ -50,11 +48,12 @@ public abstract class AbstractGridCoverage2DReaderLayer extends AbstractGeotools
 
     @Override
     public final synchronized List<? extends Layer> getLayers(
-            final MfClientHttpRequestFactory httpRequestFactory,
-            final MapfishMapContext mapContext,
-            final Processor.ExecutionContext context) {
+        final MfClientHttpRequestFactory httpRequestFactory,
+        final MapfishMapContext mapContext,
+        final Processor.ExecutionContext context
+    ) {
         AbstractGridCoverage2DReader coverage2DReader =
-                this.coverage2DReaderSupplier.apply(httpRequestFactory);
+            this.coverage2DReaderSupplier.apply(httpRequestFactory);
         Style style = this.styleSupplier.load(httpRequestFactory, coverage2DReader);
         return Collections.singletonList(new GridReaderLayer(coverage2DReader, style));
     }

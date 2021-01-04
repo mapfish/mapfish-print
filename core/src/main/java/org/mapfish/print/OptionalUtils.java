@@ -8,8 +8,8 @@ import java.util.function.Supplier;
  * Utilities for Java's Optional class.
  */
 public final class OptionalUtils {
-    private OptionalUtils() {
-    }
+
+    private OptionalUtils() {}
 
     /**
      * Return the first optional to be defined.
@@ -34,10 +34,11 @@ public final class OptionalUtils {
     @SuppressWarnings("unchecked")
     @SafeVarargs
     public static <T> Optional<T> or(final Supplier<Optional<? extends T>>... optionals) {
-        return (Optional<T>) Arrays.stream(optionals)
-                .map(Supplier::get)
-                .filter(Optional::isPresent)
-                .findFirst()
-                .orElseGet(Optional::empty);
+        return (Optional<T>) Arrays
+            .stream(optionals)
+            .map(Supplier::get)
+            .filter(Optional::isPresent)
+            .findFirst()
+            .orElseGet(Optional::empty);
     }
 }

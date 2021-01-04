@@ -1,12 +1,11 @@
 package org.mapfish.print.processor.http;
 
+import java.io.IOException;
+import java.net.URI;
 import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
-
-import java.io.IOException;
-import java.net.URI;
 
 /**
  * <p>This processor check urls against a set of url matchers to see if the request should be allowed or
@@ -71,16 +70,19 @@ import java.net.URI;
  * @see org.mapfish.print.processor.http.matcher.LocalHostMatcher
  */
 public final class RestrictUrisProcessor extends AbstractClientHttpRequestFactoryProcessor {
+
     @Override
     public MfClientHttpRequestFactory createFactoryWrapper(
-            final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
-            final MfClientHttpRequestFactory requestFactory) {
+        final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
+        final MfClientHttpRequestFactory requestFactory
+    ) {
         return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory, matchers, true) {
             @Override
             protected ClientHttpRequest createRequest(
-                    final URI uri,
-                    final HttpMethod httpMethod,
-                    final MfClientHttpRequestFactory requestFactory) throws IOException {
+                final URI uri,
+                final HttpMethod httpMethod,
+                final MfClientHttpRequestFactory requestFactory
+            ) throws IOException {
                 // Everything is already done by the caller
                 return requestFactory.createRequest(uri, httpMethod);
             }

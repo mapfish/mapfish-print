@@ -1,5 +1,12 @@
 package org.mapfish.print.attribute;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.junit.Test;
@@ -9,15 +16,8 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.test.util.AttributeTesting;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 public class AllRegisteredReflectiveAttributeValidationTest extends AbstractMapfishSpringTest {
+
     @Autowired
     List<ReflectiveAttribute<?>> allReflectiveAttributes;
 
@@ -26,10 +26,9 @@ public class AllRegisteredReflectiveAttributeValidationTest extends AbstractMapf
 
     @Test
     public void testAllAttributesHaveLegalValues() {
-        for (ReflectiveAttribute<?> attribute: allReflectiveAttributes) {
+        for (ReflectiveAttribute<?> attribute : allReflectiveAttributes) {
             attribute.init();
         }
-
         // no exception... good
     }
 
@@ -39,7 +38,7 @@ public class AllRegisteredReflectiveAttributeValidationTest extends AbstractMapf
         configuration.setConfigurationFile(getFile("map/map_attributes/config-yaml.yaml"));
         Template template = new Template();
         template.setConfiguration(configuration);
-        for (Attribute attribute: allAttributes) {
+        for (Attribute attribute : allAttributes) {
             final String attName = "!" + attribute.getClass().getSimpleName();
 
             Map<String, Attribute> attMap = new HashMap<>();
@@ -61,7 +60,6 @@ public class AllRegisteredReflectiveAttributeValidationTest extends AbstractMapf
             assertNotNull(config.getString("name"));
             assertEquals(attName, config.getString("name"));
         }
-
         // no exception... good
     }
 }

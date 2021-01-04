@@ -1,13 +1,12 @@
 package org.mapfish.print.config;
 
-import com.codahale.metrics.MetricRegistry;
-import org.mapfish.print.processor.AbstractProcessor;
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.junit.Assert.assertNotNull;
 
+import com.codahale.metrics.MetricRegistry;
 import java.util.List;
 import javax.annotation.Nullable;
-
-import static org.junit.Assert.assertNotNull;
+import org.mapfish.print.processor.AbstractProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Test Processor.

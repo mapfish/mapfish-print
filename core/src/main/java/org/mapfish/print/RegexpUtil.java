@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
  * Regular Expression utilities.
  */
 public final class RegexpUtil {
+
     private RegexpUtil() {
         // intentionally empty
     }

@@ -1,16 +1,5 @@
 package org.mapfish.print.servlet;
 
-import org.apache.commons.io.DirectoryWalker;
-import org.apache.commons.lang3.StringUtils;
-import org.locationtech.jts.util.Assert;
-import org.mapfish.print.MapPrinter;
-import org.mapfish.print.MapPrinterFactory;
-import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -28,6 +17,16 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
+import org.apache.commons.io.DirectoryWalker;
+import org.apache.commons.lang3.StringUtils;
+import org.locationtech.jts.util.Assert;
+import org.mapfish.print.MapPrinter;
+import org.mapfish.print.MapPrinterFactory;
+import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 /**
  * A {@link org.mapfish.print.MapPrinterFactory} that reads configuration from files and uses servlet's
@@ -46,17 +45,22 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
     private final Map<String, MapPrinter> printers = new HashMap<>();
     private final Map<String, Long> configurationFileLastModifiedTimes = new HashMap<>();
     private final Map<String, URI> configurationFiles = new HashMap<>();
+
     @Autowired
     private ApplicationContext applicationContext;
+
     @Autowired
     private ConfigFileLoaderManager configFileLoader;
+
     private String appsRootDirectory = null;
 
     @PostConstruct
     private void validateConfigurationFiles() {
-        for (URI file: this.configurationFiles.values()) {
-            Assert.isTrue(this.configFileLoader.isAccessible(file),
-                          file + " does not exist or is not accessible.");
+        for (URI file : this.configurationFiles.values()) {
+            Assert.isTrue(
+                this.configFileLoader.isAccessible(file),
+                file + " does not exist or is not accessible."
+            );
         }
     }
 
@@ -76,12 +80,17 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
             LOGGER.error(
                 "There is no configurationFile registered in the {}" +
                 " bean with the id: '{}' from configurationFiles:\n {}",
-                getClass().getName(), finalApp,
+                getClass().getName(),
+                finalApp,
                 String.join("\n", this.configurationFiles.keySet())
             );
             throw new NoSuchAppException(
-                    "There is no configurationFile registered in the " + getClass().getName() +
-                            " bean with the id: '" + finalApp + "'");
+                "There is no configurationFile registered in the " +
+                getClass().getName() +
+                " bean with the id: '" +
+                finalApp +
+                "'"
+            );
         }
 
         final long lastModified = this.configurationFileLastModifiedTimes.getOrDefault(finalApp, 0L);
@@ -93,8 +102,10 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
             configFileLastModified = this.configFileLoader.lastModified(configFile);
         } catch (NoSuchElementException e) {
             LOGGER.error(
-                "There is no configurationFile registered in the {}" +
-                " bean with the id: '{}'", getClass().getName(), finalApp);
+                "There is no configurationFile registered in the {}" + " bean with the id: '{}'",
+                getClass().getName(),
+                finalApp
+            );
             // The app has been removed
             this.configurationFiles.remove(finalApp);
             this.configurationFileLastModifiedTimes.remove(finalApp);
@@ -103,8 +114,12 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
                 pickDefaultApp();
             }
             throw new NoSuchAppException(
-                    "There is no configurationFile registered in the " + getClass().getName() +
-                            " bean with the id: '" + finalApp + "'");
+                "There is no configurationFile registered in the " +
+                getClass().getName() +
+                " bean with the id: '" +
+                finalApp +
+                "'"
+            );
         }
         if (configFileLastModified.isPresent() && configFileLastModified.get() > lastModified) {
             // file modified, reload it
@@ -132,13 +147,16 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
                 // see also http://bugs.java.com/view_bug.do?bug_id=7043425
                 Thread.currentThread().interrupt();
                 LOGGER.error("Error occurred while reading configuration file '{}'", configFile);
-                throw new RuntimeException(String.format(
-                        "Error occurred while reading configuration file '%s': ", configFile),
-                                           e);
+                throw new RuntimeException(
+                    String.format("Error occurred while reading configuration file '%s': ", configFile),
+                    e
+                );
             } catch (Throwable e) {
                 LOGGER.error("Error occurred while reading configuration file '{}'", configFile);
-                throw new RuntimeException(String.format(
-                        "Error occurred while reading configuration file '%s'", configFile), e);
+                throw new RuntimeException(
+                    String.format("Error occurred while reading configuration file '%s'", configFile),
+                    e
+                );
             }
         }
 
@@ -156,10 +174,10 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
      * @param configurationFiles the configuration file map.
      */
     public final void setConfigurationFiles(final Map<String, String> configurationFiles)
-            throws URISyntaxException {
+        throws URISyntaxException {
         this.configurationFiles.clear();
         this.configurationFileLastModifiedTimes.clear();
-        for (Map.Entry<String, String> entry: configurationFiles.entrySet()) {
+        for (Map.Entry<String, String> entry : configurationFiles.entrySet()) {
             if (!entry.getValue().contains(":/")) {
                 // assume is a file
                 this.configurationFiles.put(entry.getKey(), new File(entry.getValue()).toURI());
@@ -196,12 +214,13 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
                 realRoot = fileOptional.get();
             } else {
                 throw new IllegalArgumentException(
-                        directory + " does not refer to a file on the current system.");
+                    directory + " does not refer to a file on the current system."
+                );
             }
         }
 
         final AppWalker walker = new AppWalker();
-        for (File child: walker.getAppDirs(realRoot)) {
+        for (File child : walker.getAppDirs(realRoot)) {
             final File configFile = new File(child, CONFIG_YAML);
             String appName = realRoot.toURI().relativize(child.toURI()).getPath().replace('/', ':');
             if (appName.endsWith(":")) {
@@ -239,8 +258,8 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
         }
         final Optional<File> child;
         try {
-            child = this.configFileLoader.toFile(new URI(this.appsRootDirectory + "/" +
-                                                                 app.replace(':', '/')));
+            child =
+                this.configFileLoader.toFile(new URI(this.appsRootDirectory + "/" + app.replace(':', '/')));
         } catch (URISyntaxException e) {
             return null;
         }
@@ -259,6 +278,7 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
     }
 
     private static class AppWalker extends DirectoryWalker<File> {
+
         public List<File> getAppDirs(final File base) throws IOException {
             List<File> results = new ArrayList<>();
             walk(base, results);
@@ -267,8 +287,10 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
 
         @Override
         protected boolean handleDirectory(
-                final File directory, final int depth,
-                final Collection<File> results) {
+            final File directory,
+            final int depth,
+            final Collection<File> results
+        ) {
             final File configFile = new File(directory, CONFIG_YAML);
             if (configFile.exists()) {
                 results.add(directory);

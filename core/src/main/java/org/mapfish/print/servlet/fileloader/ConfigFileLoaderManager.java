@@ -2,8 +2,6 @@ package org.mapfish.print.servlet.fileloader;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -15,17 +13,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Processes all {@link ConfigFileLoaderPlugin}s and loads the files.
  */
 public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
+
     @Autowired
     private List<ConfigFileLoaderPlugin> loaderPlugins;
 
     private Iterable<ConfigFileLoaderPlugin> getLoaderPlugins() {
-        return this.loaderPlugins.stream().filter(input -> !(input instanceof ConfigFileLoaderManager))
-                .collect(Collectors.toList());
+        return this.loaderPlugins.stream()
+            .filter(input -> !(input instanceof ConfigFileLoaderManager))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -35,18 +36,23 @@ public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
     public void checkUniqueSchemes() {
         Multimap<String, ConfigFileLoaderPlugin> schemeToPluginMap = HashMultimap.create();
 
-        for (ConfigFileLoaderPlugin plugin: getLoaderPlugins()) {
+        for (ConfigFileLoaderPlugin plugin : getLoaderPlugins()) {
             schemeToPluginMap.put(plugin.getUriScheme(), plugin);
         }
 
         StringBuilder violations = new StringBuilder();
-        for (String scheme: schemeToPluginMap.keySet()) {
+        for (String scheme : schemeToPluginMap.keySet()) {
             final Collection<ConfigFileLoaderPlugin> plugins = schemeToPluginMap.get(scheme);
             if (plugins.size() > 1) {
-                violations.append("\n\n* ").append("There are  has multiple ")
-                        .append(ConfigFileLoaderPlugin.class.getSimpleName())
-                        .append(" plugins that support the scheme: '").append(scheme).append('\'')
-                        .append(":\n\t").append(plugins);
+                violations
+                    .append("\n\n* ")
+                    .append("There are  has multiple ")
+                    .append(ConfigFileLoaderPlugin.class.getSimpleName())
+                    .append(" plugins that support the scheme: '")
+                    .append(scheme)
+                    .append('\'')
+                    .append(":\n\t")
+                    .append(plugins);
             }
         }
 
@@ -57,7 +63,7 @@ public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
 
     @Override
     public Optional<File> toFile(final URI fileUri) {
-        for (ConfigFileLoaderPlugin configFileLoaderPlugin: getLoaderPlugins()) {
+        for (ConfigFileLoaderPlugin configFileLoaderPlugin : getLoaderPlugins()) {
             final Optional<File> fileOptional = configFileLoaderPlugin.toFile(fileUri);
             if (fileOptional.isPresent()) {
                 return fileOptional;
@@ -69,8 +75,9 @@ public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
     @Override
     public String getUriScheme() {
         throw new UnsupportedOperationException(
-                "This method should not be called on the manager since it supports all schemas " +
-                        "available in the plugins");
+            "This method should not be called on the manager since it supports all schemas " +
+            "available in the plugins"
+        );
     }
 
     /**
@@ -79,7 +86,7 @@ public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
     public Set<String> getSupportedUriSchemes() {
         Set<String> schemes = new HashSet<>();
 
-        for (ConfigFileLoaderPlugin loaderPlugin: this.getLoaderPlugins()) {
+        for (ConfigFileLoaderPlugin loaderPlugin : this.getLoaderPlugins()) {
             schemes.add(loaderPlugin.getUriScheme());
         }
 
@@ -88,7 +95,7 @@ public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
 
     @Override
     public Optional<Long> lastModified(final URI fileURI) {
-        for (ConfigFileLoaderPlugin plugin: getLoaderPlugins()) {
+        for (ConfigFileLoaderPlugin plugin : getLoaderPlugins()) {
             if (plugin.isAccessible(fileURI)) {
                 return plugin.lastModified(fileURI);
             }
@@ -98,7 +105,7 @@ public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
 
     @Override
     public boolean isAccessible(final URI fileURI) {
-        for (ConfigFileLoaderPlugin plugin: getLoaderPlugins()) {
+        for (ConfigFileLoaderPlugin plugin : getLoaderPlugins()) {
             if (plugin.isAccessible(fileURI)) {
                 return true;
             }
@@ -108,7 +115,7 @@ public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
 
     @Override
     public byte[] loadFile(final URI fileURI) throws IOException {
-        for (ConfigFileLoaderPlugin plugin: getLoaderPlugins()) {
+        for (ConfigFileLoaderPlugin plugin : getLoaderPlugins()) {
             if (plugin.isAccessible(fileURI)) {
                 return plugin.loadFile(fileURI);
             }
@@ -118,7 +125,7 @@ public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
 
     @Override
     public boolean isAccessible(final URI configFileUri, final String pathToSubResource) throws IOException {
-        for (ConfigFileLoaderPlugin plugin: getLoaderPlugins()) {
+        for (ConfigFileLoaderPlugin plugin : getLoaderPlugins()) {
             if (plugin.isAccessible(configFileUri, pathToSubResource)) {
                 return true;
             }
@@ -129,13 +136,14 @@ public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
 
     @Override
     public byte[] loadFile(final URI configFileUri, final String pathToSubResource) throws IOException {
-        for (ConfigFileLoaderPlugin plugin: getLoaderPlugins()) {
+        for (ConfigFileLoaderPlugin plugin : getLoaderPlugins()) {
             if (plugin.isAccessible(configFileUri, pathToSubResource)) {
                 return plugin.loadFile(configFileUri, pathToSubResource);
             }
         }
 
         throw new NoSuchElementException(
-                "No resource found : " + pathToSubResource + " for configuration file: " + configFileUri);
+            "No resource found : " + pathToSubResource + " for configuration file: " + configFileUri
+        );
     }
 }

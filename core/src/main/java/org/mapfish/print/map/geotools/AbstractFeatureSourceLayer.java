@@ -1,5 +1,11 @@
 package org.mapfish.print.map.geotools;
 
+import static org.mapfish.print.Constants.PDF_DPI;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
@@ -12,13 +18,6 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.processor.Processor;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
-
-import static org.mapfish.print.Constants.PDF_DPI;
 
 /**
  * A layer that wraps a Geotools Feature Source and a style object.
@@ -42,11 +41,12 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
      * @param params the parameters for this layer
      */
     public AbstractFeatureSourceLayer(
-            final ExecutorService executorService,
-            final FeatureSourceSupplier featureSourceSupplier,
-            final StyleSupplier<FeatureSource> styleSupplier,
-            final boolean renderAsSvg,
-            final AbstractLayerParams params) {
+        final ExecutorService executorService,
+        final FeatureSourceSupplier featureSourceSupplier,
+        final StyleSupplier<FeatureSource> styleSupplier,
+        final boolean renderAsSvg,
+        final AbstractLayerParams params
+    ) {
         super(executorService, params);
         this.featureSourceSupplier = featureSourceSupplier;
         this.styleSupplier = styleSupplier;
@@ -66,8 +66,9 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
      * @param mapContext The map context.
      */
     public final FeatureSource<?, ?> getFeatureSource(
-            @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
-            @Nonnull final MapfishMapContext mapContext) {
+        @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
+        @Nonnull final MapfishMapContext mapContext
+    ) {
         if (this.featureSource == null) {
             this.featureSource = this.featureSourceSupplier.load(httpRequestFactory, mapContext);
         }
@@ -76,8 +77,10 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
 
     @Override
     public final List<? extends Layer> getLayers(
-            @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
-            @Nonnull final MapfishMapContext mapContext, @Nonnull final Processor.ExecutionContext context) {
+        @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
+        @Nonnull final MapfishMapContext mapContext,
+        @Nonnull final Processor.ExecutionContext context
+    ) {
         FeatureSource<?, ?> source = getFeatureSource(httpRequestFactory, mapContext);
         Style style = this.styleSupplier.load(httpRequestFactory, source);
 
@@ -93,19 +96,21 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
     }
 
     public final void setFeatureCollection(final SimpleFeatureCollection featureCollection) {
-        this.featureSourceSupplier = new FeatureSourceSupplier() {
-            @Nonnull
-            @Override
-            public FeatureSource load(
+        this.featureSourceSupplier =
+            new FeatureSourceSupplier() {
+                @Nonnull
+                @Override
+                public FeatureSource load(
                     @Nonnull final MfClientHttpRequestFactory requestFactory,
-                    @Nonnull final MapfishMapContext mapContext) {
-                // GeoTools is not always thread safe. In particular the DefaultFeatureCollection.getBounds
-                // method. If multiple maps are sharing the same features, this would cause zoomToFeature
-                // to result in funky bboxes. To avoid that, we use a copy of the featureCollection
-                final SimpleFeatureCollection copy = DataUtilities.collection(featureCollection);
-                return new CollectionFeatureSource(copy);
-            }
-        };
+                    @Nonnull final MapfishMapContext mapContext
+                ) {
+                    // GeoTools is not always thread safe. In particular the DefaultFeatureCollection.getBounds
+                    // method. If multiple maps are sharing the same features, this would cause zoomToFeature
+                    // to result in funky bboxes. To avoid that, we use a copy of the featureCollection
+                    final SimpleFeatureCollection copy = DataUtilities.collection(featureCollection);
+                    return new CollectionFeatureSource(copy);
+                }
+            };
     }
 
     @Override

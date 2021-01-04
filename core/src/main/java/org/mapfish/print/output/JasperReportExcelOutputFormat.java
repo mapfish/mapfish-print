@@ -1,17 +1,17 @@
 package org.mapfish.print.output;
 
+import java.io.OutputStream;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 
-import java.io.OutputStream;
-
 /**
  * An PDF output format that uses Jasper reports to generate the result.
  */
-public final class JasperReportExcelOutputFormat extends AbstractJasperReportOutputFormat
-        implements OutputFormat {
+public final class JasperReportExcelOutputFormat
+    extends AbstractJasperReportOutputFormat
+    implements OutputFormat {
 
     @Override
     public String getContentType() {

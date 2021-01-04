@@ -1,5 +1,10 @@
 package org.mapfish.print.map.style.json;
 
+import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_GEOM_ATT_NAME;
+
+import java.util.Optional;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.json.JSONObject;
@@ -11,12 +16,6 @@ import org.mapfish.print.map.style.SLDParserPlugin;
 import org.mapfish.print.map.style.StyleParserPlugin;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.http.client.ClientHttpRequestFactory;
-
-import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_GEOM_ATT_NAME;
 
 /**
  * Supports all style format.
@@ -491,45 +490,58 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * </ul>
  */
 public final class MapfishStyleParserPlugin implements StyleParserPlugin {
+
     static final String JSON_VERSION = "version";
     private StyleBuilder sldStyleBuilder = new StyleBuilder();
 
     @Override
     public Optional<Style> parseStyle(
-            @Nullable final Configuration configuration,
-            @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
-            @Nonnull final String styleString) {
-        final Optional<Style> styleOptional = tryParse(
-                configuration, styleString, clientHttpRequestFactory);
+        @Nullable final Configuration configuration,
+        @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
+        @Nonnull final String styleString
+    ) {
+        final Optional<Style> styleOptional = tryParse(configuration, styleString, clientHttpRequestFactory);
 
         if (styleOptional.isPresent()) {
             return styleOptional;
         }
         return ParserPluginUtils.loadStyleAsURI(
-                clientHttpRequestFactory, styleString, (final byte[] input) -> {
-                    try {
-                        return tryParse(
-                                configuration, new String(input, Constants.DEFAULT_CHARSET),
-                                clientHttpRequestFactory);
-                    } catch (Throwable e) {
-                        throw ExceptionUtils.getRuntimeException(e);
-                    }
-                });
+            clientHttpRequestFactory,
+            styleString,
+            (final byte[] input) -> {
+                try {
+                    return tryParse(
+                        configuration,
+                        new String(input, Constants.DEFAULT_CHARSET),
+                        clientHttpRequestFactory
+                    );
+                } catch (Throwable e) {
+                    throw ExceptionUtils.getRuntimeException(e);
+                }
+            }
+        );
     }
 
     private Optional<Style> tryParse(
-            @Nullable final Configuration configuration,
-            @Nonnull final String styleString,
-            @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory) {
+        @Nullable final Configuration configuration,
+        @Nonnull final String styleString,
+        @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory
+    ) {
         final String trimmed = styleString.trim();
         if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
             final PJsonObject json = new PJsonObject(new JSONObject(styleString), "style");
 
             final String jsonVersion = json.optString(JSON_VERSION, "1");
-            for (Versions version: Versions.values()) {
+            for (Versions version : Versions.values()) {
                 if (version.versionNumber.equals(jsonVersion)) {
-                    return Optional.of(version.parseStyle(
-                            json, this.sldStyleBuilder, configuration, clientHttpRequestFactory));
+                    return Optional.of(
+                        version.parseStyle(
+                            json,
+                            this.sldStyleBuilder,
+                            configuration,
+                            clientHttpRequestFactory
+                        )
+                    );
                 }
             }
         } else if (trimmed.startsWith("<") && trimmed.endsWith(">")) {
@@ -543,25 +555,34 @@ public final class MapfishStyleParserPlugin implements StyleParserPlugin {
         ONE("1") {
             @Override
             Style parseStyle(
-                    @Nonnull final PJsonObject json,
-                    @Nonnull final StyleBuilder styleBuilder,
-                    @Nullable final Configuration configuration,
-                    @Nonnull final ClientHttpRequestFactory requestFactory) {
+                @Nonnull final PJsonObject json,
+                @Nonnull final StyleBuilder styleBuilder,
+                @Nullable final Configuration configuration,
+                @Nonnull final ClientHttpRequestFactory requestFactory
+            ) {
                 return new MapfishJsonStyleVersion1(
-                        json, styleBuilder, configuration, requestFactory, DEFAULT_GEOM_ATT_NAME)
-                        .parseStyle();
+                    json,
+                    styleBuilder,
+                    configuration,
+                    requestFactory,
+                    DEFAULT_GEOM_ATT_NAME
+                )
+                    .parseStyle();
             }
-        }, TWO("2") {
+        },
+        TWO("2") {
             @Override
             Style parseStyle(
-                    @Nonnull final PJsonObject json,
-                    @Nonnull final StyleBuilder styleBuilder,
-                    @Nullable final Configuration configuration,
-                    @Nonnull final ClientHttpRequestFactory requestFactory) {
+                @Nonnull final PJsonObject json,
+                @Nonnull final StyleBuilder styleBuilder,
+                @Nullable final Configuration configuration,
+                @Nonnull final ClientHttpRequestFactory requestFactory
+            ) {
                 return new MapfishJsonStyleVersion2(json, styleBuilder, configuration, requestFactory)
-                        .parseStyle();
+                    .parseStyle();
             }
         };
+
         private final String versionNumber;
 
         Versions(final String versionNumber) {
@@ -569,7 +590,10 @@ public final class MapfishStyleParserPlugin implements StyleParserPlugin {
         }
 
         abstract Style parseStyle(
-                PJsonObject json, StyleBuilder styleBuilder, Configuration configuration,
-                ClientHttpRequestFactory requestFactory);
+            PJsonObject json,
+            StyleBuilder styleBuilder,
+            Configuration configuration,
+            ClientHttpRequestFactory requestFactory
+        );
     }
 }

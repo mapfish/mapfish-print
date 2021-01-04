@@ -1,5 +1,6 @@
 package org.mapfish.print.config;
 
+import java.util.Map;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -7,8 +8,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Node;
-
-import java.util.Map;
 
 /**
  * The interface to SnakeYaml that is responsible for creating the different objects during parsing the config
@@ -22,9 +21,9 @@ import java.util.Map;
  *
  */
 public final class MapfishPrintConstructor extends Constructor {
+
     private static final String CONFIGURATION_TAG = "configuration";
-    private static final ThreadLocal<Configuration> CONFIGURATION_UNDER_CONSTRUCTION =
-            new InheritableThreadLocal<>();
+    private static final ThreadLocal<Configuration> CONFIGURATION_UNDER_CONSTRUCTION = new InheritableThreadLocal<>();
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(MapfishPrintConstructor.class);
     private final ConfigurableApplicationContext context;
 
@@ -37,11 +36,11 @@ public final class MapfishPrintConstructor extends Constructor {
         super(new TypeDescription(Configuration.class, CONFIGURATION_TAG));
         this.context = context;
         Map<String, ConfigurationObject> yamlObjects = context.getBeansOfType(ConfigurationObject.class);
-        for (Map.Entry<String, ConfigurationObject> entry: yamlObjects.entrySet()) {
+        for (Map.Entry<String, ConfigurationObject> entry : yamlObjects.entrySet()) {
             final BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition(entry.getKey());
             if (!beanDefinition.isPrototype()) {
                 final String message =
-                        "Error: Spring bean: " + entry.getKey() + " is not defined as scope = prototype";
+                    "Error: Spring bean: " + entry.getKey() + " is not defined as scope = prototype";
                 LOGGER.error(message);
                 throw new AssertionError(message);
             }

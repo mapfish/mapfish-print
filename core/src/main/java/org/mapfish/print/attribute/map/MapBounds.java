@@ -1,5 +1,8 @@
 package org.mapfish.print.attribute.map;
 
+import static org.mapfish.print.Constants.PDF_DPI;
+
+import java.awt.Rectangle;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.locationtech.jts.geom.Coordinate;
 import org.mapfish.print.map.DistanceUnit;
@@ -8,15 +11,12 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.Rectangle;
-
-import static org.mapfish.print.Constants.PDF_DPI;
-
 /**
  * Class Represents the bounds of the map in some way.  The implementations will represent the as a bbox or as
  * a center and scale. Created by Jesse on 3/26/14.
  */
 public abstract class MapBounds {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MapBounds.class);
     private final CoordinateReferenceSystem projection;
 
@@ -66,12 +66,13 @@ public abstract class MapBounds {
      * @param dpi the DPI.
      */
     public abstract MapBounds adjustBoundsToNearestScale(
-            ZoomLevels zoomLevels,
-            double tolerance,
-            ZoomLevelSnapStrategy zoomLevelSnapStrategy,
-            boolean geodetic,
-            Rectangle paintArea,
-            double dpi);
+        ZoomLevels zoomLevels,
+        double tolerance,
+        ZoomLevelSnapStrategy zoomLevelSnapStrategy,
+        boolean geodetic,
+        Rectangle paintArea,
+        double dpi
+    );
 
     /**
      * Get the nearest scale.
@@ -85,19 +86,22 @@ public abstract class MapBounds {
      * @param dpi the DPI.
      */
     public Scale getNearestScale(
-            final ZoomLevels zoomLevels,
-            final double tolerance,
-            final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
-            final boolean geodetic,
-            final Rectangle paintArea,
-            final double dpi) {
-
+        final ZoomLevels zoomLevels,
+        final double tolerance,
+        final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
+        final boolean geodetic,
+        final Rectangle paintArea,
+        final double dpi
+    ) {
         final Scale scale = getScale(paintArea, dpi);
         final Scale correctedScale;
         final double scaleRatio;
         if (geodetic) {
             final double currentScaleDenominator = scale.getGeodeticDenominator(
-                    getProjection(), dpi, getCenter());
+                getProjection(),
+                dpi,
+                getCenter()
+            );
             scaleRatio = scale.getDenominator(dpi) / currentScaleDenominator;
             correctedScale = scale.toResolution(scale.getResolution() / scaleRatio);
         } else {
@@ -107,13 +111,15 @@ public abstract class MapBounds {
 
         DistanceUnit unit = DistanceUnit.fromProjection(getProjection());
         final ZoomLevelSnapStrategy.SearchResult result = zoomLevelSnapStrategy.search(
-                correctedScale, tolerance, zoomLevels);
+            correctedScale,
+            tolerance,
+            zoomLevels
+        );
         final Scale newScale;
 
         if (geodetic) {
-            newScale = new Scale(
-                    result.getScale(unit).getDenominator(PDF_DPI) * scaleRatio,
-                    getProjection(), dpi);
+            newScale =
+                new Scale(result.getScale(unit).getDenominator(PDF_DPI) * scaleRatio, getProjection(), dpi);
         } else {
             newScale = result.getScale(unit);
         }

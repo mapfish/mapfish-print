@@ -1,9 +1,5 @@
 package org.mapfish.print.servlet.fileloader;
 
-import org.mapfish.print.FileUtils;
-import org.mapfish.print.config.WorkingDirectories;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -12,11 +8,15 @@ import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import org.mapfish.print.FileUtils;
+import org.mapfish.print.config.WorkingDirectories;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Abstract implementation for files that are on the local file system.
  */
 public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPlugin {
+
     @Autowired
     private WorkingDirectories workingDirectories;
 
@@ -82,7 +82,6 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
         }
         Optional<File> file = findFile(resolveFiles(fileURI));
 
-
         if (file.isPresent() && file.get().isDirectory()) {
             throw new IllegalArgumentException(fileURI + " does not refer to a file, it is a directory");
         }
@@ -102,7 +101,7 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
 
     @Override
     public final boolean isAccessible(final URI configFileUri, final String pathToSubResource)
-            throws IOException {
+        throws IOException {
         try {
             final Optional<File> childFile = resolveChildFile(configFileUri, pathToSubResource);
             return childFile.isPresent() && childFile.get().exists();
@@ -146,16 +145,24 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
                 while (fileIterator.hasNext()) {
                     File next = fileIterator.next();
                     if (next.exists()) {
-                        FileUtils.assertIsSubDirectory("configuration", next, configDir,
-                                                       this.workingDirectories.getWorking());
+                        FileUtils.assertIsSubDirectory(
+                            "configuration",
+                            next,
+                            configDir,
+                            this.workingDirectories.getWorking()
+                        );
                         return Optional.of(next);
                     }
                 }
 
                 final File childFile = new File(configDir, platformIndependentUriToFile(uri).getPath());
                 if (childFile.exists()) {
-                    FileUtils.assertIsSubDirectory("configuration", childFile, configDir,
-                                                   this.workingDirectories.getWorking());
+                    FileUtils.assertIsSubDirectory(
+                        "configuration",
+                        childFile,
+                        configDir,
+                        this.workingDirectories.getWorking()
+                    );
                     return Optional.of(childFile);
                 }
             }
@@ -164,8 +171,12 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
                 final File childFile = platformIndependentUriToFile(uri);
 
                 if (childFile.exists()) {
-                    FileUtils.assertIsSubDirectory("configuration", childFile, configDir,
-                                                   this.workingDirectories.getWorking());
+                    FileUtils.assertIsSubDirectory(
+                        "configuration",
+                        childFile,
+                        configDir,
+                        this.workingDirectories.getWorking()
+                    );
                     return Optional.of(childFile);
                 } else {
                     return Optional.empty();
@@ -173,15 +184,15 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
             } catch (IllegalArgumentException e) {
                 return resolveFileAssumingPathIsFile(pathToSubResource, configFile);
             }
-
         } catch (URISyntaxException e) {
             return resolveFileAssumingPathIsFile(pathToSubResource, configFile);
         }
-
     }
 
     private Optional<File> resolveFileAssumingPathIsFile(
-            final String pathToSubResource, final File configFile) {
+        final String pathToSubResource,
+        final File configFile
+    ) {
         // not a uri
         File childFile = new File(configFile.getParentFile(), pathToSubResource);
         if (childFile.exists()) {
@@ -189,8 +200,12 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
         } else {
             childFile = new File(pathToSubResource);
             if (childFile.exists()) {
-                FileUtils.assertIsSubDirectory("configuration", childFile, configFile.getParentFile(),
-                                               this.workingDirectories.getWorking());
+                FileUtils.assertIsSubDirectory(
+                    "configuration",
+                    childFile,
+                    configFile.getParentFile(),
+                    this.workingDirectories.getWorking()
+                );
                 return Optional.of(childFile);
             }
         }

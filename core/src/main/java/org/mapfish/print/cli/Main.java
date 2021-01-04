@@ -6,6 +6,15 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 import com.google.common.annotations.VisibleForTesting;
 import com.sampullara.cli.Args;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
@@ -17,16 +26,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractXmlApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.util.List;
 
 /**
  * A shell version of the MapPrinter. Can be used for testing or for calling from other languages than Java.
@@ -176,8 +175,7 @@ public final class Main {
         this.mapPrinter.setConfiguration(configFile);
         if (cli.clientConfig) {
             try (OutputStream outFile = getOutputStream(cli.output, ".yaml")) {
-                final OutputStreamWriter writer =
-                        new OutputStreamWriter(outFile, Constants.DEFAULT_CHARSET);
+                final OutputStreamWriter writer = new OutputStreamWriter(outFile, Constants.DEFAULT_CHARSET);
 
                 JSONWriter json = new JSONWriter(writer);
                 json.object();
@@ -186,15 +184,17 @@ public final class Main {
 
                 writer.close();
             }
-
         } else {
             final InputStream inFile = getInputStream(cli.spec);
             final String jsonConfiguration = IOUtils.toString(inFile, Constants.DEFAULT_ENCODING);
             PJsonObject jsonSpec = MapPrinter.parseSpec(jsonConfiguration);
 
-            try (OutputStream outFile = getOutputStream(cli.output,
-                                                        this.mapPrinter.getOutputFormat(jsonSpec)
-                                                                .getFileSuffix())) {
+            try (
+                OutputStream outFile = getOutputStream(
+                    cli.output,
+                    this.mapPrinter.getOutputFormat(jsonSpec).getFileSuffix()
+                )
+            ) {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Request Data: \n{}", jsonSpec.getInternalObj().toString(2));
                 }
@@ -204,7 +204,7 @@ public final class Main {
     }
 
     private OutputStream getOutputStream(final String output, final String suffix)
-            throws FileNotFoundException {
+        throws FileNotFoundException {
         String outputPath = output;
         final OutputStream outFile;
         if (outputPath != null) {

@@ -1,12 +1,11 @@
 package org.mapfish.print.map.image.wms;
 
+import java.net.URL;
 import org.geotools.ows.wms.WMS1_0_0;
 import org.geotools.ows.wms.WMS1_1_0;
 import org.geotools.ows.wms.WMS1_1_1;
 import org.geotools.ows.wms.WMS1_3_0;
 import org.geotools.ows.wms.request.GetMapRequest;
-
-import java.net.URL;
 
 /**
  * An enumeration of all the supported WMS versions.
@@ -55,15 +54,16 @@ public enum WmsVersion {
      * @param versionString the version string.
      */
     public static WmsVersion lookup(final String versionString) {
-        for (WmsVersion wmsVersion: values()) {
+        for (WmsVersion wmsVersion : values()) {
             if (versionString.equals(wmsVersion.versionString())) {
                 return wmsVersion;
             }
         }
 
-        StringBuilder msg = new StringBuilder("\n'").append(versionString)
-                .append("' is not one of the supported WMS versions.  Supported versions include: ");
-        for (WmsVersion wmsVersion: values()) {
+        StringBuilder msg = new StringBuilder("\n'")
+            .append(versionString)
+            .append("' is not one of the supported WMS versions.  Supported versions include: ");
+        for (WmsVersion wmsVersion : values()) {
             msg.append("\n\t* ").append(wmsVersion.versionString());
         }
         throw new IllegalArgumentException(msg.toString());

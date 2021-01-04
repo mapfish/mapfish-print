@@ -1,13 +1,5 @@
 package org.mapfish.print;
 
-import org.apache.commons.io.IOUtils;
-import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpResponse;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -16,6 +8,13 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.io.IOUtils;
+import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpResponse;
 
 public abstract class AbstractApiTest {
 
@@ -23,8 +22,8 @@ public abstract class AbstractApiTest {
 
     protected ClientHttpRequestFactory httpRequestFactory = new MfClientHttpRequestFactoryImpl(10, 10);
 
-    protected ClientHttpRequest getRequest(String path, HttpMethod method) throws IOException,
-            URISyntaxException {
+    protected ClientHttpRequest getRequest(String path, HttpMethod method)
+        throws IOException, URISyntaxException {
         return httpRequestFactory.createRequest(new URI(PRINT_SERVER + path), method);
     }
 

@@ -1,7 +1,5 @@
 package org.mapfish.print.url.data;
 
-import org.apache.http.entity.ContentType;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
@@ -9,11 +7,13 @@ import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Base64;
+import org.apache.http.entity.ContentType;
 
 /**
  * Decodes the base64 data and provides an appropriate InputStream.
  */
 public class DataUrlConnection extends URLConnection {
+
     /**
      * Must be overridden.
      *

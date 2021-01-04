@@ -12,7 +12,9 @@ public enum Type {
     LINE("line") {
         @Override
         public ScalebarDrawer createDrawer(
-                final Graphics2D graphics2d, final ScaleBarRenderSettings settings) {
+            final Graphics2D graphics2d,
+            final ScaleBarRenderSettings settings
+        ) {
             return new LineScalebarDrawer(graphics2d, settings);
         }
     },
@@ -23,7 +25,9 @@ public enum Type {
     BAR("bar") {
         @Override
         public ScalebarDrawer createDrawer(
-                final Graphics2D graphics2d, final ScaleBarRenderSettings settings) {
+            final Graphics2D graphics2d,
+            final ScaleBarRenderSettings settings
+        ) {
             return new BarScalebarDrawer(graphics2d, settings);
         }
     },
@@ -35,7 +39,9 @@ public enum Type {
     BAR_SUB("bar_sub") {
         @Override
         public ScalebarDrawer createDrawer(
-                final Graphics2D graphics2d, final ScaleBarRenderSettings settings) {
+            final Graphics2D graphics2d,
+            final ScaleBarRenderSettings settings
+        ) {
             return new BarSubScalebarDrawer(graphics2d, settings);
         }
     };
@@ -53,7 +59,7 @@ public enum Type {
      */
     public static Type fromString(final String label) {
         if (label != null) {
-            for (Type type: Type.values()) {
+            for (Type type : Type.values()) {
                 if (label.equalsIgnoreCase(type.label)) {
                     return type;
                 }

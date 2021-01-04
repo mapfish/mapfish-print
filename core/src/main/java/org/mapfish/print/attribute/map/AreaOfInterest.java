@@ -1,5 +1,9 @@
 package org.mapfish.print.attribute.map;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import javax.annotation.Nonnull;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -12,16 +16,12 @@ import org.mapfish.print.parser.HasDefaultValue;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import javax.annotation.Nonnull;
-
 /**
  * Represents an area on the map which is of particular interest for some reason.  It consists of polygon
  * geojson and a method for displaying the area the geometry intersects with.
  */
 public final class AreaOfInterest {
+
     /**
      * A Geojson geometry (can be string or GeoJson) that indicates the area of interest.
      * <p>
@@ -29,6 +29,7 @@ public final class AreaOfInterest {
      * </p>
      */
     public String area;
+
     /**
      * The way that the Area of Interest will be represented on the map.  By default it will be drawn as a
      * polygon with a solid border and a translucent interior.  The style can be controlled by the style
@@ -36,12 +37,14 @@ public final class AreaOfInterest {
      */
     @HasDefaultValue
     public AoiDisplay display = AoiDisplay.RENDER;
+
     /**
      * A string representing the style.  The {@link org.mapfish.print.map.style.StyleParserPlugin}s are used
      * to load the style. Because of this the styleRef can be JSON, SLD, URL, file path, etc...
      */
     @HasDefaultValue
     public String style;
+
     /**
      * If true the Area of Interest will be rendered as SVG (if display == RENDER).
      *
@@ -49,6 +52,7 @@ public final class AreaOfInterest {
      */
     @HasDefaultValue
     public Boolean renderAsSvg;
+
     private Geometry polygon;
 
     /**
@@ -60,9 +64,11 @@ public final class AreaOfInterest {
         Assert.isTrue(this.polygon != null, "Polygon is null. 'area' string is: '" + this.area + "'");
         Assert.isTrue(this.display != null, "'display' is null");
 
-        Assert.isTrue(this.style == null || this.display == AoiDisplay.RENDER,
-                      "'style' does not make sense unless 'display' == RENDER.  In this case 'display' == " +
-                              this.display);
+        Assert.isTrue(
+            this.style == null || this.display == AoiDisplay.RENDER,
+            "'style' does not make sense unless 'display' == RENDER.  In this case 'display' == " +
+            this.display
+        );
     }
 
     private void parseGeometry() {
@@ -93,16 +99,22 @@ public final class AreaOfInterest {
      * @param mapAttributes the attributes that this aoi is part of.
      */
     public SimpleFeatureCollection areaToFeatureCollection(
-            @Nonnull final MapAttribute.MapAttributeValues mapAttributes) {
-        Assert.isTrue(mapAttributes.areaOfInterest == this,
-                      "map attributes passed in does not contain this area of interest object");
+        @Nonnull final MapAttribute.MapAttributeValues mapAttributes
+    ) {
+        Assert.isTrue(
+            mapAttributes.areaOfInterest == this,
+            "map attributes passed in does not contain this area of interest object"
+        );
 
         final SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
         typeBuilder.setName("aoi");
         CoordinateReferenceSystem crs = mapAttributes.getMapBounds().getProjection();
         typeBuilder.add("geom", this.polygon.getClass(), crs);
-        final SimpleFeature feature =
-                SimpleFeatureBuilder.build(typeBuilder.buildFeatureType(), new Object[]{this.polygon}, "aoi");
+        final SimpleFeature feature = SimpleFeatureBuilder.build(
+            typeBuilder.buildFeatureType(),
+            new Object[] { this.polygon },
+            "aoi"
+        );
         final DefaultFeatureCollection features = new DefaultFeatureCollection();
         features.add(feature);
         return features;
@@ -141,6 +153,6 @@ public final class AreaOfInterest {
          * Do not show the Area of interest on the map.  In this case another processor will likely make use
          * of the AOI.
          */
-        NONE
+        NONE,
     }
 }

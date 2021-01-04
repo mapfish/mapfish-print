@@ -21,6 +21,7 @@ import javax.servlet.descriptor.JspConfigDescriptor;
  * dependencies.
  */
 public final class CliServletContext implements ServletContext {
+
     @Override
     public String getContextPath() {
         return null;
@@ -97,19 +98,13 @@ public final class CliServletContext implements ServletContext {
     }
 
     @Override
-    public void log(String msg) {
-
-    }
+    public void log(String msg) {}
 
     @Override
-    public void log(Exception exception, String msg) {
-
-    }
+    public void log(Exception exception, String msg) {}
 
     @Override
-    public void log(String message, Throwable throwable) {
-
-    }
+    public void log(String message, Throwable throwable) {}
 
     @Override
     public String getRealPath(String path) {
@@ -147,14 +142,10 @@ public final class CliServletContext implements ServletContext {
     }
 
     @Override
-    public void setAttribute(String name, Object object) {
-
-    }
+    public void setAttribute(String name, Object object) {}
 
     @Override
-    public void removeAttribute(String name) {
-
-    }
+    public void removeAttribute(String name) {}
 
     @Override
     public String getServletContextName() {
@@ -173,7 +164,9 @@ public final class CliServletContext implements ServletContext {
 
     @Override
     public ServletRegistration.Dynamic addServlet(
-            final String servletName, final Class<? extends Servlet> servletClass) {
+        final String servletName,
+        final Class<? extends Servlet> servletClass
+    ) {
         return null;
     }
 
@@ -204,7 +197,9 @@ public final class CliServletContext implements ServletContext {
 
     @Override
     public FilterRegistration.Dynamic addFilter(
-            final String filterName, final Class<? extends Filter> filterClass) {
+        final String filterName,
+        final Class<? extends Filter> filterClass
+    ) {
         return null;
     }
 
@@ -229,9 +224,7 @@ public final class CliServletContext implements ServletContext {
     }
 
     @Override
-    public void setSessionTrackingModes(final Set<SessionTrackingMode> sessionTrackingModes) {
-
-    }
+    public void setSessionTrackingModes(final Set<SessionTrackingMode> sessionTrackingModes) {}
 
     @Override
     public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
@@ -244,19 +237,13 @@ public final class CliServletContext implements ServletContext {
     }
 
     @Override
-    public void addListener(final String className) {
-
-    }
+    public void addListener(final String className) {}
 
     @Override
-    public <T extends EventListener> void addListener(final T t) {
-
-    }
+    public <T extends EventListener> void addListener(final T t) {}
 
     @Override
-    public void addListener(final Class<? extends EventListener> listenerClass) {
-
-    }
+    public void addListener(final Class<? extends EventListener> listenerClass) {}
 
     @Override
     public <T extends EventListener> T createListener(final Class<T> clazz) {
@@ -274,9 +261,7 @@ public final class CliServletContext implements ServletContext {
     }
 
     @Override
-    public void declareRoles(final String... roleNames) {
-
-    }
+    public void declareRoles(final String... roleNames) {}
 
     @Override
     public String getVirtualServerName() {

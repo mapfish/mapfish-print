@@ -1,10 +1,11 @@
 package org.mapfish.print.processor.map;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Test;
+
 public class SetTiledWmsProcessorTest {
+
     @Test
     public void testAdaptTileDimension() {
         assertEquals(3, SetTiledWmsProcessor.adaptTileDimension(7, 3));

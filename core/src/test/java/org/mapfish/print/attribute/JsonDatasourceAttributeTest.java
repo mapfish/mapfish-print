@@ -1,5 +1,9 @@
 package org.mapfish.print.attribute;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JsonDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
@@ -13,24 +17,19 @@ import org.mapfish.print.output.Values;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 public class JsonDatasourceAttributeTest extends AbstractMapfishSpringTest {
 
     private static final String BASE_DIR = "jsonDatasource/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
+
     @Autowired
     private TestHttpClientFactory httpClientFactory;
 
     @SuppressWarnings("unchecked")
-    private <T> T getValue(
-            final JsonDataSource datasource, final String expression,
-            final Class<T> type) throws JRException {
+    private <T> T getValue(final JsonDataSource datasource, final String expression, final Class<T> type)
+        throws JRException {
         assertNotNull(datasource);
         JRDesignField field = new JRDesignField();
         field.setName(expression);
@@ -44,8 +43,14 @@ public class JsonDatasourceAttributeTest extends AbstractMapfishSpringTest {
         PJsonObject requestData = loadJsonRequestData();
 
         Template template = config.getTemplate("main");
-        Values values = new Values("test", requestData, template, config.getDirectory(), httpClientFactory,
-                                   config.getDirectory());
+        Values values = new Values(
+            "test",
+            requestData,
+            template,
+            config.getDirectory(),
+            httpClientFactory,
+            config.getDirectory()
+        );
 
         assertEquals("s1", getValue(values.getObject("json", JsonDataSource.class), "a.b", String.class));
     }

@@ -1,5 +1,6 @@
 package org.mapfish.print.processor.map;
 
+import java.util.List;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.StyleAttribute;
 import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
@@ -13,14 +14,11 @@ import org.mapfish.print.processor.InputOutputValue;
 import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
 /**
  * <p>Processor to set a style on vector layers from the attributes.</p>
  * [[examples=report]]
  */
-public class SetStyleProcessor extends
-        AbstractProcessor<SetStyleProcessor.Input, Void> {
+public class SetStyleProcessor extends AbstractProcessor<SetStyleProcessor.Input, Void> {
 
     @Autowired
     private StyleParserPlugin mapfishJsonParser;
@@ -39,12 +37,14 @@ public class SetStyleProcessor extends
 
     @Override
     public final Void execute(final Input values, final ExecutionContext context) {
-        final Style style = this.mapfishJsonParser.parseStyle(
-                values.template.getConfiguration(),
-                values.clientHttpRequestFactoryProvider.get(),
-                values.style.style
-        ).get();
-        for (MapLayer layer: values.map.getLayers()) {
+        final Style style =
+            this.mapfishJsonParser.parseStyle(
+                    values.template.getConfiguration(),
+                    values.clientHttpRequestFactoryProvider.get(),
+                    values.style.style
+                )
+                .get();
+        for (MapLayer layer : values.map.getLayers()) {
             context.stopIfCanceled();
             if (layer instanceof AbstractFeatureSourceLayer) {
                 ((AbstractFeatureSourceLayer) layer).setStyle((requestFactory, featureSource) -> style);
@@ -56,7 +56,9 @@ public class SetStyleProcessor extends
 
     @Override
     protected void extraValidation(
-            final List<Throwable> validationErrors, final Configuration configuration) {
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {
         // no validation needed
     }
 
@@ -64,6 +66,7 @@ public class SetStyleProcessor extends
      * The input parameter object for {@link SetStyleProcessor}.
      */
     public static final class Input {
+
         /**
          * A factory for making http requests.  This is added to the values by the framework and therefore
          * does not need to be set in configuration

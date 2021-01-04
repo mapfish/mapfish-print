@@ -1,6 +1,6 @@
 package org.mapfish.print.map;
 
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import static org.mapfish.print.Constants.INCH_TO_MM;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,9 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.measure.Unit;
-
-import static org.mapfish.print.Constants.INCH_TO_MM;
-
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * An enum for expressing distance units. Contains everything needed for conversions and others.
@@ -20,63 +18,63 @@ public enum DistanceUnit {
     /**
      * Represents the meter unit.
      */
-    M(1.0, new String[]{"m", "meter", "meters"}),
+    M(1.0, new String[] { "m", "meter", "meters" }),
     /**
      * Represents the millimeter unit.
      */
-    MM(DistanceUnit.M, 0.001, new String[]{"mm", "millimeter", "millimeters"}),
+    MM(DistanceUnit.M, 0.001, new String[] { "mm", "millimeter", "millimeters" }),
     /**
      * Represents the centimeter unit.
      */
-    CM(DistanceUnit.M, 0.01, new String[]{"cm", "centimeter", "centimeters"}),
+    CM(DistanceUnit.M, 0.01, new String[] { "cm", "centimeter", "centimeters" }),
     /**
      * Represents the kilometer unit.
      */
-    KM(DistanceUnit.M, 1000.0, new String[]{"km", "kilometer", "kilometers"}),
+    KM(DistanceUnit.M, 1000.0, new String[] { "km", "kilometer", "kilometers" }),
 
     /**
      * Represents the american foot unit.
      */
-    FT(INCH_TO_MM / 1000.0 * 12.0, new String[]{"ft", "foot", "feet"}),
+    FT(INCH_TO_MM / 1000.0 * 12.0, new String[] { "ft", "foot", "feet" }),
     /**
      * Represents the american inch unit.
      */
-    IN(DistanceUnit.FT, 1 / 12.0, new String[]{"in", "inch"}),
+    IN(DistanceUnit.FT, 1 / 12.0, new String[] { "in", "inch" }),
     /**
      * Represents the american yard unit.
      */
-    YD(DistanceUnit.FT, 3.0, new String[]{"yd", "yard", "yards"}),
+    YD(DistanceUnit.FT, 3.0, new String[] { "yd", "yard", "yards" }),
     /**
      * Represents the american mile unit.
      */
-    MI(DistanceUnit.FT, 5280.0, new String[]{"mi", "mile", "miles"}),
+    MI(DistanceUnit.FT, 5280.0, new String[] { "mi", "mile", "miles" }),
 
     /**
      * Represents the lat long degree unit.
      */
-    DEGREES(40041470.0 / 360.0, new String[]{"\u00B0", "dd", "deg", "degree", "degrees"}),
+    DEGREES(40041470.0 / 360.0, new String[] { "\u00B0", "dd", "deg", "degree", "degrees" }),
     /**
      * Represents the lat long minute unit.
      */
-    MINUTE(DistanceUnit.DEGREES, 1.0 / 60.0, new String[]{"min", "minute", "minutes"}),
+    MINUTE(DistanceUnit.DEGREES, 1.0 / 60.0, new String[] { "min", "minute", "minutes" }),
     /**
      * Represents the lat long second unit.
      */
-    SECOND(DistanceUnit.MINUTE, 1.0 / 60.0, new String[]{"sec", "second", "seconds"}),
+    SECOND(DistanceUnit.MINUTE, 1.0 / 60.0, new String[] { "sec", "second", "seconds" }),
 
     /**
      * Represents the pixel unit. The conversion factor is the one used by JasperReports (1 inch = 72 pixel).
      */
-    PX(1 / 72.0 * (INCH_TO_MM / 1000.0), new String[]{"px", "pixel"}),
+    PX(1 / 72.0 * (INCH_TO_MM / 1000.0), new String[] { "px", "pixel" }),
 
     /**
      * Represents the point unit.
      */
-    PT(DistanceUnit.IN, 1.0 / 72.0, new String[]{"pt", "point"}),
+    PT(DistanceUnit.IN, 1.0 / 72.0, new String[] { "pt", "point" }),
     /**
      * Represents the pica unit.
      */
-    PC(DistanceUnit.PT, 12.0, new String[]{"pc", "pica"});
+    PC(DistanceUnit.PT, 12.0, new String[] { "pc", "pica" });
 
     /**
      * Global dictionary of every textual representations of every units.
@@ -163,7 +161,7 @@ public enum DistanceUnit {
         if (translations == null) {
             translations = new HashMap<>();
             final DistanceUnit[] values = DistanceUnit.values();
-            for (DistanceUnit cur: values) {
+            for (DistanceUnit cur : values) {
                 for (int j = 0; j < cur.texts.length; ++j) {
                     translations.put(cur.texts[j], cur);
                 }
@@ -233,7 +231,7 @@ public enum DistanceUnit {
             } else {
                 final DistanceUnit[] values = DistanceUnit.values();
                 final List<DistanceUnit> list = new ArrayList<>(values.length);
-                for (DistanceUnit value: values) {
+                for (DistanceUnit value : values) {
                     if (value.baseUnit == this) {
                         list.add(value);
                     }

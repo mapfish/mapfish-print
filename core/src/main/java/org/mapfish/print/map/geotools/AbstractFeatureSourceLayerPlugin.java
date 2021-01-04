@@ -1,5 +1,7 @@
 package org.mapfish.print.map.geotools;
 
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import org.geotools.data.FeatureSource;
 import org.geotools.styling.Style;
 import org.locationtech.jts.geom.Geometry;
@@ -11,9 +13,6 @@ import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.style.StyleParser;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-
 /**
  * Abstract class for FeatureSource based {@link org.mapfish.print.map.MapLayerFactoryPlugin} objects.
  *
@@ -22,11 +21,13 @@ import java.util.concurrent.ExecutorService;
 public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFactoryPlugin<P> {
 
     private final Set<String> typeNames;
+
     /**
      * A parser for parsing styles.
      */
     @Autowired
     protected StyleParser parser;
+
     /**
      * A fork join pool for running async tasks.
      */
@@ -58,28 +59,36 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
      * @param styleString a string that identifies a style.
      */
     protected final StyleSupplier<FeatureSource> createStyleFunction(
-            final Template template,
-            final String styleString) {
+        final Template template,
+        final String styleString
+    ) {
         return new StyleSupplier<FeatureSource>() {
             @Override
             public Style load(
-                    final MfClientHttpRequestFactory requestFactory,
-                    final FeatureSource featureSource) {
+                final MfClientHttpRequestFactory requestFactory,
+                final FeatureSource featureSource
+            ) {
                 if (featureSource == null) {
                     throw new IllegalArgumentException("Feature source cannot be null");
                 }
 
-                final String geomType = featureSource.getSchema() == null ?
-                        Geometry.class.getSimpleName().toLowerCase() :
-                        featureSource.getSchema().getGeometryDescriptor().getType().getBinding()
-                            .getSimpleName();
+                final String geomType = featureSource.getSchema() == null
+                    ? Geometry.class.getSimpleName().toLowerCase()
+                    : featureSource
+                        .getSchema()
+                        .getGeometryDescriptor()
+                        .getType()
+                        .getBinding()
+                        .getSimpleName();
                 final String styleRef = styleString != null ? styleString : geomType;
 
                 final StyleParser styleParser = AbstractFeatureSourceLayerPlugin.this.parser;
-                return OptionalUtils.or(
+                return OptionalUtils
+                    .or(
                         () -> template.getStyle(styleRef),
-                        () -> styleParser.loadStyle(template.getConfiguration(), requestFactory, styleRef))
-                        .orElseGet(() -> template.getConfiguration().getDefaultStyle(geomType));
+                        () -> styleParser.loadStyle(template.getConfiguration(), requestFactory, styleRef)
+                    )
+                    .orElseGet(() -> template.getConfiguration().getDefaultStyle(geomType));
             }
         };
     }

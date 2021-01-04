@@ -1,10 +1,9 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
-import org.mapfish.print.servlet.job.impl.PrintJobResultImpl;
-
 import java.net.URI;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import org.mapfish.print.servlet.job.impl.PrintJobResultImpl;
 
 /**
  * Extension of Print Job Result that holds data as BLOB.
@@ -33,12 +32,16 @@ public class PrintJobResultExtImpl extends PrintJobResultImpl {
      * @param referenceId the reference ID
      */
     public PrintJobResultExtImpl(
-            final URI reportURI, final String fileName, final String fileExtension, final String mimeType,
-            final byte[] data, final String referenceId) {
+        final URI reportURI,
+        final String fileName,
+        final String fileExtension,
+        final String mimeType,
+        final byte[] data,
+        final String referenceId
+    ) {
         super(reportURI, fileName, fileExtension, mimeType, referenceId);
         this.data = data;
     }
-
 
     public byte[] getData() {
         return this.data;
@@ -47,5 +50,4 @@ public class PrintJobResultExtImpl extends PrintJobResultImpl {
     public void setData(final byte[] data) {
         this.data = data;
     }
-
 }

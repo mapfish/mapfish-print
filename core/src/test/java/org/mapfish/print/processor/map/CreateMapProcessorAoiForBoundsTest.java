@@ -1,5 +1,13 @@
 package org.mapfish.print.processor.map;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -12,33 +20,29 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-
-import static org.junit.Assert.assertEquals;
-
 /**
  * Basic test of the Map processor.
  *
  * Created by Jesse on 3/26/14.
  */
 public class CreateMapProcessorAoiForBoundsTest extends AbstractMapfishSpringTest {
+
     public static final String BASE_DIR = "center_gml_only_aoi_for_bounds/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
+
     @Autowired
     private TestHttpClientFactory requestFactory;
+
     @Autowired
     private ForkJoinPool forkJoinPool;
 
     private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorAoiForBoundsTest.class,
-                                       BASE_DIR + "requestData.json");
+        return parseJSONObjectFromFile(
+            CreateMapProcessorAoiForBoundsTest.class,
+            BASE_DIR + "requestData.json"
+        );
     }
 
     @Test
@@ -46,20 +50,27 @@ public class CreateMapProcessorAoiForBoundsTest extends AbstractMapfishSpringTes
     public void testExecute() throws Exception {
         final String host = "center_gml_only_aoi_for_bounds";
         requestFactory.registerHandler(
-                input -> (("" + input.getHost()).contains(host + ".json")) ||
-                        input.getAuthority().contains(host + ".json"),
-                createFileHandler(uri -> "/map-data" + uri.getPath())
+            input ->
+                (("" + input.getHost()).contains(host + ".json")) ||
+                input.getAuthority().contains(host + ".json"),
+            createFileHandler(uri -> "/map-data" + uri.getPath())
         );
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
 
         PJsonObject requestData = loadJsonRequestData();
 
-        Values values = new Values("test", requestData, template, getTaskDirectory(), this.requestFactory,
-                                   new File("."));
+        Values values = new Values(
+            "test",
+            requestData,
+            template,
+            getTaskDirectory(),
+            this.requestFactory,
+            new File(".")
+        );
 
-        final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
-                template.getProcessorGraph().createTask(values));
+        final ForkJoinTask<Values> taskFuture =
+            this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
         taskFuture.get();
 
         @SuppressWarnings("unchecked")
@@ -67,6 +78,6 @@ public class CreateMapProcessorAoiForBoundsTest extends AbstractMapfishSpringTes
         assertEquals(2, layerGraphics.size());
 
         new ImageSimilarity(getFile(BASE_DIR + "/expectedSimpleImage-no-bounds.png"))
-                .assertSimilarity(layerGraphics, 630, 294, 100);
+        .assertSimilarity(layerGraphics, 630, 294, 100);
     }
 }

@@ -1,11 +1,10 @@
 package org.mapfish.print.processor;
 
 import com.google.common.collect.BiMap;
-import org.mapfish.print.config.ConfigurationObject;
-
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
+import org.mapfish.print.config.ConfigurationObject;
 
 /**
  * Interface for processing input attributes.  A processor must <em>NOT</em> contain mutable state because a
@@ -153,7 +152,6 @@ public interface Processor<In, Out> extends ConfigurationObject {
      * An execution context for a specific print task.
      */
     interface ExecutionContext {
-
         /**
          * Throws a CancellationException if the job was cancelled.
          */

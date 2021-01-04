@@ -1,8 +1,5 @@
 package org.mapfish.print.processor.http.matcher;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -11,11 +8,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Allows to check that a given URL matches an IP address (numeric format).
  */
 public abstract class InetHostMatcher extends HostMatcher {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(InetHostMatcher.class);
 
     private List<AddressMask> authorizedIPs = null;
@@ -23,8 +23,11 @@ public abstract class InetHostMatcher extends HostMatcher {
     private static byte[] mask(final byte[] address, final byte[] mask) {
         if (mask != null) {
             if (address.length != mask.length) {
-                LOGGER.warn("Cannot mask address [{}] with: {}", Arrays.toString(address),
-                            Arrays.toString(mask));
+                LOGGER.warn(
+                    "Cannot mask address [{}] with: {}",
+                    Arrays.toString(address),
+                    Arrays.toString(mask)
+                );
                 return address;
             } else {
                 final byte[] result = new byte[address.length];
@@ -40,7 +43,7 @@ public abstract class InetHostMatcher extends HostMatcher {
 
     @Override
     protected final Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo)
-            throws UnknownHostException, SocketException {
+        throws UnknownHostException, SocketException {
         final String host = matchInfo.getHost();
         if (host == MatchInfo.ANY_HOST) {
             return Optional.empty();
@@ -52,7 +55,7 @@ public abstract class InetHostMatcher extends HostMatcher {
         } catch (UnknownHostException ex) {
             return Optional.of(false);
         }
-        for (InetAddress requestedIP: requestedIPs) {
+        for (InetAddress requestedIP : requestedIPs) {
             if (isInAuthorized(requestedIP)) {
                 return Optional.empty();
             }
@@ -60,11 +63,11 @@ public abstract class InetHostMatcher extends HostMatcher {
         return Optional.of(false);
     }
 
-    private boolean isInAuthorized(final InetAddress requestedIP) throws UnknownHostException,
-            SocketException {
+    private boolean isInAuthorized(final InetAddress requestedIP)
+        throws UnknownHostException, SocketException {
         final List<AddressMask> finalAuthorizedIPs = getAuthorizedIPs();
         final byte[] address = requestedIP.getAddress();
-        for (AddressMask authorizedIP: finalAuthorizedIPs) {
+        for (AddressMask authorizedIP : finalAuthorizedIPs) {
             if (compareIP(address, authorizedIP)) {
                 return true;
             }
@@ -127,7 +130,9 @@ public abstract class InetHostMatcher extends HostMatcher {
      * The ip addresses that are considered legal.
      */
     protected static class AddressMask {
+
         private final byte[] address;
+
         @Nullable
         private final byte[] mask;
 
@@ -150,7 +155,7 @@ public abstract class InetHostMatcher extends HostMatcher {
         public AddressMask(final InetAddress address) {
             if (address.isLoopbackAddress() && address instanceof Inet4Address) {
                 final byte all = (byte) 0xff;
-                this.mask = new byte[]{all, 0, 0, 0};
+                this.mask = new byte[] { all, 0, 0, 0 };
             } else {
                 this.mask = null;
             }

@@ -1,6 +1,10 @@
 package org.mapfish.print.processor.jasper;
 
 import com.google.common.annotations.VisibleForTesting;
+import java.awt.Dimension;
+import java.io.File;
+import java.net.URI;
+import java.util.List;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.design.JRDesignBand;
@@ -12,11 +16,6 @@ import net.sf.jasperreports.engine.type.HorizontalImageAlignEnum;
 import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
 import net.sf.jasperreports.renderers.Renderable;
-
-import java.awt.Dimension;
-import java.io.File;
-import java.net.URI;
-import java.util.List;
 
 /**
  * Creates a Jasper containing overlaid images, which is supposed to be embedded into an another report as
@@ -67,9 +66,12 @@ public class ImagesSubReport {
     }
 
     private void addGraphics(
-            final List<URI> graphics, final JRDesignBand band,
-            final Dimension size, final JasperDesign design) {
-        for (URI graphicFile: graphics) {
+        final List<URI> graphics,
+        final JRDesignBand band,
+        final Dimension size,
+        final JasperDesign design
+    ) {
+        for (URI graphicFile : graphics) {
             final String fileName = new File(graphicFile).getAbsolutePath().replace('\\', '/');
             final String imageExpression = "\"" + fileName + "\"";
             band.addElement(getImage(imageExpression, size, design));
@@ -77,8 +79,10 @@ public class ImagesSubReport {
     }
 
     private JRDesignElement getImage(
-            final String imageExpression, final Dimension mapSize,
-            final JasperDesign design) {
+        final String imageExpression,
+        final Dimension mapSize,
+        final JasperDesign design
+    ) {
         final JRDesignImage image = new JRDesignImage(design);
 
         image.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);

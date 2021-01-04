@@ -1,5 +1,8 @@
 package org.mapfish.print.attribute.map;
 
+import static org.mapfish.print.Constants.PDF_DPI;
+
+import java.awt.Rectangle;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
@@ -11,16 +14,13 @@ import org.mapfish.print.map.Scale;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 
-import java.awt.Rectangle;
-
-import static org.mapfish.print.Constants.PDF_DPI;
-
 /**
  * Represent Map Bounds with a center location and a scale of the map.
  *
  * Created by Jesse on 3/26/14.
  */
 public final class CenterScaleMapBounds extends MapBounds {
+
     private final Coordinate center;
     private final Scale scale;
 
@@ -33,8 +33,11 @@ public final class CenterScaleMapBounds extends MapBounds {
      * @param scaleDenominator the scale denominator of the map.
      */
     public CenterScaleMapBounds(
-            final CoordinateReferenceSystem projection, final double centerX,
-            final double centerY, final double scaleDenominator) {
+        final CoordinateReferenceSystem projection,
+        final double centerX,
+        final double centerY,
+        final double scaleDenominator
+    ) {
         super(projection);
         this.center = new Coordinate(centerX, centerY);
         this.scale = new Scale(scaleDenominator, getProjection(), PDF_DPI);
@@ -49,8 +52,11 @@ public final class CenterScaleMapBounds extends MapBounds {
      * @param scale the scale of the map.
      */
     public CenterScaleMapBounds(
-            final CoordinateReferenceSystem projection, final double centerX,
-            final double centerY, final Scale scale) {
+        final CoordinateReferenceSystem projection,
+        final double centerX,
+        final double centerY,
+        final Scale scale
+    ) {
         super(projection);
         this.center = new Coordinate(centerX, centerY);
         this.scale = scale;
@@ -88,17 +94,23 @@ public final class CenterScaleMapBounds extends MapBounds {
 
     @Override
     public MapBounds adjustBoundsToNearestScale(
-            final ZoomLevels zoomLevels, final double tolerance,
-            final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
-            final boolean geodetic,
-            final Rectangle paintArea,
-            final double dpi) {
+        final ZoomLevels zoomLevels,
+        final double tolerance,
+        final ZoomLevelSnapStrategy zoomLevelSnapStrategy,
+        final boolean geodetic,
+        final Rectangle paintArea,
+        final double dpi
+    ) {
+        final Scale newScale = getNearestScale(
+            zoomLevels,
+            tolerance,
+            zoomLevelSnapStrategy,
+            geodetic,
+            paintArea,
+            dpi
+        );
 
-        final Scale newScale = getNearestScale(zoomLevels, tolerance, zoomLevelSnapStrategy,
-                                               geodetic, paintArea, dpi);
-
-        return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y,
-                                        newScale);
+        return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, newScale);
     }
 
     @Override
@@ -119,8 +131,12 @@ public final class CenterScaleMapBounds extends MapBounds {
         }
 
         final double newResolution = this.scale.getResolution() * factor;
-        return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y,
-                                        this.scale.toResolution(newResolution));
+        return new CenterScaleMapBounds(
+            getProjection(),
+            this.center.x,
+            this.center.y,
+            this.scale.toResolution(newResolution)
+        );
     }
 
     @Override
@@ -134,14 +150,17 @@ public final class CenterScaleMapBounds extends MapBounds {
     }
 
     private ReferencedEnvelope computeGeodeticBBox(
-            final double geoWidthInInches, final double geoHeightInInches) {
+        final double geoWidthInInches,
+        final double geoHeightInInches
+    ) {
         try {
             CoordinateReferenceSystem crs = getProjection();
 
             GeodeticCalculator calc = new GeodeticCalculator(crs);
 
-            DistanceUnit ellipsoidUnit =
-                    DistanceUnit.fromString(calc.getEllipsoid().getAxisUnit().toString());
+            DistanceUnit ellipsoidUnit = DistanceUnit.fromString(
+                calc.getEllipsoid().getAxisUnit().toString()
+            );
             double geoWidth = DistanceUnit.IN.convertTo(geoWidthInInches, ellipsoidUnit);
             double geoHeight = DistanceUnit.IN.convertTo(geoHeightInInches, ellipsoidUnit);
 
@@ -166,8 +185,12 @@ public final class CenterScaleMapBounds extends MapBounds {
             double maxGeoY = calc.getDestinationPosition().getOrdinate(1);
 
             return new ReferencedEnvelope(
-                    rollLongitude(minGeoX), rollLongitude(maxGeoX),
-                    rollLatitude(minGeoY), rollLatitude(maxGeoY), crs);
+                rollLongitude(minGeoX),
+                rollLongitude(maxGeoX),
+                rollLatitude(minGeoY),
+                rollLatitude(maxGeoY),
+                crs
+            );
         } catch (TransformException e) {
             throw ExceptionUtils.getRuntimeException(e);
         }

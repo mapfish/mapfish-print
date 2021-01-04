@@ -1,12 +1,5 @@
 package org.mapfish.print.servlet.job.impl;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.annotations.Type;
-import org.mapfish.print.ExceptionUtils;
-import org.mapfish.print.servlet.job.PrintJobResult;
-import org.mapfish.print.servlet.job.PrintJobStatus;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.persistence.Column;
@@ -16,6 +9,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.Type;
+import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.servlet.job.PrintJobResult;
+import org.mapfish.print.servlet.job.PrintJobStatus;
 
 /**
  * Print Job Result.
@@ -70,8 +69,12 @@ public class PrintJobResultImpl implements PrintJobResult {
      * @param referenceId the reference ID
      */
     public PrintJobResultImpl(
-            final URI reportURI, final String fileName, final String fileExtension,
-            final String mimeType, final String referenceId) {
+        final URI reportURI,
+        final String fileName,
+        final String fileExtension,
+        final String mimeType,
+        final String referenceId
+    ) {
         this.reportURI = reportURI.toString();
         this.mimeType = mimeType;
         this.fileName = fileName;

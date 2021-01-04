@@ -1,13 +1,13 @@
 package org.mapfish.print.map.style.json;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 public class MapfishJsonStyleVersion2Test {
+
     @Test
     public void testResolveAllValues() {
         Map<String, String> values = new HashMap<>();
@@ -25,5 +25,4 @@ public class MapfishJsonStyleVersion2Test {
         assertEquals("pre- value2--3value -- value -- value2 -post", updated.get("val4"));
         assertEquals("${doesNotExist}", updated.get("val5"));
     }
-
 }

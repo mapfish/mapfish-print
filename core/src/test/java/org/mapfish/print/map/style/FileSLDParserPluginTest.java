@@ -1,5 +1,11 @@
 package org.mapfish.print.map.style;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.util.Optional;
 import org.geotools.styling.Style;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -9,21 +15,17 @@ import org.mapfish.print.http.ConfigFileResolvingHttpRequestFactory;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.File;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 /**
  * Test loading an style from a file.
  */
 public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
+
     @Autowired
     private SLDParserPlugin parser;
+
     @Autowired
     private TestHttpClientFactory clientHttpRequestFactory;
+
     @Autowired
     private ConfigFileLoaderManager fileLoaderManager;
 
@@ -89,7 +91,6 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         assertEquals(1, styleOptional.get().featureTypeStyles().size());
         assertEquals(1, styleOptional.get().featureTypeStyles().get(0).rules().size());
         assertEquals(2, styleOptional.get().featureTypeStyles().get(0).rules().get(0).symbolizers().size());
-
     }
 
     @Test(expected = Exception.class)
@@ -113,7 +114,10 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         config.setFileLoaderManager(this.fileLoaderManager);
 
         ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(
-                this.clientHttpRequestFactory, config, "test");
+            this.clientHttpRequestFactory,
+            config,
+            "test"
+        );
 
         assertFalse(this.parser.parseStyle(config, requestFactory, file.getAbsolutePath()).isPresent());
     }
@@ -125,7 +129,10 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         config.setFileLoaderManager(this.fileLoaderManager);
 
         ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(
-                this.clientHttpRequestFactory, config, "test");
+            this.clientHttpRequestFactory,
+            config,
+            "test"
+        );
 
         return this.parser.parseStyle(config, requestFactory, styleString);
     }

@@ -1,5 +1,20 @@
 package org.mapfish.print.config;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.PointSymbolizer;
@@ -24,22 +39,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nullable;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-
 /**
  * Tests for {@link org.mapfish.print.config.Configuration} class.
  */
@@ -52,7 +51,6 @@ public class ConfigurationTest {
 
     @Test
     public void testGetTemplate() {
-
         final Configuration configuration = new Configuration();
         Map<String, Template> templates = new HashMap<>();
         final Template t1Template = new Template();
@@ -109,7 +107,6 @@ public class ConfigurationTest {
         styles.put("geometry", geomStyle);
         configuration.setDefaultStyle(styles);
 
-
         assertStyleType(PointSymbolizer.class, configuration.getDefaultStyle("POINT"));
         assertStyleType(PointSymbolizer.class, configuration.getDefaultStyle("MultiPOINT"));
 
@@ -143,7 +140,6 @@ public class ConfigurationTest {
         assertStyleType(Symbolizer.class, configuration.getDefaultStyle(Constants.Style.Raster.NAME));
     }
 
-
     @Test
     public void testTemplateAccess() throws Exception {
         Configuration configuration = new Configuration();
@@ -155,38 +151,52 @@ public class ConfigurationTest {
         templates.put("restricted", restricted);
         configuration.setTemplates(templates);
 
-        assertCorrectTemplates(configuration, unrestricted, restricted,
-                               AuthenticationCredentialsNotFoundException.class);
+        assertCorrectTemplates(
+            configuration,
+            unrestricted,
+            restricted,
+            AuthenticationCredentialsNotFoundException.class
+        );
 
         SimpleGrantedAuthority userAuth = new SimpleGrantedAuthority("ROLE_USER");
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         SecurityContextHolder.setContext(securityContext);
         securityContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken("user", "", Collections.singletonList(userAuth)));
+            new UsernamePasswordAuthenticationToken("user", "", Collections.singletonList(userAuth))
+        );
         assertCorrectTemplates(configuration, unrestricted, restricted, null);
 
         securityContext = SecurityContextHolder.createEmptyContext();
         SecurityContextHolder.setContext(securityContext);
-        assertCorrectTemplates(configuration, unrestricted, restricted,
-                               AuthenticationCredentialsNotFoundException.class);
+        assertCorrectTemplates(
+            configuration,
+            unrestricted,
+            restricted,
+            AuthenticationCredentialsNotFoundException.class
+        );
 
         SimpleGrantedAuthority adminAuth = new SimpleGrantedAuthority("ROLE_ADMIN");
         securityContext = SecurityContextHolder.createEmptyContext();
         SecurityContextHolder.setContext(securityContext);
         securityContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken("admin", "", Collections.singletonList(adminAuth)));
+            new UsernamePasswordAuthenticationToken("admin", "", Collections.singletonList(adminAuth))
+        );
         assertCorrectTemplates(configuration, unrestricted, restricted, null);
 
         SecurityContextHolder.clearContext();
-        assertCorrectTemplates(configuration, unrestricted, restricted,
-                               AuthenticationCredentialsNotFoundException.class);
-
+        assertCorrectTemplates(
+            configuration,
+            unrestricted,
+            restricted,
+            AuthenticationCredentialsNotFoundException.class
+        );
 
         SimpleGrantedAuthority otherAuth = new SimpleGrantedAuthority("ROLE_OTHER");
         securityContext = SecurityContextHolder.createEmptyContext();
         SecurityContextHolder.setContext(securityContext);
         securityContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken("other", "", Collections.singletonList(otherAuth)));
+            new UsernamePasswordAuthenticationToken("other", "", Collections.singletonList(otherAuth))
+        );
         assertCorrectTemplates(configuration, unrestricted, restricted, AccessDeniedException.class);
     }
 
@@ -207,7 +217,8 @@ public class ConfigurationTest {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         SecurityContextHolder.setContext(securityContext);
         securityContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken("user", "", Collections.singletonList(userAuth)));
+            new UsernamePasswordAuthenticationToken("user", "", Collections.singletonList(userAuth))
+        );
         assertAccessTemplate_ConfigSecured(configuration, null);
 
         securityContext = SecurityContextHolder.createEmptyContext();
@@ -218,24 +229,26 @@ public class ConfigurationTest {
         securityContext = SecurityContextHolder.createEmptyContext();
         SecurityContextHolder.setContext(securityContext);
         securityContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken("admin", "", Collections.singletonList(adminAuth)));
+            new UsernamePasswordAuthenticationToken("admin", "", Collections.singletonList(adminAuth))
+        );
         assertAccessTemplate_ConfigSecured(configuration, null);
 
         SecurityContextHolder.clearContext();
         assertAccessTemplate_ConfigSecured(configuration, AuthenticationCredentialsNotFoundException.class);
 
-
         SimpleGrantedAuthority otherAuth = new SimpleGrantedAuthority("ROLE_OTHER");
         securityContext = SecurityContextHolder.createEmptyContext();
         SecurityContextHolder.setContext(securityContext);
         securityContext.setAuthentication(
-                new UsernamePasswordAuthenticationToken("other", "", Collections.singletonList(otherAuth)));
+            new UsernamePasswordAuthenticationToken("other", "", Collections.singletonList(otherAuth))
+        );
         assertAccessTemplate_ConfigSecured(configuration, AccessDeniedException.class);
     }
 
     private void assertAccessTemplate_ConfigSecured(
-            Configuration configuration,
-            @Nullable Class<?> expectedException) {
+        Configuration configuration,
+        @Nullable Class<?> expectedException
+    ) {
         final int numExpectedTemplates = expectedException == null ? 2 : 0;
         assertEquals(numExpectedTemplates, configuration.getTemplates().size());
         if (expectedException != null) {
@@ -266,10 +279,11 @@ public class ConfigurationTest {
     }
 
     private void assertCorrectTemplates(
-            Configuration configuration,
-            Template unrestricted,
-            Template restricted,
-            @Nullable Class<? extends Exception> expectedException) {
+        Configuration configuration,
+        Template unrestricted,
+        Template restricted,
+        @Nullable Class<? extends Exception> expectedException
+    ) {
         if (expectedException != null) {
             try {
                 configuration.getTemplate("restricted");
@@ -312,10 +326,12 @@ public class ConfigurationTest {
         final Configuration config = new Configuration();
         Map<String, Template> templates = new HashMap<>();
         config.setTemplates(templates);
-        config.setConfigurationFile(AbstractMapfishSpringTest.getFile(ConfigurationTest.class,
-                                                                      "/org/mapfish/print/config/config" +
-                                                                              "-test-application-context" +
-                                                                              ".xml"));
+        config.setConfigurationFile(
+            AbstractMapfishSpringTest.getFile(
+                ConfigurationTest.class,
+                "/org/mapfish/print/config/config" + "-test-application-context" + ".xml"
+            )
+        );
         List<Throwable> errors = config.validate();
 
         assertEquals(1, errors.size()); // no templates error
@@ -329,8 +345,6 @@ public class ConfigurationTest {
         errors = config.validate();
 
         assertEquals(1, errors.size());
-
-
     }
 
     private void assertStyleType(Class<?> expectedSymbolizerType, Style style) {
@@ -338,7 +352,9 @@ public class ConfigurationTest {
         final FeatureTypeStyle featureTypeStyle = style.featureTypeStyles().get(0);
         final Rule rule = featureTypeStyle.rules().get(0);
         final Class<? extends Symbolizer> symbClass = rule.symbolizers().get(0).getClass();
-        assertTrue("Expected: " + expectedSymbolizerType.getName() + " but was: " + symbClass,
-                   expectedSymbolizerType.isAssignableFrom(symbClass));
+        assertTrue(
+            "Expected: " + expectedSymbolizerType.getName() + " but was: " + symbClass,
+            expectedSymbolizerType.isAssignableFrom(symbClass)
+        );
     }
 }

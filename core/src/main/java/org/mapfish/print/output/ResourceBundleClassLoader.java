@@ -11,6 +11,7 @@ import java.net.URL;
  * This is use to load the utf-8 ResourceBundle files.
  */
 public class ResourceBundleClassLoader extends ClassLoader {
+
     private final File configDir;
 
     /**

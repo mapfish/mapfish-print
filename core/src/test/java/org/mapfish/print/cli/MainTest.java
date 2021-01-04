@@ -1,12 +1,10 @@
 package org.mapfish.print.cli;
 
+import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.test.util.ImageSimilarity;
-
-import java.io.File;
-
 
 public class MainTest {
 
@@ -29,13 +27,15 @@ public class MainTest {
     @Test
     public void testNewAPI() throws Exception {
         String[] args = {
-                "-config", this.configFile.getAbsolutePath(),
-                "-spec", this.v3ApiRequestFile.getAbsolutePath(),
-                "-output", this.outputFile.getAbsolutePath()
+            "-config",
+            this.configFile.getAbsolutePath(),
+            "-spec",
+            this.v3ApiRequestFile.getAbsolutePath(),
+            "-output",
+            this.outputFile.getAbsolutePath(),
         };
         Main.runMain(args);
 
-        new ImageSimilarity(getFile("expectedV3Image.png"))
-                .assertSimilarity(this.outputFile, 10);
+        new ImageSimilarity(getFile("expectedV3Image.png")).assertSimilarity(this.outputFile, 10);
     }
 }

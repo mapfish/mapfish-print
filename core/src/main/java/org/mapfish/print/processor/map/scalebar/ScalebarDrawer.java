@@ -1,15 +1,15 @@
 package org.mapfish.print.processor.map.scalebar;
 
-import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
-
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
 
 /**
  * Base class for drawing a scale bar.
  */
 public abstract class ScalebarDrawer {
+
     /**
      * The graphics context.
      */
@@ -59,8 +59,10 @@ public abstract class ScalebarDrawer {
         final AffineTransform lineTransform = new AffineTransform(transform);
         setLineTranslate(lineTransform);
 
-        if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_LEFT ||
-                this.params.getOrientation() == Orientation.VERTICAL_LABELS_RIGHT) {
+        if (
+            this.params.getOrientation() == Orientation.VERTICAL_LABELS_LEFT ||
+            this.params.getOrientation() == Orientation.VERTICAL_LABELS_RIGHT
+        ) {
             final AffineTransform rotate = AffineTransform.getQuadrantRotateInstance(1);
             lineTransform.concatenate(rotate);
         }
@@ -85,8 +87,10 @@ public abstract class ScalebarDrawer {
                 break;
             case CENTER:
             default:
-                offsetX = (int) Math
-                        .floor(this.settings.getMaxSize().width / 2.0 - this.settings.getSize().width / 2.0);
+                offsetX =
+                    (int) Math.floor(
+                        this.settings.getMaxSize().width / 2.0 - this.settings.getSize().width / 2.0
+                    );
                 break;
         }
 
@@ -100,8 +104,10 @@ public abstract class ScalebarDrawer {
                 break;
             case MIDDLE:
             default:
-                offsetY = (int) Math.floor(this.settings.getMaxSize().height / 2.0 -
-                                                   this.settings.getSize().height / 2.0);
+                offsetY =
+                    (int) Math.floor(
+                        this.settings.getMaxSize().height / 2.0 - this.settings.getSize().height / 2.0
+                    );
                 break;
         }
 
@@ -116,14 +122,18 @@ public abstract class ScalebarDrawer {
             y = this.settings.getPadding() + this.settings.getBarSize();
         } else if (this.params.getOrientation() == Orientation.HORIZONTAL_LABELS_ABOVE) {
             x = this.settings.getPadding() + this.settings.getLeftLabelMargin();
-            y = this.settings.getPadding() + this.settings.getBarSize() + this.settings.getLabelDistance() +
-                    Label.getRotatedHeight(this.settings.getMaxLabelSize(), this.params.getLabelRotation());
+            y =
+                this.settings.getPadding() +
+                this.settings.getBarSize() +
+                this.settings.getLabelDistance() +
+                Label.getRotatedHeight(this.settings.getMaxLabelSize(), this.params.getLabelRotation());
         } else if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_LEFT) {
-            x = this.settings.getPadding() +
-                    Label.getRotatedWidth(this.settings.getMaxLabelSize(), this.params.getLabelRotation()) +
-                    this.settings.getLabelDistance();
+            x =
+                this.settings.getPadding() +
+                Label.getRotatedWidth(this.settings.getMaxLabelSize(), this.params.getLabelRotation()) +
+                this.settings.getLabelDistance();
             y = this.settings.getPadding() + this.settings.getTopLabelMargin();
-        } else {  // if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_RIGHT)
+        } else { // if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_RIGHT)
             x = this.settings.getPadding();
             y = this.settings.getPadding() + this.settings.getTopLabelMargin();
         }
@@ -141,11 +151,13 @@ public abstract class ScalebarDrawer {
             y = this.settings.getPadding() + this.settings.getBarSize() + this.settings.getLabelDistance();
         } else if (this.params.getOrientation() == Orientation.HORIZONTAL_LABELS_ABOVE) {
             x = this.settings.getPadding() + this.settings.getLeftLabelMargin();
-            y = this.settings.getPadding() +
-                    Label.getRotatedHeight(this.settings.getMaxLabelSize(), this.params.getLabelRotation());
+            y =
+                this.settings.getPadding() +
+                Label.getRotatedHeight(this.settings.getMaxLabelSize(), this.params.getLabelRotation());
         } else if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_LEFT) {
-            x = this.settings.getPadding() +
-                    Label.getRotatedWidth(this.settings.getMaxLabelSize(), this.params.getLabelRotation());
+            x =
+                this.settings.getPadding() +
+                Label.getRotatedWidth(this.settings.getMaxLabelSize(), this.params.getLabelRotation());
             y = this.settings.getPadding() + this.settings.getTopLabelMargin();
         } else { //if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_RIGHT)
             x = this.settings.getPadding() + this.settings.getBarSize() + this.settings.getLabelDistance();
@@ -161,13 +173,16 @@ public abstract class ScalebarDrawer {
     protected abstract void drawBar();
 
     private void drawLabels(
-            final AffineTransform transform, final Orientation orientation,
-            final float labelRotation) {
-        float prevMargin = orientation.isHorizontal() ? this.settings.getMaxSize().width :
-                this.settings.getMaxSize().height;
+        final AffineTransform transform,
+        final Orientation orientation,
+        final float labelRotation
+    ) {
+        float prevMargin = orientation.isHorizontal()
+            ? this.settings.getMaxSize().width
+            : this.settings.getMaxSize().height;
 
         final AffineTransform firstTickTransform = new AffineTransform(transform);
-        setLabelTranslate(firstTickTransform);  // 0,0 is the center of the first label
+        setLabelTranslate(firstTickTransform); // 0,0 is the center of the first label
 
         for (int i = this.settings.getLabels().size() - 1; i >= 0; i--) {
             final Label label = this.settings.getLabels().get(i);
@@ -179,17 +194,29 @@ public abstract class ScalebarDrawer {
             final float halfRotatedHeight = label.getRotatedHeight(labelRotation) / 2.0f;
 
             if (orientation.isHorizontal()) {
-                centerTransform.concatenate(AffineTransform.getTranslateInstance(
+                centerTransform.concatenate(
+                    AffineTransform.getTranslateInstance(
                         Math.round(label.getGraphicOffset()),
-                        Math.round(orientation == Orientation.HORIZONTAL_LABELS_BELOW ?
-                                           halfRotatedHeight : -halfRotatedHeight)));
+                        Math.round(
+                            orientation == Orientation.HORIZONTAL_LABELS_BELOW
+                                ? halfRotatedHeight
+                                : -halfRotatedHeight
+                        )
+                    )
+                );
                 shouldSkipLabel = label.getGraphicOffset() + halfRotatedWidth > prevMargin - 1;
                 newMargin = label.getGraphicOffset() - halfRotatedWidth;
             } else {
-                centerTransform.concatenate(AffineTransform.getTranslateInstance(
-                        Math.round(orientation == Orientation.VERTICAL_LABELS_RIGHT ?
-                                           halfRotatedWidth : -halfRotatedWidth),
-                        Math.round(label.getGraphicOffset())));
+                centerTransform.concatenate(
+                    AffineTransform.getTranslateInstance(
+                        Math.round(
+                            orientation == Orientation.VERTICAL_LABELS_RIGHT
+                                ? halfRotatedWidth
+                                : -halfRotatedWidth
+                        ),
+                        Math.round(label.getGraphicOffset())
+                    )
+                );
                 shouldSkipLabel = label.getGraphicOffset() + halfRotatedHeight > prevMargin - 1;
                 newMargin = label.getGraphicOffset() - halfRotatedHeight;
             }
@@ -200,8 +227,13 @@ public abstract class ScalebarDrawer {
             if (!shouldSkipLabel) {
                 this.graphics2d.setTransform(centerTransform);
                 // For some reason, we need to floor the coordinates for the text to be nicely centered
-                label.getLabelLayout().draw(this.graphics2d, (float) Math.floor(-label.getWidth() / 2.0f),
-                                            (float) Math.floor(label.getHeight() / 2.0f));
+                label
+                    .getLabelLayout()
+                    .draw(
+                        this.graphics2d,
+                        (float) Math.floor(-label.getWidth() / 2.0f),
+                        (float) Math.floor(label.getHeight() / 2.0f)
+                    );
                 prevMargin = newMargin;
             }
             // else: the label would be written over the previous one => ignore it

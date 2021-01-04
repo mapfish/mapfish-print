@@ -2,11 +2,6 @@ package org.mapfish.print.processor;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.ConfigurationException;
-import org.mapfish.print.parser.ParserUtils;
-import org.slf4j.MDC;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +10,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ConfigurationException;
+import org.mapfish.print.parser.ParserUtils;
+import org.slf4j.MDC;
 
 /**
  * Basic functionality of a processor.  Mostly utility methods.
@@ -25,6 +24,7 @@ import javax.annotation.Nonnull;
  *         the {@link org.mapfish.print.output.Values} object so other processor can access the values.
  */
 public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
+
     private final BiMap<String, String> inputMapper = HashBiMap.create();
     private final BiMap<String, String> outputMapper = HashBiMap.create();
 
@@ -140,22 +140,34 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
         } else {
             allInputAttributeNames = Collections.emptySet();
         }
-        for (String inputAttributeName: this.inputMapper.values()) {
+        for (String inputAttributeName : this.inputMapper.values()) {
             if (!allInputAttributeNames.contains(inputAttributeName)) {
-                errors.add(new ConfigurationException(inputAttributeName + " is not defined in processor '"
-                                                              + this + "'.  Check for typos. Options are " +
-                                                              allInputAttributeNames));
+                errors.add(
+                    new ConfigurationException(
+                        inputAttributeName +
+                        " is not defined in processor '" +
+                        this +
+                        "'.  Check for typos. Options are " +
+                        allInputAttributeNames
+                    )
+                );
             }
         }
 
         Set<String> allOutputAttributeNames = ParserUtils.getAllAttributeNames(getOutputType());
-        for (String outputAttributeName: this.outputMapper.keySet()) {
+        for (String outputAttributeName : this.outputMapper.keySet()) {
             if (!allOutputAttributeNames.contains(outputAttributeName)) {
-                errors.add(new ConfigurationException(outputAttributeName + " is not defined in processor " +
-                                                              "'" + this +
-                                                              "' as an output attribute.  Check for typos. " +
-                                                              "Options are " +
-                                                              allOutputAttributeNames));
+                errors.add(
+                    new ConfigurationException(
+                        outputAttributeName +
+                        " is not defined in processor " +
+                        "'" +
+                        this +
+                        "' as an output attribute.  Check for typos. " +
+                        "Options are " +
+                        allOutputAttributeNames
+                    )
+                );
             }
         }
 
@@ -169,8 +181,7 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
      *         one.
      * @param configuration the containing configuration
      */
-    protected abstract void extraValidation(
-            List<Throwable> validationErrors, Configuration configuration);
+    protected abstract void extraValidation(List<Throwable> validationErrors, Configuration configuration);
 
     @Override
     public String toString() {
@@ -190,6 +201,7 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
      * Default implementation of {@link org.mapfish.print.processor.Processor.ExecutionContext}.
      */
     public static final class Context implements ExecutionContext {
+
         private final String jobId;
         private volatile boolean canceled = false;
         private ExecutionStats stats = new ExecutionStats();
@@ -200,7 +212,6 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
         public Context(final String jobId) {
             this.jobId = jobId;
         }
-
 
         /**
          * Sets the canceled flag.

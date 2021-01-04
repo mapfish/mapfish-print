@@ -1,9 +1,5 @@
 package org.mapfish.print;
 
-import org.apache.commons.lang3.SystemUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,33 +10,38 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.SystemUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tools function to get java fonts families and interface font config.
  */
 public final class FontTools {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(FontTools.class);
 
     /**
      * List of java font families.
      */
     public static final Set<String> FONT_FAMILIES;
+
     static {
         Set<String> ff = new HashSet<>();
         GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         for (java.awt.Font font : graphicsEnvironment.getAllFonts()) {
-          ff.add(font.getFamily());
+            ff.add(font.getFamily());
         }
         FONT_FAMILIES = Collections.unmodifiableSet(ff);
     }
 
-    private FontTools() {
-    }
+    private FontTools() {}
 
     /**
      * Description of font get from font config.
      */
     public static class FontConfigDescription {
+
         /** The font families. */
         public String[] family;
         /** The font style. */
@@ -65,7 +66,7 @@ public final class FontTools {
             InputStreamReader inputStreamReader = null;
             BufferedReader stdInput = null;
             try {
-                String[] commands = {"fc-list", "-b", family};
+                String[] commands = { "fc-list", "-b", family };
                 Process process = Runtime.getRuntime().exec(commands);
 
                 inputStreamReader = new InputStreamReader(process.getInputStream(), "utf-8");
@@ -79,16 +80,15 @@ public final class FontTools {
                     } else if (description != null) {
                         String[] split = inputLine.trim().split(": ");
                         if (split[0].equals("family")) {
-                            description.family = split[1].substring(1, split[1].length() - 4)
-                                .split(Pattern.quote("\"(s) \""));
+                            description.family =
+                                split[1].substring(1, split[1].length() - 4).split(Pattern.quote("\"(s) \""));
                         } else if (split[0].equals("style")) {
-                            description.style = split[1].substring(1, split[1].length() - 4)
-                                .split(Pattern.quote("\"(s) \""));
+                            description.style =
+                                split[1].substring(1, split[1].length() - 4).split(Pattern.quote("\"(s) \""));
                         } else if (split[0].equals("fullname")) {
                             description.name = split[1].substring(1, split[1].length() - 4);
                         } else if (split[0].equals("weight")) {
-                            int weight = Integer.parseInt(split[1]
-                                .substring(0, split[1].length() - 6));
+                            int weight = Integer.parseInt(split[1].substring(0, split[1].length() - 6));
                             // See more information:
                             // https://work.lisk.in/2020/07/18/font-weight-300.html
                             // https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight

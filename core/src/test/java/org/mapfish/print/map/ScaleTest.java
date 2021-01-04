@@ -1,14 +1,15 @@
 package org.mapfish.print.map;
 
+import static org.junit.Assert.assertEquals;
+import static org.mapfish.print.Constants.PDF_DPI;
+
 import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import static org.junit.Assert.assertEquals;
-import static org.mapfish.print.Constants.PDF_DPI;
-
 public class ScaleTest {
+
     public static final CoordinateReferenceSystem SPHERICAL_MERCATOR;
     public static final CoordinateReferenceSystem CH1903;
     private static final double DELTA = 0.00001;
@@ -40,11 +41,11 @@ public class ScaleTest {
     public void geodetic() {
         final Scale scale = new Scale(15432.0, SPHERICAL_MERCATOR, 254);
 
+        assertEquals(scale.getDenominator(254), 15432.0, 1.0);
         assertEquals(
-                scale.getDenominator(254),
-                15432.0, 1.0);
-        assertEquals(
-                scale.getGeodeticDenominator(SPHERICAL_MERCATOR, 254, new Coordinate(682433.0, 6379270.0)),
-                10019.0, 1.0);
+            scale.getGeodeticDenominator(SPHERICAL_MERCATOR, 254, new Coordinate(682433.0, 6379270.0)),
+            10019.0,
+            1.0
+        );
     }
 }

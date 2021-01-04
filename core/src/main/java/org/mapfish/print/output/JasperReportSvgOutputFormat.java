@@ -1,5 +1,8 @@
 package org.mapfish.print.output;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.export.JRGraphics2DExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
@@ -10,10 +13,6 @@ import org.apache.batik.svggen.SVGGraphics2D;
 import org.mapfish.print.Constants;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 
 /**
  * An SVG output format that uses Jasper reports to generate the result.
@@ -32,8 +31,7 @@ public class JasperReportSvgOutputFormat extends AbstractJasperReportOutputForma
 
     @Override
     protected void doExport(final OutputStream outputStream, final Print print)
-            throws JRException, IOException {
-
+        throws JRException, IOException {
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
         Document document = domImpl.createDocument(null, "svg", null);
         SVGGraphics2D grx = new SVGGraphics2D(document);

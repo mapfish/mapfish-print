@@ -1,18 +1,19 @@
 package org.mapfish.print.map.tiled;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import com.google.common.collect.Multimap;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Test param methods.
  */
 public class AbstractWMXLayerParamsTest {
+
     private static final String CUSTOM_PARAMS =
-            "{\"key\": \"value\", \"key2\":[\"value1\", \"value2\"], \"key3\": null}";
+        "{\"key\": \"value\", \"key2\":[\"value1\", \"value2\"], \"key3\": null}";
 
     @Test
     public void testCustomParams() {
@@ -48,6 +49,7 @@ public class AbstractWMXLayerParamsTest {
     }
 
     private static class TestParams extends AbstractWMXLayerParams {
+
         @Override
         public String getBaseUrl() {
             return null;

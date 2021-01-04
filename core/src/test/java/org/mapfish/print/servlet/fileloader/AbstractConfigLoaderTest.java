@@ -1,5 +1,14 @@
 package org.mapfish.print.servlet.fileloader;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Test;
@@ -9,17 +18,8 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.WorkingDirectories;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URI;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest {
+
     protected static final File CONFIG_FILE = getFile(AbstractConfigLoaderTest.class, "config.yaml");
 
     @Autowired
@@ -29,7 +29,7 @@ public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest
     public void tearDown() {
         final File[] children = this.workingDirectories.getWorking().listFiles();
         assertNotNull(children);
-        for (File child: children) {
+        for (File child : children) {
             this.workingDirectories.removeDirectory(child);
         }
     }
@@ -38,7 +38,6 @@ public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest
 
     @Test
     public void testAccessibleChildResource_InWorkingDir() throws Exception {
-
         final Configuration configuration = getConfiguration();
 
         assertAccessible(this.workingDirectories.getReports());
@@ -71,14 +70,18 @@ public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest
         try {
             testFile.getParentFile().mkdirs();
             new FileOutputStream(testFile).close();
-            assertTrue(testFile.getAbsolutePath() + " is not accessible",
-                       getLoader().isAccessible(CONFIG_FILE.toURI(),
-                                                testFile.getAbsolutePath()));
-            assertTrue(testFile.getAbsoluteFile().toURI().toString() + " is not accessible",
-                       getLoader().isAccessible(CONFIG_FILE.toURI
-                               (), testFile.getAbsoluteFile().toURI().toString()));
-            assertTrue(testFile.toURI().toString() + " is not accessible",
-                       getLoader().isAccessible(CONFIG_FILE.toURI(), testFile.toURI().toString()));
+            assertTrue(
+                testFile.getAbsolutePath() + " is not accessible",
+                getLoader().isAccessible(CONFIG_FILE.toURI(), testFile.getAbsolutePath())
+            );
+            assertTrue(
+                testFile.getAbsoluteFile().toURI().toString() + " is not accessible",
+                getLoader().isAccessible(CONFIG_FILE.toURI(), testFile.getAbsoluteFile().toURI().toString())
+            );
+            assertTrue(
+                testFile.toURI().toString() + " is not accessible",
+                getLoader().isAccessible(CONFIG_FILE.toURI(), testFile.toURI().toString())
+            );
         } finally {
             testFile.delete();
         }
@@ -90,8 +93,10 @@ public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest
             testFile.getParentFile().mkdirs();
             FileUtils.writeByteArrayToFile(testFile, bytes);
             assertArrayEquals(bytes, getLoader().loadFile(CONFIG_FILE.toURI(), testFile.getAbsolutePath()));
-            assertArrayEquals(bytes, getLoader()
-                    .loadFile(CONFIG_FILE.toURI(), testFile.getAbsoluteFile().toURI().toString()));
+            assertArrayEquals(
+                bytes,
+                getLoader().loadFile(CONFIG_FILE.toURI(), testFile.getAbsoluteFile().toURI().toString())
+            );
             assertArrayEquals(bytes, getLoader().loadFile(CONFIG_FILE.toURI(), testFile.toURI().toString()));
         } finally {
             testFile.delete();

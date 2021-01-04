@@ -1,8 +1,5 @@
 package org.mapfish.print.processor.http.matcher;
 
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.ConfigurationException;
-
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.SocketException;
@@ -10,6 +7,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ConfigurationException;
 
 /**
  * Allows to check that a given URL matches a DNS address (textual format). The actual comparison is performed
@@ -46,6 +45,7 @@ import java.util.Optional;
  * [[examples=http_processors]]
  */
 public class DnsHostMatcher extends HostMatcher {
+
     private List<AddressHostMatcher> matchersForHost = new ArrayList<>();
     private String host;
 
@@ -56,9 +56,9 @@ public class DnsHostMatcher extends HostMatcher {
      * @return True if it matches.
      */
     @Override
-    public final Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo) throws SocketException,
-            UnknownHostException, MalformedURLException {
-        for (AddressHostMatcher addressHostMatcher: this.matchersForHost) {
+    public final Optional<Boolean> tryOverrideValidation(final MatchInfo matchInfo)
+        throws SocketException, UnknownHostException, MalformedURLException {
+        for (AddressHostMatcher addressHostMatcher : this.matchersForHost) {
             if (addressHostMatcher.matches(matchInfo)) {
                 return Optional.empty();
             }
@@ -83,7 +83,7 @@ public class DnsHostMatcher extends HostMatcher {
         this.host = host;
         final InetAddress[] inetAddresses = InetAddress.getAllByName(host);
 
-        for (InetAddress address: inetAddresses) {
+        for (InetAddress address : inetAddresses) {
             final AddressHostMatcher matcher = new AddressHostMatcher();
             matcher.setIp(address.getHostAddress());
             this.matchersForHost.add(matcher);

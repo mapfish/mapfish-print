@@ -1,5 +1,16 @@
 package org.mapfish.print.map.geotools;
 
+import static org.mapfish.print.Constants.OPACITY_PRECISION;
+
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 import org.geotools.data.DataStore;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
@@ -16,18 +27,6 @@ import org.mapfish.print.http.HttpRequestFetcher;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.processor.Processor;
-
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-
-import static org.mapfish.print.Constants.OPACITY_PRECISION;
 
 /**
  * The AbstractGeotoolsLayer class.
@@ -58,22 +57,21 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         this.params = other.params;
     }
 
-
     @Override
     public final Optional<MapLayer> tryAddLayer(final MapLayer newLayer) {
         return Optional.empty();
     }
 
     @Override
-    public void prepareRender(final MapfishMapContext transformer) {
-
-    }
+    public void prepareRender(final MapfishMapContext transformer) {}
 
     @Override
     public final void render(
-            final Graphics2D graphics2D,
-            final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final MapfishMapContext transformer, final Processor.ExecutionContext context) {
+        final Graphics2D graphics2D,
+        final MfClientHttpRequestFactory clientHttpRequestFactory,
+        final MapfishMapContext transformer,
+        final Processor.ExecutionContext context
+    ) {
         java.awt.geom.AffineTransform originalTransform = graphics2D.getTransform();
 
         MapfishMapContext layerTransformer = getLayerTransformer(transformer);
@@ -93,31 +91,51 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
             StreamingRenderer renderer = new StreamingRenderer();
 
             RenderingHints hints = new RenderingHints(Collections.emptyMap());
-            hints.add(new RenderingHints(RenderingHints.KEY_ALPHA_INTERPOLATION,
-                                         RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY));
-            hints.add(new RenderingHints(RenderingHints.KEY_ANTIALIASING,
-                                         RenderingHints.VALUE_ANTIALIAS_ON));
-            hints.add(new RenderingHints(RenderingHints.KEY_COLOR_RENDERING,
-                                         RenderingHints.VALUE_COLOR_RENDER_QUALITY));
-            hints.add(new RenderingHints(RenderingHints.KEY_DITHERING,
-                                         RenderingHints.VALUE_DITHER_ENABLE));
-            hints.add(new RenderingHints(RenderingHints.KEY_FRACTIONALMETRICS,
-                                         RenderingHints.VALUE_FRACTIONALMETRICS_ON));
-            hints.add(new RenderingHints(RenderingHints.KEY_INTERPOLATION,
-                                         RenderingHints.VALUE_INTERPOLATION_BICUBIC));
-            hints.add(new RenderingHints(RenderingHints.KEY_RENDERING,
-                                         RenderingHints.VALUE_RENDER_QUALITY));
-            hints.add(new RenderingHints(RenderingHints.KEY_STROKE_CONTROL,
-                                         RenderingHints.VALUE_STROKE_PURE));
-            hints.add(new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING,
-                                         RenderingHints.VALUE_TEXT_ANTIALIAS_ON));
+            hints.add(
+                new RenderingHints(
+                    RenderingHints.KEY_ALPHA_INTERPOLATION,
+                    RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY
+                )
+            );
+            hints.add(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
+            hints.add(
+                new RenderingHints(
+                    RenderingHints.KEY_COLOR_RENDERING,
+                    RenderingHints.VALUE_COLOR_RENDER_QUALITY
+                )
+            );
+            hints.add(new RenderingHints(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE));
+            hints.add(
+                new RenderingHints(
+                    RenderingHints.KEY_FRACTIONALMETRICS,
+                    RenderingHints.VALUE_FRACTIONALMETRICS_ON
+                )
+            );
+            hints.add(
+                new RenderingHints(
+                    RenderingHints.KEY_INTERPOLATION,
+                    RenderingHints.VALUE_INTERPOLATION_BICUBIC
+                )
+            );
+            hints.add(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
+            hints.add(
+                new RenderingHints(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE)
+            );
+            hints.add(
+                new RenderingHints(
+                    RenderingHints.KEY_TEXT_ANTIALIASING,
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+                )
+            );
 
             graphics2D.addRenderingHints(hints);
             renderer.setJava2DHints(hints);
             Map<String, Object> renderHints = new HashMap<>();
             if (transformer.isForceLongitudeFirst() != null) {
-                renderHints.put(StreamingRenderer.FORCE_EPSG_AXIS_ORDER_KEY,
-                                transformer.isForceLongitudeFirst());
+                renderHints.put(
+                    StreamingRenderer.FORCE_EPSG_AXIS_ORDER_KEY,
+                    transformer.isForceLongitudeFirst()
+                );
             }
             renderer.setRendererHints(renderHints);
 
@@ -138,22 +156,22 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         return this.params.opacity;
     }
 
-
     private void applyTransparency(final List<? extends Layer> layers) {
         final double opacity = this.params.opacity;
-        Assert.isTrue(opacity > -OPACITY_PRECISION && opacity < (1 + OPACITY_PRECISION),
-                      "Opacity of " + this + " is an illegal value: " + opacity);
+        Assert.isTrue(
+            opacity > -OPACITY_PRECISION && opacity < (1 + OPACITY_PRECISION),
+            "Opacity of " + this + " is an illegal value: " + opacity
+        );
 
         if (1.0 - opacity > OPACITY_PRECISION) {
             StyleVisitor visitor = new OpacitySettingStyleVisitor(opacity);
 
-            for (Layer layer: layers) {
+            for (Layer layer : layers) {
                 final Style style = layer.getStyle();
                 style.accept(visitor);
             }
         }
     }
-
 
     /**
      * Get the {@link DataStore} object that contains the data for this layer.
@@ -163,8 +181,10 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
      * @param context the job ID
      */
     protected abstract List<? extends Layer> getLayers(
-            MfClientHttpRequestFactory httpRequestFactory,
-            MapfishMapContext transformer, Processor.ExecutionContext context) throws Exception;
+        MfClientHttpRequestFactory httpRequestFactory,
+        MapfishMapContext transformer,
+        Processor.ExecutionContext context
+    ) throws Exception;
 
     @Override
     public boolean supportsNativeRotation() {
@@ -190,14 +210,16 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
         if (!FloatingPointUtil.equals(transformer.getRotation(), 0.0) && !this.supportsNativeRotation()) {
             // if a rotation is set and the rotation can not be handled natively
             // by the layer, we have to adjust the bounds and map size
-            layerTransformer = new MapfishMapContext(
+            layerTransformer =
+                new MapfishMapContext(
                     transformer,
                     transformer.getRotatedBoundsAdjustedForPreciseRotatedMapSize(),
                     transformer.getRotatedMapSize(),
                     0,
                     transformer.getDPI(),
                     transformer.isForceLongitudeFirst(),
-                    transformer.isDpiSensitiveStyle());
+                    transformer.isDpiSensitiveStyle()
+                );
         }
 
         return layerTransformer;
@@ -205,8 +227,9 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
 
     @Override
     public void prefetchResources(
-            final HttpRequestFetcher httpRequestFetcher,
-            final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer,
-            final Processor.ExecutionContext context) {
-    }
+        final HttpRequestFetcher httpRequestFetcher,
+        final MfClientHttpRequestFactory clientHttpRequestFactory,
+        final MapfishMapContext transformer,
+        final Processor.ExecutionContext context
+    ) {}
 }

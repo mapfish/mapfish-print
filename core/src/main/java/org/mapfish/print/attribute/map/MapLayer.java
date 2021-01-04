@@ -1,17 +1,15 @@
 package org.mapfish.print.attribute.map;
 
+import java.awt.Graphics2D;
+import java.util.Optional;
 import org.mapfish.print.http.HttpRequestFetcher;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.Processor;
-
-import java.awt.Graphics2D;
-import java.util.Optional;
 
 /**
  * Encapsulates the data required to load map data for a layer and render it.
  */
 public interface MapLayer {
-
     /**
      * Attempt to add the layer this layer so that both can be rendered as a single layer.
      *
@@ -47,10 +45,11 @@ public interface MapLayer {
      * @param context the job ID
      */
     void render(
-            Graphics2D graphics2D,
-            MfClientHttpRequestFactory clientHttpRequestFactory,
-            MapfishMapContext transformer,
-            Processor.ExecutionContext context);
+        Graphics2D graphics2D,
+        MfClientHttpRequestFactory clientHttpRequestFactory,
+        MapfishMapContext transformer,
+        Processor.ExecutionContext context
+    );
 
     /**
      * Indicate if the layer supports native rotation (e.g. WMS layers with the "angle" parameter).
@@ -80,10 +79,11 @@ public interface MapLayer {
      * @param context the job ID
      */
     void prefetchResources(
-            HttpRequestFetcher httpRequestFetcher,
-            MfClientHttpRequestFactory clientHttpRequestFactory,
-            MapfishMapContext transformer,
-            Processor.ExecutionContext context);
+        HttpRequestFetcher httpRequestFetcher,
+        MfClientHttpRequestFactory clientHttpRequestFactory,
+        MapfishMapContext transformer,
+        Processor.ExecutionContext context
+    );
 
     /**
      * Gets the opacity.

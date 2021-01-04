@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-
 /**
  * Models a dependency between two processors.
  */
@@ -23,9 +22,10 @@ public class ProcessorDependency {
      *         common.
      */
     public ProcessorDependency(
-            final Class<? extends Processor<?, ?>> required,
-            final Class<? extends Processor<?, ?>> dependent,
-            final Set<String> commonInputs) {
+        final Class<? extends Processor<?, ?>> required,
+        final Class<? extends Processor<?, ?>> dependent,
+        final Set<String> commonInputs
+    ) {
         this.required = required;
         this.dependent = dependent;
         this.commonInputs = new HashSet<>(commonInputs);
@@ -38,8 +38,9 @@ public class ProcessorDependency {
      * @param dependent The processor which requires the other to be executed first.
      */
     public ProcessorDependency(
-            final Class<? extends Processor<?, ?>> required,
-            final Class<? extends Processor<?, ?>> dependent) {
+        final Class<? extends Processor<?, ?>> required,
+        final Class<? extends Processor<?, ?>> dependent
+    ) {
         this(required, dependent, new HashSet<>());
     }
 
@@ -75,10 +76,15 @@ public class ProcessorDependency {
 
     @Override
     public final String toString() {
-        return "ProcessorDependency{" +
-                "required=" + this.required.getSimpleName() +
-                ", dependent=" + this.dependent.getSimpleName() +
-                ", commonInputs=" + this.commonInputs +
-                '}';
+        return (
+            "ProcessorDependency{" +
+            "required=" +
+            this.required.getSimpleName() +
+            ", dependent=" +
+            this.dependent.getSimpleName() +
+            ", commonInputs=" +
+            this.commonInputs +
+            '}'
+        );
     }
 }

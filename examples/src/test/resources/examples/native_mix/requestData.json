@@ -6,10 +6,7 @@
       "projection": "EPSG:3857",
       "dpi": 72,
       "rotation": 45,
-      "center": [
-        -8233518.5005945,
-        4980320.4059228
-      ],
+      "center": [-8233518.5005945, 4980320.4059228],
       "scale": 25000,
       "layers": [
         {
@@ -18,13 +15,9 @@
           "useNativeAngle": "false",
           "opacity": 0.5,
           "type": "WMS",
-          "layers": [
-            "tiger:tiger_roads"
-          ],
+          "layers": ["tiger:tiger_roads"],
           "imageFormat": "image/png",
-          "styles": [
-            "line"
-          ],
+          "styles": ["line"],
           "customParams": {
             "TRANSPARENT": "true"
           }
@@ -35,13 +28,9 @@
           "useNativeAngle": "true",
           "opacity": 0.5,
           "type": "WMS",
-          "layers": [
-            "tiger:tiger_roads"
-          ],
+          "layers": ["tiger:tiger_roads"],
           "imageFormat": "image/png",
-          "styles": [
-            "line"
-          ],
+          "styles": ["line"],
           "customParams": {
             "TRANSPARENT": "true"
           }
@@ -52,13 +41,9 @@
           "useNativeAngle": "false",
           "opacity": 0.5,
           "type": "WMS",
-          "layers": [
-            "tiger:tiger_roads"
-          ],
+          "layers": ["tiger:tiger_roads"],
           "imageFormat": "image/png",
-          "styles": [
-            "line"
-          ],
+          "styles": ["line"],
           "customParams": {
             "TRANSPARENT": "true"
           }

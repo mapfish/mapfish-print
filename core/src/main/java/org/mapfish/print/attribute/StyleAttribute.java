@@ -1,12 +1,11 @@
 package org.mapfish.print.attribute;
 
+import java.util.List;
 import org.mapfish.print.attribute.StyleAttribute.StylesAttributeValues;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Attribute for GeoJson Styles collection. [[examples=report]]
@@ -35,6 +34,7 @@ public final class StyleAttribute extends ReflectiveAttribute<StylesAttributeVal
      * The value of {@link StyleAttribute}.
      */
     public static final class StylesAttributeValues {
+
         /**
          * The style string.
          */

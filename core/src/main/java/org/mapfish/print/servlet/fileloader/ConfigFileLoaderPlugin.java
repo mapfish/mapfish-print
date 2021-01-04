@@ -13,7 +13,6 @@ import java.util.Optional;
  * simple way is to ensure the file is within the same or sub-directory of the config file directory.
  */
 public interface ConfigFileLoaderPlugin {
-
     /**
      * Return the file object the uri refers to if it refers to a file.  Otherwise Optional.absent().
      *

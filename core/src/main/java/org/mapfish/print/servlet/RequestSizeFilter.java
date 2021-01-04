@@ -1,9 +1,5 @@
 package org.mapfish.print.servlet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-
 import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -12,6 +8,9 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
 /**
  * Filter which checks the content size of requests.
@@ -33,8 +32,10 @@ public class RequestSizeFilter implements Filter {
 
     @Override
     public final void doFilter(
-            final ServletRequest request, final ServletResponse response,
-            final FilterChain chain) throws IOException, ServletException {
+        final ServletRequest request,
+        final ServletResponse response,
+        final FilterChain chain
+    ) throws IOException, ServletException {
         if (request.getContentLength() > this.maxContentLength) {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             LOGGER.error("Request size exceeds limit: {} bytes", request.getContentLength());
@@ -54,7 +55,5 @@ public class RequestSizeFilter implements Filter {
     }
 
     @Override
-    public void destroy() {
-    }
-
+    public void destroy() {}
 }

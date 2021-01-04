@@ -1,5 +1,12 @@
 package org.mapfish.print.map.geotools;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Map;
+import javax.annotation.PostConstruct;
 import org.eclipse.emf.common.util.URI;
 import org.geotools.xml.resolver.SchemaCache;
 import org.geotools.xml.resolver.SchemaResolver;
@@ -10,18 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Map;
-import javax.annotation.PostConstruct;
-
 /**
  * An {@link org.eclipse.emf.ecore.resource.URIHandler} for caching XSDs or using local copies.
  */
 class CachingUrihandler extends HTTPURIHandler {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CachingUrihandler.class);
 
     @Autowired

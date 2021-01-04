@@ -1,5 +1,13 @@
 package org.mapfish.print.processor.map;
 
+import static org.mapfish.print.Constants.PDF_DPI;
+
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nonnull;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.locationtech.jts.geom.Coordinate;
@@ -22,15 +30,6 @@ import org.mapfish.print.processor.RequireAttributes;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nonnull;
-
-import static org.mapfish.print.Constants.PDF_DPI;
 
 /**
  * <p>Processor used to display a map on multiple pages.</p>
@@ -58,8 +57,9 @@ import static org.mapfish.print.Constants.PDF_DPI;
  * [[examples=paging]]
  */
 public class CreateMapPagesProcessor
-        extends AbstractProcessor<CreateMapPagesProcessor.Input, CreateMapPagesProcessor.Output>
-        implements ProvideAttributes, RequireAttributes {
+    extends AbstractProcessor<CreateMapPagesProcessor.Input, CreateMapPagesProcessor.Output>
+    implements ProvideAttributes, RequireAttributes {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateMapPagesProcessor.class);
     private static final int DO_NOT_RENDER_BBOX_INDEX = -1;
     private static final String MAP_KEY = "map";
@@ -76,8 +76,9 @@ public class CreateMapPagesProcessor
 
     @Override
     protected void extraValidation(
-            final List<Throwable> validationErrors, final Configuration configuration) {
-    }
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {}
 
     @Override
     public final Input createInputParameter() {
@@ -87,7 +88,6 @@ public class CreateMapPagesProcessor
     @SuppressWarnings("unchecked")
     @Override
     public final Output execute(final Input values, final ExecutionContext context) {
-
         final MapAttributeValues map = values.map;
         final PagingAttribute.PagingProcessorValues paging = values.paging;
         CoordinateReferenceSystem projection = map.getMapBounds().getProjection();
@@ -111,18 +111,22 @@ public class CreateMapPagesProcessor
         final double paintAreaWidth = DistanceUnit.IN.convertTo(paintAreaWidthIn, projectionUnit);
         final double paintAreaHeight = DistanceUnit.IN.convertTo(paintAreaHeightIn, projectionUnit);
 
-        final double overlapProj =
-                DistanceUnit.IN.convertTo(paging.overlap * paging.scale / PDF_DPI, projectionUnit);
+        final double overlapProj = DistanceUnit.IN.convertTo(
+            paging.overlap * paging.scale / PDF_DPI,
+            projectionUnit
+        );
 
-        final int nbWidth =
-                (int) Math.ceil((aoiBBox.getWidth() + overlapProj) / (paintAreaWidth - overlapProj));
-        final int nbHeight =
-                (int) Math.ceil((aoiBBox.getHeight() + overlapProj) / (paintAreaHeight - overlapProj));
+        final int nbWidth = (int) Math.ceil(
+            (aoiBBox.getWidth() + overlapProj) / (paintAreaWidth - overlapProj)
+        );
+        final int nbHeight = (int) Math.ceil(
+            (aoiBBox.getHeight() + overlapProj) / (paintAreaHeight - overlapProj)
+        );
 
         final double marginWidth =
-                (paintAreaWidth * nbWidth - (nbWidth - 1) * overlapProj - aoiBBox.getWidth()) / 2;
+            (paintAreaWidth * nbWidth - (nbWidth - 1) * overlapProj - aoiBBox.getWidth()) / 2;
         final double marginHeight =
-                (paintAreaHeight * nbHeight - (nbHeight - 1) * overlapProj - aoiBBox.getHeight()) / 2;
+            (paintAreaHeight * nbHeight - (nbHeight - 1) * overlapProj - aoiBBox.getHeight()) / 2;
 
         final double minX = aoiBBox.getMinX() - marginWidth - overlapProj / 2;
         final double minY = aoiBBox.getMinY() - marginHeight - overlapProj / 2;
@@ -138,12 +142,12 @@ public class CreateMapPagesProcessor
                 final double x2 = x1 + paintAreaWidth;
                 final double y1 = minY + j * (paintAreaHeight - overlapProj);
                 final double y2 = y1 + paintAreaHeight;
-                Coordinate[] coords = new Coordinate[]{
-                        new Coordinate(x1, y1),
-                        new Coordinate(x1, y2),
-                        new Coordinate(x2, y2),
-                        new Coordinate(x2, y1),
-                        new Coordinate(x1, y1)
+                Coordinate[] coords = new Coordinate[] {
+                    new Coordinate(x1, y1),
+                    new Coordinate(x1, y2),
+                    new Coordinate(x2, y2),
+                    new Coordinate(x2, y1),
+                    new Coordinate(x1, y1),
                 };
 
                 LinearRing ring = this.geometryFactory.createLinearRing(coords);
@@ -168,30 +172,34 @@ public class CreateMapPagesProcessor
                     mapValues.put("name", mapIndexes[i][j]);
                     mapValues.put("left", i != 0 ? mapIndexes[i - 1][j] : DO_NOT_RENDER_BBOX_INDEX);
                     mapValues.put("bottom", j != 0 ? mapIndexes[i][j - 1] : DO_NOT_RENDER_BBOX_INDEX);
-                    mapValues
-                            .put("right", i != nbWidth - 1 ? mapIndexes[i + 1][j] : DO_NOT_RENDER_BBOX_INDEX);
+                    mapValues.put(
+                        "right",
+                        i != nbWidth - 1 ? mapIndexes[i + 1][j] : DO_NOT_RENDER_BBOX_INDEX
+                    );
                     mapValues.put("top", j != nbHeight - 1 ? mapIndexes[i][j + 1] : DO_NOT_RENDER_BBOX_INDEX);
 
                     final Envelope mapsBound = mapsBounds[i][j];
                     MapAttributeValues theMap = map.copy(
-                            map.getWidth(), map.getHeight(),
-                            (@Nonnull final MapAttributeValues input) -> {
-                                    input.center = null;
-                                    input.bbox = new double[]{
-                                            mapsBound.getMinX(),
-                                            mapsBound.getMinY(),
-                                            mapsBound.getMaxX(),
-                                            mapsBound.getMaxY()
-                                    };
+                        map.getWidth(),
+                        map.getHeight(),
+                        (@Nonnull final MapAttributeValues input) -> {
+                            input.center = null;
+                            input.bbox =
+                                new double[] {
+                                    mapsBound.getMinX(),
+                                    mapsBound.getMinY(),
+                                    mapsBound.getMaxX(),
+                                    mapsBound.getMaxY(),
+                                };
 
-                                    if (paging.aoiDisplay != null) {
-                                        input.areaOfInterest.display = paging.aoiDisplay;
-                                    }
-                                    if (paging.aoiStyle != null) {
-                                        input.areaOfInterest.style = paging.aoiStyle;
-                                    }
-                                    return null;
-                                }
+                            if (paging.aoiDisplay != null) {
+                                input.areaOfInterest.display = paging.aoiDisplay;
+                            }
+                            if (paging.aoiStyle != null) {
+                                input.areaOfInterest.style = paging.aoiStyle;
+                            }
+                            return null;
+                        }
                     );
                     mapValues.put(MAP_KEY, theMap);
 
@@ -236,6 +244,7 @@ public class CreateMapPagesProcessor
      * The Input object for processor.
      */
     public static class Input {
+
         /**
          * The required parameters for the map.
          */
@@ -252,6 +261,7 @@ public class CreateMapPagesProcessor
      * Output of processor.
      */
     public static final class Output {
+
         /**
          * Resulting list of values for the maps.
          */

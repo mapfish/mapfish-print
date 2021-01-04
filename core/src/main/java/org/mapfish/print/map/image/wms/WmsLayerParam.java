@@ -1,5 +1,7 @@
 package org.mapfish.print.map.image.wms;
 
+import java.net.URISyntaxException;
+import java.util.Arrays;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.map.tiled.AbstractWMXLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
@@ -7,14 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 
-import java.net.URISyntaxException;
-import java.util.Arrays;
-
-
 /**
  * Layer parameters for WMS layer.
  */
 public class WmsLayerParam extends AbstractWMXLayerParams {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(WmsLayerParam.class);
 
     /**
@@ -110,20 +109,30 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
         WmsVersion.lookup(this.version);
         Assert.isTrue(validateBaseUrl(), "invalid baseURL");
 
-        Assert.isTrue(this.layers.length > 0, "There must be at least one layer defined for a WMS request" +
-                " to make sense");
+        Assert.isTrue(
+            this.layers.length > 0,
+            "There must be at least one layer defined for a WMS request" + " to make sense"
+        );
 
         // OpenLayers 2 compatibility.  It will post a single empty style no matter how many layers there are
 
-        if (this.styles != null && this.styles.length != this.layers.length && this.styles.length == 1 &&
-                this.styles[0].trim().isEmpty()) {
+        if (
+            this.styles != null &&
+            this.styles.length != this.layers.length &&
+            this.styles.length == 1 &&
+            this.styles[0].trim().isEmpty()
+        ) {
             this.styles = null;
         } else {
-            Assert.isTrue(this.styles == null || this.layers.length == this.styles.length,
-                          String.format(
-                                  "If styles are defined then there must be one for each layer.  Number of" +
-                                          " layers: %s\nStyles: %s", this.layers.length,
-                                  Arrays.toString(this.styles)));
+            Assert.isTrue(
+                this.styles == null || this.layers.length == this.styles.length,
+                String.format(
+                    "If styles are defined then there must be one for each layer.  Number of" +
+                    " layers: %s\nStyles: %s",
+                    this.layers.length,
+                    Arrays.toString(this.styles)
+                )
+            );
         }
 
         if (this.imageFormat.indexOf('/') < 0) {
@@ -131,8 +140,10 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
             this.imageFormat = "image/" + this.imageFormat;
         }
 
-        Assert.isTrue(this.method == HttpMethod.GET || this.method == HttpMethod.POST,
-                      String.format("Unsupported method %s for WMS layer", this.method.toString()));
+        Assert.isTrue(
+            this.method == HttpMethod.GET || this.method == HttpMethod.POST,
+            String.format("Unsupported method %s for WMS layer", this.method.toString())
+        );
     }
 
     /**
@@ -150,6 +161,6 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
         /**
          * QGIS Server.
          */
-        QGISSERVER
+        QGISSERVER,
     }
 }

@@ -10,6 +10,7 @@ import org.opengis.referencing.cs.AxisDirection;
  * The LinearCoordinateSequence class.
  */
 public final class LinearCoordinateSequence implements CoordinateSequence, Cloneable {
+
     private int dimension;
     private double axis0Origin;
     private double axis1Origin;
@@ -162,7 +163,6 @@ public final class LinearCoordinateSequence implements CoordinateSequence, Clone
         final Coordinate[] coordinates = new Coordinate[this.numPoints];
         for (int i = 0; i < coordinates.length; i++) {
             coordinates[i] = getCoordinate(i);
-
         }
         return coordinates;
     }
@@ -181,12 +181,14 @@ public final class LinearCoordinateSequence implements CoordinateSequence, Clone
     }
 
     private boolean ordinate0IsY() {
-        return this.ordinate0AxisDirection == AxisDirection.DOWN ||
-                this.ordinate0AxisDirection == AxisDirection.UP ||
-                this.ordinate0AxisDirection == AxisDirection.NORTH ||
-                this.ordinate0AxisDirection == AxisDirection.SOUTH ||
-                this.ordinate0AxisDirection == AxisDirection.DISPLAY_DOWN ||
-                this.ordinate0AxisDirection == AxisDirection.DISPLAY_UP;
+        return (
+            this.ordinate0AxisDirection == AxisDirection.DOWN ||
+            this.ordinate0AxisDirection == AxisDirection.UP ||
+            this.ordinate0AxisDirection == AxisDirection.NORTH ||
+            this.ordinate0AxisDirection == AxisDirection.SOUTH ||
+            this.ordinate0AxisDirection == AxisDirection.DISPLAY_DOWN ||
+            this.ordinate0AxisDirection == AxisDirection.DISPLAY_UP
+        );
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.mapfish.print.output;
 
+import java.io.OutputStream;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.PrintPageFormat;
@@ -11,13 +12,12 @@ import net.sf.jasperreports.export.type.PdfVersionEnum;
 import org.mapfish.print.config.PDFConfig;
 import org.mapfish.print.processor.ExecutionStats;
 
-import java.io.OutputStream;
-
 /**
  * An PDF output format that uses Jasper reports to generate the result.
  */
-public final class JasperReportPDFOutputFormat extends AbstractJasperReportOutputFormat
-        implements OutputFormat {
+public final class JasperReportPDFOutputFormat
+    extends AbstractJasperReportOutputFormat
+    implements OutputFormat {
 
     @Override
     public String getContentType() {
@@ -31,7 +31,6 @@ public final class JasperReportPDFOutputFormat extends AbstractJasperReportOutpu
 
     @Override
     protected void doExport(final OutputStream outputStream, final Print print) throws JRException {
-
         JRPdfExporter exporter = new JRPdfExporter(print.context);
 
         exporter.setExporterInput(new SimpleExporterInput(print.print));

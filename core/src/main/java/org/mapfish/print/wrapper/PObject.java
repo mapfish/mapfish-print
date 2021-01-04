@@ -2,12 +2,10 @@ package org.mapfish.print.wrapper;
 
 import java.util.Iterator;
 
-
 /**
  * Object wrapper interface for Json and Yaml parsing.
  */
 public interface PObject {
-
     /**
      * Get the value for the key.
      *

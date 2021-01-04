@@ -1,5 +1,10 @@
 package org.mapfish.print.map.style;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Optional;
+import java.util.function.Function;
 import org.apache.commons.io.IOUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.geotools.styling.Style;
@@ -9,12 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
-
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * Utilities for creating parser plugins.
@@ -34,8 +33,10 @@ public final class ParserPluginUtils {
      * @param loadFunction the function to call when data has been loaded.
      */
     public static Optional<Style> loadStyleAsURI(
-            final ClientHttpRequestFactory clientHttpRequestFactory, final String styleRef,
-            final Function<byte[], @Nullable Optional<Style>> loadFunction) {
+        final ClientHttpRequestFactory clientHttpRequestFactory,
+        final String styleRef,
+        final Function<byte[], @Nullable Optional<Style>> loadFunction
+    ) {
         HttpStatus statusCode;
         final byte[] input;
 

@@ -15,9 +15,7 @@ public interface TableColumnConverter<R> extends ConfigurationObject {
      * @param requestFactory for fetching file and http resources.
      * @param text the cell value.
      */
-    R resolve(
-            MfClientHttpRequestFactory requestFactory,
-            String text);
+    R resolve(MfClientHttpRequestFactory requestFactory, String text);
 
     /**
      * Returns true if the converter can convert the given input.

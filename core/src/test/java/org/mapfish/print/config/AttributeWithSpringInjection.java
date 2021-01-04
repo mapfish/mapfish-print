@@ -1,10 +1,10 @@
 package org.mapfish.print.config;
 
+import static org.junit.Assert.assertNotNull;
+
 import com.codahale.metrics.MetricRegistry;
 import org.mapfish.print.attribute.PrimitiveAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Test Attribute.

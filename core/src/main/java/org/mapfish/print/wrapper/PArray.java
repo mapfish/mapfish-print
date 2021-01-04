@@ -1,6 +1,5 @@
 package org.mapfish.print.wrapper;
 
-
 /**
  * Array wrapper interface for Json and Yaml parsing.
  */

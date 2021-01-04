@@ -1,5 +1,12 @@
 package org.mapfish.print.output;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import javax.annotation.Nonnull;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.repo.FileRepositoryService;
@@ -14,25 +21,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import javax.annotation.Nonnull;
-
 /**
  * The class responsible for accessing resources and streams when generating jasper reports.
  */
 class MapfishPrintRepositoryService implements StreamRepositoryService {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MapfishPrintRepositoryService.class);
 
     private final MfClientHttpRequestFactory httpRequestFactory;
     private JasperReportsContext jasperReportsContext;
 
-    MapfishPrintRepositoryService(
-            @Nonnull final MfClientHttpRequestFactory httpRequestFactory) {
+    MapfishPrintRepositoryService(@Nonnull final MfClientHttpRequestFactory httpRequestFactory) {
         this.httpRequestFactory = httpRequestFactory;
         this.jasperReportsContext = DefaultJasperReportsContext.getInstance();
     }
@@ -47,13 +46,12 @@ class MapfishPrintRepositoryService implements StreamRepositoryService {
         }
         try {
             final ClientHttpResponse response =
-                    this.httpRequestFactory.createRequest(uri, HttpMethod.GET).execute();
+                this.httpRequestFactory.createRequest(uri, HttpMethod.GET).execute();
             return new ResponseClosingStream(response);
         } catch (IOException e) {
             return null;
         }
     }
-
 
     @Override
     public Resource getResource(final String uri) {
@@ -78,8 +76,10 @@ class MapfishPrintRepositoryService implements StreamRepositoryService {
             }
 
             final PersistenceUtil persistenceUtil = PersistenceUtil.getInstance(this.jasperReportsContext);
-            PersistenceService persistenceService =
-                    persistenceUtil.getService(FileRepositoryService.class, resourceType);
+            PersistenceService persistenceService = persistenceUtil.getService(
+                FileRepositoryService.class,
+                resourceType
+            );
             if (persistenceService != null) {
                 return resourceType.cast(persistenceService.load(uri, this));
             }
@@ -97,6 +97,7 @@ class MapfishPrintRepositoryService implements StreamRepositoryService {
     }
 
     private static final class ResponseClosingStream extends InputStream {
+
         private final InputStream stream;
         private final ClientHttpResponse response;
 

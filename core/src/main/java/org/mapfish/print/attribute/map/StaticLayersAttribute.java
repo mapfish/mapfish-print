@@ -1,11 +1,10 @@
 package org.mapfish.print.attribute.map;
 
+import java.util.List;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.wrapper.PArray;
-
-import java.util.List;
 
 /**
  * <p>The attributes for the {@link org.mapfish.print.processor.map.AddStaticLayersProcessor} (see
@@ -16,7 +15,7 @@ import java.util.List;
  * [[examples=add_overlay_layer,report]]
  */
 public final class StaticLayersAttribute
-        extends ReflectiveAttribute<StaticLayersAttribute.StaticLayersAttributeValue> {
+    extends ReflectiveAttribute<StaticLayersAttribute.StaticLayersAttributeValue> {
 
     @Override
     public Class<StaticLayersAttribute.StaticLayersAttributeValue> getValueType() {
@@ -37,6 +36,7 @@ public final class StaticLayersAttribute
      * The object used to parse the input parameters for this attribute object.
      */
     public static final class StaticLayersAttributeValue {
+
         /**
          * An array of layers (the same as for
          * {@link org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues#layers}).

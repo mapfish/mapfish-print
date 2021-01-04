@@ -1,5 +1,9 @@
 package org.mapfish.print.attribute;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import javax.annotation.Nonnull;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JsonDataSource;
 import org.json.JSONException;
@@ -8,11 +12,6 @@ import org.json.JSONWriter;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.wrapper.PObject;
-
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import javax.annotation.Nonnull;
 
 /**
  * A JSON data source attribute. To be declared as net.sf.jasperreports.engine.data.JsonDataSource in Jasper.
@@ -32,6 +31,7 @@ import javax.annotation.Nonnull;
  * The expression given to the subDataSource method must select an array in the JSON structure.
  */
 public class JsonDatasourceAttribute implements Attribute {
+
     private String configName;
 
     @Override
@@ -52,8 +52,10 @@ public class JsonDatasourceAttribute implements Attribute {
 
     @Override
     public Object getValue(
-            @Nonnull final Template template, @Nonnull final String attributeName,
-            @Nonnull final PObject requestJsonAttributes) {
+        @Nonnull final Template template,
+        @Nonnull final String attributeName,
+        @Nonnull final PObject requestJsonAttributes
+    ) {
         final String json;
         final Object value = requestJsonAttributes.opt(attributeName);
 
@@ -62,21 +64,28 @@ public class JsonDatasourceAttribute implements Attribute {
         } else if (value instanceof JSONObject) {
             json = value.toString();
         } else {
-            final String message = "Expected a JSON Object as the value for the element with the path: '" +
-                    requestJsonAttributes.getPath(attributeName) + "' but instead "
-                    + "got a '" + value.getClass().toString() + "'";
+            final String message =
+                "Expected a JSON Object as the value for the element with the path: '" +
+                requestJsonAttributes.getPath(attributeName) +
+                "' but instead " +
+                "got a '" +
+                value.getClass().toString() +
+                "'";
 
             throw new IllegalArgumentException(message);
         }
 
         try {
-            final JsonDataSource result =
-                    new JsonDataSource(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));
+            final JsonDataSource result = new JsonDataSource(
+                new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8))
+            );
             result.next();
             return result;
         } catch (JRException e) {
-            throw new RuntimeException("Error while parsing " +
-                                               requestJsonAttributes.getPath(attributeName) + " as json", e);
+            throw new RuntimeException(
+                "Error while parsing " + requestJsonAttributes.getPath(attributeName) + " as json",
+                e
+            );
         }
     }
 

@@ -1,5 +1,18 @@
 package org.mapfish.print.output;
 
+import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.attribute.Attribute;
@@ -15,24 +28,11 @@ import org.mapfish.print.wrapper.ObjectMissingException;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
-
 /**
  * Values that go into a processor from previous processors in the processor processing graph.
  */
 public final class Values {
+
     /**
      * The key that is used to store the task directory in the values map.
      */
@@ -101,12 +101,13 @@ public final class Values {
      * @param jasperTemplateBuild the directory where the jasper templates are compiled to
      */
     public Values(
-            final String jobId,
-            final PJsonObject requestData,
-            final Template template,
-            final File taskDirectory,
-            final MfClientHttpRequestFactoryImpl httpRequestFactory,
-            final File jasperTemplateBuild) {
+        final String jobId,
+        final PJsonObject requestData,
+        final Template template,
+        final File taskDirectory,
+        final MfClientHttpRequestFactoryImpl httpRequestFactory,
+        final File jasperTemplateBuild
+    ) {
         this(jobId, requestData, template, taskDirectory, httpRequestFactory, jasperTemplateBuild, null);
     }
 
@@ -122,20 +123,28 @@ public final class Values {
      * @param outputFormat the output format
      */
     public Values(
-            final String jobId,
-            final PJsonObject requestData,
-            final Template template,
-            final File taskDirectory,
-            final MfClientHttpRequestFactoryImpl httpRequestFactory,
-            final File jasperTemplateBuild,
-            final String outputFormat) {
+        final String jobId,
+        final PJsonObject requestData,
+        final Template template,
+        final File taskDirectory,
+        final MfClientHttpRequestFactoryImpl httpRequestFactory,
+        final File jasperTemplateBuild,
+        final String outputFormat
+    ) {
         Assert.isTrue(!taskDirectory.mkdirs() || taskDirectory.exists());
 
         // add task dir. to values so that all processors can access it
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
-        this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY,
-                        new MfClientHttpRequestFactoryProvider(new ConfigFileResolvingHttpRequestFactory(
-                                httpRequestFactory, template.getConfiguration(), jobId)));
+        this.values.put(
+                CLIENT_HTTP_REQUEST_FACTORY_KEY,
+                new MfClientHttpRequestFactoryProvider(
+                    new ConfigFileResolvingHttpRequestFactory(
+                        httpRequestFactory,
+                        template.getConfiguration(),
+                        jobId
+                    )
+                )
+            );
         this.values.put(TEMPLATE_KEY, template);
         this.values.put(PDF_CONFIG_KEY, template.getPdfConfig());
         if (jasperTemplateBuild != null) {
@@ -187,24 +196,31 @@ public final class Values {
      * @param requestJsonAttributes the json data for populating the attribute values
      */
     public void populateFromAttributes(
-            @Nonnull final Template template,
-            @Nonnull final Map<String, Attribute> attributes,
-            @Nonnull final PObject requestJsonAttributes) {
-        if (requestJsonAttributes.has(JSON_REQUEST_HEADERS) &&
-                requestJsonAttributes.getObject(JSON_REQUEST_HEADERS).has(JSON_REQUEST_HEADERS) &&
-                !attributes.containsKey(JSON_REQUEST_HEADERS)) {
+        @Nonnull final Template template,
+        @Nonnull final Map<String, Attribute> attributes,
+        @Nonnull final PObject requestJsonAttributes
+    ) {
+        if (
+            requestJsonAttributes.has(JSON_REQUEST_HEADERS) &&
+            requestJsonAttributes.getObject(JSON_REQUEST_HEADERS).has(JSON_REQUEST_HEADERS) &&
+            !attributes.containsKey(JSON_REQUEST_HEADERS)
+        ) {
             attributes.put(JSON_REQUEST_HEADERS, new HttpRequestHeadersAttribute());
         }
-        for (Map.Entry<String, Attribute> attribute: attributes.entrySet()) {
+        for (Map.Entry<String, Attribute> attribute : attributes.entrySet()) {
             try {
-                put(attribute.getKey(),
-                    attribute.getValue().getValue(template, attribute.getKey(), requestJsonAttributes));
+                put(
+                    attribute.getKey(),
+                    attribute.getValue().getValue(template, attribute.getKey(), requestJsonAttributes)
+                );
             } catch (ObjectMissingException | IllegalArgumentException e) {
                 throw e;
             } catch (Throwable e) {
                 String templateName = "unknown";
-                for (Map.Entry<String, Template> entry: template.getConfiguration().getTemplates()
-                        .entrySet()) {
+                for (Map.Entry<String, Template> entry : template
+                    .getConfiguration()
+                    .getTemplates()
+                    .entrySet()) {
                     if (entry.getValue() == template) {
                         templateName = entry.getKey();
                         break;
@@ -218,11 +234,16 @@ public final class Values {
                     defaults = "\n\n The attribute defaults are: " + reflectiveAttribute.getDefaultValue();
                 }
 
-                String errorMsg = "An error occurred when creating a value from the '" + attribute.getKey() +
-                        "' attribute for the '" +
-                        templateName + "' template.\n\nThe JSON is: \n" + requestJsonAttributes + defaults +
-                        "\n" +
-                        e.toString();
+                String errorMsg =
+                    "An error occurred when creating a value from the '" +
+                    attribute.getKey() +
+                    "' attribute for the '" +
+                    templateName +
+                    "' template.\n\nThe JSON is: \n" +
+                    requestJsonAttributes +
+                    defaults +
+                    "\n" +
+                    e.toString();
 
                 throw new AttributeParsingException(errorMsg, e);
             }
@@ -230,7 +251,7 @@ public final class Values {
 
         if (template.getConfiguration().isThrowErrorOnExtraParameters()) {
             final List<String> extraProperties = new ArrayList<>();
-            for (Iterator<String> it = requestJsonAttributes.keys(); it.hasNext(); ) {
+            for (Iterator<String> it = requestJsonAttributes.keys(); it.hasNext();) {
                 final String attributeName = it.next();
                 if (!attributes.containsKey(attributeName)) {
                     extraProperties.add(attributeName);
@@ -238,8 +259,11 @@ public final class Values {
             }
 
             if (!extraProperties.isEmpty()) {
-                throw new ExtraPropertyException("Extra properties found in the request attributes",
-                                                 extraProperties, attributes.keySet());
+                throw new ExtraPropertyException(
+                    "Extra properties found in the request attributes",
+                    extraProperties,
+                    attributes.keySet()
+                );
             }
         }
     }
@@ -251,9 +275,10 @@ public final class Values {
      */
     public void addRequiredValues(@Nonnull final Values sourceValues) {
         Object taskDirectory = sourceValues.getObject(TASK_DIRECTORY_KEY, Object.class);
-        MfClientHttpRequestFactoryProvider requestFactoryProvider =
-                sourceValues.getObject(CLIENT_HTTP_REQUEST_FACTORY_KEY,
-                                       MfClientHttpRequestFactoryProvider.class);
+        MfClientHttpRequestFactoryProvider requestFactoryProvider = sourceValues.getObject(
+            CLIENT_HTTP_REQUEST_FACTORY_KEY,
+            MfClientHttpRequestFactoryProvider.class
+        );
         Template template = sourceValues.getObject(TEMPLATE_KEY, Template.class);
         PDFConfig pdfConfig = sourceValues.getObject(PDF_CONFIG_KEY, PDFConfig.class);
         String subReportDir = sourceValues.getString(SUBREPORT_DIR_KEY);
@@ -282,7 +307,8 @@ public final class Values {
 
         if (value == null) {
             throw new IllegalArgumentException(
-                    "A null value was attempted to be put into the values object under key: " + key);
+                "A null value was attempted to be put into the values object under key: " + key
+            );
         }
         this.values.put(key, value);
     }
@@ -370,10 +396,10 @@ public final class Values {
      */
     @SuppressWarnings("unchecked")
     public <T> Map<String, T> find(final Class<T> valueTypeToFind) {
-        return (Map<String, T>) this.values.entrySet().stream()
-                .filter(input -> valueTypeToFind.isInstance(input.getValue()))
-                .collect(
-                        Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return (Map<String, T>) this.values.entrySet()
+            .stream()
+            .filter(input -> valueTypeToFind.isInstance(input.getValue()))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     @Override

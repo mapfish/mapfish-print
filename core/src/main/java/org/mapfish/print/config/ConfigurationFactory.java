@@ -1,6 +1,13 @@
 package org.mapfish.print.config;
 
 import com.google.common.annotations.VisibleForTesting;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.List;
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,26 +17,18 @@ import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.representer.Representer;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
-
 /**
  * Strategy/plug-in for loading {@link Configuration} objects.
  */
 public class ConfigurationFactory {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationFactory.class);
+
     @Autowired
     private ConfigurableApplicationContext context;
+
     private Yaml yaml;
     private boolean doValidation = true;
-
 
     /**
      * initialize this factory.  Called by spring after construction.
@@ -71,18 +70,17 @@ public class ConfigurationFactory {
      * @param configData the config file data
      */
     public final Configuration getConfig(final File configFile, final InputStream configData)
-            throws IOException {
+        throws IOException {
         final Configuration configuration = this.context.getBean(Configuration.class);
         configuration.setConfigurationFile(configFile);
         MapfishPrintConstructor.setConfigurationUnderConstruction(configuration);
 
-        final Configuration config =
-                this.yaml.load(new InputStreamReader(configData, "UTF-8"));
+        final Configuration config = this.yaml.load(new InputStreamReader(configData, "UTF-8"));
         if (this.doValidation) {
             final List<Throwable> validate = config.validate();
             if (!validate.isEmpty()) {
                 StringBuilder errors = new StringBuilder();
-                for (Throwable throwable: validate) {
+                for (Throwable throwable : validate) {
                     errors.append("\n\t* ").append(throwable.getMessage());
                     LOGGER.error("Configuration Error found", throwable);
                 }

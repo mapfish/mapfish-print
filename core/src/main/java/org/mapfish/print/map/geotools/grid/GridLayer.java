@@ -1,6 +1,18 @@
 package org.mapfish.print.map.geotools.grid;
 
 import com.google.common.annotations.VisibleForTesting;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
 import org.geotools.data.FeatureSource;
 import org.geotools.map.Layer;
 import org.mapfish.print.Constants;
@@ -14,23 +26,11 @@ import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.style.json.ColorParser;
 import org.mapfish.print.processor.Processor;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.Stroke;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
-
 /**
  * A layer which is a spatial grid of lines on the map.
  */
 public final class GridLayer implements MapLayer {
+
     private final GridParam params;
     private final LabelPositionCollector labels;
     AbstractFeatureSourceLayer grid;
@@ -48,15 +48,21 @@ public final class GridLayer implements MapLayer {
      * @param labels the grid labels to render
      */
     public GridLayer(
-            final ExecutorService executorService,
-            final FeatureSourceSupplier featureSourceSupplier,
-            final StyleSupplier<FeatureSource> styleSupplier,
-            final boolean renderAsSvg,
-            final GridParam params,
-            final LabelPositionCollector labels) {
-        this.grid = new AbstractFeatureSourceLayer(executorService, featureSourceSupplier, styleSupplier,
-                                                   renderAsSvg, params) {
-        };
+        final ExecutorService executorService,
+        final FeatureSourceSupplier featureSourceSupplier,
+        final StyleSupplier<FeatureSource> styleSupplier,
+        final boolean renderAsSvg,
+        final GridParam params,
+        final LabelPositionCollector labels
+    ) {
+        this.grid =
+            new AbstractFeatureSourceLayer(
+                executorService,
+                featureSourceSupplier,
+                styleSupplier,
+                renderAsSvg,
+                params
+            ) {};
         this.params = params;
         this.labels = labels;
     }
@@ -72,13 +78,15 @@ public final class GridLayer implements MapLayer {
     }
 
     @Override
-    public void prepareRender(final MapfishMapContext transformer) {
-    }
+    public void prepareRender(final MapfishMapContext transformer) {}
 
     @Override
     public void render(
-            final Graphics2D graphics, final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final MapfishMapContext transformer, final Processor.ExecutionContext context) {
+        final Graphics2D graphics,
+        final MfClientHttpRequestFactory clientHttpRequestFactory,
+        final MapfishMapContext transformer,
+        final Processor.ExecutionContext context
+    ) {
         Graphics2D graphics2D = (Graphics2D) graphics.create();
         try {
             float haloRadius = (float) this.params.haloRadius;
@@ -86,10 +94,14 @@ public final class GridLayer implements MapLayer {
 
             this.grid.render(graphics2D, clientHttpRequestFactory, transformer, context);
             Font baseFont = null;
-            for (String fontName: this.params.font.name) {
+            for (String fontName : this.params.font.name) {
                 try {
-                    baseFont = new Font(fontName, this.params.font.style.styleId,
-                                        (int) (this.params.font.size * dpiScaling));
+                    baseFont =
+                        new Font(
+                            fontName,
+                            this.params.font.style.styleId,
+                            (int) (this.params.font.size * dpiScaling)
+                        );
                     break;
                 } catch (Exception e) {
                     // try next font in list
@@ -103,10 +115,10 @@ public final class GridLayer implements MapLayer {
             Color haloColor = ColorParser.toColor(this.params.haloColor);
             Color labelColor = ColorParser.toColor(this.params.labelColor);
 
-            for (GridLabel label: this.labels) {
-                Shape textShape =
-                        baseFont.createGlyphVector(graphics2D.getFontRenderContext(), label.text)
-                                .getOutline();
+            for (GridLabel label : this.labels) {
+                Shape textShape = baseFont
+                    .createGlyphVector(graphics2D.getFontRenderContext(), label.text)
+                    .getOutline();
 
                 Rectangle2D textBounds = textShape.getBounds2D();
                 AffineTransform transform = new AffineTransform(baseTransform);
@@ -114,15 +126,15 @@ public final class GridLayer implements MapLayer {
 
                 applyOffset(transform, label.side);
 
-                RotationQuadrant.getQuadrant(transformer.getRotation(), this.params.rotateLabels)
-                        .updateTransform(transform, this.params.indent, label.side,
-                                         halfCharHeight, textBounds);
+                RotationQuadrant
+                    .getQuadrant(transformer.getRotation(), this.params.rotateLabels)
+                    .updateTransform(transform, this.params.indent, label.side, halfCharHeight, textBounds);
                 graphics2D.setTransform(transform);
 
                 if (haloRadius > 0.0f) {
                     graphics2D.setStroke(
-                            new BasicStroke(2.0f * haloRadius, BasicStroke.CAP_ROUND,
-                                            BasicStroke.JOIN_ROUND));
+                        new BasicStroke(2.0f * haloRadius, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)
+                    );
                     graphics2D.setColor(haloColor);
                     graphics2D.draw(textShape);
                 }
@@ -159,9 +171,10 @@ public final class GridLayer implements MapLayer {
 
     @VisibleForTesting
     List<? extends Layer> getLayers(
-            @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
-            @Nonnull final MapfishMapContext mapContext,
-            @Nonnull final Processor.ExecutionContext context) {
+        @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
+        @Nonnull final MapfishMapContext mapContext,
+        @Nonnull final Processor.ExecutionContext context
+    ) {
         return this.grid.getLayers(httpRequestFactory, mapContext, context);
     }
 
@@ -172,9 +185,11 @@ public final class GridLayer implements MapLayer {
 
     @Override
     public void prefetchResources(
-            final HttpRequestFetcher httpRequestFetcher,
-            final MfClientHttpRequestFactory clientHttpRequestFactory, final MapfishMapContext transformer,
-            final Processor.ExecutionContext context) {
+        final HttpRequestFetcher httpRequestFetcher,
+        final MfClientHttpRequestFactory clientHttpRequestFactory,
+        final MapfishMapContext transformer,
+        final Processor.ExecutionContext context
+    ) {
         this.grid.prefetchResources(httpRequestFetcher, clientHttpRequestFactory, transformer, context);
     }
 

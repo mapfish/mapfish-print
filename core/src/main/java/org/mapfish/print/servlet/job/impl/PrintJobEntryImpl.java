@@ -1,5 +1,8 @@
 package org.mapfish.print.servlet.job.impl;
 
+import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import org.hibernate.annotations.Type;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
@@ -11,10 +14,6 @@ import org.mapfish.print.servlet.job.PrintJobEntry;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.context.ApplicationContext;
 
-import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-
 /**
  * Print Job Entry.
  */
@@ -25,23 +24,21 @@ public class PrintJobEntryImpl implements PrintJobEntry {
     @Type(type = "org.hibernate.type.TextType")
     private String referenceId;
 
-    @Column()
+    @Column
     @Type(type = "org.mapfish.print.servlet.job.impl.hibernate.PJsonObjectUserType")
     private PJsonObject requestData;
 
     @Column
     private long startTime;
 
-    @Column()
+    @Column
     @Type(type = "org.mapfish.print.servlet.job.impl.hibernate.AccessAssertionUserType")
     private AccessAssertion access;
 
     /**
      * Constructor.
      */
-    public PrintJobEntryImpl() {
-
-    }
+    public PrintJobEntryImpl() {}
 
     /**
      * Constructor.
@@ -66,8 +63,11 @@ public class PrintJobEntryImpl implements PrintJobEntry {
      *         combined access of the template and the configuration.
      */
     public PrintJobEntryImpl(
-            final String referenceId, final PJsonObject requestData, final long startTime,
-            final AccessAssertion access) {
+        final String referenceId,
+        final PJsonObject requestData,
+        final long startTime,
+        final AccessAssertion access
+    ) {
         this.referenceId = referenceId;
         this.requestData = requestData;
         this.access = access;
@@ -117,9 +117,8 @@ public class PrintJobEntryImpl implements PrintJobEntry {
 
     @Override
     public final String getAppId() {
-        return getRequestData().optString(
-                MapPrinterServlet.JSON_APP,
-                ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY);
+        return getRequestData()
+            .optString(MapPrinterServlet.JSON_APP, ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY);
     }
 
     @Override
@@ -130,8 +129,14 @@ public class PrintJobEntryImpl implements PrintJobEntry {
     @Override
     public final void assertAccess() {
         this.access.assertAccess(
-                getClass().getSimpleName() + " for app '" + getAppId() +
-                        "' for print job '" + getReferenceId() + "'", this);
+                getClass().getSimpleName() +
+                " for app '" +
+                getAppId() +
+                "' for print job '" +
+                getReferenceId() +
+                "'",
+                this
+            );
     }
 
     /**
@@ -148,5 +153,4 @@ public class PrintJobEntryImpl implements PrintJobEntry {
         accessAssertion.setPredicates(configuration.getAccessAssertion(), template.getAccessAssertion());
         this.access = accessAssertion;
     }
-
 }

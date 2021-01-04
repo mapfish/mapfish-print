@@ -1,19 +1,19 @@
 package org.mapfish.print.processor.http.matcher;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Used to validate the access to a map service host.
  */
 public abstract class HostMatcher extends AbstractMatcher {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(HostMatcher.class);
     /**
      * The request port.  -1 is the unset/default number
@@ -25,8 +25,8 @@ public abstract class HostMatcher extends AbstractMatcher {
     protected String pathRegex = null;
 
     @Override
-    public final boolean matches(final MatchInfo matchInfo) throws UnknownHostException, SocketException,
-            MalformedURLException {
+    public final boolean matches(final MatchInfo matchInfo)
+        throws UnknownHostException, SocketException, MalformedURLException {
         Optional<Boolean> overridden = tryOverrideValidation(matchInfo);
         if (overridden.isPresent()) {
             return overridden.get();
@@ -53,8 +53,7 @@ public abstract class HostMatcher extends AbstractMatcher {
      * @param matchInfo the match information to validate.
      */
     protected abstract Optional<Boolean> tryOverrideValidation(MatchInfo matchInfo)
-            throws UnknownHostException, SocketException,
-            MalformedURLException;
+        throws UnknownHostException, SocketException, MalformedURLException;
 
     public final void setPort(final int port) {
         this.port = port;

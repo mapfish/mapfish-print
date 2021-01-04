@@ -1,5 +1,11 @@
 package org.mapfish.print.http;
 
+import java.net.MalformedURLException;
+import java.net.SocketException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+import java.util.List;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -9,13 +15,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.http.matcher.MatchInfo;
 import org.springframework.http.HttpMethod;
 
-import java.net.MalformedURLException;
-import java.net.SocketException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
-import java.util.List;
-
 /**
  * A Route planner that obtains proxies from the configuration that is currently in {@link
  * org.mapfish.print.http.MfClientHttpRequestFactoryImpl#CURRENT_CONFIGURATION}.
@@ -24,6 +23,7 @@ import java.util.List;
  * executed so that correct proxies will be set.
  */
 public final class MfRoutePlanner extends DefaultRoutePlanner {
+
     /**
      * Constructor.
      */
@@ -33,9 +33,10 @@ public final class MfRoutePlanner extends DefaultRoutePlanner {
 
     @Override
     protected HttpHost determineProxy(
-            final HttpHost target,
-            final HttpRequest request,
-            final HttpContext context) throws HttpException {
+        final HttpHost target,
+        final HttpRequest request,
+        final HttpContext context
+    ) throws HttpException {
         Configuration config = MfClientHttpRequestFactoryImpl.getCurrentConfiguration();
         if (config == null) {
             return null;
@@ -49,7 +50,7 @@ public final class MfRoutePlanner extends DefaultRoutePlanner {
         HttpMethod method = HttpMethod.valueOf(request.getRequestLine().getMethod());
 
         final List<HttpProxy> proxies = config.getProxies();
-        for (HttpProxy proxy: proxies) {
+        for (HttpProxy proxy : proxies) {
             try {
                 if (proxy.matches(MatchInfo.fromUri(uri, method))) {
                     return proxy.getHttpHost();

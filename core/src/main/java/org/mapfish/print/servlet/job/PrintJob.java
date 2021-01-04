@@ -2,27 +2,6 @@ package org.mapfish.print.servlet.job;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import org.mapfish.print.Constants;
-import org.mapfish.print.ExceptionUtils;
-import org.mapfish.print.MapPrinter;
-import org.mapfish.print.MapPrinterFactory;
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.SmtpConfig;
-import org.mapfish.print.config.Template;
-import org.mapfish.print.config.WorkingDirectories;
-import org.mapfish.print.output.OutputFormat;
-import org.mapfish.print.processor.ExecutionStats;
-import org.mapfish.print.processor.Processor;
-import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
-import org.mapfish.print.wrapper.json.PJsonObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,20 +26,44 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import org.mapfish.print.Constants;
+import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.MapPrinter;
+import org.mapfish.print.MapPrinterFactory;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.SmtpConfig;
+import org.mapfish.print.config.Template;
+import org.mapfish.print.config.WorkingDirectories;
+import org.mapfish.print.output.OutputFormat;
+import org.mapfish.print.processor.ExecutionStats;
+import org.mapfish.print.processor.Processor;
+import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
+import org.mapfish.print.wrapper.json.PJsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * The information for printing a report.
  */
 public abstract class PrintJob implements Callable<PrintJobResult> {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(PrintJob.class);
     private PrintJobEntry entry;
 
     @Autowired
     private MapPrinterFactory mapPrinterFactory;
+
     @Autowired
     private MetricRegistry metricRegistry;
+
     @Autowired
     private Accounting accounting;
+
     @Autowired
     private WorkingDirectories workingDirectories;
 
@@ -113,13 +116,14 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     protected PrintResult withOpenOutputStream(final PrintAction function) throws Exception {
         final File reportFile = getReportFile();
         final Processor.ExecutionContext executionContext;
-        try (FileOutputStream out = new FileOutputStream(reportFile);
-             BufferedOutputStream bout = new BufferedOutputStream(out)) {
+        try (
+            FileOutputStream out = new FileOutputStream(reportFile);
+            BufferedOutputStream bout = new BufferedOutputStream(out)
+        ) {
             executionContext = function.run(bout);
         }
         return new PrintResult(reportFile.length(), executionContext);
     }
-
 
     /**
      * Create Print Job Result.
@@ -129,9 +133,8 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
      * @param mimeType the mime type
      * @return the job result
      */
-    protected abstract PrintJobResult createResult(
-            String fileName, String fileExtension,
-            String mimeType) throws URISyntaxException, IOException;
+    protected abstract PrintJobResult createResult(String fileName, String fileExtension, String mimeType)
+        throws URISyntaxException, IOException;
 
     @Override
     public final PrintJobResult call() throws Exception {
@@ -141,12 +144,12 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         LOGGER.info("Starting print job {}", this.entry.getReferenceId());
         final MapPrinter mapPrinter = PrintJob.this.mapPrinterFactory.create(this.entry.getAppId());
         final Accounting.JobTracker jobTracker =
-                this.accounting.startJob(this.entry, mapPrinter.getConfiguration());
+            this.accounting.startJob(this.entry, mapPrinter.getConfiguration());
         try {
             final PJsonObject spec = this.entry.getRequestData();
             final PrintResult report = withOpenOutputStream(
-                    outputStream -> mapPrinter.print(entry.getReferenceId(), entry.getRequestData(),
-                                                     outputStream));
+                outputStream -> mapPrinter.print(entry.getReferenceId(), entry.getRequestData(), outputStream)
+            );
 
             this.metricRegistry.counter(getClass().getName() + ".success").inc();
             LOGGER.info("Successfully completed print job {}", this.entry.getReferenceId());
@@ -156,13 +159,15 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
             final OutputFormat outputFormat = mapPrinter.getOutputFormat(spec);
             final String mimeType = outputFormat.getContentType();
             final String fileExtension = outputFormat.getFileSuffix();
-            final boolean sent =
-                    maybeSendResult(mapPrinter.getConfiguration(), fileName, fileExtension, mimeType,
-                                    report.executionContext.getStats());
+            final boolean sent = maybeSendResult(
+                mapPrinter.getConfiguration(),
+                fileName,
+                fileExtension,
+                mimeType,
+                report.executionContext.getStats()
+            );
             jobTracker.onJobSuccess(report);
-            return sent ?
-                    null :
-                    createResult(fileName, fileExtension, mimeType);
+            return sent ? null : createResult(fileName, fileExtension, mimeType);
         } catch (Exception e) {
             String canceledText = "";
             if (Thread.currentThread().isInterrupted()) {
@@ -175,16 +180,21 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
             }
             deleteReport();
             maybeSendError(mapPrinter.getConfiguration(), e);
-            LOGGER.warn("Error executing print job {} {}\n{}",
-                        this.entry.getRequestData(), canceledText, this.entry.getReferenceId(), e);
+            LOGGER.warn(
+                "Error executing print job {} {}\n{}",
+                this.entry.getRequestData(),
+                canceledText,
+                this.entry.getReferenceId(),
+                e
+            );
             throw e;
         } finally {
             final long totalTimeMS = System.currentTimeMillis() - entry.getStartTime();
             final long computationTimeMs = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
             this.metricRegistry.timer(getClass().getName() + ".total")
-                    .update(totalTimeMS, TimeUnit.MILLISECONDS);
+                .update(totalTimeMS, TimeUnit.MILLISECONDS);
             this.metricRegistry.timer(getClass().getName() + ".wait")
-                    .update(totalTimeMS - computationTimeMs, TimeUnit.MILLISECONDS);
+                .update(totalTimeMS - computationTimeMs, TimeUnit.MILLISECONDS);
             LOGGER.debug("Print Job {} completed in {}ms", this.entry.getReferenceId(), computationTimeMs);
             MDC.remove(Processor.MDC_JOB_ID_KEY);
         }
@@ -204,16 +214,16 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         }
     }
 
-    private void sendErrorEmail(
-            final SmtpConfig config, final PJsonObject request, final Exception e)
-            throws MessagingException {
+    private void sendErrorEmail(final SmtpConfig config, final PJsonObject request, final Exception e)
+        throws MessagingException {
         final String to = request.getString("to");
         final InternetAddress[] recipients = InternetAddress.parse(to);
         final Message message = createMessage(config, recipients);
         message.setSubject(request.optString("errorSubject", config.getErrorSubject()));
 
-        final String msg = request.optString("errorBody", config.getErrorBody()).
-                replace("{message}", ExceptionUtils.getRootCause(e).toString());
+        final String msg = request
+            .optString("errorBody", config.getErrorBody())
+            .replace("{message}", ExceptionUtils.getRootCause(e).toString());
         final MimeBodyPart html = new MimeBodyPart();
         html.setContent(msg, "text/html; charset=utf-8");
 
@@ -229,19 +239,21 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     }
 
     private Message createMessage(final SmtpConfig config, final InternetAddress[] recipients)
-            throws MessagingException {
+        throws MessagingException {
         final Session session = createEmailSession(config);
         final Message message = new MimeMessage(session);
         message.setFrom(new InternetAddress(config.getFromAddress()));
-        message.setRecipients(
-                Message.RecipientType.TO, recipients);
+        message.setRecipients(Message.RecipientType.TO, recipients);
         return message;
     }
 
     private boolean maybeSendResult(
-            final Configuration configuration, final String fileName, final String fileExtension,
-            final String mimeType, final ExecutionStats stats)
-            throws IOException, MessagingException {
+        final Configuration configuration,
+        final String fileName,
+        final String fileExtension,
+        final String mimeType,
+        final ExecutionStats stats
+    ) throws IOException, MessagingException {
         final PJsonObject requestData = entry.getRequestData();
         final SmtpConfig smtp = configuration.getSmtp();
         final PJsonObject requestSmtp = requestData.optJSONObject("smtp");
@@ -254,9 +266,13 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     }
 
     private void sendEmail(
-            final SmtpConfig config, final PJsonObject request, final String fileName,
-            final String fileExtension, final String mimeType,
-            final ExecutionStats stats) throws MessagingException, IOException {
+        final SmtpConfig config,
+        final PJsonObject request,
+        final String fileName,
+        final String fileExtension,
+        final String mimeType,
+        final ExecutionStats stats
+    ) throws MessagingException, IOException {
         final String to = request.getString("to");
         final InternetAddress[] recipients = InternetAddress.parse(to);
         final Message message = createMessage(config, recipients);
@@ -265,9 +281,10 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         String msg = request.optString("body", config.getBody());
         if (config.getStorage() != null) {
             final Timer.Context saveTimer =
-                    this.metricRegistry.timer(config.getStorage().getClass().getName()).time();
-            final URL url = config.getStorage().save(
-                    this.entry.getReferenceId(), fileName, fileExtension, mimeType, getReportFile());
+                this.metricRegistry.timer(config.getStorage().getClass().getName()).time();
+            final URL url = config
+                .getStorage()
+                .save(this.entry.getReferenceId(), fileName, fileExtension, mimeType, getReportFile());
             saveTimer.stop();
             msg = msg.replace("{url}", url.toString());
         }
@@ -316,12 +333,16 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         final Session session;
         if (config.getUsername() != null) {
             prop.put("mail.smtp.auth", true);
-            session = Session.getInstance(prop, new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(config.getUsername(), config.getPassword());
-                }
-            });
+            session =
+                Session.getInstance(
+                    prop,
+                    new Authenticator() {
+                        @Override
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(config.getUsername(), config.getPassword());
+                        }
+                    }
+                );
         } else {
             session = Session.getInstance(prop);
         }
@@ -342,17 +363,18 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
 
     final void initForTesting(final ApplicationContext context) {
         this.metricRegistry = context.getBean(MetricRegistry.class);
-        this.mapPrinterFactory = new MapPrinterFactory() {
-            @Override
-            public MapPrinter create(final String app) {
-                return null;
-            }
+        this.mapPrinterFactory =
+            new MapPrinterFactory() {
+                @Override
+                public MapPrinter create(final String app) {
+                    return null;
+                }
 
-            @Override
-            public Set<String> getAppIds() {
-                return null;
-            }
-        };
+                @Override
+                public Set<String> getAppIds() {
+                    return null;
+                }
+            };
         this.entry = new PrintJobEntryImpl();
     }
 
@@ -372,6 +394,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
      * Holds the info that goes with the result of a print.
      */
     public static class PrintResult {
+
         /**
          * The result size in bytes.
          */

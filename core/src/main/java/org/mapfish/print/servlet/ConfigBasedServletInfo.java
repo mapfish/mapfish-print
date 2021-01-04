@@ -8,6 +8,7 @@ import java.util.UUID;
  * A default random id will be created by default.
  */
 public final class ConfigBasedServletInfo implements ServletInfo {
+
     private String servletId = UUID.randomUUID().toString();
 
     @Override

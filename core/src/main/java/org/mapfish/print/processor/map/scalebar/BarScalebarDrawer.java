@@ -23,7 +23,7 @@ public class BarScalebarDrawer extends ScalebarDrawer {
         final int barSize = getSettings().getBarSize();
 
         float subIntervalWidth =
-                getSettings().getIntervalLengthInPixels() / getSettings().getNumSubIntervals();
+            getSettings().getIntervalLengthInPixels() / getSettings().getNumSubIntervals();
         int intervalsTotal = getParams().intervals * getSettings().getNumSubIntervals();
         for (int i = 0; i < intervalsTotal; i++) {
             float pos = i * subIntervalWidth;
@@ -35,8 +35,12 @@ public class BarScalebarDrawer extends ScalebarDrawer {
         }
 
         getGraphics2d().setColor(getParams().getColor());
-        getGraphics2d().drawRect(
-                0, -barSize,
-                Math.round(getSettings().getIntervalLengthInPixels() * getParams().intervals), barSize);
+        getGraphics2d()
+            .drawRect(
+                0,
+                -barSize,
+                Math.round(getSettings().getIntervalLengthInPixels() * getParams().intervals),
+                barSize
+            );
     }
 }

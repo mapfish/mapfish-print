@@ -6,6 +6,7 @@ import com.sampullara.cli.Argument;
  * The CLI API definition.
  */
 public final class CliDefinition extends CliHelpDefinition {
+
     /**
      * Filename for the configuration (templates and CO).
      */
@@ -21,9 +22,11 @@ public final class CliDefinition extends CliHelpDefinition {
     /**
      * Used only if log4jConfig is not specified.
      */
-    @Argument(description = "Used only if log4jConfig is not specified. 3 if you want everything, 2 if you " +
-            "want the debug information (stacktraces are shown), 1 for infos and 0 for only warnings and " +
-            "errors")
+    @Argument(
+        description = "Used only if log4jConfig is not specified. 3 if you want everything, 2 if you " +
+        "want the debug information (stacktraces are shown), 1 for infos and 0 for only warnings and " +
+        "errors"
+    )
     public String verbose = "1";
 
     /**
@@ -41,8 +44,10 @@ public final class CliDefinition extends CliHelpDefinition {
     /**
      * Spring configuration file to use in addition to the default.
      */
-    @Argument(description = "Spring configuration file to use in addition to the default.  This allows " +
-            "overriding certain values if desired")
+    @Argument(
+        description = "Spring configuration file to use in addition to the default.  This allows " +
+        "overriding certain values if desired"
+    )
     public String springConfig = null;
 
     CliDefinition() {

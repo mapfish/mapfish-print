@@ -8,7 +8,6 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * customizations to the request object.
  */
 public interface MfClientHttpRequestFactory extends ClientHttpRequestFactory {
-
     /**
      * Register a callback for config using a http request.
      *

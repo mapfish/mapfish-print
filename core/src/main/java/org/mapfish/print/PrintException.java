@@ -4,6 +4,7 @@ package org.mapfish.print;
  * Base exception for printing problems.
  */
 public class PrintException extends RuntimeException {
+
     private static final long serialVersionUID = 1L;
 
     /**

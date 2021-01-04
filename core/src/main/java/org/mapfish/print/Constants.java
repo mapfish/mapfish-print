@@ -68,7 +68,6 @@ public interface Constants {
          * Grid style constants.
          */
         interface Grid {
-
             /**
              * The name of the grid feature type name.
              */
@@ -83,7 +82,6 @@ public interface Constants {
          * Raster style constants.
          */
         interface Raster {
-
             /**
              * The default style name for raster layers.
              */
@@ -94,7 +92,6 @@ public interface Constants {
          * Default Style for the Overview Map and Area of interest.
          */
         interface OverviewMap {
-
             /**
              * The default style name for the bbox rectangle in the overview map.
              */

@@ -1,18 +1,17 @@
 package org.mapfish.print.servlet.fileloader;
 
-import org.junit.Test;
-import org.mapfish.print.IllegalFileAccessException;
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 import java.nio.file.Files;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.mapfish.print.IllegalFileAccessException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class FileConfigFileLoaderTest extends AbstractConfigLoaderTest {
 
@@ -33,7 +32,6 @@ public class FileConfigFileLoaderTest extends AbstractConfigLoaderTest {
 
     @Test
     public void testLastModified() {
-
         Optional<Long> lastModified = this.loader.lastModified(CONFIG_FILE.toURI());
         assertTrue(lastModified.isPresent());
         assertEquals(CONFIG_FILE.lastModified(), lastModified.get().longValue());
@@ -72,22 +70,38 @@ public class FileConfigFileLoaderTest extends AbstractConfigLoaderTest {
         final URI configFileUri = CONFIG_FILE.toURI();
         final String resourceFileName = "resourceFile.txt";
         assertTrue(this.loader.isAccessible(configFileUri, resourceFileName));
-        assertTrue(this.loader.isAccessible(configFileUri,
-                                            getFile(FileConfigFileLoader.class, resourceFileName).toURI()
-                                                    .toString()));
-        assertTrue(this.loader.isAccessible(configFileUri,
-                                            getFile(FileConfigFileLoader.class, resourceFileName)
-                                                    .getAbsolutePath()));
-        assertTrue(this.loader.isAccessible(configFileUri,
-                                            getFile(FileConfigFileLoader.class, resourceFileName).getPath()));
+        assertTrue(
+            this.loader.isAccessible(
+                    configFileUri,
+                    getFile(FileConfigFileLoader.class, resourceFileName).toURI().toString()
+                )
+        );
+        assertTrue(
+            this.loader.isAccessible(
+                    configFileUri,
+                    getFile(FileConfigFileLoader.class, resourceFileName).getAbsolutePath()
+                )
+        );
+        assertTrue(
+            this.loader.isAccessible(
+                    configFileUri,
+                    getFile(FileConfigFileLoader.class, resourceFileName).getPath()
+                )
+        );
 
-        assertFileAccessException(configFileUri, getFile(FileConfigFileLoader.class,
-                                                         "/test-http-request-factory-application-context.xml")
-                .getAbsolutePath());
-        assertFileAccessException(configFileUri, getFile(FileConfigFileLoader.class,
-                                                         "../../../../../test-http-request-factory" +
-                                                                 "-application-context.xml")
-                .getAbsolutePath());
+        assertFileAccessException(
+            configFileUri,
+            getFile(FileConfigFileLoader.class, "/test-http-request-factory-application-context.xml")
+                .getAbsolutePath()
+        );
+        assertFileAccessException(
+            configFileUri,
+            getFile(
+                FileConfigFileLoader.class,
+                "../../../../../test-http-request-factory" + "-application-context.xml"
+            )
+                .getAbsolutePath()
+        );
     }
 
     @Test
@@ -97,20 +111,31 @@ public class FileConfigFileLoaderTest extends AbstractConfigLoaderTest {
         final byte[] bytes = getFileBytes(FileConfigFileLoader.class, resourceFileName);
 
         assertArrayEquals(bytes, this.loader.loadFile(configFileUri, resourceFileName));
-        assertArrayEquals(bytes, this.loader.loadFile(configFileUri, getFile(FileConfigFileLoader.class,
-                                                                             resourceFileName)
-                .getAbsolutePath()));
-        assertArrayEquals(bytes, this.loader
-                .loadFile(configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).getPath()));
+        assertArrayEquals(
+            bytes,
+            this.loader.loadFile(
+                    configFileUri,
+                    getFile(FileConfigFileLoader.class, resourceFileName).getAbsolutePath()
+                )
+        );
+        assertArrayEquals(
+            bytes,
+            this.loader.loadFile(
+                    configFileUri,
+                    getFile(FileConfigFileLoader.class, resourceFileName).getPath()
+                )
+        );
     }
 
     @Test(expected = IllegalFileAccessException.class)
     public void testLoadFileChildResource_NotInConfigDir() throws Exception {
         final URI configFileUri = CONFIG_FILE.toURI();
 
-        this.loader.loadFile(configFileUri, getFile(FileConfigFileLoader.class,
-                                                    "/test-http-request-factory-application-context.xml")
-                .getAbsolutePath());
+        this.loader.loadFile(
+                configFileUri,
+                getFile(FileConfigFileLoader.class, "/test-http-request-factory-application-context.xml")
+                    .getAbsolutePath()
+            );
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -119,5 +144,4 @@ public class FileConfigFileLoaderTest extends AbstractConfigLoaderTest {
 
         this.loader.loadFile(configFileUri, "doesNotExist");
     }
-
 }

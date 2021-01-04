@@ -1,11 +1,43 @@
 package org.mapfish.print.processor.map;
 
+import static org.geotools.renderer.lite.RendererUtilities.worldToScreenTransform;
+import static org.mapfish.print.Constants.PDF_DPI;
+
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.annotations.VisibleForTesting;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfWriter;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ForkJoinPool;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.batik.svggen.DefaultStyleHandler;
 import org.apache.batik.svggen.SVGGeneratorContext;
@@ -57,40 +89,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ForkJoinPool;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.Resource;
-import javax.imageio.ImageIO;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import static org.geotools.renderer.lite.RendererUtilities.worldToScreenTransform;
-import static org.mapfish.print.Constants.PDF_DPI;
-
-
 /**
  * <p>A processor to render a map that can be embedded as a sub-report into a JasperReports
  * template.</p>
@@ -98,7 +96,8 @@ import static org.mapfish.print.Constants.PDF_DPI;
  * [[examples=verboseExample]]
  */
 public final class CreateMapProcessor
-        extends AbstractProcessor<CreateMapProcessor.Input, CreateMapProcessor.Output> {
+    extends AbstractProcessor<CreateMapProcessor.Input, CreateMapProcessor.Output> {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateMapProcessor.class);
 
     @Autowired
@@ -143,12 +142,21 @@ public final class CreateMapProcessor
         // PDF is large enough for the
         // higher DPI printer
         final double dpiRatio = dpi / PDF_DPI;
-        paintArea.setBounds(0, 0,
-                            (int) Math.ceil(mapSize.getWidth() * dpiRatio),
-                            (int) Math.ceil(mapSize.getHeight() * dpiRatio));
+        paintArea.setBounds(
+            0,
+            0,
+            (int) Math.ceil(mapSize.getWidth() * dpiRatio),
+            (int) Math.ceil(mapSize.getHeight() * dpiRatio)
+        );
 
-        return new MapfishMapContext(bounds, paintArea.getSize(), mapValues.getRotation(), dpi,
-                                     mapValues.longitudeFirst, mapValues.isDpiSensitiveStyle());
+        return new MapfishMapContext(
+            bounds,
+            paintArea.getSize(),
+            mapValues.getRotation(),
+            dpi,
+            mapValues.longitudeFirst,
+            mapValues.isDpiSensitiveStyle()
+        );
     }
 
     /**
@@ -160,18 +168,22 @@ public final class CreateMapProcessor
      * @param dpi the DPI.
      */
     public static MapBounds adjustBoundsToScaleAndMapSize(
-            final GenericMapAttributeValues mapValues,
-            final Rectangle paintArea,
-            final MapBounds bounds,
-            final double dpi) {
+        final GenericMapAttributeValues mapValues,
+        final Rectangle paintArea,
+        final MapBounds bounds,
+        final double dpi
+    ) {
         MapBounds newBounds = bounds;
         if (mapValues.isUseNearestScale()) {
-            newBounds = newBounds.adjustBoundsToNearestScale(
+            newBounds =
+                newBounds.adjustBoundsToNearestScale(
                     mapValues.getZoomLevels(),
                     mapValues.getZoomSnapTolerance(),
                     mapValues.getZoomLevelSnapStrategy(),
                     mapValues.getZoomSnapGeodetic(),
-                    paintArea, dpi);
+                    paintArea,
+                    dpi
+                );
         }
 
         newBounds = new BBoxMapBounds(newBounds.toReferencedEnvelope(paintArea));
@@ -187,8 +199,7 @@ public final class CreateMapProcessor
      *
      * @param size The size of the SVG graphic.
      */
-    public static SVGGraphics2D createSvgGraphics(final Dimension size)
-            throws ParserConfigurationException {
+    public static SVGGraphics2D createSvgGraphics(final Dimension size) throws ParserConfigurationException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document document = db.getDOMImplementation().createDocument(null, "svg", null);
@@ -210,9 +221,10 @@ public final class CreateMapProcessor
      * @param path The file.
      */
     public static void saveSvgFile(final SVGGraphics2D graphics2d, final File path) throws IOException {
-        try (FileOutputStream fs = new FileOutputStream(path);
-             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fs, StandardCharsets.UTF_8);
-             Writer osw = new BufferedWriter(outputStreamWriter)
+        try (
+            FileOutputStream fs = new FileOutputStream(path);
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fs, StandardCharsets.UTF_8);
+            Writer osw = new BufferedWriter(outputStreamWriter)
         ) {
             graphics2d.stream(osw, true);
         }
@@ -225,7 +237,7 @@ public final class CreateMapProcessor
 
     @Override
     public Output execute(final Input param, final ExecutionContext context)
-            throws IOException, ParserConfigurationException, JRException {
+        throws IOException, ParserConfigurationException, JRException {
         context.stopIfCanceled();
         MapAttributeValues mapValues = (MapAttributeValues) param.map;
         if (mapValues.zoomToFeatures != null) {
@@ -237,19 +249,27 @@ public final class CreateMapProcessor
             pdfA = mapValues.pdfA;
         }
         final List<URI> graphics = createLayerGraphics(
-                param.tempTaskDirectory,
-                param.clientHttpRequestFactoryProvider.get(),
-                pdfA,
-                mapValues, context, mapContext);
+            param.tempTaskDirectory,
+            param.clientHttpRequestFactoryProvider.get(),
+            pdfA,
+            mapValues,
+            context,
+            mapContext
+        );
         context.stopIfCanceled();
 
         final URI mapSubReport;
         if (param.map.getTemplate().isMapExport()) {
             mapSubReport =
-                    createMergedGraphic(param.tempTaskDirectory, graphics, mapContext, param.outputFormat);
+                createMergedGraphic(param.tempTaskDirectory, graphics, mapContext, param.outputFormat);
         } else {
-            mapSubReport = createMapSubReport(param.tempTaskDirectory, mapValues.getMapSize(), graphics,
-                                              mapValues.getDpi());
+            mapSubReport =
+                createMapSubReport(
+                    param.tempTaskDirectory,
+                    mapValues.getMapSize(),
+                    graphics,
+                    mapValues.getDpi()
+                );
         }
 
         context.getStats().addMapStats(mapContext, mapValues);
@@ -259,22 +279,24 @@ public final class CreateMapProcessor
 
     @Override
     protected void extraValidation(
-            final List<Throwable> validationErrors, final Configuration configuration) {
-    }
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {}
 
     private URI createMergedGraphic(
-            final File printDirectory,
-            final List<URI> graphics,
-            final MapfishMapContext mapContext,
-            final String outputFormat) throws IOException {
-
+        final File printDirectory,
+        final List<URI> graphics,
+        final MapfishMapContext mapContext,
+        final String outputFormat
+    ) throws IOException {
         final File mergedGraphic = File.createTempFile("map-", "." + outputFormat, printDirectory);
         int width = mapContext.getMapSize().width;
         int height = mapContext.getMapSize().height;
 
         if ("pdf".equalsIgnoreCase(outputFormat)) {
             final com.lowagie.text.Document document = new com.lowagie.text.Document(
-                    new com.lowagie.text.Rectangle(width, height));
+                new com.lowagie.text.Rectangle(width, height)
+            );
             try {
                 PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(mergedGraphic));
                 document.open();
@@ -293,7 +315,10 @@ public final class CreateMapProcessor
         } else {
             boolean isJpeg = RenderType.fromFileExtension(outputFormat) == RenderType.JPEG;
             final BufferedImage bufferedImage = new BufferedImage(
-                    width, height, isJpeg ? BufferedImage.TYPE_3BYTE_BGR : BufferedImage.TYPE_4BYTE_ABGR);
+                width,
+                height,
+                isJpeg ? BufferedImage.TYPE_3BYTE_BGR : BufferedImage.TYPE_4BYTE_ABGR
+            );
             Graphics g = bufferedImage.getGraphics();
             if (isJpeg) {
                 g.setColor(Color.WHITE);
@@ -310,10 +335,9 @@ public final class CreateMapProcessor
         return mergedGraphic.toURI();
     }
 
-    private void drawGraphics(
-            final int width, final int height,
-            final List<URI> graphics, final Graphics g) throws IOException {
-        for (URI graphic: graphics) {
+    private void drawGraphics(final int width, final int height, final List<URI> graphics, final Graphics g)
+        throws IOException {
+        for (URI graphic : graphics) {
             final File graphicFile = new File(graphic);
             if (FilenameUtils.getExtension(graphicFile.getName()).equals("svg")) {
                 try {
@@ -329,53 +353,67 @@ public final class CreateMapProcessor
     }
 
     private URI createMapSubReport(
-            final File printDirectory,
-            final Dimension mapSize,
-            final List<URI> graphics,
-            final double dpi) throws IOException, JRException {
+        final File printDirectory,
+        final Dimension mapSize,
+        final List<URI> graphics,
+        final double dpi
+    ) throws IOException, JRException {
         final ImagesSubReport subReport = new ImagesSubReport(graphics, mapSize, dpi);
 
-        final File compiledReport = File.createTempFile("map-",
-                                                        JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT,
-                                                        printDirectory);
+        final File compiledReport = File.createTempFile(
+            "map-",
+            JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT,
+            printDirectory
+        );
         subReport.compile(compiledReport);
 
         return compiledReport.toURI();
     }
 
     private void warnIfDifferentRenderType(
-            final RenderType renderType, final MapLayer layer, final boolean allowTransparency) {
-        if (allowTransparency && renderType != layer.getRenderType() &&
-                layer.getRenderType() != RenderType.UNKNOWN) {
-            LOGGER.info("Layer {} has {} format, storing as PNG.",
-                        layer.getName().isEmpty() ? layer : layer.getName(),
-                        layer.getRenderType().toString());
+        final RenderType renderType,
+        final MapLayer layer,
+        final boolean allowTransparency
+    ) {
+        if (
+            allowTransparency &&
+            renderType != layer.getRenderType() &&
+            layer.getRenderType() != RenderType.UNKNOWN
+        ) {
+            LOGGER.info(
+                "Layer {} has {} format, storing as PNG.",
+                layer.getName().isEmpty() ? layer : layer.getName(),
+                layer.getRenderType().toString()
+            );
         }
     }
 
     private MapfishMapContext getTransformer(
-            final MapfishMapContext mapContext, final double imageBufferScaling) {
+        final MapfishMapContext mapContext,
+        final double imageBufferScaling
+    ) {
         return new MapfishMapContext(
-                mapContext,
-                mapContext.getBounds(),
-                new Dimension(
-                        (int) Math.round(mapContext.getMapSize().width * imageBufferScaling),
-                        (int) Math.round(mapContext.getMapSize().height * imageBufferScaling)
-                ),
-                mapContext.getRotation(),
-                mapContext.getDPI(),
-                mapContext.isForceLongitudeFirst(),
-                mapContext.isDpiSensitiveStyle()
+            mapContext,
+            mapContext.getBounds(),
+            new Dimension(
+                (int) Math.round(mapContext.getMapSize().width * imageBufferScaling),
+                (int) Math.round(mapContext.getMapSize().height * imageBufferScaling)
+            ),
+            mapContext.getRotation(),
+            mapContext.getDPI(),
+            mapContext.isForceLongitudeFirst(),
+            mapContext.isDpiSensitiveStyle()
         );
     }
 
     private List<URI> createLayerGraphics(
-            final File printDirectory,
-            final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final boolean pdfA,
-            final MapAttributeValues mapValues,
-            final ExecutionContext context,
-            final MapfishMapContext mapContext) throws IOException, ParserConfigurationException {
+        final File printDirectory,
+        final MfClientHttpRequestFactory clientHttpRequestFactory,
+        final boolean pdfA,
+        final MapAttributeValues mapValues,
+        final ExecutionContext context,
+        final MapfishMapContext mapContext
+    ) throws IOException, ParserConfigurationException {
         // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
         final List<MapLayer> layers = new ArrayList<>(mapValues.getLayers());
         Collections.reverse(layers);
@@ -385,34 +423,41 @@ public final class CreateMapProcessor
         final String mapKey = UUID.randomUUID().toString();
         final List<URI> graphics = new ArrayList<>(layers.size());
 
-        HttpRequestFetcher cache = new HttpRequestFetcher(printDirectory, this.metricRegistry,
-                                                          context, this.requestForkJoinPool);
+        HttpRequestFetcher cache = new HttpRequestFetcher(
+            printDirectory,
+            this.metricRegistry,
+            context,
+            this.requestForkJoinPool
+        );
 
         //prepare layers for rendering
-        for (final MapLayer layer: layers) {
+        for (final MapLayer layer : layers) {
             layer.prepareRender(mapContext);
-            final MapfishMapContext transformer = getTransformer(mapContext,
-                                                                 layer.getImageBufferScaling());
+            final MapfishMapContext transformer = getTransformer(mapContext, layer.getImageBufferScaling());
             layer.prefetchResources(cache, clientHttpRequestFactory, transformer, context);
         }
 
-        final Timer.Context timer =
-                this.metricRegistry.timer(getClass().getName() + ".buildLayers").time();
+        final Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".buildLayers").time();
         int fileNumber = 0;
-        for (LayerGroup layerGroup: LayerGroup.buildGroups(layers, pdfA)) {
+        for (LayerGroup layerGroup : LayerGroup.buildGroups(layers, pdfA)) {
             if (layerGroup.renderType == RenderType.SVG) {
                 // render layers as SVG
-                for (MapLayer layer: layerGroup.layers) {
+                for (MapLayer layer : layerGroup.layers) {
                     context.stopIfCanceled();
                     final SVGGraphics2D graphics2D = createSvgGraphics(mapContext.getMapSize());
 
                     try {
                         final Graphics2D clippedGraphics2D = createClippedGraphics(
-                                mapContext, areaOfInterest, graphics2D);
+                            mapContext,
+                            areaOfInterest,
+                            graphics2D
+                        );
                         layer.render(clippedGraphics2D, clientHttpRequestFactory, mapContext, context);
 
-                        final File path =
-                                new File(printDirectory, mapKey + "_layer_" + fileNumber++ + ".svg");
+                        final File path = new File(
+                            printDirectory,
+                            mapKey + "_layer_" + fileNumber++ + ".svg"
+                        );
                         saveSvgFile(graphics2D, path);
                         graphics.add(path.toURI());
                     } finally {
@@ -423,13 +468,14 @@ public final class CreateMapProcessor
                 // render layers as raster graphic
                 final boolean needTransparency = !layerGroup.opaque && !pdfA;
                 final BufferedImage bufferedImage = new BufferedImage(
-                        (int) Math.round(mapContext.getMapSize().width * layerGroup.imageBufferScaling),
-                        (int) Math.round(mapContext.getMapSize().height * layerGroup.imageBufferScaling),
-                        needTransparency ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR
+                    (int) Math.round(mapContext.getMapSize().width * layerGroup.imageBufferScaling),
+                    (int) Math.round(mapContext.getMapSize().height * layerGroup.imageBufferScaling),
+                    needTransparency ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR
                 );
                 final Graphics2D graphics2D = createClippedGraphics(
-                        mapContext, areaOfInterest,
-                        bufferedImage.createGraphics()
+                    mapContext,
+                    areaOfInterest,
+                    bufferedImage.createGraphics()
                 );
                 try {
                     if (layerGroup.opaque || pdfA) {
@@ -440,9 +486,11 @@ public final class CreateMapProcessor
                         graphics2D.setColor(prevColor);
                     }
 
-                    final MapfishMapContext transformer =
-                            getTransformer(mapContext, layerGroup.imageBufferScaling);
-                    for (MapLayer cur: layerGroup.layers) {
+                    final MapfishMapContext transformer = getTransformer(
+                        mapContext,
+                        layerGroup.imageBufferScaling
+                    );
+                    for (MapLayer cur : layerGroup.layers) {
                         context.stopIfCanceled();
                         warnIfDifferentRenderType(layerGroup.renderType, cur, !pdfA);
                         cur.render(graphics2D, clientHttpRequestFactory, transformer, context);
@@ -450,11 +498,13 @@ public final class CreateMapProcessor
 
                     // Try to respect the original format of the layer. But if it needs to be transparent,
                     // no choice, we need PNG.
-                    final String formatName =
-                            layerGroup.opaque && layerGroup.renderType == RenderType.JPEG ? "JPEG" : "PNG";
-                    final File path = new File(printDirectory,
-                                               String.format("%s_layer_%d.%s", mapKey, fileNumber++,
-                                                             formatName.toLowerCase()));
+                    final String formatName = layerGroup.opaque && layerGroup.renderType == RenderType.JPEG
+                        ? "JPEG"
+                        : "PNG";
+                    final File path = new File(
+                        printDirectory,
+                        String.format("%s_layer_%d.%s", mapKey, fileNumber++, formatName.toLowerCase())
+                    );
                     ImageUtils.writeImage(bufferedImage, formatName, path);
                     graphics.add(path.toURI());
                 } finally {
@@ -468,13 +518,14 @@ public final class CreateMapProcessor
     }
 
     private AreaOfInterest addAreaOfInterestLayer(
-            @Nonnull final MapAttributeValues mapValues,
-            @Nonnull final List<MapLayer> layers) {
+        @Nonnull final MapAttributeValues mapValues,
+        @Nonnull final List<MapLayer> layers
+    ) {
         final AreaOfInterest areaOfInterest = mapValues.areaOfInterest;
         if (areaOfInterest != null && areaOfInterest.display == AreaOfInterest.AoiDisplay.RENDER) {
             FeatureLayer.FeatureLayerParam param = new FeatureLayer.FeatureLayerParam();
-            param.defaultStyle = Constants.Style.OverviewMap.NAME + ":" +
-                    areaOfInterest.getArea().getClass().getSimpleName();
+            param.defaultStyle =
+                Constants.Style.OverviewMap.NAME + ":" + areaOfInterest.getArea().getClass().getSimpleName();
 
             param.style = areaOfInterest.style;
             param.renderAsSvg = areaOfInterest.renderAsSvg;
@@ -487,9 +538,9 @@ public final class CreateMapProcessor
     }
 
     private Graphics2D createClippedGraphics(
-            @Nonnull final MapfishMapContext transformer,
-            @Nullable final AreaOfInterest areaOfInterest,
-            @Nonnull final Graphics2D graphics2D
+        @Nonnull final MapfishMapContext transformer,
+        @Nullable final AreaOfInterest areaOfInterest,
+        @Nonnull final Graphics2D graphics2D
     ) {
         if (areaOfInterest != null && areaOfInterest.display == AreaOfInterest.AoiDisplay.CLIP) {
             final Polygon screenGeometry = areaOfInterestInScreenCRS(transformer, areaOfInterest);
@@ -502,12 +553,13 @@ public final class CreateMapProcessor
     }
 
     private Polygon areaOfInterestInScreenCRS(
-            @Nonnull final MapfishMapContext transformer,
-            @Nullable final AreaOfInterest areaOfInterest) {
+        @Nonnull final MapfishMapContext transformer,
+        @Nullable final AreaOfInterest areaOfInterest
+    ) {
         if (areaOfInterest != null) {
             final AffineTransform worldToScreenTransform = worldToScreenTransform(
-                    transformer.toReferencedEnvelope(),
-                    transformer.getPaintArea()
+                transformer.toReferencedEnvelope(),
+                transformer.getPaintArea()
             );
 
             MathTransform mathTransform = new AffineTransform2D(worldToScreenTransform);
@@ -524,21 +576,22 @@ public final class CreateMapProcessor
     }
 
     private void zoomToFeatures(
-            final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final MapAttributeValues mapValues,
-            final ExecutionContext context) {
-        ReferencedEnvelope bounds = getFeatureBounds(clientHttpRequestFactory,
-                                                     mapValues, context);
+        final MfClientHttpRequestFactory clientHttpRequestFactory,
+        final MapAttributeValues mapValues,
+        final ExecutionContext context
+    ) {
+        ReferencedEnvelope bounds = getFeatureBounds(clientHttpRequestFactory, mapValues, context);
 
         if (!bounds.isNull()) {
             if (mapValues.zoomToFeatures.zoomType == ZoomType.CENTER) {
                 // center the map on the center of the feature bounds
                 Coordinate center = bounds.centre();
-                mapValues.center = new double[]{center.x, center.y};
+                mapValues.center = new double[] { center.x, center.y };
                 if (mapValues.zoomToFeatures.minScale != null) {
                     LOGGER.warn(
-                            "The map.zoomToFeatures.minScale is deprecated, please use directly the map" +
-                                    ".scale");
+                        "The map.zoomToFeatures.minScale is deprecated, please use directly the map" +
+                        ".scale"
+                    );
                     mapValues.scale = mapValues.zoomToFeatures.minScale;
                 }
                 mapValues.recalculateBounds();
@@ -546,14 +599,18 @@ public final class CreateMapProcessor
                 if (bounds.getWidth() == 0.0 && bounds.getHeight() == 0.0) {
                     // single point, so we directly set the center
                     Coordinate center = bounds.centre();
-                    mapValues.center = new double[]{center.x, center.y};
+                    mapValues.center = new double[] { center.x, center.y };
                     mapValues.bbox = null;
                     mapValues.scale = mapValues.zoomToFeatures.minScale;
                     mapValues.recalculateBounds();
                 } else {
-                    mapValues.bbox = new double[]{
-                            bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY()
-                    };
+                    mapValues.bbox =
+                        new double[] {
+                            bounds.getMinX(),
+                            bounds.getMinY(),
+                            bounds.getMaxX(),
+                            bounds.getMaxY(),
+                        };
                     mapValues.center = null;
                     mapValues.recalculateBounds();
 
@@ -562,17 +619,20 @@ public final class CreateMapProcessor
 
                     if (mapValues.zoomToFeatures.minMargin != null) {
                         // add a margin around the feature bounds
-                        mapBounds = new BBoxMapBounds(mapBounds.toReferencedEnvelope(paintArea)).expand(
-                                mapValues.zoomToFeatures.minMargin, paintArea);
+                        mapBounds =
+                            new BBoxMapBounds(mapBounds.toReferencedEnvelope(paintArea))
+                            .expand(mapValues.zoomToFeatures.minMargin, paintArea);
                     }
 
                     // expand the bounds so that they match the ratio of the paint area
                     mapBounds = mapBounds.adjustedEnvelope(paintArea);
 
                     final Scale scale = mapBounds.getScale(paintArea, mapValues.getDpi());
-                    final Scale minScale = new Scale(mapValues.zoomToFeatures.minScale,
-                                                     mapValues.getMapBounds().getProjection(),
-                                                     mapValues.getDpi());
+                    final Scale minScale = new Scale(
+                        mapValues.zoomToFeatures.minScale,
+                        mapValues.getMapBounds().getProjection(),
+                        mapValues.getDpi()
+                    );
                     if (scale.getResolution() < minScale.getResolution()) {
                         // if the current scale is smaller than the min. scale, change it
                         mapBounds = mapBounds.zoomToScale(minScale);
@@ -580,11 +640,15 @@ public final class CreateMapProcessor
 
                     if (mapValues.isUseNearestScale()) {
                         // if fixed scales are used, take next higher scale
-                        mapBounds = mapBounds.adjustBoundsToNearestScale(
-                                mapValues.getZoomLevels(), 0.0,
+                        mapBounds =
+                            mapBounds.adjustBoundsToNearestScale(
+                                mapValues.getZoomLevels(),
+                                0.0,
                                 ZoomLevelSnapStrategy.HIGHER_SCALE,
                                 mapValues.getZoomSnapGeodetic(),
-                                paintArea, mapValues.getDpi());
+                                paintArea,
+                                mapValues.getDpi()
+                            );
                     }
 
                     mapValues.setMapBounds(mapBounds);
@@ -600,20 +664,26 @@ public final class CreateMapProcessor
      */
     @Nonnull
     private ReferencedEnvelope getFeatureBounds(
-            final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final MapAttributeValues mapValues, final ExecutionContext context) {
+        final MfClientHttpRequestFactory clientHttpRequestFactory,
+        final MapAttributeValues mapValues,
+        final ExecutionContext context
+    ) {
         final MapfishMapContext mapContext = createMapContext(mapValues);
 
         String layerName = mapValues.zoomToFeatures.layer;
         ReferencedEnvelope bounds = new ReferencedEnvelope();
-        for (MapLayer layer: mapValues.getLayers()) {
+        for (MapLayer layer : mapValues.getLayers()) {
             context.stopIfCanceled();
 
-            if ((!StringUtils.isEmpty(layerName) && layerName.equals(layer.getName())) ||
-                    (StringUtils.isEmpty(layerName) && layer instanceof AbstractFeatureSourceLayer)) {
+            if (
+                (!StringUtils.isEmpty(layerName) && layerName.equals(layer.getName())) ||
+                (StringUtils.isEmpty(layerName) && layer instanceof AbstractFeatureSourceLayer)
+            ) {
                 AbstractFeatureSourceLayer featureLayer = (AbstractFeatureSourceLayer) layer;
-                FeatureSource<?, ?> featureSource =
-                        featureLayer.getFeatureSource(clientHttpRequestFactory, mapContext);
+                FeatureSource<?, ?> featureSource = featureLayer.getFeatureSource(
+                    clientHttpRequestFactory,
+                    mapContext
+                );
                 FeatureCollection<?, ?> features;
                 try {
                     features = featureSource.getFeatures();
@@ -635,6 +705,7 @@ public final class CreateMapProcessor
      * The Input object for processor.
      */
     public static class Input {
+
         /**
          * A factory for making http requests.  This is added to the values by the framework and therefore
          * does not need to be set in configuration
@@ -687,9 +758,10 @@ public final class CreateMapProcessor
         public final MapfishMapContext mapContext;
 
         private Output(
-                final List<URI> layerGraphics,
-                final String mapSubReport,
-                final MapfishMapContext mapContext) {
+            final List<URI> layerGraphics,
+            final String mapSubReport,
+            final MapfishMapContext mapContext
+        ) {
             this.layerGraphics = layerGraphics;
             this.mapSubReport = mapSubReport;
             this.mapContext = mapContext;
@@ -697,26 +769,25 @@ public final class CreateMapProcessor
     }
 
     private static final class OpacityAdjustingStyleHandler extends DefaultStyleHandler {
+
         @Override
         public void setStyle(
-                final Element element,
-                final Map styleMap,
-                final SVGGeneratorContext generatorContext) {
+            final Element element,
+            final Map styleMap,
+            final SVGGeneratorContext generatorContext
+        ) {
             String tagName = element.getTagName();
-            for (final Object o: styleMap.keySet()) {
+            for (final Object o : styleMap.keySet()) {
                 String styleName = (String) o;
                 if (element.getAttributeNS(null, styleName).length() == 0) {
                     if (styleName.equals("opacity")) {
                         if (appliesTo(styleName, tagName)) {
-                            element.setAttributeNS(null, "fill-opacity",
-                                                   (String) styleMap.get(styleName));
-                            element.setAttributeNS(null, "stroke-opacity",
-                                                   (String) styleMap.get(styleName));
+                            element.setAttributeNS(null, "fill-opacity", (String) styleMap.get(styleName));
+                            element.setAttributeNS(null, "stroke-opacity", (String) styleMap.get(styleName));
                         }
                     } else {
                         if (appliesTo(styleName, tagName)) {
-                            element.setAttributeNS(null, styleName,
-                                                   (String) styleMap.get(styleName));
+                            element.setAttributeNS(null, styleName, (String) styleMap.get(styleName));
                         }
                     }
                 }
@@ -728,6 +799,7 @@ public final class CreateMapProcessor
      * Class that groups together layers that can end up in the same file.
      */
     private static final class LayerGroup {
+
         public final List<MapLayer> layers = new ArrayList<>();
         public final RenderType renderType;
         public final double imageBufferScaling;
@@ -739,11 +811,13 @@ public final class CreateMapProcessor
         }
 
         public static List<LayerGroup> buildGroups(
-                final List<MapLayer> layers, final boolean mergeAsJPEGWithScale1) {
+            final List<MapLayer> layers,
+            final boolean mergeAsJPEGWithScale1
+        ) {
             final List<LayerGroup> result = new ArrayList<>();
             if (!mergeAsJPEGWithScale1) {
                 LOGGER.debug("Building groups of layers");
-                for (int i = 0; i < layers.size(); ) {
+                for (int i = 0; i < layers.size();) {
                     final RenderType renderType = getSupportedRenderType(layers.get(i).getRenderType());
                     final double imageBufferScaling = layers.get(i).getImageBufferScaling();
                     final LayerGroup group = new LayerGroup(renderType, imageBufferScaling);
@@ -753,15 +827,17 @@ public final class CreateMapProcessor
 
                     // Merge consecutive layers of same render type and same buffer scaling (native
                     // resolution)
-                    while (i < layers.size() &&
+                    while (
+                        i < layers.size() &&
                         getSupportedRenderType(layers.get(i).getRenderType()) == renderType &&
-                            imageBufferScaling == layers.get(i).getImageBufferScaling()) {
+                        imageBufferScaling == layers.get(i).getImageBufferScaling()
+                    ) {
                         // will always go there the first time
                         l = layers.get(i);
                         LOGGER.debug("Adding layer {} to the group", l.getName());
                         group.layers.add(l);
-                        group.opaque = group.opaque ||
-                                (renderType == RenderType.JPEG && l.getOpacity() == 1.0);
+                        group.opaque =
+                            group.opaque || (renderType == RenderType.JPEG && l.getOpacity() == 1.0);
                         ++i;
                     }
 

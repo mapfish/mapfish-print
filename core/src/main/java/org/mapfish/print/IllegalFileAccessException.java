@@ -4,6 +4,7 @@ package org.mapfish.print;
  * Indicates there was an attempt to load a file that was not in the configuration directory.
  */
 public class IllegalFileAccessException extends RuntimeException {
+
     /**
      * Constructor.
      *

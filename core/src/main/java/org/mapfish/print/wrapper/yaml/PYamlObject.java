@@ -1,5 +1,10 @@
 package org.mapfish.print.wrapper.yaml;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,17 +15,11 @@ import org.mapfish.print.wrapper.PElement;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-
 /**
  * Object wrapper for Yaml parsing.
  */
 public class PYamlObject extends PAbstractObject {
+
     private final Map<String, Object> obj;
 
     /**
@@ -150,7 +149,7 @@ public class PYamlObject extends PAbstractObject {
     public final PJsonObject toJSON() {
         try {
             JSONObject json = new JSONObject();
-            for (String key: this.obj.keySet()) {
+            for (String key : this.obj.keySet()) {
                 Object opt = opt(key);
                 if (opt instanceof PYamlObject) {
                     opt = ((PYamlObject) opt).toJSON().getInternalObj();

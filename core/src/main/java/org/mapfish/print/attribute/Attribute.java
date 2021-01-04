@@ -1,12 +1,11 @@
 package org.mapfish.print.attribute;
 
+import javax.annotation.Nonnull;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.wrapper.PObject;
-
-import javax.annotation.Nonnull;
 
 /**
  * Represents an attribute passed in from a web-client to be used to populate the report.  It reads a value
@@ -14,7 +13,6 @@ import javax.annotation.Nonnull;
  *
  */
 public interface Attribute extends ConfigurationObject {
-
     /**
      * Write this attribute out the the json writer so that clients can know what attributes are expected.
      *
@@ -47,6 +45,8 @@ public interface Attribute extends ConfigurationObject {
      * @return the value
      */
     Object getValue(
-            @Nonnull Template template,
-            @Nonnull String attributeName, @Nonnull PObject requestJsonAttributes);
+        @Nonnull Template template,
+        @Nonnull String attributeName,
+        @Nonnull PObject requestJsonAttributes
+    );
 }

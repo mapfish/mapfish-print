@@ -14,8 +14,10 @@ public enum ZoomLevelSnapStrategy {
     CLOSEST_LOWER_SCALE_ON_TIE {
         @Override
         protected SearchResult search(
-                final Scale scale, final double tolerance,
-                final ZoomLevels zoomLevels) {
+            final Scale scale,
+            final double tolerance,
+            final ZoomLevels zoomLevels
+        ) {
             double resolution = scale.getResolution();
             int pos = -1;
             double distance = Double.POSITIVE_INFINITY;
@@ -42,8 +44,10 @@ public enum ZoomLevelSnapStrategy {
     CLOSEST_HIGHER_SCALE_ON_TIE {
         @Override
         protected SearchResult search(
-                final Scale scale, final double tolerance,
-                final ZoomLevels zoomLevels) {
+            final Scale scale,
+            final double tolerance,
+            final ZoomLevels zoomLevels
+        ) {
             double resolution = scale.getResolution();
             int pos = -1;
             double distance = Double.POSITIVE_INFINITY;
@@ -69,8 +73,10 @@ public enum ZoomLevelSnapStrategy {
     HIGHER_SCALE {
         @Override
         protected SearchResult search(
-                final Scale scale, final double tolerance,
-                final ZoomLevels zoomLevels) {
+            final Scale scale,
+            final double tolerance,
+            final ZoomLevels zoomLevels
+        ) {
             final double cutOff = scale.getResolution() * (1 - tolerance);
 
             int pos = zoomLevels.size() - 1;
@@ -92,8 +98,10 @@ public enum ZoomLevelSnapStrategy {
     LOWER_SCALE {
         @Override
         protected SearchResult search(
-                final Scale scale, final double tolerance,
-                final ZoomLevels zoomLevels) {
+            final Scale scale,
+            final double tolerance,
+            final ZoomLevels zoomLevels
+        ) {
             final double cutOff = scale.getResolution() * (1 + tolerance);
 
             int pos = -1;
@@ -119,13 +127,13 @@ public enum ZoomLevelSnapStrategy {
      *         from jumping to a different version even when it is very close to one of the zoomLevels.
      * @param zoomLevels the allowed zoomLevels.
      */
-    protected abstract SearchResult search(
-            Scale scale, double tolerance, ZoomLevels zoomLevels);
+    protected abstract SearchResult search(Scale scale, double tolerance, ZoomLevels zoomLevels);
 
     /**
      * The results of a search.
      */
     public static final class SearchResult {
+
         private final int zoomLevel;
         private final ZoomLevels zoomLevels;
 
@@ -185,12 +193,17 @@ public enum ZoomLevelSnapStrategy {
 
         @Override
         public String toString() {
-            return String.format("SearchResult{zoomLevel=%s, scale=%s, zoomLevels=%s}",
-                                 zoomLevel, zoomLevels.get(zoomLevel, DistanceUnit.M), zoomLevels);
+            return String.format(
+                "SearchResult{zoomLevel=%s, scale=%s, zoomLevels=%s}",
+                zoomLevel,
+                zoomLevels.get(zoomLevel, DistanceUnit.M),
+                zoomLevels
+            );
         }
     }
 
     private static class Constants {
+
         private static final double DISTANCE_TREATED_AS_EQUAL = 0.00000000001;
     }
 }

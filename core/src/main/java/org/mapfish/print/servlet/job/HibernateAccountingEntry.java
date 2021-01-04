@@ -2,6 +2,13 @@ package org.mapfish.print.servlet.job;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.mapfish.print.Constants;
@@ -14,14 +21,6 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 /**
  * Entity for the print_accountings table.
  */
@@ -29,6 +28,7 @@ import javax.persistence.Table;
 @Table(name = "print_accountings")
 @TypeDef(name = "jsonb-node", typeClass = JsonBinaryType.class, defaultForType = ObjectNode.class)
 public class HibernateAccountingEntry {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(HibernateAccountingEntry.class);
 
     @Id
@@ -77,8 +77,7 @@ public class HibernateAccountingEntry {
     /**
      * Default constructor (used only by Hibernate).
      */
-    public HibernateAccountingEntry() {
-    }
+    public HibernateAccountingEntry() {}
 
     /**
      * Constructor that initialize the fields that depends on the job description.
@@ -88,16 +87,18 @@ public class HibernateAccountingEntry {
      * @param configuration The configuration
      */
     public HibernateAccountingEntry(
-            final PrintJobEntry entry, final PrintJobStatus.Status status,
-            final Configuration configuration) {
+        final PrintJobEntry entry,
+        final PrintJobStatus.Status status,
+        final Configuration configuration
+    ) {
         this.referenceId = entry.getReferenceId();
         this.appId = entry.getAppId();
         final PJsonObject specJson = entry.getRequestData();
         try {
-            final PObject headers = specJson.
-                    getObject(MapPrinterServlet.JSON_ATTRIBUTES).
-                    getObject(MapPrinterServlet.JSON_REQUEST_HEADERS).
-                    getObject(MapPrinterServlet.JSON_REQUEST_HEADERS);
+            final PObject headers = specJson
+                .getObject(MapPrinterServlet.JSON_ATTRIBUTES)
+                .getObject(MapPrinterServlet.JSON_REQUEST_HEADERS)
+                .getObject(MapPrinterServlet.JSON_REQUEST_HEADERS);
             if (headers.has("referer")) {
                 this.referer = headers.getArray("referer").getString(0);
             }

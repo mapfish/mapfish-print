@@ -1,5 +1,12 @@
 package org.mapfish.print.config.access;
 
+import static org.junit.Assert.assertEquals;
+import static org.mapfish.print.config.access.AccessAssertionTestUtil.setCreds;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Test;
@@ -7,14 +14,6 @@ import org.mapfish.print.SetsUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.mapfish.print.config.access.AccessAssertionTestUtil.setCreds;
 
 public class RoleAccessAssertionTest {
 
@@ -72,7 +71,6 @@ public class RoleAccessAssertionTest {
 
         setCreds("ROLE_OTHER", "ROLE_USER2");
         assertion.assertAccess("", this);
-
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -82,7 +80,6 @@ public class RoleAccessAssertionTest {
 
         setCreds("ROLE_OTHER");
         assertion.assertAccess("", this);
-
     }
 
     @Test(expected = AuthenticationCredentialsNotFoundException.class)
@@ -130,7 +127,6 @@ public class RoleAccessAssertionTest {
         newAssertion.assertAccess("", this);
     }
 
-
     @Test
     public void testMarshalUnmarshalAllowed() {
         setCreds("ROLE_USER");
@@ -142,7 +138,6 @@ public class RoleAccessAssertionTest {
         newAssertion.unmarshal(marshalData);
         newAssertion.assertAccess("", this);
     }
-
 
     @Test
     public void testValidate() {

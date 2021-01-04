@@ -1,15 +1,13 @@
 package org.mapfish.print.servlet.job;
 
+import java.util.Date;
 import org.mapfish.print.config.access.AccessAssertion;
 import org.mapfish.print.wrapper.json.PJsonObject;
-
-import java.util.Date;
 
 /**
  * Print Job Entry.
  */
 public interface PrintJobEntry {
-
     /**
      * Get reference ID.
      */
@@ -49,5 +47,4 @@ public interface PrintJobEntry {
      * Assert that the current is authorized to access this job.
      */
     void assertAccess();
-
 }

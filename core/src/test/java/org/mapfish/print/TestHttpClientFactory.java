@@ -1,6 +1,13 @@
 package org.mapfish.print;
 
+import static org.junit.Assert.fail;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.ConfigurableRequest;
@@ -13,20 +20,12 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URI;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
-
-import static org.junit.Assert.fail;
-
 /**
  * Allows tests to provide canned responses to requests.
  */
-public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
-        implements MfClientHttpRequestFactory {
+public class TestHttpClientFactory
+    extends MfClientHttpRequestFactoryImpl
+    implements MfClientHttpRequestFactory {
 
     private final Map<Predicate<URI>, Handler> handlers = new ConcurrentHashMap<>();
 
@@ -43,7 +42,7 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
 
     @Override
     public ConfigurableRequest createRequest(URI uri, final HttpMethod httpMethod) {
-        for (Map.Entry<Predicate<URI>, Handler> entry: handlers.entrySet()) {
+        for (Map.Entry<Predicate<URI>, Handler> entry : handlers.entrySet()) {
             if (entry.getKey().test(uri)) {
                 try {
                     final MockClientHttpRequest httpRequest = entry.getValue().handleRequest(uri, httpMethod);
@@ -61,7 +60,8 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
         throw new UnsupportedOperationException("Not supported");
     }
 
-    public static abstract class Handler {
+    public abstract static class Handler {
+
         public abstract MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception;
 
         public MockClientHttpRequest ok(URI uri, byte[] bytes, HttpMethod httpMethod) {
@@ -91,6 +91,7 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
     }
 
     private static class TestConfigurableRequest implements ConfigurableRequest {
+
         private final MockClientHttpRequest httpRequest;
 
         public TestConfigurableRequest(MockClientHttpRequest httpRequest) {

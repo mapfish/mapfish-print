@@ -1,6 +1,15 @@
 package org.mapfish.print.map.style.json;
 
 import com.google.common.annotations.VisibleForTesting;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.styling.Rule;
@@ -16,20 +25,11 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.filter.Filter;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 /**
  * Support a more flexible json styling than that which is supported by version 1.
  */
 public final class MapfishJsonStyleVersion2 {
+
     static final String JSON_SYMB = "symbolizers";
     private static final String JSON_TYPE = "type";
     private static final Pattern VALUE_EXPR_PATTERN = Pattern.compile("\\$\\{([\\w\\d_-]+)\\}");
@@ -41,14 +41,14 @@ public final class MapfishJsonStyleVersion2 {
     private final JsonStyleParserHelper parserHelper;
 
     MapfishJsonStyleVersion2(
-            @Nonnull final PJsonObject json,
-            @Nonnull final StyleBuilder styleBuilder,
-            @Nullable final Configuration configuration,
-            @Nonnull final ClientHttpRequestFactory requestFactory) {
+        @Nonnull final PJsonObject json,
+        @Nonnull final StyleBuilder styleBuilder,
+        @Nullable final Configuration configuration,
+        @Nonnull final ClientHttpRequestFactory requestFactory
+    ) {
         this.json = json;
         this.styleBuilder = styleBuilder;
-        this.parserHelper = new JsonStyleParserHelper(configuration, requestFactory, styleBuilder,
-                                                      false);
+        this.parserHelper = new JsonStyleParserHelper(configuration, requestFactory, styleBuilder, false);
     }
 
     @VisibleForTesting
@@ -67,7 +67,6 @@ public final class MapfishJsonStyleVersion2 {
                 } else {
                     next.setValue(resolve);
                 }
-
             }
         }
 
@@ -113,9 +112,13 @@ public final class MapfishJsonStyleVersion2 {
         }
 
         if (rules.isEmpty()) {
-            throw new IllegalArgumentException(String.format(
+            throw new IllegalArgumentException(
+                String.format(
                     "No rules found in style.  Rules are json objects that have the key %s or have the " +
-                            "form: [ecql]", JSON_FILTER_INCLUDE));
+                    "form: [ecql]",
+                    JSON_FILTER_INCLUDE
+                )
+            );
         }
 
         return this.parserHelper.createStyle(rules);
@@ -143,8 +146,8 @@ public final class MapfishJsonStyleVersion2 {
             symbolizers[i] = type.parseJson(this.parserHelper, symbolizerJson);
             if (symbolizers[i] == null) {
                 throw new RuntimeException(
-                        "Error creating symbolizer " + symbolizerJson.getString(JSON_TYPE) + " in rule " +
-                                jsonKey);
+                    "Error creating symbolizer " + symbolizerJson.getString(JSON_TYPE) + " in rule " + jsonKey
+                );
             }
         }
 
@@ -158,7 +161,7 @@ public final class MapfishJsonStyleVersion2 {
 
     private void updateSymbolizerProperties(final PJsonObject ruleJson, final PJsonObject symbolizerJson) {
         Map<String, String> values = buildValuesMap(ruleJson, symbolizerJson);
-        for (Map.Entry<String, String> entry: values.entrySet()) {
+        for (Map.Entry<String, String> entry : values.entrySet()) {
             try {
                 symbolizerJson.getInternalObj().put(entry.getKey(), entry.getValue());
             } catch (JSONException e) {
@@ -168,7 +171,10 @@ public final class MapfishJsonStyleVersion2 {
     }
 
     private double getScaleDenominator(
-            final Map<String, String> ruleValues, final String keyName, final double defaultValue) {
+        final Map<String, String> ruleValues,
+        final String keyName,
+        final double defaultValue
+    ) {
         String scaleString = ruleValues.get(keyName);
         if (scaleString != null) {
             return Double.parseDouble(scaleString);
@@ -176,9 +182,7 @@ public final class MapfishJsonStyleVersion2 {
         return defaultValue;
     }
 
-    private Map<String, String> buildValuesMap(
-            final PJsonObject ruleJson,
-            final PJsonObject symbolizerJson) {
+    private Map<String, String> buildValuesMap(final PJsonObject ruleJson, final PJsonObject symbolizerJson) {
         Map<String, String> values = new HashMap<>();
 
         Iterator<String> keys = this.json.keys();
@@ -215,35 +219,40 @@ public final class MapfishJsonStyleVersion2 {
         POINT {
             @Override
             protected Symbolizer parseJson(
-                    final JsonStyleParserHelper parser,
-                    final PJsonObject symbolizerJson) {
+                final JsonStyleParserHelper parser,
+                final PJsonObject symbolizerJson
+            ) {
                 return parser.createPointSymbolizer(symbolizerJson);
             }
-        }, LINE {
+        },
+        LINE {
             @Override
             protected Symbolizer parseJson(
-                    final JsonStyleParserHelper parser,
-                    final PJsonObject symbolizerJson) {
+                final JsonStyleParserHelper parser,
+                final PJsonObject symbolizerJson
+            ) {
                 return parser.createLineSymbolizer(symbolizerJson);
             }
-        }, POLYGON {
+        },
+        POLYGON {
             @Override
             protected Symbolizer parseJson(
-                    final JsonStyleParserHelper parser,
-                    final PJsonObject symbolizerJson) {
+                final JsonStyleParserHelper parser,
+                final PJsonObject symbolizerJson
+            ) {
                 return parser.createPolygonSymbolizer(symbolizerJson);
             }
-        }, TEXT {
+        },
+        TEXT {
             @Override
             protected Symbolizer parseJson(
-                    final JsonStyleParserHelper parser,
-                    final PJsonObject symbolizerJson) {
+                final JsonStyleParserHelper parser,
+                final PJsonObject symbolizerJson
+            ) {
                 return parser.createTextSymbolizer(symbolizerJson);
             }
         };
 
-        protected abstract Symbolizer parseJson(
-                JsonStyleParserHelper parser,
-                PJsonObject symbolizerJson);
+        protected abstract Symbolizer parseJson(JsonStyleParserHelper parser, PJsonObject symbolizerJson);
     }
 }

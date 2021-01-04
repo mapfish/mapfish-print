@@ -8,7 +8,6 @@ import java.net.URI;
  * Load a generated report from a supported URI.
  */
 public interface ReportLoader {
-
     /**
      * Returns true if this loader can process the provided URI.
      *

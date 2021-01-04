@@ -1,17 +1,5 @@
 package org.mapfish.print.processor.jasper;
 
-import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
-import net.sf.jasperreports.engine.design.JRDesignField;
-import org.junit.Test;
-import org.mapfish.print.output.Values;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -20,6 +8,17 @@ import static org.mapfish.print.processor.jasper.MergeDataSourceProcessor.Out;
 import static org.mapfish.print.processor.jasper.MergeDataSourceProcessor.Source;
 import static org.mapfish.print.processor.jasper.MergeDataSourceProcessor.SourceType.DATASOURCE;
 import static org.mapfish.print.processor.jasper.MergeDataSourceProcessor.SourceType.SINGLE;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+import net.sf.jasperreports.engine.design.JRDesignField;
+import org.junit.Test;
+import org.mapfish.print.output.Values;
 
 public class MergeDataSourceProcessorTest {
 
@@ -30,9 +29,9 @@ public class MergeDataSourceProcessorTest {
         values.put("row11", "hello11");
         values.put("row2", "hello2");
         List<Map<String, ?>> innerData = Arrays.asList(
-                createRow("r1val1", "r1val2", "r1val3"),
-                createRow("r2val1", "r2val2", "r2val3"),
-                createRow("r3val1", "r3val2", "r3val3")
+            createRow("r1val1", "r1val2", "r1val3"),
+            createRow("r2val1", "r2val2", "r2val3"),
+            createRow("r3val1", "r3val2", "r3val3")
         );
         JRMapCollectionDataSource datasource = new JRMapCollectionDataSource(innerData);
         values.put("manyRows", datasource);
@@ -46,9 +45,10 @@ public class MergeDataSourceProcessorTest {
         fieldMap.put("col1", "col1");
         fieldMap.put("col3", "col2");
         List<Source> source = Arrays.asList(
-                Source.createSource(null, SINGLE, fieldMap1),
-                Source.createSource(null, SINGLE, Collections.singletonMap("row2", "renamed")),
-                Source.createSource("manyRows", DATASOURCE, fieldMap));
+            Source.createSource(null, SINGLE, fieldMap1),
+            Source.createSource(null, SINGLE, Collections.singletonMap("row2", "renamed")),
+            Source.createSource("manyRows", DATASOURCE, fieldMap)
+        );
         processor.setSources(source);
 
         List<Throwable> errors = new ArrayList<>();

@@ -18,10 +18,12 @@ public final class TestMapAttribute extends GenericMapAttribute {
     }
 
     public static final class EmbeddedTestAttribute {
+
         public boolean embeddedElem;
     }
 
     public final class TestMapAttributeValues extends GenericMapAttribute.GenericMapAttributeValues {
+
         public int requiredElem;
         public int[] requiredArray;
         public EmbeddedTestAttribute embedded;
@@ -30,12 +32,13 @@ public final class TestMapAttribute extends GenericMapAttribute {
 
         @HasDefaultValue
         public EmbeddedTestAttribute optionalEmbedded;
+
         @HasDefaultValue
         public int[] optionalArray;
 
         public TestMapAttributeValues(Template template) {
             super(template);
-            optionalArray = new int[]{1, 2};
+            optionalArray = new int[] { 1, 2 };
         }
 
         @Override
@@ -49,8 +52,6 @@ public final class TestMapAttribute extends GenericMapAttribute {
         }
 
         @Override
-        public void setRawLayers(PArray layers) {
-        }
+        public void setRawLayers(PArray layers) {}
     }
-
 }

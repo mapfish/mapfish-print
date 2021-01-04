@@ -1,10 +1,5 @@
 package org.mapfish.print.servlet;
 
-import org.mapfish.print.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
@@ -12,11 +7,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.mapfish.print.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
 /**
  * Base class for MapPrinter servlets (deals with the configuration loading).
  */
 public abstract class BaseMapServlet {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseMapServlet.class);
     private int cacheDurationInSeconds = 3600;
 
@@ -60,7 +60,10 @@ public abstract class BaseMapServlet {
      * @param code the error code
      */
     protected static void error(
-            final HttpServletResponse httpServletResponse, final String message, final HttpStatus code) {
+        final HttpServletResponse httpServletResponse,
+        final String message,
+        final HttpStatus code
+    ) {
         try {
             httpServletResponse.setContentType("text/plain");
             httpServletResponse.setStatus(code.value());

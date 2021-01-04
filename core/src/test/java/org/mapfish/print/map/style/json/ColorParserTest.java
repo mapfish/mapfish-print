@@ -1,10 +1,9 @@
 package org.mapfish.print.map.style.json;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 public class ColorParserTest {
 

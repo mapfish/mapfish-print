@@ -1,5 +1,7 @@
 package org.mapfish.print.map.geotools;
 
+import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -9,9 +11,6 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
-
-import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
 
 /**
  * A layer to render GeoTools features.
@@ -33,11 +32,12 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
      * @param params the parameters for this layer
      */
     public FeatureLayer(
-            final ExecutorService executorService,
-            final FeatureSourceSupplier featureSourceSupplier,
-            final StyleSupplier<FeatureSource> styleSupplier,
-            final boolean renderAsSvg,
-            final AbstractLayerParams params) {
+        final ExecutorService executorService,
+        final FeatureSourceSupplier featureSourceSupplier,
+        final StyleSupplier<FeatureSource> styleSupplier,
+        final boolean renderAsSvg,
+        final AbstractLayerParams params
+    ) {
         super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params);
     }
 
@@ -62,24 +62,23 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
 
         @Nonnull
         @Override
-        public FeatureLayer parse(
-                @Nonnull final Template template,
-                @Nonnull final FeatureLayerParam param) {
+        public FeatureLayer parse(@Nonnull final Template template, @Nonnull final FeatureLayerParam param) {
             return new FeatureLayer(
-                    this.forkJoinPool,
-                    createFeatureSourceSupplier(param.features),
-                    createStyleFunction(template, param.style, param.defaultStyle),
-                    template.getConfiguration().renderAsSvg(param.renderAsSvg),
-                    param);
+                this.forkJoinPool,
+                createFeatureSourceSupplier(param.features),
+                createStyleFunction(template, param.style, param.defaultStyle),
+                template.getConfiguration().renderAsSvg(param.renderAsSvg),
+                param
+            );
         }
 
-        private FeatureSourceSupplier createFeatureSourceSupplier(
-                final SimpleFeatureCollection features) {
+        private FeatureSourceSupplier createFeatureSourceSupplier(final SimpleFeatureCollection features) {
             return new FeatureSourceSupplier() {
                 @Override
                 public FeatureSource load(
-                        final MfClientHttpRequestFactory requestFactory,
-                        final MapfishMapContext mapContext) {
+                    final MfClientHttpRequestFactory requestFactory,
+                    final MapfishMapContext mapContext
+                ) {
                     return new CollectionFeatureSource(features);
                 }
             };
@@ -95,26 +94,40 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
          *         selected depending on the geometry type.
          */
         protected StyleSupplier<FeatureSource> createStyleFunction(
-                final Template template, final String styleString, final String defaultStyleName) {
+            final Template template,
+            final String styleString,
+            final String defaultStyleName
+        ) {
             return new StyleSupplier<FeatureSource>() {
                 @Override
                 public Style load(
-                        final MfClientHttpRequestFactory requestFactory,
-                        final FeatureSource featureSource) {
+                    final MfClientHttpRequestFactory requestFactory,
+                    final FeatureSource featureSource
+                ) {
                     if (featureSource == null) {
                         throw new IllegalArgumentException("Feature source cannot be null");
                     }
 
-                    final String geomType =
-                            featureSource.getSchema().getGeometryDescriptor().getType().getBinding()
-                            .getSimpleName();
-                    final String styleRef = styleString != null ? styleString : (defaultStyleName != null ?
-                            defaultStyleName : geomType);
-                    return OptionalUtils.or(
+                    final String geomType = featureSource
+                        .getSchema()
+                        .getGeometryDescriptor()
+                        .getType()
+                        .getBinding()
+                        .getSimpleName();
+                    final String styleRef = styleString != null
+                        ? styleString
+                        : (defaultStyleName != null ? defaultStyleName : geomType);
+                    return OptionalUtils
+                        .or(
                             () -> template.getStyle(styleRef),
-                            () -> Plugin.this.parser.loadStyle(template.getConfiguration(), requestFactory,
-                                                               styleRef))
-                            .orElseGet(() -> template.getConfiguration().getDefaultStyle(styleRef));
+                            () ->
+                                Plugin.this.parser.loadStyle(
+                                        template.getConfiguration(),
+                                        requestFactory,
+                                        styleRef
+                                    )
+                        )
+                        .orElseGet(() -> template.getConfiguration().getDefaultStyle(styleRef));
                 }
             };
         }
@@ -124,6 +137,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
      * The parameters for creating a vector layer.
      */
     public static class FeatureLayerParam extends AbstractLayerParams {
+
         /**
          * A collection of features.
          */

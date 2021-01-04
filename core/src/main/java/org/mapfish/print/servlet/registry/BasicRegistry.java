@@ -2,19 +2,19 @@ package org.mapfish.print.servlet.registry;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.mapfish.print.ExceptionUtils;
-
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.mapfish.print.ExceptionUtils;
 
 /**
  * A simple implementation of {@link org.mapfish.print.servlet.registry.Registry} based on a {@link
  * java.util.HashMap}.
  */
 public class BasicRegistry implements Registry {
+
     private static final int TIME_TO_KEEP_AFTER_ACCESS = 30;
     private Cache<String, Object> registry;
     private int timeToKeepAfterAccessInMinutes = TIME_TO_KEEP_AFTER_ACCESS;
@@ -25,9 +25,12 @@ public class BasicRegistry implements Registry {
 
     @PostConstruct
     private void init() {
-        this.registry = CacheBuilder.newBuilder().
-                concurrencyLevel(1).
-                expireAfterAccess(this.timeToKeepAfterAccessInMinutes, TimeUnit.MINUTES).build();
+        this.registry =
+            CacheBuilder
+                .newBuilder()
+                .concurrencyLevel(1)
+                .expireAfterAccess(this.timeToKeepAfterAccessInMinutes, TimeUnit.MINUTES)
+                .build();
     }
 
     @Override
@@ -117,5 +120,4 @@ public class BasicRegistry implements Registry {
             throw ExceptionUtils.getRuntimeException(e);
         }
     }
-
 }

@@ -8,6 +8,7 @@ import java.util.Set;
  * json.
  */
 public final class ExtraPropertyException extends RuntimeException {
+
     private final Collection<String> extraProperties;
     private final Set<String> attributeNames;
 
@@ -20,23 +21,28 @@ public final class ExtraPropertyException extends RuntimeException {
      * @param attributeNames all the allowed attribute names.
      */
     public ExtraPropertyException(
-            final String message, final Collection<String> extraProperties,
-            final Set<String> attributeNames) {
+        final String message,
+        final Collection<String> extraProperties,
+        final Set<String> attributeNames
+    ) {
         super(createMessage(message, extraProperties, attributeNames));
         this.extraProperties = extraProperties;
         this.attributeNames = attributeNames;
     }
 
     private static String createMessage(
-            final String message, final Collection<String> extraProperties,
-            final Set<String> attributeNames) {
-        StringBuilder missingPropertyMessage =
-                new StringBuilder(message).append("\n").append("Extra Properties: \n");
-        for (String extraProperty: extraProperties) {
+        final String message,
+        final Collection<String> extraProperties,
+        final Set<String> attributeNames
+    ) {
+        StringBuilder missingPropertyMessage = new StringBuilder(message)
+            .append("\n")
+            .append("Extra Properties: \n");
+        for (String extraProperty : extraProperties) {
             missingPropertyMessage.append("\n\t* ").append(extraProperty);
         }
         missingPropertyMessage.append("\n\nAll allowed properties are: \n");
-        for (String attributeName: attributeNames) {
+        for (String attributeName : attributeNames) {
             missingPropertyMessage.append("\n\t* ").append(attributeName);
         }
         return missingPropertyMessage.toString();

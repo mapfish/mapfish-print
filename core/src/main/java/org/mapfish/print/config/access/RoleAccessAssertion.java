@@ -1,6 +1,12 @@
 package org.mapfish.print.config.access;
 
 import com.google.common.collect.Collections2;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,13 +17,6 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.annotation.Nullable;
 
 /**
  * An access assertion that verifies that the current user has the required roles.
@@ -39,9 +38,11 @@ public final class RoleAccessAssertion implements AccessAssertion {
     @SuppressWarnings("unchecked")
     public AccessAssertion setRequiredRoles(final Collection<String> assertionRequiredRoles) {
         if (this.requiredRoles != null) {
-            throw new AssertionError(getClass() +
-                                             "#setRequiredRoles() may only be called once any further calls" +
-                                             " result in an exception");
+            throw new AssertionError(
+                getClass() +
+                "#setRequiredRoles() may only be called once any further calls" +
+                " result in an exception"
+            );
         }
         if (assertionRequiredRoles == null) {
             this.requiredRoles = Collections.unmodifiableSet(Collections.emptySet());
@@ -62,26 +63,29 @@ public final class RoleAccessAssertion implements AccessAssertion {
 
         if (context == null || context.getAuthentication() == null) {
             throw new AuthenticationCredentialsNotFoundException(
-                    resourceDescription + " requires an authenticated user");
+                resourceDescription + " requires an authenticated user"
+            );
         } else if (this.requiredRoles.isEmpty()) {
             if (!context.getAuthentication().getAuthorities().isEmpty()) {
                 return;
             }
         } else {
-            Collection<String> authorities =
-                    Collections2.transform(context.getAuthentication().getAuthorities(),
-                                           (@Nullable final GrantedAuthority input) -> (
-                                                   input == null ? "" : input.toString())
-                    );
-            for (String acc: this.requiredRoles) {
+            Collection<String> authorities = Collections2.transform(
+                context.getAuthentication().getAuthorities(),
+                (@Nullable final GrantedAuthority input) -> (input == null ? "" : input.toString())
+            );
+            for (String acc : this.requiredRoles) {
                 if (authorities.contains(acc)) {
                     return;
                 }
             }
         }
-        throw new AccessDeniedException("User " + context.getAuthentication().getPrincipal() +
-                                                " does not have one of the required roles to access: " +
-                                                resourceDescription);
+        throw new AccessDeniedException(
+            "User " +
+            context.getAuthentication().getPrincipal() +
+            " does not have one of the required roles to access: " +
+            resourceDescription
+        );
     }
 
     @Override
@@ -94,7 +98,7 @@ public final class RoleAccessAssertion implements AccessAssertion {
             throw new RuntimeException(e);
         }
         if (this.requiredRoles != null) {
-            for (String role: this.requiredRoles) {
+            for (String role : this.requiredRoles) {
                 roles.put(role);
             }
         }

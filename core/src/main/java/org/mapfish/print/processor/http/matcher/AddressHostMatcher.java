@@ -1,12 +1,11 @@
 package org.mapfish.print.processor.http.matcher;
 
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.ConfigurationException;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ConfigurationException;
 
 /**
  * Compares ip address string and mask string by using {@link java.net.InetAddress} comparison.
@@ -46,6 +45,7 @@ import java.util.List;
  * [[examples=http_processors]]
  */
 public class AddressHostMatcher extends InetHostMatcher {
+
     private String ip = null;
     private String mask = null;
 
@@ -56,7 +56,7 @@ public class AddressHostMatcher extends InetHostMatcher {
         InetAddress[] ips = InetAddress.getAllByName(this.ip);
         final ArrayList<AddressMask> authorizedIPs = new ArrayList<>(ips.length);
         final InetAddress theMask = getMaskAddress();
-        for (InetAddress actualIp: ips) {
+        for (InetAddress actualIp : ips) {
             authorizedIPs.add(new AddressMask(actualIp, theMask));
         }
         return authorizedIPs;

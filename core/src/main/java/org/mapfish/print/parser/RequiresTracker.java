@@ -2,19 +2,19 @@ package org.mapfish.print.parser;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import org.locationtech.jts.util.Assert;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import org.locationtech.jts.util.Assert;
 
 /**
  * Keeps track of the attributes that require other dependencies and verifies they are all satisfied at the
  * end of the json parsing.
  */
 class RequiresTracker {
+
     private Multimap<Field, String> dependantToRequirementsMap = HashMultimap.create();
     private Map<String, Field> requirementToDependantMap = new HashMap<>();
     private Collection<Field> dependantsInJson = new ArrayList<>();
@@ -29,14 +29,12 @@ class RequiresTracker {
         Requires requires = field.getAnnotation(Requires.class);
         if (requires != null) {
             final String[] requirements = requires.value();
-            for (String requirement: requirements) {
+            for (String requirement : requirements) {
                 this.dependantToRequirementsMap.put(field, requirement);
                 this.requirementToDependantMap.put(requirement, field);
             }
-
         }
     }
-
 
     /**
      * Check if a field is part of a {@link org.mapfish.print.parser.Requires} relationship and mark the
@@ -55,7 +53,6 @@ class RequiresTracker {
         }
     }
 
-
     /**
      * Check that each requirement is satisfied.
      *
@@ -64,7 +61,7 @@ class RequiresTracker {
     public void checkAllRequirementsSatisfied(final String currentPath) {
         StringBuilder errors = new StringBuilder();
 
-        for (Field field: this.dependantsInJson) {
+        for (Field field : this.dependantsInJson) {
             final Collection<String> requirements = this.dependantToRequirementsMap.get(field);
             if (!requirements.isEmpty()) {
                 errors.append("\n");
@@ -72,12 +69,22 @@ class RequiresTracker {
                 if (field.getType().isArray()) {
                     type = field.getType().getComponentType().getName() + "[]";
                 }
-                errors.append("\t* ").append(type).append(' ').append(field.getName()).append(" depends on ")
-                        .append(requirements);
+                errors
+                    .append("\t* ")
+                    .append(type)
+                    .append(' ')
+                    .append(field.getName())
+                    .append(" depends on ")
+                    .append(requirements);
             }
         }
-        Assert.equals(0, errors.length(),
-                      "\nErrors were detected when analysing the @Requires dependencies of '" +
-                              currentPath + "': " + errors);
+        Assert.equals(
+            0,
+            errors.length(),
+            "\nErrors were detected when analysing the @Requires dependencies of '" +
+            currentPath +
+            "': " +
+            errors
+        );
     }
 }

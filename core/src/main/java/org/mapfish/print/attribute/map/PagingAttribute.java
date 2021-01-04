@@ -1,11 +1,10 @@
 package org.mapfish.print.attribute.map;
 
+import java.util.List;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.HasDefaultValue;
-
-import java.util.List;
 
 /**
  * <p>Attribute that defines how a map is displayed across many pages.</p>
@@ -34,10 +33,12 @@ public final class PagingAttribute extends ReflectiveAttribute<PagingAttribute.P
      * Values object for this attribute type.
      */
     public static class PagingProcessorValues {
+
         /**
          * The scale denominator for each page/sub-map.
          */
         public double scale;
+
         /**
          * The amount that each page/sub-map should overlap each other.
          * <p>

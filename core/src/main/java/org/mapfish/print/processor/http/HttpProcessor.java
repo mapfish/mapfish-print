@@ -10,7 +10,6 @@ import org.mapfish.print.processor.Processor;
  * @param <Param> the type of parameter object required when creating the wrapper object.
  */
 public interface HttpProcessor<Param> extends Processor<Param, Void> {
-
     /**
      * Create the {@link org.mapfish.print.http.MfClientHttpRequestFactory} to use.
      *

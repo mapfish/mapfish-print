@@ -1,12 +1,10 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
-import org.mapfish.print.servlet.job.PrintJobEntry;
-import org.mapfish.print.servlet.job.impl.PrintJobStatusImpl;
-
 import javax.annotation.Nullable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
+import org.mapfish.print.servlet.job.PrintJobEntry;
+import org.mapfish.print.servlet.job.impl.PrintJobStatusImpl;
 
 /**
  * Extension of PrintJob Status that holds last check time.
@@ -18,13 +16,10 @@ public class PrintJobStatusExtImpl extends PrintJobStatusImpl {
     @Column
     private Long lastCheckTime = System.currentTimeMillis();
 
-
     /**
      * Constructor.
      */
-    public PrintJobStatusExtImpl() {
-
-    }
+    public PrintJobStatusExtImpl() {}
 
     /**
      * Constructor.
@@ -48,5 +43,4 @@ public class PrintJobStatusExtImpl extends PrintJobStatusImpl {
     public void setLastCheckTime(final long lastCheckTime) {
         this.lastCheckTime = lastCheckTime;
     }
-
 }

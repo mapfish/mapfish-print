@@ -1,5 +1,20 @@
 package org.mapfish.print.http;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
@@ -24,26 +39,11 @@ import org.springframework.http.client.AbstractClientHttpRequest;
 import org.springframework.http.client.AbstractClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.URI;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 /**
  * Default implementation.
  */
 public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequestFactory {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MfClientHttpRequestFactoryImpl.class);
     private static final ThreadLocal<Configuration> CURRENT_CONFIGURATION = new InheritableThreadLocal<>();
 
@@ -71,29 +71,30 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     }
 
     private static CloseableHttpClient createHttpClient(final int maxConnTotal, final int maxConnPerRoute) {
-        final RequestConfig requestConfig =
-                RequestConfig.custom().
-                        setConnectionRequestTimeout(getIntProperty("http.connectionRequestTimeout")).
-                        setConnectTimeout(getIntProperty("http.connectTimeout")).
-                        setSocketTimeout(getIntProperty("http.socketTimeout")).build();
+        final RequestConfig requestConfig = RequestConfig
+            .custom()
+            .setConnectionRequestTimeout(getIntProperty("http.connectionRequestTimeout"))
+            .setConnectTimeout(getIntProperty("http.connectTimeout"))
+            .setSocketTimeout(getIntProperty("http.socketTimeout"))
+            .build();
 
-        final HttpClientBuilder httpClientBuilder = HttpClients.custom().
-                disableCookieManagement().
-                setDnsResolver(new RandomizingDnsResolver()).
-                setRoutePlanner(new MfRoutePlanner()).
-                setSSLSocketFactory(new MfSSLSocketFactory()).
-                setDefaultCredentialsProvider(new MfCredentialsProvider()).
-                setDefaultRequestConfig(requestConfig).
-                setMaxConnTotal(maxConnTotal).
-                setMaxConnPerRoute(maxConnPerRoute);
+        final HttpClientBuilder httpClientBuilder = HttpClients
+            .custom()
+            .disableCookieManagement()
+            .setDnsResolver(new RandomizingDnsResolver())
+            .setRoutePlanner(new MfRoutePlanner())
+            .setSSLSocketFactory(new MfSSLSocketFactory())
+            .setDefaultCredentialsProvider(new MfCredentialsProvider())
+            .setDefaultRequestConfig(requestConfig)
+            .setMaxConnTotal(maxConnTotal)
+            .setMaxConnPerRoute(maxConnPerRoute);
         return httpClientBuilder.build();
     }
 
     // allow extension only for testing
     @Override
-    public ConfigurableRequest createRequest(
-            @Nonnull final URI uri,
-            @Nonnull final HttpMethod httpMethod) throws IOException {
+    public ConfigurableRequest createRequest(@Nonnull final URI uri, @Nonnull final HttpMethod httpMethod)
+        throws IOException {
         HttpRequestBase httpRequest = (HttpRequestBase) createHttpUriRequest(httpMethod, uri);
         return new Request(getHttpClient(), httpRequest, createHttpContext(httpMethod, uri));
     }
@@ -107,6 +108,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
      * result.
      */
     private static final class RandomizingDnsResolver extends SystemDefaultDnsResolver {
+
         @Override
         public InetAddress[] resolve(final String host) throws UnknownHostException {
             final List<InetAddress> list = Arrays.asList(super.resolve(host));
@@ -129,9 +131,10 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         private Configuration configuration;
 
         Request(
-                @Nonnull final HttpClient client,
-                @Nonnull final HttpRequestBase request,
-                @Nullable final HttpContext context) {
+            @Nonnull final HttpClient client,
+            @Nonnull final HttpRequestBase request,
+            @Nullable final HttpContext context
+        ) {
             this.client = client;
             this.request = request;
             this.context = context;
@@ -177,22 +180,25 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             CURRENT_CONFIGURATION.set(this.configuration);
 
             LOGGER.debug(
-                "Preparing request {} {}: {}", this.getMethod(), this.getURI(),
+                "Preparing request {} {}: {}",
+                this.getMethod(),
+                this.getURI(),
                 String.join("\n", Utils.getPrintableHeadersList(headers))
             );
 
-            for (Map.Entry<String, List<String>> entry: headers.entrySet()) {
+            for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
                 String headerName = entry.getKey();
-                if (!headerName.equalsIgnoreCase(HTTP.CONTENT_LEN) &&
-                        !headerName.equalsIgnoreCase(HTTP.TRANSFER_ENCODING)) {
-                    for (String headerValue: entry.getValue()) {
+                if (
+                    !headerName.equalsIgnoreCase(HTTP.CONTENT_LEN) &&
+                    !headerName.equalsIgnoreCase(HTTP.TRANSFER_ENCODING)
+                ) {
+                    for (String headerValue : entry.getValue()) {
                         this.request.addHeader(headerName, headerValue);
                     }
                 }
             }
             if (this.request instanceof HttpEntityEnclosingRequest) {
-                final HttpEntityEnclosingRequest entityEnclosingRequest =
-                        (HttpEntityEnclosingRequest) this.request;
+                final HttpEntityEnclosingRequest entityEnclosingRequest = (HttpEntityEnclosingRequest) this.request;
                 final HttpEntity requestEntity = new ByteArrayEntity(this.outputStream.toByteArray());
                 entityEnclosingRequest.setEntity(requestEntity);
             }
@@ -204,18 +210,17 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     }
 
     static class Response extends AbstractClientHttpResponse {
+
         private static final Logger LOGGER = LoggerFactory.getLogger(Response.class);
         private static final AtomicInteger ID_COUNTER = new AtomicInteger();
         private final HttpResponse response;
         private final int id = ID_COUNTER.incrementAndGet();
         private InputStream inputStream;
 
-
         Response(@Nonnull final HttpResponse response) {
             this.response = response;
             LOGGER.trace("Creating Http Response object: {}", this.id);
         }
-
 
         @Override
         public int getRawStatusCode() {
@@ -241,8 +246,11 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
                     inputStream.close();
                 }
             } catch (IOException e) {
-                LOGGER.error("Error occurred while trying to retrieve Http Response {} in order to close it.",
-                             this.id, e);
+                LOGGER.error(
+                    "Error occurred while trying to retrieve Http Response {} in order to close it.",
+                    this.id,
+                    e
+                );
             }
             LOGGER.trace("Closed Http Response object: {}", this.id);
         }
@@ -266,8 +274,8 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         public HttpHeaders getHeaders() {
             final HttpHeaders translatedHeaders = new HttpHeaders();
             final Header[] allHeaders = this.response.getAllHeaders();
-            for (Header header: allHeaders) {
-                for (HeaderElement element: header.getElements()) {
+            for (Header header : allHeaders) {
+                for (HeaderElement element : header.getElements()) {
                     translatedHeaders.add(header.getName(), element.toString());
                 }
             }

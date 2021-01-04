@@ -1,30 +1,29 @@
 package org.mapfish.print.processor;
 
-import org.junit.Test;
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.output.Values;
-import org.mapfish.print.parser.HasDefaultValue;
-
-import java.util.Arrays;
-import java.util.List;
-import javax.annotation.Nullable;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.List;
+import javax.annotation.Nullable;
+import org.junit.Test;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.output.Values;
+import org.mapfish.print.parser.HasDefaultValue;
+
 public class ProcessorGraphNodeTest {
+
     final String iMappingName = "integer";
     final String bMappingName = "bool";
     Integer intVal = 1;
     String sVal = "sValue";
     List<String> lsVal = Arrays.asList("one", "two");
-    double[] daVal = new double[]{1.2, 2.3};
+    double[] daVal = new double[] { 1.2, 2.3 };
 
     @Test
     public void testPopulateInputParameter() {
-
         Values values = new Values();
         values.put(iMappingName, intVal);
         values.put(bMappingName, true);
@@ -47,7 +46,6 @@ public class ProcessorGraphNodeTest {
 
     @Test(expected = RuntimeException.class)
     public void testNullableProperty() {
-
         Values values = new Values();
         values.put(iMappingName, intVal);
         values.put(bMappingName, true);
@@ -59,8 +57,6 @@ public class ProcessorGraphNodeTest {
         processor.getInputMapperBiMap().put(iMappingName, "i");
         processor.getInputMapperBiMap().put(bMappingName, "b");
         ProcessorUtils.populateInputParameter(processor, values);
-
-
     }
 
     @Test
@@ -97,7 +93,6 @@ public class ProcessorGraphNodeTest {
         dto.defaultI = 32;
         dto.ls = lsVal;
 
-
         TestProcessor processor = new TestProcessor();
         processor.getOutputMapperBiMap().put("i", iMappingName);
         processor.getOutputMapperBiMap().put("b", bMappingName);
@@ -114,8 +109,10 @@ public class ProcessorGraphNodeTest {
     }
 
     static class DataTransferObject {
+
         @HasDefaultValue
         public int defaultI = 3;
+
         public int i;
         public boolean b;
         public String s;

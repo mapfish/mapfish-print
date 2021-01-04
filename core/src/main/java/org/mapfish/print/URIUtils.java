@@ -2,11 +2,6 @@ package org.mapfish.print;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.commons.io.IOUtils;
-import org.mapfish.print.http.MfClientHttpRequestFactory;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpResponse;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -18,11 +13,16 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import org.apache.commons.io.IOUtils;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpResponse;
 
 /**
  * Utility methods for editing and analyzing uris.
  */
 public final class URIUtils {
+
     private URIUtils() {
         // intentionally empty
     }
@@ -57,7 +57,6 @@ public final class URIUtils {
                 key = pair;
                 value = "";
             } else {
-
                 try {
                     key = URLDecoder.decode(pair.substring(0, pos), "UTF-8");
                     value = URLDecoder.decode(pair.substring(pos + 1), "UTF-8");
@@ -81,8 +80,10 @@ public final class URIUtils {
      * @throws URISyntaxException
      */
     public static String addParams(
-            final String url, final Multimap<String, String> params, final Set<String> overrideParams)
-            throws URISyntaxException {
+        final String url,
+        final Multimap<String, String> params,
+        final Set<String> overrideParams
+    ) throws URISyntaxException {
         return addParams(new URI(url), params, overrideParams).toString();
     }
 
@@ -95,7 +96,10 @@ public final class URIUtils {
      * @return The new query
      */
     public static URI addParams(
-            final URI uri, final Multimap<String, String> params, final Set<String> overrideParams) {
+        final URI uri,
+        final Multimap<String, String> params,
+        final Set<String> overrideParams
+    ) {
         if (params == null || params.isEmpty()) {
             return uri;
         }
@@ -115,7 +119,7 @@ public final class URIUtils {
 
         Map<String, Collection<String>> origParams = getParameters(uri).asMap();
         boolean first = true;
-        for (Map.Entry<String, Collection<String>> param: params.asMap().entrySet()) {
+        for (Map.Entry<String, Collection<String>> param : params.asMap().entrySet()) {
             final String key = param.getKey();
             Collection<String> origList = origParams.remove(key);
             if (origList != null && (overrideParams == null || !overrideParams.contains(key))) {
@@ -125,7 +129,7 @@ public final class URIUtils {
             first = addParams(result, first, key, list);
         }
 
-        for (Map.Entry<String, Collection<String>> param: origParams.entrySet()) {
+        for (Map.Entry<String, Collection<String>> param : origParams.entrySet()) {
             final String key = param.getKey();
             Collection<String> list = param.getValue();
             first = addParams(result, first, key, list);
@@ -143,10 +147,13 @@ public final class URIUtils {
     }
 
     private static boolean addParams(
-            final StringBuilder result, final boolean isFirstParam, final String key,
-            final Collection<String> list) {
+        final StringBuilder result,
+        final boolean isFirstParam,
+        final String key,
+        final Collection<String> list
+    ) {
         boolean first = isFirstParam;
-        for (String val: list) {
+        for (String val : list) {
             if (first) {
                 result.append('?');
                 first = false;
@@ -172,7 +179,10 @@ public final class URIUtils {
      * @param value the value to insert
      */
     public static void addParamOverride(
-            final Multimap<String, String> params, final String key, final String value) {
+        final Multimap<String, String> params,
+        final String key,
+        final String value
+    ) {
         params.removeAll(key);
         params.put(key, value);
     }
@@ -185,7 +195,10 @@ public final class URIUtils {
      * @param value the value to insert
      */
     public static void setParamDefault(
-            final Multimap<String, String> params, final String key, final String value) {
+        final Multimap<String, String> params,
+        final String key,
+        final String value
+    ) {
         if (!params.containsKey(key)) {
             params.put(key, value);
         }
@@ -199,7 +212,7 @@ public final class URIUtils {
      */
     public static URI setQueryParams(final URI initialUri, final Multimap<String, String> queryParams) {
         StringBuilder queryString = new StringBuilder();
-        for (Map.Entry<String, String> entry: queryParams.entries()) {
+        for (Map.Entry<String, String> entry : queryParams.entries()) {
             if (queryString.length() > 0) {
                 queryString.append("&");
             }
@@ -207,14 +220,23 @@ public final class URIUtils {
         }
         try {
             if (initialUri.getHost() == null && initialUri.getAuthority() != null) {
-                return new URI(initialUri.getScheme(), initialUri.getAuthority(), initialUri.getPath(),
-                               queryString.toString(),
-                               initialUri.getFragment());
+                return new URI(
+                    initialUri.getScheme(),
+                    initialUri.getAuthority(),
+                    initialUri.getPath(),
+                    queryString.toString(),
+                    initialUri.getFragment()
+                );
             } else {
-                return new URI(initialUri.getScheme(), initialUri.getUserInfo(), initialUri.getHost(),
-                               initialUri.getPort(),
-                               initialUri.getPath(),
-                               queryString.toString(), initialUri.getFragment());
+                return new URI(
+                    initialUri.getScheme(),
+                    initialUri.getUserInfo(),
+                    initialUri.getHost(),
+                    initialUri.getPort(),
+                    initialUri.getPath(),
+                    queryString.toString(),
+                    initialUri.getFragment()
+                );
             }
         } catch (URISyntaxException e) {
             throw ExceptionUtils.getRuntimeException(e);
@@ -229,7 +251,7 @@ public final class URIUtils {
      * @return the data in string form.
      */
     public static String toString(final MfClientHttpRequestFactory requestFactory, final URI uri)
-            throws IOException {
+        throws IOException {
         try (ClientHttpResponse response = requestFactory.createRequest(uri, HttpMethod.GET).execute()) {
             return IOUtils.toString(response.getBody(), Constants.DEFAULT_ENCODING);
         }
@@ -243,7 +265,7 @@ public final class URIUtils {
      * @return the data in string form.
      */
     public static String toString(final MfClientHttpRequestFactory requestFactory, final URL url)
-            throws IOException {
+        throws IOException {
         try {
             return toString(requestFactory, url.toURI());
         } catch (URISyntaxException e) {
@@ -264,13 +286,23 @@ public final class URIUtils {
         }
         try {
             if (initialUri.getHost() == null && initialUri.getAuthority() != null) {
-                return new URI(initialUri.getScheme(), initialUri.getAuthority(), finalPath,
-                               initialUri.getQuery(),
-                               initialUri.getFragment());
+                return new URI(
+                    initialUri.getScheme(),
+                    initialUri.getAuthority(),
+                    finalPath,
+                    initialUri.getQuery(),
+                    initialUri.getFragment()
+                );
             } else {
-                return new URI(initialUri.getScheme(), initialUri.getUserInfo(), initialUri.getHost(),
-                               initialUri.getPort(),
-                               finalPath, initialUri.getQuery(), initialUri.getFragment());
+                return new URI(
+                    initialUri.getScheme(),
+                    initialUri.getUserInfo(),
+                    initialUri.getHost(),
+                    initialUri.getPort(),
+                    finalPath,
+                    initialUri.getQuery(),
+                    initialUri.getFragment()
+                );
             }
         } catch (URISyntaxException e) {
             throw ExceptionUtils.getRuntimeException(e);

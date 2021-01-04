@@ -1,13 +1,5 @@
 package org.mapfish.print.processor;
 
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.ConfigurationException;
-import org.mapfish.print.config.ConfigurationObject;
-import org.mapfish.print.config.PDFConfig;
-import org.mapfish.print.output.Values;
-import org.springframework.beans.BeanUtils;
-import org.springframework.core.MethodParameter;
-
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -17,6 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ConfigurationException;
+import org.mapfish.print.config.ConfigurationObject;
+import org.mapfish.print.config.PDFConfig;
+import org.mapfish.print.output.Values;
+import org.springframework.beans.BeanUtils;
+import org.springframework.core.MethodParameter;
 
 /**
  * <p>This processor allows the dynamic configuration of the {@link org.mapfish.print.config.PDFConfig}
@@ -81,7 +80,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
      */
     public void setUpdates(final Map<String, Object> updates) {
         Map<String, Update> finalUpdatesMap = new HashMap<>();
-        for (Map.Entry<String, Object> entry: updates.entrySet()) {
+        for (Map.Entry<String, Object> entry : updates.entrySet()) {
             String property = entry.getKey();
             Update update;
             if (entry.getValue() instanceof Update) {
@@ -94,8 +93,15 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
                 update.setValueKey(value);
             } else {
                 throw new IllegalArgumentException(
-                        "Update property " + property + " has a non-string and non-!updatePdfConfigUpdate " +
-                                "value: " + entry.getValue() + "(" + entry.getValue().getClass() + ")");
+                    "Update property " +
+                    property +
+                    " has a non-string and non-!updatePdfConfigUpdate " +
+                    "value: " +
+                    entry.getValue() +
+                    "(" +
+                    entry.getValue().getClass() +
+                    ")"
+                );
             }
 
             finalUpdatesMap.put(property, update);
@@ -105,16 +111,24 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
 
     @Override
     protected void extraValidation(
-            final List<Throwable> validationErrors, final Configuration configuration) {
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {
         if (this.updates == null) {
-            validationErrors.add(new ConfigurationException(
-                    "The property 'attributeMap' in the !updatePdfConfig processor is required"));
+            validationErrors.add(
+                new ConfigurationException(
+                    "The property 'attributeMap' in the !updatePdfConfig processor is required"
+                )
+            );
         } else {
             if (this.updates.isEmpty()) {
-                validationErrors.add(new ConfigurationException(
-                        "At least one value for 'attributeMap' in !updatePdfConfig should be declared."));
+                validationErrors.add(
+                    new ConfigurationException(
+                        "At least one value for 'attributeMap' in !updatePdfConfig should be declared."
+                    )
+                );
             }
-            for (Map.Entry<String, Update> entry: this.updates.entrySet()) {
+            for (Map.Entry<String, Update> entry : this.updates.entrySet()) {
                 entry.getValue().validate(validationErrors, configuration);
             }
         }
@@ -129,17 +143,20 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
     @Nullable
     @Override
     public Void execute(final In in, final ExecutionContext context) {
-        for (Map.Entry<String, Update> entry: this.updates.entrySet()) {
+        for (Map.Entry<String, Update> entry : this.updates.entrySet()) {
             Object value = getAttributeValue(entry.getValue().valueKey, in.values);
-            final PropertyDescriptor propertyDescriptor =
-                    BeanUtils.getPropertyDescriptor(PDFConfig.class, entry.getValue().property);
+            final PropertyDescriptor propertyDescriptor = BeanUtils.getPropertyDescriptor(
+                PDFConfig.class,
+                entry.getValue().property
+            );
             final String format = entry.getValue().format;
             if (format != null) {
                 value = String.format(format, value);
             }
 
-            final MethodParameter writeMethodParameter =
-                    BeanUtils.getWriteMethodParameter(propertyDescriptor);
+            final MethodParameter writeMethodParameter = BeanUtils.getWriteMethodParameter(
+                propertyDescriptor
+            );
             try {
                 if (propertyDescriptor.getName().equals("keywords")) {
                     value = convertKeywords(value);
@@ -148,17 +165,25 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
             } catch (Throwable e) {
                 if (writeMethodParameter == null) {
                     throw new RuntimeException(
-                            "An error occurred while executing !updatePdfConfig.  Unable to set " +
-                                    "configuration property '" +
-                                    entry.getKey() + " with value " + value + ". ");
+                        "An error occurred while executing !updatePdfConfig.  Unable to set " +
+                        "configuration property '" +
+                        entry.getKey() +
+                        " with value " +
+                        value +
+                        ". "
+                    );
                 }
                 throw new RuntimeException(
-                        "An error occurred while executing !updatePdfConfig.  Unable to set configuration " +
-                                "property '" +
-                                entry.getKey() + " with value " + value + ". The expected type is " +
-                                writeMethodParameter.getParameterType() +
-                                " but the type of the value being set was: " +
-                                (value != null ? value.getClass() : "null"));
+                    "An error occurred while executing !updatePdfConfig.  Unable to set configuration " +
+                    "property '" +
+                    entry.getKey() +
+                    " with value " +
+                    value +
+                    ". The expected type is " +
+                    writeMethodParameter.getParameterType() +
+                    " but the type of the value being set was: " +
+                    (value != null ? value.getClass() : "null")
+                );
             }
         }
 
@@ -172,7 +197,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
         if (keywordsObj instanceof Iterable) {
             Iterable obj = (Iterable) keywordsObj;
             final ArrayList<String> list = new ArrayList<>();
-            for (Object keyword: obj) {
+            for (Object keyword : obj) {
                 list.add(keyword.toString());
             }
             return list;
@@ -180,9 +205,8 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
         if (keywordsObj.getClass().isArray()) {
             Object[] arr = (Object[]) keywordsObj;
             final ArrayList<String> list = new ArrayList<>();
-            for (Object keyword: arr) {
+            for (Object keyword : arr) {
                 list.add(keyword.toString());
-
             }
             return list;
         }
@@ -208,15 +232,25 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
                 value = field.get(value);
             } catch (NoSuchFieldException e) {
                 throw new IllegalArgumentException(
-                        "No field " + part + " in object: " + value.getClass() +
-                                ". This error is part of the processor " +
-                                "!updatePdfConfig for the value: " + attributeName);
+                    "No field " +
+                    part +
+                    " in object: " +
+                    value.getClass() +
+                    ". This error is part of the processor " +
+                    "!updatePdfConfig for the value: " +
+                    attributeName
+                );
             } catch (IllegalAccessException e) {
                 throw new IllegalArgumentException(
-                        "Not permitted to access" + part + " in object: " + value.getClass() +
-                                ".  This is likely caused by the " +
-                                "Java security manager. This error is part of the processor " +
-                                "!updatePdfConfig for the value: " + attributeName);
+                    "Not permitted to access" +
+                    part +
+                    " in object: " +
+                    value.getClass() +
+                    ".  This is likely caused by the " +
+                    "Java security manager. This error is part of the processor " +
+                    "!updatePdfConfig for the value: " +
+                    attributeName
+                );
             }
         }
 
@@ -227,8 +261,11 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
     private void assertNonnullValue(final String attributeName, final Values values, final Object value) {
         if (value == null) {
             throw new IllegalArgumentException(
-                    attributeName + " does not identify a value that is currently in the values object.  " +
-                            "Values object is: \n" + values);
+                attributeName +
+                " does not identify a value that is currently in the values object.  " +
+                "Values object is: \n" +
+                values
+            );
         }
     }
 
@@ -236,6 +273,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
      * The input parameters object.
      */
     public static class In {
+
         /**
          * The values object used to retrieve the required attributes.
          */
@@ -253,6 +291,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
      * [[examples=updatePdfMetadata]]
      */
     public static final class Update implements ConfigurationObject {
+
         private String property;
         private String valueKey;
         private String format;
@@ -272,39 +311,55 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
         @Override
         public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
             if (this.valueKey.isEmpty()) {
-                validationErrors.add(new ConfigurationException(
-                        "The value of '" + this.property +
-                                "' should not be empty. Error in !updatePdfConfig"));
+                validationErrors.add(
+                    new ConfigurationException(
+                        "The value of '" + this.property + "' should not be empty. Error in !updatePdfConfig"
+                    )
+                );
                 return;
             }
             if (this.valueKey.charAt(0) == '.') {
-                validationErrors.add(new ConfigurationException(
-                        "The value of '" + this.property + "' should start with a '.', it was " +
-                                this.valueKey + ". Error in !updatePdfConfig"));
+                validationErrors.add(
+                    new ConfigurationException(
+                        "The value of '" +
+                        this.property +
+                        "' should start with a '.', it was " +
+                        this.valueKey +
+                        ". Error in !updatePdfConfig"
+                    )
+                );
                 return;
             }
 
             String[] attributeAccessorDefinition = this.valueKey.split("\\.");
             if (attributeAccessorDefinition.length == 0) {
-                validationErrors.add(new ConfigurationException(
-                        this.property + ": " + this.valueKey +
-                                " is not a valid mapping in !updatePdfConfig"));
+                validationErrors.add(
+                    new ConfigurationException(
+                        this.property + ": " + this.valueKey + " is not a valid mapping in !updatePdfConfig"
+                    )
+                );
                 return;
             }
 
-            final PropertyDescriptor propertyDescriptor =
-                    BeanUtils.getPropertyDescriptor(PDFConfig.class, this.property);
+            final PropertyDescriptor propertyDescriptor = BeanUtils.getPropertyDescriptor(
+                PDFConfig.class,
+                this.property
+            );
             if (propertyDescriptor == null || BeanUtils.getWriteMethodParameter(propertyDescriptor) == null) {
                 PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(PDFConfig.class);
                 StringBuilder options = new StringBuilder();
-                for (PropertyDescriptor descriptor: descriptors) {
+                for (PropertyDescriptor descriptor : descriptors) {
                     options.append("\n\t* ").append(descriptor.getName());
                 }
-                validationErrors.add(new ConfigurationException(
-                        "There is no pdf config property called '" + this.property + "'. Options include: " +
-                                options));
+                validationErrors.add(
+                    new ConfigurationException(
+                        "There is no pdf config property called '" +
+                        this.property +
+                        "'. Options include: " +
+                        options
+                    )
+                );
             }
-
         }
 
         /**
@@ -332,5 +387,4 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
             this.format = format;
         }
     }
-
 }

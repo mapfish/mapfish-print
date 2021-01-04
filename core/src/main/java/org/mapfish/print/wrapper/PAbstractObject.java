@@ -1,6 +1,5 @@
 package org.mapfish.print.wrapper;
 
-
 /**
  * Abstract class for PObject implementation.
  */

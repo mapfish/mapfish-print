@@ -1,13 +1,12 @@
 package org.mapfish.print.processor.http.matcher;
 
-import org.mapfish.print.config.Configuration;
-
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import org.mapfish.print.config.Configuration;
 
 /**
  * Allows to check that a given URL is served by one of the local network interface or one of its aliases.
@@ -45,7 +44,7 @@ public class LocalHostMatcher extends InetHostMatcher {
         while (ifaces.hasMoreElements()) {
             NetworkInterface networkInterface = ifaces.nextElement();
             final List<InterfaceAddress> addrs = networkInterface.getInterfaceAddresses();
-            for (InterfaceAddress netAddr: addrs) {
+            for (InterfaceAddress netAddr : addrs) {
                 authorizedIPs.add(new AddressMask(netAddr.getAddress()));
             }
         }
@@ -56,7 +55,6 @@ public class LocalHostMatcher extends InetHostMatcher {
     public final void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         // no checks required
     }
-
 
     @Override
     public final String toString() {

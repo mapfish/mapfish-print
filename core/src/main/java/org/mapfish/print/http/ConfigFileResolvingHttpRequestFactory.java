@@ -1,9 +1,17 @@
 package org.mapfish.print.http;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.CopyOnWriteArrayList;
+import javax.annotation.Nonnull;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.Processor;
-
 import org.mapfish.print.url.data.DataUrlConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,17 +23,6 @@ import org.springframework.http.client.AbstractClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.concurrent.CopyOnWriteArrayList;
-import javax.annotation.Nonnull;
-
-
 /**
  * This request factory will attempt to load resources using
  * {@link org.mapfish.print.config.Configuration#loadFile(String)}
@@ -33,6 +30,7 @@ import javax.annotation.Nonnull;
  * method is GET and will fallback to the normal/wrapped factory to make http requests.
  */
 public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttpRequestFactory {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigFileResolvingHttpRequestFactory.class);
     private final Configuration config;
     private final String jobId;
@@ -47,8 +45,10 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
      * @param jobId the job ID
      */
     public ConfigFileResolvingHttpRequestFactory(
-            final MfClientHttpRequestFactoryImpl httpRequestFactory,
-            final Configuration config, final String jobId) {
+        final MfClientHttpRequestFactoryImpl httpRequestFactory,
+        final Configuration config,
+        final String jobId
+    ) {
         this.httpRequestFactory = httpRequestFactory;
         this.config = config;
         this.jobId = jobId;
@@ -60,22 +60,17 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
     }
 
     @Override
-    public ClientHttpRequest createRequest(
-            final URI uri,
-            final HttpMethod httpMethod) {
+    public ClientHttpRequest createRequest(final URI uri, final HttpMethod httpMethod) {
         return new ConfigFileResolvingRequest(uri, httpMethod);
     }
 
-
     private class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
+
         private final URI uri;
         private final HttpMethod httpMethod;
         private ClientHttpRequest request;
 
-
-        ConfigFileResolvingRequest(
-                @Nonnull final URI uri,
-                @Nonnull final HttpMethod httpMethod) {
+        ConfigFileResolvingRequest(@Nonnull final URI uri, @Nonnull final HttpMethod httpMethod) {
             this.uri = uri;
             this.httpMethod = httpMethod;
         }
@@ -88,9 +83,9 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
         }
 
         private synchronized ClientHttpRequest createRequestFromWrapped(final HttpHeaders headers)
-                throws IOException {
+            throws IOException {
             final MfClientHttpRequestFactoryImpl requestFactory =
-                    ConfigFileResolvingHttpRequestFactory.this.httpRequestFactory;
+                ConfigFileResolvingHttpRequestFactory.this.httpRequestFactory;
             ConfigurableRequest httpRequest = requestFactory.createRequest(this.uri, this.httpMethod);
             httpRequest.setConfiguration(ConfigFileResolvingHttpRequestFactory.this.config);
 
@@ -101,7 +96,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
 
         @Override
         protected synchronized ClientHttpResponse executeInternal(final HttpHeaders headers)
-                throws IOException {
+            throws IOException {
             final String prev = MDC.get(Processor.MDC_JOB_ID_KEY);
             boolean mdcChanged = prev == null || jobId.equals(prev);
             if (mdcChanged) {
@@ -118,8 +113,10 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
                     final String contentType = duc.getContentType();
                     final HttpHeaders responseHeaders = new HttpHeaders();
                     responseHeaders.set("Content-Type", contentType);
-                    final ConfigFileResolverHttpResponse response =
-                      new ConfigFileResolverHttpResponse(is, responseHeaders);
+                    final ConfigFileResolverHttpResponse response = new ConfigFileResolverHttpResponse(
+                        is,
+                        responseHeaders
+                    );
                     LOGGER.debug("Resolved request using DataUrlConnection: {}", contentType);
                     return response;
                 }
@@ -129,10 +126,14 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
                     try {
                         final byte[] bytes = configuration.loadFile(uriString);
                         final InputStream is = new ByteArrayInputStream(bytes);
-                        final ConfigFileResolverHttpResponse response =
-                                new ConfigFileResolverHttpResponse(is, headers);
-                        LOGGER.debug("Resolved request: {} using mapfish print config file loaders.",
-                                     uriString);
+                        final ConfigFileResolverHttpResponse response = new ConfigFileResolverHttpResponse(
+                            is,
+                            headers
+                        );
+                        LOGGER.debug(
+                            "Resolved request: {} using mapfish print config file loaders.",
+                            uriString
+                        );
                         return response;
                     } catch (NoSuchElementException e) {
                         // cannot be loaded by configuration so try http
@@ -153,8 +154,8 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
         }
 
         private ClientHttpResponse executeCallbacksAndRequest(final ClientHttpRequest requestToExecute)
-                throws IOException {
-            for (RequestConfigurator callback: ConfigFileResolvingHttpRequestFactory.this.callbacks) {
+            throws IOException {
+            for (RequestConfigurator callback : ConfigFileResolvingHttpRequestFactory.this.callbacks) {
                 callback.configureRequest(requestToExecute);
             }
 
@@ -177,12 +178,11 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
         }
 
         private class ConfigFileResolverHttpResponse implements ClientHttpResponse {
+
             private final InputStream is;
             private final HttpHeaders headers;
 
-            ConfigFileResolverHttpResponse(
-                    final InputStream is,
-                    final HttpHeaders headers) {
+            ConfigFileResolverHttpResponse(final InputStream is, final HttpHeaders headers) {
                 this.headers = headers;
                 this.is = is;
             }

@@ -16,6 +16,7 @@ import org.opengis.filter.expression.Function;
  * opacity factory passed in.
  */
 public final class OpacitySettingStyleVisitor extends AbstractStyleVisitor {
+
     private final Expression opacityFactor;
     private final FilterFactory2 filterFactory;
 
@@ -58,7 +59,10 @@ public final class OpacitySettingStyleVisitor extends AbstractStyleVisitor {
     }
 
     private Function getOpacityAdjustingExpression(final Expression opacity) {
-        return this.filterFactory
-                .function(MultiplicationFunction.NAME.getName(), opacity, this.opacityFactor);
+        return this.filterFactory.function(
+                MultiplicationFunction.NAME.getName(),
+                opacity,
+                this.opacityFactor
+            );
     }
 }

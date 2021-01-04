@@ -1,9 +1,8 @@
 package org.mapfish.print.processor.jasper;
 
+import javax.swing.table.AbstractTableModel;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
-
-import javax.swing.table.AbstractTableModel;
 
 /**
  * Processor that has data for a table in a jasper report.
@@ -35,9 +34,7 @@ public class TableDataSource extends AbstractTableModel {
                 this.data[i][j] = jsonRow.getString(j);
             }
         }
-
     }
-
 
     /**
      * Constructor.

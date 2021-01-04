@@ -9,6 +9,7 @@ import com.codahale.metrics.httpclient.HttpClientMetricNameStrategy;
  *
  */
 public final class MetricsNameStrategyFactory {
+
     private MetricsNameStrategyFactory() {
         // intentionally blank.
     }

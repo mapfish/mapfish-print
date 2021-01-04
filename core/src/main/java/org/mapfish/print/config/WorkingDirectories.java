@@ -1,13 +1,6 @@
 package org.mapfish.print.config;
 
-
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,12 +8,18 @@ import java.util.Date;
 import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Class for configuring the working directories and ensuring they exist correctly.
  *
  */
 public class WorkingDirectories {
+
     private static final String TASK_DIR_PREFIX = "task-";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WorkingDirectories.class);
@@ -50,7 +49,7 @@ public class WorkingDirectories {
         if (webappPath != null) {
             webappName = new File(webappPath).getName();
         } else {
-            webappName = "default";  // left like that only in UTs
+            webappName = "default"; // left like that only in UTs
         }
         this.working = new File(working.replace("{WEBAPP}", webappName));
         createIfMissing(this.working, "working");
@@ -120,10 +119,14 @@ public class WorkingDirectories {
 
     private void createIfMissing(final File directory, final String name) {
         if (!directory.exists() && !directory.mkdirs()) {
-            if (!directory.exists()) {  // Maybe somebody else created it in the mean time
+            if (!directory.exists()) { // Maybe somebody else created it in the mean time
                 throw new AssertionError(
-                        "Unable to create working directory: '" + directory + "' it is the '" + name +
-                                "' directory");
+                    "Unable to create working directory: '" +
+                    directory +
+                    "' it is the '" +
+                    name +
+                    "' directory"
+                );
             }
         }
     }
@@ -137,8 +140,11 @@ public class WorkingDirectories {
      * @param logger the logger to log errors to if an occur.
      */
     public final File getBuildFileFor(
-            final Configuration configuration, final File jasperFileXml,
-            final String extension, final Logger logger) {
+        final Configuration configuration,
+        final File jasperFileXml,
+        final String extension,
+        final Logger logger
+    ) {
         final String configurationAbsolutePath = configuration.getDirectory().getPath();
         final int prefixToConfiguration = configurationAbsolutePath.length() + 1;
         final String parentDir = jasperFileXml.getAbsoluteFile().getParent();
@@ -147,15 +153,19 @@ public class WorkingDirectories {
             relativePathToFile = FilenameUtils.getBaseName(jasperFileXml.getName());
         } else {
             final String relativePathToContainingDirectory = parentDir.substring(prefixToConfiguration);
-            relativePathToFile = relativePathToContainingDirectory + File.separator +
-                    FilenameUtils.getBaseName(jasperFileXml.getName());
+            relativePathToFile =
+                relativePathToContainingDirectory +
+                File.separator +
+                FilenameUtils.getBaseName(jasperFileXml.getName());
         }
 
         final File buildFile = new File(getJasperCompilation(configuration), relativePathToFile + extension);
 
         if (!buildFile.getParentFile().exists() && !buildFile.getParentFile().mkdirs()) {
-            logger.error("Unable to create directory for containing compiled jasper report templates: {}",
-                         buildFile.getParentFile());
+            logger.error(
+                "Unable to create directory for containing compiled jasper report templates: {}",
+                buildFile.getParentFile()
+            );
         }
         return buildFile;
     }
@@ -215,9 +225,11 @@ public class WorkingDirectories {
 
             int deletedFiles = 0;
             if (dir.exists()) {
-                for (File file: Objects.requireNonNull(dir.listFiles())) {
-                    if ((prefix == null || file.getName().startsWith(prefix))
-                            && file.lastModified() < ageThreshold) {
+                for (File file : Objects.requireNonNull(dir.listFiles())) {
+                    if (
+                        (prefix == null || file.getName().startsWith(prefix)) &&
+                        file.lastModified() < ageThreshold
+                    ) {
                         if (!FileUtils.deleteQuietly(file)) {
                             LOGGER.warn("failed to delete file {}", file.getAbsolutePath());
                         } else {

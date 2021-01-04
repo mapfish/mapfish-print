@@ -1,5 +1,15 @@
 package org.mapfish.print;
 
+import java.awt.Dimension;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.Files;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.geotools.referencing.CRS;
 import org.junit.runner.RunWith;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
@@ -14,35 +24,28 @@ import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.awt.Dimension;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
-import java.nio.file.Files;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Class that loads the normal spring application context from the spring config file. Subclasses can use
  * Autowired to get dependencies from the application context.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
+@ContextConfiguration(
+    locations = {
         AbstractMapfishSpringTest.DEFAULT_SPRING_XML,
         AbstractMapfishSpringTest.TEST_SPRING_XML,
-        AbstractMapfishSpringTest.TEST_SPRING_FONT_XML
-})
+        AbstractMapfishSpringTest.TEST_SPRING_FONT_XML,
+    }
+)
 public abstract class AbstractMapfishSpringTest {
+
     public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";
     public static final String TEST_SPRING_XML =
-            "classpath:test-http-request-factory-application-context.xml";
+        "classpath:test-http-request-factory-application-context.xml";
     public static final String TEST_SPRING_FONT_XML = "classpath:test-mapfish-spring-custom-fonts.xml";
     public static final String TMP = System.getProperty("java.io.tmpdir");
     protected static final Processor.ExecutionContext CONTEXT = new AbstractProcessor.Context("test");
     static final Pattern IMPORT_PATTERN = Pattern.compile("@@importFile\\((\\S+)\\)@@");
+
     @Autowired
     private WorkingDirectories workingDirectories;
 
@@ -65,6 +68,7 @@ public abstract class AbstractMapfishSpringTest {
     public static byte[] getFileBytes(Class<?> testClass, String fileName) throws IOException {
         return Files.readAllBytes(getFile(testClass, fileName).toPath());
     }
+
     /**
      * Parse the json string.
      *
@@ -75,7 +79,7 @@ public abstract class AbstractMapfishSpringTest {
     }
 
     public static PJsonObject parseJSONObjectFromFile(Class<?> testClass, String fileName)
-            throws IOException {
+        throws IOException {
         final File file = getFile(testClass, fileName);
         String jsonString = new String(Files.readAllBytes(file.toPath()), Constants.DEFAULT_CHARSET);
         Matcher matcher = IMPORT_PATTERN.matcher(jsonString);
@@ -83,8 +87,10 @@ public abstract class AbstractMapfishSpringTest {
             final String importFileName = matcher.group(1);
             File importFile = new File(file.getParentFile(), importFileName);
             final String tagToReplace = matcher.group();
-            final String importJson = new String(Files.readAllBytes(importFile.toPath()),
-                                                 Constants.DEFAULT_CHARSET);
+            final String importJson = new String(
+                Files.readAllBytes(importFile.toPath()),
+                Constants.DEFAULT_CHARSET
+            );
             jsonString = jsonString.replace(tagToReplace, importJson);
             matcher = IMPORT_PATTERN.matcher(jsonString);
         }
@@ -113,8 +119,7 @@ public abstract class AbstractMapfishSpringTest {
     protected TestHttpClientFactory.Handler createFileHandler(String filename) {
         return new TestHttpClientFactory.Handler() {
             @Override
-            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
-                    throws Exception {
+            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
                 try {
                     byte[] bytes = getFileBytes(filename);
                     return ok(uri, bytes, httpMethod);
@@ -128,8 +133,7 @@ public abstract class AbstractMapfishSpringTest {
     protected TestHttpClientFactory.Handler createFileHandler(Function<URI, String> filename) {
         return new TestHttpClientFactory.Handler() {
             @Override
-            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
-                    throws Exception {
+            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
                 try {
                     byte[] bytes = getFileBytes(filename.apply(uri));
                     return ok(uri, bytes, httpMethod);
@@ -176,20 +180,19 @@ public abstract class AbstractMapfishSpringTest {
             javaVersion = Integer.parseInt(fullVersion);
         }
 
-        String platformVersionName = "expectedSimpleImage" + classifier + "-" + normalizedOSName() +
-                "-jdk" + javaVersion + ".png";
+        String platformVersionName =
+            "expectedSimpleImage" + classifier + "-" + normalizedOSName() + "-jdk" + javaVersion + ".png";
         String platformName = "expectedSimpleImage" + classifier + "-" + normalizedOSName() + ".png";
         String defaultName = "expectedSimpleImage" + classifier + ".png";
 
-//        new File(TMP, baseDir).mkdirs();
-//        ImageIO.write(actualImage, "png", new File(TMP, baseDir + "/" + platformVersionName));
-//        ImageIO.write(actualImage, "png", new File(TMP, baseDir + "/" + platformName));
-//        ImageIO.write(actualImage, "png", new File(TMP, baseDir + "/" + defaultName));
-
+        //        new File(TMP, baseDir).mkdirs();
+        //        ImageIO.write(actualImage, "png", new File(TMP, baseDir + "/" + platformVersionName));
+        //        ImageIO.write(actualImage, "png", new File(TMP, baseDir + "/" + platformName));
+        //        ImageIO.write(actualImage, "png", new File(TMP, baseDir + "/" + defaultName));
 
         return OptionalUtils
-                .or(() -> findImage(baseDir, platformVersionName), () -> findImage(baseDir, platformName))
-                .orElse(defaultName);
+            .or(() -> findImage(baseDir, platformVersionName), () -> findImage(baseDir, platformName))
+            .orElse(defaultName);
     }
 
     private Optional<String> findImage(final String baseDir, final String fileName) {
@@ -200,5 +203,4 @@ public abstract class AbstractMapfishSpringTest {
             return Optional.empty();
         }
     }
-
 }

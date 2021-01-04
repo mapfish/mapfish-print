@@ -1,11 +1,10 @@
 package org.mapfish.print.attribute;
 
+import java.net.URL;
+import java.util.List;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.HasDefaultValue;
-
-import java.net.URL;
-import java.util.List;
 
 /**
  * Objects needed by the {@link org.mapfish.print.processor.jasper.LegendProcessor} (see

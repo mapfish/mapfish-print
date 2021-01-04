@@ -6,6 +6,7 @@ import org.mapfish.print.parser.HasDefaultValue;
  * Zoom the map to the features of a specific layer or all features of the map.
  */
 public class ZoomToFeatures {
+
     private static final int DEFAULT_ZOOM_TO_MIN_MARGIN = 10;
 
     /**
@@ -54,7 +55,6 @@ public class ZoomToFeatures {
      * The zoom type.
      */
     public enum ZoomType {
-
         /**
          * Set the center of the map to the center of the extent of the features.
          */
@@ -63,6 +63,6 @@ public class ZoomToFeatures {
         /**
          * Set the extent of the map so that all features are visible.
          */
-        EXTENT
+        EXTENT,
     }
 }

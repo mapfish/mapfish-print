@@ -1,11 +1,5 @@
 package org.mapfish.print.map.tiled;
 
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.locationtech.jts.geom.Coordinate;
-import org.mapfish.print.attribute.map.MapBounds;
-import org.mapfish.print.http.MfClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpRequest;
-
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -13,6 +7,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.locationtech.jts.geom.Coordinate;
+import org.mapfish.print.attribute.map.MapBounds;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequest;
 
 /**
  * Encapsulates the information needed to create tile requests for a particular map bounds and display.
@@ -34,7 +33,6 @@ public abstract class TileCacheInformation {
 
     private final AbstractTiledLayerParams params;
 
-
     /**
      * Constructor.
      *
@@ -44,8 +42,11 @@ public abstract class TileCacheInformation {
      * @param params the params with the data for creating the layer.
      */
     public TileCacheInformation(
-            final MapBounds bounds, final Rectangle paintArea, final double dpi,
-            final AbstractTiledLayerParams params) {
+        final MapBounds bounds,
+        final Rectangle paintArea,
+        final double dpi,
+        final AbstractTiledLayerParams params
+    ) {
         this.bounds = bounds;
         this.paintArea = paintArea;
         this.dpi = dpi;
@@ -64,13 +65,13 @@ public abstract class TileCacheInformation {
      */
     @Nonnull
     public abstract ClientHttpRequest getTileRequest(
-            MfClientHttpRequestFactory httpRequestFactory,
-            String commonUrl,
-            ReferencedEnvelope tileBounds,
-            Dimension tileSizeOnScreen,
-            int column,
-            int row)
-            throws Exception;
+        MfClientHttpRequestFactory httpRequestFactory,
+        String commonUrl,
+        ReferencedEnvelope tileBounds,
+        Dimension tileSizeOnScreen,
+        int column,
+        int row
+    ) throws Exception;
 
     /**
      * Get the resolution that the layer uses for its calculations.  The map isn't always at a resolution that
@@ -117,10 +118,10 @@ public abstract class TileCacheInformation {
         double minGeoX = envelope.getMinX();
         double minGeoY = envelope.getMinY();
         double tileMinGeoX =
-                (tileCacheMinX + (Math.floor((minGeoX - tileCacheMinX) / geoTileSize.x) * geoTileSize.x));
+            (tileCacheMinX + (Math.floor((minGeoX - tileCacheMinX) / geoTileSize.x) * geoTileSize.x));
         final double tileCacheMinY = tileCacheBounds.getMinY();
         double tileMinGeoY =
-                (tileCacheMinY + (Math.floor((minGeoY - tileCacheMinY) / geoTileSize.y) * geoTileSize.y));
+            (tileCacheMinY + (Math.floor((minGeoY - tileCacheMinY) / geoTileSize.y) * geoTileSize.y));
 
         return new Coordinate(tileMinGeoX, tileMinGeoY);
     }
