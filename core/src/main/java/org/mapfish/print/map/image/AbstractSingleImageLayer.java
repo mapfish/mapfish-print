@@ -206,7 +206,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 
             final BufferedImage image = ImageIO.read(httpResponse.getBody());
             if (image == null) {
-                LOGGER.warn("Cannot read image from %a", request.getURI());
+                LOGGER.warn("Cannot read image from {}", request.getURI());
                 this.registry.counter(baseMetricName + ".error").inc();
                 if (getFailOnError()) {
                     throw new RuntimeException("Cannot read image from " + request.getURI());
