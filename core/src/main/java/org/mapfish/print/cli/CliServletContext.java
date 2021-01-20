@@ -283,4 +283,33 @@ public final class CliServletContext implements ServletContext {
     public String getVirtualServerName() {
         return null;
     }
+
+    @Override
+    public void setResponseCharacterEncoding(final String enc) {}
+
+    @Override
+    public String getResponseCharacterEncoding() {
+        return null;
+    }
+
+    @Override
+    public void setRequestCharacterEncoding(final String enc) {}
+
+    @Override
+    public String getRequestCharacterEncoding() {
+        return null;
+    }
+
+    @Override
+    public void setSessionTimeout(final int timeout) {}
+
+    @Override
+    public int getSessionTimeout() {
+        return 0;
+    }
+
+    @Override
+    public javax.servlet.ServletRegistration.Dynamic addJspFile(String p1, String p2) {
+        return null;
+    }
 }
