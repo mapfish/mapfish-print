@@ -75,6 +75,20 @@ If you want to run in debug mode you can do the following:
 > ./gradlew print --debug-jvm -PprintArgs="-config ../examples/src/test/resources/examples/simple/config.yaml -spec ../examples/src/test/resources/examples/simple/requestData.json -output ./output.pdf"
 ```
 
+For the examples that use geoserver you shoul run it in the composition, then build and start the composition:
+
+```
+make build
+cp docker-compose.override.sample.yaml docker-compose.override.yaml
+make acceptance-tests-up
+```
+
+Run the example:
+
+```
+docker-compose exec builder gradle print -PprintArgs="-config /src/examples/src/test/resources/examples/simple/config.yaml -spec /src/examples/src/test/resources/examples/simple/requestData.json -output /src/examples/output.pdf"
+```
+
 # To use in Eclipse
 
 Create Eclipse project metadata:
