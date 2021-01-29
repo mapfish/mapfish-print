@@ -6,6 +6,7 @@ services:
     image: mapfish_print_builder
     volumes:
       - ./core:/src/core
+      - ./examples:/src/examples
     command:
       - gradle
       - --continuous
