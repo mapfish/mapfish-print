@@ -50,38 +50,45 @@ jobs:
       - run: make acceptance-tests-run
 
       # Extract artifacts
-      - run: docker run --rm --detach --name=builder mapfish_print_builder
+      - run: docker run --rm --detach --name=builder mapfish_print_builder || true
         if: always()
-      - run: docker cp builder:/src/core/build/ core/build/
-        if: always()
-
-      - run: docker cp mapfish-print_tests_1:/src/examples/build/ examples/build/
+      - run: docker cp builder:/src/core/build/ core/build/ || true
         if: always()
 
-      - run: docker-compose logs
+      - run: docker cp mapfish-print_tests_1:/src/examples/build/ examples/build/ || true
+        if: always()
+
+      - run: docker-compose logs || true
         if: failure()
 
       - run: make acceptance-tests-down
 
+      - run: mkdir -p core/build/resources/actual examples/build/reports core/build/reports
+          examples/build/resources/test/examples
+        if: always()
       - uses: actions/upload-artifact@v1
         with:
           name: Test results
           path: core/build/resources/actual
+          if-no-files-found: ignore
         if: failure()
       - uses: actions/upload-artifact@v1
         with:
           name: Reports examples
           path: examples/build/reports
+          if-no-files-found: ignore
         if: failure()
       - uses: actions/upload-artifact@v1
         with:
           name: Reports core
           path: core/build/reports
+          if-no-files-found: ignore
         if: failure()
       - uses: actions/upload-artifact@v1
         with:
           name: Examples
           path: examples/build/resources/test/examples
+          if-no-files-found: ignore
         if: failure()
 
       - name: Collect test results
