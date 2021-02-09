@@ -57,9 +57,9 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
      * @param wmsLayer The source layer
      * @param tileSize The size of the tiles
      */
-    public TiledWmsLayer(final WmsLayer wmsLayer, final Dimension tileSize) {
+    public TiledWmsLayer(final WmsLayer wmsLayer, final Dimension tileSize, final int tileBufferWidth, final int tileBufferHeight) {
         super(wmsLayer, wmsLayer.getStyleSupplier(), wmsLayer.getRegistry(), wmsLayer.getConfiguration());
-        this.param = new TiledWmsLayerParam(wmsLayer.getParams(), tileSize);
+        this.param = new TiledWmsLayerParam(wmsLayer.getParams(), tileSize, tileBufferWidth, tileBufferHeight);
     }
 
     /**

@@ -87,6 +87,8 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
         }
 
         final Dimension tileSize = adaptTileDimensions(pixels, maxWidth, maxHeight);
+        final int tileBufferWidth = 10;
+        final int tileBufferHeight = 10;
 
         final List<MapLayer> layers = values.map.getLayers();
         for (int i = 0; i < layers.size(); i++) {
@@ -103,7 +105,7 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
                                     String.join(", ", wmsLayer.getParams().layers), tileSize.width,
                                     tileSize.height);
                     }
-                    values.map.replaceLayer(i, new TiledWmsLayer(wmsLayer, tileSize));
+                    values.map.replaceLayer(i, new TiledWmsLayer(wmsLayer, tileSize, tileBufferWidth, tileBufferHeight));
                 }
             }
         }

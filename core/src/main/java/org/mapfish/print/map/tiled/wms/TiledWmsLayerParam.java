@@ -18,6 +18,7 @@ public final class TiledWmsLayerParam extends WmsLayerParam {
      * A two element array of integers indicating the x and y size of each tile.
      */
     public int[] tileSize;
+    public int[] tileBufferSize;
 
     /**
      * Constructor.
@@ -32,9 +33,10 @@ public final class TiledWmsLayerParam extends WmsLayerParam {
      * @param params the WMS parameters to convert
      * @param tileSize The size of the tiles
      */
-    public TiledWmsLayerParam(final WmsLayerParam params, final Dimension tileSize) {
+    public TiledWmsLayerParam(final WmsLayerParam params, final Dimension tileSize, final int tileBufferWidth, final int tileBufferHeight) {
         super(params);
         this.tileSize = new int[]{tileSize.width, tileSize.height};
+        this.tileBufferSize = new int[]{tileBufferWidth, tileBufferHeight};
     }
 
     @Override
@@ -47,6 +49,14 @@ public final class TiledWmsLayerParam extends WmsLayerParam {
 
     public Dimension getTileSize() {
         return new Dimension(this.tileSize[0], this.tileSize[1]);
+    }
+    
+    public int getTileBufferWidth() {
+    	return this.tileBufferSize[0];
+    }
+    
+    public int getTileBufferHeight() {
+    	return this.tileBufferSize[1];
     }
 
 }
