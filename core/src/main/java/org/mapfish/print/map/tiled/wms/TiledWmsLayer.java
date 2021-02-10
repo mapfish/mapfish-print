@@ -161,6 +161,16 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
             return TiledWmsLayer.this.param.getTileSize();
         }
 
+        @Override
+        public int getTileBufferHeight() {
+        	return TiledWmsLayer.this.param.getTileBufferHeight();
+        }
+        
+        @Override
+        public int getTileBufferWidth() {
+        	return TiledWmsLayer.this.param.getTileBufferWidth();
+        }
+        
         @Nonnull
         @Override
         protected ReferencedEnvelope getTileCacheBounds() {

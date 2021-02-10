@@ -94,6 +94,19 @@ public abstract class TileCacheInformation {
      * Obtain the image tile size of the tiles that will be loaded from the server.
      */
     public abstract Dimension getTileSize();
+    
+    /**
+     * Obtain the buffer width for meta tiling
+     */
+    public int getTileBufferWidth() {
+    	return 0;
+    }
+    /**
+     * Obtain the buffer height for meta tiling
+     */
+    public int getTileBufferHeight() {
+    	return 0;
+    }
 
     /**
      * Return the full bounds of the tileCache.
