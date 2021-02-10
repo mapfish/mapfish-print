@@ -87,8 +87,6 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
         }
 
         final Dimension tileSize = adaptTileDimensions(pixels, maxWidth, maxHeight);
-        final int tileBufferWidth = 10;
-        final int tileBufferHeight = 10;
 
         final List<MapLayer> layers = values.map.getLayers();
         for (int i = 0; i < layers.size(); i++) {
@@ -105,6 +103,11 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
                                     String.join(", ", wmsLayer.getParams().layers), tileSize.width,
                                     tileSize.height);
                     }
+                    // Notes(IS): Honestly I have no idea where should I put these buffer size.
+                    // It is needed for TiledWmsLayer (so that the values are accessible)
+                    final int tileBufferWidth = 0;
+                    final int tileBufferHeight = 0;
+
                     values.map.replaceLayer(i, new TiledWmsLayer(wmsLayer, tileSize, tileBufferWidth, tileBufferHeight));
                 }
             }

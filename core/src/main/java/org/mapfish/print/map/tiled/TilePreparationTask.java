@@ -81,16 +81,14 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
                 Dimension tileSizeOnScreen = this.tiledLayer.getTileSize();
                 int tileBufferWidth = this.tiledLayer.getTileBufferWidth();
                 int tileBufferHeight = this.tiledLayer.getTileBufferHeight();
-                
+
                 Dimension tileSizeOnScreenWithBuffer = new Dimension(tileSizeOnScreen.width + 2 * tileBufferWidth, tileSizeOnScreen.height + 2 * tileBufferHeight);
 
                 final double resolution = this.tiledLayer.getResolution();
                 Coordinate tileSizeInWorld = new Coordinate(tileSizeOnScreen.width * resolution,
                                                             tileSizeOnScreen.height * resolution);
                 Coordinate bufferSizeInWorld = new Coordinate(tileBufferWidth * resolution, tileBufferHeight * resolution);
-                
-                // set bufferHeightInWorld
-                
+
                 // The minX minY of the first (minY, minY) tile
                 Coordinate gridCoverageOrigin =
                         this.tiledLayer.getMinGeoCoordinate(mapGeoBounds, tileSizeInWorld);
@@ -128,12 +126,12 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
 
                         ReferencedEnvelope tileBounds = new ReferencedEnvelope(
                                 geoX, gridCoverageMaxX, geoY, gridCoverageMaxY, mapProjection);
-                        
+
                         ReferencedEnvelope tileBoundsWithBuffer = new ReferencedEnvelope(
-                                geoX - bufferSizeInWorld.x, 
-                                gridCoverageMaxX + bufferSizeInWorld.x, 
-                                geoY - bufferSizeInWorld.y, 
-                                gridCoverageMaxY + bufferSizeInWorld.y, 
+                                geoX - bufferSizeInWorld.x,
+                                gridCoverageMaxX + bufferSizeInWorld.x,
+                                geoY - bufferSizeInWorld.y,
+                                gridCoverageMaxY + bufferSizeInWorld.y,
                                 mapProjection);
 
                         int row = (int) Math.round((tileCacheBounds.getMaxY() -
