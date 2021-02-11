@@ -28,10 +28,6 @@
           "tileSize": [
             256,
             256
-          ],
-          "tileBufferSize": [
-            0,
-            0
           ]
         }
       ]
