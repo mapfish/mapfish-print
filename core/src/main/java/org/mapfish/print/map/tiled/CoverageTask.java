@@ -100,7 +100,24 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                     }
                     Tile tile = task.call();
                     if (tile.getImage() != null) {
-                        graphics.drawImage(tile.getImage(),
+                    	// crop the image here
+                    	BufferedImage noBufferTileImage;
+                    	if (this.tiledLayer.getTileBufferWidth() > 0 || this.tiledLayer.getTileBufferHeight() > 0) {
+                    		int noBufferWidth = Math.min(
+                    				this.tiledLayer.getTileSize().width,
+                    				tile.getImage().getWidth() - this.tiledLayer.getTileBufferWidth());
+                    		int noBufferHeight = Math.min(
+                    				this.tiledLayer.getTileSize().height,
+                    				tile.getImage().getHeight() - this.tiledLayer.getTileBufferHeight());
+                    		noBufferTileImage = tile.getImage().getSubimage(
+                			this.tiledLayer.getTileBufferWidth(),
+                			this.tiledLayer.getTileBufferHeight(),
+                			noBufferWidth,
+                			noBufferHeight);
+                    	}else {
+                    		noBufferTileImage = tile.getImage();
+                    	}
+                        graphics.drawImage(noBufferTileImage,
                                            tile.getxIndex() * this.tiledLayer.getTileSize().width,
                                            tile.getyIndex() * this.tiledLayer.getTileSize().height, null);
                     }
