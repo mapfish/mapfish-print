@@ -13,7 +13,7 @@
 </p>
 <p>
     You can mount additional font in
-    <code>core/docker/usr/share/fonts/truetype/[font-file]/</code>, and verity that she is correctly installed
+    <code>core/docker/usr/share/fonts/truetype/[font-file]</code>, and verity that she is correctly installed
     by opening the view <code>[base URL]/print/fonts</code>.
 </p>
 
@@ -25,20 +25,20 @@
 <p>The docker image can be tuned with several environment variables:</p>
 <ul>
     <li><code>CATALINA_OPTS</code>: Java startup parameters.</li>
-    <li><code>DEFAULT_LOG_LEVEL</code>: Set the default log level (defaults to INFO)</li>
-    <li><code>TOMCAT_LOG_LEVEL</code>: Set the tomcat log level (defaults to INFO)</li>
-    <li><code>LOG_LEVEL</code>: Set the mapfish print log level (defaults to INFO)</li>
-    <li><code>SPRING_LOG_LEVEL</code>: Set the Spring log level (defaults to WARN)</li>
-    <li><code>JASPER_LOG_LEVEL</code>: Set the JasperReports log level (defaults to WARN)</li>
-    <li><code>APACHE_LOG_LEVEL</code>: Set the Apache log level (defaults to WARN)</li>
-    <li><code>SQL_LOG_LEVEL</code>: Set the SQL (Hibernate) log level (defaults to WARN)</li>
-    <li><code>SENTRY_LOG_LEVEL</code>: Set the Sentry log level (defaults to ERROR)</li>
+    <li><code>DEFAULT_LOG_LEVEL</code>: Set the default log level (defaults to <code>INFO</code>)</li>
+    <li><code>TOMCAT_LOG_LEVEL</code>: Set the tomcat log level (defaults to <code>INFO</code>)</li>
+    <li><code>LOG_LEVEL</code>: Set the mapfish print log level (defaults to <code>INFO</code>)</li>
+    <li><code>SPRING_LOG_LEVEL</code>: Set the Spring log level (defaults to <code>WARN</code>)</li>
+    <li><code>JASPER_LOG_LEVEL</code>: Set the JasperReports log level (defaults to <code>WARN</code>)</li>
+    <li><code>APACHE_LOG_LEVEL</code>: Set the Apache log level (defaults to <code>WARN</code>)</li>
+    <li><code>SQL_LOG_LEVEL</code>: Set the SQL (Hibernate) log level (defaults to <code>WARN</code>)</li>
+    <li><code>SENTRY_LOG_LEVEL</code>: Set the Sentry log level (defaults to <code>ERROR</code>)</li>
     <li>
         <code>SENTRY_REPORTING_LOG_LEVEL</code>: Starting from what log level to report to Sentry (defaults to
-        WARN)
+        <code>WARN</code>)
     </li>
     <li>
-        <code>TOMCAT_LOG_TYPE:</code>:
+        <code>TOMCAT_LOG_TYPE</code>:
         <ul>
             <li>
                 <code>classic</code> (default): The logs are human readable. Access logs are going to stdout
@@ -121,9 +121,12 @@
 
 <p>
     <code>
-        docker run --name mapfish-print-test -p 8080:8080 \ -e TOMCAT_LOG_TYPE='json' \ -e
-        CATALINA_OPTS="-Ddb.name=mydb -Ddb.host=myserver -Ddb.username=myuser -Ddb.password=mypwd
-        -Ddb.port=5432" \ mydockerhub/mapfish-print:latest
+        <pre>
+docker run --name=mapfish-print-test --publish=8080:8080
+--env=TOMCAT_LOG_TYPE=json
+--env=CATALINA_OPTS="-Ddb.name=mydb -Ddb.host=myserver -Ddb.username=myuser -Ddb.password=mypwd -Ddb.port=5432"
+mydockerhub/mapfish-print:latest
+        </pre>
     </code>
 </p>
 
@@ -137,9 +140,10 @@
 <ul>
     <li>
         <code>PRINT_CANCEL_OLD_POLL_INTERVAL</code>: How often in seconds the DB is polled for jobs to be
-        cancelled (default=60s)
+        cancelled (default=<code>60</code>s)
     </li>
     <li>
-        <code>PRINT_POLL_INTERVAL</code>: How often in seconds the DB is polled for new jobs (default=0.5s)
+        <code>PRINT_POLL_INTERVAL</code>: How often in seconds the DB is polled for new jobs
+        (default=<code>0.5</code>s)
     </li>
 </ul>
