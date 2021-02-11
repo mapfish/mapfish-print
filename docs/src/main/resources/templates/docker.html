@@ -1,184 +1,145 @@
 <h4 id="docker_image">
-  Image
-  <a class="headerlink" href="#docker_image" title="Permalink to this headline"
-    >¶</a
-  >
+    Image
+    <a class="headerlink" href="#docker_image" title="Permalink to this headline">¶</a>
 </h4>
 <p>
-  Docker Hub contains a
-  <a href="https://hub.docker.com/r/camptocamp/mapfish_print/"
-    >repository with images</a
-  >
-  that can be used.
+    Docker Hub contains a
+    <a href="https://hub.docker.com/r/camptocamp/mapfish_print/">repository with images</a>
+    that can be used.
 </p>
 <p>
-  You can mount your print apps in
-  <code>/usr/local/tomcat/webapps/ROOT/print-apps</code>.
+    You can mount your print apps in
+    <code>/usr/local/tomcat/webapps/ROOT/print-apps</code>.
 </p>
 <p>
-  You can mount additional font in
-  <code>core/docker/usr/share/fonts/truetype/<font-name></code>,
-  and verity that she is correctly installed by opening the view
-  <code>[base URL]/print/fonts</code>.
+    You can mount additional font in
+    <code>core/docker/usr/share/fonts/truetype/[font-file]/</code>, and verity that she is correctly installed
+    by opening the view <code>[base URL]/print/fonts</code>.
 </p>
 
 <h4 id="docker_tunings">
-  Tunings
-  <a
-    class="headerlink"
-    href="#docker_tunings"
-    title="Permalink to this headline"
-    >¶</a
-  >
+    Tunings
+    <a class="headerlink" href="#docker_tunings" title="Permalink to this headline">¶</a>
 </h4>
 
 <p>The docker image can be tuned with several environment variables:</p>
 <ul>
-  <li><code>CATALINA_OPTS</code>: Java startup parameters.</li>
-  <li>
-    <code>DEFAULT_LOG_LEVEL</code>: Set the default log level (defaults to INFO)
-  </li>
-  <li>
-    <code>TOMCAT_LOG_LEVEL</code>: Set the tomcat log level (defaults to INFO)
-  </li>
-  <li>
-    <code>LOG_LEVEL</code>: Set the mapfish print log level (defaults to INFO)
-  </li>
-  <li>
-    <code>SPRING_LOG_LEVEL</code>: Set the Spring log level (defaults to WARN)
-  </li>
-  <li>
-    <code>JASPER_LOG_LEVEL</code>: Set the JasperReports log level (defaults to
-    WARN)
-  </li>
-  <li>
-    <code>APACHE_LOG_LEVEL</code>: Set the Apache log level (defaults to WARN)
-  </li>
-  <li>
-    <code>SQL_LOG_LEVEL</code>: Set the SQL (Hibernate) log level (defaults to
-    WARN)
-  </li>
-  <li>
-    <code>SENTRY_LOG_LEVEL</code>: Set the Sentry log level (defaults to ERROR)
-  </li>
-  <li>
-    <code>SENTRY_REPORTING_LOG_LEVEL</code>: Starting from what log level to
-    report to Sentry (defaults to WARN)
-  </li>
-  <li>
-    <code>TOMCAT_LOG_TYPE:</code>:
-    <ul>
-      <li>
-        <code>classic</code> (default): The logs are human readable. Access logs
-        are going to stdout and the other logs are going to stderr.
-      </li>
-      <li>
-        <code>json</code>: The logs will be formatted in a JSON suitable for
-        logstash. Access logs are going to stdout and the other logs are going
-        to stderr.
-      </li>
-      <li>
-        <code>logstash</code>: The logs will be formatted in a JSON suitable for
-        logstash (@cee) and sent by syslog/UDP. The access logs are going to
-        stdout in json format. More variables are available for this mode:
+    <li><code>CATALINA_OPTS</code>: Java startup parameters.</li>
+    <li><code>DEFAULT_LOG_LEVEL</code>: Set the default log level (defaults to INFO)</li>
+    <li><code>TOMCAT_LOG_LEVEL</code>: Set the tomcat log level (defaults to INFO)</li>
+    <li><code>LOG_LEVEL</code>: Set the mapfish print log level (defaults to INFO)</li>
+    <li><code>SPRING_LOG_LEVEL</code>: Set the Spring log level (defaults to WARN)</li>
+    <li><code>JASPER_LOG_LEVEL</code>: Set the JasperReports log level (defaults to WARN)</li>
+    <li><code>APACHE_LOG_LEVEL</code>: Set the Apache log level (defaults to WARN)</li>
+    <li><code>SQL_LOG_LEVEL</code>: Set the SQL (Hibernate) log level (defaults to WARN)</li>
+    <li><code>SENTRY_LOG_LEVEL</code>: Set the Sentry log level (defaults to ERROR)</li>
+    <li>
+        <code>SENTRY_REPORTING_LOG_LEVEL</code>: Starting from what log level to report to Sentry (defaults to
+        WARN)
+    </li>
+    <li>
+        <code>TOMCAT_LOG_TYPE:</code>:
         <ul>
-          <li><code>TOMCAT_LOG_HOST</code>: the target host</li>
-          <li><code>TOMCAT_LOG_PORT</code>: the target port</li>
+            <li>
+                <code>classic</code> (default): The logs are human readable. Access logs are going to stdout
+                and the other logs are going to stderr.
+            </li>
+            <li>
+                <code>json</code>: The logs will be formatted in a JSON suitable for logstash. Access logs are
+                going to stdout and the other logs are going to stderr.
+            </li>
+            <li>
+                <code>logstash</code>: The logs will be formatted in a JSON suitable for logstash (@cee) and
+                sent by syslog/UDP. The access logs are going to stdout in json format. More variables are
+                available for this mode:
+                <ul>
+                    <li><code>TOMCAT_LOG_HOST</code>: the target host</li>
+                    <li><code>TOMCAT_LOG_PORT</code>: the target port</li>
+                </ul>
+            </li>
         </ul>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <code>EXTRA_JARS</code>: If set, directory where extra JAR files are taken
-    from. Can be used, for example, to add fonts.
-  </li>
-  <li>
-    <code>PRINT_YAML_MAX_ALIASES</code>: Set the YAML max alias,
-    <a
-      href="https://www.javadoc.io/doc/org.yaml/snakeyaml/latest/org/yaml/snakeyaml/LoaderOptions.html#setMaxAliasesForCollections-int-"
-    >
-      see also</a
-    >
-    (defaults to 50).
-  </li>
+    </li>
+    <li>
+        <code>EXTRA_JARS</code>: If set, directory where extra JAR files are taken from. Can be used, for
+        example, to add fonts.
+    </li>
+    <li>
+        <code>PRINT_YAML_MAX_ALIASES</code>: Set the YAML max alias,
+        <a
+            href="https://www.javadoc.io/doc/org.yaml/snakeyaml/latest/org/yaml/snakeyaml/LoaderOptions.html#setMaxAliasesForCollections-int-"
+        >
+            see also</a
+        >
+        (defaults to 50).
+    </li>
 </ul>
 
 <p>
-  If you want to tune properties from
-  <a
-    href="https://github.com/mapfish/mapfish-print/blob/master/core/src/main/resources/mapfish-spring.properties"
-    >mapfish-spring.properties</a
-  >
-  You can override them by adding <code>-D</code> options to the
-  <code>CATALINA_OPTS</code> environment variable.
+    If you want to tune properties from
+    <a
+        href="https://github.com/mapfish/mapfish-print/blob/master/core/src/main/resources/mapfish-spring.properties"
+        >mapfish-spring.properties</a
+    >
+    You can override them by adding <code>-D</code> options to the <code>CATALINA_OPTS</code> environment
+    variable.
 </p>
 
 <h4 id="docker_sentry">
-  Sentry integration
-  <a class="headerlink" href="#docker_sentry" title="Permalink to this headline"
-    >¶</a
-  >
+    Sentry integration
+    <a class="headerlink" href="#docker_sentry" title="Permalink to this headline">¶</a>
 </h4>
 
 <p>
-  You can enable Sentry crash reports by adding a parameter to the
-  <code>CATALINA_OPTS</code> environment variable with the DSN provided by
-  sentry: <code>-Dsentry.dsn=https://public:private@host:port/project_id</code>
+    You can enable Sentry crash reports by adding a parameter to the
+    <code>CATALINA_OPTS</code> environment variable with the DSN provided by sentry:
+    <code>-Dsentry.dsn=https://public:private@host:port/project_id</code>
 </p>
 
 <p>
-  Other parameters are documented here:
-  <a href="https://docs.sentry.io/clients/java/config/"
-    >https://docs.sentry.io/clients/java/config/</a
-  >
+    Other parameters are documented here:
+    <a href="https://docs.sentry.io/clients/java/config/">https://docs.sentry.io/clients/java/config/</a>
 </p>
 
 <h4 id="multi">
-  Multi-instance
-  <a class="headerlink" href="#multi" title="Permalink to this headline">¶</a>
+    Multi-instance
+    <a class="headerlink" href="#multi" title="Permalink to this headline">¶</a>
 </h4>
 
 <p>
-  In this mode several instances of the print will collaborate together to
-  handle the print jobs. The state is stored in a database. You need to add the
-  following parameters to CATALINA_OPTS:
+    In this mode several instances of the print will collaborate together to handle the print jobs. The state
+    is stored in a database. You need to add the following parameters to CATALINA_OPTS:
 </p>
 <ul>
-  <li><code>-Ddb.username=...</code>: The PostgresQL username</li>
-  <li><code>-Ddb.password=...</code>: The PostgresQL password</li>
-  <li><code>-Ddb.host=...</code>: The PostgresQL host name</li>
-  <li><code>-Ddb.name=...</code>: The PostgresQL database name</li>
-  <li>
-    <code>-Ddb.port=...</code>: The PostgresQL database port (Default value
-    =5432)
-  </li>
+    <li><code>-Ddb.username=...</code>: The PostgresQL username</li>
+    <li><code>-Ddb.password=...</code>: The PostgresQL password</li>
+    <li><code>-Ddb.host=...</code>: The PostgresQL host name</li>
+    <li><code>-Ddb.name=...</code>: The PostgresQL database name</li>
+    <li><code>-Ddb.port=...</code>: The PostgresQL database port (Default value =5432)</li>
 </ul>
 
 <p>Example:</p>
 
 <p>
-  <code>
-    docker run --name mapfish-print-test -p 8080:8080 \ -e
-    TOMCAT_LOG_TYPE='json' \ -e CATALINA_OPTS="-Ddb.name=mydb -Ddb.host=myserver
-    -Ddb.username=myuser -Ddb.password=mypwd -Ddb.port=5432" \
-    mydockerhub/mapfish-print:latest
-  </code>
+    <code>
+        docker run --name mapfish-print-test -p 8080:8080 \ -e TOMCAT_LOG_TYPE='json' \ -e
+        CATALINA_OPTS="-Ddb.name=mydb -Ddb.host=myserver -Ddb.username=myuser -Ddb.password=mypwd
+        -Ddb.port=5432" \ mydockerhub/mapfish-print:latest
+    </code>
 </p>
 
 <p>
-  The necessary tables are created automatically (print_accountings,
-  print_job_results, print_job_statuses). In this mode the container will wait
-  for the database to be reachable before actually starting the tomcat server.
+    The necessary tables are created automatically (print_accountings, print_job_results, print_job_statuses).
+    In this mode the container will wait for the database to be reachable before actually starting the tomcat
+    server.
 </p>
 
 <p>The DB polling can be tuned with those two environment variables:</p>
 <ul>
-  <li>
-    <code>PRINT_CANCEL_OLD_POLL_INTERVAL</code>: How often in seconds the DB is
-    polled for jobs to be cancelled (default=60s)
-  </li>
-  <li>
-    <code>PRINT_POLL_INTERVAL</code>: How often in seconds the DB is polled for
-    new jobs (default=0.5s)
-  </li>
+    <li>
+        <code>PRINT_CANCEL_OLD_POLL_INTERVAL</code>: How often in seconds the DB is polled for jobs to be
+        cancelled (default=60s)
+    </li>
+    <li>
+        <code>PRINT_POLL_INTERVAL</code>: How often in seconds the DB is polled for new jobs (default=0.5s)
+    </li>
 </ul>
