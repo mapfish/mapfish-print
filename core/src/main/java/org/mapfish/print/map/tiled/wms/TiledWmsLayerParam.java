@@ -1,8 +1,9 @@
 package org.mapfish.print.map.tiled.wms;
-import org.mapfish.print.parser.HasDefaultValue;
 
 import org.locationtech.jts.util.Assert;
+
 import org.mapfish.print.map.image.wms.WmsLayerParam;
+import org.mapfish.print.parser.HasDefaultValue;
 
 import java.awt.Dimension;
 import java.net.URISyntaxException;
@@ -38,8 +39,11 @@ public final class TiledWmsLayerParam extends WmsLayerParam {
      *
      * @param params the WMS parameters to convert
      * @param tileSize The size of the tiles
+     * @param tileBufferWidth The width of the the buffer tile for meta tile
+     * @param tileBufferHeight The height of the the buffer tile for meta tile
      */
-    public TiledWmsLayerParam(final WmsLayerParam params, final Dimension tileSize, final int tileBufferWidth, final int tileBufferHeight) {
+    public TiledWmsLayerParam(final WmsLayerParam params, final Dimension tileSize, 
+            final int tileBufferWidth, final int tileBufferHeight) {
         super(params);
         this.tileSize = new int[]{tileSize.width, tileSize.height};
         this.tileBufferSize = new int[]{tileBufferWidth, tileBufferHeight};
@@ -58,11 +62,11 @@ public final class TiledWmsLayerParam extends WmsLayerParam {
     }
 
     public int getTileBufferWidth() {
-    	return this.tileBufferSize[0];
+        return this.tileBufferSize[0];
     }
 
     public int getTileBufferHeight() {
-    	return this.tileBufferSize[1];
+        return this.tileBufferSize[1];
     }
 
 }

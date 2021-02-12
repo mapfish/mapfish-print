@@ -96,16 +96,16 @@ public abstract class TileCacheInformation {
     public abstract Dimension getTileSize();
     
     /**
-     * Obtain the buffer width for meta tiling
+     * Obtain the buffer width for meta tiling.
      */
     public int getTileBufferWidth() {
-    	return 0;
+        return 0;
     }
     /**
-     * Obtain the buffer height for meta tiling
+     * Obtain the buffer height for meta tiling.
      */
     public int getTileBufferHeight() {
-    	return 0;
+        return 0;
     }
 
     /**

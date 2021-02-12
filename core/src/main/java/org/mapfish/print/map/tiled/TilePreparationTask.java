@@ -82,12 +82,16 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
                 int tileBufferWidth = this.tiledLayer.getTileBufferWidth();
                 int tileBufferHeight = this.tiledLayer.getTileBufferHeight();
 
-                Dimension tileSizeOnScreenWithBuffer = new Dimension(tileSizeOnScreen.width + 2 * tileBufferWidth, tileSizeOnScreen.height + 2 * tileBufferHeight);
+                Dimension tileSizeOnScreenWithBuffer = new Dimension(
+                        tileSizeOnScreen.width + 2 * tileBufferWidth, 
+                        tileSizeOnScreen.height + 2 * tileBufferHeight);
 
                 final double resolution = this.tiledLayer.getResolution();
-                Coordinate tileSizeInWorld = new Coordinate(tileSizeOnScreen.width * resolution,
-                                                            tileSizeOnScreen.height * resolution);
-                Coordinate bufferSizeInWorld = new Coordinate(tileBufferWidth * resolution, tileBufferHeight * resolution);
+                Coordinate tileSizeInWorld = new Coordinate(
+                        tileSizeOnScreen.width * resolution, 
+                        tileSizeOnScreen.height * resolution);
+                Coordinate bufferSizeInWorld = new Coordinate(
+                        tileBufferWidth * resolution, tileBufferHeight * resolution);
 
                 // The minX minY of the first (minY, minY) tile
                 Coordinate gridCoverageOrigin =

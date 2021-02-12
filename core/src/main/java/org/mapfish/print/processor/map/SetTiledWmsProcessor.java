@@ -108,7 +108,8 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
                     final int tileBufferWidth = 0;
                     final int tileBufferHeight = 0;
 
-                    values.map.replaceLayer(i, new TiledWmsLayer(wmsLayer, tileSize, tileBufferWidth, tileBufferHeight));
+                    values.map.replaceLayer(i, new TiledWmsLayer(
+                            wmsLayer, tileSize, tileBufferWidth, tileBufferHeight));
                 }
             }
         }

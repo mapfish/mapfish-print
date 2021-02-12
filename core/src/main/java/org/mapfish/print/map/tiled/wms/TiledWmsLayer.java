@@ -56,10 +56,14 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
      *
      * @param wmsLayer The source layer
      * @param tileSize The size of the tiles
+     * @param tileBufferWidth The width of the the buffer tile for meta tile
+     * @param tileBufferHeight The height of the the buffer tile for meta tile
      */
-    public TiledWmsLayer(final WmsLayer wmsLayer, final Dimension tileSize, final int tileBufferWidth, final int tileBufferHeight) {
+    public TiledWmsLayer(final WmsLayer wmsLayer, final Dimension tileSize, final int tileBufferWidth, 
+            final int tileBufferHeight) {
         super(wmsLayer, wmsLayer.getStyleSupplier(), wmsLayer.getRegistry(), wmsLayer.getConfiguration());
-        this.param = new TiledWmsLayerParam(wmsLayer.getParams(), tileSize, tileBufferWidth, tileBufferHeight);
+        this.param = new TiledWmsLayerParam(
+                wmsLayer.getParams(), tileSize, tileBufferWidth, tileBufferHeight);
     }
 
     /**
@@ -163,12 +167,12 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
 
         @Override
         public int getTileBufferHeight() {
-        	return TiledWmsLayer.this.param.getTileBufferHeight();
+            return TiledWmsLayer.this.param.getTileBufferHeight();
         }
         
         @Override
         public int getTileBufferWidth() {
-        	return TiledWmsLayer.this.param.getTileBufferWidth();
+            return TiledWmsLayer.this.param.getTileBufferWidth();
         }
         
         @Nonnull
