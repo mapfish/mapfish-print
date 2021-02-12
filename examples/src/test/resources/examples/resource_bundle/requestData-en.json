@@ -5,10 +5,7 @@
   "attributes": {
     "map": {
       "longitudeFirst": true,
-      "center": [
-        5,
-        45
-      ],
+      "center": [5, 45],
       "scale": 100000000,
       "projection": "EPSG:4326",
       "dpi": 72,

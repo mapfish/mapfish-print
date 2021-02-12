@@ -1,22 +1,19 @@
 package org.mapfish.print;
 
+import java.awt.image.BufferedImage;
+import java.net.URI;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.ImageTranscoder;
 import org.apache.batik.transcoder.image.TIFFTranscoder;
 
-import java.awt.image.BufferedImage;
-import java.net.URI;
-
 /**
  * SVG Utilities.
  */
 public final class SvgUtil {
 
-    private SvgUtil() {
-
-    }
+    private SvgUtil() {}
 
     /**
      * Renders an SVG image into a {@link BufferedImage}.
@@ -28,7 +25,7 @@ public final class SvgUtil {
      * @throws TranscoderException
      */
     public static BufferedImage convertFromSvg(final URI svgFile, final int width, final int height)
-            throws TranscoderException {
+        throws TranscoderException {
         BufferedImageTranscoder imageTranscoder = new BufferedImageTranscoder();
 
         imageTranscoder.addTranscodingHint(TIFFTranscoder.KEY_WIDTH, (float) width);
@@ -49,8 +46,7 @@ public final class SvgUtil {
 
         @Override
         public BufferedImage createImage(final int w, final int h) {
-            BufferedImage bi = new BufferedImage(w, h,
-                                                 BufferedImage.TYPE_INT_ARGB);
+            BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
             return bi;
         }
 
@@ -63,5 +59,4 @@ public final class SvgUtil {
             return this.img;
         }
     }
-
 }

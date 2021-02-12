@@ -12,6 +12,7 @@ import org.mapfish.print.wrapper.PObject;
  * Wrapper around the {@link org.json.JSONArray} class to have a better error management.
  */
 public class PJsonArray extends PElement implements PArray {
+
     private final JSONArray array;
 
     /**

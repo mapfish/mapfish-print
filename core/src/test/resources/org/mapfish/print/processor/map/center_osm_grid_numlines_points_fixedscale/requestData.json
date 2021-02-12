@@ -12,10 +12,11 @@
           "numberOfLines": [5, 5],
           "renderAsSvg": false,
           "font": {
-            "name" : ["Liberation Sans"],
-            "size" : "10"
+            "name": ["Liberation Sans"],
+            "size": "10"
           }
-        }, {
+        },
+        {
           "type": "osm",
           "baseURL": "http://center_osm_fixedscale.osm:1234",
           "imageExtension": "png"

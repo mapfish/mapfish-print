@@ -1,9 +1,5 @@
 package org.mapfish.print;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,6 +9,9 @@ import java.util.jar.Manifest;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Allows to access version information (from the manifest).
@@ -20,6 +19,7 @@ import javax.servlet.ServletContext;
  * Works only in a servlet context.
  */
 public class VersionInfo {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(VersionInfo.class);
 
     private static final String MAPFISH_PRINT_VERSION = "Mapfish-Print-Version";
@@ -66,8 +66,9 @@ public class VersionInfo {
     }
 
     private Attributes getAttributes() {
-        if (this.servletContext == null ||
-                this.servletContext.getClass().getSimpleName().startsWith("Mock")) {
+        if (
+            this.servletContext == null || this.servletContext.getClass().getSimpleName().startsWith("Mock")
+        ) {
             return null;
         }
         try {

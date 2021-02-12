@@ -4,6 +4,7 @@ package org.mapfish.print.wrapper;
  * PArray that is consists of several PArray objects merged together.
  */
 public final class PJoinedArray implements PArray {
+
     private final PArray[] arrays;
     private final int combinedSize;
 
@@ -15,7 +16,7 @@ public final class PJoinedArray implements PArray {
     public PJoinedArray(final PArray[] arrays) {
         this.arrays = arrays;
         int size = 0;
-        for (PArray array: arrays) {
+        for (PArray array : arrays) {
             size += array.size();
         }
 
@@ -30,7 +31,7 @@ public final class PJoinedArray implements PArray {
     @Override
     public PObject getObject(final int i) {
         int index = i;
-        for (PArray array: this.arrays) {
+        for (PArray array : this.arrays) {
             if (index < array.size()) {
                 return array.getObject(index);
             } else {
@@ -43,7 +44,7 @@ public final class PJoinedArray implements PArray {
     @Override
     public PArray getArray(final int i) {
         int index = i;
-        for (PArray array: this.arrays) {
+        for (PArray array : this.arrays) {
             if (index < array.size()) {
                 return array.getArray(index);
             } else {
@@ -86,7 +87,7 @@ public final class PJoinedArray implements PArray {
     @Override
     public String getPath(final String key) {
         StringBuilder builder = new StringBuilder();
-        for (PArray array: this.arrays) {
+        for (PArray array : this.arrays) {
             if (builder.length() == 0) {
                 builder.append(" + ");
             }
@@ -98,7 +99,7 @@ public final class PJoinedArray implements PArray {
     @Override
     public String getCurrentPath() {
         StringBuilder builder = new StringBuilder();
-        for (PArray array: this.arrays) {
+        for (PArray array : this.arrays) {
             if (builder.length() == 0) {
                 builder.append(" + ");
             }
@@ -110,7 +111,7 @@ public final class PJoinedArray implements PArray {
     @Override
     public Object get(final int i) {
         int index = i;
-        for (PArray array: this.arrays) {
+        for (PArray array : this.arrays) {
             if (index < array.size()) {
                 return array.get(index);
             } else {

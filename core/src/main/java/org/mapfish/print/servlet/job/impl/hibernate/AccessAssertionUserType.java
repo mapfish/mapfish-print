@@ -1,5 +1,10 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
+import java.io.Serializable;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 import org.json.JSONException;
@@ -8,18 +13,12 @@ import org.mapfish.print.ApplicationContextProvider;
 import org.mapfish.print.config.access.AccessAssertion;
 import org.mapfish.print.config.access.AccessAssertionPersister;
 
-import java.io.Serializable;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-
 /**
  * Hibernate user type for access assertion.
  */
 public class AccessAssertionUserType implements UserType {
 
-    private static final int[] SQL_TYPES = {Types.LONGVARCHAR};
+    private static final int[] SQL_TYPES = { Types.LONGVARCHAR };
 
     @Override
     public final Object assemble(final Serializable cached, final Object owner) {
@@ -60,13 +59,17 @@ public class AccessAssertionUserType implements UserType {
 
     @Override
     public final Object nullSafeGet(
-            final ResultSet rs, final String[] names, final SharedSessionContractImplementor session,
-            final Object owner) throws SQLException {
+        final ResultSet rs,
+        final String[] names,
+        final SharedSessionContractImplementor session,
+        final Object owner
+    ) throws SQLException {
         String value = rs.getString(names[0]);
         if (value != null) {
             try {
-                AccessAssertionPersister persister = ApplicationContextProvider.getApplicationContext()
-                        .getBean(AccessAssertionPersister.class);
+                AccessAssertionPersister persister = ApplicationContextProvider
+                    .getApplicationContext()
+                    .getBean(AccessAssertionPersister.class);
                 return persister.unmarshal(new JSONObject(value));
             } catch (JSONException e) {
                 throw new RuntimeException(e);
@@ -78,13 +81,17 @@ public class AccessAssertionUserType implements UserType {
 
     @Override
     public final void nullSafeSet(
-            final PreparedStatement st, final Object value, final int index,
-            final SharedSessionContractImplementor session) throws SQLException {
+        final PreparedStatement st,
+        final Object value,
+        final int index,
+        final SharedSessionContractImplementor session
+    ) throws SQLException {
         if (value == null) {
             st.setNull(index, SQL_TYPES[0]);
         } else {
-            AccessAssertionPersister persister = ApplicationContextProvider.getApplicationContext()
-                    .getBean(AccessAssertionPersister.class);
+            AccessAssertionPersister persister = ApplicationContextProvider
+                .getApplicationContext()
+                .getBean(AccessAssertionPersister.class);
             st.setString(index, persister.marshal(((AccessAssertion) value)).toString());
         }
     }
@@ -103,5 +110,4 @@ public class AccessAssertionUserType implements UserType {
     public final int[] sqlTypes() {
         return SQL_TYPES;
     }
-
 }

@@ -1,5 +1,10 @@
 package org.mapfish.print.attribute;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.PrintException;
@@ -11,12 +16,6 @@ import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.yaml.PYamlArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * <p>
@@ -76,6 +75,7 @@ import javax.annotation.Nullable;
  * datasource_multiple_maps,customDynamicReport,report]]
  */
 public final class DataSourceAttribute implements Attribute {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceAttribute.class);
 
     private Map<String, Attribute> attributes = new HashMap<>();
@@ -116,11 +116,11 @@ public final class DataSourceAttribute implements Attribute {
      * @param attributes the attributes
      */
     public void setAttributes(final Map<String, Attribute> attributes) {
-        for (Map.Entry<String, Attribute> entry: attributes.entrySet()) {
+        for (Map.Entry<String, Attribute> entry : attributes.entrySet()) {
             Object attribute = entry.getValue();
             if (!(attribute instanceof Attribute)) {
                 final String msg =
-                        "Attribute: '" + entry.getKey() + "' is not an attribute. It is a: " + attribute;
+                    "Attribute: '" + entry.getKey() + "' is not an attribute. It is a: " + attribute;
                 LOGGER.error("Error setting the Attributes: {}", msg);
                 throw new IllegalArgumentException(msg);
             } else {
@@ -134,14 +134,15 @@ public final class DataSourceAttribute implements Attribute {
     public void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
         try {
             json.key(ReflectiveAttribute.JSON_NAME).value(this.configName);
-            json.key(ReflectiveAttribute.JSON_ATTRIBUTE_TYPE)
-                    .value(DataSourceAttributeValue.class.getSimpleName());
+            json
+                .key(ReflectiveAttribute.JSON_ATTRIBUTE_TYPE)
+                .value(DataSourceAttributeValue.class.getSimpleName());
 
             json.key(ReflectiveAttribute.JSON_CLIENT_PARAMS);
             json.object();
             json.key("attributes");
             json.array();
-            for (Map.Entry<String, Attribute> entry: this.attributes.entrySet()) {
+            for (Map.Entry<String, Attribute> entry : this.attributes.entrySet()) {
                 Attribute attribute = entry.getValue();
                 if (attribute.getClass().getAnnotation(InternalAttribute.class) == null) {
                     json.object();
@@ -151,7 +152,6 @@ public final class DataSourceAttribute implements Attribute {
             }
             json.endArray();
             json.endObject();
-
         } catch (Throwable e) {
             // Note: If this test fails and you just added a new attribute, make
             // sure to set defaults in AbstractMapfishSpringTest.configureAttributeForTesting
@@ -175,8 +175,9 @@ public final class DataSourceAttribute implements Attribute {
      */
     @SuppressWarnings("unchecked")
     public DataSourceAttributeValue parseAttribute(
-            @Nonnull final Template template,
-            @Nullable final PArray jsonValue) throws JSONException {
+        @Nonnull final Template template,
+        @Nullable final PArray jsonValue
+    ) throws JSONException {
         final PArray pValue;
 
         if (jsonValue != null) {
@@ -208,8 +209,10 @@ public final class DataSourceAttribute implements Attribute {
 
     @Override
     public Object getValue(
-            @Nonnull final Template template,
-            @Nonnull final String attributeName, @Nonnull final PObject requestJsonAttributes) {
+        @Nonnull final Template template,
+        @Nonnull final String attributeName,
+        @Nonnull final PObject requestJsonAttributes
+    ) {
         return this.parseAttribute(template, requestJsonAttributes.optArray(attributeName));
     }
 
@@ -217,6 +220,7 @@ public final class DataSourceAttribute implements Attribute {
      * The value class for the {@link org.mapfish.print.attribute.DataSourceAttribute}.
      */
     public static final class DataSourceAttributeValue {
+
         /**
          * The array of attribute data.  Each element in the array is the attribute data for one row in the
          * resulting datasource (as processed by

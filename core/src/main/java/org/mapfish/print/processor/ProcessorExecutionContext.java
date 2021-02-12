@@ -1,22 +1,21 @@
 package org.mapfish.print.processor;
 
-import org.mapfish.print.output.Values;
-import org.mapfish.print.processor.AbstractProcessor.Context;
-
 import java.util.IdentityHashMap;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import org.mapfish.print.output.Values;
+import org.mapfish.print.processor.AbstractProcessor.Context;
 
 /**
  * Contains information shared across all nodes being executed.
  *
  */
 public final class ProcessorExecutionContext {
+
     private final Values values;
     private final IdentityHashMap<Processor, Void> runningProcessors = new IdentityHashMap<>();
-    private final IdentityHashMap<Processor, Void> executedProcessors =
-            new IdentityHashMap<>();
+    private final IdentityHashMap<Processor, Void> executedProcessors = new IdentityHashMap<>();
     private final Lock processorLock = new ReentrantLock();
     private final Context context;
 
@@ -49,8 +48,11 @@ public final class ProcessorExecutionContext {
         this.processorLock.lock();
         final boolean canStart;
         try {
-            if (isRunning(processorGraphNode) || isFinished(processorGraphNode) ||
-                    !allAreFinished(processorGraphNode.getRequirements())) {
+            if (
+                isRunning(processorGraphNode) ||
+                isFinished(processorGraphNode) ||
+                !allAreFinished(processorGraphNode.getRequirements())
+            ) {
                 canStart = false;
             } else {
                 started(processorGraphNode);
@@ -129,7 +131,7 @@ public final class ProcessorExecutionContext {
     public boolean allAreFinished(final Set<ProcessorGraphNode<?, ?>> processorNodes) {
         this.processorLock.lock();
         try {
-            for (ProcessorGraphNode<?, ?> node: processorNodes) {
+            for (ProcessorGraphNode<?, ?> node : processorNodes) {
                 if (!isFinished(node)) {
                     return false;
                 }
@@ -138,7 +140,6 @@ public final class ProcessorExecutionContext {
         } finally {
             this.processorLock.unlock();
         }
-
     }
 
     /**

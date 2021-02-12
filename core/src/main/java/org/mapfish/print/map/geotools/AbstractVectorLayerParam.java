@@ -7,6 +7,7 @@ import org.mapfish.print.parser.HasDefaultValue;
  * Common parameters for geotools vector layers.
  */
 public abstract class AbstractVectorLayerParam extends AbstractLayerParams {
+
     /**
      * The style name of a style to apply to the features during rendering.  The style name must map to a
      * style in the template or the configuration objects.
@@ -15,6 +16,7 @@ public abstract class AbstractVectorLayerParam extends AbstractLayerParams {
      */
     @HasDefaultValue
     public String style;
+
     /**
      * Indicates if the layer is rendered as SVG.
      *

@@ -1,5 +1,8 @@
 package org.mapfish.print.servlet.job.impl;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.ExceptionUtils;
@@ -14,10 +17,6 @@ import org.mapfish.print.servlet.registry.Registry;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
 
 /**
  * Job Queue that uses Registry.
@@ -103,7 +102,7 @@ public class RegistryJobQueue implements JobQueue {
 
     @Override
     public final synchronized void done(final String referenceId, final PrintJobResult result)
-            throws NoSuchReferenceException {
+        throws NoSuchReferenceException {
         try {
             PrintJobStatusImpl status = load(referenceId);
             if (!status.isDone()) {
@@ -123,8 +122,10 @@ public class RegistryJobQueue implements JobQueue {
 
     @Override
     public final synchronized void cancel(
-            final String referenceId, final String message, final boolean forceFinal)
-            throws NoSuchReferenceException {
+        final String referenceId,
+        final String message,
+        final boolean forceFinal
+    ) throws NoSuchReferenceException {
         try {
             PrintJobStatusImpl status = load(referenceId);
 
@@ -151,7 +152,7 @@ public class RegistryJobQueue implements JobQueue {
 
     @Override
     public final synchronized void fail(final String referenceId, final String message)
-            throws NoSuchReferenceException {
+        throws NoSuchReferenceException {
         try {
             PrintJobStatusImpl status = load(referenceId);
             if (!status.isDone()) {
@@ -202,7 +203,7 @@ public class RegistryJobQueue implements JobQueue {
 
     @Override
     public final PrintJobStatusImpl get(final String referenceId, final boolean external)
-            throws NoSuchReferenceException {
+        throws NoSuchReferenceException {
         try {
             PrintJobStatusImpl status = load(referenceId);
             status.setStatusTime(System.currentTimeMillis());
@@ -259,8 +260,9 @@ public class RegistryJobQueue implements JobQueue {
             final AccessAssertion accessAssertion = this.assertionPersister.unmarshal(accessJSON);
 
             PrintJobStatusImpl report = new PrintJobStatusImpl(
-                    new PrintJobEntryImpl(referenceId, requestData, startTime, accessAssertion),
-                    requestCount);
+                new PrintJobEntryImpl(referenceId, requestData, startTime, accessAssertion),
+                requestCount
+            );
             report.setStatus(status);
 
             if (metadata.has(JSON_COMPLETION_DATE)) {
@@ -282,8 +284,13 @@ public class RegistryJobQueue implements JobQueue {
                 String fileExt = metadata.getString(JSON_FILE_EXT);
                 String mimeType = metadata.getString(JSON_MIME_TYPE);
 
-                PrintJobResult result =
-                        new PrintJobResultImpl(reportURI, fileName, fileExt, mimeType, referenceId);
+                PrintJobResult result = new PrintJobResultImpl(
+                    reportURI,
+                    fileName,
+                    fileExt,
+                    mimeType,
+                    referenceId
+                );
                 report.setResult(result);
             }
 

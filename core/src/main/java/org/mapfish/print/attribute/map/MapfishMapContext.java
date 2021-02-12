@@ -1,15 +1,14 @@
 package org.mapfish.print.attribute.map;
 
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.mapfish.print.FloatingPointUtil;
-import org.mapfish.print.map.Scale;
-
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.mapfish.print.FloatingPointUtil;
+import org.mapfish.print.map.Scale;
 
 /**
  * Utility class that adjusts the bounds and the map size in case a rotation is set. Also it provides an
@@ -35,8 +34,12 @@ public final class MapfishMapContext {
      * @param dpiSensitiveStyle Scale the vector styles?
      */
     public MapfishMapContext(
-            final MapBounds bounds, final Dimension mapSize, final double dpi,
-            final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
+        final MapBounds bounds,
+        final Dimension mapSize,
+        final double dpi,
+        final Boolean forceLongitudeFirst,
+        final boolean dpiSensitiveStyle
+    ) {
         this(null, bounds, mapSize, dpi, forceLongitudeFirst, dpiSensitiveStyle);
     }
 
@@ -51,8 +54,13 @@ public final class MapfishMapContext {
      * @param dpiSensitiveStyle Scale the vector styles?
      */
     public MapfishMapContext(
-            final MapBounds bounds, final Dimension mapSize, final double rotation,
-            final double dpi, final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
+        final MapBounds bounds,
+        final Dimension mapSize,
+        final double rotation,
+        final double dpi,
+        final Boolean forceLongitudeFirst,
+        final boolean dpiSensitiveStyle
+    ) {
         this(null, bounds, mapSize, rotation, dpi, forceLongitudeFirst, dpiSensitiveStyle);
     }
 
@@ -68,9 +76,13 @@ public final class MapfishMapContext {
      */
     // CSOFF: ParameterNumber
     public MapfishMapContext(
-            final MapfishMapContext parent, final MapBounds bounds, final Dimension mapSize,
-            final double dpi,
-            final Boolean forceLongitudeFirst, final boolean dpiSensitiveStyle) {
+        final MapfishMapContext parent,
+        final MapBounds bounds,
+        final Dimension mapSize,
+        final double dpi,
+        final Boolean forceLongitudeFirst,
+        final boolean dpiSensitiveStyle
+    ) {
         this(parent, bounds, mapSize, 0, dpi, forceLongitudeFirst, dpiSensitiveStyle);
     }
 
@@ -87,9 +99,14 @@ public final class MapfishMapContext {
      */
     // CSOFF: ParameterNumber
     public MapfishMapContext(
-            final MapfishMapContext parent, final MapBounds bounds, final Dimension mapSize,
-            final double rotation, final double dpi, final Boolean forceLongitudeFirst,
-            final boolean dpiSensitiveStyle) {
+        final MapfishMapContext parent,
+        final MapBounds bounds,
+        final Dimension mapSize,
+        final double rotation,
+        final double dpi,
+        final Boolean forceLongitudeFirst,
+        final boolean dpiSensitiveStyle
+    ) {
         // CSON: ParameterNumber
         this.parent = parent;
         this.bounds = bounds;
@@ -106,9 +123,7 @@ public final class MapfishMapContext {
      * @param rectangle The rectangle.
      */
     public static Dimension rectangleDoubleToDimension(final Rectangle2D.Double rectangle) {
-        return new Dimension(
-                (int) Math.round(rectangle.width),
-                (int) Math.round(rectangle.height));
+        return new Dimension((int) Math.round(rectangle.width), (int) Math.round(rectangle.height));
     }
 
     /**
@@ -192,7 +207,7 @@ public final class MapfishMapContext {
 
     public double getGeodeticScaleDenominator() {
         return getScale()
-                .getGeodeticDenominator(this.bounds.getProjection(), this.dpi, getBounds().getCenter());
+            .getGeodeticDenominator(this.bounds.getProjection(), this.dpi, getBounds().getCenter());
     }
 
     /**
@@ -220,7 +235,8 @@ public final class MapfishMapContext {
      * @param geodetic Get geodetic scale
      */
     public double getRoundedScaleDenominator(final boolean geodetic) {
-        final double scaleDenominator = this.bounds.getScale(getPaintArea(), this.dpi)
+        final double scaleDenominator =
+            this.bounds.getScale(getPaintArea(), this.dpi)
                 .getDenominator(geodetic, getBounds().getProjection(), this.dpi, getBounds().getCenter());
 
         final int numChars = String.format("%d", Math.round(scaleDenominator)).length();
@@ -311,8 +327,7 @@ public final class MapfishMapContext {
         double width = this.mapSize.getWidth();
         if (!FloatingPointUtil.equals(this.rotation, 0.0)) {
             double height = this.mapSize.getHeight();
-            width = Math.abs(width * Math.cos(this.rotation))
-                    + Math.abs(height * Math.sin(this.rotation));
+            width = Math.abs(width * Math.cos(this.rotation)) + Math.abs(height * Math.sin(this.rotation));
         }
         return width;
     }
@@ -321,8 +336,7 @@ public final class MapfishMapContext {
         double height = this.mapSize.getHeight();
         if (!FloatingPointUtil.equals(this.rotation, 0.0)) {
             double width = this.mapSize.getWidth();
-            height = Math.abs(height * Math.cos(this.rotation))
-                    + Math.abs(width * Math.sin(this.rotation));
+            height = Math.abs(height * Math.cos(this.rotation)) + Math.abs(width * Math.sin(this.rotation));
         }
         return height;
     }

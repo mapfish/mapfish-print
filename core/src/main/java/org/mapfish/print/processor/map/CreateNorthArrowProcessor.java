@@ -1,5 +1,13 @@
 package org.mapfish.print.processor.map;
 
+import static org.mapfish.print.Constants.PDF_DPI;
+
+import java.awt.Dimension;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 import net.sf.jasperreports.engine.JRException;
 import org.mapfish.print.attribute.NorthArrowAttribute;
 import org.mapfish.print.attribute.map.MapAttribute;
@@ -9,16 +17,6 @@ import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.processor.jasper.ImagesSubReport;
 import org.mapfish.print.processor.jasper.JasperReportBuilder;
-
-import java.awt.Dimension;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.Collections;
-import java.util.List;
-
-import static org.mapfish.print.Constants.PDF_DPI;
-
 
 /**
  * <p>Processor to create a north-arrow for a map.</p>
@@ -44,7 +42,7 @@ import static org.mapfish.print.Constants.PDF_DPI;
  * [[examples=verboseExample,print_osm_new_york_nosubreports]]
  */
 public class CreateNorthArrowProcessor
-        extends AbstractProcessor<CreateNorthArrowProcessor.Input, CreateNorthArrowProcessor.Output> {
+    extends AbstractProcessor<CreateNorthArrowProcessor.Input, CreateNorthArrowProcessor.Output> {
 
     /**
      * Constructor.
@@ -55,8 +53,9 @@ public class CreateNorthArrowProcessor
 
     @Override
     protected void extraValidation(
-            final List<Throwable> validationErrors, final Configuration configuration) {
-    }
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {}
 
     @Override
     public final Input createInputParameter() {
@@ -69,25 +68,30 @@ public class CreateNorthArrowProcessor
 
         final double dpiRatio = values.map.getDpi() / PDF_DPI;
         final Dimension size = new Dimension(
-                (int) (values.northArrow.getSize().getWidth() * dpiRatio),
-                (int) (values.northArrow.getSize().getHeight() * dpiRatio));
+            (int) (values.northArrow.getSize().getWidth() * dpiRatio),
+            (int) (values.northArrow.getSize().getHeight() * dpiRatio)
+        );
 
         final URI northArrowGraphicFile = NorthArrowGraphic.create(
-                size,
-                values.northArrow.getGraphic(),
-                values.northArrow.getBackgroundColor(),
-                values.map.getRotation(),
-                values.tempTaskDirectory,
-                values.clientHttpRequestFactoryProvider.get(),
-                !values.template.isPdfA());
+            size,
+            values.northArrow.getGraphic(),
+            values.northArrow.getBackgroundColor(),
+            values.map.getRotation(),
+            values.tempTaskDirectory,
+            values.clientHttpRequestFactoryProvider.get(),
+            !values.template.isPdfA()
+        );
 
         context.stopIfCanceled();
 
         String strScalebarSubReport = null;
         if (values.northArrow.isCreateSubReport()) {
             final URI scalebarSubReport = createNorthArrowSubReport(
-                    values.tempTaskDirectory, values.northArrow.getSize(),
-                    Collections.singletonList(northArrowGraphicFile), values.map.getDpi());
+                values.tempTaskDirectory,
+                values.northArrow.getSize(),
+                Collections.singletonList(northArrowGraphicFile),
+                values.map.getDpi()
+            );
             strScalebarSubReport = scalebarSubReport.toString();
         }
 
@@ -95,15 +99,18 @@ public class CreateNorthArrowProcessor
     }
 
     private URI createNorthArrowSubReport(
-            final File printDirectory,
-            final Dimension size,
-            final List<URI> graphics,
-            final double dpi) throws IOException, JRException {
+        final File printDirectory,
+        final Dimension size,
+        final List<URI> graphics,
+        final double dpi
+    ) throws IOException, JRException {
         final ImagesSubReport subReport = new ImagesSubReport(graphics, size, dpi);
 
-        final File compiledReport = File.createTempFile("north-arrow-report-",
-                                                        JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT,
-                                                        printDirectory);
+        final File compiledReport = File.createTempFile(
+            "north-arrow-report-",
+            JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT,
+            printDirectory
+        );
         subReport.compile(compiledReport);
 
         return compiledReport.toURI();
@@ -113,6 +120,7 @@ public class CreateNorthArrowProcessor
      * Input for the processor.
      */
     public static class Input {
+
         /**
          * The map the north arrow is created for.
          */

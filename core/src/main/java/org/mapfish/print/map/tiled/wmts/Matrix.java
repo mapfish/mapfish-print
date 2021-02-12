@@ -1,12 +1,11 @@
 package org.mapfish.print.map.tiled.wmts;
 
+import static org.mapfish.print.Constants.OGC_DPI;
+
+import java.util.Arrays;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.map.Scale;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import java.util.Arrays;
-
-import static org.mapfish.print.Constants.OGC_DPI;
 
 /**
  * A class representing a matrix.
@@ -38,14 +37,22 @@ public class Matrix {
      * Validate the properties have the correct values.
      */
     public final void postConstruct() {
-        Assert.equals(2, this.tileSize.length, "tileSize must have exactly 2 elements to the array.  Was: " +
-                Arrays.toString(this.tileSize));
-        Assert.equals(2, this.topLeftCorner.length,
-                      "topLeftCorner must have exactly 2 elements to the array.  Was: " +
-                              Arrays.toString(this.topLeftCorner));
-        Assert.equals(2, this.matrixSize.length,
-                      "matrixSize must have exactly 2 elements to the array.  Was: " +
-                              Arrays.toString(this.matrixSize));
+        Assert.equals(
+            2,
+            this.tileSize.length,
+            "tileSize must have exactly 2 elements to the array.  Was: " + Arrays.toString(this.tileSize)
+        );
+        Assert.equals(
+            2,
+            this.topLeftCorner.length,
+            "topLeftCorner must have exactly 2 elements to the array.  Was: " +
+            Arrays.toString(this.topLeftCorner)
+        );
+        Assert.equals(
+            2,
+            this.matrixSize.length,
+            "matrixSize must have exactly 2 elements to the array.  Was: " + Arrays.toString(this.matrixSize)
+        );
     }
 
     /**

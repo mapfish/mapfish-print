@@ -5,11 +5,11 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.font.TextLayout;
 
-
 /**
  * Position, size and content of a label.
  */
 public class Label {
+
     /**
      * Position of the label, relative to the first tick of the bar.
      */

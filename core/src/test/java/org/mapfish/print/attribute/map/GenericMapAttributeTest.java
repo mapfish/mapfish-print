@@ -1,18 +1,5 @@
 package org.mapfish.print.attribute.map;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONWriter;
-import org.junit.Test;
-import org.mapfish.print.attribute.ReflectiveAttribute;
-import org.mapfish.print.config.Template;
-import org.mapfish.print.parser.MapfishParser;
-import org.mapfish.print.test.util.AttributeTesting;
-
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -22,6 +9,18 @@ import static org.mapfish.print.attribute.ReflectiveAttribute.JSON_ATTRIBUTE_IS_
 import static org.mapfish.print.attribute.ReflectiveAttribute.JSON_ATTRIBUTE_TYPE;
 import static org.mapfish.print.attribute.ReflectiveAttribute.JSON_CLIENT_INFO;
 import static org.mapfish.print.attribute.ReflectiveAttribute.JSON_CLIENT_PARAMS;
+
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONWriter;
+import org.junit.Test;
+import org.mapfish.print.attribute.ReflectiveAttribute;
+import org.mapfish.print.config.Template;
+import org.mapfish.print.parser.MapfishParser;
+import org.mapfish.print.test.util.AttributeTesting;
 
 /**
  * Test reflective attribute functionality.
@@ -34,7 +33,7 @@ public class GenericMapAttributeTest {
 
         final TestMapAttribute att = new TestMapAttribute();
         att.setConfigName(mapAttName);
-        att.setDpiSuggestions(new double[]{72, 92.2, 128, 200.5});
+        att.setDpiSuggestions(new double[] { 72, 92.2, 128, 200.5 });
         att.setMaxDpi(300.0);
         att.setWidth(128);
         att.setHeight(60);
@@ -69,16 +68,17 @@ public class GenericMapAttributeTest {
         assertEmbedded(required, false, "embedded");
         assertEmbedded(required, true, "optionalEmbedded");
 
-
         final JSONObject suggestions = json.getJSONObject(JSON_CLIENT_INFO);
         assertEquals(5, suggestions.length());
 
-        assertEquals("[72,92.2,128,200.5]",
-                     suggestions.get(GenericMapAttribute.JSON_DPI_SUGGESTIONS).toString()
-                             .replaceAll("\\s+", ""));
-        assertEquals("[4000,3000,2000,1000]",
-                     suggestions.get(GenericMapAttribute.JSON_ZOOM_LEVEL_SUGGESTIONS).toString()
-                             .replaceAll("\\s+", ""));
+        assertEquals(
+            "[72,92.2,128,200.5]",
+            suggestions.get(GenericMapAttribute.JSON_DPI_SUGGESTIONS).toString().replaceAll("\\s+", "")
+        );
+        assertEquals(
+            "[4000,3000,2000,1000]",
+            suggestions.get(GenericMapAttribute.JSON_ZOOM_LEVEL_SUGGESTIONS).toString().replaceAll("\\s+", "")
+        );
         assertEquals(300, suggestions.getInt(GenericMapAttribute.JSON_MAX_DPI));
         assertEquals(128, suggestions.getInt(GenericMapAttribute.JSON_MAP_WIDTH));
         assertEquals(60, suggestions.getInt(GenericMapAttribute.JSON_MAP_HEIGHT));
@@ -113,8 +113,12 @@ public class GenericMapAttributeTest {
     }
 
     private void assertElem(
-            JSONObject required, String elemName, String type, String defaultVal, boolean isArray)
-            throws JSONException {
+        JSONObject required,
+        String elemName,
+        String type,
+        String defaultVal,
+        boolean isArray
+    ) throws JSONException {
         final JSONObject elem = required.getJSONObject(elemName);
         assertEquals(type, elem.getString(JSON_ATTRIBUTE_TYPE));
         if (defaultVal != null) {
@@ -130,7 +134,7 @@ public class GenericMapAttributeTest {
     }
 
     private void assertEmbedded(JSONObject required, boolean hasDefault, String attName)
-            throws JSONException {
+        throws JSONException {
         assertTrue(required.has(attName));
         final JSONObject embedded = required.getJSONObject(attName);
         assertEquals(hasDefault, embedded.has(JSON_ATTRIBUTE_DEFAULT));
@@ -138,8 +142,10 @@ public class GenericMapAttributeTest {
         if (hasDefault) {
             assertEquals("null", embedded.get(JSON_ATTRIBUTE_DEFAULT).toString());
         }
-        assertEquals(MapfishParser.stringRepresentation(TestMapAttribute.EmbeddedTestAttribute.class),
-                     embedded.get(JSON_ATTRIBUTE_TYPE));
+        assertEquals(
+            MapfishParser.stringRepresentation(TestMapAttribute.EmbeddedTestAttribute.class),
+            embedded.get(JSON_ATTRIBUTE_TYPE)
+        );
         final JSONObject typeDescriptor = embedded.getJSONObject(JSON_ATTRIBUTE_EMBEDDED_TYPE);
         assertTrue(typeDescriptor.has("embeddedElem"));
         assertEquals(typeDescriptor.toString(2), 1, typeDescriptor.length());

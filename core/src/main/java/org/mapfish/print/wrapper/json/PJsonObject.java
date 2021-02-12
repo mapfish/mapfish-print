@@ -1,5 +1,6 @@
 package org.mapfish.print.wrapper.json;
 
+import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mapfish.print.wrapper.ObjectMissingException;
@@ -8,12 +9,11 @@ import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PElement;
 import org.mapfish.print.wrapper.PObject;
 
-import java.util.Iterator;
-
 /**
  * Wrapper around the {@link org.json.JSONObject} class to have a better error management.
  */
 public class PJsonObject extends PAbstractObject {
+
     private final JSONObject obj;
 
     /**
@@ -216,7 +216,6 @@ public class PJsonObject extends PAbstractObject {
         return this.obj.length();
     }
 
-    // CHECKSTYLE:OFF
     // Don't run checkstyle on generated methods
     @Override
     public int hashCode() {
@@ -247,7 +246,6 @@ public class PJsonObject extends PAbstractObject {
         }
         return true;
     }
-    // CHECKSTYLE:ON
 
     /**
      * Get the internal json object.

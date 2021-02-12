@@ -15,5 +15,4 @@ public class NoSuchReferenceException extends Exception {
     public NoSuchReferenceException(final String referenceId) {
         super("invalid reference '" + referenceId + "'");
     }
-
 }

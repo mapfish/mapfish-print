@@ -1,14 +1,15 @@
 package org.mapfish.print.config;
 
-import org.mapfish.print.attribute.PrimitiveAttribute;
-
 import static org.junit.Assert.assertNotNull;
+
+import org.mapfish.print.attribute.PrimitiveAttribute;
 
 /**
  * Attribute that needs the configuration object injected.
  */
-public class AttributeWithConfigurationInjection extends PrimitiveAttribute<Integer>
-        implements HasConfiguration {
+public class AttributeWithConfigurationInjection
+    extends PrimitiveAttribute<Integer>
+    implements HasConfiguration {
 
     private Configuration configuration;
 

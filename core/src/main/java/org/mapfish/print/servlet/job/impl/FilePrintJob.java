@@ -8,10 +8,19 @@ import org.mapfish.print.servlet.job.PrintJobResult;
  *
  */
 public class FilePrintJob extends PrintJob {
+
     @Override
     protected PrintJobResult createResult(
-            final String fileName, final String fileExtension, final String mimeType) {
-        return new PrintJobResultImpl(getReportFile().toURI(), fileName, fileExtension, mimeType,
-                                      getEntry().getReferenceId());
+        final String fileName,
+        final String fileExtension,
+        final String mimeType
+    ) {
+        return new PrintJobResultImpl(
+            getReportFile().toURI(),
+            fileName,
+            fileExtension,
+            mimeType,
+            getEntry().getReferenceId()
+        );
     }
 }

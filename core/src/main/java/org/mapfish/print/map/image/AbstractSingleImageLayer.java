@@ -1,7 +1,20 @@
 package org.mapfish.print.map.image;
 
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
+
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
+import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -29,24 +42,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
-import javax.imageio.ImageIO;
-
-import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
-
 /**
  * Common implementation for layers that are represented as a single grid coverage image.
  */
 public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSingleImageLayer.class);
 
     /**
@@ -54,6 +54,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
      */
     @Nonnull
     protected final MetricRegistry registry;
+
     /**
      * The configuration.
      */
@@ -70,10 +71,12 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
      * @param configuration the configuration
      */
     protected AbstractSingleImageLayer(
-            final ExecutorService executorService,
-            final StyleSupplier<GridCoverage2D> styleSupplier,
-            final AbstractLayerParams params, final MetricRegistry registry,
-            final Configuration configuration) {
+        final ExecutorService executorService,
+        final StyleSupplier<GridCoverage2D> styleSupplier,
+        final AbstractLayerParams params,
+        final MetricRegistry registry,
+        final Configuration configuration
+    ) {
         super(executorService, params);
         this.styleSupplier = styleSupplier;
         this.registry = registry;
@@ -82,9 +85,10 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 
     @Override
     protected final List<? extends Layer> getLayers(
-            final MfClientHttpRequestFactory httpRequestFactory,
-            final MapfishMapContext mapContext,
-            final Processor.ExecutionContext context) {
+        final MfClientHttpRequestFactory httpRequestFactory,
+        final MapfishMapContext mapContext,
+        final Processor.ExecutionContext context
+    ) {
         BufferedImage image;
         try {
             image = loadImage(httpRequestFactory, mapContext);
@@ -97,11 +101,21 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 
         GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
         GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapEnvelope.getCoordinateReferenceSystem());
-        gridEnvelope.setEnvelope(mapEnvelope.getMinX(), mapEnvelope.getMinY(),
-                                 mapEnvelope.getMaxX(), mapEnvelope.getMaxY());
+        gridEnvelope.setEnvelope(
+            mapEnvelope.getMinX(),
+            mapEnvelope.getMinY(),
+            mapEnvelope.getMaxX(),
+            mapEnvelope.getMaxY()
+        );
         final String coverageName = getClass().getSimpleName();
-        final GridCoverage2D gridCoverage2D = factory.create(coverageName, image, gridEnvelope,
-                                                             null, null, null);
+        final GridCoverage2D gridCoverage2D = factory.create(
+            coverageName,
+            image,
+            gridEnvelope,
+            null,
+            null,
+            null
+        );
 
         Style style = this.styleSupplier.load(httpRequestFactory, gridCoverage2D);
         return Collections.singletonList(new GridCoverageLayer(gridCoverage2D, style));
@@ -114,8 +128,9 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
      * @param transformer object containing map rendering information
      */
     protected abstract BufferedImage loadImage(
-            MfClientHttpRequestFactory requestFactory,
-            MapfishMapContext transformer) throws Throwable;
+        MfClientHttpRequestFactory requestFactory,
+        MapfishMapContext transformer
+    ) throws Throwable;
 
     @Override
     public final double getImageBufferScaling() {
@@ -151,17 +166,17 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
      * @return The image
      */
     protected BufferedImage fetchImage(
-            @Nonnull final ClientHttpRequest request, @Nonnull final MapfishMapContext transformer)
-            throws IOException {
-        final String baseMetricName = getClass().getName() + ".read." +
-                StatsUtils.quotePart(request.getURI().getHost());
+        @Nonnull final ClientHttpRequest request,
+        @Nonnull final MapfishMapContext transformer
+    ) throws IOException {
+        final String baseMetricName =
+            getClass().getName() + ".read." + StatsUtils.quotePart(request.getURI().getHost());
         final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
         try (ClientHttpResponse httpResponse = request.execute()) {
             final List<String> contentType = httpResponse.getHeaders().get("Content-Type");
             String stringBody = null;
             if (contentType == null || contentType.size() != 1) {
-                LOGGER.debug("The image {} didn't return a valid content type header.",
-                             request.getURI());
+                LOGGER.debug("The image {} didn't return a valid content type header.", request.getURI());
             } else if (!contentType.get(0).startsWith("image/")) {
                 final byte[] data;
                 try (InputStream body = httpResponse.getBody()) {
@@ -172,12 +187,14 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 
             if (httpResponse.getStatusCode() != HttpStatus.OK) {
                 String message = String.format(
-                        "Invalid status code for %s (%d!=%d).With request headers:\n%s\n" +
-                        "The response was: '%s'\nWith response headers:\n%s",
-                        request.getURI(), httpResponse.getStatusCode().value(), HttpStatus.OK.value(),
-                        String.join("\n", Utils.getPrintableHeadersList(request.getHeaders())),
-                        httpResponse.getStatusText(),
-                        String.join("\n", Utils.getPrintableHeadersList(httpResponse.getHeaders()))
+                    "Invalid status code for %s (%d!=%d).With request headers:\n%s\n" +
+                    "The response was: '%s'\nWith response headers:\n%s",
+                    request.getURI(),
+                    httpResponse.getStatusCode().value(),
+                    HttpStatus.OK.value(),
+                    String.join("\n", Utils.getPrintableHeadersList(request.getHeaders())),
+                    httpResponse.getStatusText(),
+                    String.join("\n", Utils.getPrintableHeadersList(httpResponse.getHeaders()))
                 );
                 if (stringBody != null) {
                     message += "\nContent:\n" + stringBody;
@@ -194,7 +211,9 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
             if (stringBody != null) {
                 LOGGER.debug(
                     "We get a wrong image for {}, content type: {}\nresult:\n{}",
-                    request.getURI(), contentType.get(0), stringBody
+                    request.getURI(),
+                    contentType.get(0),
+                    stringBody
                 );
                 this.registry.counter(baseMetricName + ".error").inc();
                 if (getFailOnError()) {

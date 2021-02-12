@@ -18,8 +18,11 @@ public abstract class GridLabelFormat {
             return new GridLabelFormat.Simple(param.labelFormat);
         } else if (param.valueFormat != null) {
             return new GridLabelFormat.Detailed(
-                    param.valueFormat, param.unitFormat,
-                    param.formatDecimalSeparator, param.formatGroupingSeparator);
+                param.valueFormat,
+                param.unitFormat,
+                param.formatDecimalSeparator,
+                param.formatGroupingSeparator
+            );
         }
         return null;
     }
@@ -36,6 +39,7 @@ public abstract class GridLabelFormat {
      * Label format where value and unit are formatted at once.
      */
     public static class Simple extends GridLabelFormat {
+
         private String labelFormat = null;
 
         /**
@@ -57,6 +61,7 @@ public abstract class GridLabelFormat {
      * Label format where value and unit are formatted with different patterns.
      */
     public static class Detailed extends GridLabelFormat {
+
         private String valueFormat;
         private String unitFormat;
         private String formatDecimalSeparator;
@@ -71,8 +76,11 @@ public abstract class GridLabelFormat {
          * @param formatGroupingSeparator Grouping separator.
          */
         public Detailed(
-                final String valueFormat, final String unitFormat,
-                final String formatDecimalSeparator, final String formatGroupingSeparator) {
+            final String valueFormat,
+            final String unitFormat,
+            final String formatDecimalSeparator,
+            final String formatGroupingSeparator
+        ) {
             this.valueFormat = valueFormat;
             this.unitFormat = (unitFormat == null) ? GridParam.DEFAULT_UNIT_FORMAT : unitFormat;
             this.formatDecimalSeparator = formatDecimalSeparator;

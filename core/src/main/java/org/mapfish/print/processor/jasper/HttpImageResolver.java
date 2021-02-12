@@ -1,5 +1,12 @@
 package org.mapfish.print.processor.jasper;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.imageio.ImageIO;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
@@ -10,20 +17,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.imageio.ImageIO;
-
 /**
  * <p>Interprets text in a table cell as an image URL.</p>
  * <p>See also: <a href="tableimages.html">Configuration of tables with HTML images</a></p>
  * [[examples=datasource_many_dynamictables_legend]]
  */
 public final class HttpImageResolver implements TableColumnConverter<BufferedImage> {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpImageResolver.class);
     private static final int IMAGE_SIZE = 48;
     private Pattern urlExtractor = Pattern.compile("(.*)");
@@ -59,9 +59,7 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
     }
 
     @Override
-    public BufferedImage resolve(
-            final MfClientHttpRequestFactory requestFactory,
-            final String text) {
+    public BufferedImage resolve(final MfClientHttpRequestFactory requestFactory, final String text) {
         Matcher urlMatcher = this.urlExtractor.matcher(text);
 
         if (urlMatcher.matches() && urlMatcher.group(this.urlGroup) != null) {
@@ -82,8 +80,12 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
                         LOGGER.warn("Image loaded from '{}'is not valid", url, e);
                     }
                 } else {
-                    LOGGER.warn("Error loading the table row image: {}.\nStatus Code: {}\nStatus Text: {}",
-                                url, response.getStatusCode(), response.getStatusText());
+                    LOGGER.warn(
+                        "Error loading the table row image: {}.\nStatus Code: {}\nStatus Text: {}",
+                        url,
+                        response.getStatusCode(),
+                        response.getStatusText()
+                    );
                 }
             } catch (Throwable e) {
                 LOGGER.warn("Error loading table row image: {}", uriString, e);

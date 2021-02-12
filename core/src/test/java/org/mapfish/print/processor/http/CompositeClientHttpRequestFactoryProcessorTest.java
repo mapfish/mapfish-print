@@ -1,5 +1,10 @@
 package org.mapfish.print.processor.http;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+
+import java.net.URI;
+import javax.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.attribute.HttpRequestHeadersAttribute;
@@ -9,16 +14,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.net.URI;
-import javax.annotation.Nullable;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-
-@ContextConfiguration(locations = {
+@ContextConfiguration(
+    locations = {
         "classpath:org/mapfish/print/processor/http/composite-client-http-request-factory/add-custom" +
-                "-processor-application-context.xml"
-})
+        "-processor-application-context.xml",
+    }
+)
 public class CompositeClientHttpRequestFactoryProcessorTest extends AbstractHttpProcessorTest {
 
     @Override
@@ -50,8 +51,9 @@ public class CompositeClientHttpRequestFactoryProcessorTest extends AbstractHttp
         @Override
         public Void execute(TestParam values, ExecutionContext context) throws Exception {
             final URI uri = new URI("https://localhost:8443/path?query#fragment");
-            final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(uri,
-                                                                                                          HttpMethod.GET);
+            final ClientHttpRequest request = values.clientHttpRequestFactoryProvider
+                .get()
+                .createRequest(uri, HttpMethod.GET);
             final URI finalUri = request.getURI();
 
             assertEquals("http", finalUri.getScheme());
@@ -62,7 +64,7 @@ public class CompositeClientHttpRequestFactoryProcessorTest extends AbstractHttp
             assertEquals("fragment", finalUri.getFragment());
 
             assertEquals(1, request.getHeaders().size());
-            assertArrayEquals(new Object[]{"value"}, request.getHeaders().get("header1").toArray());
+            assertArrayEquals(new Object[] { "value" }, request.getHeaders().get("header1").toArray());
 
             return null;
         }

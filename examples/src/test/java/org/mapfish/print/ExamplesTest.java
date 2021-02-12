@@ -3,6 +3,10 @@ package org.mapfish.print;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
+import ch.qos.logback.core.util.StatusPrinter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
@@ -18,9 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
-
 import javax.imageio.ImageIO;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,12 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.core.util.StatusPrinter;
-
-
 /**
  * To run this test make sure that the test GeoServer is running:
  *
@@ -57,15 +53,13 @@ import ch.qos.logback.core.util.StatusPrinter;
  * ./gradlew examples:geoserver
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-        ExamplesTest.DEFAULT_SPRING_XML,
-        ExamplesTest.TEST_SPRING_XML
-})
+@ContextConfiguration(locations = { ExamplesTest.DEFAULT_SPRING_XML, ExamplesTest.TEST_SPRING_XML })
 public class ExamplesTest {
+
     public static final String DEFAULT_SPRING_XML = "classpath:mapfish-spring-application-context.xml";
     public static final String TEST_SPRING_XML =
-            "classpath:test-http-request-factory-application-context.xml";
-    public static final String[] BITMAP_FORMATS = {"png", "jpeg", "tiff"};
+        "classpath:test-http-request-factory-application-context.xml";
+    public static final String[] BITMAP_FORMATS = { "png", "jpeg", "tiff" };
     private static final Logger LOGGER = LoggerFactory.getLogger(ExamplesTest.class);
     private static final String REQUEST_DATA_FILE = "requestData(-.*)?.json";
     private static final String CONFIG_FILE = "config.yaml";
@@ -118,7 +112,6 @@ public class ExamplesTest {
             }
 
             exampleFilter = Pattern.compile(parts[0]);
-
         } else {
             requestFilter = REQUEST_MATCH_ALL;
             exampleFilter = EXAMPLE_MATCH_ALL;
@@ -137,13 +130,16 @@ public class ExamplesTest {
     public static void main(String[] args) {
         JUnitCore junit = new JUnitCore();
         if (args.length < 1) {
-            System.err.println("This main is expected to have at least one parameter, it is a regular " +
-                                       "expression for selecting the examples to run");
+            System.err.println(
+                "This main is expected to have at least one parameter, it is a regular " +
+                "expression for selecting the examples to run"
+            );
             System.exit(1);
         }
         if (args.length > 2) {
-            System.err.println("A maximum of 2 parameters are allowed.  param 1=example regex, param2 = " +
-                                       "configRegexp");
+            System.err.println(
+                "A maximum of 2 parameters are allowed.  param 1=example regex, param2 = " + "configRegexp"
+            );
             System.exit(1);
         }
 
@@ -162,16 +158,21 @@ public class ExamplesTest {
         final String namePattern = "[a-zA-Z0-9_]+";
         final File examplesDir = getFile(ExamplesTest.class, "/examples");
         StringBuilder errors = new StringBuilder();
-        for (File example: Objects.requireNonNull(examplesDir.listFiles())) {
+        for (File example : Objects.requireNonNull(examplesDir.listFiles())) {
             if (example.isDirectory() && !examplesDir.getName().matches(namePattern)) {
                 errors.append("\n    * ").append(examplesDir.getName());
             }
         }
 
-        assertEquals(String.format(
-            "All example directory names must match the pattern: '%s'.  " +
-            "The following fail that test: %s", namePattern, errors),
-            0, errors.length()
+        assertEquals(
+            String.format(
+                "All example directory names must match the pattern: '%s'.  " +
+                "The following fail that test: %s",
+                namePattern,
+                errors
+            ),
+            0,
+            errors.length()
         );
     }
 
@@ -182,7 +183,7 @@ public class ExamplesTest {
         int testsRan = 0;
         final File examplesDir = getFile(ExamplesTest.class, "/examples");
 
-        for (File example: Objects.requireNonNull(examplesDir.listFiles())) {
+        for (File example : Objects.requireNonNull(examplesDir.listFiles())) {
             if (example.isDirectory() && exampleFilter.matcher(example.getName()).matches()) {
                 testsRan += runExample(example, errors, true);
             }
@@ -193,7 +194,7 @@ public class ExamplesTest {
 
     private void reportErrors(final Map<String, Throwable> errors, final int testsRan) {
         if (!errors.isEmpty()) {
-            for (Map.Entry<String, Throwable> error: errors.entrySet()) {
+            for (Map.Entry<String, Throwable> error : errors.entrySet()) {
                 System.err.println("\nExample: '" + error.getKey() + "' failed with the error:");
                 error.getValue().printStackTrace();
             }
@@ -205,7 +206,7 @@ public class ExamplesTest {
             errorReport.append(testsRan);
             errorReport.append(" examples.\n");
             errorReport.append("See Standard Error for the stack traces.  A summary is as follows...\n\n");
-            for (Map.Entry<String, Throwable> error: errors.entrySet()) {
+            for (Map.Entry<String, Throwable> error : errors.entrySet()) {
                 StringBuilder exampleName = new StringBuilder();
                 exampleName.append("The example ");
                 exampleName.append(error.getKey());
@@ -240,10 +241,11 @@ public class ExamplesTest {
             this.mapPrinter.setConfiguration(configFile);
 
             if (!hasRequestFile(example)) {
-                throw new AssertionError(String.format(
-                        "Example: '%s' does not have any request data files.", example.getName()));
+                throw new AssertionError(
+                    String.format("Example: '%s' does not have any request data files.", example.getName())
+                );
             }
-            for (File requestFile: Objects.requireNonNull(example.listFiles())) {
+            for (File requestFile : Objects.requireNonNull(example.listFiles())) {
                 if (!requestFile.isFile() || !requestFilter.matcher(requestFile.getName()).matches()) {
                     continue;
                 }
@@ -251,9 +253,10 @@ public class ExamplesTest {
                     if (isRequestDataFile(requestFile)) {
                         // WARN to be displayed in the Travis logs
                         LOGGER.warn("Run example '{}' ({})", example.getName(), requestFile.getName());
-                        String requestData =
-                                new String(java.nio.file.Files.readAllBytes(requestFile.toPath()),
-                                           Constants.DEFAULT_CHARSET);
+                        String requestData = new String(
+                            java.nio.file.Files.readAllBytes(requestFile.toPath()),
+                            Constants.DEFAULT_CHARSET
+                        );
 
                         final PJsonObject jsonSpec = MapPrinter.parseSpec(requestData);
 
@@ -265,11 +268,15 @@ public class ExamplesTest {
                         }
 
                         URL url = new URL(
-                            AbstractApiTest.PRINT_SERVER + "print/" + example.getName() +
-                            MapPrinterServlet.CREATE_AND_GET_URL + "." + outputFormat
+                            AbstractApiTest.PRINT_SERVER +
+                            "print/" +
+                            example.getName() +
+                            MapPrinterServlet.CREATE_AND_GET_URL +
+                            "." +
+                            outputFormat
                         );
                         URLConnection connection = url.openConnection();
-                        HttpURLConnection http = (HttpURLConnection)connection;
+                        HttpURLConnection http = (HttpURLConnection) connection;
                         http.setRequestMethod("POST");
                         http.setDoInput(true);
                         http.setDoOutput(true);
@@ -286,8 +293,9 @@ public class ExamplesTest {
 
                         InputStream inputStr = connection.getInputStream();
                         if (responseCode != 200) {
-                            String encoding = connection.getContentEncoding() == null ? "UTF-8"
-                                    : connection.getContentEncoding();
+                            String encoding = connection.getContentEncoding() == null
+                                ? "UTF-8"
+                                : connection.getContentEncoding();
                             String response = IOUtils.toString(inputStr, encoding);
                             Assert.isTrue(false, response);
                         }
@@ -305,20 +313,29 @@ public class ExamplesTest {
 
                         if (ArrayUtils.contains(BITMAP_FORMATS, outputFormat)) {
                             File expectedOutputDir = new File(example, "expected_output");
-                            File expectedOutput =
-                                    getExpectedOutput(outputFormat, requestFile, expectedOutputDir);
+                            File expectedOutput = getExpectedOutput(
+                                outputFormat,
+                                requestFile,
+                                expectedOutputDir
+                            );
                             if (!expectedOutput.exists()) {
                                 errors.put(
-                                        example.getName() + " (" + requestFile.getName() + ")",
-                                        new Exception("File not found: " + expectedOutput.toString()));
+                                    example.getName() + " (" + requestFile.getName() + ")",
+                                    new Exception("File not found: " + expectedOutput.toString())
+                                );
                             }
 
                             int similarity = 0;
-                            File file = new File(expectedOutputDir, "image-similarity-" + requestFile.getName() + ".txt");
+                            File file = new File(
+                                expectedOutputDir,
+                                "image-similarity-" + requestFile.getName() + ".txt"
+                            );
                             System.out.println("Use similarity file: " + file.getName());
                             if (file.isFile()) {
-                                String similarityString = new String(Files.readAllBytes(file.toPath()),
-                                                                     Constants.DEFAULT_CHARSET);
+                                String similarityString = new String(
+                                    Files.readAllBytes(file.toPath()),
+                                    Constants.DEFAULT_CHARSET
+                                );
                                 similarity = Integer.parseInt(similarityString.trim());
                             }
                             new ImageSimilarity(expectedOutput).assertSimilarity(image, similarity);
@@ -336,13 +353,12 @@ public class ExamplesTest {
     }
 
     private File getExpectedOutput(String outputFormat, File requestFile, File expectedOutputDir) {
-        final String imageName = requestFile.getName().replace(".json",
-                                                               "." + outputFormat);
+        final String imageName = requestFile.getName().replace(".json", "." + outputFormat);
         return new File(expectedOutputDir, imageName);
     }
 
     private boolean hasRequestFile(File example) {
-        for (File file: Objects.requireNonNull(example.listFiles())) {
+        for (File file : Objects.requireNonNull(example.listFiles())) {
             if (isRequestDataFile(file)) {
                 return true;
             }

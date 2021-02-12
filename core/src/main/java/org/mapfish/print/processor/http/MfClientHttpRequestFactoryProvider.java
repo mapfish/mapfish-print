@@ -6,6 +6,7 @@ import org.mapfish.print.http.MfClientHttpRequestFactory;
  * Used to be compatible with the InputOutputValues and be able change the MfClientHttpRequestFactory.
  */
 public class MfClientHttpRequestFactoryProvider {
+
     private MfClientHttpRequestFactory clientHttpRequestFactory;
 
     /**
@@ -14,7 +15,8 @@ public class MfClientHttpRequestFactoryProvider {
      * @param initialClientHttpRequestFactory The initial value
      */
     public MfClientHttpRequestFactoryProvider(
-            final MfClientHttpRequestFactory initialClientHttpRequestFactory) {
+        final MfClientHttpRequestFactory initialClientHttpRequestFactory
+    ) {
         this.clientHttpRequestFactory = initialClientHttpRequestFactory;
     }
 

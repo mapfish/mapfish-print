@@ -1,6 +1,18 @@
 package org.mapfish.print.config;
 
+import static org.mapfish.print.OptionalUtils.or;
+
 import com.google.common.collect.Sets;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import javax.annotation.Nonnull;
 import org.geotools.styling.Style;
 import org.json.JSONException;
 import org.json.JSONWriter;
@@ -19,31 +31,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import javax.annotation.Nonnull;
-
-import static org.mapfish.print.OptionalUtils.or;
-
 /**
  * Represents a report template configuration.
  */
 public class Template implements ConfigurationObject, HasConfiguration {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(Template.class);
+
     @Autowired
     private ProcessorDependencyGraphFactory processorGraphFactory;
+
     @Autowired
     private ClientHttpRequestFactory httpRequestFactory;
+
     @Autowired
     private StyleParser styleParser;
-
 
     private String reportTemplate;
     private Map<String, Attribute> attributes = new HashMap<>();
@@ -119,7 +121,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     public final void printClientConfig(final JSONWriter json) throws JSONException {
         json.key("attributes");
         json.array();
-        for (Map.Entry<String, Attribute> entry: this.attributes.entrySet()) {
+        for (Map.Entry<String, Attribute> entry : this.attributes.entrySet()) {
             Attribute attribute = entry.getValue();
             if (attribute.getClass().getAnnotation(InternalAttribute.class) == null) {
                 json.object();
@@ -140,11 +142,11 @@ public class Template implements ConfigurationObject, HasConfiguration {
      * @param attributes the attribute map
      */
     public final void setAttributes(final Map<String, Attribute> attributes) {
-        for (Map.Entry<String, Attribute> entry: attributes.entrySet()) {
+        for (Map.Entry<String, Attribute> entry : attributes.entrySet()) {
             Object attribute = entry.getValue();
             if (!(attribute instanceof Attribute)) {
                 final String msg =
-                        "Attribute: '" + entry.getKey() + "' is not an attribute. It is a: " + attribute;
+                    "Attribute: '" + entry.getKey() + "' is not an attribute. It is a: " + attribute;
                 LOGGER.error("Error setting the Attributes: {}", msg);
                 throw new IllegalArgumentException(msg);
             } else {
@@ -177,14 +179,13 @@ public class Template implements ConfigurationObject, HasConfiguration {
     }
 
     private void assertProcessors(final List<Processor> processorsToCheck) {
-        for (Processor entry: processorsToCheck) {
+        for (Processor entry : processorsToCheck) {
             if (!(entry instanceof Processor)) {
                 final String msg = "Processor: " + entry + " is not a processor.";
                 LOGGER.error("Error setting the Attributes: {}", msg);
                 throw new IllegalArgumentException(msg);
             }
         }
-
     }
 
     /**
@@ -242,7 +243,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
             synchronized (this) {
                 if (this.processorGraph == null) {
                     final Map<String, Class<?>> attcls = new HashMap<>();
-                    for (Map.Entry<String, Attribute> attribute: this.attributes.entrySet()) {
+                    for (Map.Entry<String, Attribute> attribute : this.attributes.entrySet()) {
                         attcls.put(attribute.getKey(), attribute.getValue().getValueType());
                     }
                     this.processorGraph = this.processorGraphFactory.build(this.processors, attcls);
@@ -272,8 +273,12 @@ public class Template implements ConfigurationObject, HasConfiguration {
         final String styleRef = this.styles.get(styleName);
         Optional<Style> style;
         if (styleRef != null) {
-            style = (Optional<Style>) this.styleParser
-                    .loadStyle(getConfiguration(), this.httpRequestFactory, styleRef);
+            style =
+                (Optional<Style>) this.styleParser.loadStyle(
+                        getConfiguration(),
+                        this.httpRequestFactory,
+                        styleRef
+                    );
         } else {
             style = Optional.empty();
         }
@@ -296,16 +301,19 @@ public class Template implements ConfigurationObject, HasConfiguration {
         numberOfTableConfigurations += this.jdbcUrl == null ? 0 : 1;
 
         if (numberOfTableConfigurations > 1) {
-            validationErrors.add(new ConfigurationException(
-                    "Only one of 'iterValue' or 'tableData' or 'jdbcUrl' should be defined."));
+            validationErrors.add(
+                new ConfigurationException(
+                    "Only one of 'iterValue' or 'tableData' or 'jdbcUrl' should be defined."
+                )
+            );
         }
 
-        for (Attribute attribute: this.attributes.values()) {
+        for (Attribute attribute : this.attributes.values()) {
             attribute.validate(validationErrors, config);
         }
 
         ProcessorDependencyGraphFactory.fillProcessorAttributes(this.processors, this.attributes);
-        for (Processor processor: this.processors) {
+        for (Processor processor : this.processors) {
             processor.validate(validationErrors, config);
         }
 
@@ -317,18 +325,18 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
         for (String jdbcDriver : getJdbcDrivers()) {
             try {
-               Class.forName(jdbcDriver);
+                Class.forName(jdbcDriver);
             } catch (ClassNotFoundException e) {
-               validationErrors.add(new ConfigurationException(
-                        "Unable to load JDBC driver: " + jdbcDriver +
-                                " ensure that the web application has the jar on its classpath"));
+                validationErrors.add(
+                    new ConfigurationException(
+                        "Unable to load JDBC driver: " +
+                        jdbcDriver +
+                        " ensure that the web application has the jar on its classpath"
+                    )
+                );
             }
-
-
-
         }
         if (getJdbcUrl() != null) {
-
             Connection connection = null;
             try {
                 if (getJdbcUser() != null) {
@@ -351,7 +359,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
         if (this.mapExport) {
             int count = 0;
-            for (Processor<?, ?> processor: getProcessors()) {
+            for (Processor<?, ?> processor : getProcessors()) {
                 if (processor instanceof CreateMapProcessor) {
                     count++;
                 }
@@ -360,8 +368,11 @@ public class Template implements ConfigurationObject, HasConfiguration {
                 }
             }
             if (count != 1) {
-                validationErrors.add(new ConfigurationException(
-                        "When using MapExport, exactly one CreateMapProcessor should be defined."));
+                validationErrors.add(
+                    new ConfigurationException(
+                        "When using MapExport, exactly one CreateMapProcessor should be defined."
+                    )
+                );
             }
         }
     }
@@ -369,7 +380,6 @@ public class Template implements ConfigurationObject, HasConfiguration {
     final void assertAccessible(final String name) {
         this.accessAssertion.assertAccess("Template '" + name + "'", this);
     }
-
 
     /**
      * The roles required to access this template.  If empty or not set then it is a <em>public</em> template.

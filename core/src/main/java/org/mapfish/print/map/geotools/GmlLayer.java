@@ -1,5 +1,14 @@
 package org.mapfish.print.map.geotools;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.emf.ecore.resource.URIHandler;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
@@ -17,20 +26,11 @@ import org.mapfish.print.map.AbstractLayerParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.xml.sax.SAXException;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.ParserConfigurationException;
-
 /**
  * <p>Parses GML from the request data.</p>
  */
 public final class GmlLayer extends AbstractFeatureSourceLayer {
+
     /**
      * Constructor.
      *
@@ -43,11 +43,12 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
      * @param params the parameters for this layer
      */
     public GmlLayer(
-            final ExecutorService executorService,
-            final FeatureSourceSupplier featureSourceSupplier,
-            final StyleSupplier<FeatureSource> styleSupplier,
-            final boolean renderAsSvg,
-            final AbstractLayerParams params) {
+        final ExecutorService executorService,
+        final FeatureSourceSupplier featureSourceSupplier,
+        final StyleSupplier<FeatureSource> styleSupplier,
+        final boolean renderAsSvg,
+        final AbstractLayerParams params
+    ) {
         super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params);
     }
 
@@ -60,10 +61,10 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         private static final String TYPE = "gml";
 
         private static final GMLConfiguration GML_2_PARSER = new GMLConfiguration();
-        private static final org.geotools.gml3.GMLConfiguration GML_3_PARSER =
-                new org.geotools.gml3.GMLConfiguration();
-        private static final org.geotools.gml3.v3_2.GMLConfiguration GML_32_PARSER =
-                new org.geotools.gml3.v3_2.GMLConfiguration(true);
+        private static final org.geotools.gml3.GMLConfiguration GML_3_PARSER = new org.geotools.gml3.GMLConfiguration();
+        private static final org.geotools.gml3.v3_2.GMLConfiguration GML_32_PARSER = new org.geotools.gml3.v3_2.GMLConfiguration(
+            true
+        );
 
         @Autowired
         private URIHandler cachingUrihandler;
@@ -75,7 +76,6 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
             super(TYPE);
         }
 
-
         @Override
         public GmlParam createParameter() {
             return new GmlParam();
@@ -83,26 +83,24 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
 
         @Nonnull
         @Override
-        public GmlLayer parse(
-                @Nonnull final Template template,
-                @Nonnull final GmlParam param) {
+        public GmlLayer parse(@Nonnull final Template template, @Nonnull final GmlParam param) {
             return new GmlLayer(
-                    this.forkJoinPool,
-                    createFeatureSourceSupplier(template, param.url),
-                    createStyleFunction(template, param.style),
-                    template.getConfiguration().renderAsSvg(param.renderAsSvg),
-                    param);
+                this.forkJoinPool,
+                createFeatureSourceSupplier(template, param.url),
+                createStyleFunction(template, param.style),
+                template.getConfiguration().renderAsSvg(param.renderAsSvg),
+                param
+            );
         }
 
-        private FeatureSourceSupplier createFeatureSourceSupplier(
-                final Template template,
-                final String url) {
+        private FeatureSourceSupplier createFeatureSourceSupplier(final Template template, final String url) {
             return new FeatureSourceSupplier() {
                 @Nonnull
                 @Override
                 public FeatureSource load(
-                        @Nonnull final MfClientHttpRequestFactory requestFactory,
-                        @Nonnull final MapfishMapContext mapContext) {
+                    @Nonnull final MfClientHttpRequestFactory requestFactory,
+                    @Nonnull final MapfishMapContext mapContext
+                ) {
                     SimpleFeatureCollection featureCollection;
                     try {
                         featureCollection = createFeatureSource(template, requestFactory, url);
@@ -118,9 +116,10 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         }
 
         private SimpleFeatureCollection createFeatureSource(
-                final Template template,
-                final MfClientHttpRequestFactory httpRequestFactory,
-                final String gmlString) throws IOException {
+            final Template template,
+            final MfClientHttpRequestFactory httpRequestFactory,
+            final String gmlString
+        ) throws IOException {
             try {
                 URL url = new URL(gmlString);
                 FileUtils.testForLegalFileUrl(template.getConfiguration(), url);
@@ -140,7 +139,6 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
                 return null;
             }
         }
-
 
         private SimpleFeatureCollection parseGml3(final String gmlData) throws IOException {
             Parser gmlV3Parser = createParser(GML_3_PARSER);
@@ -183,7 +181,6 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
                 } else {
                     throw new RuntimeException("unable to parse gml: \n\n" + gmlData);
                 }
-
             } catch (SAXException | ParserConfigurationException e) {
                 throw ExceptionUtils.getRuntimeException(e);
             }
@@ -200,6 +197,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
      * The parameters for creating a layer that renders Gml formatted data.
      */
     public static class GmlParam extends AbstractVectorLayerParam {
+
         /**
          * A url to the gml or the raw Gml data.
          *

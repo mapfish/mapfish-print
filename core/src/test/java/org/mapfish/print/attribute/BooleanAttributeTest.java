@@ -1,5 +1,9 @@
 package org.mapfish.print.attribute;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -11,17 +15,13 @@ import org.mapfish.print.output.Values;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 public class BooleanAttributeTest extends AbstractMapfishSpringTest {
 
     private static final String BASE_DIR = "bool/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
+
     @Autowired
     private TestHttpClientFactory httpClientFactory;
 
@@ -31,19 +31,29 @@ public class BooleanAttributeTest extends AbstractMapfishSpringTest {
         PJsonObject requestData = loadJsonRequestData();
 
         Template template = config.getTemplate("main");
-        Values values = new Values("test", requestData, template, config.getDirectory(), httpClientFactory,
-                                   config.getDirectory());
+        Values values = new Values(
+            "test",
+            requestData,
+            template,
+            config.getDirectory(),
+            httpClientFactory,
+            config.getDirectory()
+        );
 
         assertTrue(values.getBoolean("field1"));
         assertFalse(values.getBoolean("field2"));
         assertFalse(values.getBoolean("field3"));
 
-        JSONObject field2Config =
-                AbstractAttributeTest.getClientConfig(template.getAttributes().get("field2"), template);
+        JSONObject field2Config = AbstractAttributeTest.getClientConfig(
+            template.getAttributes().get("field2"),
+            template
+        );
         assertFalse(field2Config.has(ReflectiveAttribute.JSON_ATTRIBUTE_DEFAULT));
 
-        JSONObject field3Config =
-                AbstractAttributeTest.getClientConfig(template.getAttributes().get("field3"), template);
+        JSONObject field3Config = AbstractAttributeTest.getClientConfig(
+            template.getAttributes().get("field3"),
+            template
+        );
         assertTrue(field3Config.has(ReflectiveAttribute.JSON_ATTRIBUTE_DEFAULT));
         assertFalse(field3Config.getBoolean(ReflectiveAttribute.JSON_ATTRIBUTE_DEFAULT));
     }

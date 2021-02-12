@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
  * Utility functions for images.
  */
 public final class ImageUtils {
+
     private ImageUtils() {
         // intentionally empty
     }
@@ -23,7 +24,7 @@ public final class ImageUtils {
      * @throws IOException if an error occurs during writing.
      */
     public static void writeImage(final BufferedImage im, final String formatName, final File output)
-            throws IOException {
+        throws IOException {
         if (!ImageIO.write(im, formatName, output)) {
             throw new RuntimeException("Image format not supported: " + formatName);
         }
@@ -38,7 +39,7 @@ public final class ImageUtils {
      * @throws IOException if an error occurs during writing.
      */
     public static void writeImage(final BufferedImage im, final String formatName, final OutputStream output)
-            throws IOException {
+        throws IOException {
         if (!ImageIO.write(im, formatName, output)) {
             throw new RuntimeException("Image format not supported: " + formatName);
         }

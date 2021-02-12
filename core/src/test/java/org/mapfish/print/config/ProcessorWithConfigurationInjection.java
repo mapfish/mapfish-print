@@ -1,17 +1,17 @@
 package org.mapfish.print.config;
 
-import org.mapfish.print.processor.AbstractProcessor;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 import javax.annotation.Nullable;
-
-import static org.junit.Assert.assertNotNull;
+import org.mapfish.print.processor.AbstractProcessor;
 
 /**
  * Processor that needs the configuration object injected.
  */
-public class ProcessorWithConfigurationInjection extends AbstractProcessor<Object, Void>
-        implements HasConfiguration {
+public class ProcessorWithConfigurationInjection
+    extends AbstractProcessor<Object, Void>
+    implements HasConfiguration {
 
     private Configuration configuration;
 
@@ -25,7 +25,6 @@ public class ProcessorWithConfigurationInjection extends AbstractProcessor<Objec
     public void assertInjected() {
         assertNotNull(configuration);
     }
-
 
     @Override
     public void setConfiguration(final Configuration configuration) {

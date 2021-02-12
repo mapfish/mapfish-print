@@ -1,10 +1,8 @@
 {
   "layout": "A4 landscape",
   "outputFormat": "pdf",
-  "attributes":
-  {
-    "map":
-    {
+  "attributes": {
+    "map": {
       "projection": "EPSG:3857",
       "dpi": 72,
       "rotation": 0,

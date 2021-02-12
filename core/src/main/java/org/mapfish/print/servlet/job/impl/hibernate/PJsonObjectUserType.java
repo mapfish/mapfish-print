@@ -1,23 +1,22 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
+import java.io.Serializable;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
 
-import java.io.Serializable;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-
 /**
  * Hibernate User Type for PJson object.
  */
 public class PJsonObjectUserType implements UserType {
 
-    private static final int[] SQL_TYPES = {Types.LONGVARCHAR};
+    private static final int[] SQL_TYPES = { Types.LONGVARCHAR };
 
     private static final String CONTEXT_NAME = "spec";
 
@@ -32,8 +31,10 @@ public class PJsonObjectUserType implements UserType {
             return value;
         } else {
             try {
-                return new PJsonObject(new JSONObject(((PJsonObject) value).getInternalObj().toString()),
-                                       CONTEXT_NAME);
+                return new PJsonObject(
+                    new JSONObject(((PJsonObject) value).getInternalObj().toString()),
+                    CONTEXT_NAME
+                );
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -66,8 +67,11 @@ public class PJsonObjectUserType implements UserType {
 
     @Override
     public final Object nullSafeGet(
-            final ResultSet rs, final String[] names, final SharedSessionContractImplementor session,
-            final Object owner) throws SQLException {
+        final ResultSet rs,
+        final String[] names,
+        final SharedSessionContractImplementor session,
+        final Object owner
+    ) throws SQLException {
         String value = rs.getString(names[0]);
         if (value != null) {
             try {
@@ -81,8 +85,11 @@ public class PJsonObjectUserType implements UserType {
 
     @Override
     public final void nullSafeSet(
-            final PreparedStatement st, final Object value, final int index,
-            final SharedSessionContractImplementor session) throws SQLException {
+        final PreparedStatement st,
+        final Object value,
+        final int index,
+        final SharedSessionContractImplementor session
+    ) throws SQLException {
         if (value == null) {
             st.setNull(index, SQL_TYPES[0]);
         } else {
@@ -104,5 +111,4 @@ public class PJsonObjectUserType implements UserType {
     public final int[] sqlTypes() {
         return SQL_TYPES;
     }
-
 }

@@ -1,12 +1,11 @@
 package org.mapfish.print.map.style;
 
-import org.geotools.styling.Style;
-import org.mapfish.print.config.Configuration;
-import org.springframework.http.client.ClientHttpRequestFactory;
-
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.geotools.styling.Style;
+import org.mapfish.print.config.Configuration;
+import org.springframework.http.client.ClientHttpRequestFactory;
 
 /**
  * A plugin used for loading {@link Style} objects from a string.
@@ -14,7 +13,6 @@ import javax.annotation.Nullable;
  * The string might be json, css, url, whatever.
  */
 public interface StyleParserPlugin {
-
     /**
      * Using the string load a style.  The string can be from a URL, xml, css, whatever.  If the string
      * references a file it <strong>MUST</strong> be within a subdirectory of the configuration directory.
@@ -26,7 +24,8 @@ public interface StyleParserPlugin {
      *         Optional.absent().
      */
     Optional<Style> parseStyle(
-            @Nullable Configuration configuration,
-            @Nonnull ClientHttpRequestFactory clientHttpRequestFactory,
-            @Nonnull String styleString);
+        @Nullable Configuration configuration,
+        @Nonnull ClientHttpRequestFactory clientHttpRequestFactory,
+        @Nonnull String styleString
+    );
 }

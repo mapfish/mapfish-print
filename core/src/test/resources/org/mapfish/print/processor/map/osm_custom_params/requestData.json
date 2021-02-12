@@ -10,7 +10,8 @@
           "type": "geojson",
           "style": "file://thinline.sld",
           "geojson": "http://osm_custom_params.json/geojson/ny-roads-3857.json"
-        }, {
+        },
+        {
           "type": "osm",
           "baseURL": "http://osm_custom_params.osm:1234",
           "imageExtension": "png",

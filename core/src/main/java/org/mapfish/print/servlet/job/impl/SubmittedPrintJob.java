@@ -1,9 +1,8 @@
 package org.mapfish.print.servlet.job.impl;
 
+import java.util.concurrent.Future;
 import org.mapfish.print.servlet.job.PrintJobEntry;
 import org.mapfish.print.servlet.job.PrintJobResult;
-
-import java.util.concurrent.Future;
 
 /**
  * Encapsulates a job that has been submitted to the JobManager.
@@ -34,5 +33,4 @@ public class SubmittedPrintJob {
     public final PrintJobEntry getEntry() {
         return this.entry;
     }
-
 }

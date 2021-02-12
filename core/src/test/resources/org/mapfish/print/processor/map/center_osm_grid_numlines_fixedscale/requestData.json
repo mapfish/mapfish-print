@@ -11,7 +11,8 @@
           "numberOfLines": [8, 8],
           "pointsInLine": 100,
           "renderAsSvg": false
-        }, {
+        },
+        {
           "type": "osm",
           "baseURL": "http://center_osm_fixedscale.osm:1234",
           "imageExtension": "png"

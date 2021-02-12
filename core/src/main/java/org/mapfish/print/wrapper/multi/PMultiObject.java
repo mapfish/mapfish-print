@@ -1,20 +1,19 @@
 package org.mapfish.print.wrapper.multi;
 
-import org.mapfish.print.wrapper.PAbstractObject;
-import org.mapfish.print.wrapper.PArray;
-import org.mapfish.print.wrapper.PObject;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
+import org.mapfish.print.wrapper.PAbstractObject;
+import org.mapfish.print.wrapper.PArray;
+import org.mapfish.print.wrapper.PObject;
 
 /**
  * Object wrapper for Yaml parsing.
  */
 public class PMultiObject extends PAbstractObject {
+
     private final PObject[] objs;
 
     /**
@@ -36,7 +35,7 @@ public class PMultiObject extends PAbstractObject {
     public static String getContext(final PObject[] objs) {
         StringBuilder result = new StringBuilder("(");
         boolean first = true;
-        for (PObject obj: objs) {
+        for (PObject obj : objs) {
             if (!first) {
                 result.append('|');
             }
@@ -49,7 +48,7 @@ public class PMultiObject extends PAbstractObject {
 
     @Override
     public final Object opt(final String key) {
-        for (PObject obj: this.objs) {
+        for (PObject obj : this.objs) {
             Object result = obj.opt(key);
             if (result != null) {
                 return result;
@@ -60,7 +59,7 @@ public class PMultiObject extends PAbstractObject {
 
     @Override
     public final String optString(final String key) {
-        for (PObject obj: this.objs) {
+        for (PObject obj : this.objs) {
             String result = obj.optString(key);
             if (result != null) {
                 return result;
@@ -71,7 +70,7 @@ public class PMultiObject extends PAbstractObject {
 
     @Override
     public final Integer optInt(final String key) {
-        for (PObject obj: this.objs) {
+        for (PObject obj : this.objs) {
             Integer result = obj.optInt(key);
             if (result != null) {
                 return result;
@@ -82,7 +81,7 @@ public class PMultiObject extends PAbstractObject {
 
     @Override
     public final Long optLong(final String key) {
-        for (PObject obj: this.objs) {
+        for (PObject obj : this.objs) {
             Long result = obj.optLong(key);
             if (result != null) {
                 return result;
@@ -93,7 +92,7 @@ public class PMultiObject extends PAbstractObject {
 
     @Override
     public final Double optDouble(final String key) {
-        for (PObject obj: this.objs) {
+        for (PObject obj : this.objs) {
             Double result = obj.optDouble(key);
             if (result != null) {
                 return result;
@@ -104,7 +103,7 @@ public class PMultiObject extends PAbstractObject {
 
     @Override
     public final Float optFloat(final String key) {
-        for (PObject obj: this.objs) {
+        for (PObject obj : this.objs) {
             Float result = obj.optFloat(key);
             if (result != null) {
                 return result;
@@ -115,7 +114,7 @@ public class PMultiObject extends PAbstractObject {
 
     @Override
     public final Boolean optBool(final String key) {
-        for (PObject obj: this.objs) {
+        for (PObject obj : this.objs) {
             Boolean result = obj.optBool(key);
             if (result != null) {
                 return result;
@@ -127,7 +126,7 @@ public class PMultiObject extends PAbstractObject {
     @Override
     public final PObject optObject(final String key) {
         List<PObject> results = new ArrayList<>();
-        for (PObject obj: this.objs) {
+        for (PObject obj : this.objs) {
             PObject result = obj.optObject(key);
             if (result != null) {
                 results.add(result);
@@ -144,7 +143,7 @@ public class PMultiObject extends PAbstractObject {
 
     @Override
     public final PArray optArray(final String key) {
-        for (PObject obj: this.objs) {
+        for (PObject obj : this.objs) {
             PArray result = obj.optArray(key);
             if (result != null) {
                 return result;
@@ -155,7 +154,7 @@ public class PMultiObject extends PAbstractObject {
 
     @Override
     public final boolean isArray(final String key) {
-        for (PObject obj: this.objs) {
+        for (PObject obj : this.objs) {
             if (obj.has(key)) {
                 return obj.isArray(key);
             }
@@ -165,7 +164,7 @@ public class PMultiObject extends PAbstractObject {
 
     private Set<String> allKeys() {
         Set<String> keys = new HashSet<>();
-        for (PObject obj: this.objs) {
+        for (PObject obj : this.objs) {
             Iterator<String> customParamsIter = obj.keys();
             while (customParamsIter.hasNext()) {
                 keys.add(customParamsIter.next());
@@ -186,7 +185,7 @@ public class PMultiObject extends PAbstractObject {
 
     @Override
     public final boolean has(final String key) {
-        for (PObject obj: this.objs) {
+        for (PObject obj : this.objs) {
             if (obj.has(key)) {
                 return true;
             }

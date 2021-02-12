@@ -1,10 +1,9 @@
 package org.mapfish.print.map.geotools;
 
+import javax.annotation.Nonnull;
 import org.geotools.data.FeatureSource;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
-
-import javax.annotation.Nonnull;
 
 /**
  * Function for creating feature source.
@@ -19,6 +18,7 @@ public interface FeatureSourceSupplier {
      */
     @Nonnull
     FeatureSource load(
-            @Nonnull MfClientHttpRequestFactory requestFactory,
-            @Nonnull MapfishMapContext mapContext);
+        @Nonnull MfClientHttpRequestFactory requestFactory,
+        @Nonnull MapfishMapContext mapContext
+    );
 }

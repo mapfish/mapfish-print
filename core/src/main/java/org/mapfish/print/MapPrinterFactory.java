@@ -1,8 +1,7 @@
 package org.mapfish.print;
 
-import org.mapfish.print.servlet.NoSuchAppException;
-
 import java.util.Set;
+import org.mapfish.print.servlet.NoSuchAppException;
 
 /**
  * Interface for a class that creates MapPrinters.

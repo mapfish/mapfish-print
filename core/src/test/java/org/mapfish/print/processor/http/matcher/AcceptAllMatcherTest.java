@@ -1,11 +1,10 @@
 package org.mapfish.print.processor.http.matcher;
 
-import org.junit.Test;
-import org.springframework.http.HttpMethod;
+import static org.mapfish.print.processor.http.matcher.MatcherTestUtils.assertMatch;
 
 import java.net.URI;
-
-import static org.mapfish.print.processor.http.matcher.MatcherTestUtils.assertMatch;
+import org.junit.Test;
+import org.springframework.http.HttpMethod;
 
 public class AcceptAllMatcherTest {
 

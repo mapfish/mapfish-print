@@ -12,7 +12,8 @@
           "spacing": [1000, 1000],
           "origin": [8200000, 4980000],
           "renderAsSvg": false
-        }, {
+        },
+        {
           "type": "osm",
           "baseURL": "http://center_osm_fixedscale.osm:1234",
           "imageExtension": "png"

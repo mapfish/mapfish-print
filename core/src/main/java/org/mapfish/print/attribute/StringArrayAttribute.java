@@ -5,6 +5,7 @@ package org.mapfish.print.attribute;
  * [[examples=verboseExample]]
  */
 public class StringArrayAttribute extends PrimitiveAttribute<String[]> {
+
     /**
      * Constructor.
      */

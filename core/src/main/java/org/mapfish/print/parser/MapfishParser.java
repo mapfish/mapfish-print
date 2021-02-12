@@ -1,15 +1,8 @@
 package org.mapfish.print.parser;
 
-import org.mapfish.print.ExceptionUtils;
-import org.mapfish.print.ExtraPropertyException;
-import org.mapfish.print.MissingPropertyException;
-import org.mapfish.print.attribute.PrimitiveAttribute;
-import org.mapfish.print.url.data.Handler;
-import org.mapfish.print.wrapper.ObjectMissingException;
-import org.mapfish.print.wrapper.PArray;
-import org.mapfish.print.wrapper.PObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.mapfish.print.parser.ParserUtils.FILTER_NON_FINAL_FIELDS;
+import static org.mapfish.print.parser.ParserUtils.getAllAttributeNames;
+import static org.mapfish.print.parser.ParserUtils.getAttributeNames;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -23,10 +16,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-
-import static org.mapfish.print.parser.ParserUtils.FILTER_NON_FINAL_FIELDS;
-import static org.mapfish.print.parser.ParserUtils.getAllAttributeNames;
-import static org.mapfish.print.parser.ParserUtils.getAttributeNames;
+import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.ExtraPropertyException;
+import org.mapfish.print.MissingPropertyException;
+import org.mapfish.print.attribute.PrimitiveAttribute;
+import org.mapfish.print.url.data.Handler;
+import org.mapfish.print.wrapper.ObjectMissingException;
+import org.mapfish.print.wrapper.PArray;
+import org.mapfish.print.wrapper.PObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class parses json parameter objects into the parameter object taken by {@link
@@ -44,11 +43,11 @@ import static org.mapfish.print.parser.ParserUtils.getAttributeNames;
  * @see org.mapfish.print.map.MapLayerFactoryPlugin
  */
 public final class MapfishParser {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MapfishParser.class);
     public static final String POST_CONSTRUCT_METHOD_NAME = "postConstruct";
 
-    private MapfishParser() {
-    }
+    private MapfishParser() {}
 
     /**
      * Populate the param object by obtaining the values from the like names values in the request data
@@ -64,46 +63,64 @@ public final class MapfishParser {
      *         org.mapfish.print.attribute.map.MapAttribute} to be able to choose the correct plugin.
      */
     public static void parse(
-            final boolean errorOnExtraProperties, final PObject requestData, final Object objectToPopulate,
-            final String... extraPropertyToIgnore) {
-        checkForExtraProperties(errorOnExtraProperties, objectToPopulate.getClass(), requestData,
-                                extraPropertyToIgnore);
+        final boolean errorOnExtraProperties,
+        final PObject requestData,
+        final Object objectToPopulate,
+        final String... extraPropertyToIgnore
+    ) {
+        checkForExtraProperties(
+            errorOnExtraProperties,
+            objectToPopulate.getClass(),
+            requestData,
+            extraPropertyToIgnore
+        );
 
-        final Collection<Field> allAttributes =
-                ParserUtils.getAttributes(objectToPopulate.getClass(), FILTER_NON_FINAL_FIELDS);
+        final Collection<Field> allAttributes = ParserUtils.getAttributes(
+            objectToPopulate.getClass(),
+            FILTER_NON_FINAL_FIELDS
+        );
         Map<String, Class<?>> missingProperties = new HashMap<>();
 
         final OneOfTracker oneOfTracker = new OneOfTracker();
         final RequiresTracker requiresTracker = new RequiresTracker();
         final String paramClassName = objectToPopulate.getClass().getName();
-        for (Field attribute: allAttributes) {
+        for (Field attribute : allAttributes) {
             oneOfTracker.register(attribute);
             requiresTracker.register(attribute);
         }
 
-        for (Field property: allAttributes) {
+        for (Field property : allAttributes) {
             try {
                 Object value;
                 try {
-                    value = parseValue(errorOnExtraProperties, extraPropertyToIgnore, property.getType(),
-                                       property.getName(),
-                                       requestData);
+                    value =
+                        parseValue(
+                            errorOnExtraProperties,
+                            extraPropertyToIgnore,
+                            property.getType(),
+                            property.getName(),
+                            requestData
+                        );
                 } catch (UnsupportedTypeException e) {
                     String type = e.type.getName();
                     if (e.type.isArray()) {
                         type = e.type.getComponentType().getName() + "[]";
                     }
                     throw new RuntimeException(
-                            "The type '" + type + "' is not a supported type when parsing json.  " +
-                                    "See documentation for supported types.\n\nUnsupported type found in " +
-                                    paramClassName
-                                    + " " +
-                                    "under the property: " + property.getName() +
-                                    "\n\nTo support more types add the type to" +
-                                    " " +
-                                    "parseValue and parseArrayValue in this class and add a test to the " +
-                                    "test class",
-                            e);
+                        "The type '" +
+                        type +
+                        "' is not a supported type when parsing json.  " +
+                        "See documentation for supported types.\n\nUnsupported type found in " +
+                        paramClassName +
+                        " " +
+                        "under the property: " +
+                        property.getName() +
+                        "\n\nTo support more types add the type to" +
+                        " " +
+                        "parseValue and parseArrayValue in this class and add a test to the " +
+                        "test class",
+                        e
+                    );
                 }
                 try {
                     oneOfTracker.markAsVisited(property);
@@ -127,10 +144,14 @@ public final class MapfishParser {
 
         if (!missingProperties.isEmpty()) {
             String message =
-                    "Request Json is missing some required attributes at: '" + requestData.getCurrentPath() +
-                            "': ";
-            throw new MissingPropertyException(message, missingProperties,
-                                               getAllAttributeNames(objectToPopulate.getClass()));
+                "Request Json is missing some required attributes at: '" +
+                requestData.getCurrentPath() +
+                "': ";
+            throw new MissingPropertyException(
+                message,
+                missingProperties,
+                getAllAttributeNames(objectToPopulate.getClass())
+            );
         }
 
         try {
@@ -152,14 +173,17 @@ public final class MapfishParser {
     }
 
     private static void checkForExtraProperties(
-            final boolean errorOnExtraProperties, final Class<?> paramClass,
-            final PObject layer, final String[] extraPropertyToIgnore) {
+        final boolean errorOnExtraProperties,
+        final Class<?> paramClass,
+        final PObject layer,
+        final String[] extraPropertyToIgnore
+    ) {
         final Collection<String> acceptableKeyValues = new HashSet<>();
-        for (String name: getAttributeNames(paramClass, FILTER_NON_FINAL_FIELDS)) {
+        for (String name : getAttributeNames(paramClass, FILTER_NON_FINAL_FIELDS)) {
             acceptableKeyValues.add(name.toLowerCase());
         }
         if (extraPropertyToIgnore != null) {
-            for (String propName: extraPropertyToIgnore) {
+            for (String propName : extraPropertyToIgnore) {
                 acceptableKeyValues.add(propName.toLowerCase());
             }
         }
@@ -174,10 +198,12 @@ public final class MapfishParser {
         }
         if (!extraProperties.isEmpty()) {
             String msg =
-                    "Extra properties were found in the request data at: " + layer.getCurrentPath() + ": ";
-            ExtraPropertyException exception =
-                    new ExtraPropertyException(msg, extraProperties, getAttributeNames(paramClass,
-                                                                                       field -> true));
+                "Extra properties were found in the request data at: " + layer.getCurrentPath() + ": ";
+            ExtraPropertyException exception = new ExtraPropertyException(
+                msg,
+                extraProperties,
+                getAttributeNames(paramClass, field -> true)
+            );
             if (errorOnExtraProperties) {
                 throw exception;
             } else {
@@ -186,11 +212,13 @@ public final class MapfishParser {
         }
     }
 
-
     private static Object parseValue(
-            final boolean errorOnExtraProperties, final String[] extraPropertyToIgnore, final Class<?> type,
-            final String fieldName, final PObject layer) throws
-            UnsupportedTypeException {
+        final boolean errorOnExtraProperties,
+        final String[] extraPropertyToIgnore,
+        final Class<?> type,
+        final String fieldName,
+        final PObject layer
+    ) throws UnsupportedTypeException {
         String name = fieldName;
         if (!layer.has(name) && layer.has(name.toLowerCase())) {
             name = name.toLowerCase();
@@ -224,12 +252,20 @@ public final class MapfishParser {
             value = Array.newInstance(type.getComponentType(), array.size());
 
             for (int i = 0; i < array.size(); i++) {
-                Object arrayValue = parseArrayValue(errorOnExtraProperties, extraPropertyToIgnore,
-                                                    type.getComponentType(), i, array);
+                Object arrayValue = parseArrayValue(
+                    errorOnExtraProperties,
+                    extraPropertyToIgnore,
+                    type.getComponentType(),
+                    i,
+                    array
+                );
                 if (arrayValue == null) {
                     throw new IllegalArgumentException(
-                            "Arrays cannot have null values in them.  Error found with: " + array +
-                                    " when being converted to a " + type.getComponentType());
+                        "Arrays cannot have null values in them.  Error found with: " +
+                        array +
+                        " when being converted to a " +
+                        type.getComponentType()
+                    );
                 }
                 Array.set(value, i, arrayValue);
             }
@@ -262,9 +298,11 @@ public final class MapfishParser {
         } catch (NumberFormatException ne) {
             final Object[] enumConstants = type.getEnumConstants();
 
-            for (Object enumConstant: enumConstants) {
-                if (enumConstant.toString().equalsIgnoreCase(enumString) ||
-                        ((Enum) enumConstant).name().equalsIgnoreCase(enumString)) {
+            for (Object enumConstant : enumConstants) {
+                if (
+                    enumConstant.toString().equalsIgnoreCase(enumString) ||
+                    ((Enum) enumConstant).name().equalsIgnoreCase(enumString)
+                ) {
                     return enumConstant;
                 }
             }
@@ -273,16 +311,27 @@ public final class MapfishParser {
     }
 
     private static IllegalArgumentException enumError(
-            final Object[] enumConstants, final String path, final String enumString) {
-        return new IllegalArgumentException(path + " should be an enumeration value or ordinal " +
-                                                    "but was: " + enumString + "\nEnum constants are: " +
-                                                    Arrays.toString(enumConstants));
+        final Object[] enumConstants,
+        final String path,
+        final String enumString
+    ) {
+        return new IllegalArgumentException(
+            path +
+            " should be an enumeration value or ordinal " +
+            "but was: " +
+            enumString +
+            "\nEnum constants are: " +
+            Arrays.toString(enumConstants)
+        );
     }
 
     private static Object parseArrayValue(
-            final boolean errorOnExtraProperties, final String[] extraPropertyToIgnore, final Class<?> type,
-            final int i, final PArray array) throws UnsupportedTypeException {
-
+        final boolean errorOnExtraProperties,
+        final String[] extraPropertyToIgnore,
+        final Class<?> type,
+        final int i,
+        final PArray array
+    ) throws UnsupportedTypeException {
         Object value;
         if (type == String.class) {
             value = array.getString(i);
@@ -331,7 +380,10 @@ public final class MapfishParser {
      * @param requestData the data to retrieve the value from.
      */
     public static Object parsePrimitive(
-            final String fieldName, final PrimitiveAttribute<?> pAtt, final PObject requestData) {
+        final String fieldName,
+        final PrimitiveAttribute<?> pAtt,
+        final PObject requestData
+    ) {
         Class<?> valueClass = pAtt.getValueClass();
         Object value;
         try {
@@ -342,12 +394,15 @@ public final class MapfishParser {
                 type = e.type.getComponentType().getName() + "[]";
             }
             throw new RuntimeException(
-                    "The type '" + type + "' is not a supported type when parsing json.  " +
-                            "See documentation for supported types.\n\nUnsupported type found in attribute " +
-                            fieldName
-                            + "\n\nTo support more types add the type to " +
-                            "parseValue and parseArrayValue in this class and add a test to the test class",
-                    e);
+                "The type '" +
+                type +
+                "' is not a supported type when parsing json.  " +
+                "See documentation for supported types.\n\nUnsupported type found in attribute " +
+                fieldName +
+                "\n\nTo support more types add the type to " +
+                "parseValue and parseArrayValue in this class and add a test to the test class",
+                e
+            );
         }
         pAtt.validateValue(value);
 
@@ -364,6 +419,7 @@ public final class MapfishParser {
     }
 
     private static final class UnsupportedTypeException extends Exception {
+
         private final Class<?> type;
 
         private UnsupportedTypeException(final Class<?> type, final Exception cause) {

@@ -1,16 +1,15 @@
 package org.mapfish.print.config;
 
-import org.junit.Test;
-import org.mapfish.print.AbstractMapfishSpringTest;
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.mapfish.print.AbstractMapfishSpringTest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class WorkingDirectoriesTest extends AbstractMapfishSpringTest {
 

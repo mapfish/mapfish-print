@@ -6,10 +6,7 @@
       "projection": "EPSG:3857",
       "rotation": 0,
       "scale": 10000,
-      "center": [
-        0,
-        0
-      ],
+      "center": [0, 0],
       "dpi": 128,
       "layers": [
         {
@@ -24,10 +21,7 @@
                 },
                 "geometry": {
                   "type": "Point",
-                  "coordinates": [
-                    -100,
-                    0
-                  ]
+                  "coordinates": [-100, 0]
                 }
               },
               {
@@ -37,10 +31,7 @@
                 },
                 "geometry": {
                   "type": "Point",
-                  "coordinates": [
-                    0,
-                    0
-                  ]
+                  "coordinates": [0, 0]
                 }
               },
               {
@@ -50,10 +41,7 @@
                 },
                 "geometry": {
                   "type": "Point",
-                  "coordinates": [
-                    100,
-                    0
-                  ]
+                  "coordinates": [100, 0]
                 }
               }
             ]

@@ -1,5 +1,8 @@
 package org.mapfish.print.processor.map;
 
+import java.util.Arrays;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
 import org.mapfish.print.attribute.map.StaticLayersAttribute;
 import org.mapfish.print.config.Configuration;
@@ -8,10 +11,6 @@ import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.InputOutputValue;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PJoinedArray;
-
-import java.util.Arrays;
-import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * <p>This processor adds the configured set of layers to the map.</p>
@@ -23,8 +22,7 @@ import javax.annotation.Nullable;
  * <p>See also: <a href="attributes.html#!staticLayers">!staticLayers</a> attribute</p>
  * [[examples=add_overlay_layer,report]]
  */
-public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticLayersProcessor.Input,
-        Void> {
+public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticLayersProcessor.Input, Void> {
 
     private StaticLayerPosition position;
 
@@ -47,11 +45,16 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
 
     @Override
     protected void extraValidation(
-            final List<Throwable> validationErrors, final Configuration configuration) {
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {
         if (this.position == null) {
-            validationErrors.add(new ConfigurationException(
+            validationErrors.add(
+                new ConfigurationException(
                     "The addPosition field needs to be set to one of the allowed options: " +
-                            Arrays.toString(StaticLayerPosition.values())));
+                    Arrays.toString(StaticLayerPosition.values())
+                )
+            );
         }
     }
 
@@ -66,20 +69,22 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
     public Void execute(final Input values, final ExecutionContext context) throws Exception {
         switch (this.position) {
             case BOTTOM:
-                values.map.setRawLayers(new PJoinedArray(new PArray[]{
-                        values.map.getRawLayers(), values.staticLayers.layers
-                }));
+                values.map.setRawLayers(
+                    new PJoinedArray(new PArray[] { values.map.getRawLayers(), values.staticLayers.layers })
+                );
                 break;
             case TOP:
-                values.map.setRawLayers(new PJoinedArray(new PArray[]{
-                        values.staticLayers.layers, values.map.getRawLayers()
-                }));
+                values.map.setRawLayers(
+                    new PJoinedArray(new PArray[] { values.staticLayers.layers, values.map.getRawLayers() })
+                );
                 break;
             default:
                 throw new Error(
-                        "An enumeration value was added that does not have an implementation.  A Programmer" +
-                                " must add "
-                                + "this implementation to " + getClass().getName());
+                    "An enumeration value was added that does not have an implementation.  A Programmer" +
+                    " must add " +
+                    "this implementation to " +
+                    getClass().getName()
+                );
         }
         values.map.postConstruct();
         return null;
@@ -96,7 +101,7 @@ public final class AddStaticLayersProcessor extends AbstractProcessor<AddStaticL
         /**
          * Add Layers to the bottom of the map, background layers.
          */
-        BOTTOM
+        BOTTOM,
     }
 
     /**

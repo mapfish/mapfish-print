@@ -1,5 +1,16 @@
 package org.mapfish.print.map.style;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Optional;
+import java.util.function.Function;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.DefaultResourceLocator;
 import org.geotools.styling.Style;
@@ -16,22 +27,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Optional;
-import java.util.function.Function;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 /**
  * Basic implementation for loading and parsing an SLD style.
  */
 public class SLDParserPlugin implements StyleParserPlugin {
+
     /**
      * The separator between the path or url segment for loading the sld and an index of the style to obtain.
      * <p>
@@ -40,16 +40,18 @@ public class SLDParserPlugin implements StyleParserPlugin {
      */
     public static final String STYLE_INDEX_REF_SEPARATOR = "##";
 
-
     @Override
     public final Optional<Style> parseStyle(
-            @Nullable final Configuration configuration,
-            @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
-            @Nonnull final String styleString) {
-
+        @Nullable final Configuration configuration,
+        @Nonnull final ClientHttpRequestFactory clientHttpRequestFactory,
+        @Nonnull final String styleString
+    ) {
         // try to load xml
         final Optional<Style> styleOptional = tryLoadSLD(
-                styleString.getBytes(Constants.DEFAULT_CHARSET), null, clientHttpRequestFactory);
+            styleString.getBytes(Constants.DEFAULT_CHARSET),
+            null,
+            clientHttpRequestFactory
+        );
 
         if (styleOptional.isPresent()) {
             return styleOptional;
@@ -57,11 +59,14 @@ public class SLDParserPlugin implements StyleParserPlugin {
 
         final Integer styleIndex = lookupStyleIndex(styleString).orElse(null);
         final String styleStringWithoutIndexReference = removeIndexReference(styleString);
-        Function<byte[], Optional<Style>> loadFunction =
-                input -> tryLoadSLD(input, styleIndex, clientHttpRequestFactory);
+        Function<byte[], Optional<Style>> loadFunction = input ->
+            tryLoadSLD(input, styleIndex, clientHttpRequestFactory);
 
-        return ParserPluginUtils.loadStyleAsURI(clientHttpRequestFactory, styleStringWithoutIndexReference,
-                                                loadFunction);
+        return ParserPluginUtils.loadStyleAsURI(
+            clientHttpRequestFactory,
+            styleStringWithoutIndexReference,
+            loadFunction
+        );
     }
 
     private String removeIndexReference(final String styleString) {
@@ -81,14 +86,17 @@ public class SLDParserPlugin implements StyleParserPlugin {
     }
 
     private Optional<Style> tryLoadSLD(
-            final byte[] bytes, final Integer styleIndex,
-            final ClientHttpRequestFactory clientHttpRequestFactory) {
-        Assert.isTrue(styleIndex == null || styleIndex > -1,
-                      "styleIndex must be > -1 but was: " + styleIndex);
+        final byte[] bytes,
+        final Integer styleIndex,
+        final ClientHttpRequestFactory clientHttpRequestFactory
+    ) {
+        Assert.isTrue(
+            styleIndex == null || styleIndex > -1,
+            "styleIndex must be > -1 but was: " + styleIndex
+        );
 
         final Style[] styles;
         try {
-
             // check if the XML is valid
             // this is only done in a separate step to avoid that fatal errors show up in the logs
             // by setting a custom error handler.
@@ -101,46 +109,59 @@ public class SLDParserPlugin implements StyleParserPlugin {
 
             // then read the styles
             final SLDParser sldParser = new SLDParser(CommonFactoryFinder.getStyleFactory());
-            sldParser.setOnLineResourceLocator(new DefaultResourceLocator() {
-                @Override
-                public URL locateResource(final String uri) {
-                    try {
-                        final URL theUrl = super.locateResource(uri);
-                        final URI theUri;
-                        if (theUrl != null) {
-                            theUri = theUrl.toURI();
-                        } else {
-                            theUri = URI.create(uri);
+            sldParser.setOnLineResourceLocator(
+                new DefaultResourceLocator() {
+                    @Override
+                    public URL locateResource(final String uri) {
+                        try {
+                            final URL theUrl = super.locateResource(uri);
+                            final URI theUri;
+                            if (theUrl != null) {
+                                theUri = theUrl.toURI();
+                            } else {
+                                theUri = URI.create(uri);
+                            }
+                            if (theUri.getScheme().startsWith("http")) {
+                                final ClientHttpRequest request = clientHttpRequestFactory.createRequest(
+                                    theUri,
+                                    HttpMethod.GET
+                                );
+                                return request.getURI().toURL();
+                            }
+                            return null;
+                        } catch (IOException | URISyntaxException e) {
+                            return null;
                         }
-                        if (theUri.getScheme().startsWith("http")) {
-                            final ClientHttpRequest request = clientHttpRequestFactory.createRequest(
-                                    theUri, HttpMethod.GET);
-                            return request.getURI().toURL();
-                        }
-                        return null;
-                    } catch (IOException | URISyntaxException e) {
-                        return null;
                     }
                 }
-            });
+            );
             sldParser.setInput(new ByteArrayInputStream(bytes));
             styles = sldParser.readXML();
-
         } catch (Throwable e) {
             return Optional.empty();
         }
 
         if (styleIndex != null) {
-            Assert.isTrue(styleIndex < styles.length, String.format("There where %s styles in file but " +
-                                                                            "requested index was: %s",
-                                                                    styles.length, styleIndex + 1));
+            Assert.isTrue(
+                styleIndex < styles.length,
+                String.format(
+                    "There where %s styles in file but " + "requested index was: %s",
+                    styles.length,
+                    styleIndex + 1
+                )
+            );
         } else {
-            Assert.isTrue(styles.length < 2, String.format("There are %s therefore the styleRef must " +
-                                                                   "contain an index identifying the style." +
-                                                                   "  The index starts at 1 for the first " +
-                                                                   "style.\n" +
-                                                                   "\tExample: thinline.sld##1",
-                                                           styles.length));
+            Assert.isTrue(
+                styles.length < 2,
+                String.format(
+                    "There are %s therefore the styleRef must " +
+                    "contain an index identifying the style." +
+                    "  The index starts at 1 for the first " +
+                    "style.\n" +
+                    "\tExample: thinline.sld##1",
+                    styles.length
+                )
+            );
         }
 
         if (styleIndex == null) {

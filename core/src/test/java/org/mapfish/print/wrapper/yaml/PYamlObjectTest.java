@@ -1,22 +1,22 @@
 package org.mapfish.print.wrapper.yaml;
 
-import org.junit.Test;
-import org.mapfish.print.wrapper.json.PJsonArray;
-import org.mapfish.print.wrapper.json.PJsonObject;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.mapfish.print.wrapper.json.PJsonArray;
+import org.mapfish.print.wrapper.json.PJsonObject;
 
 public class PYamlObjectTest {
+
     @Test
     public void testToJson() {
         Map<String, Object> map = new HashMap<>();
         map.put("att1", 1);
-        map.put("att2", new Object[]{1, 2});
+        map.put("att2", new Object[] { 1, 2 });
 
         Map<String, Object> embedded = new HashMap<>();
         embedded.put("embeddedAtt1", true);

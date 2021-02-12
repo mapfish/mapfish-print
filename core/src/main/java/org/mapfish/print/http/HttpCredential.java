@@ -1,5 +1,10 @@
 package org.mapfish.print.http;
 
+import java.net.MalformedURLException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -8,12 +13,6 @@ import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.processor.http.matcher.MatchInfo;
 import org.mapfish.print.processor.http.matcher.URIMatcher;
 import org.mapfish.print.processor.http.matcher.UriMatchers;
-
-import java.net.MalformedURLException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Represents a set of credentials to use for an http request.  These can be configured in the Configuration
@@ -25,6 +24,7 @@ import javax.annotation.Nullable;
  * </p>
  */
 public class HttpCredential implements ConfigurationObject {
+
     private String username;
     private char[] password;
     private UriMatchers matchers = new UriMatchers();
@@ -71,9 +71,10 @@ public class HttpCredential implements ConfigurationObject {
     public void setPassword(final String password) {
         if (password == null) {
             throw new IllegalArgumentException(
-                    "Do not set a null password, simply exclude it from configuration file.  " +
-                            "If there is supposed to be a password perhaps it has illegal characters, " +
-                            "surround password with quotes");
+                "Do not set a null password, simply exclude it from configuration file.  " +
+                "If there is supposed to be a password perhaps it has illegal characters, " +
+                "surround password with quotes"
+            );
         }
         this.password = password.toCharArray();
     }
@@ -91,7 +92,7 @@ public class HttpCredential implements ConfigurationObject {
      * @param matchInfo the information for making the patch
      */
     public boolean matches(final MatchInfo matchInfo)
-            throws SocketException, UnknownHostException, MalformedURLException {
+        throws SocketException, UnknownHostException, MalformedURLException {
         return this.matchers.matches(matchInfo);
     }
 
@@ -104,7 +105,6 @@ public class HttpCredential implements ConfigurationObject {
     @Nullable
     public final Credentials toCredentials(final AuthScope authscope) {
         try {
-
             if (!matches(MatchInfo.fromAuthScope(authscope))) {
                 return null;
             }
@@ -123,5 +123,4 @@ public class HttpCredential implements ConfigurationObject {
         }
         return new UsernamePasswordCredentials(this.username, passwordString);
     }
-
 }

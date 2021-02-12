@@ -1,5 +1,8 @@
 package org.mapfish.print.attribute;
 
+import static org.junit.Assert.assertArrayEquals;
+
+import java.io.IOException;
 import org.json.simple.JSONArray;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -11,16 +14,13 @@ import org.mapfish.print.output.Values;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
-
-import static org.junit.Assert.assertArrayEquals;
-
 public class StringArrayAttributeTest extends AbstractMapfishSpringTest {
 
     private static final String BASE_DIR = "stringarray/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
+
     @Autowired
     private TestHttpClientFactory httpClientFactory;
 
@@ -30,12 +30,18 @@ public class StringArrayAttributeTest extends AbstractMapfishSpringTest {
         PJsonObject requestData = loadJsonRequestData();
 
         Template template = config.getTemplate("main");
-        Values values = new Values("test", requestData, template, config.getDirectory(), httpClientFactory,
-                                   config.getDirectory());
+        Values values = new Values(
+            "test",
+            requestData,
+            template,
+            config.getDirectory(),
+            httpClientFactory,
+            config.getDirectory()
+        );
 
         String[] array = (String[]) values.getObject("stringarray", Object.class);
 
-        assertArrayEquals(new String[]{"s1", "s2"}, array);
+        assertArrayEquals(new String[] { "s1", "s2" }, array);
     }
 
     @SuppressWarnings("unchecked")
@@ -51,12 +57,18 @@ public class StringArrayAttributeTest extends AbstractMapfishSpringTest {
         requestData.getJSONObject("attributes").getInternalObj().put("stringarray", intArray);
 
         Template template = config.getTemplate("main");
-        Values values = new Values("test", requestData, template, config.getDirectory(), httpClientFactory,
-                                   config.getDirectory());
+        Values values = new Values(
+            "test",
+            requestData,
+            template,
+            config.getDirectory(),
+            httpClientFactory,
+            config.getDirectory()
+        );
 
         String[] array = (String[]) values.getObject("stringarray", Object.class);
 
-        assertArrayEquals(new String[]{"1", "2", "3"}, array);
+        assertArrayEquals(new String[] { "1", "2", "3" }, array);
     }
 
     private PJsonObject loadJsonRequestData() throws IOException {

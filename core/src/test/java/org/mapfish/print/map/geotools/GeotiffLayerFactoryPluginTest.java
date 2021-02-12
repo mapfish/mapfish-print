@@ -1,5 +1,6 @@
 package org.mapfish.print.map.geotools;
 
+import java.io.File;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.IllegalFileAccessException;
@@ -8,16 +9,14 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest;
 import org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest;
 
-import java.io.File;
-
 public class GeotiffLayerFactoryPluginTest {
 
     @Test(expected = IllegalFileAccessException.class)
     public void testGeoIllegalFileUrl() throws Exception {
-        final File file = AbstractMapfishSpringTest.
-                getFile(CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest.class,
-                        CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest
-                                .BASE_DIR + "sampleGeoTiff.tif");
+        final File file = AbstractMapfishSpringTest.getFile(
+            CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest.class,
+            CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest.BASE_DIR + "sampleGeoTiff.tif"
+        );
         final Configuration configuration = new Configuration();
         configuration.setConfigurationFile(File.createTempFile("xyz", ".yaml"));
 

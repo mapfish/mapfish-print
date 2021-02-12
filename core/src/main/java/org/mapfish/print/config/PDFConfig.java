@@ -1,9 +1,8 @@
 package org.mapfish.print.config;
 
-import org.mapfish.print.OptionalUtils;
-
 import java.util.List;
 import java.util.Optional;
+import org.mapfish.print.OptionalUtils;
 
 /**
  * <p>A Configuration object for containing metadata that will be embedded in the PDF and parameters to use
@@ -13,6 +12,7 @@ import java.util.Optional;
  * [[examples=config_aliases_defaults,verboseExample]]
  */
 public class PDFConfig implements ConfigurationObject {
+
     private static final String MAPFISH_PRINT = "Mapfish Print";
     private Optional<Boolean> compressed = Optional.empty();
     private Optional<String> title = Optional.empty();
@@ -102,7 +102,7 @@ public class PDFConfig implements ConfigurationObject {
      */
     public void setKeywords(final List<String> keywords) {
         StringBuilder builder = new StringBuilder();
-        for (String keyword: keywords) {
+        for (String keyword : keywords) {
             if (builder.length() > 0) {
                 builder.append(',');
             }
@@ -123,5 +123,4 @@ public class PDFConfig implements ConfigurationObject {
     public void setCreator(final String creator) {
         this.creator = Optional.of(creator);
     }
-
 }

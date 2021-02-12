@@ -1,5 +1,16 @@
 package org.mapfish.print.processor.map;
 
+import static java.lang.Math.PI;
+import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mapfish.print.Constants.PDF_DPI;
+
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
@@ -11,18 +22,6 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-
-import static java.lang.Math.PI;
-import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mapfish.print.Constants.PDF_DPI;
 
 public class MapfishMapContextTest {
 
@@ -44,15 +43,13 @@ public class MapfishMapContextTest {
     private void assertRoundedScale(double actualScaleDenominator, double roundedScale) {
         MapBounds bounds = new CenterScaleMapBounds(WGS84, 0, 0, actualScaleDenominator);
         Dimension paint = new Dimension(200, 200);
-        MapfishMapContext transformer = new MapfishMapContext(bounds, paint, 90,
-                                                              PDF_DPI, true, true);
+        MapfishMapContext transformer = new MapfishMapContext(bounds, paint, 90, PDF_DPI, true, true);
         assertEquals(roundedScale, transformer.getRoundedScaleDenominator(), 0.00001);
     }
 
     @Test
     public void testGetRotation() {
-        MapfishMapContext transformer = new MapfishMapContext(null, null, PI / 2,
-                                                              PDF_DPI, null, true);
+        MapfishMapContext transformer = new MapfishMapContext(null, null, PI / 2, PDF_DPI, null, true);
         assertEquals("converted to radians", PI / 2, transformer.getRotation(), 1e-9);
     }
 
@@ -61,22 +58,20 @@ public class MapfishMapContextTest {
         MapBounds bounds = new BBoxMapBounds(WGS84, 5, 45, 25, 55);
 
         // rotate 90 degree
-        MapfishMapContext transformer = new MapfishMapContext(bounds, null, PI / 2,
-                                                              PDF_DPI, null, true);
+        MapfishMapContext transformer = new MapfishMapContext(bounds, null, PI / 2, PDF_DPI, null, true);
         MapBounds rotatedBounds = new BBoxMapBounds(WGS84, 10, 40, 20, 60);
         assertEquals(rotatedBounds, transformer.getRotatedBounds());
 
         // rotate 180 degree
-        transformer = new MapfishMapContext(bounds, null, PI, PDF_DPI,
-                                            null, true);
+        transformer = new MapfishMapContext(bounds, null, PI, PDF_DPI, null, true);
         rotatedBounds = new BBoxMapBounds(WGS84, 5, 45, 25, 55);
         assertEquals(rotatedBounds, transformer.getRotatedBounds());
 
         // rotate 45 degree
-        transformer = new MapfishMapContext(bounds, null, PI / 4, PDF_DPI,
-                                            null, true);
-        ReferencedEnvelope rotatedEnvelope =
-                transformer.getRotatedBounds().toReferencedEnvelope(new Rectangle(1, 1));
+        transformer = new MapfishMapContext(bounds, null, PI / 4, PDF_DPI, null, true);
+        ReferencedEnvelope rotatedEnvelope = transformer
+            .getRotatedBounds()
+            .toReferencedEnvelope(new Rectangle(1, 1));
         assertEquals(4.393398, rotatedEnvelope.getMinX(), 1e-6);
         assertEquals(25.606601, rotatedEnvelope.getMaxX(), 1e-6);
         assertEquals(39.393398, rotatedEnvelope.getMinY(), 1e-6);
@@ -84,10 +79,8 @@ public class MapfishMapContextTest {
 
         // rotate 45 degree
         bounds = new BBoxMapBounds(WGS84, -0.5, -0.5, 0.5, 0.5);
-        transformer = new MapfishMapContext(bounds, null, PI / 4, PDF_DPI,
-                                            null, true);
-        rotatedEnvelope =
-                transformer.getRotatedBounds().toReferencedEnvelope(new Rectangle(1, 1));
+        transformer = new MapfishMapContext(bounds, null, PI / 4, PDF_DPI, null, true);
+        rotatedEnvelope = transformer.getRotatedBounds().toReferencedEnvelope(new Rectangle(1, 1));
         assertEquals(-0.707106, rotatedEnvelope.getMinX(), 1e-6);
         assertEquals(0.707106, rotatedEnvelope.getMaxX(), 1e-6);
         assertEquals(-0.707106, rotatedEnvelope.getMinY(), 1e-6);
@@ -97,8 +90,7 @@ public class MapfishMapContextTest {
     @Test
     public void testGetRotatedBounds_CenterScaleMapBounds() {
         MapBounds bounds = new CenterScaleMapBounds(WGS84, 0, 0, 1000);
-        MapfishMapContext transformer = new MapfishMapContext(bounds, null, 90,
-                                                              PDF_DPI, true, true);
+        MapfishMapContext transformer = new MapfishMapContext(bounds, null, 90, PDF_DPI, true, true);
         // nothing changes
         assertEquals(bounds, transformer.getRotatedBounds());
     }
@@ -120,15 +112,16 @@ public class MapfishMapContextTest {
         CoordinateReferenceSystem epsg2056 = factory.createCoordinateReferenceSystem("EPSG:2056");
 
         MapAttribute.MapAttributeValues mapValues =
-                (new MapAttribute()).new MapAttributeValues(null, 780, 330);
+            (new MapAttribute()).new MapAttributeValues(null, 780, 330);
         mapValues.dpi = 100;
         mapValues.rotation = 55.26239249861529;
         mapValues.setMapBounds(new CenterScaleMapBounds(epsg2056, 2742033.0, 1253823.0, 25000));
 
         MapBounds centerBounds = mapValues.getMapBounds();
         Rectangle paintAreaRotated = new Rectangle(
-                (int) Math.round(995.0 * PDF_DPI / 100.0),
-                (int) Math.round(1152.0 * PDF_DPI / 100.0));
+            (int) Math.round(995.0 * PDF_DPI / 100.0),
+            (int) Math.round(1152.0 * PDF_DPI / 100.0)
+        );
         ReferencedEnvelope optimalBbox = centerBounds.toReferencedEnvelope(paintAreaRotated);
 
         paintAreaRotated = new Rectangle(995, 1152);
@@ -149,23 +142,26 @@ public class MapfishMapContextTest {
     @Test
     public void testGetRotatedMapSize() {
         // no rotation
-        MapfishMapContext transformer = new MapfishMapContext(null, new Dimension(1, 1),
-                                                              0, PDF_DPI, true, true);
+        MapfishMapContext transformer = new MapfishMapContext(
+            null,
+            new Dimension(1, 1),
+            0,
+            PDF_DPI,
+            true,
+            true
+        );
         assertEquals(new Dimension(1, 1), transformer.getRotatedMapSize());
 
         // rotate 90 degree
-        transformer = new MapfishMapContext(null, new Dimension(2, 1),
-                                            PI / 2, PDF_DPI, true, true);
+        transformer = new MapfishMapContext(null, new Dimension(2, 1), PI / 2, PDF_DPI, true, true);
         assertEquals(new Dimension(1, 2), transformer.getRotatedMapSize());
 
         // rotate 180 degree
-        transformer = new MapfishMapContext(null, new Dimension(2, 1), PI,
-                                            PDF_DPI, true, true);
+        transformer = new MapfishMapContext(null, new Dimension(2, 1), PI, PDF_DPI, true, true);
         assertEquals(new Dimension(2, 1), transformer.getRotatedMapSize());
 
         // rotate 45 degree
-        transformer = new MapfishMapContext(null, new Dimension(100, 100), PI / 4,
-                                            PDF_DPI, true, true);
+        transformer = new MapfishMapContext(null, new Dimension(100, 100), PI / 4, PDF_DPI, true, true);
         Dimension rotatedMapSize = transformer.getRotatedMapSize();
         assertEquals(141, rotatedMapSize.getWidth(), 1e-6);
         assertEquals(141, rotatedMapSize.getHeight(), 1e-6);
@@ -177,30 +173,27 @@ public class MapfishMapContextTest {
         Dimension mapSize = new Dimension(100, 100);
 
         // no rotation
-        MapfishMapContext transformer = new MapfishMapContext(bounds, mapSize, 0, PDF_DPI,
-                                                              true, true);
+        MapfishMapContext transformer = new MapfishMapContext(bounds, mapSize, 0, PDF_DPI, true, true);
         assertNull(transformer.getTransform());
 
         // rotate 180 degree
-        transformer = new MapfishMapContext(bounds, mapSize, PI, PDF_DPI,
-                                            true, true);
+        transformer = new MapfishMapContext(bounds, mapSize, PI, PDF_DPI, true, true);
         AffineTransform transform = transformer.getTransform();
         assertEquals(100, transform.getTranslateX(), 1e-6);
         assertEquals(100, transform.getTranslateY(), 1e-6);
 
         double[] matrix = new double[6];
         transform.getMatrix(matrix);
-        assertArrayEquals(new double[]{-1.0, 0.0, 0.0, -1.0, 100.0, 100.0}, matrix, 1e-6);
+        assertArrayEquals(new double[] { -1.0, 0.0, 0.0, -1.0, 100.0, 100.0 }, matrix, 1e-6);
 
         // rotate 90 degree
-        transformer = new MapfishMapContext(bounds, mapSize, PI / 2, PDF_DPI,
-                                            true, true);
+        transformer = new MapfishMapContext(bounds, mapSize, PI / 2, PDF_DPI, true, true);
         transform = transformer.getTransform();
         assertEquals(100, transform.getTranslateX(), 1e-6);
         assertEquals(0, transform.getTranslateY(), 1e-6);
 
         matrix = new double[6];
         transform.getMatrix(matrix);
-        assertArrayEquals(new double[]{0.0, 1.0, -1.0, -0.0, 100.0, 0.0}, matrix, 1e-6);
+        assertArrayEquals(new double[] { 0.0, 1.0, -1.0, -0.0, 100.0, 0.0 }, matrix, 1e-6);
     }
 }

@@ -1,5 +1,20 @@
 package org.mapfish.print.map.style.json;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mapfish.print.map.style.json.MapfishStyleParserPluginTest.REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON;
+
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import javax.imageio.ImageIO;
 import org.apache.commons.lang3.StringUtils;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.Fill;
@@ -31,22 +46,6 @@ import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.style.GraphicalSymbol;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import javax.imageio.ImageIO;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mapfish.print.map.style.json.MapfishStyleParserPluginTest.REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON;
-
 @SuppressWarnings("deprecation")
 public class JsonStyleParserHelperTest {
 
@@ -56,8 +55,13 @@ public class JsonStyleParserHelperTest {
     JsonStyleParserHelper helper;
 
     static void assertStroke(
-            double stokeOpacity, String lineCap, Stroke stroke, String strokeColor, float[] dashArray,
-            double strokeWidth) {
+        double stokeOpacity,
+        String lineCap,
+        Stroke stroke,
+        String strokeColor,
+        float[] dashArray,
+        double strokeWidth
+    ) {
         assertEquals(stokeOpacity, valueOf(stroke.getOpacity()));
         assertEquals(strokeColor, valueOf(stroke.getColor()));
         assertArrayEquals(dashArray, stroke.getDashArray(), 0.001f);
@@ -79,8 +83,8 @@ public class JsonStyleParserHelperTest {
         Configuration configuration = new Configuration();
         final File file = getFile(MapfishStyleParserPluginTest.class, REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON);
         configuration.setConfigurationFile(file);
-        helper = new JsonStyleParserHelper(
-                configuration, new TestHttpClientFactory(), new StyleBuilder(), true);
+        helper =
+            new JsonStyleParserHelper(configuration, new TestHttpClientFactory(), new StyleBuilder(), true);
     }
 
     private File getFile(Class<?> base, String fileName) throws URISyntaxException {
@@ -94,7 +98,6 @@ public class JsonStyleParserHelperTest {
 
     @Test
     public void testCreatePointSymbolizerExternalGraphic() throws Exception {
-
         JSONObject style = new JSONObject();
         style.put("externalGraphic", "mark.png");
 
@@ -146,7 +149,14 @@ public class JsonStyleParserHelperTest {
 
         assertFill(fillOpacity, "#EEEEEE", externalGraphic.getFill());
 
-        assertStroke(stokeOpacity, lineCap, externalGraphic.getStroke(), "#FFFFFF", new float[]{5f, 2f}, 2.0);
+        assertStroke(
+            stokeOpacity,
+            lineCap,
+            externalGraphic.getStroke(),
+            "#FFFFFF",
+            new float[] { 5f, 2f },
+            2.0
+        );
 
         assertEquals(0.4, valueOf(graphic.getOpacity()));
         assertEquals(10.0, valueOf(graphic.getSize()));
@@ -169,7 +179,7 @@ public class JsonStyleParserHelperTest {
 
         transformer.transform(symbolizer); // verify it converts to xml correctly
 
-        assertStroke(0.2, "round", symbolizer.getStroke(), "#FFFFFF", new float[]{5f, 2f}, 2.0);
+        assertStroke(0.2, "round", symbolizer.getStroke(), "#FFFFFF", new float[] { 5f, 2f }, 2.0);
         assertFill(0.3, "#EEEEEE", symbolizer.getFill());
     }
 
@@ -187,7 +197,7 @@ public class JsonStyleParserHelperTest {
 
         transformer.transform(symbolizer); // verify it converts to xml correctly
 
-        assertStroke(0.2, "round", symbolizer.getStroke(), "#FFFFFF", new float[]{5f, 2f}, 2.0);
+        assertStroke(0.2, "round", symbolizer.getStroke(), "#FFFFFF", new float[] { 5f, 2f }, 2.0);
     }
 
     @Test
@@ -200,7 +210,6 @@ public class JsonStyleParserHelperTest {
         final String labelYOffset = "-35.0";
         final String haloColor = "#123456";
         final String haloRadius = "3.0";
-
 
         JSONObject style = new JSONObject();
         style.put("label", "name");
@@ -224,7 +233,7 @@ public class JsonStyleParserHelperTest {
         TextSymbolizer symbolizer = helper.createTextSymbolizer(pStyle);
         assertNotNull(symbolizer);
 
-        transformer.transform(symbolizer);  // test that it can be written to xml correctly
+        transformer.transform(symbolizer); // test that it can be written to xml correctly
 
         assertFill(1.0, fontColor, symbolizer.getFill());
         assertEquals("name", valueOf(symbolizer.getLabel()));
@@ -266,7 +275,6 @@ public class JsonStyleParserHelperTest {
         final String fontFamily = "Arial, sans-serif";
         final String fontWeight = "bold";
 
-
         JSONObject style = new JSONObject();
         style.put("label", "name");
         style.put("fontColor", fontColor);
@@ -280,7 +288,7 @@ public class JsonStyleParserHelperTest {
         TextSymbolizer symbolizer = helper.createTextSymbolizer(pStyle);
         assertNotNull(symbolizer);
 
-        transformer.transform(symbolizer);  // test that it can be written to xml correctly
+        transformer.transform(symbolizer); // test that it can be written to xml correctly
     }
 
     @Test
@@ -293,7 +301,6 @@ public class JsonStyleParserHelperTest {
         final String labelYOffset = "-35.0";
         final String haloColor = "#123456";
         final String haloRadius = "3.0";
-
 
         JSONObject style = new JSONObject();
         style.put("label", "name");
@@ -317,7 +324,7 @@ public class JsonStyleParserHelperTest {
         TextSymbolizer symbolizer = helper.createTextSymbolizer(pStyle);
         assertNotNull(symbolizer);
 
-        transformer.transform(symbolizer);  // test that it can be written to xml correctly
+        transformer.transform(symbolizer); // test that it can be written to xml correctly
 
         assertFill(1.0, fontColor, symbolizer.getFill());
         assertEquals("name", valueOf(symbolizer.getLabel()));
@@ -365,7 +372,6 @@ public class JsonStyleParserHelperTest {
         final String haloColor = "#123456";
         final String haloRadius = "3.0";
 
-
         JSONObject style = new JSONObject();
         style.put("label", "name");
         style.put("fontColor", fontColor);
@@ -388,7 +394,7 @@ public class JsonStyleParserHelperTest {
         TextSymbolizer symbolizer = helper.createTextSymbolizer(pStyle);
         assertNotNull(symbolizer);
 
-        transformer.transform(symbolizer);  // test that it can be written to xml correctly
+        transformer.transform(symbolizer); // test that it can be written to xml correctly
 
         assertFill(1.0, fontColor, symbolizer.getFill());
         assertEquals("name", valueOf(symbolizer.getLabel()));
@@ -436,7 +442,6 @@ public class JsonStyleParserHelperTest {
         final String haloColor = "#123456";
         final String haloRadius = "3.0";
 
-
         JSONObject style = new JSONObject();
         style.put("label", "name");
         style.put("fontColor", fontColor);
@@ -459,7 +464,7 @@ public class JsonStyleParserHelperTest {
         TextSymbolizer symbolizer = helper.createTextSymbolizer(pStyle);
         assertNotNull(symbolizer);
 
-        transformer.transform(symbolizer);  // test that it can be written to xml correctly
+        transformer.transform(symbolizer); // test that it can be written to xml correctly
 
         assertFill(1.0, fontColor, symbolizer.getFill());
         assertEquals("name", valueOf(symbolizer.getLabel()));
@@ -499,7 +504,6 @@ public class JsonStyleParserHelperTest {
         final String haloColor = "#123456";
         final String haloRadius = "3.0";
 
-
         JSONObject style = new JSONObject();
         style.put("label", "name");
         style.put(JsonStyleParserHelper.JSON_LABEL_OUTLINE_COLOR, haloColor);
@@ -509,7 +513,7 @@ public class JsonStyleParserHelperTest {
         TextSymbolizer symbolizer = helper.createTextSymbolizer(pStyle);
         assertNotNull(symbolizer);
 
-        transformer.transform(symbolizer);  // test that it can be written to xml correctly
+        transformer.transform(symbolizer); // test that it can be written to xml correctly
 
         Halo halo = symbolizer.getHalo();
         assertFill(1.0, haloColor, halo.getFill());
@@ -518,14 +522,13 @@ public class JsonStyleParserHelperTest {
 
     @Test
     public void testCreateStroke_DashStyle() {
-
-        assertDashStyle("5 4 3 4", new float[]{5f, 4f, 3f, 4f});
+        assertDashStyle("5 4 3 4", new float[] { 5f, 4f, 3f, 4f });
         assertDashStyle(JsonStyleParserHelper.STROKE_DASHSTYLE_SOLID, null);
-        assertDashStyle(JsonStyleParserHelper.STROKE_DASHSTYLE_DASH, new float[]{2f, 2f});
-        assertDashStyle(JsonStyleParserHelper.STROKE_DASHSTYLE_DASHDOT, new float[]{3f, 2f, 0.1f, 2f});
-        assertDashStyle(JsonStyleParserHelper.STROKE_DASHSTYLE_DOT, new float[]{0.1f, 2f});
-        assertDashStyle(JsonStyleParserHelper.STROKE_DASHSTYLE_LONGDASH, new float[]{4f, 2f});
-        assertDashStyle(JsonStyleParserHelper.STROKE_DASHSTYLE_LONGDASHDOT, new float[]{5f, 2f, 0.1f, 2f});
+        assertDashStyle(JsonStyleParserHelper.STROKE_DASHSTYLE_DASH, new float[] { 2f, 2f });
+        assertDashStyle(JsonStyleParserHelper.STROKE_DASHSTYLE_DASHDOT, new float[] { 3f, 2f, 0.1f, 2f });
+        assertDashStyle(JsonStyleParserHelper.STROKE_DASHSTYLE_DOT, new float[] { 0.1f, 2f });
+        assertDashStyle(JsonStyleParserHelper.STROKE_DASHSTYLE_LONGDASH, new float[] { 4f, 2f });
+        assertDashStyle(JsonStyleParserHelper.STROKE_DASHSTYLE_LONGDASHDOT, new float[] { 5f, 2f, 0.1f, 2f });
     }
 
     @Test
@@ -558,8 +561,12 @@ public class JsonStyleParserHelperTest {
         final Graphic graphic = pointSymbolizer.getGraphic();
         Mark mark = (Mark) graphic.graphicalSymbols().get(0);
         Stroke stroke = mark.getStroke();
-        assertArrayEquals(Arrays.toString(stroke.getDashArray()), new float[]{5f, 4f}, stroke.getDashArray(),
-                          FLOAT_DELTA);
+        assertArrayEquals(
+            Arrays.toString(stroke.getDashArray()),
+            new float[] { 5f, 4f },
+            stroke.getDashArray(),
+            FLOAT_DELTA
+        );
     }
 
     @Test
@@ -587,8 +594,12 @@ public class JsonStyleParserHelperTest {
         assertNotNull(lineSymbolizer);
 
         final Stroke stroke = lineSymbolizer.getStroke();
-        assertArrayEquals(Arrays.toString(stroke.getDashArray()), new float[]{5f, 4f}, stroke.getDashArray(),
-                          FLOAT_DELTA);
+        assertArrayEquals(
+            Arrays.toString(stroke.getDashArray()),
+            new float[] { 5f, 4f },
+            stroke.getDashArray(),
+            FLOAT_DELTA
+        );
     }
 
     @Test
@@ -617,8 +628,12 @@ public class JsonStyleParserHelperTest {
         assertNotNull(polygonSymbolizer);
 
         final Stroke stroke = polygonSymbolizer.getStroke();
-        assertArrayEquals(Arrays.toString(stroke.getDashArray()), new float[]{5f, 4f}, stroke.getDashArray(),
-                          FLOAT_DELTA);
+        assertArrayEquals(
+            Arrays.toString(stroke.getDashArray()),
+            new float[] { 5f, 4f },
+            stroke.getDashArray(),
+            FLOAT_DELTA
+        );
 
         assertNotNull(polygonSymbolizer.getFill());
     }
@@ -661,15 +676,17 @@ public class JsonStyleParserHelperTest {
         // ImageIO supports image/jpeg.  The two don't match so the image won't be loaded (even if it could).
         final List<String> strings = Arrays.asList(ImageIO.getReaderMIMETypes());
         PJsonObject styleJson = new PJsonObject(new JSONObject(), "style");
-        for (String supportedMimetype: strings) {
+        for (String supportedMimetype : strings) {
             Set<String> compatibleMimetypes = findCompatibleMimeTypes(supportedMimetype);
-            for (String mimeType: compatibleMimetypes) {
+            for (String mimeType : compatibleMimetypes) {
                 if (StringUtils.isEmpty(mimeType)) {
                     continue;
                 }
                 styleJson.getInternalObj().put(JsonStyleParserHelper.JSON_GRAPHIC_FORMAT, mimeType);
                 final String graphicFormat = helper.getGraphicFormat(
-                        "http://somefile.com/file.jpeg", styleJson);
+                    "http://somefile.com/file.jpeg",
+                    styleJson
+                );
                 assertTrue(graphicFormat + " is not supported", strings.contains(graphicFormat));
             }
         }
@@ -679,9 +696,9 @@ public class JsonStyleParserHelperTest {
     public void testGetGraphicFormatDetect2() {
         final List<String> strings = Arrays.asList(ImageIO.getReaderMIMETypes());
         PJsonObject styleJson = new PJsonObject(new JSONObject(), "style");
-        for (String supportedMimetype: strings) {
+        for (String supportedMimetype : strings) {
             Set<String> compatibleMimetypes = findCompatibleMimeTypes(supportedMimetype);
-            for (String mimeType: compatibleMimetypes) {
+            for (String mimeType : compatibleMimetypes) {
                 if (StringUtils.isEmpty(mimeType)) {
                     continue;
                 }
@@ -694,7 +711,7 @@ public class JsonStyleParserHelperTest {
     }
 
     private Set<String> findCompatibleMimeTypes(String mimeType) {
-        for (Set<String> compatibleMimetypes: helper.COMPATIBLE_MIMETYPES) {
+        for (Set<String> compatibleMimetypes : helper.COMPATIBLE_MIMETYPES) {
             if (compatibleMimetypes.contains(mimeType)) {
                 return compatibleMimetypes;
             }
@@ -731,9 +748,10 @@ public class JsonStyleParserHelperTest {
 
     @Test
     public void testExpressionProperties() throws Exception {
-        String jsonString = new String(java.nio.file.Files.readAllBytes(
-                getFile("v2-style-all-properies-as-expressions.json").toPath()),
-                                       Constants.DEFAULT_CHARSET);
+        String jsonString = new String(
+            java.nio.file.Files.readAllBytes(getFile("v2-style-all-properies-as-expressions.json").toPath()),
+            Constants.DEFAULT_CHARSET
+        );
 
         PJsonObject json = MapPrinter.parseSpec(jsonString).getJSONObject("*");
 
@@ -741,7 +759,7 @@ public class JsonStyleParserHelperTest {
         final PointSymbolizer pointSymbolizer = this.helper.createPointSymbolizer(symb.getJSONObject(0));
         final LineSymbolizer lineSymbolizer = this.helper.createLineSymbolizer(symb.getJSONObject(1));
         final PolygonSymbolizer polygonSymbolizer =
-                this.helper.createPolygonSymbolizer(symb.getJSONObject(2));
+            this.helper.createPolygonSymbolizer(symb.getJSONObject(2));
         final TextSymbolizer textSymbolizer = this.helper.createTextSymbolizer(symb.getJSONObject(3));
 
         final Graphic graphic = pointSymbolizer.getGraphic();
@@ -783,10 +801,10 @@ public class JsonStyleParserHelperTest {
         assertEquals("haloOpacity", propertyName(halo.getFill().getOpacity()));
         assertEquals("haloRadius", propertyName(halo.getRadius()));
         assertEquals("label", propertyName(textSymbolizer.getLabel()));
-        assertEquals("labelRotation",
-                     propertyName(((PointPlacement) textSymbolizer.getLabelPlacement()).getRotation()));
-
-
+        assertEquals(
+            "labelRotation",
+            propertyName(((PointPlacement) textSymbolizer.getLabelPlacement()).getRotation())
+        );
     }
 
     private String propertyName(Expression rotation) {
@@ -800,7 +818,11 @@ public class JsonStyleParserHelperTest {
         PJsonObject pStyle = new PJsonObject(strokeJson, "style");
         final Stroke stroke = helper.createStroke(pStyle, false);
         assertNotNull(stroke);
-        assertArrayEquals(Arrays.toString(stroke.getDashArray()), expectedDashArray, stroke.getDashArray(),
-                          FLOAT_DELTA);
+        assertArrayEquals(
+            Arrays.toString(stroke.getDashArray()),
+            expectedDashArray,
+            stroke.getDashArray(),
+            FLOAT_DELTA
+        );
     }
 }

@@ -9,7 +9,9 @@ import org.springframework.context.ApplicationContext;
  * Class for marshalling and unmarshalling AccessAssertionObjects to and from JSON.
  */
 public final class AccessAssertionPersister {
+
     private static final String JSON_CLASS_NAME = "className";
+
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -22,10 +24,13 @@ public final class AccessAssertionPersister {
         final String className;
         try {
             className = encodedAssertion.getString(JSON_CLASS_NAME);
-            final Class<?> assertionClass =
-                    Thread.currentThread().getContextClassLoader().loadClass(className);
-            final AccessAssertion assertion =
-                    (AccessAssertion) this.applicationContext.getBean(assertionClass);
+            final Class<?> assertionClass = Thread
+                .currentThread()
+                .getContextClassLoader()
+                .loadClass(className);
+            final AccessAssertion assertion = (AccessAssertion) this.applicationContext.getBean(
+                    assertionClass
+                );
             assertion.unmarshal(encodedAssertion);
 
             return assertion;
@@ -42,10 +47,14 @@ public final class AccessAssertionPersister {
     public JSONObject marshal(final AccessAssertion assertion) {
         final JSONObject jsonObject = assertion.marshal();
         if (jsonObject.has(JSON_CLASS_NAME)) {
-            throw new AssertionError("The toJson method in AccessAssertion: '" + assertion.getClass() +
-                                             "' defined a JSON field " + JSON_CLASS_NAME +
-                                             " which is a reserved keyword and is not permitted to be used " +
-                                             "in toJSON method");
+            throw new AssertionError(
+                "The toJson method in AccessAssertion: '" +
+                assertion.getClass() +
+                "' defined a JSON field " +
+                JSON_CLASS_NAME +
+                " which is a reserved keyword and is not permitted to be used " +
+                "in toJSON method"
+            );
         }
         try {
             jsonObject.put(JSON_CLASS_NAME, assertion.getClass().getName());

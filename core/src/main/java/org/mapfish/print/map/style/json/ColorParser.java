@@ -1,14 +1,13 @@
 package org.mapfish.print.map.style.json;
 
-import org.geotools.styling.SLD;
-import org.mapfish.print.OptionalUtils;
-
 import java.awt.Color;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.geotools.styling.SLD;
+import org.mapfish.print.OptionalUtils;
 
 /**
  * Parses colors from text strings. Supports formats:
@@ -33,21 +32,39 @@ import java.util.regex.Pattern;
  * </ul>
  */
 public final class ColorParser {
+
     private static final float MAX_INT_COLOR = 255f;
 
     private static final String NUMBER_PATTERN = "\\s*(\\d*\\.?\\d*[%f]?)\\s*";
     private static final Pattern RGB_COLOR_EXTRACTOR = Pattern.compile(
-            "rgb\\s*\\(" + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," + NUMBER_PATTERN + "\\)");
+        "rgb\\s*\\(" + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," + NUMBER_PATTERN + "\\)"
+    );
     private static final Pattern RGBA_COLOR_EXTRACTOR = Pattern.compile(
-            "rgba\\s*\\(" + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," +
-                    NUMBER_PATTERN + "\\)");
+        "rgba\\s*\\(" +
+        NUMBER_PATTERN +
+        "," +
+        NUMBER_PATTERN +
+        "," +
+        NUMBER_PATTERN +
+        "," +
+        NUMBER_PATTERN +
+        "\\)"
+    );
 
     private static final Pattern HSL_COLOR_EXTRACTOR = Pattern.compile(
-            "hsl\\s*\\(" + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," + NUMBER_PATTERN + "\\)");
+        "hsl\\s*\\(" + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," + NUMBER_PATTERN + "\\)"
+    );
     private static final Pattern HSLA_COLOR_EXTRACTOR = Pattern.compile(
-            "hsla\\s*\\(" + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," +
-                    NUMBER_PATTERN + "\\)");
-
+        "hsla\\s*\\(" +
+        NUMBER_PATTERN +
+        "," +
+        NUMBER_PATTERN +
+        "," +
+        NUMBER_PATTERN +
+        "," +
+        NUMBER_PATTERN +
+        "\\)"
+    );
 
     private ColorParser() {
         // utility class so ignore
@@ -94,10 +111,13 @@ public final class ColorParser {
 
         if (color == null) {
             final Field[] fields = Color.class.getFields();
-            for (Field field: fields) {
-                if (field.getType() == Color.class && Modifier.isFinal(field.getModifiers())
-                        && Modifier.isStatic(field.getModifiers()) &&
-                        field.getName().equalsIgnoreCase(trimmedString)) {
+            for (Field field : fields) {
+                if (
+                    field.getType() == Color.class &&
+                    Modifier.isFinal(field.getModifiers()) &&
+                    Modifier.isStatic(field.getModifiers()) &&
+                    field.getName().equalsIgnoreCase(trimmedString)
+                ) {
                     try {
                         return (Color) field.get(null);
                     } catch (IllegalAccessException e) {
@@ -163,7 +183,11 @@ public final class ColorParser {
     }
 
     private static Color toColorRGBA(
-            final String red, final String green, final String blue, final String alpha) {
+        final String red,
+        final String green,
+        final String blue,
+        final String alpha
+    ) {
         float finalRed = parseValue(red).get();
         float finalGreen = parseValue(green).get();
         float finalBlue = parseValue(blue).get();
@@ -173,8 +197,12 @@ public final class ColorParser {
     }
 
     private static Optional<Float> parseValue(final String red) {
-        return OptionalUtils.or(() -> parsePercent(red), () -> parseInt(red),
-                                () -> parseFloat(red), () -> parseDouble(red));
+        return OptionalUtils.or(
+            () -> parsePercent(red),
+            () -> parseInt(red),
+            () -> parseFloat(red),
+            () -> parseDouble(red)
+        );
     }
 
     private static Optional<Float> parsePercent(final String colorString) {
@@ -186,7 +214,11 @@ public final class ColorParser {
     }
 
     private static Color toColorFromHSLA(
-            final String hue, final String saturation, final String luminance, final String alpha) {
+        final String hue,
+        final String saturation,
+        final String luminance,
+        final String alpha
+    ) {
         float finalHue = parseValue(hue).get();
         float finalSaturation = parseValue(saturation).get();
         float finalLuminance = parseValue(luminance).get();
@@ -294,9 +326,6 @@ public final class ColorParser {
      * @param color The color.
      */
     public static String toRGB(final Color color) {
-        return "rgb("
-                + color.getRed() + ", "
-                + color.getGreen() + ", "
-                + color.getBlue() + ")";
+        return "rgb(" + color.getRed() + ", " + color.getGreen() + ", " + color.getBlue() + ")";
     }
 }

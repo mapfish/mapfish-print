@@ -1,17 +1,17 @@
 package org.mapfish.print.map.geotools.grid;
 
-import org.locationtech.jts.util.Assert;
-import org.mapfish.print.parser.HasDefaultValue;
-
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.util.Arrays;
 import javax.swing.JLabel;
+import org.locationtech.jts.util.Assert;
+import org.mapfish.print.parser.HasDefaultValue;
 
 /**
  * Configuration object for the grid labels.
  */
 public final class GridFontParam {
+
     private static final Font DEFAULT_FONT_NAME = new JLabel().getFont();
     private static final int DEFAULT_FONT_SIZE = 10;
 
@@ -19,12 +19,14 @@ public final class GridFontParam {
      * The name of the font.
      */
     @HasDefaultValue
-    public String[] name = {DEFAULT_FONT_NAME.getFontName()};
+    public String[] name = { DEFAULT_FONT_NAME.getFontName() };
+
     /**
      * The size of the font. 10.
      */
     @HasDefaultValue
     public int size = DEFAULT_FONT_SIZE;
+
     /**
      * The style of the font.  Default BOLD
      */
@@ -40,7 +42,7 @@ public final class GridFontParam {
         Assert.isTrue(this.size > 1, "size must be greater than 1");
 
         Font baseFont = null;
-        for (String fontName: this.name) {
+        for (String fontName : this.name) {
             try {
                 baseFont = new Font(fontName, this.style.styleId, this.size);
                 break;
@@ -50,11 +52,15 @@ public final class GridFontParam {
         }
 
         if (baseFont == null) {
-            String[] legalFonts =
-                    GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+            String[] legalFonts = GraphicsEnvironment
+                .getLocalGraphicsEnvironment()
+                .getAvailableFontFamilyNames();
             throw new IllegalArgumentException(
-                    Arrays.toString(this.name) + " does not contain a font that can be created by this Java "
-                            + "Virtual Machine, legal options are: \n" + Arrays.toString(legalFonts));
+                Arrays.toString(this.name) +
+                " does not contain a font that can be created by this Java " +
+                "Virtual Machine, legal options are: \n" +
+                Arrays.toString(legalFonts)
+            );
         }
     }
 }

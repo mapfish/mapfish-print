@@ -1,9 +1,9 @@
 package org.mapfish.print.map.tiled.osm;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 public class OsmLayerParamTest {
 
@@ -32,5 +32,4 @@ public class OsmLayerParamTest {
         params.baseURL = "http://tile.openstreetmap.org/{a}/{x}/{y}.png";
         assertFalse(params.validateBaseUrl());
     }
-
 }

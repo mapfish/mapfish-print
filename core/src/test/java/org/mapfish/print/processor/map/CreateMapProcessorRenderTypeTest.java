@@ -1,5 +1,14 @@
 package org.mapfish.print.processor.map;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -11,24 +20,16 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 public class CreateMapProcessorRenderTypeTest extends AbstractMapfishSpringTest {
 
     public static final String BASE_DIR = "rendertype/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
+
     @Autowired
     private TestHttpClientFactory requestFactory;
+
     @Autowired
     private ForkJoinPool forkJoinPool;
 
@@ -41,24 +42,32 @@ public class CreateMapProcessorRenderTypeTest extends AbstractMapfishSpringTest 
     public void testExecute() throws Exception {
         final String host = "center_wms1_0_0_flexiblescale";
         requestFactory.registerHandler(
-                input -> (("" + input.getHost()).contains(host + ".wms")) ||
-                        input.getAuthority().contains(host + ".wms"),
-                createFileHandler("/map-data/zoomed-in-ny-tiger.tif")
+            input ->
+                (("" + input.getHost()).contains(host + ".wms")) ||
+                input.getAuthority().contains(host + ".wms"),
+            createFileHandler("/map-data/zoomed-in-ny-tiger.tif")
         );
         requestFactory.registerHandler(
-                input -> (("" + input.getHost()).contains(host + ".json")) ||
-                        input.getAuthority().contains(host + ".json"),
-                createFileHandler(uri -> "/map-data" + uri.getPath())
+            input ->
+                (("" + input.getHost()).contains(host + ".json")) ||
+                input.getAuthority().contains(host + ".json"),
+            createFileHandler(uri -> "/map-data" + uri.getPath())
         );
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
 
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values("test", requestData, template, getTaskDirectory(),
-                                   this.requestFactory, new File("."));
+        Values values = new Values(
+            "test",
+            requestData,
+            template,
+            getTaskDirectory(),
+            this.requestFactory,
+            new File(".")
+        );
 
-        final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
-                template.getProcessorGraph().createTask(values));
+        final ForkJoinTask<Values> taskFuture =
+            this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
         taskFuture.get();
 
         @SuppressWarnings("unchecked")
@@ -69,6 +78,5 @@ public class CreateMapProcessorRenderTypeTest extends AbstractMapfishSpringTest 
         assertTrue(layerGraphics.get(1).getPath().endsWith(".png"));
         assertTrue(layerGraphics.get(2).getPath().endsWith(".svg"));
         assertTrue(layerGraphics.get(3).getPath().endsWith(".png"));
-
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * Store accounting info in the DB.
  */
 public class HibernateAccounting extends Accounting {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(HibernateAccounting.class);
 
     @Autowired
@@ -23,7 +24,6 @@ public class HibernateAccounting extends Accounting {
 
     @Autowired
     private PlatformTransactionManager txManager;
-
 
     @Override
     public JobTracker startJob(final PrintJobEntry entry, final Configuration configuration) {
@@ -34,6 +34,7 @@ public class HibernateAccounting extends Accounting {
      * A JobTracker specialization for storing in the DB.
      */
     public class JobTracker extends Accounting.JobTracker {
+
         /**
          * Constructor.
          *
@@ -48,7 +49,10 @@ public class HibernateAccounting extends Accounting {
         public long onJobSuccess(final PrintJob.PrintResult printResult) {
             final long duractionUSec = super.onJobSuccess(printResult);
             final HibernateAccountingEntry record1 = new HibernateAccountingEntry(
-                    this.entry, PrintJobStatus.Status.FINISHED, this.configuration);
+                this.entry,
+                PrintJobStatus.Status.FINISHED,
+                this.configuration
+            );
             final HibernateAccountingEntry record = record1;
             record.setProcessingTimeMS(duractionUSec / 1000000L);
             record.setFileSize(printResult.fileSize);
@@ -61,7 +65,10 @@ public class HibernateAccounting extends Accounting {
         public void onJobCancel() {
             super.onJobCancel();
             final HibernateAccountingEntry record = new HibernateAccountingEntry(
-                    this.entry, PrintJobStatus.Status.CANCELLED, this.configuration);
+                this.entry,
+                PrintJobStatus.Status.CANCELLED,
+                this.configuration
+            );
             insertRecord(record);
         }
 
@@ -69,22 +76,27 @@ public class HibernateAccounting extends Accounting {
         public void onJobError() {
             super.onJobError();
             final HibernateAccountingEntry record = new HibernateAccountingEntry(
-                    this.entry, PrintJobStatus.Status.ERROR, this.configuration);
+                this.entry,
+                PrintJobStatus.Status.ERROR,
+                this.configuration
+            );
             insertRecord(record);
         }
 
         private void insertRecord(final HibernateAccountingEntry tuple) {
             try {
                 final TransactionTemplate tmpl = new TransactionTemplate(HibernateAccounting.this.txManager);
-                tmpl.execute(new TransactionCallbackWithoutResult() {
-                    @Override
-                    protected void doInTransactionWithoutResult(final TransactionStatus status) {
-                        final Session currentSession = HibernateAccounting.this.sf.getCurrentSession();
-                        currentSession.merge(tuple);
-                        currentSession.flush();
-                        currentSession.evict(tuple);
+                tmpl.execute(
+                    new TransactionCallbackWithoutResult() {
+                        @Override
+                        protected void doInTransactionWithoutResult(final TransactionStatus status) {
+                            final Session currentSession = HibernateAccounting.this.sf.getCurrentSession();
+                            currentSession.merge(tuple);
+                            currentSession.flush();
+                            currentSession.evict(tuple);
+                        }
                     }
-                });
+                );
             } catch (HibernateException ex) {
                 LOGGER.warn("Cannot save accounting information", ex);
             }

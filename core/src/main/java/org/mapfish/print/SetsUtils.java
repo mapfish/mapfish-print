@@ -8,8 +8,8 @@ import java.util.Set;
  * Some utilities for Sets.
  */
 public final class SetsUtils {
-    private SetsUtils() {
-    }
+
+    private SetsUtils() {}
 
     /**
      * Create a HashSet with the given initial values.

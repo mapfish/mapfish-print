@@ -1,6 +1,11 @@
 package org.mapfish.print.map.image.wms;
 
 import com.codahale.metrics.MetricRegistry;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.net.URI;
+import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapfishMapContext;
@@ -14,16 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.client.ClientHttpRequest;
 
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.net.URI;
-import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
-
 /**
  * Wms layer.
  */
 public final class WmsLayer extends AbstractSingleImageLayer {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(WmsLayer.class);
     private final WmsLayerParam params;
     private ClientHttpRequest imageRequest;
@@ -38,20 +38,21 @@ public final class WmsLayer extends AbstractSingleImageLayer {
      * @param configuration the configuration.
      */
     protected WmsLayer(
-            @Nonnull final ExecutorService executorService,
-            @Nonnull final StyleSupplier<GridCoverage2D> styleSupplier,
-            @Nonnull final WmsLayerParam params,
-            @Nonnull final MetricRegistry registry,
-            @Nonnull final Configuration configuration) {
+        @Nonnull final ExecutorService executorService,
+        @Nonnull final StyleSupplier<GridCoverage2D> styleSupplier,
+        @Nonnull final WmsLayerParam params,
+        @Nonnull final MetricRegistry registry,
+        @Nonnull final Configuration configuration
+    ) {
         super(executorService, styleSupplier, params, registry, configuration);
         this.params = params;
     }
 
     @Override
     protected BufferedImage loadImage(
-            @Nonnull final MfClientHttpRequestFactory requestFactory,
-            @Nonnull final MapfishMapContext transformer) throws Throwable {
-
+        @Nonnull final MfClientHttpRequestFactory requestFactory,
+        @Nonnull final MapfishMapContext transformer
+    ) throws Throwable {
         LOGGER.info("Query the WMS image {}.", this.imageRequest.getURI());
         return fetchImage(imageRequest, transformer);
     }
@@ -71,9 +72,13 @@ public final class WmsLayer extends AbstractSingleImageLayer {
      */
     @Override
     public boolean supportsNativeRotation() {
-        return this.params.useNativeAngle &&
-                (this.params.serverType == WmsLayerParam.ServerType.MAPSERVER ||
-                        this.params.serverType == WmsLayerParam.ServerType.GEOSERVER);
+        return (
+            this.params.useNativeAngle &&
+            (
+                this.params.serverType == WmsLayerParam.ServerType.MAPSERVER ||
+                this.params.serverType == WmsLayerParam.ServerType.GEOSERVER
+            )
+        );
     }
 
     @Override
@@ -83,9 +88,11 @@ public final class WmsLayer extends AbstractSingleImageLayer {
 
     @Override
     public void prefetchResources(
-            @Nonnull final HttpRequestFetcher httpRequestFetcher,
-            @Nonnull final MfClientHttpRequestFactory requestFactory,
-            @Nonnull final MapfishMapContext transformer, @Nonnull final Processor.ExecutionContext context) {
+        @Nonnull final HttpRequestFetcher httpRequestFetcher,
+        @Nonnull final MfClientHttpRequestFactory requestFactory,
+        @Nonnull final MapfishMapContext transformer,
+        @Nonnull final Processor.ExecutionContext context
+    ) {
         try {
             final MapfishMapContext layerTransformer = getLayerTransformer(transformer);
 
@@ -94,12 +101,19 @@ public final class WmsLayer extends AbstractSingleImageLayer {
 
             final Rectangle paintArea = layerTransformer.getPaintArea();
             final ReferencedEnvelope envelope = layerTransformer.getBounds().toReferencedEnvelope(paintArea);
-            URI uri = WmsUtilities.makeWmsGetLayerRequest(wmsLayerParam, commonUri, paintArea.getSize(),
-                                                          layerTransformer.getDPI(),
-                                                          layerTransformer.getRotation(), envelope);
+            URI uri = WmsUtilities.makeWmsGetLayerRequest(
+                wmsLayerParam,
+                commonUri,
+                paintArea.getSize(),
+                layerTransformer.getDPI(),
+                layerTransformer.getRotation(),
+                envelope
+            );
 
-            this.imageRequest = httpRequestFetcher.register(
-                    WmsUtilities.createWmsRequest(requestFactory, uri, this.params.method));
+            this.imageRequest =
+                httpRequestFetcher.register(
+                    WmsUtilities.createWmsRequest(requestFactory, uri, this.params.method)
+                );
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

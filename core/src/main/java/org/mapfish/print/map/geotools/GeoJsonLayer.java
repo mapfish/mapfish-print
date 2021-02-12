@@ -1,5 +1,8 @@
 package org.mapfish.print.map.geotools;
 
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import javax.annotation.Nonnull;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -9,10 +12,6 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
-
-import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
 
 /**
  * <p>Parses GeoJSON from the request data.</p>
@@ -32,11 +31,12 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
      * @param params the parameters for this layer
      */
     public GeoJsonLayer(
-            final ExecutorService executorService,
-            final FeatureSourceSupplier featureSourceSupplier,
-            final StyleSupplier<FeatureSource> styleSupplier,
-            final boolean renderAsSvg,
-            final AbstractLayerParams params) {
+        final ExecutorService executorService,
+        final FeatureSourceSupplier featureSourceSupplier,
+        final StyleSupplier<FeatureSource> styleSupplier,
+        final boolean renderAsSvg,
+        final AbstractLayerParams params
+    ) {
         super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params);
     }
 
@@ -64,28 +64,31 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
 
         @Nonnull
         @Override
-        public GeoJsonLayer parse(
-                @Nonnull final Template template,
-                @Nonnull final GeoJsonParam param) {
+        public GeoJsonLayer parse(@Nonnull final Template template, @Nonnull final GeoJsonParam param) {
             return new GeoJsonLayer(
-                    this.forkJoinPool,
-                    createFeatureSourceSupplier(template, param.geoJson),
-                    createStyleFunction(template, param.style),
-                    template.getConfiguration().renderAsSvg(param.renderAsSvg),
-                    param);
+                this.forkJoinPool,
+                createFeatureSourceSupplier(template, param.geoJson),
+                createStyleFunction(template, param.style),
+                template.getConfiguration().renderAsSvg(param.renderAsSvg),
+                param
+            );
         }
 
         private FeatureSourceSupplier createFeatureSourceSupplier(
-                final Template template,
-                final String geoJsonString) {
+            final Template template,
+            final String geoJsonString
+        ) {
             return new FeatureSourceSupplier() {
                 @Nonnull
                 @Override
                 public FeatureSource load(
-                        @Nonnull final MfClientHttpRequestFactory requestFactory,
-                        @Nonnull final MapfishMapContext mapContext) {
-                    final FeaturesParser parser = new FeaturesParser(requestFactory,
-                                                                     mapContext.isForceLongitudeFirst());
+                    @Nonnull final MfClientHttpRequestFactory requestFactory,
+                    @Nonnull final MapfishMapContext mapContext
+                ) {
+                    final FeaturesParser parser = new FeaturesParser(
+                        requestFactory,
+                        mapContext.isForceLongitudeFirst()
+                    );
                     SimpleFeatureCollection featureCollection;
                     try {
                         featureCollection = parser.autoTreat(template, geoJsonString);
@@ -102,6 +105,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
      * The parameters for creating a layer that renders GeoJSON formatted data.
      */
     public static class GeoJsonParam extends AbstractVectorLayerParam {
+
         /**
          * A geojson formatted string or url to the geoJson or the raw GeoJSON data.
          *

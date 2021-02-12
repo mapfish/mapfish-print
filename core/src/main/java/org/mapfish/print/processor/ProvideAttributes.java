@@ -1,8 +1,7 @@
 package org.mapfish.print.processor;
 
-import org.mapfish.print.attribute.Attribute;
-
 import java.util.Map;
+import org.mapfish.print.attribute.Attribute;
 
 /**
  * Processor that provide attributes.

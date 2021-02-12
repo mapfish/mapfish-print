@@ -1,5 +1,10 @@
 package org.mapfish.print.attribute.map;
 
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.geotools.referencing.CRS;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,18 +25,12 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 /**
  * Generic attributes for {@link org.mapfish.print.processor.map.CreateMapProcessor} and {@link
  * org.mapfish.print.processor.map.CreateOverviewMapProcessor}.
  */
 public abstract class GenericMapAttribute
-        extends ReflectiveAttribute<GenericMapAttribute.GenericMapAttributeValues> {
+    extends ReflectiveAttribute<GenericMapAttribute.GenericMapAttributeValues> {
 
     /**
      * The json key for the suggested DPI values in the client config.
@@ -58,7 +57,8 @@ public abstract class GenericMapAttribute
      */
     public static final String JSON_MAX_HEIGHT = "maxHeight";
     static final String JSON_ZOOM_LEVEL_SUGGESTIONS = "scales";
-    private static final double[] DEFAULT_DPI_VALUES = {72, 120, 200, 254, 300, 600, 1200, 2400};
+    private static final double[] DEFAULT_DPI_VALUES = { 72, 120, 200, 254, 300, 600, 1200, 2400 };
+
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -82,7 +82,9 @@ public abstract class GenericMapAttribute
      * @param longitudeFirst longitudeFirst
      */
     public static CoordinateReferenceSystem parseProjection(
-            final String projection, final Boolean longitudeFirst) {
+        final String projection,
+        final Boolean longitudeFirst
+    ) {
         try {
             if (longitudeFirst == null) {
                 return CRS.decode(projection);
@@ -119,7 +121,7 @@ public abstract class GenericMapAttribute
     public final double[] getDpiSuggestions() {
         if (this.dpiSuggestions == null) {
             List<Double> list = new ArrayList<>();
-            for (double suggestion: DEFAULT_DPI_VALUES) {
+            for (double suggestion : DEFAULT_DPI_VALUES) {
                 if (suggestion <= this.maxDpi) {
                     list.add(suggestion);
                 }
@@ -253,51 +255,66 @@ public abstract class GenericMapAttribute
 
     @Override
     public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
-
         if (this.width != null && this.maxWidth != null) {
-            validationErrors.add(new ConfigurationException(
-                    "cannot set both width and maxWidth in " + getClass().getName()));
+            validationErrors.add(
+                new ConfigurationException("cannot set both width and maxWidth in " + getClass().getName())
+            );
         }
 
         if (this.height != null && this.maxHeight != null) {
-            validationErrors.add(new ConfigurationException(
-                    "cannot set both height and maxHeight in " + getClass().getName()));
+            validationErrors.add(
+                new ConfigurationException("cannot set both height and maxHeight in " + getClass().getName())
+            );
         }
 
         if (this.width != null && this.width < 1) {
-            validationErrors.add(new ConfigurationException(
-                    "width field is not legal: " + this.width + " in " + getClass().getName()));
+            validationErrors.add(
+                new ConfigurationException(
+                    "width field is not legal: " + this.width + " in " + getClass().getName()
+                )
+            );
         }
 
         if (this.height != null && this.height < 1) {
-            validationErrors.add(new ConfigurationException(
-                    "height field is not legal: " + this.height + " in " + getClass().getName()));
+            validationErrors.add(
+                new ConfigurationException(
+                    "height field is not legal: " + this.height + " in " + getClass().getName()
+                )
+            );
         }
 
         if (this.maxWidth != null && this.maxWidth < 1) {
-            validationErrors.add(new ConfigurationException(
-                    "max width field is not legal: " + this.width + " in " + getClass().getName()));
+            validationErrors.add(
+                new ConfigurationException(
+                    "max width field is not legal: " + this.width + " in " + getClass().getName()
+                )
+            );
         }
 
         if (this.maxHeight != null && this.maxHeight < 1) {
-            validationErrors
-                    .add(new ConfigurationException("max height field is not legal: " + this.height + " in " +
-                                                            getClass().getName()));
+            validationErrors.add(
+                new ConfigurationException(
+                    "max height field is not legal: " + this.height + " in " + getClass().getName()
+                )
+            );
         }
 
         if (this.getMaxDpi() == null || this.getMaxDpi() < 1) {
             validationErrors.add(
-                    new ConfigurationException("maxDpi field is not legal: " + this.getMaxDpi() + " in " +
-                                                       getClass().getName()));
+                new ConfigurationException(
+                    "maxDpi field is not legal: " + this.getMaxDpi() + " in " + getClass().getName()
+                )
+            );
         }
 
         if (this.getMaxDpi() != null && this.getDpiSuggestions() != null) {
-            for (double dpi: this.getDpiSuggestions()) {
+            for (double dpi : this.getDpiSuggestions()) {
                 if (dpi < 1 || dpi > this.getMaxDpi()) {
-                    validationErrors.add(new ConfigurationException(
-                            "dpiSuggestions contains an invalid value: " + dpi + " in " +
-                                    getClass().getName()));
-
+                    validationErrors.add(
+                        new ConfigurationException(
+                            "dpiSuggestions contains an invalid value: " + dpi + " in " + getClass().getName()
+                        )
+                    );
                 }
             }
         }
@@ -322,32 +339,38 @@ public abstract class GenericMapAttribute
      * The value of {@link GenericMapAttribute}.
      */
     public abstract class GenericMapAttributeValues {
+
         /**
          * The default projection.
          */
         protected static final String DEFAULT_PROJECTION = "EPSG:3857";
         private static final String TYPE = "type";
         private final Template template;
+
         /**
          * The width of the map.
          */
         @HasDefaultValue
         public Integer width = null;
+
         /**
          * The height of the map.
          */
         @HasDefaultValue
         public Integer height = null;
+
         /**
          * The projection of the map.
          */
         @HasDefaultValue
         public String projection = null;
+
         /**
          * The rotation of the map.
          */
         @HasDefaultValue
         public Double rotation = null;
+
         /**
          * Indicates if the map should adjust its scale/zoom level to be equal to one of those defined in the
          * configuration file.
@@ -357,6 +380,7 @@ public abstract class GenericMapAttribute
          */
         @HasDefaultValue
         public Boolean useNearestScale = null;
+
         /**
          * Indicates if the map should adjust its bounds.
          *
@@ -365,12 +389,14 @@ public abstract class GenericMapAttribute
          */
         @HasDefaultValue
         public Boolean useAdjustBounds = null;
+
         /**
          * By default the normal axis order as specified in EPSG code will be used when parsing projections.
          * However the requestor can override this by explicitly declaring that longitude axis is first.
          */
         @HasDefaultValue
         public Boolean longitudeFirst = null;
+
         /**
          * Should the vector style definitions be adapted to the target DPI resolution? (Default: true)
          *
@@ -382,6 +408,7 @@ public abstract class GenericMapAttribute
          */
         @HasDefaultValue
         public boolean dpiSensitiveStyle = true;
+
         private List<MapLayer> mapLayers;
 
         /**
@@ -418,7 +445,6 @@ public abstract class GenericMapAttribute
          * Validate the values provided by the request data and construct MapBounds and parse the layers.
          */
         public void postConstruct() throws FactoryException {
-
             if (this.width == null) {
                 throw new IllegalArgumentException("width parameter was not set.");
             }
@@ -430,13 +456,13 @@ public abstract class GenericMapAttribute
             //check maximum dimensions
             if (getMaxWidth() != null && this.width > getMaxWidth()) {
                 throw new IllegalArgumentException(
-                        "width parameter was " + getWidth() + " must be limited to "
-                                + getMaxWidth() + ".");
+                    "width parameter was " + getWidth() + " must be limited to " + getMaxWidth() + "."
+                );
             }
             if (getMaxHeight() != null && this.height > getMaxHeight()) {
                 throw new IllegalArgumentException(
-                        "height parameter was " + getHeight() + " must be limited to "
-                                + getMaxHeight() + ".");
+                    "height parameter was " + getHeight() + " must be limited to " + getMaxHeight() + "."
+                );
             }
 
             this.mapLayers = parseLayers();
@@ -461,20 +487,22 @@ public abstract class GenericMapAttribute
         }
 
         @SuppressWarnings("unchecked")
-        private void parseSingleLayer(
-                final List<MapLayer> layerList,
-                final PObject layer) throws Throwable {
-
+        private void parseSingleLayer(final List<MapLayer> layerList, final PObject layer) throws Throwable {
             final Map<String, MapLayerFactoryPlugin> layerParsers =
-                    GenericMapAttribute.this.applicationContext.getBeansOfType(MapLayerFactoryPlugin.class);
-            for (MapLayerFactoryPlugin layerParser: layerParsers.values()) {
-                final boolean layerApplies = layerParser.getTypeNames().contains(layer.getString(TYPE).
-                        toLowerCase());
+                GenericMapAttribute.this.applicationContext.getBeansOfType(MapLayerFactoryPlugin.class);
+            for (MapLayerFactoryPlugin layerParser : layerParsers.values()) {
+                final boolean layerApplies = layerParser
+                    .getTypeNames()
+                    .contains(layer.getString(TYPE).toLowerCase());
                 if (layerApplies) {
                     Object param = layerParser.createParameter();
 
-                    MapfishParser.parse(this.template.getConfiguration().isThrowErrorOnExtraParameters(),
-                                        layer, param, TYPE);
+                    MapfishParser.parse(
+                        this.template.getConfiguration().isThrowErrorOnExtraParameters(),
+                        layer,
+                        param,
+                        TYPE
+                    );
 
                     final MapLayer newLayer = layerParser.parse(this.template, param);
                     if (layerList.isEmpty()) {
@@ -494,11 +522,14 @@ public abstract class GenericMapAttribute
                 }
             }
 
-            StringBuilder message = new StringBuilder(String.format(
+            StringBuilder message = new StringBuilder(
+                String.format(
                     "\nLayer with type: '%s' is not currently supported.  Options include: ",
-                    layer.getString(TYPE)));
-            for (MapLayerFactoryPlugin<?> mapLayerFactoryPlugin: layerParsers.values()) {
-                for (Object name: mapLayerFactoryPlugin.getTypeNames()) {
+                    layer.getString(TYPE)
+                )
+            );
+            for (MapLayerFactoryPlugin<?> mapLayerFactoryPlugin : layerParsers.values()) {
+                for (Object name : mapLayerFactoryPlugin.getTypeNames()) {
                     message.append("\n");
                     message.append("\t* ").append(name);
                 }

@@ -1,5 +1,12 @@
 package org.mapfish.print.attribute;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.awt.Dimension;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -12,18 +19,11 @@ import org.mapfish.print.processor.map.scalebar.Type;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.Dimension;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
 
     @Autowired
     private ConfigurationFactory configurationFactory;
+
     @Autowired
     private TestHttpClientFactory httpRequestFactory;
 
@@ -79,13 +79,22 @@ public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
         final File configFile = getFile(ScalebarAttributeTest.class, "scalebar/config.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
         final Template template = config.getTemplate("main");
-        final PJsonObject pJsonObject =
-                parseJSONObjectFromFile(ScalebarAttributeTest.class, "scalebar/requestData.json");
-        final Values values =
-                new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
-                           new File("."));
-        final ScalebarAttribute.ScalebarAttributeValues value =
-                values.getObject("scalebar", ScalebarAttribute.ScalebarAttributeValues.class);
+        final PJsonObject pJsonObject = parseJSONObjectFromFile(
+            ScalebarAttributeTest.class,
+            "scalebar/requestData.json"
+        );
+        final Values values = new Values(
+            "test",
+            pJsonObject,
+            template,
+            getTaskDirectory(),
+            this.httpRequestFactory,
+            new File(".")
+        );
+        final ScalebarAttribute.ScalebarAttributeValues value = values.getObject(
+            "scalebar",
+            ScalebarAttribute.ScalebarAttributeValues.class
+        );
 
         assertEquals(Type.LINE.getLabel(), value.type);
         assertEquals("m", value.unit);

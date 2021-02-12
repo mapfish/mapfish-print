@@ -1,5 +1,8 @@
 package org.mapfish.print.wrapper.yaml;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.mapfish.print.ExceptionUtils;
@@ -8,11 +11,6 @@ import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PElement;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonArray;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 
 /**
  * Array wrapper for Yaml parsing.
@@ -136,7 +134,6 @@ public class PYamlArray extends PElement implements PArray {
             } else {
                 jsonArray.put(o);
             }
-
         }
         return new PJsonArray(null, jsonArray, getContextName());
     }

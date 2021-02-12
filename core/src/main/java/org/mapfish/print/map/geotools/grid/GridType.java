@@ -48,7 +48,9 @@ public enum GridType {
          * @param labels the collector for the labels.
          */
         FeatureSourceSupplier createFeatureSource(
-                Template template, GridParam layerData, LabelPositionCollector labels);
+            Template template,
+            GridParam layerData,
+            LabelPositionCollector labels
+        );
     }
-
 }

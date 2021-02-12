@@ -4,12 +4,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import org.locationtech.jts.util.Assert;
-import org.mapfish.print.ExceptionUtils;
-import org.mapfish.print.output.Values;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Optional;
@@ -17,6 +11,11 @@ import java.util.Set;
 import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
+import org.locationtech.jts.util.Assert;
+import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.output.Values;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents one node in the Processor dependency graph ({@link ProcessorDependencyGraph}).
@@ -26,6 +25,7 @@ import javax.annotation.Nonnull;
  * @param <Out> Same as {@link Processor} <em>Out</em> parameter
  */
 public final class ProcessorGraphNode<In, Out> {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorGraphNode.class);
     private final Processor<In, Out> processor;
 
@@ -48,8 +48,9 @@ public final class ProcessorGraphNode<In, Out> {
      * @param metricRegistry registry for timing the execution time of the processor.
      */
     public ProcessorGraphNode(
-            @Nonnull final Processor<In, Out> processor,
-            @Nonnull final MetricRegistry metricRegistry) {
+        @Nonnull final Processor<In, Out> processor,
+        @Nonnull final MetricRegistry metricRegistry
+    ) {
         this.processor = processor;
         this.metricRegistry = metricRegistry;
     }
@@ -96,7 +97,8 @@ public final class ProcessorGraphNode<In, Out> {
      * @return a task ready to be submitted to a fork join pool.
      */
     public Optional<ProcessorNodeForkJoinTask<In, Out>> createTask(
-            @Nonnull final ProcessorExecutionContext execContext) {
+        @Nonnull final ProcessorExecutionContext execContext
+    ) {
         if (!execContext.tryStart(this)) {
             return Optional.empty();
         } else {
@@ -137,7 +139,7 @@ public final class ProcessorGraphNode<In, Out> {
      */
     public void toString(final StringBuilder builder, final int indent, final String parent) {
         this.processor.toString(builder, indent, parent);
-        for (ProcessorGraphNode dependency: this.dependencies) {
+        for (ProcessorGraphNode dependency : this.dependencies) {
             dependency.toString(builder, indent + 1, this.processor.toString());
         }
     }
@@ -159,8 +161,8 @@ public final class ProcessorGraphNode<In, Out> {
     public Set<? extends Processor<?, ?>> getAllProcessors() {
         IdentityHashMap<Processor<?, ?>, Void> all = new IdentityHashMap<>();
         all.put(this.getProcessor(), null);
-        for (ProcessorGraphNode<?, ?> dependency: this.dependencies) {
-            for (Processor<?, ?> p: dependency.getAllProcessors()) {
+        for (ProcessorGraphNode<?, ?> dependency : this.dependencies) {
+            for (Processor<?, ?> p : dependency.getAllProcessors()) {
                 all.put(p, null);
             }
         }
@@ -174,58 +176,75 @@ public final class ProcessorGraphNode<In, Out> {
      * @param <Out> the type of the output parameter
      */
     public static final class ProcessorNodeForkJoinTask<In, Out> extends RecursiveTask<Values> {
+
         private final ProcessorExecutionContext execContext;
         private final ProcessorGraphNode<In, Out> node;
 
         private ProcessorNodeForkJoinTask(
-                final ProcessorGraphNode<In, Out> node, final ProcessorExecutionContext execContext) {
+            final ProcessorGraphNode<In, Out> node,
+            final ProcessorExecutionContext execContext
+        ) {
             this.node = node;
             this.execContext = execContext;
         }
 
         @Override
         protected Values compute() {
-            return this.execContext.getContext().mdcContext(() -> {
-                final Values values = this.execContext.getValues();
+            return this.execContext.getContext()
+                .mdcContext(
+                    () -> {
+                        final Values values = this.execContext.getValues();
 
-                final Processor<In, Out> process = this.node.processor;
-                final MetricRegistry registry = this.node.metricRegistry;
-                final String name = String.format("%s.compute.%s",
-                                                  ProcessorGraphNode.class.getName(),
-                                                  process.getClass().getName());
-                Timer.Context timerContext = registry.timer(name).time();
-                try {
-                    final In inputParameter = ProcessorUtils.populateInputParameter(process, values);
+                        final Processor<In, Out> process = this.node.processor;
+                        final MetricRegistry registry = this.node.metricRegistry;
+                        final String name = String.format(
+                            "%s.compute.%s",
+                            ProcessorGraphNode.class.getName(),
+                            process.getClass().getName()
+                        );
+                        Timer.Context timerContext = registry.timer(name).time();
+                        try {
+                            final In inputParameter = ProcessorUtils.populateInputParameter(process, values);
 
-                    Out output;
-                    try {
-                        LOGGER.debug("Executing process: {}", process);
-                        output = process.execute(inputParameter, this.execContext.getContext());
-                        LOGGER.debug("Succeeded in executing process: {}", process);
-                    } catch (Exception e) {
-                        // the processor is already canceled, so we don't care if something fails
+                            Out output;
+                            try {
+                                LOGGER.debug("Executing process: {}", process);
+                                output = process.execute(inputParameter, this.execContext.getContext());
+                                LOGGER.debug("Succeeded in executing process: {}", process);
+                            } catch (Exception e) {
+                                // the processor is already canceled, so we don't care if something fails
+                                this.execContext.getContext().stopIfCanceled();
+                                LOGGER.info("Error while executing process: {}", process);
+                                registry.counter(name + ".error").inc();
+                                throw ExceptionUtils.getRuntimeException(e);
+                            }
+
+                            if (output != null) {
+                                ProcessorUtils.writeProcessorOutputToValues(output, process, values);
+                            }
+                        } finally {
+                            this.execContext.finished(this.node);
+                            final long processorTime = TimeUnit.MILLISECONDS.convert(
+                                timerContext.stop(),
+                                TimeUnit.NANOSECONDS
+                            );
+                            LOGGER.info(
+                                "Time taken to run processor: '{}' was {} ms",
+                                process.getClass(),
+                                processorTime
+                            );
+                        }
+
                         this.execContext.getContext().stopIfCanceled();
-                        LOGGER.info("Error while executing process: {}", process);
-                        registry.counter(name + ".error").inc();
-                        throw ExceptionUtils.getRuntimeException(e);
+                        ProcessorDependencyGraph.tryExecuteNodes(
+                            this.node.dependencies,
+                            this.execContext,
+                            true
+                        );
+
+                        return values;
                     }
-
-                    if (output != null) {
-                        ProcessorUtils.writeProcessorOutputToValues(output, process, values);
-                    }
-                } finally {
-                    this.execContext.finished(this.node);
-                    final long processorTime = TimeUnit.MILLISECONDS.convert(
-                            timerContext.stop(), TimeUnit.NANOSECONDS);
-                    LOGGER.info("Time taken to run processor: '{}' was {} ms",
-                                process.getClass(), processorTime);
-                }
-
-                this.execContext.getContext().stopIfCanceled();
-                ProcessorDependencyGraph.tryExecuteNodes(this.node.dependencies, this.execContext, true);
-
-                return values;
-            });
+                );
         }
     }
 }

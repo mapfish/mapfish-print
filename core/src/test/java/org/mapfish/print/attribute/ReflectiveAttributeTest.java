@@ -1,5 +1,6 @@
 package org.mapfish.print.attribute;
 
+import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -9,9 +10,8 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
 
-import java.util.List;
-
 public class ReflectiveAttributeTest {
+
     @Test(expected = AssertionFailedException.class)
     public void testPJsonObjIllegal() {
         new TestReflectiveAtt(PJsonObjParamIllegal.class).init();
@@ -56,27 +56,28 @@ public class ReflectiveAttributeTest {
         }
 
         @Override
-        public void validate(List<Throwable> validationErrors, final Configuration configuration) {
-
-        }
+        public void validate(List<Throwable> validationErrors, final Configuration configuration) {}
     }
 
     static class PJsonObjParamIllegal {
+
         public PJsonObject p;
     }
 
     static class JsonObjParamIllegal {
+
         public JSONObject p;
     }
 
     static class PJsonArrayParamIllegal {
+
         public PJsonArray p;
     }
 
     static class JsonArrayParamIllegal {
+
         public JSONArray p;
     }
 
-    static class Empty {
-    }
+    static class Empty {}
 }

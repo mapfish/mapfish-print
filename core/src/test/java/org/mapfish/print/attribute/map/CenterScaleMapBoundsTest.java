@@ -1,19 +1,19 @@
 package org.mapfish.print.attribute.map;
 
+import static org.junit.Assert.assertEquals;
+
+import java.awt.Rectangle;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import java.awt.Rectangle;
-
-import static org.junit.Assert.assertEquals;
-
 /**
  * Test bounds implementation.
  */
 public class CenterScaleMapBoundsTest {
+
     public static final CoordinateReferenceSystem SPHERICAL_MERCATOR;
     public static final CoordinateReferenceSystem CH1903;
     public static final CoordinateReferenceSystem LAMBERT;
@@ -32,8 +32,12 @@ public class CenterScaleMapBoundsTest {
     @Test
     public void testToReferencedEnvelopeCH1903Projection() {
         final double startScaleDenominator = 18984.396150703426;
-        final CenterScaleMapBounds bounds =
-                new CenterScaleMapBounds(CH1903, 659596.5, 185610.5, startScaleDenominator);
+        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(
+            CH1903,
+            659596.5,
+            185610.5,
+            startScaleDenominator
+        );
         final Rectangle paintArea = new Rectangle(521, 330);
         final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea);
 
@@ -50,8 +54,12 @@ public class CenterScaleMapBoundsTest {
     @Test
     public void testToReferencedEnvelopeLambertProjection() {
         final double startScaleDenominator = 17983.582534790035;
-        final CenterScaleMapBounds bounds =
-                new CenterScaleMapBounds(LAMBERT, 445000, 6355000, startScaleDenominator);
+        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(
+            LAMBERT,
+            445000,
+            6355000,
+            startScaleDenominator
+        );
         final Rectangle paintArea = new Rectangle(418, 512);
         final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea);
 
@@ -68,9 +76,12 @@ public class CenterScaleMapBoundsTest {
     @Test
     public void testToReferencedEnvelopeLatLong() {
         final double startScaleDenominator = 56304.83087498591;
-        final CenterScaleMapBounds bounds =
-                new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 8.2335427805083, 46.801424340241,
-                                         startScaleDenominator);
+        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(
+            DefaultGeographicCRS.WGS84,
+            8.2335427805083,
+            46.801424340241,
+            startScaleDenominator
+        );
         final Rectangle paintArea = new Rectangle(521, 330);
         final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea);
 
@@ -88,8 +99,12 @@ public class CenterScaleMapBoundsTest {
     @Test
     public void testZoomOut() {
         final double Denominator = 2500.0;
-        final CenterScaleMapBounds bounds =
-                new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0.0, 0.0, Denominator);
+        final CenterScaleMapBounds bounds = new CenterScaleMapBounds(
+            DefaultGeographicCRS.WGS84,
+            0.0,
+            0.0,
+            Denominator
+        );
         final Rectangle paintArea = new Rectangle(400, 200);
         final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea);
 

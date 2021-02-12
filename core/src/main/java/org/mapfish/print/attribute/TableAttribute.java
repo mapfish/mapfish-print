@@ -1,10 +1,9 @@
 package org.mapfish.print.attribute;
 
+import java.util.List;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.wrapper.PArray;
-
-import java.util.List;
 
 /**
  * <p>The attributes for {@link org.mapfish.print.processor.jasper.TableProcessor} (see
@@ -12,6 +11,7 @@ import java.util.List;
  * [[examples=verboseExample,datasource_dynamic_tables,customDynamicReport]]
  */
 public final class TableAttribute extends ReflectiveAttribute<TableAttribute.TableAttributeValue> {
+
     @Override
     public Class<TableAttributeValue> getValueType() {
         return TableAttributeValue.class;

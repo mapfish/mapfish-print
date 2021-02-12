@@ -8,6 +8,7 @@ import java.util.Set;
  * json.
  */
 public final class MissingPropertyException extends RuntimeException {
+
     private final Map<String, Class<?>> missingProperties;
     private final Set<String> attributeNames;
 
@@ -20,19 +21,24 @@ public final class MissingPropertyException extends RuntimeException {
      * @param attributeNames all the allowed attribute names.
      */
     public MissingPropertyException(
-            final String message, final Map<String, Class<?>> missingProperties,
-            final Set<String> attributeNames) {
+        final String message,
+        final Map<String, Class<?>> missingProperties,
+        final Set<String> attributeNames
+    ) {
         super(createMessage(message, missingProperties, attributeNames));
         this.missingProperties = missingProperties;
         this.attributeNames = attributeNames;
     }
 
     private static String createMessage(
-            final String message, final Map<String, Class<?>> missingProperties,
-            final Set<String> attributeNames) {
-        StringBuilder missingPropertyMessage =
-                new StringBuilder(message).append("\n").append("Missing Properties: \n");
-        for (Map.Entry<String, Class<?>> entry: missingProperties.entrySet()) {
+        final String message,
+        final Map<String, Class<?>> missingProperties,
+        final Set<String> attributeNames
+    ) {
+        StringBuilder missingPropertyMessage = new StringBuilder(message)
+            .append("\n")
+            .append("Missing Properties: \n");
+        for (Map.Entry<String, Class<?>> entry : missingProperties.entrySet()) {
             String type = entry.getValue().getName();
             if (entry.getValue().isArray()) {
                 type = entry.getValue().getComponentType().getName() + "[]";
@@ -40,7 +46,7 @@ public final class MissingPropertyException extends RuntimeException {
             missingPropertyMessage.append("\n\t* ").append(type).append(" ").append(entry.getKey());
         }
         missingPropertyMessage.append("\n\nAll allowed properties are: \n");
-        for (String attributeName: attributeNames) {
+        for (String attributeName : attributeNames) {
             missingPropertyMessage.append("\n\t* ").append(attributeName);
         }
         return missingPropertyMessage.toString();

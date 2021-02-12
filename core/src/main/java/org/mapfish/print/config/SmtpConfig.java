@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
  * This configuration is needed only if reports are to be sent to the user by email.
  */
 public class SmtpConfig implements ConfigurationObject {
+
     /**
      * The default subject.
      */
@@ -49,8 +50,7 @@ public class SmtpConfig implements ConfigurationObject {
     private ReportStorage storage = null;
 
     @Override
-    public void validate(
-            final List<Throwable> validationErrors, final Configuration configuration) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (fromAddress == null) {
             validationErrors.add(new ConfigurationException("Missing fromAddress"));
         }
@@ -64,8 +64,9 @@ public class SmtpConfig implements ConfigurationObject {
         }
 
         if (ssl && starttls) {
-            validationErrors.add(new ConfigurationException(
-                    "Cannot enable ssl and starttls at the same time"));
+            validationErrors.add(
+                new ConfigurationException("Cannot enable ssl and starttls at the same time")
+            );
         }
 
         if (storage != null) {

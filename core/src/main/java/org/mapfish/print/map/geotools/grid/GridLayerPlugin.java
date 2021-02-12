@@ -1,5 +1,7 @@
 package org.mapfish.print.map.geotools.grid;
 
+import java.util.concurrent.ForkJoinPool;
+import javax.annotation.Nonnull;
 import org.geotools.data.FeatureSource;
 import org.geotools.styling.Style;
 import org.mapfish.print.OptionalUtils;
@@ -10,10 +12,6 @@ import org.mapfish.print.map.geotools.FeatureSourceSupplier;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.concurrent.ForkJoinPool;
-import javax.annotation.Nonnull;
-
-
 /**
  * <p>A layer which is a spatial grid of lines on the map.</p>
  * <p>Type: <code>grid</code></p>
@@ -22,6 +20,7 @@ import javax.annotation.Nonnull;
 public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<GridParam> {
 
     private static final String TYPE = "grid";
+
     @Autowired
     private ForkJoinPool pool;
 
@@ -39,38 +38,51 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
 
     @Nonnull
     @Override
-    public GridLayer parse(
-            @Nonnull final Template template,
-            @Nonnull final GridParam layerData) {
+    public GridLayer parse(@Nonnull final Template template, @Nonnull final GridParam layerData) {
         LabelPositionCollector labels = new LabelPositionCollector();
         FeatureSourceSupplier featureSource = createFeatureSourceFunction(template, layerData, labels);
         final StyleSupplier<FeatureSource> styleFunction = createStyleSupplier(template, layerData);
-        return new GridLayer(this.pool, featureSource, styleFunction,
-                             template.getConfiguration().renderAsSvg(layerData.renderAsSvg),
-                             layerData, labels);
+        return new GridLayer(
+            this.pool,
+            featureSource,
+            styleFunction,
+            template.getConfiguration().renderAsSvg(layerData.renderAsSvg),
+            layerData,
+            labels
+        );
     }
 
     private StyleSupplier<FeatureSource> createStyleSupplier(
-            final Template template, final GridParam layerData) {
+        final Template template,
+        final GridParam layerData
+    ) {
         return new StyleSupplier<FeatureSource>() {
             @Override
             public Style load(
-                    final MfClientHttpRequestFactory requestFactory,
-                    final FeatureSource featureSource) {
+                final MfClientHttpRequestFactory requestFactory,
+                final FeatureSource featureSource
+            ) {
                 String styleRef = layerData.style;
-                return OptionalUtils.or(
+                return OptionalUtils
+                    .or(
                         () -> template.getStyle(styleRef),
-                        () -> GridLayerPlugin.super.parser.loadStyle(template.getConfiguration(),
-                                                                     requestFactory, styleRef))
-                        .orElseGet(() -> layerData.gridType.strategy.defaultStyle(template, layerData));
+                        () ->
+                            GridLayerPlugin.super.parser.loadStyle(
+                                template.getConfiguration(),
+                                requestFactory,
+                                styleRef
+                            )
+                    )
+                    .orElseGet(() -> layerData.gridType.strategy.defaultStyle(template, layerData));
             }
         };
     }
 
     private FeatureSourceSupplier createFeatureSourceFunction(
-            final Template template,
-            final GridParam layerData,
-            final LabelPositionCollector labels) {
+        final Template template,
+        final GridParam layerData,
+        final LabelPositionCollector labels
+    ) {
         return layerData.gridType.strategy.createFeatureSource(template, layerData, labels);
     }
 }

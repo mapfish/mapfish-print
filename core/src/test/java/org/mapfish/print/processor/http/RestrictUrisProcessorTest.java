@@ -1,5 +1,11 @@
 package org.mapfish.print.processor.http;
 
+import static org.junit.Assert.assertEquals;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mapfish.print.TestHttpClientFactory;
@@ -12,33 +18,32 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-
 public class RestrictUrisProcessorTest {
+
     static final TestHttpClientFactory requestFactory = new TestHttpClientFactory();
 
     @BeforeClass
     public static void setUp() {
-        requestFactory.registerHandler(input -> true, new TestHttpClientFactory.Handler() {
-            @Override
-            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
-                assertEquals("localhost", uri.getHost());
-                return null;
+        requestFactory.registerHandler(
+            input -> true,
+            new TestHttpClientFactory.Handler() {
+                @Override
+                public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
+                    assertEquals("localhost", uri.getHost());
+                    return null;
+                }
             }
-        });
+        );
     }
 
     @Test
     public void testCreateFactoryWrapperLegalRequest() throws Exception {
         final RestrictUrisProcessor restrictUrisProcessor = createLocalhostOnly();
         ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
-        final MfClientHttpRequestFactory factoryWrapper =
-                restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
+        final MfClientHttpRequestFactory factoryWrapper = restrictUrisProcessor.createFactoryWrapper(
+            params,
+            requestFactory
+        );
         factoryWrapper.createRequest(new URI("http://localhost:8080/geoserver/wms"), HttpMethod.GET);
     }
 
@@ -46,8 +51,10 @@ public class RestrictUrisProcessorTest {
     public void testCreateFactoryWrapperIllegalRequest() throws Exception {
         final RestrictUrisProcessor restrictUrisProcessor = createLocalhostOnly();
         ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
-        final ClientHttpRequestFactory factoryWrapper =
-                restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
+        final ClientHttpRequestFactory factoryWrapper = restrictUrisProcessor.createFactoryWrapper(
+            params,
+            requestFactory
+        );
         factoryWrapper.createRequest(new URI("http://www.google.com/q"), HttpMethod.GET);
     }
 
@@ -55,8 +62,10 @@ public class RestrictUrisProcessorTest {
     public void testRejectWithLegalRequest() throws Exception {
         final RestrictUrisProcessor restrictUrisProcessor = createDenyInternal();
         ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
-        final ClientHttpRequestFactory factoryWrapper =
-                restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
+        final ClientHttpRequestFactory factoryWrapper = restrictUrisProcessor.createFactoryWrapper(
+            params,
+            requestFactory
+        );
         factoryWrapper.createRequest(new URI("http://localhost/q"), HttpMethod.GET);
     }
 
@@ -64,8 +73,10 @@ public class RestrictUrisProcessorTest {
     public void testRejectWithIllegalRequest() throws Exception {
         final RestrictUrisProcessor restrictUrisProcessor = createDenyInternal();
         ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
-        final ClientHttpRequestFactory factoryWrapper =
-                restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
+        final ClientHttpRequestFactory factoryWrapper = restrictUrisProcessor.createFactoryWrapper(
+            params,
+            requestFactory
+        );
         factoryWrapper.createRequest(new URI("http://192.168.12.23/q"), HttpMethod.GET);
     }
 

@@ -1,14 +1,12 @@
 package org.mapfish.print.servlet.job;
 
-import org.mapfish.print.config.access.AccessAssertion;
-
 import java.util.Date;
+import org.mapfish.print.config.access.AccessAssertion;
 
 /**
  * Print Job Status.
  */
 public interface PrintJobStatus {
-
     /**
      * Get the entry.
      */
@@ -118,7 +116,6 @@ public interface PrintJobStatus {
         /**
          * There was an error executing the job.
          */
-        ERROR
+        ERROR,
     }
-
 }

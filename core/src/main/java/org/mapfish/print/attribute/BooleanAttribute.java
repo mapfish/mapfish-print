@@ -1,6 +1,5 @@
 package org.mapfish.print.attribute;
 
-
 /**
  * <p>A boolean type attribute.</p>
  * [[examples=verboseExample]]

@@ -1,9 +1,6 @@
 package org.mapfish.print.output;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperPrintManager;
-import org.mapfish.print.ImageUtils;
+import static org.mapfish.print.Constants.PDF_DPI;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -13,14 +10,17 @@ import java.awt.Stroke;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import static org.mapfish.print.Constants.PDF_DPI;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperPrintManager;
+import org.mapfish.print.ImageUtils;
 
 /**
  * An PDF output format that uses Jasper reports to generate the result.
  */
-public final class JasperReportImageOutputFormat extends AbstractJasperReportOutputFormat
-        implements OutputFormat {
+public final class JasperReportImageOutputFormat
+    extends AbstractJasperReportOutputFormat
+    implements OutputFormat {
 
     private int imageType = BufferedImage.TYPE_INT_ARGB;
 
@@ -42,7 +42,7 @@ public final class JasperReportImageOutputFormat extends AbstractJasperReportOut
 
     @Override
     protected void doExport(final OutputStream outputStream, final Print print)
-            throws JRException, IOException {
+        throws JRException, IOException {
         JasperPrint jasperPrint = print.print;
         final int numPages = jasperPrint.getPages().size();
 
@@ -53,8 +53,10 @@ public final class JasperReportImageOutputFormat extends AbstractJasperReportOut
         final int separatorHeightOnImage = (int) (separatorHeight * dpiRatio);
 
         BufferedImage reportImage = new BufferedImage(
-                pageWidthOnImage, numPages * pageHeightOnImage + (numPages - 1) * separatorHeightOnImage,
-                this.imageType);
+            pageWidthOnImage,
+            numPages * pageHeightOnImage + (numPages - 1) * separatorHeightOnImage,
+            this.imageType
+        );
 
         Graphics2D graphics2D = reportImage.createGraphics();
         try {
@@ -63,12 +65,18 @@ public final class JasperReportImageOutputFormat extends AbstractJasperReportOut
             for (int pageIndex = 0; pageIndex < numPages; pageIndex++) {
                 Image pageImage = printManager.printToImage(jasperPrint, pageIndex, dpiRatio);
 
-                graphics2D.drawImage(pageImage,
-                                     0, (pageHeightOnImage + separatorHeight) * pageIndex,
-                                     pageWidthOnImage,
-                                     (pageHeightOnImage + separatorHeight) * pageIndex + pageHeightOnImage,
-                                     0, 0,
-                                     pageWidthOnImage, pageHeightOnImage, null);
+                graphics2D.drawImage(
+                    pageImage,
+                    0,
+                    (pageHeightOnImage + separatorHeight) * pageIndex,
+                    pageWidthOnImage,
+                    (pageHeightOnImage + separatorHeight) * pageIndex + pageHeightOnImage,
+                    0,
+                    0,
+                    pageWidthOnImage,
+                    pageHeightOnImage,
+                    null
+                );
             }
 
             // draw separator line between the pages
@@ -77,9 +85,7 @@ public final class JasperReportImageOutputFormat extends AbstractJasperReportOut
                 graphics2D.setColor(Color.black);
                 graphics2D.setStroke(stroke);
                 int y = (pageHeightOnImage + separatorHeight) * pageIndex + pageHeightOnImage;
-                graphics2D.drawLine(
-                        0, y,
-                        pageWidthOnImage, y);
+                graphics2D.drawLine(0, y, pageWidthOnImage, y);
             }
         } finally {
             graphics2D.dispose();

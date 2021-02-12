@@ -4,10 +4,10 @@ package org.mapfish.print;
  * Util class to test equality of floating points.
  */
 public final class FloatingPointUtil {
+
     private static final float EPSILON = 0.00000001F;
 
-    private FloatingPointUtil() {
-    }
+    private FloatingPointUtil() {}
 
     /**
      * Check the equality of two floats taking into consideration the precision issue of floating point

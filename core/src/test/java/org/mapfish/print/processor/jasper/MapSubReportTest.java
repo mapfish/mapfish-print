@@ -1,5 +1,12 @@
 package org.mapfish.print.processor.jasper;
 
+import static org.junit.Assert.assertEquals;
+
+import java.awt.Dimension;
+import java.io.File;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JRDesignImage;
 import net.sf.jasperreports.engine.design.JasperDesign;
@@ -7,14 +14,6 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import java.awt.Dimension;
-import java.io.File;
-import java.net.URI;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 public class MapSubReportTest {
 
@@ -28,10 +27,11 @@ public class MapSubReportTest {
         File layer2Tiff = new File("/tmp/mfp/3/layer_2.tiff").getAbsoluteFile();
         File layer3SVG = new File("/tmp/mfp/3/layer_3.svg").getAbsoluteFile();
         List<URI> layerImages = Arrays.asList(
-                layer0Tiff.toURI(),
-                layer1SVG.toURI(),
-                layer2Tiff.toURI(),
-                layer3SVG.toURI());
+            layer0Tiff.toURI(),
+            layer1SVG.toURI(),
+            layer2Tiff.toURI(),
+            layer3SVG.toURI()
+        );
 
         ImagesSubReport subReport = new ImagesSubReport(layerImages, new Dimension(400, 500), 72);
 
@@ -56,8 +56,6 @@ public class MapSubReportTest {
         subReport.compile(compiledReportFile);
 
         JasperReport jasperReport = (JasperReport) JRLoader.loadObject(compiledReportFile);
-        assertEquals("report can be loaded from compiled file",
-                     "map", jasperReport.getName());
+        assertEquals("report can be loaded from compiled file", "map", jasperReport.getName());
     }
-
 }

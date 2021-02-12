@@ -1,5 +1,9 @@
 package org.mapfish.print.processor.http;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -18,22 +22,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.List;
-import java.util.concurrent.ForkJoinPool;
-
-import static org.junit.Assert.assertEquals;
-
-@ContextConfiguration(locations = {
+@ContextConfiguration(
+    locations = {
         "classpath:org/mapfish/print/processor/http/map-uri/map-uri-228-bug-fix-processor-application" +
-                "-context.xml"
-})
+        "-context.xml",
+    }
+)
 public class MapUriBug228ProcessorTest extends AbstractMapfishSpringTest {
+
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
     @Autowired
     ConfigurationFactory configurationFactory;
+
     @Autowired
     MfClientHttpRequestFactoryImpl httpClientFactory;
+
     @Autowired
     ForkJoinPool forkJoinPool;
 
@@ -45,20 +50,26 @@ public class MapUriBug228ProcessorTest extends AbstractMapfishSpringTest {
     @DirtiesContext
     public void bug228FixMapUri() throws Exception {
         this.configurationFactory.setDoValidation(false);
-        final Configuration config =
-                configurationFactory.getConfig(getFile(baseDir() + "/map-uri-228-bug-fix-config.yaml"));
+        final Configuration config = configurationFactory.getConfig(
+            getFile(baseDir() + "/map-uri-228-bug-fix-config.yaml")
+        );
         final Template template = config.getTemplate("main");
 
-        ConfigFileResolvingHttpRequestFactory requestFactory =
-                new ConfigFileResolvingHttpRequestFactory(this.httpClientFactory, config, "test");
+        ConfigFileResolvingHttpRequestFactory requestFactory = new ConfigFileResolvingHttpRequestFactory(
+            this.httpClientFactory,
+            config,
+            "test"
+        );
         ProcessorDependencyGraph graph = template.getProcessorGraph();
         List<ProcessorGraphNode<?, ?>> roots = graph.getRoots();
 
         assertEquals(1, roots.size());
 
         Values values = new Values();
-        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
-                   new MfClientHttpRequestFactoryProvider(requestFactory));
+        values.put(
+            Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
+            new MfClientHttpRequestFactoryProvider(requestFactory)
+        );
         values.put(Values.TASK_DIRECTORY_KEY, temporaryFolder.getRoot());
         values.put(Values.VALUES_KEY, values);
         values.put(Values.TEMPLATE_KEY, template);

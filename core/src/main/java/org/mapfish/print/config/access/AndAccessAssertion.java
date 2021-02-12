@@ -1,20 +1,20 @@
 package org.mapfish.print.config.access;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javax.annotation.Nonnull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.config.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import javax.annotation.Nonnull;
-
 /**
  * An access assertion that throws fails if any of the encapsulated assertions fail.
  */
 public final class AndAccessAssertion implements AccessAssertion {
+
     private static final String JSON_ARRAY = "data";
     private List<AccessAssertion> predicates;
 
@@ -41,7 +41,7 @@ public final class AndAccessAssertion implements AccessAssertion {
 
     @Override
     public void assertAccess(final String resourceDescription, final Object protectedResource) {
-        for (AccessAssertion predicate: this.predicates) {
+        for (AccessAssertion predicate : this.predicates) {
             predicate.assertAccess(resourceDescription, protectedResource);
         }
     }
@@ -54,7 +54,7 @@ public final class AndAccessAssertion implements AccessAssertion {
             marshalData.put(JSON_ARRAY, array);
 
             if (this.predicates != null) {
-                for (AccessAssertion predicate: this.predicates) {
+                for (AccessAssertion predicate : this.predicates) {
                     final JSONObject predicateMarshalData = this.persister.marshal(predicate);
                     array.put(predicateMarshalData);
                 }
@@ -83,7 +83,7 @@ public final class AndAccessAssertion implements AccessAssertion {
 
     @Override
     public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
-        for (AccessAssertion predicate: this.predicates) {
+        for (AccessAssertion predicate : this.predicates) {
             predicate.validate(validationErrors, configuration);
         }
     }

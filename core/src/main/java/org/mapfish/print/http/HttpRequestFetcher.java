@@ -2,18 +2,6 @@ package org.mapfish.print.http;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import org.apache.commons.io.IOUtils;
-import org.mapfish.print.StatsUtils;
-import org.mapfish.print.processor.Processor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.AbstractClientHttpResponse;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.util.StreamUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -25,6 +13,17 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import javax.annotation.Nullable;
+import org.apache.commons.io.IOUtils;
+import org.mapfish.print.StatsUtils;
+import org.mapfish.print.processor.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.AbstractClientHttpResponse;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.util.StreamUtils;
 
 /**
  * Schedule tasks for caching Http Requests that can be run simultaneously.
@@ -51,9 +50,11 @@ public final class HttpRequestFetcher {
      * @param requestForkJoinPool the work pool to use to do the requests
      */
     public HttpRequestFetcher(
-            final File temporaryDirectory, final MetricRegistry registry,
-            final Processor.ExecutionContext context,
-            final ForkJoinPool requestForkJoinPool) {
+        final File temporaryDirectory,
+        final MetricRegistry registry,
+        final Processor.ExecutionContext context,
+        final ForkJoinPool requestForkJoinPool
+    ) {
         this.temporaryDirectory = temporaryDirectory;
         this.registry = registry;
         this.context = context;
@@ -89,7 +90,7 @@ public final class HttpRequestFetcher {
             this.status = originalResponse.getRawStatusCode();
             this.statusText = originalResponse.getStatusText();
             this.cachedFile =
-                    File.createTempFile("cacheduri", null, HttpRequestFetcher.this.temporaryDirectory);
+                File.createTempFile("cacheduri", null, HttpRequestFetcher.this.temporaryDirectory);
             try (OutputStream os = new FileOutputStream(this.cachedFile)) {
                 IOUtils.copy(originalResponse.getBody(), os);
             }
@@ -131,15 +132,20 @@ public final class HttpRequestFetcher {
     }
 
     private final class CachedClientHttpRequest implements ClientHttpRequest, Callable<Void> {
+
         private final ClientHttpRequest originalRequest;
         private final Processor.ExecutionContext context;
+
         @Nullable
         private ClientHttpResponse response;
+
         @Nullable
         private ForkJoinTask<Void> future;
 
         private CachedClientHttpRequest(
-                final ClientHttpRequest request, final Processor.ExecutionContext context) {
+            final ClientHttpRequest request,
+            final Processor.ExecutionContext context
+        ) {
             this.originalRequest = request;
             this.context = context;
         }
@@ -175,8 +181,8 @@ public final class HttpRequestFetcher {
         public ClientHttpResponse execute() {
             assert this.future != null;
             final Timer.Context timerWait =
-                    HttpRequestFetcher.this.registry.timer(HttpRequestFetcher.class.getName() +
-                                                                   ".waitDownloader").time();
+                HttpRequestFetcher.this.registry.timer(HttpRequestFetcher.class.getName() + ".waitDownloader")
+                    .time();
             this.future.join();
             timerWait.stop();
             assert this.response != null;
@@ -191,48 +197,51 @@ public final class HttpRequestFetcher {
 
         @Override
         public Void call() throws Exception {
-            return context.mdcContextEx(() -> {
-                final String baseMetricName =
-                        HttpRequestFetcher.class.getName() + ".read." +
-                                StatsUtils.quotePart(getURI().getHost());
-                final Timer.Context timerDownload =
+            return context.mdcContextEx(
+                () -> {
+                    final String baseMetricName =
+                        HttpRequestFetcher.class.getName() +
+                        ".read." +
+                        StatsUtils.quotePart(getURI().getHost());
+                    final Timer.Context timerDownload =
                         HttpRequestFetcher.this.registry.timer(baseMetricName).time();
-                try (ClientHttpResponse originalResponse = this.originalRequest.execute()) {
-                    context.stopIfCanceled();
-                    this.response = new CachedClientHttpResponse(originalResponse);
-                } catch (IOException e) {
-                    LOGGER.warn("Request failed {}", this.originalRequest.getURI(), e);
-                    this.response = new AbstractClientHttpResponse() {
-                        @Override
-                        public HttpHeaders getHeaders() {
-                            return new HttpHeaders();
-                        }
+                    try (ClientHttpResponse originalResponse = this.originalRequest.execute()) {
+                        context.stopIfCanceled();
+                        this.response = new CachedClientHttpResponse(originalResponse);
+                    } catch (IOException e) {
+                        LOGGER.warn("Request failed {}", this.originalRequest.getURI(), e);
+                        this.response =
+                            new AbstractClientHttpResponse() {
+                                @Override
+                                public HttpHeaders getHeaders() {
+                                    return new HttpHeaders();
+                                }
 
-                        @Override
-                        public InputStream getBody() {
-                            return StreamUtils.emptyInput();
-                        }
+                                @Override
+                                public InputStream getBody() {
+                                    return StreamUtils.emptyInput();
+                                }
 
-                        @Override
-                        public int getRawStatusCode() {
-                            return 500;
-                        }
+                                @Override
+                                public int getRawStatusCode() {
+                                    return 500;
+                                }
 
-                        @Override
-                        public String getStatusText() {
-                            return e.getMessage();
-                        }
+                                @Override
+                                public String getStatusText() {
+                                    return e.getMessage();
+                                }
 
-                        @Override
-                        public void close() {
-                        }
-                    };
-                    HttpRequestFetcher.this.registry.counter(baseMetricName + ".error").inc();
-                } finally {
-                    timerDownload.stop();
+                                @Override
+                                public void close() {}
+                            };
+                        HttpRequestFetcher.this.registry.counter(baseMetricName + ".error").inc();
+                    } finally {
+                        timerDownload.stop();
+                    }
+                    return null;
                 }
-                return null;
-            });
+            );
         }
 
         public void setFuture(final ForkJoinTask<Void> future) {

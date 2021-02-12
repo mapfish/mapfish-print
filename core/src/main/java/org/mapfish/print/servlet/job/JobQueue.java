@@ -6,7 +6,6 @@ import java.util.List;
  * Manages the Statuses of the Print Jobs. Should not be used directly unless by Job Manager.
  */
 public interface JobQueue {
-
     /**
      * Return the amount of time the queue will keep an entry before purging the record.
      *

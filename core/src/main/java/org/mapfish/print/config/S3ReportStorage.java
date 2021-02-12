@@ -13,14 +13,13 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Configuration for storing the reports in a S3 compatible storage.
@@ -29,6 +28,7 @@ import java.util.concurrent.TimeUnit;
  * Environment Variables, Java System Properties, Credential profiles file, ...
  */
 public class S3ReportStorage implements ReportStorage {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(S3ReportStorage.class);
     private static final long PURGE_INTERVAL_MS = 6 * 60 * 60 * 1000;
     private static long nextPurge = 0;
@@ -60,7 +60,7 @@ public class S3ReportStorage implements ReportStorage {
         final long retentionMs = TimeUnit.MILLISECONDS.convert(retentionDays, TimeUnit.DAYS);
         try {
             final ObjectListing objects = client.listObjects(bucket, prefix);
-            for (S3ObjectSummary object: objects.getObjectSummaries()) {
+            for (S3ObjectSummary object : objects.getObjectSummaries()) {
                 final Date lastModified = object.getLastModified();
                 final long ageMs = now.getTime() - lastModified.getTime();
                 if (ageMs > retentionMs) {
@@ -82,7 +82,8 @@ public class S3ReportStorage implements ReportStorage {
 
         if (endpointUrl != null) {
             builder.withEndpointConfiguration(
-                    new AwsClientBuilder.EndpointConfiguration(endpointUrl, region));
+                new AwsClientBuilder.EndpointConfiguration(endpointUrl, region)
+            );
         } else if (region != null) {
             builder.withRegion(region);
         }
@@ -92,8 +93,12 @@ public class S3ReportStorage implements ReportStorage {
 
     @Override
     public URL save(
-            final String ref, final String filename, final String extension, final String mimeType,
-            final File file) {
+        final String ref,
+        final String filename,
+        final String extension,
+        final String mimeType,
+        final File file
+    ) {
         final AmazonS3 client = connect();
         maybePurge(client);
         final PutObjectRequest request = createPutRequest(ref, filename, extension, mimeType, file);
@@ -104,10 +109,13 @@ public class S3ReportStorage implements ReportStorage {
     }
 
     private PutObjectRequest createPutRequest(
-            final String ref, final String filename, final String extension, final String mimeType,
-            final File file) {
-        final PutObjectRequest request =
-                new PutObjectRequest(bucket, getKey(ref, filename, extension), file);
+        final String ref,
+        final String filename,
+        final String extension,
+        final String mimeType,
+        final File file
+    ) {
+        final PutObjectRequest request = new PutObjectRequest(bucket, getKey(ref, filename, extension), file);
         request.withCannedAcl(CannedAccessControlList.PublicRead);
         final ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(mimeType);
@@ -127,14 +135,14 @@ public class S3ReportStorage implements ReportStorage {
     }
 
     @Override
-    public void validate(
-            final List<Throwable> validationErrors, final Configuration configuration) {
+    public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (bucket == null) {
             validationErrors.add(new ConfigurationException("You must define a bucket"));
         }
         if (accessKey != null && secretKey == null) {
-            validationErrors.add(new ConfigurationException(
-                    "If you define the accessKey, you must define the secretKey"));
+            validationErrors.add(
+                new ConfigurationException("If you define the accessKey, you must define the secretKey")
+            );
         }
 
         if (!prefix.endsWith("/") && !prefix.isEmpty()) {

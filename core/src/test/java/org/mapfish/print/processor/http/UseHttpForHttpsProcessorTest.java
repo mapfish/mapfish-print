@@ -1,20 +1,21 @@
 package org.mapfish.print.processor.http;
 
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.test.context.ContextConfiguration;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.annotation.Nullable;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.test.context.ContextConfiguration;
 
-import static org.junit.Assert.assertEquals;
-
-@ContextConfiguration(locations = {
+@ContextConfiguration(
+    locations = {
         "classpath:org/mapfish/print/processor/http/use-http-for-https/add-custom-processor-application" +
-                "-context.xml"
-})
+        "-context.xml",
+    }
+)
 public class UseHttpForHttpsProcessorTest extends AbstractHttpProcessorTest {
 
     @Override
@@ -51,16 +52,16 @@ public class UseHttpForHttpsProcessorTest extends AbstractHttpProcessorTest {
         }
 
         private void testUriWithOnlyAuthoritySegment(TestParam values)
-                throws URISyntaxException, IOException {
+            throws URISyntaxException, IOException {
             String authHost = "center_wmts_fixedscale.com";
 
             URI uri = new URI("https://" + userinfo + "@" + authHost + ":8443/" + path);
-            ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(uri,
-                                                                                                    HttpMethod.GET);
+            ClientHttpRequest request = values.clientHttpRequestFactoryProvider
+                .get()
+                .createRequest(uri, HttpMethod.GET);
             assertEquals("http", request.getURI().getScheme());
             assertEquals(userinfo + "@" + authHost + ":9999", request.getURI().getAuthority());
             assertEquals("/" + path, request.getURI().getPath());
-
 
             uri = new URI("https://" + authHost + ":8443/" + path);
             request = values.clientHttpRequestFactoryProvider.get().createRequest(uri, HttpMethod.GET);
@@ -79,11 +80,17 @@ public class UseHttpForHttpsProcessorTest extends AbstractHttpProcessorTest {
         }
 
         private void testHttp(TestParam values) throws URISyntaxException, IOException {
-            String uriString =
-                    String.format("http://%s@%s:9999/%s?%s#%s", userinfo, host, path, query, fragment);
-            final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(new
-                                                                                                                  URI(
-                    uriString), HttpMethod.GET);
+            String uriString = String.format(
+                "http://%s@%s:9999/%s?%s#%s",
+                userinfo,
+                host,
+                path,
+                query,
+                fragment
+            );
+            final ClientHttpRequest request = values.clientHttpRequestFactoryProvider
+                .get()
+                .createRequest(new URI(uriString), HttpMethod.GET);
             assertEquals("http", request.getURI().getScheme());
             assertEquals(userinfo, request.getURI().getUserInfo());
             assertEquals(host, request.getURI().getHost());
@@ -94,11 +101,17 @@ public class UseHttpForHttpsProcessorTest extends AbstractHttpProcessorTest {
         }
 
         private void testDefinedPortMapping(TestParam values) throws IOException, URISyntaxException {
-            String uriString =
-                    String.format("https://%s@%s:8443/%s?%s#%s", userinfo, host, path, query, fragment);
-            final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(new
-                                                                                                                  URI(
-                    uriString), HttpMethod.GET);
+            String uriString = String.format(
+                "https://%s@%s:8443/%s?%s#%s",
+                userinfo,
+                host,
+                path,
+                query,
+                fragment
+            );
+            final ClientHttpRequest request = values.clientHttpRequestFactoryProvider
+                .get()
+                .createRequest(new URI(uriString), HttpMethod.GET);
             assertEquals("http", request.getURI().getScheme());
             assertEquals(userinfo, request.getURI().getUserInfo());
             assertEquals(host, request.getURI().getHost());
@@ -110,9 +123,9 @@ public class UseHttpForHttpsProcessorTest extends AbstractHttpProcessorTest {
 
         private void testImplicitPortMapping(TestParam values) throws IOException, URISyntaxException {
             String uriString = String.format("https://%s@%s/%s?%s#%s", userinfo, host, path, query, fragment);
-            final ClientHttpRequest request = values.clientHttpRequestFactoryProvider.get().createRequest(new
-                                                                                                                  URI(
-                    uriString), HttpMethod.GET);
+            final ClientHttpRequest request = values.clientHttpRequestFactoryProvider
+                .get()
+                .createRequest(new URI(uriString), HttpMethod.GET);
             assertEquals("http", request.getURI().getScheme());
             assertEquals(userinfo, request.getURI().getUserInfo());
             assertEquals(host, request.getURI().getHost());

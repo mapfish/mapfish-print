@@ -1,13 +1,13 @@
 package org.mapfish.print.processor.http.matcher;
 
-import org.mapfish.print.config.Configuration;
-
 import java.util.List;
+import org.mapfish.print.config.Configuration;
 
 /**
  * A matcher that always returns true. [[examples=http_processors]]
  */
 public final class AcceptAllMatcher extends AbstractMatcher {
+
     /**
      * A singleton instance to reduce creating unnecessary instances.
      */

@@ -11,10 +11,7 @@
         "map": {
           "projection": "EPSG:3857",
           "dpi": 72,
-          "center": [
-            -8233518.5005945,
-            4980320.4059228
-          ],
+          "center": [-8233518.5005945, 4980320.4059228],
           "scale": 25000,
           "layers": [
             {
@@ -44,10 +41,7 @@
                     },
                     "geometry": {
                       "type": "Point",
-                      "coordinates": [
-                        -8233518.5005945,
-                        4980320.4059228
-                      ]
+                      "coordinates": [-8233518.5005945, 4980320.4059228]
                     }
                   }
                 ]
@@ -57,9 +51,7 @@
               "baseURL": "http://geoserver:8080/wms",
               "opacity": 1,
               "type": "WMS",
-              "layers": [
-                "tiger-ny"
-              ],
+              "layers": ["tiger-ny"],
               "imageFormat": "image/png",
               "customParams": {
                 "TRANSPARENT": "true"
@@ -74,10 +66,7 @@
         "map": {
           "projection": "EPSG:3857",
           "dpi": 72,
-          "center": [
-            -8234918.5005945,
-            4981920.4059228
-          ],
+          "center": [-8234918.5005945, 4981920.4059228],
           "scale": 25000,
           "layers": [
             {
@@ -107,10 +96,7 @@
                     },
                     "geometry": {
                       "type": "Point",
-                      "coordinates": [
-                        -8234918.5005945,
-                        4981920.4059228
-                      ]
+                      "coordinates": [-8234918.5005945, 4981920.4059228]
                     }
                   }
                 ]
@@ -120,9 +106,7 @@
               "baseURL": "http://geoserver:8080/wms",
               "opacity": 1,
               "type": "WMS",
-              "layers": [
-                "tiger-ny"
-              ],
+              "layers": ["tiger-ny"],
               "imageFormat": "image/png",
               "customParams": {
                 "TRANSPARENT": "true"
@@ -137,10 +121,7 @@
         "map": {
           "projection": "EPSG:3857",
           "dpi": 72,
-          "center": [
-            -8234618.5005945,
-            4981920.4059228
-          ],
+          "center": [-8234618.5005945, 4981920.4059228],
           "scale": 25000,
           "layers": [
             {
@@ -170,10 +151,7 @@
                     },
                     "geometry": {
                       "type": "Point",
-                      "coordinates": [
-                        -8234618.5005945,
-                        4981920.4059228
-                      ]
+                      "coordinates": [-8234618.5005945, 4981920.4059228]
                     }
                   }
                 ]
@@ -183,9 +161,7 @@
               "baseURL": "http://geoserver:8080/wms",
               "opacity": 1,
               "type": "WMS",
-              "layers": [
-                "tiger-ny"
-              ],
+              "layers": ["tiger-ny"],
               "imageFormat": "image/png",
               "customParams": {
                 "TRANSPARENT": "true"

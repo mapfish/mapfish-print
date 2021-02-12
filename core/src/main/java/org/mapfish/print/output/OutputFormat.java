@@ -1,11 +1,10 @@
 package org.mapfish.print.output;
 
+import java.io.File;
+import java.io.OutputStream;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.wrapper.json.PJsonObject;
-
-import java.io.File;
-import java.io.OutputStream;
 
 /**
  * Interface for exporting the generated PDF from MapPrinter.
@@ -35,7 +34,11 @@ public interface OutputFormat {
      * @param outputStream the stream to write the result to
      */
     Processor.ExecutionContext print(
-            String jobId, PJsonObject spec, Configuration config, File configDir, File taskDirectory,
-            OutputStream outputStream) throws Exception;
-
+        String jobId,
+        PJsonObject spec,
+        Configuration config,
+        File configDir,
+        File taskDirectory,
+        OutputStream outputStream
+    ) throws Exception;
 }

@@ -1,5 +1,12 @@
 package org.mapfish.print.processor.http;
 
+import static org.junit.Assert.assertEquals;
+
+import java.net.URI;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
+import javax.annotation.Nullable;
 import org.json.JSONException;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -18,17 +25,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ForkJoinPool;
-import javax.annotation.Nullable;
-
-import static org.junit.Assert.assertEquals;
-
 public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTest {
+
     @Autowired
     ConfigurationFactory configurationFactory;
+
     @Autowired
     TestHttpClientFactory httpClientFactory;
 
@@ -44,12 +45,15 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
     @Test
     @DirtiesContext
     public void testExecute() throws Exception {
-        this.httpClientFactory.registerHandler(input -> true, new TestHttpClientFactory.Handler() {
-            @Override
-            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
-                return new MockClientHttpRequest(httpMethod, uri);
-            }
-        });
+        this.httpClientFactory.registerHandler(
+                input -> true,
+                new TestHttpClientFactory.Handler() {
+                    @Override
+                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
+                        return new MockClientHttpRequest(httpMethod, uri);
+                    }
+                }
+            );
 
         this.configurationFactory.setDoValidation(false);
         final Configuration config = configurationFactory.getConfig(getFile(baseDir() + "/config.yaml"));
@@ -68,8 +72,10 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
         assertEquals(testProcessorClass(), dependencies.iterator().next().getClass());
 
         Values values = new Values();
-        values.put(Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
-                   new MfClientHttpRequestFactoryProvider(this.httpClientFactory));
+        values.put(
+            Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
+            new MfClientHttpRequestFactoryProvider(this.httpClientFactory)
+        );
         values.put(Values.VALUES_KEY, values);
         addExtraValues(values);
         forkJoinPool.invoke(graph.createTask(values));
@@ -82,10 +88,10 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
     @Test
     @DirtiesContext
     public void testCreateMapDependency() throws Exception {
-
         this.configurationFactory.setDoValidation(false);
-        final Configuration config =
-                configurationFactory.getConfig(getFile(baseDir() + "/config-createmap.yaml"));
+        final Configuration config = configurationFactory.getConfig(
+            getFile(baseDir() + "/config-createmap.yaml")
+        );
         final Template template = config.getTemplate("main");
 
         ProcessorDependencyGraph graph = template.getProcessorGraph();
@@ -101,11 +107,12 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
     }
 
     public static class TestParam {
+
         @InputOutputValue
         public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;
     }
 
-    public static abstract class AbstractTestProcessor extends AbstractProcessor<TestParam, Void> {
+    public abstract static class AbstractTestProcessor extends AbstractProcessor<TestParam, Void> {
 
         /**
          * Constructor.
@@ -124,6 +131,5 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
         public TestParam createInputParameter() {
             return new TestParam();
         }
-
     }
 }

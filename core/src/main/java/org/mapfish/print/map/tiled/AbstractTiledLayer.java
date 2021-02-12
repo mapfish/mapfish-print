@@ -1,6 +1,12 @@
 package org.mapfish.print.map.tiled;
 
 import com.codahale.metrics.MetricRegistry;
+import java.awt.Rectangle;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
@@ -13,13 +19,6 @@ import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.processor.Processor;
-
-import java.awt.Rectangle;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ForkJoinPool;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * An abstract class to support implementing layers that consist of Raster tiles which are combined to compose
@@ -47,11 +46,12 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
      * @param configuration the configuration.
      */
     protected AbstractTiledLayer(
-            @Nullable final ForkJoinPool forkJoinPool,
-            @Nullable final StyleSupplier<GridCoverage2D> styleSupplier,
-            @Nonnull final AbstractLayerParams params,
-            @Nullable final MetricRegistry registry,
-            @Nonnull final Configuration configuration) {
+        @Nullable final ForkJoinPool forkJoinPool,
+        @Nullable final StyleSupplier<GridCoverage2D> styleSupplier,
+        @Nonnull final AbstractLayerParams params,
+        @Nullable final MetricRegistry registry,
+        @Nonnull final Configuration configuration
+    ) {
         super(forkJoinPool, params);
         this.styleSupplier = styleSupplier;
         this.registry = registry;
@@ -67,10 +67,11 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
      * @param configuration the configuration.
      */
     public AbstractTiledLayer(
-            final AbstractGeotoolsLayer other,
-            @Nullable final StyleSupplier<GridCoverage2D> styleSupplier,
-            @Nullable final MetricRegistry registry,
-            @Nonnull final Configuration configuration) {
+        final AbstractGeotoolsLayer other,
+        @Nullable final StyleSupplier<GridCoverage2D> styleSupplier,
+        @Nullable final MetricRegistry registry,
+        @Nonnull final Configuration configuration
+    ) {
         super(other);
         this.styleSupplier = styleSupplier;
         this.registry = registry;
@@ -79,24 +80,34 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
 
     @Override
     public final void prepareRender(final MapfishMapContext mapContext) {
-        this.tileCacheInformation = createTileInformation(
+        this.tileCacheInformation =
+            createTileInformation(
                 mapContext.getRotatedBoundsAdjustedForPreciseRotatedMapSize(),
                 new Rectangle(mapContext.getRotatedMapSize()),
-                mapContext.getDPI());
+                mapContext.getDPI()
+            );
     }
 
     @Override
     protected final List<? extends Layer> getLayers(
-            final MfClientHttpRequestFactory httpRequestFactory,
-            final MapfishMapContext mapContext, final Processor.ExecutionContext context) {
-
-        final CoverageTask task = new CoverageTask(this.tilePreparationInfo,
-                                                   getFailOnError(), this.registry, context,
-                                                   this.tileCacheInformation, this.configuration);
+        final MfClientHttpRequestFactory httpRequestFactory,
+        final MapfishMapContext mapContext,
+        final Processor.ExecutionContext context
+    ) {
+        final CoverageTask task = new CoverageTask(
+            this.tilePreparationInfo,
+            getFailOnError(),
+            this.registry,
+            context,
+            this.tileCacheInformation,
+            this.configuration
+        );
         final GridCoverage2D gridCoverage2D = task.call();
 
         GridCoverageLayer layer = new GridCoverageLayer(
-                gridCoverage2D, this.styleSupplier.load(httpRequestFactory, gridCoverage2D));
+            gridCoverage2D,
+            this.styleSupplier.load(httpRequestFactory, gridCoverage2D)
+        );
         return Collections.singletonList(layer);
     }
 
@@ -108,7 +119,10 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
      * @param dpi the DPI to render at
      */
     protected abstract TileCacheInformation createTileInformation(
-            MapBounds bounds, Rectangle paintArea, double dpi);
+        MapBounds bounds,
+        Rectangle paintArea,
+        double dpi
+    );
 
     @Override
     public final double getImageBufferScaling() {
@@ -117,15 +131,20 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
 
     @Override
     public final void prefetchResources(
-            final HttpRequestFetcher httpRequestFetcher,
-            final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final MapfishMapContext transformer,
-            final Processor.ExecutionContext context) {
+        final HttpRequestFetcher httpRequestFetcher,
+        final MfClientHttpRequestFactory clientHttpRequestFactory,
+        final MapfishMapContext transformer,
+        final Processor.ExecutionContext context
+    ) {
         final MapfishMapContext layerTransformer = getLayerTransformer(transformer);
 
         final TilePreparationTask task = new TilePreparationTask(
-                clientHttpRequestFactory, layerTransformer,
-                this.tileCacheInformation, httpRequestFetcher, context);
+            clientHttpRequestFactory,
+            layerTransformer,
+            this.tileCacheInformation,
+            httpRequestFetcher,
+            context
+        );
         this.tilePreparationInfo = task.call();
     }
 }

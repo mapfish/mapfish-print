@@ -3,12 +3,7 @@
   "outputFormat": "pdf",
   "attributes": {
     "map": {
-      "bbox": [
-        100,
-        -1,
-        106,
-        1.538
-      ],
+      "bbox": [100, -1, 106, 1.538],
       "projection": "CRS:84",
       "dpi": 144,
       "rotation": 0,
@@ -25,27 +20,19 @@
       "classes": [
         {
           "name": "Arbres",
-          "icons": [
-            "http://geoserver:8080/www/legends/legend1.png"
-          ]
+          "icons": ["http://geoserver:8080/www/legends/legend1.png"]
         },
         {
           "name": "Peturbations",
-          "icons": [
-            "http://geoserver:8080/www/legends/legend2.png"
-          ]
+          "icons": ["http://geoserver:8080/www/legends/legend2.png"]
         },
         {
           "name": "Points de vente",
-          "icons": [
-            "http://geoserver:8080/www/legends/legend3.png"
-          ]
+          "icons": ["http://geoserver:8080/www/legends/legend3.png"]
         },
         {
           "name": "Alea",
-          "icons": [
-            "http://geoserver:8080/www/legends/legend4.png"
-          ]
+          "icons": ["http://geoserver:8080/www/legends/legend4.png"]
         },
         {
           "name": "Data uri test",

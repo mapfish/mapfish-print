@@ -2,6 +2,25 @@ package org.mapfish.print.processor.jasper;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
+import javax.annotation.Resource;
+import javax.imageio.ImageIO;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import org.mapfish.print.Constants;
@@ -22,37 +41,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
-import javax.annotation.Resource;
-import javax.imageio.ImageIO;
-
 /**
  * <p>Create a legend.</p>
  * <p>See also: <a href="attributes.html#!legend">!legend</a> attribute</p>
  * [[examples=verboseExample,legend_cropped,legend_scaled]]
  */
 public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Input, LegendProcessor.Output> {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(LegendProcessor.class);
     private static final String NAME_COLUMN = "name";
     private static final String ICON_COLUMN = "icon";
     private static final String REPORT_COLUMN = "report";
     private static final String LEVEL_COLUMN = "level";
+
     @Autowired
     private JasperReportBuilder jasperReportBuilder;
 
@@ -69,7 +70,6 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     private Integer maxWidth = null;
     private Double dpi = Constants.PDF_DPI;
     private boolean scaled = false;
-
 
     /**
      * Constructor.
@@ -125,16 +125,20 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     @Override
     public Output execute(final Input values, final ExecutionContext context) throws Exception {
         final List<Object[]> legendList = new ArrayList<>();
-        final String[] legendColumns = {NAME_COLUMN, ICON_COLUMN, REPORT_COLUMN, LEVEL_COLUMN};
+        final String[] legendColumns = { NAME_COLUMN, ICON_COLUMN, REPORT_COLUMN, LEVEL_COLUMN };
         final LegendAttributeValue legendAttributes = values.legend;
         fillLegend(
-                values.clientHttpRequestFactoryProvider.get(),
-                legendAttributes, legendList, context,
-                values.tempTaskDirectory);
+            values.clientHttpRequestFactoryProvider.get(),
+            legendAttributes,
+            legendList,
+            context,
+            values.tempTaskDirectory
+        );
         final Object[][] legend = new Object[legendList.size()][];
 
-        final JRTableModelDataSource dataSource = new JRTableModelDataSource(new TableDataSource(
-                legendColumns, legendList.toArray(legend)));
+        final JRTableModelDataSource dataSource = new JRTableModelDataSource(
+            new TableDataSource(legendColumns, legendList.toArray(legend))
+        );
 
         String compiledTemplatePath = compileTemplate(values.template.getConfiguration());
 
@@ -150,23 +154,26 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     }
 
     private void createTasks(
-            final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final LegendAttributeValue legendAttributes,
-            final ExecutionContext context, final File tempTaskDirectory,
-            final int level, final List<Callable<Object[]>> tasks) {
+        final MfClientHttpRequestFactory clientHttpRequestFactory,
+        final LegendAttributeValue legendAttributes,
+        final ExecutionContext context,
+        final File tempTaskDirectory,
+        final int level,
+        final List<Callable<Object[]>> tasks
+    ) {
         int insertNameIndex = tasks.size();
         final URL[] icons = legendAttributes.icons;
         final double dpi = legendAttributes.dpi != null ? legendAttributes.dpi : this.dpi;
         if (icons != null && icons.length > 0) {
-            for (URL icon: icons) {
-                tasks.add(new IconTask(icon, dpi, context, level, tempTaskDirectory,
-                                       clientHttpRequestFactory));
+            for (URL icon : icons) {
+                tasks.add(
+                    new IconTask(icon, dpi, context, level, tempTaskDirectory, clientHttpRequestFactory)
+                );
             }
         }
         if (legendAttributes.classes != null) {
-            for (LegendAttributeValue value: legendAttributes.classes) {
-                createTasks(clientHttpRequestFactory, value, context, tempTaskDirectory,
-                            level + 1, tasks);
+            for (LegendAttributeValue value : legendAttributes.classes) {
+                createTasks(clientHttpRequestFactory, value, context, tempTaskDirectory, level + 1, tasks);
             }
         }
         if (!tasks.isEmpty()) {
@@ -175,23 +182,25 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     }
 
     private void fillLegend(
-            final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final LegendAttributeValue legendAttributes,
-            final List<Object[]> legendList,
-            final ExecutionContext context,
-            final File tempTaskDirectory)
-            throws ExecutionException, InterruptedException {
+        final MfClientHttpRequestFactory clientHttpRequestFactory,
+        final LegendAttributeValue legendAttributes,
+        final List<Object[]> legendList,
+        final ExecutionContext context,
+        final File tempTaskDirectory
+    ) throws ExecutionException, InterruptedException {
         List<Callable<Object[]>> tasks = new ArrayList<>();
         createTasks(clientHttpRequestFactory, legendAttributes, context, tempTaskDirectory, 0, tasks);
         List<Future<Object[]>> futures = this.requestForkJoinPool.invokeAll(tasks);
-        for (Future<Object[]> future: futures) {
+        for (Future<Object[]> future : futures) {
             legendList.add(future.get());
         }
     }
 
     private URI createSubReport(
-            final BufferedImage originalImage, final double originalImageDPI, final File tempTaskDirectory)
-            throws IOException, JRException {
+        final BufferedImage originalImage,
+        final double originalImageDPI,
+        final File tempTaskDirectory
+    ) throws IOException, JRException {
         BufferedImage image = originalImage;
         double scaleFactor = 1;
         if (this.maxWidth != null) {
@@ -208,14 +217,19 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         URI imageFile = writeToFile(image, tempTaskDirectory);
 
         final ImagesSubReport subReport = new ImagesSubReport(
-                Collections.singletonList(imageFile),
-                new Dimension((int) Math.round(image.getWidth() * scaleFactor),
-                              (int) Math.round(image.getHeight() * scaleFactor)),
-                this.dpi);
+            Collections.singletonList(imageFile),
+            new Dimension(
+                (int) Math.round(image.getWidth() * scaleFactor),
+                (int) Math.round(image.getHeight() * scaleFactor)
+            ),
+            this.dpi
+        );
 
-        final File compiledReport = File.createTempFile("legend-report-",
-                                                        JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT,
-                                                        tempTaskDirectory);
+        final File compiledReport = File.createTempFile(
+            "legend-report-",
+            JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT,
+            tempTaskDirectory
+        );
         subReport.compile(compiledReport);
 
         return compiledReport.toURI();
@@ -229,23 +243,32 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     private BufferedImage scaleToMaxWidth(final BufferedImage image, final double scaleFactor) {
         final double factor = this.maxWidth / scaleFactor / image.getWidth();
 
-        final BufferedImage inter = (image.getType() == BufferedImage.TYPE_BYTE_INDEXED ||
-            image.getType() == BufferedImage.TYPE_BYTE_BINARY) ? new BufferedImage(
+        final BufferedImage inter = (
+                image.getType() == BufferedImage.TYPE_BYTE_INDEXED ||
+                image.getType() == BufferedImage.TYPE_BYTE_BINARY
+            )
+            ? new BufferedImage(
                 (int) Math.round(image.getWidth()),
                 (int) Math.round(image.getHeight()),
                 BufferedImage.TYPE_4BYTE_ABGR
-            ) : image;
-        if (image.getType() == BufferedImage.TYPE_BYTE_INDEXED ||
-            image.getType() == BufferedImage.TYPE_BYTE_BINARY) {
+            )
+            : image;
+        if (
+            image.getType() == BufferedImage.TYPE_BYTE_INDEXED ||
+            image.getType() == BufferedImage.TYPE_BYTE_BINARY
+        ) {
             inter.createGraphics().drawImage(image, 0, 0, null);
         }
 
         final BufferedImage result = new BufferedImage(
-                (int) Math.round(image.getWidth() * factor),
-                (int) Math.round(image.getHeight() * factor),
-                (image.getType() == BufferedImage.TYPE_BYTE_INDEXED ||
-                image.getType() == BufferedImage.TYPE_BYTE_BINARY) ?
-                BufferedImage.TYPE_4BYTE_ABGR : image.getType()
+            (int) Math.round(image.getWidth() * factor),
+            (int) Math.round(image.getHeight() * factor),
+            (
+                    image.getType() == BufferedImage.TYPE_BYTE_INDEXED ||
+                    image.getType() == BufferedImage.TYPE_BYTE_BINARY
+                )
+                ? BufferedImage.TYPE_4BYTE_ABGR
+                : image.getType()
         );
         AffineTransform at = new AffineTransform();
         at.scale(factor, factor);
@@ -261,14 +284,20 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
     @Override
     protected void extraValidation(
-            final List<Throwable> validationErrors, final Configuration configuration) {
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {
         // no checks needed
     }
 
     private synchronized BufferedImage getMissingImage() {
         if (this.missingImage == null) {
-            this.missingImage = new BufferedImage(this.missingImageSize.width, this.missingImageSize.height,
-                                                  BufferedImage.TYPE_INT_RGB);
+            this.missingImage =
+                new BufferedImage(
+                    this.missingImageSize.width,
+                    this.missingImageSize.height,
+                    BufferedImage.TYPE_INT_RGB
+                );
             final Graphics2D graphics = this.missingImage.createGraphics();
 
             try {
@@ -285,6 +314,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
      * The Input Parameter object for {@link org.mapfish.print.processor.jasper.LegendProcessor}.
      */
     public static final class Input {
+
         /**
          * The template that contains this processor.
          */
@@ -308,6 +338,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
      * The Output object of the legend processor method.
      */
     public static final class Output {
+
         /**
          * The datasource for the legend object in the report.
          */
@@ -322,8 +353,10 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         public final int numberOfLegendRows;
 
         Output(
-                final JRTableModelDataSource legendDataSource, final int numberOfLegendRows,
-                final String legendSubReport) {
+            final JRTableModelDataSource legendDataSource,
+            final int numberOfLegendRows,
+            final String legendSubReport
+        ) {
             this.legendDataSource = legendDataSource;
             this.numberOfLegendRows = numberOfLegendRows;
             this.legendSubReport = legendSubReport;
@@ -342,7 +375,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
         @Override
         public Object[] call() {
-            return new Object[]{this.name, null, null, this.level};
+            return new Object[] { this.name, null, null, this.level };
         }
     }
 
@@ -356,9 +389,13 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         private File tempTaskDirectory;
 
         private IconTask(
-                final URL icon, final double iconDPI, final ExecutionContext context,
-                final int level, final File tempTaskDirectory,
-                final MfClientHttpRequestFactory clientHttpRequestFactory) {
+            final URL icon,
+            final double iconDPI,
+            final ExecutionContext context,
+            final int level,
+            final File tempTaskDirectory,
+            final MfClientHttpRequestFactory clientHttpRequestFactory
+        ) {
             this.icon = icon;
             this.iconDPI = iconDPI;
             this.context = context;
@@ -369,56 +406,62 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
         @Override
         public Object[] call() throws Exception {
-            return context.mdcContextEx(() -> {
-                BufferedImage image = null;
-                final URI uri = this.icon.toURI();
-                final String metricName =
-                    LegendProcessor.class.getName() + ".read." + StatsUtils.quotePart(uri.getHost());
-                try {
-                    if (this.icon.getProtocol().equals("data")) {
-                        image = ImageIO.read(this.icon);
-                    } else {
-                        this.context.stopIfCanceled();
-                        final ClientHttpRequest request = this.clientHttpRequestFactory.createRequest(
-                            uri, HttpMethod.GET);
-                        final Timer.Context timer =
-                            LegendProcessor.this.metricRegistry.timer(metricName).time();
-                        try (ClientHttpResponse httpResponse = request.execute()) {
-                            if (httpResponse.getStatusCode() == HttpStatus.OK) {
-                                image = ImageIO.read(httpResponse.getBody());
-                                if (image == null) {
-                                    LOGGER.warn("The URL: {} is NOT an image format that can be decoded",
-                                        this.icon);
+            return context.mdcContextEx(
+                () -> {
+                    BufferedImage image = null;
+                    final URI uri = this.icon.toURI();
+                    final String metricName =
+                        LegendProcessor.class.getName() + ".read." + StatsUtils.quotePart(uri.getHost());
+                    try {
+                        if (this.icon.getProtocol().equals("data")) {
+                            image = ImageIO.read(this.icon);
+                        } else {
+                            this.context.stopIfCanceled();
+                            final ClientHttpRequest request =
+                                this.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+                            final Timer.Context timer =
+                                LegendProcessor.this.metricRegistry.timer(metricName).time();
+                            try (ClientHttpResponse httpResponse = request.execute()) {
+                                if (httpResponse.getStatusCode() == HttpStatus.OK) {
+                                    image = ImageIO.read(httpResponse.getBody());
+                                    if (image == null) {
+                                        LOGGER.warn(
+                                            "The URL: {} is NOT an image format that can be decoded",
+                                            this.icon
+                                        );
+                                    } else {
+                                        timer.stop();
+                                    }
                                 } else {
-                                    timer.stop();
-                                }
-                            } else {
-                                LOGGER.warn(
-                                    "Failed to load image from: {} due to server side error.\n" +
+                                    LOGGER.warn(
+                                        "Failed to load image from: {} due to server side error.\n" +
                                         "\tResponse Code: {}\n" +
                                         "\tResponse Text: {}\n" +
                                         "\tWith Headers:\n\t{}",
-                                    this.icon, httpResponse.getStatusCode(), httpResponse.getStatusText(),
-                                    String.join(
-                                        "\n\t",
-                                        Utils.getPrintableHeadersList(httpResponse.getHeaders())
-                                    )
-                                );
+                                        this.icon,
+                                        httpResponse.getStatusCode(),
+                                        httpResponse.getStatusText(),
+                                        String.join(
+                                            "\n\t",
+                                            Utils.getPrintableHeadersList(httpResponse.getHeaders())
+                                        )
+                                    );
+                                }
                             }
                         }
+                    } catch (Exception e) {
+                        LOGGER.warn("Failed to load image from: {}", this.icon, e);
                     }
-                } catch (Exception e) {
-                    LOGGER.warn("Failed to load image from: {}", this.icon, e);
-                }
 
-                if (image == null) {
-                    image = getMissingImage();
-                    LegendProcessor.this.metricRegistry.counter(metricName + ".error").inc();
-                }
+                    if (image == null) {
+                        image = getMissingImage();
+                        LegendProcessor.this.metricRegistry.counter(metricName + ".error").inc();
+                    }
 
-                String report = createSubReport(image, this.iconDPI, this.tempTaskDirectory).toString();
-                return new Object[]{null, image, report, this.level};
-            });
+                    String report = createSubReport(image, this.iconDPI, this.tempTaskDirectory).toString();
+                    return new Object[] { null, image, report, this.level };
+                }
+            );
         }
     }
 }

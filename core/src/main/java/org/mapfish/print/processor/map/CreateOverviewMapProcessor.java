@@ -1,5 +1,10 @@
 package org.mapfish.print.processor.map;
 
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -25,12 +30,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.awt.Rectangle;
-import java.awt.geom.AffineTransform;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
 
 /**
  * Processor to create overview maps. Internally {@link CreateMapProcessor} is used.
@@ -61,7 +60,7 @@ import java.util.List;
  * [[examples=verboseExample,overviewmap_tyger_ny_EPSG_3857]]
  */
 public class CreateOverviewMapProcessor
-        extends AbstractProcessor<CreateOverviewMapProcessor.Input, CreateOverviewMapProcessor.Output> {
+    extends AbstractProcessor<CreateOverviewMapProcessor.Input, CreateOverviewMapProcessor.Output> {
 
     @Autowired
     private CreateMapProcessor mapProcessor;
@@ -82,16 +81,16 @@ public class CreateOverviewMapProcessor
     }
 
     @Override
-    public final Output execute(final Input values, final ExecutionContext context)
-            throws Exception {
+    public final Output execute(final Input values, final ExecutionContext context) throws Exception {
         CreateMapProcessor.Input mapProcessorValues = this.mapProcessor.createInputParameter();
         mapProcessorValues.clientHttpRequestFactoryProvider = values.clientHttpRequestFactoryProvider;
         mapProcessorValues.tempTaskDirectory = values.tempTaskDirectory;
         mapProcessorValues.template = values.template;
 
         MapAttribute.OverriddenMapAttributeValues mapParams =
-                ((MapAttribute.MapAttributeValues) values.map).getWithOverrides(
-                        (OverviewMapAttribute.OverviewMapAttributeValues) values.overviewMap);
+            ((MapAttribute.MapAttributeValues) values.map).getWithOverrides(
+                    (OverviewMapAttribute.OverviewMapAttributeValues) values.overviewMap
+                );
         mapProcessorValues.map = mapParams;
 
         // TODO validate parameters (dpi? mapParams.postConstruct())
@@ -106,15 +105,18 @@ public class CreateOverviewMapProcessor
     }
 
     private void setOriginalMapExtentLayer(
-            final MapBounds originalBounds,
-            final Input values,
-            final MapAttribute.OverriddenMapAttributeValues mapParams)
-            throws IOException {
+        final MapBounds originalBounds,
+        final Input values,
+        final MapAttribute.OverriddenMapAttributeValues mapParams
+    ) throws IOException {
         Rectangle originalPaintArea = new Rectangle(values.map.getMapSize());
         MapBounds adjustedBounds = CreateMapProcessor.adjustBoundsToScaleAndMapSize(
-                values.map, originalPaintArea, originalBounds, values.map.getDpi());
-        ReferencedEnvelope originalEnvelope =
-                adjustedBounds.toReferencedEnvelope(originalPaintArea);
+            values.map,
+            originalPaintArea,
+            originalBounds,
+            values.map.getDpi()
+        );
+        ReferencedEnvelope originalEnvelope = adjustedBounds.toReferencedEnvelope(originalPaintArea);
 
         Geometry mapExtent = JTS.toGeometry(originalEnvelope);
         if (!FloatingPointUtil.equals(values.map.getRotation(), 0.0)) {
@@ -122,18 +124,25 @@ public class CreateOverviewMapProcessor
         }
 
         FeatureLayer layer = createOrignalMapExtentLayer(
-                mapExtent, mapParams,
-                ((OverviewMapAttribute.OverviewMapAttributeValues) values.overviewMap).getStyle(),
-                originalEnvelope.getCoordinateReferenceSystem());
+            mapExtent,
+            mapParams,
+            ((OverviewMapAttribute.OverviewMapAttributeValues) values.overviewMap).getStyle(),
+            originalEnvelope.getCoordinateReferenceSystem()
+        );
         mapParams.setMapExtentLayer(layer);
     }
 
     private Geometry rotateExtent(
-            final Geometry mapExtent, final double rotation,
-            final ReferencedEnvelope originalEnvelope) {
+        final Geometry mapExtent,
+        final double rotation,
+        final ReferencedEnvelope originalEnvelope
+    ) {
         final Coordinate center = originalEnvelope.centre();
         final AffineTransform affineTransform = AffineTransform.getRotateInstance(
-                rotation, center.x, center.y);
+            rotation,
+            center.x,
+            center.y
+        );
         final MathTransform mathTransform = new AffineTransform2D(affineTransform);
 
         try {
@@ -144,9 +153,11 @@ public class CreateOverviewMapProcessor
     }
 
     private FeatureLayer createOrignalMapExtentLayer(
-            final Geometry mapExtent,
-            final MapAttribute.OverriddenMapAttributeValues mapParams, final String style,
-            final CoordinateReferenceSystem crs) throws IOException {
+        final Geometry mapExtent,
+        final MapAttribute.OverriddenMapAttributeValues mapParams,
+        final String style,
+        final CoordinateReferenceSystem crs
+    ) throws IOException {
         FeatureLayerParam layerParams = new FeatureLayerParam();
         layerParams.style = style;
         layerParams.defaultStyle = Constants.Style.OverviewMap.NAME;
@@ -158,7 +169,9 @@ public class CreateOverviewMapProcessor
     }
 
     private DefaultFeatureCollection wrapIntoFeatureCollection(
-            final Geometry mapExtent, final CoordinateReferenceSystem crs) {
+        final Geometry mapExtent,
+        final CoordinateReferenceSystem crs
+    ) {
         SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
         typeBuilder.setName("overview-map");
         typeBuilder.setCRS(crs);
@@ -166,33 +179,39 @@ public class CreateOverviewMapProcessor
         final SimpleFeatureType type = typeBuilder.buildFeatureType();
 
         DefaultFeatureCollection features = new DefaultFeatureCollection();
-        features.add(SimpleFeatureBuilder.build(type, new Object[]{mapExtent}, null));
+        features.add(SimpleFeatureBuilder.build(type, new Object[] { mapExtent }, null));
 
         return features;
     }
 
     private void setOverviewMapBounds(
-            final MapAttribute.OverriddenMapAttributeValues mapParams,
-            final MapBounds originalBounds, final Input values) {
+        final MapAttribute.OverriddenMapAttributeValues mapParams,
+        final MapBounds originalBounds,
+        final Input values
+    ) {
         MapBounds overviewMapBounds;
         if (mapParams.getCustomBounds() != null) {
             overviewMapBounds = mapParams.getCustomBounds();
         } else {
             // zoom-out the original map bounds by the given factor
-            overviewMapBounds = originalBounds.zoomOut(
-                    ((OverviewMapAttribute.OverviewMapAttributeValues) values.overviewMap).getZoomFactor());
+            overviewMapBounds =
+                originalBounds.zoomOut(
+                    ((OverviewMapAttribute.OverviewMapAttributeValues) values.overviewMap).getZoomFactor()
+                );
         }
 
         // adjust the bounds to size of the overview map, because the overview map
         // might have a different aspect ratio than the main map
         overviewMapBounds =
-                overviewMapBounds.adjustedEnvelope(new Rectangle(values.overviewMap.getMapSize()));
+            overviewMapBounds.adjustedEnvelope(new Rectangle(values.overviewMap.getMapSize()));
         mapParams.setZoomedOutBounds(overviewMapBounds);
     }
 
     @Override
     protected final void extraValidation(
-            final List<Throwable> validationErrors, final Configuration configuration) {
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {
         this.mapProcessor.extraValidation(validationErrors, configuration);
     }
 
@@ -200,6 +219,7 @@ public class CreateOverviewMapProcessor
      * The Input object for the processor.
      */
     public static final class Input extends CreateMapProcessor.Input {
+
         /**
          * Optional parameters for the overview map which allow to override parameters of the main map.
          */

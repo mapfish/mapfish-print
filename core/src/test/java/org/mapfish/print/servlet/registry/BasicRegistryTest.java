@@ -1,10 +1,10 @@
 package org.mapfish.print.servlet.registry;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.junit.Assert.assertEquals;
 
 public class BasicRegistryTest extends AbstractMapfishSpringTest {
 
@@ -28,5 +28,4 @@ public class BasicRegistryTest extends AbstractMapfishSpringTest {
         registry.incrementInt(key, 2);
         assertEquals(4, registry.getNumber(key));
     }
-
 }

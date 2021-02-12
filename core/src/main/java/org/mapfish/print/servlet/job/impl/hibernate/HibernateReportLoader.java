@@ -1,12 +1,11 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
-import org.mapfish.print.servlet.job.loader.ReportLoader;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import org.mapfish.print.servlet.job.loader.ReportLoader;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Loads reports from hibernate uris.

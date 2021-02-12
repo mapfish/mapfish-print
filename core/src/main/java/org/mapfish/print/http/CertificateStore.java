@@ -1,10 +1,5 @@
 package org.mapfish.print.http;
 
-import org.mapfish.print.ExceptionUtils;
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.ConfigurationObject;
-import org.mapfish.print.config.HasConfiguration;
-
 import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.security.KeyStore;
@@ -12,6 +7,10 @@ import java.util.List;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
+import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ConfigurationObject;
+import org.mapfish.print.config.HasConfiguration;
 
 /**
  * A configuration object for configuring a custom certificate/trust store.
@@ -19,6 +18,7 @@ import javax.net.ssl.TrustManagerFactory;
  * It is a uri to a java jks keystore file along with the password for unlocking the store.
  */
 public final class CertificateStore implements ConfigurationObject, HasConfiguration {
+
     private URI uri;
     private char[] password;
     private Configuration configuration;
@@ -61,7 +61,6 @@ public final class CertificateStore implements ConfigurationObject, HasConfigura
      * Lazily create and get the ssl context.
      */
     public SSLContext getSSLContext() {
-
         if (this.sslContext == null) {
             synchronized (this) {
                 if (this.sslContext == null) {

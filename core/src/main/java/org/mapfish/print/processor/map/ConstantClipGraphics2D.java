@@ -29,8 +29,8 @@ import java.util.Map;
  * A graphics 2d implementation that delegates all calls to the wrapped graphics2d except for the methods
  * related to setting the clip.  These calls are ignored.
  */
-// CHECKSTYLE:OFF
 final class ConstantClipGraphics2D extends Graphics2D {
+
     private final Graphics2D wrapped;
 
     ConstantClipGraphics2D(final Graphics2D wrapped, final Shape clipShape) {
@@ -415,21 +415,47 @@ final class ConstantClipGraphics2D extends Graphics2D {
 
     @Override
     public boolean drawImage(
-            Image img, int x, int y, int width, int height, Color bgcolor, ImageObserver observer) {
+        Image img,
+        int x,
+        int y,
+        int width,
+        int height,
+        Color bgcolor,
+        ImageObserver observer
+    ) {
         return wrapped.drawImage(img, x, y, width, height, bgcolor, observer);
     }
 
     @Override
     public boolean drawImage(
-            Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2,
-            ImageObserver observer) {
+        Image img,
+        int dx1,
+        int dy1,
+        int dx2,
+        int dy2,
+        int sx1,
+        int sy1,
+        int sx2,
+        int sy2,
+        ImageObserver observer
+    ) {
         return wrapped.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer);
     }
 
     @Override
     public boolean drawImage(
-            Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, Color bgcolor,
-            ImageObserver observer) {
+        Image img,
+        int dx1,
+        int dy1,
+        int dx2,
+        int dy2,
+        int sx1,
+        int sy1,
+        int sx2,
+        int sy2,
+        Color bgcolor,
+        ImageObserver observer
+    ) {
         return wrapped.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, bgcolor, observer);
     }
 

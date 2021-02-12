@@ -41,7 +41,7 @@ public class LineScalebarDrawer extends ScalebarDrawer {
             for (int j = 1; j < getSettings().getNumSubIntervals(); j++) {
                 pos += getSettings().getIntervalLengthInPixels() / getSettings().getNumSubIntervals();
                 getGraphics2d()
-                        .drawLine(Math.round(pos), -barSize, Math.round(pos), -Math.round(barSize / 2.0f));
+                    .drawLine(Math.round(pos), -barSize, Math.round(pos), -Math.round(barSize / 2.0f));
             }
         }
     }

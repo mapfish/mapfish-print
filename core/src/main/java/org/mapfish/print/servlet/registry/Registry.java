@@ -1,8 +1,7 @@
 package org.mapfish.print.servlet.registry;
 
-import org.json.JSONObject;
-
 import java.net.URI;
+import org.json.JSONObject;
 
 /**
  * A variable store for sharing common values across all nodes in a cluster.
@@ -11,7 +10,6 @@ import java.net.URI;
  * </p>
  */
 public interface Registry {
-
     /**
      * Check if something is registered for the key.
      *

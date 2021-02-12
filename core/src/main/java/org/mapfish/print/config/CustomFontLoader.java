@@ -1,13 +1,5 @@
 package org.mapfish.print.config;
 
-
-import net.sf.jasperreports.engine.DefaultJasperReportsContext;
-import net.sf.jasperreports.engine.fonts.FontFamily;
-import net.sf.jasperreports.engine.fonts.FontUtil;
-import net.sf.jasperreports.extensions.ExtensionsEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
@@ -16,7 +8,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
-
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.fonts.FontFamily;
+import net.sf.jasperreports.engine.fonts.FontUtil;
+import net.sf.jasperreports.extensions.ExtensionsEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Used to load custom fonts.
@@ -27,6 +24,7 @@ import java.util.Set;
  * styles.
  */
 public final class CustomFontLoader {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomFontLoader.class);
 
     /**
@@ -35,8 +33,7 @@ public final class CustomFontLoader {
      * @param paths A list of paths to ttf font files.
      */
     public CustomFontLoader(final Set<String> paths) {
-
-        for (String path: paths) {
+        for (String path : paths) {
             try {
                 LOGGER.debug("Loading font {}", path);
                 loadFont(path);
@@ -51,13 +48,15 @@ public final class CustomFontLoader {
 
     private void registerJasperFonts() {
         final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        final List<FontFamily> families =
-                ExtensionsEnvironment.getExtensionsRegistry().getExtensions(FontFamily.class);
-        for (FontFamily family: families) {
+        final List<FontFamily> families = ExtensionsEnvironment
+            .getExtensionsRegistry()
+            .getExtensions(FontFamily.class);
+        for (FontFamily family : families) {
             for (int style = 0; style <= 3; ++style) {
                 LOGGER.debug("Registered font family {} style {}", family.getName(), style);
-                final Font font = FontUtil.getInstance(DefaultJasperReportsContext.getInstance())
-                        .getAwtFontFromBundles(family.getName(), style, 10.0f, null, true);
+                final Font font = FontUtil
+                    .getInstance(DefaultJasperReportsContext.getInstance())
+                    .getAwtFontFromBundles(family.getName(), style, 10.0f, null, true);
                 if (font != null && ge.registerFont(font)) {
                     LOGGER.info("Font {} from Jasper registered successfully", font);
                 }
@@ -84,8 +83,10 @@ public final class CustomFontLoader {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         boolean registered = ge.registerFont(font);
         if (!registered) {
-            LOGGER.warn("Font {} could not be registered. Is there already a system font with the same name?",
-                        fontFile.getAbsolutePath());
+            LOGGER.warn(
+                "Font {} could not be registered. Is there already a system font with the same name?",
+                fontFile.getAbsolutePath()
+            );
         } else {
             LOGGER.info("Font {} registered successfully", fontFile.getAbsolutePath());
         }

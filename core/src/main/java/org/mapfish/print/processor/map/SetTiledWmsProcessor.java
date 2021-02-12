@@ -1,7 +1,13 @@
 package org.mapfish.print.processor.map;
 
+import static org.mapfish.print.Constants.PDF_DPI;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.math.IntMath;
+import java.awt.Dimension;
+import java.math.RoundingMode;
+import java.net.URI;
+import java.util.List;
 import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Configuration;
@@ -16,13 +22,6 @@ import org.mapfish.print.processor.http.matcher.UriMatchers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
-
-import java.awt.Dimension;
-import java.math.RoundingMode;
-import java.net.URI;
-import java.util.List;
-
-import static org.mapfish.print.Constants.PDF_DPI;
 
 /**
  * <p>Processor that transforms WMS layers that are too big into tiled WMS layers.</p>
@@ -65,9 +64,14 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
      * and maxHeight, but with the smallest tiles as possible.
      */
     private static Dimension adaptTileDimensions(
-            final Dimension pixels, final int maxWidth, final int maxHeight) {
-        return new Dimension(adaptTileDimension(pixels.width, maxWidth),
-                             adaptTileDimension(pixels.height, maxHeight));
+        final Dimension pixels,
+        final int maxWidth,
+        final int maxHeight
+    ) {
+        return new Dimension(
+            adaptTileDimension(pixels.width, maxWidth),
+            adaptTileDimension(pixels.height, maxHeight)
+        );
     }
 
     @Override
@@ -79,8 +83,10 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
     public final Void execute(final Input values, final ExecutionContext context) throws Exception {
         final Dimension size = values.map.getMapSize();
         final double dpiRatio = values.map.getDpi() / PDF_DPI;
-        final Dimension pixels = new Dimension((int) Math.ceil(size.width * dpiRatio),
-                                               (int) Math.ceil(size.height * dpiRatio));
+        final Dimension pixels = new Dimension(
+            (int) Math.ceil(size.width * dpiRatio),
+            (int) Math.ceil(size.height * dpiRatio)
+        );
 
         if (pixels.height <= maxHeight && pixels.width <= maxWidth) {
             return null;
@@ -98,10 +104,13 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
                 final WmsLayerParam params = wmsLayer.getParams();
                 if (matchers.matches(new URI(params.baseURL), HttpMethod.GET)) {
                     if (LOGGER.isInfoEnabled()) {
-                        LOGGER.info("Converting layer {}[{}] into a tiled WMS layer with tileSize={}x{}",
-                                    wmsLayer.getParams().baseURL,
-                                    String.join(", ", wmsLayer.getParams().layers), tileSize.width,
-                                    tileSize.height);
+                        LOGGER.info(
+                            "Converting layer {}[{}] into a tiled WMS layer with tileSize={}x{}",
+                            wmsLayer.getParams().baseURL,
+                            String.join(", ", wmsLayer.getParams().layers),
+                            tileSize.width,
+                            tileSize.height
+                        );
                     }
                     values.map.replaceLayer(i, new TiledWmsLayer(wmsLayer, tileSize));
                 }
@@ -112,14 +121,18 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
 
     @Override
     protected final void extraValidation(
-            final List<Throwable> validationErrors, final Configuration configuration) {
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {
         if (this.maxHeight < 256) {
-            validationErrors.add(new ConfigurationException(
-                    "The maxHeight must be >=256 in " + getClass().getName()));
+            validationErrors.add(
+                new ConfigurationException("The maxHeight must be >=256 in " + getClass().getName())
+            );
         }
         if (this.maxWidth < 256) {
-            validationErrors.add(new ConfigurationException(
-                    "The maxWidth must be >=256 in " + getClass().getName()));
+            validationErrors.add(
+                new ConfigurationException("The maxWidth must be >=256 in " + getClass().getName())
+            );
         }
     }
 
@@ -161,6 +174,7 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
      * The input parameter object for {@link SetFeaturesProcessor}.
      */
     public static final class Input {
+
         /**
          * The map to update.
          */

@@ -1,11 +1,9 @@
 package org.mapfish.print.processor.map.scalebar;
 
-
-import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
-import org.mapfish.print.map.DistanceUnit;
-
 import java.awt.Dimension;
 import java.util.List;
+import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
+import org.mapfish.print.map.DistanceUnit;
 
 /**
  * Parameters to render a scalebar.

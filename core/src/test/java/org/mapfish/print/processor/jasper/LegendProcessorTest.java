@@ -1,5 +1,16 @@
 package org.mapfish.print.processor.jasper;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
 import org.json.simple.JSONArray;
@@ -18,26 +29,17 @@ import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ForkJoinPool;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 public class LegendProcessorTest extends AbstractMapfishSpringTest {
+
     public static final String BASE_DIR = "legend/";
     public static final String BASE_DIR_DYNAMIC = "legend_dynamic/";
 
     @Autowired
     private ConfigurationFactory configurationFactory;
+
     @Autowired
     private ForkJoinPool forkJoinPool;
+
     @Autowired
     private TestHttpClientFactory httpRequestFactory;
 
@@ -52,24 +54,34 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
     @Test
     @DirtiesContext
     public void testBasicLegendProperties() throws Exception {
-        httpRequestFactory.registerHandler(input -> input != null && input.getHost().equals("legend.com"),
-                                           new TestHttpClientFactory.Handler() {
-            @Override
-            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
-                final MockClientHttpRequest request = new MockClientHttpRequest();
-                request.setResponse(new MockClientHttpResponse(new byte[0], HttpStatus.OK));
-                return request;
+        httpRequestFactory.registerHandler(
+            input -> input != null && input.getHost().equals("legend.com"),
+            new TestHttpClientFactory.Handler() {
+                @Override
+                public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
+                    final MockClientHttpRequest request = new MockClientHttpRequest();
+                    request.setResponse(new MockClientHttpResponse(new byte[0], HttpStatus.OK));
+                    return request;
+                }
             }
-        });
+        );
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values("test", requestData, template, getTaskDirectory(), this.httpRequestFactory,
-                                   new File("."));
+        Values values = new Values(
+            "test",
+            requestData,
+            template,
+            getTaskDirectory(),
+            this.httpRequestFactory,
+            new File(".")
+        );
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final JRTableModelDataSource legend = values.getObject(
-                "legendDataSource", JRTableModelDataSource.class);
+            "legendDataSource",
+            JRTableModelDataSource.class
+        );
 
         int count = 0;
         while (legend.next()) {
@@ -83,18 +95,29 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
     @Test
     @DirtiesContext
     public void testDynamicLegendProperties() throws Exception {
-        httpRequestFactory.registerHandler(input -> input != null && input.getHost().equals("legend.com"),
-                                           createFileHandler(uri -> BASE_DIR_DYNAMIC + uri.getPath()));
-        final Configuration config =
-                configurationFactory.getConfig(getFile(BASE_DIR_DYNAMIC + "config.yaml"));
+        httpRequestFactory.registerHandler(
+            input -> input != null && input.getHost().equals("legend.com"),
+            createFileHandler(uri -> BASE_DIR_DYNAMIC + uri.getPath())
+        );
+        final Configuration config = configurationFactory.getConfig(
+            getFile(BASE_DIR_DYNAMIC + "config.yaml")
+        );
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadDynamicJsonRequestData();
-        Values values = new Values("test", requestData, template, getTaskDirectory(), this.httpRequestFactory,
-                                   new File("."));
+        Values values = new Values(
+            "test",
+            requestData,
+            template,
+            getTaskDirectory(),
+            this.httpRequestFactory,
+            new File(".")
+        );
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final JRTableModelDataSource legend = values.getObject(
-                "legendDataSource", JRTableModelDataSource.class);
+            "legendDataSource",
+            JRTableModelDataSource.class
+        );
 
         JRDesignField iconField = new JRDesignField();
         iconField.setName("icon");
@@ -125,27 +148,40 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
     @Test
     @DirtiesContext
     public void testEmptyLegend() throws Exception {
-        httpRequestFactory.registerHandler(input -> input != null && input.getHost().equals("legend.com"),
-                                           new TestHttpClientFactory.Handler() {
-            @Override
-            public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
-                final MockClientHttpRequest request = new MockClientHttpRequest();
-                request.setResponse(new MockClientHttpResponse(new byte[0], HttpStatus.OK));
-                return request;
+        httpRequestFactory.registerHandler(
+            input -> input != null && input.getHost().equals("legend.com"),
+            new TestHttpClientFactory.Handler() {
+                @Override
+                public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
+                    final MockClientHttpRequest request = new MockClientHttpRequest();
+                    request.setResponse(new MockClientHttpResponse(new byte[0], HttpStatus.OK));
+                    return request;
+                }
             }
-        });
+        );
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
-        requestData.getJSONObject("attributes").getJSONObject("legend").getInternalObj()
-                .put("classes", new JSONArray());
+        requestData
+            .getJSONObject("attributes")
+            .getJSONObject("legend")
+            .getInternalObj()
+            .put("classes", new JSONArray());
 
-        Values values = new Values("test", requestData, template, getTaskDirectory(), this.httpRequestFactory,
-                                   new File("."));
+        Values values = new Values(
+            "test",
+            requestData,
+            template,
+            getTaskDirectory(),
+            this.httpRequestFactory,
+            new File(".")
+        );
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final JRTableModelDataSource legend = values.getObject(
-                "legendDataSource", JRTableModelDataSource.class);
+            "legendDataSource",
+            JRTableModelDataSource.class
+        );
 
         int count = 0;
         while (legend.next()) {

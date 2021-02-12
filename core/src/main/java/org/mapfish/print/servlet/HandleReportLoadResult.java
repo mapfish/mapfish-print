@@ -1,12 +1,11 @@
 package org.mapfish.print.servlet;
 
-import org.mapfish.print.servlet.job.PrintJobStatus;
-import org.mapfish.print.servlet.job.loader.ReportLoader;
-
 import java.io.IOException;
 import java.net.URI;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
+import org.mapfish.print.servlet.job.PrintJobStatus;
+import org.mapfish.print.servlet.job.loader.ReportLoader;
 
 /**
  * Called when a report is loaded to be sent to the user.
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
  * @param <R> The return value
  */
 public interface HandleReportLoadResult<R> {
-
     /**
      * Called if the report reference is unknown.
      *
@@ -40,8 +38,11 @@ public interface HandleReportLoadResult<R> {
      * @param loader the loader for loading the report.
      */
     R successfulPrint(
-            PrintJobStatus successfulPrintResult, HttpServletResponse httpServletResponse, URI reportURI,
-            ReportLoader loader) throws IOException, ServletException;
+        PrintJobStatus successfulPrintResult,
+        HttpServletResponse httpServletResponse,
+        URI reportURI,
+        ReportLoader loader
+    ) throws IOException, ServletException;
 
     /**
      * Called when a print job failed.

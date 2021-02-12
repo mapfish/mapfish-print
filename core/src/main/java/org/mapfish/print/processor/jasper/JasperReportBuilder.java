@@ -2,6 +2,14 @@ package org.mapfish.print.processor.jasper;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.design.JRValidationException;
@@ -13,15 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
 /**
  * <p>A processor that actually compiles a JasperReport template file.</p>
  * <p>Example</p>
@@ -31,8 +30,10 @@ import java.util.stream.StreamSupport;
  *               directory: '.'</code></pre>
  * [[examples=verboseExample]]
  */
-public final class JasperReportBuilder extends AbstractProcessor<JasperReportBuilder.Input, Void>
-        implements HasConfiguration {
+public final class JasperReportBuilder
+    extends AbstractProcessor<JasperReportBuilder.Input, Void>
+    implements HasConfiguration {
+
     /**
      * Extension for Jasper XML Report Template files.
      */
@@ -44,8 +45,10 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperReportBuilder.class);
     private File directory = null;
     private Configuration configuration;
+
     @Autowired
     private MetricRegistry metricRegistry;
+
     @Autowired
     private WorkingDirectories workingDirectories;
 
@@ -58,8 +61,8 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
 
     @Override
     public Void execute(final JasperReportBuilder.Input param, final ExecutionContext context)
-            throws JRException {
-        for (final File jasperFile: jasperXmlFiles()) {
+        throws JRException {
+        for (final File jasperFile : jasperXmlFiles()) {
             context.stopIfCanceled();
             compileJasperReport(this.configuration, jasperFile);
         }
@@ -67,8 +70,13 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     }
 
     File compileJasperReport(final Configuration config, final File jasperFile) throws JRException {
-        final File buildFile = this.workingDirectories.getBuildFileFor(
-                config, jasperFile, JASPER_REPORT_COMPILED_FILE_EXT, LOGGER);
+        final File buildFile =
+            this.workingDirectories.getBuildFileFor(
+                    config,
+                    jasperFile,
+                    JASPER_REPORT_COMPILED_FILE_EXT,
+                    LOGGER
+                );
         return compileJasperReport(buildFile, jasperFile);
     }
 
@@ -81,28 +89,36 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
                 // move it (atomic operation) when done. Worst case: we compile a file twice instead
                 // of once.
                 File tmpBuildFile = File.createTempFile(
-                        "temp_", JASPER_REPORT_COMPILED_FILE_EXT, buildFile.getParentFile());
+                    "temp_",
+                    JASPER_REPORT_COMPILED_FILE_EXT,
+                    buildFile.getParentFile()
+                );
 
                 LOGGER.info("Building Jasper report: {}", jasperFile.getAbsolutePath());
                 LOGGER.debug("To: {}", buildFile.getAbsolutePath());
-                final Timer.Context compileJasperReport = this.metricRegistry.timer(getClass().getName() +
-                                                                                            ".compile." +
-                                                                                            jasperFile)
-                        .time();
+                final Timer.Context compileJasperReport =
+                    this.metricRegistry.timer(getClass().getName() + ".compile." + jasperFile).time();
                 try {
-                    JasperCompileManager.compileReportToFile(jasperFile.getAbsolutePath(),
-                                                             tmpBuildFile.getAbsolutePath());
+                    JasperCompileManager.compileReportToFile(
+                        jasperFile.getAbsolutePath(),
+                        tmpBuildFile.getAbsolutePath()
+                    );
                 } catch (JRValidationException e) {
                     LOGGER.error("The report '{}' isn't valid.", jasperFile.getAbsolutePath());
                     throw e;
                 } finally {
                     final long compileTime = TimeUnit.MILLISECONDS.convert(
-                            compileJasperReport.stop(), TimeUnit.NANOSECONDS);
+                        compileJasperReport.stop(),
+                        TimeUnit.NANOSECONDS
+                    );
                     LOGGER.info("Report '{}' built in {}ms.", jasperFile.getAbsolutePath(), compileTime);
                 }
 
                 java.nio.file.Files.move(
-                        tmpBuildFile.toPath(), buildFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
+                    tmpBuildFile.toPath(),
+                    buildFile.toPath(),
+                    StandardCopyOption.ATOMIC_MOVE
+                );
             } catch (IOException e) {
                 throw new JRException(e);
             }
@@ -119,21 +135,25 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
         }
         final String configurationAbsolutePath = this.configuration.getDirectory().getAbsolutePath();
         if (!directoryToSearch.getAbsolutePath().startsWith(configurationAbsolutePath)) {
-            throw new IllegalArgumentException(String.format(
+            throw new IllegalArgumentException(
+                String.format(
                     "All directories and files referenced in the configuration must be in the " +
-                            "configuration directory: %s is not in %s.",
-                    directoryToSearch, this.configuration.getDirectory()));
+                    "configuration directory: %s is not in %s.",
+                    directoryToSearch,
+                    this.configuration.getDirectory()
+                )
+            );
         }
         final File[] children = directoryToSearch.listFiles();
         if (children != null) {
-            return StreamSupport.stream(Arrays.spliterator(children), false)
-                    .filter(input -> input != null && input.getName().endsWith(JASPER_REPORT_XML_FILE_EXT))
-                    .collect(Collectors.toList());
+            return StreamSupport
+                .stream(Arrays.spliterator(children), false)
+                .filter(input -> input != null && input.getName().endsWith(JASPER_REPORT_XML_FILE_EXT))
+                .collect(Collectors.toList());
         } else {
             throw new IllegalArgumentException(String.format("%s is not a directory", directoryToSearch));
         }
     }
-
 
     @Override
     public JasperReportBuilder.Input createInputParameter() {
@@ -149,20 +169,29 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     public void setDirectory(final String directory) {
         this.directory = new File(this.configuration.getDirectory(), directory);
         if (!this.directory.exists()) {
-            throw new IllegalArgumentException(String.format(
+            throw new IllegalArgumentException(
+                String.format(
                     "Directory does not exist: %s.\n" +
-                            "Configuration contained value %s which is supposed to be relative to " +
-                            "configuration directory.",
-                    this.directory, directory));
+                    "Configuration contained value %s which is supposed to be relative to " +
+                    "configuration directory.",
+                    this.directory,
+                    directory
+                )
+            );
         }
 
-        if (!this.directory.getAbsolutePath()
-                .startsWith(this.configuration.getDirectory().getAbsolutePath())) {
-            throw new IllegalArgumentException(String.format(
+        if (
+            !this.directory.getAbsolutePath().startsWith(this.configuration.getDirectory().getAbsolutePath())
+        ) {
+            throw new IllegalArgumentException(
+                String.format(
                     "All files and directories must be contained in the configuration directory the " +
-                            "directory provided in the configuration breaks that contract: %s in config " +
-                            "file resolved to %s.",
-                    directory, this.directory));
+                    "directory provided in the configuration breaks that contract: %s in config " +
+                    "file resolved to %s.",
+                    directory,
+                    this.directory
+                )
+            );
         }
     }
 
@@ -184,6 +213,5 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     /**
      * The input parameter object for {@link JasperReportBuilder}.
      */
-    public static final class Input {
-    }
+    public static final class Input {}
 }

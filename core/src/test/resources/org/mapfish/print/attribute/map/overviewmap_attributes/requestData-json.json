@@ -9,14 +9,21 @@
         {
           "type": "geojson",
           "style": "polygon",
-          "geoJson": { "type": "FeatureCollection",
+          "geoJson": {
+            "type": "FeatureCollection",
             "features": [
-              { "type": "Feature",
+              {
+                "type": "Feature",
                 "geometry": {
                   "type": "Polygon",
                   "coordinates": [
-                    [ [102.0, 0.0], [103.0, 0.0], [103.0, 1.0],
-                      [102.0, 1.0], [102.0, 0.0] ]
+                    [
+                      [102.0, 0.0],
+                      [103.0, 0.0],
+                      [103.0, 1.0],
+                      [102.0, 1.0],
+                      [102.0, 0.0]
+                    ]
                   ]
                 },
                 "properties": {
@@ -24,12 +31,18 @@
                   "prop1": 1.0
                 }
               },
-              { "type": "Feature",
+              {
+                "type": "Feature",
                 "geometry": {
                   "type": "Polygon",
                   "coordinates": [
-                    [ [104.0, 0.0], [105.0, 0.0], [105.0, 1.0],
-                      [104.0, 1.0], [104.0, 0.0] ]
+                    [
+                      [104.0, 0.0],
+                      [105.0, 0.0],
+                      [105.0, 1.0],
+                      [104.0, 1.0],
+                      [104.0, 0.0]
+                    ]
                   ]
                 },
                 "properties": {
@@ -37,17 +50,23 @@
                   "prop1": 0.0
                 }
               },
-              { "type": "Feature",
+              {
+                "type": "Feature",
                 "geometry": {
                   "type": "Polygon",
                   "coordinates": [
-                    [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
-                      [100.0, 1.0], [100.0, 0.0] ]
+                    [
+                      [100.0, 0.0],
+                      [101.0, 0.0],
+                      [101.0, 1.0],
+                      [100.0, 1.0],
+                      [100.0, 0.0]
+                    ]
                   ]
                 },
                 "properties": {
                   "prop0": "value0",
-                  "prop1": {"this": "that"}
+                  "prop1": { "this": "that" }
                 }
               }
             ]
@@ -61,16 +80,12 @@
         {
           "type": "geojson",
           "style": "polygon",
-          "geoJson": { "type": "FeatureCollection",
-            "features": []
-          }
+          "geoJson": { "type": "FeatureCollection", "features": [] }
         },
         {
           "type": "geojson",
           "style": "polygon",
-          "geoJson": { "type": "FeatureCollection",
-            "features": []
-          }
+          "geoJson": { "type": "FeatureCollection", "features": [] }
         }
       ]
     }

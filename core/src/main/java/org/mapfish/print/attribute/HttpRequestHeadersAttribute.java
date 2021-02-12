@@ -1,15 +1,14 @@
 package org.mapfish.print.attribute;
 
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.Template;
-import org.mapfish.print.wrapper.PArray;
-import org.mapfish.print.wrapper.PObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.Template;
+import org.mapfish.print.wrapper.PArray;
+import org.mapfish.print.wrapper.PObject;
 
 /**
  * Attribute representing the headers from the request.
@@ -19,7 +18,8 @@ import java.util.Map;
  */
 @InternalAttribute
 public final class HttpRequestHeadersAttribute
-        extends ReflectiveAttribute<HttpRequestHeadersAttribute.Value> {
+    extends ReflectiveAttribute<HttpRequestHeadersAttribute.Value> {
+
     /**
      * Constructor that calls init.
      */
@@ -46,6 +46,7 @@ public final class HttpRequestHeadersAttribute
      * The object containing the attribute data.
      */
     public static final class Value {
+
         /**
          * The headers from the request.
          */

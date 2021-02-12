@@ -1,5 +1,7 @@
 package org.mapfish.print.map.geotools.grid;
 
+import java.awt.geom.AffineTransform;
+import javax.annotation.Nonnull;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.feature.DefaultFeatureCollection;
@@ -19,9 +21,6 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
-import java.awt.geom.AffineTransform;
-import javax.annotation.Nonnull;
-
 /**
  * Strategy for creating the style and features for the grid when the grid consists of lines.
  */
@@ -34,15 +33,17 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
 
     @Override
     public FeatureSourceSupplier createFeatureSource(
-            final Template template,
-            final GridParam layerData,
-            final LabelPositionCollector labels) {
+        final Template template,
+        final GridParam layerData,
+        final LabelPositionCollector labels
+    ) {
         return new FeatureSourceSupplier() {
             @Nonnull
             @Override
             public FeatureSource load(
-                    @Nonnull final MfClientHttpRequestFactory requestFactory,
-                    @Nonnull final MapfishMapContext mapContext) {
+                @Nonnull final MfClientHttpRequestFactory requestFactory,
+                @Nonnull final MapfishMapContext mapContext
+            ) {
                 SimpleFeatureType featureType = GridUtils.createGridFeatureType(mapContext, Point.class);
                 SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureType);
                 final DefaultFeatureCollection features;
@@ -57,10 +58,11 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
     }
 
     private DefaultFeatureCollection createFeaturesFromSpacing(
-            final MapfishMapContext mapContext,
-            final SimpleFeatureBuilder featureBuilder,
-            final GridParam layerData,
-            final LabelPositionCollector labels) {
+        final MapfishMapContext mapContext,
+        final SimpleFeatureBuilder featureBuilder,
+        final GridParam layerData,
+        final LabelPositionCollector labels
+    ) {
         GeometryFactory geometryFactory = new GeometryFactory();
         ReferencedEnvelope bounds = mapContext.toReferencedEnvelope();
 
@@ -88,30 +90,57 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
 
             if (!onRightBorder(bounds, x)) { // don't add the border features twice.
                 GridUtils.bottomBorderLabel(
-                        labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform,
-                        labelTransform,
-                        layerData.getGridLabelFormat());
+                    labels,
+                    geometryFactory,
+                    rotatedBounds,
+                    unit,
+                    x,
+                    worldToScreenTransform,
+                    labelTransform,
+                    layerData.getGridLabelFormat()
+                );
                 GridUtils.topBorderLabel(
-                        labels, geometryFactory, rotatedBounds, unit, x, worldToScreenTransform,
-                        labelTransform,
-                        layerData.getGridLabelFormat());
+                    labels,
+                    geometryFactory,
+                    rotatedBounds,
+                    unit,
+                    x,
+                    worldToScreenTransform,
+                    labelTransform,
+                    layerData.getGridLabelFormat()
+                );
             }
             for (double y = minY; y < bounds.getMaxY(); y += incrementY) {
                 j++;
 
                 if (addBorderFeatures && !onRightBorder(bounds, x) && !onTopBorder(bounds, y)) {
                     GridUtils.leftBorderLabel(
-                            labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform,
-                            labelTransform,
-                            layerData.getGridLabelFormat());
+                        labels,
+                        geometryFactory,
+                        rotatedBounds,
+                        unit,
+                        y,
+                        worldToScreenTransform,
+                        labelTransform,
+                        layerData.getGridLabelFormat()
+                    );
                     GridUtils.rightBorderLabel(
-                            labels, geometryFactory, rotatedBounds, unit, y, worldToScreenTransform,
-                            labelTransform,
-                            layerData.getGridLabelFormat());
+                        labels,
+                        geometryFactory,
+                        rotatedBounds,
+                        unit,
+                        y,
+                        worldToScreenTransform,
+                        labelTransform,
+                        layerData.getGridLabelFormat()
+                    );
                 }
-                if (!onTopBorder(bounds, y) && !onBottomBorder(bounds, y) &&
-                        !onLeftBorder(bounds, x) &&
-                        !onRightBorder(bounds, x)) { // don't add the border features twice.
+                if (
+                    !onTopBorder(bounds, y) &&
+                    !onBottomBorder(bounds, y) &&
+                    !onLeftBorder(bounds, x) &&
+                    !onRightBorder(bounds, x)
+                ) { // don't add the border features twice.
                     featureBuilder.reset();
                     Point geom = geometryFactory.createPoint(new Coordinate(x, y));
                     featureBuilder.set(Grid.ATT_GEOM, geom);
@@ -122,7 +151,6 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
         }
         return features;
     }
-
 
     private boolean onRightBorder(final ReferencedEnvelope bounds, final double x) {
         return x >= bounds.getMaxX();
@@ -141,10 +169,11 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
     }
 
     private DefaultFeatureCollection createFeaturesFromNumberOfLines(
-            final MapfishMapContext mapContext,
-            final SimpleFeatureBuilder featureBuilder,
-            final GridParam layerData,
-            final LabelPositionCollector labels) {
+        final MapfishMapContext mapContext,
+        final SimpleFeatureBuilder featureBuilder,
+        final GridParam layerData,
+        final LabelPositionCollector labels
+    ) {
         GeometryFactory geometryFactory = new GeometryFactory();
         ReferencedEnvelope bounds = mapContext.toReferencedEnvelope();
 
@@ -165,27 +194,56 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
             double y = bounds.getMinY();
             for (int j = 0; j < layerData.numberOfLines[1] + 2; j++) {
                 String fid = "grid." + i + "." + j;
-                if ((i != 0 || j != 0) &&
-                        (i != layerData.numberOfLines[0] + 1 || j != layerData.numberOfLines[1] + 1) &&
-                        (i != 0 || j != layerData.numberOfLines[1] + 1) &&
-                        (i != layerData.numberOfLines[0] + 1 || j != 0)) {
-
+                if (
+                    (i != 0 || j != 0) &&
+                    (i != layerData.numberOfLines[0] + 1 || j != layerData.numberOfLines[1] + 1) &&
+                    (i != 0 || j != layerData.numberOfLines[1] + 1) &&
+                    (i != layerData.numberOfLines[0] + 1 || j != 0)
+                ) {
                     if (i == 0) {
-                        GridUtils.leftBorderLabel(labels, geometryFactory, rotatedBounds, unit, y,
-                                                  worldToScreenTransform, labelTransform,
-                                                  layerData.getGridLabelFormat());
+                        GridUtils.leftBorderLabel(
+                            labels,
+                            geometryFactory,
+                            rotatedBounds,
+                            unit,
+                            y,
+                            worldToScreenTransform,
+                            labelTransform,
+                            layerData.getGridLabelFormat()
+                        );
                     } else if (i == layerData.numberOfLines[0] + 1) {
-                        GridUtils.rightBorderLabel(labels, geometryFactory, rotatedBounds, unit, y,
-                                                   worldToScreenTransform, labelTransform,
-                                                   layerData.getGridLabelFormat());
+                        GridUtils.rightBorderLabel(
+                            labels,
+                            geometryFactory,
+                            rotatedBounds,
+                            unit,
+                            y,
+                            worldToScreenTransform,
+                            labelTransform,
+                            layerData.getGridLabelFormat()
+                        );
                     } else if (j == 0) {
-                        GridUtils.bottomBorderLabel(labels, geometryFactory, rotatedBounds, unit, x,
-                                                    worldToScreenTransform, labelTransform,
-                                                    layerData.getGridLabelFormat());
+                        GridUtils.bottomBorderLabel(
+                            labels,
+                            geometryFactory,
+                            rotatedBounds,
+                            unit,
+                            x,
+                            worldToScreenTransform,
+                            labelTransform,
+                            layerData.getGridLabelFormat()
+                        );
                     } else if (j == layerData.numberOfLines[1] + 1) {
-                        GridUtils.topBorderLabel(labels, geometryFactory, rotatedBounds, unit, x,
-                                                 worldToScreenTransform, labelTransform,
-                                                 layerData.getGridLabelFormat());
+                        GridUtils.topBorderLabel(
+                            labels,
+                            geometryFactory,
+                            rotatedBounds,
+                            unit,
+                            x,
+                            worldToScreenTransform,
+                            labelTransform,
+                            layerData.getGridLabelFormat()
+                        );
                     } else {
                         featureBuilder.reset();
                         Point geom = geometryFactory.createPoint(new Coordinate(x, y));
@@ -199,5 +257,4 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
         }
         return features;
     }
-
 }

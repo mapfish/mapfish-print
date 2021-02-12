@@ -1,6 +1,16 @@
 package org.mapfish.print.map.geotools;
 
 import com.google.common.annotations.VisibleForTesting;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import javax.annotation.Nonnull;
 import org.apache.commons.io.IOUtils;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -28,23 +38,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import javax.annotation.Nonnull;
-
 /**
  * Parser for GeoJson features collection.
  *
  * Created by Stéphane Brunner on 16/4/14.
  */
 public class FeaturesParser {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(FeaturesParser.class);
     private final MfClientHttpRequestFactory httpRequestFactory;
     private final boolean forceLongitudeFirst;
@@ -56,16 +56,19 @@ public class FeaturesParser {
      * @param forceLongitudeFirst if true then force longitude coordinate as first coordinate
      */
     public FeaturesParser(
-            final MfClientHttpRequestFactory httpRequestFactory, final boolean forceLongitudeFirst) {
+        final MfClientHttpRequestFactory httpRequestFactory,
+        final boolean forceLongitudeFirst
+    ) {
         this.httpRequestFactory = httpRequestFactory;
         this.forceLongitudeFirst = forceLongitudeFirst;
     }
 
     @VisibleForTesting
     static final CoordinateReferenceSystem parseCoordinateReferenceSystem(
-            final MfClientHttpRequestFactory requestFactory,
-            final JSONObject geojson,
-            final boolean forceLongitudeFirst) {
+        final MfClientHttpRequestFactory requestFactory,
+        final JSONObject geojson,
+        final boolean forceLongitudeFirst
+    ) {
         CoordinateReferenceSystem crs = DefaultEngineeringCRS.GENERIC_2D;
         StringBuilder code = new StringBuilder();
         try {
@@ -86,23 +89,31 @@ public class FeaturesParser {
                     }
                 } else if (type.equals("link")) {
                     String linkType = getProperty(crsJson, "type");
-                    if (linkType != null &&
-                            (linkType.equalsIgnoreCase("esriwkt") || linkType.equalsIgnoreCase("ogcwkt"))) {
+                    if (
+                        linkType != null &&
+                        (linkType.equalsIgnoreCase("esriwkt") || linkType.equalsIgnoreCase("ogcwkt"))
+                    ) {
                         String uri = getProperty(crsJson, "href");
                         if (uri != null) {
-                            ClientHttpRequest request =
-                                    requestFactory.createRequest(new URI(uri), HttpMethod.GET);
+                            ClientHttpRequest request = requestFactory.createRequest(
+                                new URI(uri),
+                                HttpMethod.GET
+                            );
                             try (ClientHttpResponse response = request.execute()) {
-
                                 if (response.getStatusCode() == HttpStatus.OK) {
-                                    final String wkt = IOUtils.toString(response.getBody(),
-                                                                        Constants.DEFAULT_ENCODING);
+                                    final String wkt = IOUtils.toString(
+                                        response.getBody(),
+                                        Constants.DEFAULT_ENCODING
+                                    );
                                     try {
                                         return CRS.parseWKT(wkt);
                                     } catch (FactoryException e) {
                                         LOGGER.warn(
-                                                "Unable to load linked CRS from geojson: \n{}\n\nWKT loaded" +
-                                                        " from:\n{}", crsJson, wkt);
+                                            "Unable to load linked CRS from geojson: \n{}\n\nWKT loaded" +
+                                            " from:\n{}",
+                                            crsJson,
+                                            wkt
+                                        );
                                     }
                                 }
                             }
@@ -113,7 +124,6 @@ public class FeaturesParser {
                 } else {
                     code.append(getProperty(crsJson, "code"));
                 }
-
             }
         } catch (JSONException | IOException | URISyntaxException e) {
             LOGGER.warn("Error reading the required elements to parse crs of the geojson: \n{}", geojson, e);
@@ -149,7 +159,7 @@ public class FeaturesParser {
      * @throws IOException
      */
     public final SimpleFeatureCollection autoTreat(final Template template, final String features)
-            throws IOException {
+        throws IOException {
         SimpleFeatureCollection featuresCollection = treatStringAsURL(template, features);
         if (featuresCollection == null) {
             featuresCollection = treatStringAsGeoJson(features);
@@ -165,7 +175,7 @@ public class FeaturesParser {
      * @return the feature collection
      */
     public final SimpleFeatureCollection treatStringAsURL(final Template template, final String geoJsonUrl)
-            throws IOException {
+        throws IOException {
         URL url;
         try {
             url = FileUtils.testForLegalFileUrl(template.getConfiguration(), new URL(geoJsonUrl));
@@ -202,8 +212,9 @@ public class FeaturesParser {
         if (featureType != null) {
             geoJsonReader.setFeatureType(featureType);
         }
-        ByteArrayInputStream input =
-                new ByteArrayInputStream(convertedGeojsonObject.getBytes(Constants.DEFAULT_CHARSET));
+        ByteArrayInputStream input = new ByteArrayInputStream(
+            convertedGeojsonObject.getBytes(Constants.DEFAULT_CHARSET)
+        );
 
         return (SimpleFeatureCollection) geoJsonReader.readFeatureCollection(input);
     }
@@ -212,7 +223,7 @@ public class FeaturesParser {
         String convertedGeojsonObject = geojsonData.trim();
         if (convertedGeojsonObject.startsWith("[")) {
             convertedGeojsonObject =
-                    "{\"type\": \"FeatureCollection\", \"features\": " + convertedGeojsonObject + "}";
+                "{\"type\": \"FeatureCollection\", \"features\": " + convertedGeojsonObject + "}";
         }
         return convertedGeojsonObject;
     }
@@ -221,9 +232,11 @@ public class FeaturesParser {
         try {
             JSONObject geojson = new JSONObject(geojsonData);
             if (geojson.has("type") && geojson.getString("type").equalsIgnoreCase("FeatureCollection")) {
-                CoordinateReferenceSystem crs =
-                        parseCoordinateReferenceSystem(this.httpRequestFactory, geojson,
-                                                       this.forceLongitudeFirst);
+                CoordinateReferenceSystem crs = parseCoordinateReferenceSystem(
+                    this.httpRequestFactory,
+                    geojson,
+                    this.forceLongitudeFirst
+                );
                 SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
                 builder.setName("GeosjonFeatureType");
                 final JSONArray features = geojson.getJSONArray("features");
@@ -267,7 +280,6 @@ public class FeaturesParser {
         } catch (JSONException e) {
             throw new PrintException("Invalid geoJSON: \n" + geojsonData + ": " + e.getMessage(), e);
         }
-
     }
 
     @SuppressWarnings("unchecked")

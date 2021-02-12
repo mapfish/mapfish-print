@@ -1,12 +1,12 @@
 {
-    "layout" : "main",
-    "attributes": {
-        "table": {
-            "columns": ["id", "name", "icon"],
-            "data": [
-                [1, "blah", "icon_pan"],
-                [2, "blip", null]
-            ]
-        }
+  "layout": "main",
+  "attributes": {
+    "table": {
+      "columns": ["id", "name", "icon"],
+      "data": [
+        [1, "blah", "icon_pan"],
+        [2, "blip", null]
+      ]
     }
+  }
 }

@@ -1,5 +1,9 @@
 package org.mapfish.print.servlet.job;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -15,23 +19,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
 
     @Autowired
     ThreadPoolJobManager jobManager;
+
     @Autowired
     ApplicationContext context;
+
     @Autowired
     JobQueue jobQueue;
 
     @Test
     public void testRun() {
-
         assertRegistryValues(0, 0, true);
         TestPrintJob printJob = new TestPrintJob();
         PrintJobEntryImpl entry = (PrintJobEntryImpl) printJob.getEntry();
@@ -48,15 +48,16 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
 
         final AtomicBoolean finishFlag = new AtomicBoolean(false);
 
-        printJob = new TestPrintJob() {
-            @Override
-            protected PrintResult withOpenOutputStream(PrintAction function) throws Exception {
-                while (!finishFlag.get()) {
-                    Thread.sleep(100);
+        printJob =
+            new TestPrintJob() {
+                @Override
+                protected PrintResult withOpenOutputStream(PrintAction function) throws Exception {
+                    while (!finishFlag.get()) {
+                        Thread.sleep(100);
+                    }
+                    return super.withOpenOutputStream(function);
                 }
-                return super.withOpenOutputStream(function);
-            }
-        };
+            };
         entry.setStartTime(System.currentTimeMillis());
         jobManager.submit(printJob);
 
@@ -68,8 +69,10 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
     }
 
     private void assertRegistryValues(
-            int expectedLastPrintCount, int expectedRequestsMade, boolean timeSpentIsZero) {
-
+        int expectedLastPrintCount,
+        int expectedRequestsMade,
+        boolean timeSpentIsZero
+    ) {
         long start = System.currentTimeMillis();
         AssertionError error = null;
         while ((System.currentTimeMillis() - start) > 2000) {
@@ -101,8 +104,12 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
             try {
                 initForTesting(context);
                 PrintJobEntryImpl entry = (PrintJobEntryImpl) getEntry();
-                entry.setRequestData(new PJsonObject(
-                        new JSONObject("{\"" + MapPrinterServlet.JSON_APP + "\":\"default\"}"), "job"));
+                entry.setRequestData(
+                    new PJsonObject(
+                        new JSONObject("{\"" + MapPrinterServlet.JSON_APP + "\":\"default\"}"),
+                        "job"
+                    )
+                );
                 entry.setReferenceId("abc");
                 Template template = new Template();
                 Configuration configuration = new Configuration();
@@ -122,12 +129,16 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
 
         @Override
         protected PrintJobResult createResult(
-                final String fileName, final String fileExtension, final String mimeType) {
+            final String fileName,
+            final String fileExtension,
+            final String mimeType
+        ) {
             return null;
         }
     }
 
     private class FailingPrintJob extends TestPrintJob {
+
         @Override
         protected PrintResult withOpenOutputStream(PrintAction function) {
             throw new RuntimeException("failure");

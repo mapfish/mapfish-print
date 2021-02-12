@@ -36,7 +36,6 @@
           "style": "file://roads.sld",
           "geojson": "http://center_gml_only_aoi_for_bounds.json/geojson/ny-roads-3857.json"
         }
-
       ]
     }
   }

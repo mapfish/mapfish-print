@@ -1,6 +1,8 @@
-{ "type": "FeatureCollection",
+{
+  "type": "FeatureCollection",
   "features": [
-    { "type": "Feature",
+    {
+      "type": "Feature",
       "geometry": {
         "type": "Point",
         "coordinates": [96, 0.0]

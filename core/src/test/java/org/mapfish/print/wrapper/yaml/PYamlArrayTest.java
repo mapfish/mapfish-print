@@ -1,18 +1,17 @@
 package org.mapfish.print.wrapper.yaml;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.mapfish.print.wrapper.json.PJsonArray;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Test;
+import org.mapfish.print.wrapper.json.PJsonArray;
 
 public class PYamlArrayTest {
 
@@ -20,9 +19,12 @@ public class PYamlArrayTest {
     public void testToJSON() {
         Map<String, Object> embedded = new HashMap<>();
         embedded.put("a", 1);
-        List<Object> array = Arrays.asList(1, embedded,
-                                           Arrays.asList(1, 2, 3),
-                                           new String[]{"a", "b", "c"});
+        List<Object> array = Arrays.asList(
+            1,
+            embedded,
+            Arrays.asList(1, 2, 3),
+            new String[] { "a", "b", "c" }
+        );
         final PJsonArray test = new PYamlArray(null, array, "test").toJSON();
         assertEquals(4, test.size());
 

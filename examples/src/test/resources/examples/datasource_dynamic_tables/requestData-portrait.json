@@ -5,10 +5,7 @@
     "title": "Report title",
     "map": {
       "projection": "EPSG:4326",
-      "center": [
-        0,
-        0
-      ],
+      "center": [0, 0],
       "layers": [],
       "scale": 25000,
       "dpi": 90
@@ -17,54 +14,22 @@
       {
         "title": "Table 1",
         "table": {
-          "columns": [
-            "osm_id",
-            "timestamp",
-            "name",
-            "type"
-          ],
+          "columns": ["osm_id", "timestamp", "name", "type"],
           "data": [
-            [
-              "337907707",
-              "2010-11-09T22:54:26Z",
-              "Alpes",
-              "bus_stop"
-            ],
-            [
-              "337907710",
-              "2010-11-09T22:54:25Z",
-              "Alpes",
-              "bus_stop"
-            ],
-            [
-              "347352116",
-              "2010-11-09T22:54:23Z",
-              "Mirabeau",
-              "bus_stop"
-            ]
+            ["337907707", "2010-11-09T22:54:26Z", "Alpes", "bus_stop"],
+            ["337907710", "2010-11-09T22:54:25Z", "Alpes", "bus_stop"],
+            ["347352116", "2010-11-09T22:54:23Z", "Mirabeau", "bus_stop"]
           ]
         }
       },
       {
         "title": "Table 2",
         "table": {
-          "columns": [
-            "osm_id",
-            "name"
-          ],
+          "columns": ["osm_id", "name"],
           "data": [
-            [
-              "337907707",
-              "Alpes"
-            ],
-            [
-              "337907710",
-              "Alpes"
-            ],
-            [
-              "347352116",
-              "Mirabeau"
-            ]
+            ["337907707", "Alpes"],
+            ["337907710", "Alpes"],
+            ["347352116", "Mirabeau"]
           ]
         }
       }

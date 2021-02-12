@@ -1,13 +1,5 @@
 package org.mapfish.print.processor.http;
 
-import org.mapfish.print.ExceptionUtils;
-import org.mapfish.print.RegexpUtil;
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
-import org.mapfish.print.http.MfClientHttpRequestFactory;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpRequest;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,6 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.RegexpUtil;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
+import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequest;
 
 /**
  * This processor maps https requests to http requests for certain hosts. The port number can also be mapped
@@ -35,6 +34,7 @@ import java.util.regex.Pattern;
  * ).</p> [[examples=http_processors]]
  */
 public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFactoryProcessor {
+
     private static final int HTTPS_STANDARD_PORT = 443;
     private static final int HTTP_STANDARD_PORT = 80;
     private static final int JAVA_HTTPS_STANDARD_PORT = 8443;
@@ -54,7 +54,9 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
 
     @Override
     protected void extraValidation(
-            final List<Throwable> validationErrors, final Configuration configuration) {
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {
         super.extraValidation(validationErrors, configuration);
         if (this.hosts.isEmpty()) {
             validationErrors.add(new IllegalArgumentException("No hosts are registered"));
@@ -63,14 +65,16 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
 
     @Override
     public MfClientHttpRequestFactory createFactoryWrapper(
-            final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
-            final MfClientHttpRequestFactory requestFactory) {
+        final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
+        final MfClientHttpRequestFactory requestFactory
+    ) {
         return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory, matchers, false) {
             @Override
             protected ClientHttpRequest createRequest(
-                    final URI uri,
-                    final HttpMethod httpMethod,
-                    final MfClientHttpRequestFactory requestFactory) throws IOException {
+                final URI uri,
+                final HttpMethod httpMethod,
+                final MfClientHttpRequestFactory requestFactory
+            ) throws IOException {
                 if (uri.getScheme() != null && uri.getScheme().equals("https")) {
                     try {
                         URI httpUri = uri;
@@ -117,13 +121,13 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
      */
     public void setHosts(final List<String> hosts) {
         this.hosts.clear();
-        for (String host: hosts) {
+        for (String host : hosts) {
             this.hosts.add(RegexpUtil.compilePattern(host));
         }
     }
 
     private boolean matchingHost(final String host) {
-        for (Pattern hostPattern: UseHttpForHttpsProcessor.this.hosts) {
+        for (Pattern hostPattern : UseHttpForHttpsProcessor.this.hosts) {
             if (hostPattern.matcher(host).matches()) {
                 return true;
             }
@@ -138,9 +142,16 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
             port = UseHttpForHttpsProcessor.this.portMapping.get(port);
         }
 
-        httpUri = new URI("http", uri.getUserInfo(), uri.getHost(), port,
-                          uri.getPath(),
-                          uri.getQuery(), uri.getFragment());
+        httpUri =
+            new URI(
+                "http",
+                uri.getUserInfo(),
+                uri.getHost(),
+                port,
+                uri.getPath(),
+                uri.getQuery(),
+                uri.getFragment()
+            );
         return httpUri;
     }
 
@@ -160,8 +171,7 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
             authority = authority + port;
         }
 
-        httpUri = new URI("http", authority, uri.getPath(), uri.getQuery(),
-                          uri.getFragment());
+        httpUri = new URI("http", authority, uri.getPath(), uri.getQuery(), uri.getFragment());
         return httpUri;
     }
 }

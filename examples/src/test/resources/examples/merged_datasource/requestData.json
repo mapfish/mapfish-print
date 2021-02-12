@@ -8,44 +8,20 @@
       {
         "displayName": "Feature 1",
         "table": {
-          "columns": [
-            "id",
-            "name",
-            "icon"
-          ],
+          "columns": ["id", "name", "icon"],
           "data": [
-            [
-              1,
-              "blah",
-              "icon_pan"
-            ],
-            [
-              2,
-              "blip",
-              "icon_zoomin"
-            ]
+            [1, "blah", "icon_pan"],
+            [2, "blip", "icon_zoomin"]
           ]
         }
       },
       {
         "displayName": "Feature 2",
         "table": {
-          "columns": [
-            "id",
-            "name",
-            "icon"
-          ],
+          "columns": ["id", "name", "icon"],
           "data": [
-            [
-              10,
-              "blah2",
-              "icon_pan2"
-            ],
-            [
-              20,
-              "blip2",
-              "icon_zoomin2"
-            ]
+            [10, "blah2", "icon_pan2"],
+            [20, "blip2", "icon_zoomin2"]
           ]
         }
       }
@@ -55,44 +31,31 @@
       "classes": [
         {
           "name": "Arbres",
-          "icons": [
-            "http://geoserver:8080/www/legends/arbres.png"
-          ]
+          "icons": ["http://geoserver:8080/www/legends/arbres.png"]
         },
         {
           "name": "Peturbations",
-          "icons": [
-            "http://geoserver:8080/www/legends/perturbations.png"
-          ]
+          "icons": ["http://geoserver:8080/www/legends/perturbations.png"]
         },
         {
           "name": "Points de vente",
-          "icons": [
-            "http://geoserver:8080/www/legends/points-de-vente.png"
-          ]
+          "icons": ["http://geoserver:8080/www/legends/points-de-vente.png"]
         },
         {
           "name": "Stationement",
-          "icons": [
-            "http://geoserver:8080/www/legends/stationement.png"
-          ]
+          "icons": ["http://geoserver:8080/www/legends/stationement.png"]
         }
       ]
     },
     "map": {
       "projection": "EPSG:3857",
       "dpi": 72,
-      "center": [
-        -8233518.5005945,
-        4980320.4059228
-      ],
+      "center": [-8233518.5005945, 4980320.4059228],
       "scale": 25000,
       "layers": [
         {
           "type": "WMS",
-          "layers": [
-            "tiger-ny"
-          ],
+          "layers": ["tiger-ny"],
           "baseURL": "http://geoserver:8080/wms",
           "imageFormat": "image/png",
           "version": "1.1.1",

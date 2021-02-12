@@ -32,7 +32,7 @@ public enum VerticalAlign {
      */
     public static VerticalAlign fromString(final String label) {
         if (label != null) {
-            for (VerticalAlign type: VerticalAlign.values()) {
+            for (VerticalAlign type : VerticalAlign.values()) {
                 if (label.equalsIgnoreCase(type.label)) {
                     return type;
                 }

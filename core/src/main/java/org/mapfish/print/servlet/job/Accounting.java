@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Do some accounting for jobs.
  */
 public class Accounting {
+
     @Autowired
     private MetricRegistry metricRegistry;
 
@@ -28,6 +29,7 @@ public class Accounting {
      * Do accounting for a job.
      */
     public class JobTracker {
+
         /**
          * The job description.
          */

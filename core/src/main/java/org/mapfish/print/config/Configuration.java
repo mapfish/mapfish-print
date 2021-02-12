@@ -1,5 +1,20 @@
 package org.mapfish.print.config;
 
+import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Graphic;
 import org.geotools.styling.Mark;
@@ -37,28 +52,12 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 
-import java.awt.Color;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
-
-
 /**
  * The Main Configuration Bean.
  *
  */
 public class Configuration implements ConfigurationObject {
+
     private static final Map<String, String> GEOMETRY_NAME_ALIASES;
     private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
 
@@ -70,8 +69,10 @@ public class Configuration implements ConfigurationObject {
         map.put("multigeometry", Geometry.class.getSimpleName().toLowerCase());
 
         map.put("line", LineString.class.getSimpleName().toLowerCase());
-        map.put(LineString.class.getSimpleName().toLowerCase(),
-                LineString.class.getSimpleName().toLowerCase());
+        map.put(
+            LineString.class.getSimpleName().toLowerCase(),
+            LineString.class.getSimpleName().toLowerCase()
+        );
         map.put("linearring", LineString.class.getSimpleName().toLowerCase());
         map.put("multilinestring", LineString.class.getSimpleName().toLowerCase());
         map.put("multiline", LineString.class.getSimpleName().toLowerCase());
@@ -115,10 +116,13 @@ public class Configuration implements ConfigurationObject {
 
     @Autowired
     private StyleParser styleParser;
+
     @Autowired
     private ClientHttpRequestFactory clientHttpRequestFactory;
+
     @Autowired
     private ConfigFileLoaderManager fileLoaderManager;
+
     @Autowired
     private ApplicationContext context;
 
@@ -238,13 +242,18 @@ public class Configuration implements ConfigurationObject {
         json.key("layouts");
         json.array();
         final Map<String, Template> accessibleTemplates = getTemplates();
-        accessibleTemplates.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey))
-                .forEach(entry -> {
-            json.object();
-            json.key("name").value(entry.getKey());
-            entry.getValue().printClientConfig(json);
-            json.endObject();
-                });
+        accessibleTemplates
+            .entrySet()
+            .stream()
+            .sorted(Comparator.comparing(Map.Entry::getKey))
+            .forEach(
+                entry -> {
+                    json.object();
+                    json.key("name").value(entry.getKey());
+                    entry.getValue().printClientConfig(json);
+                    json.endObject();
+                }
+            );
         json.endArray();
         json.key("smtp").object();
         json.key("enabled").value(smtp != null);
@@ -287,15 +296,20 @@ public class Configuration implements ConfigurationObject {
     }
 
     public final Map<String, Template> getTemplates() {
-        return this.templates.entrySet().stream().filter(input -> {
-            try {
-                accessAssertion.assertAccess("Configuration", this);
-                input.getValue().assertAccessible(input.getKey());
-                return true;
-            } catch (AccessDeniedException | AuthenticationCredentialsNotFoundException e) {
-                return false;
-            }
-        }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return this.templates.entrySet()
+            .stream()
+            .filter(
+                input -> {
+                    try {
+                        accessAssertion.assertAccess("Configuration", this);
+                        input.getValue().assertAccessible(input.getKey());
+                        return true;
+                    } catch (AccessDeniedException | AuthenticationCredentialsNotFoundException e) {
+                        return false;
+                    }
+                }
+            )
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     /**
@@ -352,8 +366,6 @@ public class Configuration implements ConfigurationObject {
         } else {
             return Optional.empty();
         }
-
-
     }
 
     /**
@@ -399,24 +411,31 @@ public class Configuration implements ConfigurationObject {
     }
 
     private boolean isPolygonType(@Nonnull final String normalizedGeomName) {
-        return normalizedGeomName.equalsIgnoreCase(Polygon.class.getSimpleName())
-                || normalizedGeomName.equalsIgnoreCase(MultiPolygon.class.getSimpleName());
+        return (
+            normalizedGeomName.equalsIgnoreCase(Polygon.class.getSimpleName()) ||
+            normalizedGeomName.equalsIgnoreCase(MultiPolygon.class.getSimpleName())
+        );
     }
 
     private boolean isLineType(@Nonnull final String normalizedGeomName) {
-        return normalizedGeomName.equalsIgnoreCase(LineString.class.getSimpleName())
-                || normalizedGeomName.equalsIgnoreCase(MultiLineString.class.getSimpleName())
-                || normalizedGeomName.equalsIgnoreCase(LinearRing.class.getSimpleName());
+        return (
+            normalizedGeomName.equalsIgnoreCase(LineString.class.getSimpleName()) ||
+            normalizedGeomName.equalsIgnoreCase(MultiLineString.class.getSimpleName()) ||
+            normalizedGeomName.equalsIgnoreCase(LinearRing.class.getSimpleName())
+        );
     }
 
     private boolean isPointType(@Nonnull final String normalizedGeomName) {
-        return normalizedGeomName.equalsIgnoreCase(Point.class.getSimpleName())
-                || normalizedGeomName.equalsIgnoreCase(MultiPoint.class.getSimpleName());
+        return (
+            normalizedGeomName.equalsIgnoreCase(Point.class.getSimpleName()) ||
+            normalizedGeomName.equalsIgnoreCase(MultiPoint.class.getSimpleName())
+        );
     }
 
     private Symbolizer createMapOverviewStyle(
-            @Nonnull final String normalizedGeomName,
-            @Nonnull final StyleBuilder builder) {
+        @Nonnull final String normalizedGeomName,
+        @Nonnull final StyleBuilder builder
+    ) {
         Stroke stroke = builder.createStroke(Color.blue, 2);
         final Fill fill = builder.createFill(Color.blue, 0.2);
         String overviewGeomType = Polygon.class.getSimpleName();
@@ -447,7 +466,7 @@ public class Configuration implements ConfigurationObject {
      */
     public final void setDefaultStyle(final Map<String, Style> defaultStyle) {
         this.defaultStyle = new HashMap<>(defaultStyle.size());
-        for (Map.Entry<String, Style> entry: defaultStyle.entrySet()) {
+        for (Map.Entry<String, Style> entry : defaultStyle.entrySet()) {
             String normalizedName = GEOMETRY_NAME_ALIASES.get(entry.getKey().toLowerCase());
 
             if (normalizedName == null) {
@@ -490,32 +509,39 @@ public class Configuration implements ConfigurationObject {
         List<Throwable> validationErrors = new ArrayList<>();
         this.accessAssertion.validate(validationErrors, this);
 
-        for (String jdbcDriver: this.jdbcDrivers) {
+        for (String jdbcDriver : this.jdbcDrivers) {
             try {
                 Class.forName(jdbcDriver);
             } catch (ClassNotFoundException e) {
                 try {
                     Configuration.class.getClassLoader().loadClass(jdbcDriver);
                 } catch (ClassNotFoundException e1) {
-                    validationErrors.add(new ConfigurationException(String.format(
-                            "Unable to load JDBC driver: %s ensure that the web application has the jar " +
-                                    "on its classpath", jdbcDriver)));
+                    validationErrors.add(
+                        new ConfigurationException(
+                            String.format(
+                                "Unable to load JDBC driver: %s ensure that the web application has the jar " +
+                                "on its classpath",
+                                jdbcDriver
+                            )
+                        )
+                    );
                 }
             }
         }
 
         if (this.configurationFile == null) {
-            validationErrors.add(new ConfigurationException("Configuration file is field on configuration " +
-                                                                    "object is null"));
+            validationErrors.add(
+                new ConfigurationException("Configuration file is field on configuration " + "object is null")
+            );
         }
         if (this.templates.isEmpty()) {
             validationErrors.add(new ConfigurationException("There are not templates defined."));
         }
-        for (Template template: this.templates.values()) {
+        for (Template template : this.templates.values()) {
             template.validate(validationErrors, this);
         }
 
-        for (HttpProxy proxy: this.proxies) {
+        for (HttpProxy proxy : this.proxies) {
             proxy.validate(validationErrors, this);
         }
 

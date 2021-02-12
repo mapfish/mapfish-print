@@ -6,11 +6,13 @@ import org.mapfish.print.parser.HasDefaultValue;
  * Contains common properties to all layers.
  */
 public class AbstractLayerParams {
+
     /**
      * The opacity of the image.
      */
     @HasDefaultValue
     public double opacity = 1.0;
+
     /**
      * The name of the layer.
      */
@@ -26,8 +28,7 @@ public class AbstractLayerParams {
     /**
      * Constructor.
      */
-    public AbstractLayerParams() {
-    }
+    public AbstractLayerParams() {}
 
     /**
      * Copy constructor.

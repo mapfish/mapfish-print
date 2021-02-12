@@ -45,5 +45,4 @@ public interface AccessAssertion extends ConfigurationObject {
      * @return the copy
      */
     AccessAssertion copy();
-
 }

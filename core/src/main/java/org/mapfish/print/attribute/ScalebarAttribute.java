@@ -1,6 +1,8 @@
 package org.mapfish.print.attribute;
 
-
+import java.awt.Color;
+import java.awt.Dimension;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
@@ -12,10 +14,6 @@ import org.mapfish.print.processor.map.scalebar.HorizontalAlign;
 import org.mapfish.print.processor.map.scalebar.Orientation;
 import org.mapfish.print.processor.map.scalebar.Type;
 import org.mapfish.print.processor.map.scalebar.VerticalAlign;
-
-import java.awt.Color;
-import java.awt.Dimension;
-import java.util.List;
 
 /**
  * <p>The attributes for {@link org.mapfish.print.processor.map.scalebar.CreateScalebarProcessor} (see
@@ -31,13 +29,19 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
     @Override
     public final void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.width == null || this.width < 1) {
-            validationErrors.add(new ConfigurationException(
-                    "width field is not legal: " + this.width + " in " + getClass().getName()));
+            validationErrors.add(
+                new ConfigurationException(
+                    "width field is not legal: " + this.width + " in " + getClass().getName()
+                )
+            );
         }
 
         if (this.height == null || this.height < 1) {
-            validationErrors.add(new ConfigurationException(
-                    "height field is not legal: " + this.height + " in " + getClass().getName()));
+            validationErrors.add(
+                new ConfigurationException(
+                    "height field is not legal: " + this.height + " in " + getClass().getName()
+                )
+            );
         }
     }
 
@@ -78,7 +82,6 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
     public final void setHeight(final Integer height) {
         this.height = height;
     }
-
 
     public final Boolean getCreateSubReport() {
         return this.createSubReport;

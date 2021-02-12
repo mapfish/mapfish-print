@@ -2,14 +2,13 @@ package org.mapfish.print.map.tiled;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Iterator;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Iterator;
 
 /**
  * An abstract layers params class for WM* layers (e.g. WMS or WMTS).
@@ -17,6 +16,7 @@ import java.util.Iterator;
 public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
 
     private final Multimap<String, String> additionalCustomParam = HashMultimap.create();
+
     /**
      * Custom query parameters to use when making http requests.  These are related to {@link
      * #mergeableParams} except they are the parameters that will prevent two layers from the same server from
@@ -33,6 +33,7 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
      */
     @HasDefaultValue
     public PObject customParams;
+
     /**
      * Custom query parameters that can be merged if multiple layers are merged together into a single
      * request.
@@ -111,10 +112,8 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
         return params;
     }
 
-
     @Override
-    public String createCommonUrl()
-            throws URISyntaxException {
+    public String createCommonUrl() throws URISyntaxException {
         return getBaseUrl();
     }
 
@@ -137,5 +136,4 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
             return false;
         }
     }
-
 }

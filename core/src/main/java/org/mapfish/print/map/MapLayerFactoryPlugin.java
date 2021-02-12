@@ -1,11 +1,10 @@
 package org.mapfish.print.map;
 
-import org.mapfish.print.attribute.map.MapLayer;
-import org.mapfish.print.config.Template;
-
 import java.io.IOException;
 import java.util.Set;
 import javax.annotation.Nonnull;
+import org.mapfish.print.attribute.map.MapLayer;
+import org.mapfish.print.config.Template;
 
 /**
  * Parses layer request data and creates a MapLayer from it.
@@ -14,7 +13,6 @@ import javax.annotation.Nonnull;
  *         create the layer.
  */
 public interface MapLayerFactoryPlugin<Param> {
-
     /**
      * Return a set of all the values the json 'type' property should have for this plugin to apply typenames
      * <em>MUST</em> be lowercase.
@@ -42,7 +40,5 @@ public interface MapLayerFactoryPlugin<Param> {
      * @param layerData an object populated from the json for the layer
      */
     @Nonnull
-    MapLayer parse(
-            @Nonnull Template template,
-            @Nonnull Param layerData) throws IOException;
+    MapLayer parse(@Nonnull Template template, @Nonnull Param layerData) throws IOException;
 }

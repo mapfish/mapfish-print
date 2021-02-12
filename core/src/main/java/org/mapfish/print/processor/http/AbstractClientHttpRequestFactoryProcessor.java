@@ -1,19 +1,18 @@
 package org.mapfish.print.processor.http;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.http.matcher.URIMatcher;
 import org.mapfish.print.processor.http.matcher.UriMatchers;
 
-import java.util.List;
-import javax.annotation.Nullable;
-
 /**
  * The AbstractClientHttpRequestFactoryProcessor class.
  */
 public abstract class AbstractClientHttpRequestFactoryProcessor
-        extends AbstractProcessor<ClientHttpFactoryProcessorParam, Void>
-        implements HttpProcessor<ClientHttpFactoryProcessorParam> {
+    extends AbstractProcessor<ClientHttpFactoryProcessorParam, Void>
+    implements HttpProcessor<ClientHttpFactoryProcessorParam> {
 
     /**
      * The matchers that choose if the processor is applied or not.
@@ -61,7 +60,9 @@ public abstract class AbstractClientHttpRequestFactoryProcessor
 
     @Override
     protected void extraValidation(
-            final List<Throwable> validationErrors, final Configuration configuration) {
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {
         this.matchers.validate(validationErrors);
     }
 
@@ -73,11 +74,10 @@ public abstract class AbstractClientHttpRequestFactoryProcessor
 
     @Nullable
     @Override
-    public final Void execute(
-            final ClientHttpFactoryProcessorParam values,
-            final ExecutionContext context) {
-        values.clientHttpRequestFactoryProvider.set(createFactoryWrapper(
-                values, values.clientHttpRequestFactoryProvider.get()));
+    public final Void execute(final ClientHttpFactoryProcessorParam values, final ExecutionContext context) {
+        values.clientHttpRequestFactoryProvider.set(
+            createFactoryWrapper(values, values.clientHttpRequestFactoryProvider.get())
+        );
         return null;
     }
 }

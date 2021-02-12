@@ -8,9 +8,9 @@ assignees: ''
 
 **Context**
 
-- MapFish print version: ?
-- Java version: ?
-- OS: ?
+-   MapFish print version: ?
+-   Java version: ?
+-   OS: ?
 
 **Describe the bug**
 

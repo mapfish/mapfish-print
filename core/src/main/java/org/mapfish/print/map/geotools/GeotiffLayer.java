@@ -1,5 +1,14 @@
 package org.mapfish.print.map.geotools;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
+import javax.annotation.Nonnull;
 import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.gce.geotiff.GeoTiffFormat;
@@ -16,16 +25,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.function.Function;
-import javax.annotation.Nonnull;
-
 /**
  * <p>Reads a GeoTIFF file from an URL.</p>
  */
@@ -40,10 +39,11 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
      * @param params the parameters for this layer
      */
     public GeotiffLayer(
-            final Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> reader,
-            final StyleSupplier<AbstractGridCoverage2DReader> style,
-            final ExecutorService executorService,
-            final AbstractLayerParams params) {
+        final Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> reader,
+        final StyleSupplier<AbstractGridCoverage2DReader> style,
+        final ExecutorService executorService,
+        final AbstractLayerParams params
+    ) {
         super(reader::apply, style, executorService, params);
     }
 
@@ -56,9 +56,12 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
      * <p>Renders a GeoTIFF image as layer.</p>
      * <p>Type: <code>geotiff</code></p>
      */
-    public static final class Plugin extends AbstractGridCoverageLayerPlugin
-            implements MapLayerFactoryPlugin<GeotiffParam> {
+    public static final class Plugin
+        extends AbstractGridCoverageLayerPlugin
+        implements MapLayerFactoryPlugin<GeotiffParam> {
+
         private static final Set<String> TYPENAMES = Collections.singleton("geotiff");
+
         @Autowired
         private ExecutorService forkJoinPool;
 
@@ -74,25 +77,27 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
 
         @Nonnull
         @Override
-        public GeotiffLayer parse(
-                @Nonnull final Template template,
-                @Nonnull final GeotiffParam param) throws IOException {
-            Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader>
-                    geotiffReader =
-                    getGeotiffReader(template, param.url);
+        public GeotiffLayer parse(@Nonnull final Template template, @Nonnull final GeotiffParam param)
+            throws IOException {
+            Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> geotiffReader = getGeotiffReader(
+                template,
+                param.url
+            );
 
             String styleRef = param.style;
 
-            return new GeotiffLayer(geotiffReader::apply,
-                                    super.<AbstractGridCoverage2DReader>createStyleSupplier(template,
-                                                                                            styleRef),
-                                    this.forkJoinPool,
-                                    param);
+            return new GeotiffLayer(
+                geotiffReader::apply,
+                super.<AbstractGridCoverage2DReader>createStyleSupplier(template, styleRef),
+                this.forkJoinPool,
+                param
+            );
         }
 
         private Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> getGeotiffReader(
-                final Template template,
-                final String geotiffUrl) throws IOException {
+            final Template template,
+            final String geotiffUrl
+        ) throws IOException {
             final URL url = FileUtils.testForLegalFileUrl(template.getConfiguration(), new URL(geotiffUrl));
             return (final MfClientHttpRequestFactory requestFactory) -> {
                 try {
@@ -103,10 +108,13 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
                         geotiffFile = File.createTempFile("downloadedGeotiff", ".tiff");
 
                         final ClientHttpRequest request = requestFactory.createRequest(
-                                url.toURI(), HttpMethod.GET);
-                        try (ClientHttpResponse httpResponse = request.execute();
-
-                             FileOutputStream output = new FileOutputStream(geotiffFile)) {
+                            url.toURI(),
+                            HttpMethod.GET
+                        );
+                        try (
+                            ClientHttpResponse httpResponse = request.execute();
+                            FileOutputStream output = new FileOutputStream(geotiffFile)
+                        ) {
                             IOUtils.copy(httpResponse.getBody(), output);
                         }
                     }
@@ -123,11 +131,13 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
      * The parameters for reading a Geotiff file, either from the server or from a URL.
      */
     public static final class GeotiffParam extends AbstractLayerParams {
+
         /**
          * The url of the geotiff.  It can be a file but if it is the file must be contained within the config
          * directory.
          */
         public String url;
+
         /**
          * A string identifying a style to use when rendering the raster.
          */

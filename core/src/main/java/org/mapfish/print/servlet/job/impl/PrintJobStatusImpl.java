@@ -1,12 +1,5 @@
 package org.mapfish.print.servlet.job.impl;
 
-import org.hibernate.annotations.Target;
-import org.hibernate.annotations.Type;
-import org.mapfish.print.config.access.AccessAssertion;
-import org.mapfish.print.servlet.job.PrintJobEntry;
-import org.mapfish.print.servlet.job.PrintJobResult;
-import org.mapfish.print.servlet.job.PrintJobStatus;
-
 import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,6 +11,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import org.hibernate.annotations.Target;
+import org.hibernate.annotations.Type;
+import org.mapfish.print.config.access.AccessAssertion;
+import org.mapfish.print.servlet.job.PrintJobEntry;
+import org.mapfish.print.servlet.job.PrintJobResult;
+import org.mapfish.print.servlet.job.PrintJobStatus;
 
 /**
  * Represent a print job that has completed.  Contains the information about the print job.
@@ -25,12 +24,15 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "print_job_statuses")
 public class PrintJobStatusImpl implements PrintJobStatus {
+
     @Embedded
     @Target(PrintJobEntryImpl.class)
     private final PrintJobEntry entry;
+
     @Id
     @Type(type = "org.hibernate.type.TextType")
     private String referenceId;
+
     @Column
     @Enumerated(EnumType.STRING)
     private PrintJobStatus.Status status = PrintJobStatus.Status.WAITING;
@@ -190,5 +192,4 @@ public class PrintJobStatusImpl implements PrintJobStatus {
     public void setStatusTime(final Long statusTime) {
         this.statusTime = statusTime;
     }
-
 }

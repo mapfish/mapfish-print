@@ -1,9 +1,6 @@
 package org.mapfish.print.processor;
 
-import org.junit.Test;
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.PDFConfig;
-import org.mapfish.print.output.Values;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,8 +8,10 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.PDFConfig;
+import org.mapfish.print.output.Values;
 
 public class PdfConfigurationProcessorTest {
 
@@ -74,8 +73,10 @@ public class PdfConfigurationProcessorTest {
         assertEquals(updatedTitle, in.pdfConfig.getTitle());
         attributeMap.clear();
 
-        attributeMap
-                .put("title", new PdfConfigurationProcessor.Update(titleKey + ".value", "Print Report %s"));
+        attributeMap.put(
+            "title",
+            new PdfConfigurationProcessor.Update(titleKey + ".value", "Print Report %s")
+        );
         pdfConfigurationProcessor.setUpdates(attributeMap);
         in.values.put(titleKey, new CustomTitleAtt(updatedTitle));
         pdfConfigurationProcessor.execute(in, null);
@@ -99,7 +100,7 @@ public class PdfConfigurationProcessorTest {
         assertEquals("1,2,3", in.pdfConfig.getKeywordsAsString());
 
         pdfConfigurationProcessor.setUpdates(attributeMap);
-        in.values.put(keywordsKey, new String[]{"9", " 8 8", " 7"});
+        in.values.put(keywordsKey, new String[] { "9", " 8 8", " 7" });
         pdfConfigurationProcessor.execute(in, null);
         assertEquals("9,8 8,7", in.pdfConfig.getKeywordsAsString());
 
@@ -114,7 +115,7 @@ public class PdfConfigurationProcessorTest {
         assertEquals("4,5,6", in.pdfConfig.getKeywordsAsString());
 
         pdfConfigurationProcessor.setUpdates(attributeMap);
-        in.values.put(keywordsKey, new Integer[]{6, 7});
+        in.values.put(keywordsKey, new Integer[] { 6, 7 });
         pdfConfigurationProcessor.execute(in, null);
         assertEquals("6,7", in.pdfConfig.getKeywordsAsString());
     }
@@ -161,6 +162,7 @@ public class PdfConfigurationProcessorTest {
     }
 
     public static class CustomTitleAtt {
+
         public String value;
 
         public CustomTitleAtt(String updatedTitle) {

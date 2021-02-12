@@ -1,6 +1,13 @@
 package org.mapfish.print.map.tiled.osm;
 
 import com.codahale.metrics.MetricRegistry;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.concurrent.ForkJoinPool;
+import javax.annotation.Nonnull;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.URIUtils;
@@ -15,18 +22,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.concurrent.ForkJoinPool;
-import javax.annotation.Nonnull;
-
 /**
  * Strategy object for rendering Osm based layers.
  */
 public final class OsmLayer extends AbstractTiledLayer {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(OsmLayer.class);
     private final OsmLayerParam param;
 
@@ -40,18 +40,22 @@ public final class OsmLayer extends AbstractTiledLayer {
      * @param configuration the configuration.
      */
     public OsmLayer(
-            @Nonnull final ForkJoinPool forkJoinPool,
-            @Nonnull final StyleSupplier<GridCoverage2D> styleSupplier,
-            @Nonnull final OsmLayerParam param,
-            @Nonnull final MetricRegistry registry,
-            @Nonnull final Configuration configuration) {
+        @Nonnull final ForkJoinPool forkJoinPool,
+        @Nonnull final StyleSupplier<GridCoverage2D> styleSupplier,
+        @Nonnull final OsmLayerParam param,
+        @Nonnull final MetricRegistry registry,
+        @Nonnull final Configuration configuration
+    ) {
         super(forkJoinPool, styleSupplier, param, registry, configuration);
         this.param = param;
     }
 
     @Override
     protected TileCacheInformation createTileInformation(
-            final MapBounds bounds, final Rectangle paintArea, final double dpi) {
+        final MapBounds bounds,
+        final Rectangle paintArea,
+        final double dpi
+    ) {
         return new OsmTileCacheInformation(bounds, paintArea, dpi);
     }
 
@@ -61,13 +65,12 @@ public final class OsmLayer extends AbstractTiledLayer {
     }
 
     private final class OsmTileCacheInformation extends TileCacheInformation {
+
         private final double resolution;
         private final int resolutionIndex;
 
-        private OsmTileCacheInformation(
-                final MapBounds bounds, final Rectangle paintArea, final double dpi) {
+        private OsmTileCacheInformation(final MapBounds bounds, final Rectangle paintArea, final double dpi) {
             super(bounds, paintArea, dpi, OsmLayer.this.param);
-
             final double targetResolution = bounds.getScale(paintArea, dpi).getResolution();
 
             Double[] resolutions = OsmLayer.this.param.resolutions;
@@ -89,26 +92,31 @@ public final class OsmLayer extends AbstractTiledLayer {
         @Nonnull
         @Override
         public ClientHttpRequest getTileRequest(
-                final MfClientHttpRequestFactory httpRequestFactory,
-                final String commonUrl,
-                final ReferencedEnvelope tileBounds,
-                final Dimension tileSizeOnScreen,
-                final int column,
-                final int row)
-                throws IOException, URISyntaxException {
-
+            final MfClientHttpRequestFactory httpRequestFactory,
+            final String commonUrl,
+            final ReferencedEnvelope tileBounds,
+            final Dimension tileSizeOnScreen,
+            final int column,
+            final int row
+        ) throws IOException, URISyntaxException {
             final URI uri;
-            if (commonUrl.contains("{x}") && commonUrl.contains("{z}")
-                    && (commonUrl.contains("{y}") || commonUrl.contains("{-y}"))) {
+            if (
+                commonUrl.contains("{x}") &&
+                commonUrl.contains("{z}") &&
+                (commonUrl.contains("{y}") || commonUrl.contains("{-y}"))
+            ) {
                 String url = commonUrl
-                        .replace("{z}", Integer.toString(this.resolutionIndex))
-                        .replace("{x}", Integer.toString(column))
-                        .replace("{y}", Integer.toString(row));
+                    .replace("{z}", Integer.toString(this.resolutionIndex))
+                    .replace("{x}", Integer.toString(column))
+                    .replace("{y}", Integer.toString(row));
                 if (commonUrl.contains("{-y}")) {
                     // {-y} is for  OSGeo TMS layers, see also: https://josm.openstreetmap
                     // .de/wiki/Maps#TileMapServicesTMS
-                    url = url.replace("{-y}", Integer.toString(
-                            (int) Math.pow(2, this.resolutionIndex) - 1 - row));
+                    url =
+                        url.replace(
+                            "{-y}",
+                            Integer.toString((int) Math.pow(2, this.resolutionIndex) - 1 - row)
+                        );
                 }
                 uri = new URI(url);
             } else {
@@ -125,8 +133,13 @@ public final class OsmLayer extends AbstractTiledLayer {
             }
 
             return httpRequestFactory.createRequest(
-                    URIUtils.addParams(uri, OsmLayerParam.convertToMultiMap(OsmLayer.this.param.customParams),
-                                       URIUtils.getParameters(uri).keySet()), HttpMethod.GET);
+                URIUtils.addParams(
+                    uri,
+                    OsmLayerParam.convertToMultiMap(OsmLayer.this.param.customParams),
+                    URIUtils.getParameters(uri).keySet()
+                ),
+                HttpMethod.GET
+            );
         }
 
         @Override

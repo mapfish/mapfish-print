@@ -1,11 +1,31 @@
 package org.mapfish.print.http;
 
+import static org.junit.Assert.assertEquals;
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.TrustManagerFactory;
 import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -25,33 +45,15 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.TrustManagerFactory;
-
-import static org.junit.Assert.assertEquals;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
+@ContextConfiguration(
+    locations = {
         AbstractMapfishSpringTest.DEFAULT_SPRING_XML,
-        "classpath:/org/mapfish/print/http/proxy/application-context-proxy-test.xml"
-})
+        "classpath:/org/mapfish/print/http/proxy/application-context-proxy-test.xml",
+    }
+)
 public class HttpProxyTest {
+
     static final int HTTPS_PROXY_PORT = 23433;
     static final String LOCALHOST = "localhost";
     private static final int PROXY_PORT = 23434;
@@ -63,6 +65,7 @@ public class HttpProxyTest {
 
     @Autowired
     ConfigurationFactory configurationFactory;
+
     @Autowired
     private MfClientHttpRequestFactoryImpl requestFactory;
 
@@ -85,11 +88,14 @@ public class HttpProxyTest {
     }
 
     static void assertCorrectResponse(
-            ConfigurationFactory configurationFactory,
-            MfClientHttpRequestFactoryImpl requestFactory,
-            HttpCredential httpCredential, String expected, String target, String path) throws Exception {
-        final File configFile = AbstractMapfishSpringTest.getFile(
-                HttpProxyTest.class, "proxy/config.yaml");
+        ConfigurationFactory configurationFactory,
+        MfClientHttpRequestFactoryImpl requestFactory,
+        HttpCredential httpCredential,
+        String expected,
+        String target,
+        String path
+    ) throws Exception {
+        final File configFile = AbstractMapfishSpringTest.getFile(HttpProxyTest.class, "proxy/config.yaml");
         configurationFactory.setDoValidation(false);
         final Configuration config = configurationFactory.getConfig(configFile);
         final CertificateStore certificateStore = new CertificateStore();
@@ -104,8 +110,11 @@ public class HttpProxyTest {
             config.setCredentials(Collections.singletonList(httpCredential));
         }
 
-        ConfigFileResolvingHttpRequestFactory clientHttpRequestFactory =
-                new ConfigFileResolvingHttpRequestFactory(requestFactory, config, "test");
+        ConfigFileResolvingHttpRequestFactory clientHttpRequestFactory = new ConfigFileResolvingHttpRequestFactory(
+            requestFactory,
+            config,
+            "test"
+        );
 
         URI uri = new URI(target + path);
         final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
@@ -118,8 +127,7 @@ public class HttpProxyTest {
     }
 
     private static SSLContext getSslContext()
-            throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException,
-            UnrecoverableKeyException, KeyManagementException {
+        throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException, UnrecoverableKeyException, KeyManagementException {
         SSLContext sslContext = SSLContext.getInstance("TLS");
 
         char[] password = "password".toCharArray();
@@ -144,7 +152,7 @@ public class HttpProxyTest {
     }
 
     public static void respond(HttpExchange httpExchange, String errorMessage, int responseCode)
-            throws IOException {
+        throws IOException {
         final byte[] bytes = errorMessage.getBytes(Constants.DEFAULT_CHARSET);
         httpExchange.sendResponseHeaders(responseCode, bytes.length);
         httpExchange.getResponseBody().write(bytes);
@@ -157,12 +165,14 @@ public class HttpProxyTest {
 
         final SSLEngine m_engine = sslContext.createSSLEngine();
 
-        httpsServer.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
-            public void configure(HttpsParameters params) {
-                params.setCipherSuites(m_engine.getEnabledCipherSuites());
-                params.setProtocols(m_engine.getEnabledProtocols());
+        httpsServer.setHttpsConfigurator(
+            new HttpsConfigurator(sslContext) {
+                public void configure(HttpsParameters params) {
+                    params.setCipherSuites(m_engine.getEnabledCipherSuites());
+                    params.setProtocols(m_engine.getEnabledProtocols());
+                }
             }
-        });
+        );
         httpsServer.start();
 
         return httpsServer;
@@ -184,7 +194,6 @@ public class HttpProxyTest {
         errors.clear();
         httpProxy.validate(errors, configuration);
         assertEquals(0, errors.size());
-
     }
 
     @Test
@@ -194,16 +203,17 @@ public class HttpProxyTest {
         httpProxy.setPort(PROXY_PORT);
 
         final String path = "/request";
-        proxyServer.createContext(path, new HttpHandler() {
-            @Override
-            public void handle(HttpExchange httpExchange) throws IOException {
-                respond(httpExchange, MESSAGE_FROM_PROXY, 200);
+        proxyServer.createContext(
+            path,
+            new HttpHandler() {
+                @Override
+                public void handle(HttpExchange httpExchange) throws IOException {
+                    respond(httpExchange, MESSAGE_FROM_PROXY, 200);
+                }
             }
-        });
+        );
 
-        assertCorrectResponse(
-                httpProxy, MESSAGE_FROM_PROXY,
-                "http://" + LOCALHOST + ":" + TARGET_PORT, path);
+        assertCorrectResponse(httpProxy, MESSAGE_FROM_PROXY, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
     }
 
     @Test
@@ -214,33 +224,36 @@ public class HttpProxyTest {
         httpProxy.setUsername("username");
 
         final String path = "/username";
-        httpsServer.createContext(path, new HttpHandler() {
-            @Override
-            public void handle(HttpExchange httpExchange) throws IOException {
-                final String authorization = httpExchange.getRequestHeaders().getFirst("Authorization");
-                if (authorization == null) {
-                    httpExchange.getResponseHeaders().add(
-                            "WWW-Authenticate", "Basic realm=\"Test Site\"");
-                    httpExchange.sendResponseHeaders(401, 0);
-                    httpExchange.close();
-                } else {
-                    final String expectedAuth = "Basic dXNlcm5hbWU6bnVsbA==";
-                    if (authorization.equals(expectedAuth)) {
-                        respond(httpExchange, MESSAGE_FROM_PROXY, 200);
+        httpsServer.createContext(
+            path,
+            new HttpHandler() {
+                @Override
+                public void handle(HttpExchange httpExchange) throws IOException {
+                    final String authorization = httpExchange.getRequestHeaders().getFirst("Authorization");
+                    if (authorization == null) {
+                        httpExchange
+                            .getResponseHeaders()
+                            .add("WWW-Authenticate", "Basic realm=\"Test Site\"");
+                        httpExchange.sendResponseHeaders(401, 0);
+                        httpExchange.close();
                     } else {
-                        final String errorMessage =
-                                String.format("Expected authorization:\n" +
-                                                      "'%s' but got:\n" +
-                                                      "'%s'", expectedAuth, authorization);
-                        respond(httpExchange, errorMessage, 500);
+                        final String expectedAuth = "Basic dXNlcm5hbWU6bnVsbA==";
+                        if (authorization.equals(expectedAuth)) {
+                            respond(httpExchange, MESSAGE_FROM_PROXY, 200);
+                        } else {
+                            final String errorMessage = String.format(
+                                "Expected authorization:\n" + "'%s' but got:\n" + "'%s'",
+                                expectedAuth,
+                                authorization
+                            );
+                            respond(httpExchange, errorMessage, 500);
+                        }
                     }
                 }
             }
-        });
+        );
 
-        assertCorrectResponse(
-                httpProxy, MESSAGE_FROM_PROXY,
-                "http://" + LOCALHOST + ":" + TARGET_PORT, path);
+        assertCorrectResponse(httpProxy, MESSAGE_FROM_PROXY, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
     }
 
     @Test
@@ -252,31 +265,37 @@ public class HttpProxyTest {
         httpProxy.setPassword("password");
 
         final String path = "/usernameAndPassword";
-        httpsServer.createContext(path, new HttpHandler() {
-            @Override
-            public void handle(HttpExchange httpExchange) throws IOException {
-                final String authorization = httpExchange.getRequestHeaders().getFirst("Authorization");
-                if (authorization == null) {
-                    httpExchange.getResponseHeaders().add(
-                            "WWW-Authenticate", "Basic realm=\"Test Site\"");
-                    httpExchange.sendResponseHeaders(401, 0);
-                    httpExchange.close();
-                } else {
-                    final String expectedAuth = "Basic dXNlcm5hbWU6cGFzc3dvcmQ=";
-                    if (authorization.equals(expectedAuth)) {
-                        respond(httpExchange, MESSAGE_FROM_PROXY, 200);
+        httpsServer.createContext(
+            path,
+            new HttpHandler() {
+                @Override
+                public void handle(HttpExchange httpExchange) throws IOException {
+                    final String authorization = httpExchange.getRequestHeaders().getFirst("Authorization");
+                    if (authorization == null) {
+                        httpExchange
+                            .getResponseHeaders()
+                            .add("WWW-Authenticate", "Basic realm=\"Test Site\"");
+                        httpExchange.sendResponseHeaders(401, 0);
+                        httpExchange.close();
                     } else {
-                        final String errorMessage =
-                                "Expected authorization:\n'" + expectedAuth + "' but got:\n'"
-                                        + authorization + "'";
-                        respond(httpExchange, errorMessage, 500);
+                        final String expectedAuth = "Basic dXNlcm5hbWU6cGFzc3dvcmQ=";
+                        if (authorization.equals(expectedAuth)) {
+                            respond(httpExchange, MESSAGE_FROM_PROXY, 200);
+                        } else {
+                            final String errorMessage =
+                                "Expected authorization:\n'" +
+                                expectedAuth +
+                                "' but got:\n'" +
+                                authorization +
+                                "'";
+                            respond(httpExchange, errorMessage, 500);
+                        }
                     }
                 }
             }
-        });
+        );
 
-        assertCorrectResponse(
-                httpProxy, MESSAGE_FROM_PROXY, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
+        assertCorrectResponse(httpProxy, MESSAGE_FROM_PROXY, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
     }
 
     @Test
@@ -290,19 +309,25 @@ public class HttpProxyTest {
         final String message = "Target was reached without proxy";
 
         final String path = "/nomatch";
-        targetServer.createContext(path, new HttpHandler() {
-            @Override
-            public void handle(HttpExchange httpExchange) throws IOException {
-                respond(httpExchange, message, 200);
+        targetServer.createContext(
+            path,
+            new HttpHandler() {
+                @Override
+                public void handle(HttpExchange httpExchange) throws IOException {
+                    respond(httpExchange, message, 200);
+                }
             }
-        });
-        proxyServer.createContext(path, new HttpHandler() {
-            @Override
-            public void handle(HttpExchange httpExchange) throws IOException {
-                String msg = "Proxy was reached but in this test the proxy should not have been used.";
-                respond(httpExchange, msg, 500);
+        );
+        proxyServer.createContext(
+            path,
+            new HttpHandler() {
+                @Override
+                public void handle(HttpExchange httpExchange) throws IOException {
+                    String msg = "Proxy was reached but in this test the proxy should not have been used.";
+                    respond(httpExchange, msg, 500);
+                }
             }
-        });
+        );
 
         assertCorrectResponse(httpProxy, message, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
     }
@@ -318,25 +343,31 @@ public class HttpProxyTest {
         final String message = "Target was reached without proxy";
 
         final String path = "/nomatch";
-        targetServer.createContext(path, new HttpHandler() {
-            @Override
-            public void handle(HttpExchange httpExchange) throws IOException {
-                respond(httpExchange, message, 200);
+        targetServer.createContext(
+            path,
+            new HttpHandler() {
+                @Override
+                public void handle(HttpExchange httpExchange) throws IOException {
+                    respond(httpExchange, message, 200);
+                }
             }
-        });
-        proxyServer.createContext(path, new HttpHandler() {
-            @Override
-            public void handle(HttpExchange httpExchange) throws IOException {
-                String msg = "Proxy was reached but in this test the proxy should not have been used.";
-                respond(httpExchange, msg, 500);
+        );
+        proxyServer.createContext(
+            path,
+            new HttpHandler() {
+                @Override
+                public void handle(HttpExchange httpExchange) throws IOException {
+                    String msg = "Proxy was reached but in this test the proxy should not have been used.";
+                    respond(httpExchange, msg, 500);
+                }
             }
-        });
+        );
 
         assertCorrectResponse(httpProxy, message, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
     }
 
     private void assertCorrectResponse(HttpProxy httpProxy, String expected, String target, String path)
-            throws Exception {
+        throws Exception {
         assertCorrectResponse(configurationFactory, requestFactory, httpProxy, expected, target, path);
     }
 }

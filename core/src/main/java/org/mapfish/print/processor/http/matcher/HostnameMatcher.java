@@ -1,13 +1,12 @@
 package org.mapfish.print.processor.http.matcher;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Allows to check that a given URL matches a hostname literally (textual match).
@@ -78,7 +77,6 @@ public final class HostnameMatcher extends HostMatcher {
         return match;
     }
 
-    // CHECKSTYLE:OFF
     // Don't run checkstyle on generated methods
     @Override
     public String toString() {
@@ -127,13 +125,11 @@ public final class HostnameMatcher extends HostMatcher {
             return false;
         }
         final HostnameMatcher that = (HostnameMatcher) o;
-        return allowSubDomains == that.allowSubDomains &&
-                Objects.equals(host, that.host);
+        return allowSubDomains == that.allowSubDomains && Objects.equals(host, that.host);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), host, allowSubDomains);
     }
-    // CHECKSTYLE:ON
 }

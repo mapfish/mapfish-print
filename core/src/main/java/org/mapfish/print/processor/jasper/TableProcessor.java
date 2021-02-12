@@ -1,5 +1,23 @@
 package org.mapfish.print.processor.jasper;
 
+import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT;
+import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPORT_XML_FILE_EXT;
+
+import java.awt.image.RenderedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
@@ -34,25 +52,6 @@ import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.mapfish.print.wrapper.PArray;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.image.RenderedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT;
-import static org.mapfish.print.processor.jasper.JasperReportBuilder.JASPER_REPORT_XML_FILE_EXT;
-
 /**
  * <p>A processor for generating a table.</p>
  * <p>See also: <a href="attributes.html#!table">!table</a> attribute</p>
@@ -78,6 +77,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
 
     @Autowired
     private JasperReportBuilder jasperReportBuilder;
+
     private boolean defaultTemplate;
 
     /**
@@ -262,7 +262,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         // this map needs to be linked so it keeps order
         Map<String, Class<?>> columns = new LinkedHashMap<>();
         final PArray[] jsonData = jsonTable.data;
-        for (final PArray jsonRow: jsonData) {
+        for (final PArray jsonRow : jsonData) {
             context.stopIfCanceled();
             final Map<String, Object> row = new HashMap<>();
             for (int j = 0; j < jsonRow.size(); j++) {
@@ -273,8 +273,8 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                 }
                 TableColumnConverter<?> converter = this.columnConverterMap.get(columnName);
                 if (converter != null) {
-                    rowValue = converter
-                            .resolve(values.clientHttpRequestFactoryProvider.get(), (String) rowValue);
+                    rowValue =
+                        converter.resolve(values.clientHttpRequestFactoryProvider.get(), (String) rowValue);
                 } else {
                     rowValue = tryConvert(values.clientHttpRequestFactoryProvider.get(), rowValue);
                 }
@@ -306,14 +306,15 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
      * converter, which claims that it can convert, will be used to do the conversion.
      */
     private Object tryConvert(
-            final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final Object rowValue) throws URISyntaxException, IOException {
+        final MfClientHttpRequestFactory clientHttpRequestFactory,
+        final Object rowValue
+    ) throws URISyntaxException, IOException {
         if (this.converters.isEmpty()) {
             return rowValue;
         }
 
         String value = String.valueOf(rowValue);
-        for (TableColumnConverter<?> converter: this.converters) {
+        for (TableColumnConverter<?> converter : this.converters) {
             if (converter.canConvert(value)) {
                 return converter.resolve(clientHttpRequestFactory, value);
             }
@@ -322,9 +323,8 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         return rowValue;
     }
 
-    private String generateSubReport(
-            final Input input,
-            final Map<String, Class<?>> columns) throws JRException, IOException {
+    private String generateSubReport(final Input input, final Map<String, Class<?>> columns)
+        throws JRException, IOException {
         byte[] bytes = loadJasperTemplate(input.template.getConfiguration());
         final JasperDesign templateDesign = JRXmlLoader.load(new ByteArrayInputStream(bytes));
 
@@ -358,11 +358,11 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             columnWidth = templateDesign.getPageWidth();
         } else {
             columnWidth =
-                    (templateDesign.getPageWidth() - (SPACE_BETWEEN_COLS * (numColumns - 1))) / numColumns;
+                (templateDesign.getPageWidth() - (SPACE_BETWEEN_COLS * (numColumns - 1))) / numColumns;
         }
 
         int i = 0;
-        for (Map.Entry<String, Class<?>> entry: columns.entrySet()) {
+        for (Map.Entry<String, Class<?>> entry : columns.entrySet()) {
             i++;
 
             JRStyle columnDetailStyle;
@@ -416,49 +416,89 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                 JRDesignElement designElement;
                 if (RenderedImage.class.isAssignableFrom(valueClass)) {
                     designElement = createImageElement(templateDesign, columnName);
-                    addElement(detailBand, designElement, detailPosX, detailPosY,
-                               columnWidth, detailHeight, columnDetailStyle);
+                    addElement(
+                        detailBand,
+                        designElement,
+                        detailPosX,
+                        detailPosY,
+                        columnWidth,
+                        detailHeight,
+                        columnDetailStyle
+                    );
                 } else {
                     JRDesignTextField textField = createTextField(columnName);
-                    addElement(detailBand, textField, detailPosX, detailPosY,
-                               columnWidth, detailHeight, columnDetailStyle);
+                    addElement(
+                        detailBand,
+                        textField,
+                        detailPosX,
+                        detailPosY,
+                        columnWidth,
+                        detailHeight,
+                        columnDetailStyle
+                    );
                 }
             } else {
                 // image element
                 JRDesignElement imageElement = createImageElement(templateDesign, columnName);
                 // condition: use this element for images
                 JRDesignExpression printWhenExpression = new JRDesignExpression();
-                printWhenExpression.setText("new Boolean($F{" + columnName +
-                                                    "}.getClass().equals(java.awt.image.BufferedImage" +
-                                                    ".class))");
+                printWhenExpression.setText(
+                    "new Boolean($F{" +
+                    columnName +
+                    "}.getClass().equals(java.awt.image.BufferedImage" +
+                    ".class))"
+                );
                 imageElement.setPrintWhenExpression(printWhenExpression);
 
-                addElement(detailBand, imageElement, detailPosX, detailPosY,
-                           columnWidth, detailHeight, columnDetailStyle);
+                addElement(
+                    detailBand,
+                    imageElement,
+                    detailPosX,
+                    detailPosY,
+                    columnWidth,
+                    detailHeight,
+                    columnDetailStyle
+                );
 
                 // text field element
                 JRDesignTextField textField = createTextField(columnName);
                 // condition: use this element for non-images
                 printWhenExpression = new JRDesignExpression();
-                printWhenExpression.setText("new Boolean(!$F{" + columnName +
-                                                    "}.getClass().equals(java.awt.image.BufferedImage" +
-                                                    ".class))");
+                printWhenExpression.setText(
+                    "new Boolean(!$F{" +
+                    columnName +
+                    "}.getClass().equals(java.awt.image.BufferedImage" +
+                    ".class))"
+                );
                 textField.setPrintWhenExpression(printWhenExpression);
 
-                addElement(detailBand, textField, detailPosX, detailPosY,
-                           columnWidth, detailHeight, columnDetailStyle);
+                addElement(
+                    detailBand,
+                    textField,
+                    detailPosX,
+                    detailPosY,
+                    columnWidth,
+                    detailHeight,
+                    columnDetailStyle
+                );
             }
 
             headerPosX = headerPosX + columnWidth + SPACE_BETWEEN_COLS;
             detailPosX = detailPosX + columnWidth + SPACE_BETWEEN_COLS;
         }
 
-        final File jrxmlFile =
-                File.createTempFile("table-", JASPER_REPORT_XML_FILE_EXT, input.tempTaskDirectory);
+        final File jrxmlFile = File.createTempFile(
+            "table-",
+            JASPER_REPORT_XML_FILE_EXT,
+            input.tempTaskDirectory
+        );
         JRXmlWriter.writeReport(templateDesign, jrxmlFile.getAbsolutePath(), Constants.DEFAULT_ENCODING);
 
-        final File buildFile =
-                File.createTempFile("table-", JASPER_REPORT_COMPILED_FILE_EXT, input.tempTaskDirectory);
+        final File buildFile = File.createTempFile(
+            "table-",
+            JASPER_REPORT_COMPILED_FILE_EXT,
+            input.tempTaskDirectory
+        );
         if (!buildFile.delete()) {
             throw new PrintException("Unable to delete the build file: " + buildFile);
         }
@@ -475,9 +515,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         return textField;
     }
 
-    private JRDesignElement createImageElement(
-            final JasperDesign templateDesign,
-            final String columnName) {
+    private JRDesignElement createImageElement(final JasperDesign templateDesign, final String columnName) {
         JRDesignImage designImage = new JRDesignImage(templateDesign);
         designImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
         designImage.setHorizontalImageAlign(HorizontalImageAlignEnum.LEFT);
@@ -488,9 +526,14 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     }
 
     private void addElement(
-            final JRDesignBand detailBand,
-            final JRDesignElement designElement, final int detailPosX, final int detailPosY,
-            final int columnWidth, final int detailHeight, final JRStyle columnDetailStyle) {
+        final JRDesignBand detailBand,
+        final JRDesignElement designElement,
+        final int detailPosX,
+        final int detailPosY,
+        final int columnWidth,
+        final int detailHeight,
+        final JRStyle columnDetailStyle
+    ) {
         designElement.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
         designElement.setX(detailPosX);
         designElement.setY(detailPosY);
@@ -503,22 +546,23 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     private void removeDetailBand(final JasperDesign templateDesign) {
         final JRDesignSection detailSection = (JRDesignSection) templateDesign.getDetailSection();
         final List<JRBand> bandsList = new ArrayList<>(detailSection.getBandsList());
-        for (JRBand jrBand: bandsList) {
+        for (JRBand jrBand : bandsList) {
             detailSection.removeBand(jrBand);
         }
     }
 
     private void clearFields(final JasperDesign templateDesign) {
         final List<JRField> fieldsList = new ArrayList<>(templateDesign.getFieldsList());
-        for (JRField jrField: fieldsList) {
+        for (JRField jrField : fieldsList) {
             templateDesign.removeField(jrField);
         }
     }
 
     private JRStyle getStyle(
-            final JasperDesign templateDesign,
-            final String specificStyle,
-            final String defaultStyle) {
+        final JasperDesign templateDesign,
+        final String specificStyle,
+        final String defaultStyle
+    ) {
         JRStyle columnDetailStyle;
         if (specificStyle != null) {
             columnDetailStyle = templateDesign.getStylesMap().get(specificStyle);
@@ -530,25 +574,35 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
 
     @Override
     protected void extraValidation(
-            final List<Throwable> validationErrors, final Configuration configuration) {
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {
         final boolean styleRefDeclared =
-                this.firstHeaderStyle != null || this.lastHeaderStyle != null || this.headerStyle != null ||
-                        this.firstDetailStyle != null || this.lastDetailStyle != null ||
-                        this.detailStyle != null;
+            this.firstHeaderStyle != null ||
+            this.lastHeaderStyle != null ||
+            this.headerStyle != null ||
+            this.firstDetailStyle != null ||
+            this.lastDetailStyle != null ||
+            this.detailStyle != null;
         if (styleRefDeclared && this.jasperTemplate == null) {
-            validationErrors.add(new ConfigurationException(
-                    "if a style is declared a 'jasperTemplate' must also be declared (in !tableProcessor)."));
+            validationErrors.add(
+                new ConfigurationException(
+                    "if a style is declared a 'jasperTemplate' must also be declared (in !tableProcessor)."
+                )
+            );
         }
         if (styleRefDeclared && !this.dynamic) {
-            validationErrors.add(new ConfigurationException(
-                    "if a style is declared dynamic must be true (in !tableProcessor)."));
+            validationErrors.add(
+                new ConfigurationException(
+                    "if a style is declared dynamic must be true (in !tableProcessor)."
+                )
+            );
         }
         if (this.dynamic) {
             if (this.jasperTemplate == null) {
                 try {
                     this.jasperTemplate =
-                            TableProcessor.class.getResource("dynamic-table-default.jrxml").toURI()
-                                    .toString();
+                        TableProcessor.class.getResource("dynamic-table-default.jrxml").toURI().toString();
                     this.firstDetailStyle = "column_style_1";
                     this.detailStyle = "column_style_2";
                     this.lastDetailStyle = "column_style_3";
@@ -556,18 +610,23 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                     this.headerStyle = "header_style_2";
                     this.lastHeaderStyle = "header_style_3";
                     this.defaultTemplate = true;
-
                 } catch (URISyntaxException e) {
                     throw new Error(e);
                 }
             }
             if (this.headerStyle == null) {
-                validationErrors.add(new ConfigurationException(
-                        "'headerStyle' property must be declared if !tableProcessor is dynamic."));
+                validationErrors.add(
+                    new ConfigurationException(
+                        "'headerStyle' property must be declared if !tableProcessor is dynamic."
+                    )
+                );
             }
             if (this.detailStyle == null) {
-                validationErrors.add(new ConfigurationException(
-                        "'detailStyle' property must be declared if !tableProcessor is dynamic."));
+                validationErrors.add(
+                    new ConfigurationException(
+                        "'detailStyle' property must be declared if !tableProcessor is dynamic."
+                    )
+                );
             }
 
             try {
@@ -575,24 +634,36 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                 final JasperDesign templateDesign = JRXmlLoader.load(new ByteArrayInputStream(bytes));
                 final Map<String, JRStyle> stylesMap = templateDesign.getStylesMap();
                 if (templateDesign.getColumnHeader() == null) {
-                    validationErrors.add(new ConfigurationException(
+                    validationErrors.add(
+                        new ConfigurationException(
                             "JasperTemplate must have a column band defined for height and positioning " +
-                                    "information"));
+                            "information"
+                        )
+                    );
                 } else if (templateDesign.getColumnHeader().getElements().length == 0) {
-                    validationErrors.add(new ConfigurationException(
+                    validationErrors.add(
+                        new ConfigurationException(
                             "column header band must have at least one element defined for to height and " +
-                                    "positioning information"));
+                            "positioning information"
+                        )
+                    );
                 }
 
                 final JRDesignSection detailSection = (JRDesignSection) templateDesign.getDetailSection();
                 if (detailSection.getBands().length == 0) {
-                    validationErrors.add(new ConfigurationException(
+                    validationErrors.add(
+                        new ConfigurationException(
                             "JasperTemplate must have a detail band defined for height and positioning " +
-                                    "information"));
+                            "information"
+                        )
+                    );
                 } else if (detailSection.getBands()[0].getElements().length == 0) {
-                    validationErrors.add(new ConfigurationException(
+                    validationErrors.add(
+                        new ConfigurationException(
                             "detail band must have at least one element defined for to height and " +
-                                    "positioning information"));
+                            "positioning information"
+                        )
+                    );
                 }
 
                 checkStyleExists(validationErrors, stylesMap, this.firstDetailStyle);
@@ -604,7 +675,6 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             } catch (Throwable e) {
                 validationErrors.add(e);
             }
-
         }
     }
 
@@ -619,12 +689,16 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     }
 
     private void checkStyleExists(
-            final List<Throwable> validationErrors,
-            final Map<String, JRStyle> stylesMap,
-            final String styleRef) {
+        final List<Throwable> validationErrors,
+        final Map<String, JRStyle> stylesMap,
+        final String styleRef
+    ) {
         if (styleRef != null && !stylesMap.containsKey(styleRef)) {
-            validationErrors.add(new ConfigurationException(
-                    "No style with id: '" + styleRef + "' exists in " + this.jasperTemplate));
+            validationErrors.add(
+                new ConfigurationException(
+                    "No style with id: '" + styleRef + "' exists in " + this.jasperTemplate
+                )
+            );
         }
     }
 
@@ -632,6 +706,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
      * Input object for execute.
      */
     public static final class Input {
+
         /**
          * A factory for making http requests.  This is added to the values by the framework and therefore
          * does not need to be set in configuration
@@ -655,6 +730,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
      * The Output of the processor.
      */
     public static final class Output {
+
         /**
          * The table datasource.
          */
@@ -671,13 +747,13 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         public final String tableSubReport;
 
         private Output(
-                final JRMapCollectionDataSource dataSource,
-                final int numberOfTableRows,
-                final String subReport) {
+            final JRMapCollectionDataSource dataSource,
+            final int numberOfTableRows,
+            final String subReport
+        ) {
             this.tableDataSource = dataSource;
             this.numberOfTableRows = numberOfTableRows;
             this.tableSubReport = subReport;
         }
     }
-
 }

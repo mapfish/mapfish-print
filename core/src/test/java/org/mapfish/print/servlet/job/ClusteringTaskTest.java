@@ -1,5 +1,8 @@
 package org.mapfish.print.servlet.job;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -17,17 +20,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-@ContextConfiguration(locations = {
-        ClusteredMapPrinterServletTest.CLUSTERED_CONTEXT
-})
+@ContextConfiguration(locations = { ClusteredMapPrinterServletTest.CLUSTERED_CONTEXT })
 @Ignore //db must be set up to run this test
 public class ClusteringTaskTest extends AbstractMapfishSpringTest {
 
     TestJobManager jobMan1;
     TestJobManager jobMan2;
+
     @Autowired
     private ApplicationContext context;
 
@@ -40,17 +39,42 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
 
     @Test(timeout = 60000)
     public void testRun() throws Exception {
-        PJsonObject requestData =
-                new PJsonObject(new JSONObject("{\"" + MapPrinterServlet.JSON_APP + "\":\"default\"}"),
-                                "job");
-        jobMan1.submit(new PrintJobEntryImpl("first job", requestData, System.currentTimeMillis(),
-                                             new AlwaysAllowAssertion()));
-        jobMan1.submit(new PrintJobEntryImpl("second job", requestData, System.currentTimeMillis(),
-                                             new AlwaysAllowAssertion()));
-        jobMan1.submit(new PrintJobEntryImpl("third job", requestData, System.currentTimeMillis(),
-                                             new AlwaysAllowAssertion()));
-        jobMan1.submit(new PrintJobEntryImpl("fourth job", requestData, System.currentTimeMillis(),
-                                             new AlwaysAllowAssertion()));
+        PJsonObject requestData = new PJsonObject(
+            new JSONObject("{\"" + MapPrinterServlet.JSON_APP + "\":\"default\"}"),
+            "job"
+        );
+        jobMan1.submit(
+            new PrintJobEntryImpl(
+                "first job",
+                requestData,
+                System.currentTimeMillis(),
+                new AlwaysAllowAssertion()
+            )
+        );
+        jobMan1.submit(
+            new PrintJobEntryImpl(
+                "second job",
+                requestData,
+                System.currentTimeMillis(),
+                new AlwaysAllowAssertion()
+            )
+        );
+        jobMan1.submit(
+            new PrintJobEntryImpl(
+                "third job",
+                requestData,
+                System.currentTimeMillis(),
+                new AlwaysAllowAssertion()
+            )
+        );
+        jobMan1.submit(
+            new PrintJobEntryImpl(
+                "fourth job",
+                requestData,
+                System.currentTimeMillis(),
+                new AlwaysAllowAssertion()
+            )
+        );
 
         int ready = 0;
         while (ready < 4) {
@@ -74,10 +98,10 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
         //verify each job manager ran some jobs
         assertTrue(jobMan1.getJobsRun() > 0);
         assertTrue(jobMan2.getJobsRun() > 0);
-
     }
 
     private class TestJobManager extends ThreadPoolJobManager {
+
         private String name;
 
         private int jobsRun;
@@ -101,7 +125,10 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
 
                 @Override
                 protected PrintJobResult createResult(
-                        final String fileName, final String fileExtension, final String mimeType) {
+                    final String fileName,
+                    final String fileExtension,
+                    final String mimeType
+                ) {
                     return null;
                 }
             };
@@ -114,7 +141,5 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
         public final int getJobsRun() {
             return jobsRun;
         }
-
     }
-
 }

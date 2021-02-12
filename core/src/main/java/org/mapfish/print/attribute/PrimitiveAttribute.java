@@ -1,5 +1,7 @@
 package org.mapfish.print.attribute;
 
+import java.util.List;
+import javax.annotation.Nonnull;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -9,9 +11,6 @@ import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.mapfish.print.wrapper.multi.PMultiObject;
-
-import java.util.List;
-import javax.annotation.Nonnull;
 
 /**
  * A type of attribute whose value is a primitive type.
@@ -26,6 +25,7 @@ import javax.annotation.Nonnull;
  * @param <Value> The value type of the attribute
  */
 public abstract class PrimitiveAttribute<Value> implements Attribute {
+
     /**
      * The default value.
      */
@@ -72,8 +72,7 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
      *
      * @param value The value from a request.
      */
-    public void validateValue(final Object value) {
-    }
+    public void validateValue(final Object value) {}
 
     @Override
     public final void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
@@ -94,16 +93,19 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
 
     @Override
     public Object getValue(
-            @Nonnull final Template template,
-            @Nonnull final String attributeName,
-            @Nonnull final PObject requestJsonAttributes) {
+        @Nonnull final Template template,
+        @Nonnull final String attributeName,
+        @Nonnull final PObject requestJsonAttributes
+    ) {
         final Object defaultVal = getDefault();
         PObject jsonToUse = requestJsonAttributes;
         if (defaultVal != null) {
             final JSONObject obj = new JSONObject();
             obj.put(attributeName, defaultVal);
-            final PObject[] pValues =
-                    new PObject[]{requestJsonAttributes, new PJsonObject(obj, "default_" + attributeName)};
+            final PObject[] pValues = new PObject[] {
+                requestJsonAttributes,
+                new PJsonObject(obj, "default_" + attributeName),
+            };
             jsonToUse = new PMultiObject(pValues);
         }
         return MapfishParser.parsePrimitive(attributeName, this, jsonToUse);

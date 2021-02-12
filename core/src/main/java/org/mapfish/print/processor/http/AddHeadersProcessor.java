@@ -1,5 +1,11 @@
 package org.mapfish.print.processor.http;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
@@ -7,13 +13,6 @@ import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.http.matcher.UriMatchers;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * <p>This processor allows adding static headers to an http request.</p>
@@ -30,6 +29,7 @@ import java.util.Map;
  * ).</p> [[examples=http_processors]]
  */
 public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryProcessor {
+
     private final Map<String, List<String>> headers = new HashMap<>();
 
     /**
@@ -41,14 +41,17 @@ public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryP
      * @param headers The headers.
      */
     public static MfClientHttpRequestFactory createFactoryWrapper(
-            final MfClientHttpRequestFactory requestFactory,
-            final UriMatchers matchers, final Map<String, List<String>> headers) {
+        final MfClientHttpRequestFactory requestFactory,
+        final UriMatchers matchers,
+        final Map<String, List<String>> headers
+    ) {
         return new AbstractMfClientHttpRequestFactoryWrapper(requestFactory, matchers, false) {
             @Override
             protected ClientHttpRequest createRequest(
-                    final URI uri,
-                    final HttpMethod httpMethod,
-                    final MfClientHttpRequestFactory requestFactory) throws IOException {
+                final URI uri,
+                final HttpMethod httpMethod,
+                final MfClientHttpRequestFactory requestFactory
+            ) throws IOException {
                 final ClientHttpRequest request = requestFactory.createRequest(uri, httpMethod);
                 request.getHeaders().putAll(headers);
                 return request;
@@ -65,13 +68,15 @@ public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryP
     @SuppressWarnings("unchecked")
     public void setHeaders(final Map<String, Object> headers) {
         this.headers.clear();
-        for (Map.Entry<String, Object> entry: headers.entrySet()) {
+        for (Map.Entry<String, Object> entry : headers.entrySet()) {
             if (entry.getValue() instanceof List) {
                 List value = (List) entry.getValue();
                 // verify they are all strings
-                for (Object o: value) {
-                    Assert.isTrue(o instanceof String, o + " is not a string it is a: '" +
-                            o.getClass() + "'");
+                for (Object o : value) {
+                    Assert.isTrue(
+                        o instanceof String,
+                        o + " is not a string it is a: '" + o.getClass() + "'"
+                    );
                 }
                 this.headers.put(entry.getKey(), (List<String>) entry.getValue());
             } else if (entry.getValue() instanceof String) {
@@ -85,8 +90,9 @@ public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryP
 
     @Override
     protected void extraValidation(
-            final List<Throwable> validationErrors,
-            final Configuration configuration) {
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {
         super.extraValidation(validationErrors, configuration);
         if (this.headers.isEmpty()) {
             validationErrors.add(new IllegalStateException("There are no headers defined."));
@@ -95,8 +101,9 @@ public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryP
 
     @Override
     public MfClientHttpRequestFactory createFactoryWrapper(
-            final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
-            final MfClientHttpRequestFactory requestFactory) {
+        final ClientHttpFactoryProcessorParam clientHttpFactoryProcessorParam,
+        final MfClientHttpRequestFactory requestFactory
+    ) {
         return createFactoryWrapper(requestFactory, this.matchers, this.headers);
     }
 }

@@ -21,14 +21,8 @@
       "faField": 3
     }
   ],
-  "sa": [
-    "s1",
-    "s2"
-  ],
-  "ba": [
-    true,
-    false
-  ],
+  "sa": ["s1", "s2"],
+  "ba": [true, false],
   "oa": [
     {
       "f": 1
@@ -37,10 +31,7 @@
       "b": 2
     }
   ],
-  "da": [
-    2.1,
-    2.2
-  ],
+  "da": [2.1, 2.2],
   "e": {
     "embeddedValue": "embeddedValue"
   },

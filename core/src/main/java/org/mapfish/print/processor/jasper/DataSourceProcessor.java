@@ -1,5 +1,19 @@
 package org.mapfish.print.processor.jasper;
 
+import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ForkJoinTask;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -20,21 +34,6 @@ import org.mapfish.print.processor.ProcessorDependencyGraphFactory;
 import org.mapfish.print.processor.RequireAttributes;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ForkJoinTask;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
-
-import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue;
 
 /**
  * <p>A processor that will process a
@@ -71,17 +70,19 @@ import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttribut
  * datasource_multiple_maps,customDynamicReport,report]]
  */
 public final class DataSourceProcessor
-        extends AbstractProcessor<DataSourceProcessor.Input, DataSourceProcessor.Output>
-        implements RequireAttributes, CustomDependencies {
+    extends AbstractProcessor<DataSourceProcessor.Input, DataSourceProcessor.Output>
+    implements RequireAttributes, CustomDependencies {
 
     private Map<String, Attribute> internalAttributes = new HashMap<>();
     private Map<String, Attribute> allAttributes = new HashMap<>();
 
     @Autowired
     private ProcessorDependencyGraphFactory processorGraphFactory;
+
     private ProcessorDependencyGraph processorGraph;
     private List<Processor> processors;
     private List<String> copyAttributes = new ArrayList<>();
+
     @Autowired
     private JasperReportBuilder jasperReportBuilder;
 
@@ -98,8 +99,8 @@ public final class DataSourceProcessor
     @PostConstruct
     private void init() {
         // default to no processors
-        this.processorGraph = this.processorGraphFactory.build(Collections.emptyList(),
-                                                               Collections.emptyMap());
+        this.processorGraph =
+            this.processorGraphFactory.build(Collections.emptyList(), Collections.emptyMap());
     }
 
     /**
@@ -164,7 +165,6 @@ public final class DataSourceProcessor
         this.copyAttributes = copyAttributes;
     }
 
-
     @Nonnull
     @Override
     public Collection<String> getDependencies() {
@@ -202,7 +202,6 @@ public final class DataSourceProcessor
     @Nullable
     @Override
     public Output execute(final Input input, final ExecutionContext context) throws Exception {
-
         JRDataSource jrDataSource = processInput(input);
 
         if (jrDataSource == null) {
@@ -211,16 +210,15 @@ public final class DataSourceProcessor
         return new Output(jrDataSource);
     }
 
-    private JRDataSource processInput(@Nonnull final Input input)
-            throws JSONException, JRException {
+    private JRDataSource processInput(@Nonnull final Input input) throws JSONException, JRException {
         List<Values> dataSourceValues = new ArrayList<>();
-        for (Map<String, Object> o: input.datasource.attributesValues) {
+        for (Map<String, Object> o : input.datasource.attributesValues) {
             // copy only the required values
             Values rowValues = new Values(input.values);
-            for (String attributeName: this.copyAttributes) {
+            for (String attributeName : this.copyAttributes) {
                 rowValues.put(attributeName, input.values.getObject(attributeName, Object.class));
             }
-            for (Map.Entry<String, Object> entry: o.entrySet()) {
+            for (Map.Entry<String, Object> entry : o.entrySet()) {
                 rowValues.put(entry.getKey(), entry.getValue());
             }
 
@@ -229,10 +227,10 @@ public final class DataSourceProcessor
 
         List<ForkJoinTask<Values>> futures = new ArrayList<>();
         if (!dataSourceValues.isEmpty()) {
-            for (Values dataSourceValue: dataSourceValues) {
+            for (Values dataSourceValue : dataSourceValues) {
                 addAttributes(input.template, dataSourceValue);
                 final ForkJoinTask<Values> taskFuture =
-                        this.processorGraph.createTask(dataSourceValue).fork();
+                    this.processorGraph.createTask(dataSourceValue).fork();
                 futures.add(taskFuture);
             }
             final File reportFile;
@@ -245,7 +243,7 @@ public final class DataSourceProcessor
             }
             List<Map<String, ?>> rows = new ArrayList<>();
 
-            for (ForkJoinTask<Values> future: futures) {
+            for (ForkJoinTask<Values> future : futures) {
                 final Values rowData = future.join();
                 if (reportFile != null) {
                     rowData.put(this.reportKey, reportFile.getAbsolutePath());
@@ -258,12 +256,13 @@ public final class DataSourceProcessor
         return null;
     }
 
-    private void addAttributes(
-            @Nonnull final Template template,
-            @Nonnull final Values dataSourceValue) throws JSONException {
-        dataSourceValue.populateFromAttributes(template, this.internalAttributes,
-                                               new PJsonObject(new JSONObject(),
-                                                               "DataSourceProcessorAttributes"));
+    private void addAttributes(@Nonnull final Template template, @Nonnull final Values dataSourceValue)
+        throws JSONException {
+        dataSourceValue.populateFromAttributes(
+            template,
+            this.internalAttributes,
+            new PJsonObject(new JSONObject(), "DataSourceProcessorAttributes")
+        );
     }
 
     @Override
@@ -274,28 +273,38 @@ public final class DataSourceProcessor
 
     @Override
     protected void extraValidation(
-            final List<Throwable> validationErrors,
-            final Configuration configuration) {
-        if (this.reportTemplate != null && this.reportKey == null ||
-                this.reportTemplate == null && this.reportKey != null) {
-            validationErrors.add(new ConfigurationException("'reportKey' and 'reportTemplate' must ither " +
-                                                                    "both be null or both be non-null.  " +
-                                                                    "reportKey: " +
-                                                                    this.reportKey + " reportTemplate: "
-                                                                    + this.reportTemplate));
+        final List<Throwable> validationErrors,
+        final Configuration configuration
+    ) {
+        if (
+            this.reportTemplate != null &&
+            this.reportKey == null ||
+            this.reportTemplate == null &&
+            this.reportKey != null
+        ) {
+            validationErrors.add(
+                new ConfigurationException(
+                    "'reportKey' and 'reportTemplate' must ither " +
+                    "both be null or both be non-null.  " +
+                    "reportKey: " +
+                    this.reportKey +
+                    " reportTemplate: " +
+                    this.reportTemplate
+                )
+            );
         }
 
-        for (Attribute attribute: this.internalAttributes.values()) {
+        for (Attribute attribute : this.internalAttributes.values()) {
             attribute.validate(validationErrors, configuration);
         }
 
         ProcessorDependencyGraphFactory.fillProcessorAttributes(this.processors, this.allAttributes);
-        for (Processor processor: this.processors) {
+        for (Processor processor : this.processors) {
             processor.validate(validationErrors, configuration);
         }
 
         final Map<String, Class<?>> attcls = new HashMap<>();
-        for (Map.Entry<String, Attribute> attribute: this.allAttributes.entrySet()) {
+        for (Map.Entry<String, Attribute> attribute : this.allAttributes.entrySet()) {
             attcls.put(attribute.getKey(), attribute.getValue().getValueType());
         }
         try {
@@ -305,11 +314,12 @@ public final class DataSourceProcessor
         }
 
         if (this.processorGraph == null) {
-            validationErrors.add(new ConfigurationException(
-                    "There are no child processors for this processor"));
+            validationErrors.add(
+                new ConfigurationException("There are no child processors for this processor")
+            );
         } else {
             final Set<Processor<?, ?>> allProcessors = this.processorGraph.getAllProcessors();
-            for (Processor<?, ?> processor: allProcessors) {
+            for (Processor<?, ?> processor : allProcessors) {
                 processor.validate(validationErrors, configuration);
             }
         }
@@ -319,6 +329,7 @@ public final class DataSourceProcessor
      * Contains the datasource input.
      */
     public static final class Input {
+
         /**
          * The values object with all values.  This is required in order to run sub-processor graph
          */
@@ -333,13 +344,13 @@ public final class DataSourceProcessor
          * The data that will be processed by this processor in order to create a Jasper DataSource object.
          */
         public DataSourceAttributeValue datasource;
-
     }
 
     /**
      * Contains the datasource output.
      */
     public static final class Output {
+
         /**
          * The datasource to be assigned to a report or sub-report detail/table section.
          */

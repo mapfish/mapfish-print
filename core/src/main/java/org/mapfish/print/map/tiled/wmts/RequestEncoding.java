@@ -11,5 +11,5 @@ public enum RequestEncoding {
     /**
      * Use Rest format for encoding the WMTS tile parameters.
      */
-    REST
+    REST,
 }

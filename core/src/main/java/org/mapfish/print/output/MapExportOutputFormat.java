@@ -1,5 +1,13 @@
 package org.mapfish.print.output;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 import org.apache.commons.io.IOUtils;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
@@ -10,16 +18,6 @@ import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.map.CreateMapProcessor;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-
 
 /**
  * The MapExportOutputFormat class.
@@ -59,10 +57,10 @@ public class MapExportOutputFormat implements OutputFormat {
     }
 
     private String getMapSubReportVariable(final Template template) {
-        for (Processor<?, ?> processor: template.getProcessors()) {
+        for (Processor<?, ?> processor : template.getProcessors()) {
             if (processor instanceof CreateMapProcessor) {
                 String mapSubReport =
-                        ((CreateMapProcessor) processor).getOutputMapperBiMap().get(MAP_SUBREPORT);
+                    ((CreateMapProcessor) processor).getOutputMapperBiMap().get(MAP_SUBREPORT);
                 if (mapSubReport == null) {
                     return MAP_SUBREPORT;
                 } else {
@@ -77,19 +75,30 @@ public class MapExportOutputFormat implements OutputFormat {
 
     @Override
     public final Processor.ExecutionContext print(
-            final String jobId, final PJsonObject spec,
-            final Configuration config, final File configDir,
-            final File taskDirectory,
-            final OutputStream outputStream) throws Exception {
+        final String jobId,
+        final PJsonObject spec,
+        final Configuration config,
+        final File configDir,
+        final File taskDirectory,
+        final OutputStream outputStream
+    ) throws Exception {
         final String templateName = spec.getString(Constants.JSON_LAYOUT_KEY);
 
         final Template template = config.getTemplate(templateName);
 
-        final Values values = new Values(jobId, spec, template, taskDirectory, this.httpRequestFactory, null,
-                                         this.fileSuffix);
+        final Values values = new Values(
+            jobId,
+            spec,
+            template,
+            taskDirectory,
+            this.httpRequestFactory,
+            null,
+            this.fileSuffix
+        );
 
-        final ProcessorDependencyGraph.ProcessorGraphForkJoinTask task =
-                template.getProcessorGraph().createTask(values);
+        final ProcessorDependencyGraph.ProcessorGraphForkJoinTask task = template
+            .getProcessorGraph()
+            .createTask(values);
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(task);
 
         try {

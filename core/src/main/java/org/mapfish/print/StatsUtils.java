@@ -4,8 +4,8 @@ package org.mapfish.print;
  * Utility functions for metrics.
  */
 public final class StatsUtils {
-    private StatsUtils() {
-    }
+
+    private StatsUtils() {}
 
     /**
      * Convert the given name into a proper metric part (what lies between dots).

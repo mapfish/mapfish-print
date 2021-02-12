@@ -1,10 +1,9 @@
 package org.mapfish.print.http;
 
+import java.util.List;
 import org.apache.http.HttpHost;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.http.matcher.URIMatcher;
-
-import java.util.List;
 
 /**
  * This configuration object configures the proxies to be used by the system. This is configured as one of the
@@ -29,6 +28,7 @@ import java.util.List;
  * </code></pre>
  */
 public final class HttpProxy extends HttpCredential {
+
     private String host;
     private int port = 80;
     private String scheme;
@@ -125,5 +125,4 @@ public final class HttpProxy extends HttpCredential {
             validationErrors.add(new IllegalStateException("The parameter 'host' is required."));
         }
     }
-
 }

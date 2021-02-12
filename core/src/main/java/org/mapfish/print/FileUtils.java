@@ -1,20 +1,20 @@
 package org.mapfish.print;
 
-import org.mapfish.print.config.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import org.mapfish.print.config.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Methods for interacting with files.  Such things and verifying the files are in the correct directory,
  * Converting URLs to file objects.
  */
 public final class FileUtils {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(FileUtils.class);
 
     private FileUtils() {
@@ -36,9 +36,10 @@ public final class FileUtils {
         final String protocol = url.getProtocol();
         if (protocol.equalsIgnoreCase("file")) {
             try {
-
-                File file = new File(configuration.getDirectory(),
-                                     url.toExternalForm().substring("file://".length()));
+                File file = new File(
+                    configuration.getDirectory(),
+                    url.toExternalForm().substring("file://".length())
+                );
                 if (file.exists() && file.isFile()) {
                     URL tmpUrl = file.getAbsoluteFile().toURI().toURL();
                     assertFileIsInConfigDir(configuration, file);
@@ -51,7 +52,8 @@ public final class FileUtils {
                         return tmpUrl;
                     } else {
                         throw new IllegalArgumentException(
-                                "File urls must refer to a file within the configuration directory");
+                            "File urls must refer to a file within the configuration directory"
+                        );
                     }
                 }
             } catch (MalformedURLException e) {
@@ -71,7 +73,6 @@ public final class FileUtils {
         assertIsSubDirectory("configuration", file, configuration.getDirectory());
     }
 
-
     /**
      * Verify that the file is within the base directory. {@link org.mapfish.print.IllegalFileAccessException}
      * will be thrown if the assertion does not hold.
@@ -81,24 +82,35 @@ public final class FileUtils {
      * @param baseFiles the directories that can legally contain the child.
      */
     public static boolean assertIsSubDirectory(
-            final String descriptorOfBase, final File child, final File... baseFiles) {
+        final String descriptorOfBase,
+        final File child,
+        final File... baseFiles
+    ) {
         File canonicalChild;
         try {
             canonicalChild = child.getCanonicalFile();
         } catch (IOException e) {
-            throw new Error("Unable to get the canonical file of '" + child +
-                                    "'.  Therefore it is not possible to verify if it is a " +
-
-                                    "child of '" + Arrays.toString(baseFiles) + "'.");
+            throw new Error(
+                "Unable to get the canonical file of '" +
+                child +
+                "'.  Therefore it is not possible to verify if it is a " +
+                "child of '" +
+                Arrays.toString(baseFiles) +
+                "'."
+            );
         }
-        for (File base: baseFiles) {
+        for (File base : baseFiles) {
             File canonicalBase;
             try {
                 canonicalBase = base.getCanonicalFile();
             } catch (IOException e) {
-                throw new Error("Unable to get the canonical file of '" + base +
-                                        "'.  Therefore it is not possible to verify if '" + child
-                                        + "' is a child of it.");
+                throw new Error(
+                    "Unable to get the canonical file of '" +
+                    base +
+                    "'.  Therefore it is not possible to verify if '" +
+                    child +
+                    "' is a child of it."
+                );
             }
             File parentFile = canonicalChild;
             while (parentFile != null) {
@@ -109,14 +121,19 @@ public final class FileUtils {
             }
         }
         LOGGER.warn(
-                "A user attempted to access a file not within the '{}' directories ({}). Attempted access " +
-                        "to: {}",
-                descriptorOfBase, Arrays.toString(baseFiles), canonicalChild);
+            "A user attempted to access a file not within the '{}' directories ({}). Attempted access " +
+            "to: {}",
+            descriptorOfBase,
+            Arrays.toString(baseFiles),
+            canonicalChild
+        );
         throw new IllegalFileAccessException(
-                "'" + canonicalChild + "' identifies a file that is not within the '" +
-                        descriptorOfBase +
-                        "' directories: " + Arrays.toString(baseFiles));
+            "'" +
+            canonicalChild +
+            "' identifies a file that is not within the '" +
+            descriptorOfBase +
+            "' directories: " +
+            Arrays.toString(baseFiles)
+        );
     }
-
-
 }
