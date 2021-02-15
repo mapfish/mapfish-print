@@ -48,6 +48,15 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
     private int maxHeight;
 
     /**
+     * The tile buffer width in pixels.
+     */
+    private int tileBufferWidth;
+    /**
+     * The tile buffer height in pixels.
+     */
+    private int tileBufferHeight;
+
+    /**
      * Constructor.
      */
     protected SetTiledWmsProcessor() {
@@ -103,13 +112,9 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
                                     String.join(", ", wmsLayer.getParams().layers), tileSize.width,
                                     tileSize.height);
                     }
-                    // Notes(IS): Honestly I have no idea where should I put these buffer size.
-                    // It is needed for TiledWmsLayer (so that the values are accessible)
-                    final int tileBufferWidth = 0;
-                    final int tileBufferHeight = 0;
 
                     values.map.replaceLayer(i, new TiledWmsLayer(
-                            wmsLayer, tileSize, tileBufferWidth, tileBufferHeight));
+                            wmsLayer, tileSize, this.tileBufferWidth, this.tileBufferHeight));
                 }
             }
         }
@@ -172,5 +177,19 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
          */
         @InputOutputValue
         public GenericMapAttributeValues map;
+    }
+
+    /**
+     * @param tileBufferWidth the tileBufferWidth to set
+     */
+    public void setTileBufferWidth(final int tileBufferWidth) {
+        this.tileBufferWidth = tileBufferWidth;
+    }
+
+    /**
+     * @param tileBufferHeight the tileBufferHeight to set
+     */
+    public void setTileBufferHeight(final int tileBufferHeight) {
+        this.tileBufferHeight = tileBufferHeight;
     }
 }

@@ -1,0 +1,32 @@
+{
+  "layout": "Auto meta tiling",
+  "outputFormat": "pdf",
+  "attributes": {
+    "map": {
+      "projection": "EPSG:4326",
+      "dpi": 72,
+      "rotation": 0,
+      "bbox": [
+        -130,
+        20,
+        -60,
+        50
+      ],
+      "longitudeFirst": true,
+      "layers": [
+        {
+          "type": "WMS",
+          "layers": [
+            "topp:states"
+          ],
+          "baseURL": "http://geoserver:8080/wms",
+          "imageFormat": "image/png",
+          "version": "1.1.1",
+          "customParams": {
+            "TRANSPARENT": "true"
+          }
+        }
+      ]
+    }
+  }
+}
