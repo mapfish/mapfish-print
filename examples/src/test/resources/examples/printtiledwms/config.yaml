@@ -45,7 +45,6 @@ templates:
     - !setTiledWms
       maxWidth: 256
       maxHeight: 256
-    - !setTileBufferSize
-      bufferWidth: 60
-      bufferHeight: 60
+      tileBufferWidth: 60
+      tileBufferHeight: 60
     - !createMap {}

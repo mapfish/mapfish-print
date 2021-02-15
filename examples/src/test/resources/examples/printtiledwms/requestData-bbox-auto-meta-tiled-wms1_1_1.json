@@ -15,7 +15,7 @@
       "longitudeFirst": true,
       "layers": [
         {
-          "type": "tiledwms",
+          "type": "WMS",
           "layers": [
             "topp:states"
           ],
