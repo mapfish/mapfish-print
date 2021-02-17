@@ -49,10 +49,14 @@ The print will be available on port `8080` and on code modification will be buil
 
 # Create new stabilisation branch
 
+- In the `builds.gradle` file , set the version to `x.y.0`.
 - Create a new branch name x.y from master.
-- Create a new label names 'backport x.y'.
+- Create a new label names 'backport x.y' in the right color (github: Issues->Labels->New Label).
+- Create a tag 'release/x.y.0'.
+- On the master branch: Update the `SECURITY.md` file, add a policy for the new and old version.
 - On the master branch update the `.github/workflows/rebuild.yaml` file by adding the new branch name.
 - On the master branch update the `.github/workflows/audit.yaml` file by adding the new branch name.
+- On the master branch set in the `build.gradle` file the new `x.y+1.0-SNAPSHOT` version.
 
 # Run from commandline
 
