@@ -49,6 +49,7 @@ The print will be available on port `8080` and on code modification will be buil
 
 # Create new stabilisation branch
 
+- Update *CHANGELOG.md*
 - In the `builds.gradle` file , set the version to `x.y.0`.
 - Create a new branch name x.y from master.
 - Create a new label names 'backport x.y' in the right color (github: Issues->Labels->New Label).
@@ -129,8 +130,10 @@ Agreement](http://goo.gl/forms/QO9UELxM9m).
 
 # Published artifacts
 
-[Docker](https://hub.docker.com/r/camptocamp/mapfish-print)
+[Docker](https://hub.docker.com/r/camptocamp/mapfish_print)
 
 [War and jar from version 3.23](https://github.com/orgs/mapfish/packages)
 
 [War and jar before version 3.23](https://mvnrepository.com/artifact/org.mapfish.print)
+
+[Releases, including various assets](https://github.com/mapfish/mapfish-print/releases)
