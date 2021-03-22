@@ -1,10 +1,6 @@
 Please read the documentation available here: <https://mapfish.github.io/mapfish-print/>
 
-For support or questions post on the community mailing list:
-<https://groups.google.com/forum/#!forum/mapfish-print-users>
-
-The community mailing list is a place where users can share experiences, it is not a professional support
-mailing list. For professional support, users should sign a support contract with a professional services
+For professional support, users should sign a support contract with a professional services
 company, and use their appropriate channel.
 
 # Prerequisites
