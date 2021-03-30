@@ -164,19 +164,23 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
                     null :
                     createResult(fileName, fileExtension, mimeType);
         } catch (Exception e) {
-            String canceledText = "";
             if (Thread.currentThread().isInterrupted()) {
-                canceledText = "(canceled) ";
+                LOGGER.info(
+                    "Print job canceled {}\n{}",
+                    this.entry.getRequestData(), this.entry.getReferenceId()
+                );
                 this.metricRegistry.counter(getClass().getName() + ".canceled").inc();
                 jobTracker.onJobCancel();
             } else {
+                LOGGER.warn(
+                    "Error executing print job {}\n{}",
+                    this.entry.getRequestData(), this.entry.getReferenceId(), e
+                );
                 this.metricRegistry.counter(getClass().getName() + ".error").inc();
                 jobTracker.onJobError();
             }
             deleteReport();
             maybeSendError(mapPrinter.getConfiguration(), e);
-            LOGGER.warn("Error executing print job {} {}\n{}",
-                        this.entry.getRequestData(), canceledText, this.entry.getReferenceId(), e);
             throw e;
         } finally {
             final long totalTimeMS = System.currentTimeMillis() - entry.getStartTime();
