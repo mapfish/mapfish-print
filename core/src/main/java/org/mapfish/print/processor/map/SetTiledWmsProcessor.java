@@ -180,6 +180,9 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
     }
 
     /**
+     *
+     * Set the left and right buffer for fetching tiles in pixels.
+     *
      * @param tileBufferWidth the tileBufferWidth to set
      */
     public void setTileBufferWidth(final int tileBufferWidth) {
@@ -187,6 +190,9 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
     }
 
     /**
+     *
+     *  Set the top and bottom buffer for fetching tiles in pixels.
+     *
      * @param tileBufferHeight the tileBufferHeight to set
      */
     public void setTileBufferHeight(final int tileBufferHeight) {
