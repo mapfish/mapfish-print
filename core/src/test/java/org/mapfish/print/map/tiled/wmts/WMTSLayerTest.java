@@ -63,4 +63,21 @@ public class WMTSLayerTest {
         assertEquals("http://test_server/mapproxy_4_v3/wmts/wmts_layer/matrix_set/the_matrix_id/5/4.png",
                      restURI);
     }
+
+    @Test
+    public void testCreateRestURIMixedCase() throws Exception {
+        WMTSLayerParam param = new WMTSLayerParam();
+        param.layer = "wmts_layer";
+        param.matrixSet = "matrix_set";
+        param.style="default";
+        param.baseURL =
+                "http://test_server/literal/style/tilematrixset/mapproxy_4_v3/wmts/"+
+        "{LaYer}/{style}/{tilematrixset}/{TILEMATRIX}/{TileCol}/" +
+                        "{TileRow}.png";
+        String restURI = WMTSLayer.createRestURI("the_matrix_id", 4, 5, param).toString();
+
+        assertEquals("http://test_server/literal/style/tilematrixset/mapproxy_4_v3/wmts/wmts_layer/default/matrix_set/the_matrix_id/5/4.png",
+                     restURI);
+    }
+
 }
