@@ -131,12 +131,16 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
                 // when throwing a ClosedByInterruptException. so, we do it manually.
                 // see also http://bugs.java.com/view_bug.do?bug_id=7043425
                 Thread.currentThread().interrupt();
-                LOGGER.error("Error occurred while reading configuration file '{}'", configFile);
+                LOGGER.error(
+                    "Error occurred while reading configuration file '{}', '{}'", configFile, e.getMessage()
+                );
                 throw new RuntimeException(String.format(
                         "Error occurred while reading configuration file '%s': ", configFile),
                                            e);
             } catch (Throwable e) {
-                LOGGER.error("Error occurred while reading configuration file '{}'", configFile);
+                LOGGER.error(
+                    "Error occurred while reading configuration file '{}', '{}'", configFile, e.getMessage()
+                );
                 throw new RuntimeException(String.format(
                         "Error occurred while reading configuration file '%s'", configFile), e);
             }
