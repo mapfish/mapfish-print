@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.regex.Pattern;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -77,12 +79,12 @@ public class WMTSLayer extends AbstractTiledLayer {
                 path = path.replace("{" + dimension + "}", value);
             }
         }
-        path = path.replace("{TileMatrixSet}", layerParam.matrixSet);
-        path = path.replace("{TileMatrix}", matrixId);
-        path = path.replace("{TileRow}", String.valueOf(row));
-        path = path.replace("{TileCol}", String.valueOf(col));
-        path = path.replace("{style}", layerParam.style);
-        path = path.replace("{Layer}", layerParam.layer);
+        path = path.replaceAll("(?i)" + Pattern.quote("{TileMatrixSet}"), layerParam.matrixSet);
+        path = path.replaceAll("(?i)" + Pattern.quote("{TileMatrix}"), matrixId);
+        path = path.replaceAll("(?i)" + Pattern.quote("{TileRow}"), String.valueOf(row));
+        path = path.replaceAll("(?i)" + Pattern.quote("{TileCol}"), String.valueOf(col));
+        path = path.replaceAll("(?i)" + Pattern.quote("{style}"), layerParam.style);
+        path = path.replaceAll("(?i)" + Pattern.quote("{Layer}"), layerParam.layer);
 
         return new URI(path);
     }
