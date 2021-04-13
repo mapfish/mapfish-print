@@ -41,6 +41,7 @@ configurations.all {
 apply plugin: 'org.owasp.dependencycheck'
 
 configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
+    apply plugin: 'maven'
     apply plugin: 'java'
     apply plugin: 'com.github.spotbugs'
     apply plugin: 'eclipse'
