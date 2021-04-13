@@ -1,5 +1,12 @@
 # ChangeLog
 
+### 3.28.1
+
+* The community mailing list no longer exists. Links to it were removed.
+* [WMTS Template Variables are now case-insensitive](https://github.com/mapfish/mapfish-print/pull/1803).
+* [Updated documentation for buffered Tiles](https://github.com/mapfish/mapfish-print/pull/1793).
+* [Better Error Handling](https://github.com/mapfish/mapfish-print/pull/1790).
+
 ### 3.28.0
 
 * ChangeLog started.
