@@ -1,7 +1,6 @@
 Please read the documentation available here: <https://mapfish.github.io/mapfish-print/>
 
-For professional support, users should sign a support contract with a professional services
-company, and use their appropriate channel.
+[Camptocamp](https://www.camptocamp.com) is providing professional assistance services, open source software maintenance and new feature development for MapFish Print. Please reach us if you have any inquiry, we'd be glad to help. Every income helps float this project.
 
 # Prerequisites
 
