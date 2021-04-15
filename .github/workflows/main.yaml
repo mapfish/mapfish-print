@@ -5,15 +5,15 @@ on:
   push:
   pull_request:
 
+env:
+  HAS_SECRETS: ${{ secrets.HAS_SECRETS }}
+
 jobs:
   build:
     runs-on: ubuntu-20.04
     timeout-minutes: 30
     name: Continuous integration
     if: "!startsWith(github.event.head_commit.message, '[skip ci] ')"
-
-    env:
-      SECRETS: ${{ secrets.SECRETS }}
 
     steps:
       - uses: actions/checkout@v2
@@ -33,12 +33,12 @@ jobs:
           ci-gpg-private-key: ${{secrets.CI_GPG_PRIVATE_KEY}}
           github-gopass-ci-token: ${{secrets.GOPASS_CI_GITHUB_TOKEN}}
           patterns: docker
-        if: env.SECRETS == 'TRUE'
+        if: env.HAS_SECRETS == 'HAS_SECRETS'
       - run: gpg --export-secret-keys --armor D121AF2DFA8E140688BD968930C9B913FD42EF13 > CI.asc
-        if: env.SECRETS == 'TRUE'
+        if: env.HAS_SECRETS == 'HAS_SECRETS'
 
       - run: echo "enablePublishing=true" > gradle.properties
-        if: env.SECRETS == 'TRUE'
+        if: env.HAS_SECRETS == 'HAS_SECRETS'
 
       - run: echo "${HOME}/.local/bin" >> ${GITHUB_PATH}
       - run: python3 -m pip install --user --requirement=ci/requirements.txt
@@ -105,7 +105,7 @@ jobs:
 
       - name: Publish
         run: c2cciutils-publish
-        if: env.SECRETS == 'TRUE'
+        if: env.HAS_SECRETS == 'HAS_SECRETS'
 
       - id: version
         run: echo "##[set-output name=version;]$(grep version build.gradle|sed "s/ \+version = .\(.*\)./\1/g")"
@@ -121,7 +121,7 @@ jobs:
           release_name: Release ${{ steps.tag.outputs.tag }}
           draft: false
           prerelease: false
-        if: startsWith(github.ref, 'refs/tags/') && env.SECRETS == 'TRUE'
+        if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.1
         env:
@@ -131,7 +131,7 @@ jobs:
           asset_path: ./core/build/libs/print-servlet-${{ steps.version.outputs.version }}.war
           asset_name: print-servlet-${{ steps.version.outputs.version }}.war
           asset_content_type: application/java-archive
-        if: startsWith(github.ref, 'refs/tags/') && env.SECRETS == 'TRUE'
+        if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.1
         env:
@@ -141,7 +141,7 @@ jobs:
           asset_path: ./core/build/distributions/core-${{ steps.version.outputs.version }}.zip
           asset_name: print-cli-${{ steps.version.outputs.version }}.zip
           asset_content_type: application/zip
-        if: startsWith(github.ref, 'refs/tags/') && env.SECRETS == 'TRUE'
+        if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.1
         env:
@@ -151,7 +151,7 @@ jobs:
           asset_path: ./core/build/libs/print-lib-${{ steps.version.outputs.version }}.jar
           asset_name: print-lib-${{ steps.version.outputs.version }}.jar
           asset_content_type: application/java-archive
-        if: startsWith(github.ref, 'refs/tags/') && env.SECRETS == 'TRUE'
+        if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.1
         env:
@@ -161,7 +161,7 @@ jobs:
           asset_path: ./core/build/libs/print-lib-${{ steps.version.outputs.version }}-sources.jar
           asset_name: print-lib-${{ steps.version.outputs.version }}-sources.jar
           asset_content_type: application/java-archive
-        if: startsWith(github.ref, 'refs/tags/') && env.SECRETS == 'TRUE'
+        if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.1
         env:
@@ -171,7 +171,7 @@ jobs:
           asset_path: ./core/build/libs/print-lib-${{ steps.version.outputs.version }}-javadoc.jar
           asset_name: print-lib-${{ steps.version.outputs.version }}-javadoc.jar
           asset_content_type: application/java-archive
-        if: startsWith(github.ref, 'refs/tags/') && env.SECRETS == 'TRUE'
+        if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
 
       # Update the documentation
       - uses: actions/checkout@v2
@@ -179,7 +179,7 @@ jobs:
           repository: mapfish/mapfish-print-doc
           token: ${{ secrets.GOPASS_CI_GITHUB_TOKEN }}
           path: mapfish-print-doc
-        if: github.ref == 'refs/heads/master' && env.SECRETS == 'TRUE'
+        if: github.ref == 'refs/heads/master' && env.HAS_SECRETS == 'HAS_SECRETS'
       - name: Publish documentation
         run: |
           cd ${GITHUB_WORKSPACE}/mapfish-print-doc
@@ -190,4 +190,4 @@ jobs:
           git add -A .
           git commit -m 'Update docs'
           git push origin gh-pages
-        if: github.ref == 'refs/heads/master' && env.SECRETS == 'TRUE'
+        if: github.ref == 'refs/heads/master' && env.HAS_SECRETS == 'HAS_SECRETS'
