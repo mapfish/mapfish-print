@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/dependabot-2.0.json
+
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: '/ci'
+    schedule:
+      interval: daily
+      time: '02:00'
+    open-pull-requests-limit: 99
+    ignore:
+      - dependency-name: none
+
+  - package-ecosystem: docker
+    directory: '/'
+    schedule:
+      interval: daily
+      time: '02:00'
+    open-pull-requests-limit: 99
+    ignore:
+      - dependency-name: none
+
+  - package-ecosystem: docker
+    directory: "/core"
+    schedule:
+      interval: daily
+      time: "02:00"
+    open-pull-requests-limit: 99
+    ignore:
+        - dependency-name: none
