@@ -13,6 +13,9 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <geotools.version>24.2</geotools.version>
+    <spring.version>5.2.2.RELEASE</spring.version>
+	<batik.version>1.14</batik.version>
+    <spotbugsVersion>4.1.4</spotbugsVersion>    
   </properties>
 
 <repositories>
@@ -32,11 +35,11 @@
       </releases>
     </repository>
 
-<!--  for statsd, but needs password?
+<!--  for statsd -->
     <repository>
-      <id>spring-plugins</id>
+      <id>readytalk</id>
       <name>Spring Plugins</name>
-      <url>https://repo.spring.io/plugins-release/</url>
+      <url>https://dl.bintray.com/readytalk/maven</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
@@ -44,7 +47,7 @@
         <enabled>true</enabled>
       </releases>
     </repository>
- -->
+
   </repositories>
 
   <dependencies>
@@ -103,6 +106,13 @@
     </dependency>
 
     <dependency>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs-annotations</artifactId>
+      <version>${spotbugsVersion}</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-core</artifactId>
       <version>4.1.19</version>
@@ -144,11 +154,10 @@
       <version>4.1.19</version>
     </dependency>
 
-    <!--TODO: Was 4.2.0. But both are not available on public repos? -->
     <dependency>
       <groupId>com.readytalk</groupId>
       <artifactId>metrics3-statsd</artifactId>
-      <version>4.1.0</version>
+      <version>4.2.0</version>
     </dependency>
 
     <dependency>
