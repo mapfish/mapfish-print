@@ -144,6 +144,7 @@
       <version>4.1.19</version>
     </dependency>
 
+    <!--TODO: Was 4.2.0. But both are not available on public repos? -->
     <dependency>
       <groupId>com.readytalk</groupId>
       <artifactId>metrics3-statsd</artifactId>
@@ -161,6 +162,14 @@
       <artifactId>commons-collections4</artifactId>
       <version>4.4</version>
     </dependency>
+
+    <dependency>
+      <groupId>net.sf.jasperreports</groupId>
+      <artifactId>jasperreports</artifactId>
+      <version>6.16.0</version>
+    </dependency>
+
+
 
     <dependency>
       <groupId>org.springframework</groupId>
