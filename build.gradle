@@ -13,7 +13,7 @@ buildscript {
         classpath 'de.marcphilipp.gradle:nexus-publish-plugin:0.4.0'
         classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:2.0.0"
         classpath "se.bjurr.violations:violations-gradle-plugin:1.37"
-        classpath 'org.owasp:dependency-check-gradle:5.3.2'
+        classpath 'org.owasp:dependency-check-gradle:6.1.6'
     }
 }
 
