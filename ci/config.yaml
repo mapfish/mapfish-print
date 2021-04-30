@@ -2,8 +2,8 @@ version:
   tag_to_version_re:
     - from: release/([0-9]+\.[0-9]+\.[0-9]+)
       to: \1
-
 checks:
+  versions: False
   required_workflows:
     audit.yaml:
       steps: []
