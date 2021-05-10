@@ -44,6 +44,7 @@ jobs:
           sudo apt-get install python3-wheel python3-setuptools
 
       - run: echo "${HOME}/.local/bin" >> ${GITHUB_PATH}
+      - run: python3 -m pip install --user setuptools-rust
       - run: python3 -m pip install --user --requirement=ci/requirements.txt
 
       - name: Checks
