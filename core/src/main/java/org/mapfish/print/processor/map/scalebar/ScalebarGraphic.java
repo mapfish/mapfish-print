@@ -232,7 +232,7 @@ public class ScalebarGraphic {
         scaledValue = Math.round(scaledValue * 10000) / 10000;
         String decimals = Double.toString(scaledValue).split("\\.")[1];
 
-        if (Double.valueOf(decimals) == 0) {
+        if (Double.parseDouble(decimals) == 0) {
             return Long.toString(Math.round(scaledValue));
         } else {
             return Double.toString(scaledValue);
