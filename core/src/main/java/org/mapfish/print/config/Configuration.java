@@ -318,7 +318,7 @@ public class Configuration implements ConfigurationObject {
             this.accessAssertion.assertAccess("Configuration", this);
             template.assertAccessible(name);
         } else {
-            LOGGER.warn("Template '%s' does not exist.  Options are: %s", name, this.templates.keySet());
+            LOGGER.warn("Template '{}' does not exist.  Options are: {}", name, this.templates.keySet());
         }
         return template;
     }
