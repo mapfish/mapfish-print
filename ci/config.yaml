@@ -9,6 +9,7 @@ checks:
     rebuild.yaml: False
     clean.yaml: False
     dependabot-auto-merge.yaml: False
+    codeql.yaml: False
   versions: False
   codespell: False
 
