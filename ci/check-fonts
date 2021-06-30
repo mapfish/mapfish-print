@@ -55,7 +55,7 @@ def main():
     for font, fontconfig in fonts.items():
         font_result = [f for f in fonts_result["fonts"] if f["family"] == font]
         assert len(font_result) == 1
-        assert font_result[0]["fontconfig"] == fontconfig, "Invalid {}: ".format(font) + str(
+        assert font_result[0]["fontconfig"] == fontconfig, f"Invalid {font}: " + str(
             font_result[0]["fontconfig"]
         )
 
