@@ -45,6 +45,9 @@ public final class CliDefinition extends CliHelpDefinition {
             "overriding certain values if desired")
     public String springConfig = null;
 
+    @Argument(description = "Use standard LogBack log configuration and don't override with internal config files.")
+    public boolean uselogback = true;
+
     CliDefinition() {
         // this is intentionally empty
     }

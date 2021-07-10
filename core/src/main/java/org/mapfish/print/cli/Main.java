@@ -100,7 +100,10 @@ public final class Main {
             printUsage(1);
             return;
         }
-        configureLogs(cli.verbose);
+
+        if (!cli.uselogback) {
+            configureLogs(cli.verbose);
+        }
 
         AbstractXmlApplicationContext context = new ClassPathXmlApplicationContext(DEFAULT_SPRING_CONTEXT);
 
