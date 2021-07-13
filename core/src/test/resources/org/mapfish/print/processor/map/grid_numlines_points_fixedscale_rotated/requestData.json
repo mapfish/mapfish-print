@@ -21,7 +21,8 @@
             "style": "BOLD",
             "size": 8
           }
-        }, {
+        },
+        {
           "type": "osm",
           "baseURL": "http://center_osm_fixedscale.osm:1234",
           "imageExtension": "png"

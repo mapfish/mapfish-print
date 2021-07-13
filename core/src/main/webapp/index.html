@@ -1,239 +1,249 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <link href="favicon.ico" rel="shortcut icon"/>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"
-      type="text/javascript"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <link href="favicon.ico" rel="shortcut icon" />
+    <script
+      src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"
+      type="text/javascript"
+    ></script>
     <script type="text/javascript">
-        function changeFormat() {
+      function changeFormat() {
+        var appId = $('#selectSpec').val();
+        var format = $('#selectFormat').val();
+        $('#spec').attr('action', 'print/' + appId + '/buildreport.' + format);
+      }
+      function openCapabilities() {
+        var url = $('#capabilities').attr('url');
+        window.open(url, '_capabilities');
+      }
+      function copyRequestToTextArea() {
+        var att = $('#selectExample').val();
+        $('#specText').val(requestExamples[att]);
+        validateJSON();
+      }
 
-            var appId = $('#selectSpec').val();
-            var format = $('#selectFormat').val();
-            $('#spec').attr('action', 'print/' + appId + "/buildreport." + format);
-        }
-        function openCapabilities() {
-            var url = $('#capabilities').attr('url');
-            window.open(url, '_capabilities')
-        }
-        function copyRequestToTextArea() {
-            var att = $('#selectExample').val();
-            $('#specText').val(requestExamples[att]);
-            validateJSON();
-        }
+      function updateApp() {
+        var appId = $('#selectSpec').val();
 
-        function updateApp() {
-            var appId = $('#selectSpec').val();
-
-            $.ajax({
-                type: 'GET',
-                url: 'print/' + appId + '/capabilities.json',
-                success: function (data) {
-                    var i = 0;
-                    var formatSelect = $('#selectFormat');
-                    formatSelect.empty();
-                    var select = data.formats[0];
-                    for(i = 0; i < data.formats.length; i++) {
-                        if (data.formats[i] === 'pdf') {
-                            select = data.formats[i];
-                        }
-                        formatSelect.append(new Option(data.formats[i], data.formats[i]));
-                    }
-
-                    formatSelect.val(select);
-                    $('#spec').attr('action', 'print/' + appId + "/buildreport." + select);
-                    var caps = $('#capabilities');
-                    caps.attr("url", 'print/' + appId + '/capabilities.json?pretty=true');
-                }
-            });
-            $.ajax({
-                type: 'GET',
-                url: 'print/' + appId + '/exampleRequest.json',
-                dataType: 'json',
-                success: function (data) {
-                    var setExample = true;
-                    requestExamples = data;
-                    var exampleSelect = $('#selectExample');
-                    exampleSelect.empty();
-                    for (var att in data) {
-                        if (data.hasOwnProperty(att)) {
-                            exampleSelect.append(new Option(att, att));
-                            if (setExample) {
-                                $('#specText').val(data[att]);
-                                validateJSON();
-                                setExample = false;
-                            }
-                        }
-                    }
-                }
-            });
-
-        }
-        function disableUI(disabled) {
-            $('#specText').attr('disabled', disabled);
-            $('#selectSpec').attr('disabled', disabled);
-            $('#selectFormat').attr('disabled', disabled);
-            $('#CreateAndGetPrint').attr('disabled', disabled);
-            $('#PostAndPollPrint').attr('disabled', disabled);
-        }
-
-        function validateJSON() {
-            $('#messages').text("");
-            var data = $('#specText').val();
-            try {
-                $.parseJSON(data);
-                $('#validation').text("");
-
-                $('#CreateAndGetPrint').attr('disabled', false);
-                $('#PostAndPollPrint').attr('disabled', false);
-            } catch (e) {
-                $('#validation').text("JSON in text area is invalid, It must be fixed before posting request");
-
-                $('#CreateAndGetPrint').attr('disabled', true);
-                $('#PostAndPollPrint').attr('disabled', true);
+        $.ajax({
+          type: 'GET',
+          url: 'print/' + appId + '/capabilities.json',
+          success: function (data) {
+            var i = 0;
+            var formatSelect = $('#selectFormat');
+            formatSelect.empty();
+            var select = data.formats[0];
+            for (i = 0; i < data.formats.length; i++) {
+              if (data.formats[i] === 'pdf') {
+                select = data.formats[i];
+              }
+              formatSelect.append(new Option(data.formats[i], data.formats[i]));
             }
-        }
-        function post() {
-            var data = encodeURIComponent($('#specText').val());
-            var appId = $('#selectSpec').val();
-            var format = $('#selectFormat').val();
-            disableUI(true);
 
-            var startTime = new Date().getTime();
-            $('#messages').text('Waiting for report...');
-
-            $.ajax({
-                type: 'POST',
-                url: 'print/' + appId + '/report.' + format,
-                data: data,
-                success: function (data) {
-                    downloadWhenReady(startTime, $.parseJSON(data));
-                },
-                error: function (data) {
-                    $('#messages').text('Error creating report: ' + data.statusText);
-                    disableUI(false);
-                },
-                dataType: 'application/json'
-            });
-        }
-
-        function postOnly() {
-          var data = encodeURIComponent($('#specText').val());
-          var appId = $('#selectSpec').val();
-          var format = $('#selectFormat').val();
-          disableUI(true);
-
-          var startTime = new Date().getTime();
-          $('#messages').text('Scheduling the job...');
-
-          $.ajax({
-            type: 'POST',
-            url: 'print/' + appId + '/report.' + format,
-            data: data,
-            success: function (data) {
-              $('#messages').text('Job scheduled');
-              disableUI(false);
-            },
-            error: function (data) {
-              $('#messages').text('Error creating report: ' + data.statusText);
-              disableUI(false);
-            },
-            dataType: 'application/json'
-          });
-        }
-
-        function updateWaitingMsg(startTime, data) {
-            var elapsed = Math.floor((new Date().getTime() - startTime) / 100);
-            var time = '';
-            if (elapsed > 5) {
-                time = (elapsed / 10) +" sec";
-            }
-            $('#messages').text('Waiting for report '+ time + ": " + data.ref );
-        }
-        function downloadWhenReady(startTime, data) {
-            if ((new Date().getTime() - startTime) > 30000) {
-                $('#messages').text('Gave up waiting after 30 seconds')
-                disableUI(false);
-            } else {
-                updateWaitingMsg(startTime, data);
-                setTimeout(function () {
-                    $.getJSON(data.statusURL, function (statusData) {
-                        if (!statusData.done) {
-                            downloadWhenReady(startTime, data);
-                        } else {
-                            window.location = statusData.downloadURL;
-                            $('#messages').text('Downloading: '+data.ref);
-                            disableUI(false);
-
-                        }
-                    }, function error(data) {$('#messages').text('Error occurred requesting status');});
-                }, 500);
-            }
-        }
-        function init() {
-            $.ajax({
-                type: 'GET',
-                url: 'print/apps.json',
-                success: function (data) {
-                    data.sort();
-                    var specSelect = $('#selectSpec');
-                    for (var i = 0, len = data.length; i < len; i++) {
-                        specSelect.append(new Option(data[i], data[i]));
-                    }
-
-                    specSelect.val(data[0]);
-
-                    updateApp();
+            formatSelect.val(select);
+            $('#spec').attr('action', 'print/' + appId + '/buildreport.' + select);
+            var caps = $('#capabilities');
+            caps.attr('url', 'print/' + appId + '/capabilities.json?pretty=true');
+          },
+        });
+        $.ajax({
+          type: 'GET',
+          url: 'print/' + appId + '/exampleRequest.json',
+          dataType: 'json',
+          success: function (data) {
+            var setExample = true;
+            requestExamples = data;
+            var exampleSelect = $('#selectExample');
+            exampleSelect.empty();
+            for (var att in data) {
+              if (data.hasOwnProperty(att)) {
+                exampleSelect.append(new Option(att, att));
+                if (setExample) {
+                  $('#specText').val(data[att]);
+                  validateJSON();
+                  setExample = false;
                 }
-            });
+              }
+            }
+          },
+        });
+      }
+      function disableUI(disabled) {
+        $('#specText').attr('disabled', disabled);
+        $('#selectSpec').attr('disabled', disabled);
+        $('#selectFormat').attr('disabled', disabled);
+        $('#CreateAndGetPrint').attr('disabled', disabled);
+        $('#PostAndPollPrint').attr('disabled', disabled);
+      }
+
+      function validateJSON() {
+        $('#messages').text('');
+        var data = $('#specText').val();
+        try {
+          $.parseJSON(data);
+          $('#validation').text('');
+
+          $('#CreateAndGetPrint').attr('disabled', false);
+          $('#PostAndPollPrint').attr('disabled', false);
+        } catch (e) {
+          $('#validation').text('JSON in text area is invalid, It must be fixed before posting request');
+
+          $('#CreateAndGetPrint').attr('disabled', true);
+          $('#PostAndPollPrint').attr('disabled', true);
         }
+      }
+      function post() {
+        var data = encodeURIComponent($('#specText').val());
+        var appId = $('#selectSpec').val();
+        var format = $('#selectFormat').val();
+        disableUI(true);
+
+        var startTime = new Date().getTime();
+        $('#messages').text('Waiting for report...');
+
+        $.ajax({
+          type: 'POST',
+          url: 'print/' + appId + '/report.' + format,
+          data: data,
+          success: function (data) {
+            downloadWhenReady(startTime, $.parseJSON(data));
+          },
+          error: function (data) {
+            $('#messages').text('Error creating report: ' + data.statusText);
+            disableUI(false);
+          },
+          dataType: 'application/json',
+        });
+      }
+
+      function postOnly() {
+        var data = encodeURIComponent($('#specText').val());
+        var appId = $('#selectSpec').val();
+        var format = $('#selectFormat').val();
+        disableUI(true);
+
+        var startTime = new Date().getTime();
+        $('#messages').text('Scheduling the job...');
+
+        $.ajax({
+          type: 'POST',
+          url: 'print/' + appId + '/report.' + format,
+          data: data,
+          success: function (data) {
+            $('#messages').text('Job scheduled');
+            disableUI(false);
+          },
+          error: function (data) {
+            $('#messages').text('Error creating report: ' + data.statusText);
+            disableUI(false);
+          },
+          dataType: 'application/json',
+        });
+      }
+
+      function updateWaitingMsg(startTime, data) {
+        var elapsed = Math.floor((new Date().getTime() - startTime) / 100);
+        var time = '';
+        if (elapsed > 5) {
+          time = elapsed / 10 + ' sec';
+        }
+        $('#messages').text('Waiting for report ' + time + ': ' + data.ref);
+      }
+      function downloadWhenReady(startTime, data) {
+        if (new Date().getTime() - startTime > 30000) {
+          $('#messages').text('Gave up waiting after 30 seconds');
+          disableUI(false);
+        } else {
+          updateWaitingMsg(startTime, data);
+          setTimeout(function () {
+            $.getJSON(
+              data.statusURL,
+              function (statusData) {
+                if (!statusData.done) {
+                  downloadWhenReady(startTime, data);
+                } else {
+                  window.location = statusData.downloadURL;
+                  $('#messages').text('Downloading: ' + data.ref);
+                  disableUI(false);
+                }
+              },
+              function error(data) {
+                $('#messages').text('Error occurred requesting status');
+              }
+            );
+          }, 500);
+        }
+      }
+      function init() {
+        $.ajax({
+          type: 'GET',
+          url: 'print/apps.json',
+          success: function (data) {
+            data.sort();
+            var specSelect = $('#selectSpec');
+            for (var i = 0, len = data.length; i < len; i++) {
+              specSelect.append(new Option(data[i], data[i]));
+            }
+
+            specSelect.val(data[0]);
+
+            updateApp();
+          },
+        });
+      }
     </script>
-</head>
-<body onload="init()">
+  </head>
+  <body onload="init()">
     <h1>Test Print</h1>
     <h2><span id="messages"></span></h2>
-    <h3><span id="validation" style="color:red"></span></h3>
+    <h3><span id="validation" style="color: red"></span></h3>
 
     <form action="print/buildreport.pdf" id="spec" method="post">
-        <textarea id="specText" name="spec" oninput="validateJSON()" rows="30" style="width: 100%">
+      <textarea id="specText" name="spec" oninput="validateJSON()" rows="30" style="width: 100%"> </textarea>
+      <table>
+        <tr>
+          <td><label for="selectSpec">Print App/Example:</label></td>
+          <td><select id="selectSpec" onchange="updateApp()"></select></td>
+        </tr>
+        <tr>
+          <td><label for="selectExample">Sample Request Data:</label></td>
+          <td><select id="selectExample" onchange="copyRequestToTextArea()"></select></td>
+        </tr>
+        <tr>
+          <td><label for="selectFormat">Output Format:</label></td>
+          <td><select id="selectFormat" onchange="changeFormat()"></select></td>
+        </tr>
+      </table>
+      <p>
+        <button id="CreateAndGetPrint" type="submit">Create And Get Print</button>
+        <button id="PostAndPollPrint" onclick="javascript:post()" type="button">Post and Poll Print</button>
+        <button id="PostPrint" onclick="javascript:postOnly()" type="button">Post only Print</button>
 
-        </textarea>
-        <p>
-        <table>
-            <tr><td><label for="selectSpec">Print App/Example:</label></td><td><select id="selectSpec" onchange="updateApp()"></select></td></tr>
-            <tr><td><label for="selectExample">Sample Request Data:</label></td><td><select id="selectExample" onchange="copyRequestToTextArea()"></select></td></tr>
-            <tr><td><label for="selectFormat">Output Format:</label></td><td><select id="selectFormat" onchange="changeFormat()"></select></td></tr>
-        </table>
-        </p>
-        <p>
-            <button id="CreateAndGetPrint" type="submit">Create And Get Print</button>
-            <button id="PostAndPollPrint" onclick="javascript:post()" type="button">Post and Poll Print
-            </button>
-            <button id="PostPrint" onclick="javascript:postOnly()" type="button">Post only Print
-            </button>
-
-            <button id="capabilities"
-              onclick="openCapabilities()"
-                    type="button"
-              url="print/capabilities.json?pretty=true">Capabilities
-            </button>
-        </p>
+        <button
+          id="capabilities"
+          onclick="openCapabilities()"
+          type="button"
+          url="print/capabilities.json?pretty=true"
+        >
+          Capabilities
+        </button>
+      </p>
     </form>
-    <button id="list-fonts" onclick="window.open('print/fonts', '_fonts')" type="button">List available
-        fonts
+    <button id="list-fonts" onclick="window.open('print/fonts', '_fonts')" type="button">
+      List available fonts
     </button>
 
     <h2>Performance and Health Metrics</h2>
     <p>
-        <button id="metrics" onclick="window.open('metrics/metrics?pretty=true', '_metrics')" type="button">
-            Metrics
-        </button>
-        <button id="healthcheck" onclick="window.open('metrics/healthcheck', '_metrics')" type="button">Health
-            Check
-        </button>
-        <button id="ping" onclick="window.open('metrics/ping', '_metrics')" type="button">Ping</button>
-        <button id="threads" onclick="window.open('metrics/threads', '_metrics')" type="button">Threads
-        </button>
+      <button id="metrics" onclick="window.open('metrics/metrics?pretty=true', '_metrics')" type="button">
+        Metrics
+      </button>
+      <button id="healthcheck" onclick="window.open('metrics/healthcheck', '_metrics')" type="button">
+        Health Check
+      </button>
+      <button id="ping" onclick="window.open('metrics/ping', '_metrics')" type="button">Ping</button>
+      <button id="threads" onclick="window.open('metrics/threads', '_metrics')" type="button">Threads</button>
     </p>
-</body>
+  </body>
 </html>

@@ -1,30 +1,33 @@
 <p>
-    This section explains how to add one or multiple images to a table subreport.<br/>
-    In a first step a table needs to be configured. For this, the processor
-    <a href="processors.html#!prepareTable">!prepareTable</a> is used. The column containing the image needs
-    to be defined which is done using:
+  This section explains how to add one or multiple images to a table subreport.<br />
+  In a first step a table needs to be configured. For this, the processor
+  <a href="processors.html#!prepareTable">!prepareTable</a> is used. The column containing the image needs to
+  be defined which is done using:
 </p>
-    <div class="highlight"><pre>
+<div class="highlight">
+  <pre>
         ...
         icon: !urlImage
               urlExtractor: (.*)                # Use regular expression (regex) to retrieve the URL of the image in the text of the icon column.
               urlGroup: 1
        ...
-    </pre></div>
+    </pre
+  >
+</div>
 <p>
-    The source column may contain more text than just the URL of the image. For this reason a regex
-    expression, passed to <a href="configuration.html#!urlImage">urlExtractor</a>, is used to filter
-    out the URL.
+  The source column may contain more text than just the URL of the image. For this reason a regex expression,
+  passed to <a href="configuration.html#!urlImage">urlExtractor</a>, is used to filter out the URL.
 </p>
 <p>
-    The following example shows a configuration of a table where the column with the title "icon" contains
-    the URL to the image. For GeoMapFish applications the column name depends on the title that is used in
-    the interface and therefore can be the translation of the underlying database column name (if a database
-    is used).<br/>
-    In the example below all columns from the original table are included in the printed table
-    without formatting.
+  The following example shows a configuration of a table where the column with the title "icon" contains the
+  URL to the image. For GeoMapFish applications the column name depends on the title that is used in the
+  interface and therefore can be the translation of the underlying database column name (if a database is
+  used).<br />
+  In the example below all columns from the original table are included in the printed table without
+  formatting.
 </p>
-    <div class="highlight"><pre>
+<div class="highlight">
+  <pre>
        ...
         - !prepareTable
           dynamic: true
@@ -33,23 +36,25 @@
               urlExtractor: (.*)                # Use Regex expression to retrieve the URL of the image in the text of the icon column.
               urlGroup: 1
        ...
-    </pre></div>
-<p>
-    To add formatting styles to the printed table there are two possibilities:
-    <ol>
-        <li>
-            To add a subreport in form of a JasperReport template containing all of the columns that are to
-            be included in the printed report. This requires the dynamic flag in the processor !prepareTable
-            to be false.
-        </li>
-        <li>
-            Use the styling from a subreport template but generate the columns dynamically. In this case
-            the JasperReports template (table_a4_portrait.jrxml) must contain one element. An example for
-            this type of configuration is given below.
-        </li>
-    </ol>
-</p>
-    <div class="highlight"><pre>
+    </pre
+  >
+</div>
+<p>To add formatting styles to the printed table there are two possibilities:</p>
+<ol>
+  <li>
+    To add a subreport in form of a JasperReport template containing all of the columns that are to be
+    included in the printed report. This requires the dynamic flag in the processor !prepareTable to be false.
+  </li>
+
+  <li>
+    Use the styling from a subreport template but generate the columns dynamically. In this case the
+    JasperReports template (table_a4_portrait.jrxml) must contain one element. An example for this type of
+    configuration is given below.
+  </li>
+</ol>
+
+<div class="highlight">
+  <pre>
        ...
         - !prepareTable
              excludeColumns:
@@ -68,20 +73,23 @@
                  urlExtractor: (.*)                     # Use Regex expression to retrieve the URL of the image in the text of the icon column.
                  urlGroup: 1
        ...
-    </pre></div>
+    </pre
+  >
+</div>
 <p>
-    For the case that multiple columns with different titles contain images each column has to be configured
-    in the config.yaml. Below is an example where two columns <code>Icon</code> and <code>Image</code>
-    contain images. The columns can be in the same table  and/or they can be in different tables. This means
-    if two columns <code>Icon</code> and <code>Image</code> are configured to contain images (as in the
-    example below), it is possible to have two tables, one table with the column <code>Icon</code> and
-    the other table with the columns <code>Icon</code> and <code>Image</code>. In the print all tree
-    columns contain images in the print.<br/>
+  For the case that multiple columns with different titles contain images each column has to be configured in
+  the config.yaml. Below is an example where two columns <code>Icon</code> and <code>Image</code> contain
+  images. The columns can be in the same table and/or they can be in different tables. This means if two
+  columns <code>Icon</code> and <code>Image</code> are configured to contain images (as in the example below),
+  it is possible to have two tables, one table with the column <code>Icon</code> and the other table with the
+  columns <code>Icon</code> and <code>Image</code>. In the print all tree columns contain images in the
+  print.<br />
 </p>
 <p>
-   <code>config.yaml</code>
+  <code>config.yaml</code>
 </p>
-   <div class="highlight"><pre>
+<div class="highlight">
+  <pre>
        ...
        - !prepareTable
              excludeColumns:
@@ -99,11 +107,14 @@
                  urlExtractor: (.*)
                  urlGroup: 1
        ...
-   </pre></div>
+   </pre
+  >
+</div>
 <p>
-   <code>table_a4_portrait.jrxml</code>
+  <code>table_a4_portrait.jrxml</code>
 </p>
-   <div class="highlight"><pre>
+<div class="highlight">
+  <pre>
        ...
         &lt;detail&gt;
                 &lt;band height="20"&gt;
@@ -114,8 +125,8 @@
                 &lt;/band&gt;
         &lt;/detail&gt;
        ...
-   </pre></div>
-<p>
-   The resulting output of the above configuration is shown in the figure below.
-</p>
-<img src="./images/image_table.png" width="800">
+   </pre
+  >
+</div>
+<p>The resulting output of the above configuration is shown in the figure below.</p>
+<img src="./images/image_table.png" width="800" />

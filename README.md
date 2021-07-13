@@ -38,13 +38,14 @@ The test (part of the build) requires the 'Liberation Sans' font, which can be d
 # Auto-releoad mode
 
 To be able to quickly test modifications in the print you should:
+
 - Copy the file `docker-compose.override.sample.yaml` to `docker-compose.override.yaml`.
 - Run `docker compose up -d`,
-The print will be available on port `8080` and on code modification will be built and trigger a restart.
+  The print will be available on port `8080` and on code modification will be built and trigger a restart.
 
 # Create new stabilisation branch
 
-- Update *CHANGELOG.md*
+- Update _CHANGELOG.md_
 - In the `builds.gradle` file , set the version to `x.y.0`.
 - Create a new branch name x.y from master.
 - Create a new label names 'backport x.y' in the right color (github: Issues->Labels->New Label).

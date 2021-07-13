@@ -1,10 +1,10 @@
 templates:
   main: !template
-    reportTemplate: "dummy.jxml"
+    reportTemplate: 'dummy.jxml'
     attributes:
       map: !map
         width: 125
         height: 25
         maxDpi: 400
     processors:
-    - !createMap {}
+      - !createMap {}
