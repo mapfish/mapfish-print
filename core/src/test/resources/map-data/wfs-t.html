@@ -66,43 +66,31 @@
           displayClass: 'olControlEditingToolbar',
         });
 
-        var drawLine = new OpenLayers.Control.DrawFeature(
-          roads,
-          OpenLayers.Handler.Path,
-          { displayClass: 'olControlDrawFeaturePath' }
-        );
+        var drawLine = new OpenLayers.Control.DrawFeature(roads, OpenLayers.Handler.Path, {
+          displayClass: 'olControlDrawFeaturePath',
+        });
         drawLine.featureAdded = function (feature) {
           feature.layer.eraseFeatures([feature]);
           // cast to multilinestring
-          feature.geometry = new OpenLayers.Geometry.MultiLineString(
-            feature.geometry
-          );
+          feature.geometry = new OpenLayers.Geometry.MultiLineString(feature.geometry);
           feature.style.strokeColor = '#ff0000';
           feature.state = OpenLayers.State.INSERT;
           feature.layer.drawFeature(feature);
         };
 
-        var drawPoint = new OpenLayers.Control.DrawFeature(
-          cities,
-          OpenLayers.Handler.Point,
-          { displayClass: 'olControlDrawFeaturePoint' }
-        );
+        var drawPoint = new OpenLayers.Control.DrawFeature(cities, OpenLayers.Handler.Point, {
+          displayClass: 'olControlDrawFeaturePoint',
+        });
         drawPoint.featureAdded = function (feature) {
           feature.layer.eraseFeatures([feature]);
           // cast to multipoint
-          feature.geometry = new OpenLayers.Geometry.MultiPoint(
-            feature.geometry
-          );
+          feature.geometry = new OpenLayers.Geometry.MultiPoint(feature.geometry);
           feature.style.strokeColor = '#0000ff';
           feature.state = OpenLayers.State.INSERT;
           feature.layer.drawFeature(feature);
         };
 
-        panel.addControls([
-          new OpenLayers.Control.Navigation(),
-          drawLine,
-          drawPoint,
-        ]);
+        panel.addControls([new OpenLayers.Control.Navigation(), drawLine, drawPoint]);
 
         map.addControl(panel);
         map.addControl(new OpenLayers.Control.LayerSwitcher());
@@ -113,8 +101,7 @@
   </head>
   <body onload="init()">
     <h3>OpenLayers WFS-T demo: Tasmania cities and roads</h3>
-    <a href="#" onclick="map.layers[2].commit();return false">Save Roads</a
-    ><br />
+    <a href="#" onclick="map.layers[2].commit();return false">Save Roads</a><br />
     <a href="#" onclick="map.layers[3].commit();return false">Save Cities</a>
     <div id="map"></div>
   </body>

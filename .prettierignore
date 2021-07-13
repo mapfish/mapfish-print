@@ -1,0 +1,5 @@
+examples/src/test/resources/examples/*/config.yaml
+examples/src/test/resources/examples_to_port/*/config.yaml
+core/src/test/resources/org/mapfish/print/**/requestData.json
+core/src/test/resources/org/mapfish/print/**/config.yaml
+core/src/test/resources/org/mapfish/print/processor/map/*/config-*.yaml

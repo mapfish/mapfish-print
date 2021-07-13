@@ -8,44 +8,18 @@
       {
         "title": "bus_stop",
         "table": {
-          "columns": [
-            "osm_id",
-            "timestamp",
-            "name",
-            "Type"
-          ],
+          "columns": ["osm_id", "timestamp", "name", "Type"],
           "data": [
-            [
-              "337907707",
-              "2010-11-09T22:54:26Z",
-              "Alpes",
-              "bus_stop"
-            ],
-            [
-              "337907710",
-              "2010-11-09T22:54:25Z",
-              "Alpes",
-              "bus_stop"
-            ],
-            [
-              "347352116",
-              "2010-11-09T22:54:23Z",
-              "Mirabeau",
-              "bus_stop"
-            ]
+            ["337907707", "2010-11-09T22:54:26Z", "Alpes", "bus_stop"],
+            ["337907710", "2010-11-09T22:54:25Z", "Alpes", "bus_stop"],
+            ["347352116", "2010-11-09T22:54:23Z", "Mirabeau", "bus_stop"]
           ]
         }
       },
       {
         "title": "restaurant",
         "table": {
-          "columns": [
-            "icon",
-            "osm_id",
-            "timestamp",
-            "name",
-            "Type"
-          ],
+          "columns": ["icon", "osm_id", "timestamp", "name", "Type"],
           "data": [
             [
               "http://geoserver:8080/www/icons/men-at-work.jpeg",
@@ -69,10 +43,7 @@
       "projection": "EPSG:21781",
       "dpi": 254,
       "rotation": 0,
-      "center": [
-        542000,
-        154000
-      ],
+      "center": [542000, 154000],
       "scale": 100000,
       "longitudeFirst": true,
       "layers": [
@@ -120,10 +91,7 @@
                 },
                 "geometry": {
                   "type": "Point",
-                  "coordinates": [
-                    538442.421319,
-                    151817.140031
-                  ]
+                  "coordinates": [538442.421319, 151817.140031]
                 }
               },
               {
@@ -137,10 +105,7 @@
                 },
                 "geometry": {
                   "type": "Point",
-                  "coordinates": [
-                    538474.353811,
-                    151862.615586
-                  ]
+                  "coordinates": [538474.353811, 151862.615586]
                 }
               },
               {
@@ -154,10 +119,7 @@
                 },
                 "geometry": {
                   "type": "Point",
-                  "coordinates": [
-                    538314.149264,
-                    152046.467663
-                  ]
+                  "coordinates": [538314.149264, 152046.467663]
                 }
               },
               {
@@ -171,10 +133,7 @@
                 },
                 "geometry": {
                   "type": "Point",
-                  "coordinates": [
-                    538396.724407,
-                    152032.68026
-                  ]
+                  "coordinates": [538396.724407, 152032.68026]
                 }
               },
               {
@@ -188,10 +147,7 @@
                 },
                 "geometry": {
                   "type": "Point",
-                  "coordinates": [
-                    538371.262438,
-                    152033.652827
-                  ]
+                  "coordinates": [538371.262438, 152033.652827]
                 }
               }
             ]

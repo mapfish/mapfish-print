@@ -1,7 +1,7 @@
 throwErrorOnExtraParameters: true
 templates:
   main: !template
-    reportTemplate: "dummy.jxml"
+    reportTemplate: 'dummy.jxml'
     attributes:
       map: !map
         width: 500
@@ -10,4 +10,4 @@ templates:
         zoomLevels: !zoomLevels
           scales: [50000, 100000, 500000, 1000000, 2000000, 5000000]
     processors:
-    - !createMap {}
+      - !createMap {}

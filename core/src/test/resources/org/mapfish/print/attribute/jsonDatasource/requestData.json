@@ -2,6 +2,6 @@
   "layout": "main",
   "outputFormat": "pdf",
   "attributes": {
-    "json": {"a": {"b": "s1"}}
+    "json": { "a": { "b": "s1" } }
   }
 }

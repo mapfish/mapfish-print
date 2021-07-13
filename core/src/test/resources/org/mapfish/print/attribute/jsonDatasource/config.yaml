@@ -5,5 +5,5 @@ templates:
     attributes:
       json: !jsonDatasource {}
     processors:
-    - !reportBuilder
-        directory: "."
+      - !reportBuilder
+        directory: '.'

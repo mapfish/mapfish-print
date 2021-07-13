@@ -12,4 +12,4 @@ templates:
         zoomLevels: !zoomLevels
           scales: [50000, 100000, 500000, 1000000]
     processors:
-    - !createMap {}
+      - !createMap {}

@@ -5,11 +5,7 @@
     <script src="http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers"></script>
 
     <link rel="stylesheet" href="/geoserver/style.css" type="text/css" />
-    <link
-      rel="stylesheet"
-      href="openlayers/theme/default/style.css"
-      type="text/css"
-    />
+    <link rel="stylesheet" href="openlayers/theme/default/style.css" type="text/css" />
 
     <style type="text/css">
       body {
@@ -55,12 +51,7 @@
           // this resolution displays the globe in one 256x256 pixel tile
           maxResolution: 78271.51695,
           // these are the bounds of the globe in sperical mercator
-          maxExtent: new OpenLayers.Bounds(
-            -20037508,
-            -20037508,
-            20037508,
-            20037508
-          ),
+          maxExtent: new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508),
         };
         // construct a map with the above options
         map = new OpenLayers.Map('map', options);
@@ -105,12 +96,7 @@
           }
         );
 
-        var usBounds = new OpenLayers.Bounds(
-          -14392000,
-          2436200,
-          -7279500,
-          6594375
-        );
+        var usBounds = new OpenLayers.Bounds(-14392000, 2436200, -7279500, 6594375);
 
         // add the created layers to the map
         // (if you want custom layers to show up they must be here as well)
@@ -143,9 +129,8 @@
     <h3>Geoserver OpenLayers Demo</h3>
     <div id="map"></div>
     <p>
-      In creating your own OpenLayers application, you can use the bounds shown
-      above as your initial extent. For example, the following code would zoom
-      your map to the current extent:
+      In creating your own OpenLayers application, you can use the bounds shown above as your initial extent.
+      For example, the following code would zoom your map to the current extent:
     </p>
     <pre id="bounds"></pre>
   </body>

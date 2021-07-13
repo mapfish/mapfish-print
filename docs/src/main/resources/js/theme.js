@@ -32,8 +32,7 @@ require = (function e(t, n, r) {
   {
     'sphinx-rtd-theme': [
       function (require, module, exports) {
-        var jQuery =
-          typeof window != 'undefined' ? window.jQuery : require('jquery');
+        var jQuery = typeof window != 'undefined' ? window.jQuery : require('jquery');
 
         // Sphinx theme nav state
         function ThemeNav() {
@@ -112,9 +111,7 @@ require = (function e(t, n, r) {
               });
 
             // Make tables responsive
-            $('table.docutils:not(.field-list)').wrap(
-              "<div class='wy-table-responsive'></div>"
-            );
+            $('table.docutils:not(.field-list)').wrap("<div class='wy-table-responsive'></div>");
 
             // Add expand links to all parents of nested ul
             $('.wy-menu-vertical ul')
@@ -137,12 +134,8 @@ require = (function e(t, n, r) {
             var anchor = encodeURI(window.location.hash);
             if (anchor) {
               try {
-                var link = $('.wy-menu-vertical').find(
-                  '[href="' + anchor + '"]'
-                );
-                $('.wy-menu-vertical li.toctree-l1 li.current').removeClass(
-                  'current'
-                );
+                var link = $('.wy-menu-vertical').find('[href="' + anchor + '"]');
+                $('.wy-menu-vertical li.toctree-l1 li.current').removeClass('current');
                 link.closest('li.toctree-l2').addClass('current');
                 link.closest('li.toctree-l3').addClass('current');
                 link.closest('li.toctree-l4').addClass('current');
@@ -157,8 +150,7 @@ require = (function e(t, n, r) {
             var newWinPosition = this.win.scrollTop(),
               winBottom = newWinPosition + this.winHeight,
               navPosition = this.navBar.scrollTop(),
-              newNavPosition =
-                navPosition + (newWinPosition - this.winPosition);
+              newNavPosition = navPosition + (newWinPosition - this.winPosition);
             if (newWinPosition < 0 || winBottom > this.docHeight) {
               return;
             }

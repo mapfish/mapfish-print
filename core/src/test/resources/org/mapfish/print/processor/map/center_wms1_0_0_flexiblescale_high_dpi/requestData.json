@@ -11,7 +11,8 @@
           "type": "geojson",
           "style": "file://thinline.sld",
           "geojson": "http://center_wms1_0_0_flexiblescale_high_dpi.json/geojson/ny-roads-3857.json"
-        }, {
+        },
+        {
           "type": "wms",
           "baseURL": "http://center_wms1_0_0_flexiblescale_high_dpi.wms:1234/wms",
           "opacity": 1.0,

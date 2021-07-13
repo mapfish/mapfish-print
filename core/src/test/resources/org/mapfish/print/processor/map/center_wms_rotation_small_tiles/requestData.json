@@ -9,17 +9,12 @@
 
       "layers": [
         {
-          "layers": [
-            "tiling"
-          ],
+          "layers": ["tiling"],
           "baseURL": "http://center_wms_rotation_small_tiles.com:1234/wms",
           "version": "1.0.0",
           "type": "TILEDWMS",
           "imageFormat": "image/png",
-          "tileSize": [
-            25,
-            25
-          ]
+          "tileSize": [25, 25]
         }
       ]
     }
