@@ -13,6 +13,9 @@ task startScripts(type: CreateStartScripts) {
 task print(type: JavaExec) {
     main = 'org.mapfish.print.cli.Main'
     classpath = sourceSets.main.runtimeClasspath
+    // https://stackoverflow.com/questions/23689054/problems-passing-system-properties-and-parameters-when-running-java-class-via-gr
+    /* Can pass all the properties: */
+    systemProperties System.getProperties()
 }
 
 // define what should be included as distribution. usually this configuration
