@@ -1,14 +1,25 @@
 package org.mapfish.print.http;
 
+import org.apache.http.auth.AuthScheme;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -16,6 +27,7 @@ import org.apache.http.impl.conn.SystemDefaultDnsResolver;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.processor.http.matcher.MatchInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -30,7 +42,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -96,6 +111,38 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             @Nonnull final HttpMethod httpMethod) throws IOException {
         HttpRequestBase httpRequest = (HttpRequestBase) createHttpUriRequest(httpMethod, uri);
         return new Request(getHttpClient(), httpRequest, createHttpContext(httpMethod, uri));
+    }
+
+    @Override
+    protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
+        Configuration config = MfClientHttpRequestFactoryImpl.getCurrentConfiguration();
+        if (config == null) {
+            return null;
+        }
+
+        final AuthCache authCache = new BasicAuthCache();
+        final CredentialsProvider myCredentialsProvider = new BasicCredentialsProvider();
+
+        // Add AuthCache to the execution context
+        final HttpClientContext context = HttpClientContext.create();
+
+        final List<HttpProxy> proxies = config.getProxies();
+        for (HttpProxy proxy : proxies) {
+
+            final String proxyPreemtiveAuthScheme = proxy.getPreemtiveAuthScheme();
+            if (proxyPreemtiveAuthScheme != null) {
+                final AuthScheme authScheme = proxy.getPreemtiveAuthSchemeClass();
+                final HttpHost host = proxy.getHttpHost();
+                authCache.put(host, authScheme);
+
+                final AuthScope authScope = new AuthScope(host.getHostName(), host.getPort(), null,
+                        proxyPreemtiveAuthScheme);
+                myCredentialsProvider.setCredentials(authScope, proxy.toCredentials(authScope));
+            }
+        }
+        context.setCredentialsProvider(myCredentialsProvider);
+        context.setAuthCache(authCache);
+        return context;
     }
 
     /**

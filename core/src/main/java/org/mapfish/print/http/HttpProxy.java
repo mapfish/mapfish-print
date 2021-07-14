@@ -1,9 +1,14 @@
 package org.mapfish.print.http;
 
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScheme;
+import org.apache.http.client.config.AuthSchemes;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.auth.DigestScheme;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.http.matcher.URIMatcher;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -19,6 +24,7 @@ import java.util.List;
  *     port: 8888
  *     username: username
  *     password: xyzpassword
+ *     preemtiveAuthScheme: Basic
  *     matchers:
  *       - !localMatch
  *         reject: true
@@ -29,9 +35,11 @@ import java.util.List;
  * </code></pre>
  */
 public final class HttpProxy extends HttpCredential {
+    private static final List<String> PREEMTIVE_ALLOWED_AUTH_SCHEMES = Arrays.asList(AuthSchemes.BASIC, AuthSchemes.DIGEST);
     private String host;
     private int port = 80;
     private String scheme;
+    private String preemtiveAuthScheme = null;
 
     public HttpHost getHttpHost() {
         return new HttpHost(this.host, this.port, getScheme());
@@ -119,10 +127,29 @@ public final class HttpProxy extends HttpCredential {
         this.port = port;
     }
 
+    public String getPreemtiveAuthScheme() {
+        return preemtiveAuthScheme;
+    }
+
+    public AuthScheme getPreemtiveAuthSchemeClass() {
+        if(AuthSchemes.BASIC.equals(this.preemtiveAuthScheme)) {
+            return new BasicScheme();
+        } else {
+            return new DigestScheme();
+        }
+    }
+
+    public void setPreemtiveAuthScheme(String preemtiveAuthScheme) {
+        this.preemtiveAuthScheme = preemtiveAuthScheme;
+    }
+
     @Override
     public void validate(final List<Throwable> validationErrors, final Configuration configuration) {
         if (this.host == null) {
             validationErrors.add(new IllegalStateException("The parameter 'host' is required."));
+        }
+        if(this.preemtiveAuthScheme!=null && !PREEMTIVE_ALLOWED_AUTH_SCHEMES.contains(this.preemtiveAuthScheme)) {
+            validationErrors.add(new IllegalStateException("The parameter 'preemptiveAuthScheme' has illegal value."));
         }
     }
 
