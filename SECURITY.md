@@ -12,7 +12,7 @@
 | 3.24    | 31/12/2021      |
 | 3.25    | 31/12/2021      |
 | 3.26    | 31/06/2021      |
-| 3.27    | 31/06/2021      |
-| 3.28    | To be defined   |
+| 3.27    | 06/01/2023      |
+| 3.28    | Best effort     |
 
 ### Version 3.23 is prematurely end of support because its staging build system was no longer working.
