@@ -49,7 +49,6 @@ configure(subprojects.findAll { ['core', 'examples', 'docs'].contains(it.name) }
         maven { url "http://download.osgeo.org/webdav/geotools" }
         mavenCentral()
         jcenter()
-        maven { url "https://dl.bintray.com/readytalk/maven" }
         maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
         maven { url "https://repo.osgeo.org/repository/release/" }
         maven { url "https://download.osgeo.org/webdav/geotools/" }
