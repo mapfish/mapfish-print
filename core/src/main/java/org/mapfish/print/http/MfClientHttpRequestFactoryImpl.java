@@ -2,6 +2,7 @@ package org.mapfish.print.http;
 
 import org.apache.http.auth.AuthScheme;
 import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.Header;
@@ -18,6 +19,7 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -117,8 +119,12 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
         Configuration config = MfClientHttpRequestFactoryImpl.getCurrentConfiguration();
         if (config == null) {
-            return null;
+            LOGGER.error("No configuration found. Cannot set preemtive authentication.");
+            //FIXME: Why is the config null here?!
+            // return null;
         }
+        // FIXME: For now, hardcode it, in order to try preemptive authentication out,
+        // anyways.
 
         final AuthCache authCache = new BasicAuthCache();
         final CredentialsProvider myCredentialsProvider = new BasicCredentialsProvider();
@@ -126,20 +132,34 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         // Add AuthCache to the execution context
         final HttpClientContext context = HttpClientContext.create();
 
-        final List<HttpProxy> proxies = config.getProxies();
-        for (HttpProxy proxy : proxies) {
+        /* TODO: HardCoded part starts here: */
 
-            final String proxyPreemtiveAuthScheme = proxy.getPreemtiveAuthScheme();
-            if (proxyPreemtiveAuthScheme != null) {
-                final AuthScheme authScheme = proxy.getPreemtiveAuthSchemeClass();
-                final HttpHost host = proxy.getHttpHost();
-                authCache.put(host, authScheme);
+        final String proxyPreemtiveAuthScheme = "Basic";
 
-                final AuthScope authScope = new AuthScope(host.getHostName(), host.getPort(), null,
-                        proxyPreemtiveAuthScheme);
-                myCredentialsProvider.setCredentials(authScope, proxy.toCredentials(authScope));
-            }
-        }
+        final AuthScheme authScheme = new BasicScheme();
+        final HttpHost host = new HttpHost("[::1]", 8080, "http");
+        authCache.put(host, authScheme);
+
+        final AuthScope authScope = new AuthScope(host.getHostName(), host.getPort(), null, proxyPreemtiveAuthScheme);
+        Credentials credentialls = new UsernamePasswordCredentials("jack", "insecure");
+        myCredentialsProvider.setCredentials(authScope, credentialls);
+
+        /*
+         * TODO: This was the generic code that reads out the config: final
+         * List<HttpProxy> proxies = config.getProxies(); for (HttpProxy proxy :
+         * proxies) {
+         * 
+         * final String proxyPreemtiveAuthScheme = proxy.getPreemtiveAuthScheme(); if
+         * (proxyPreemtiveAuthScheme != null) { final AuthScheme authScheme =
+         * proxy.getPreemtiveAuthSchemeClass(); final HttpHost host =
+         * proxy.getHttpHost(); authCache.put(host, authScheme);
+         * 
+         * final AuthScope authScope = new AuthScope(host.getHostName(), host.getPort(),
+         * null, proxyPreemtiveAuthScheme);
+         * myCredentialsProvider.setCredentials(authScope,
+         * proxy.toCredentials(authScope)); } }
+         * 
+         */
         context.setCredentialsProvider(myCredentialsProvider);
         context.setAuthCache(authCache);
         return context;
