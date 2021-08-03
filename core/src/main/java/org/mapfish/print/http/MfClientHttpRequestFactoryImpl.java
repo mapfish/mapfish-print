@@ -1,7 +1,9 @@
 package org.mapfish.print.http;
 
+import org.apache.http.auth.AUTH;
 import org.apache.http.auth.AuthScheme;
 import org.apache.http.auth.Credentials;
+import org.apache.http.auth.MalformedChallengeException;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.client.CredentialsProvider;
@@ -26,6 +28,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.SystemDefaultDnsResolver;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.mapfish.print.config.Configuration;
@@ -137,6 +140,13 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         final String proxyPreemtiveAuthScheme = "Basic";
 
         final AuthScheme authScheme = new BasicScheme();
+        
+        try {
+            authScheme.processChallenge(new BasicHeader(AUTH.PROXY_AUTH, "BASIC realm=default"));
+        } catch (MalformedChallengeException e) {
+           LOGGER.error("Something went wrong", e);
+        }
+        
         final HttpHost host = new HttpHost("[::1]", 8080, "http");
         authCache.put(host, authScheme);
 
