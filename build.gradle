@@ -9,7 +9,7 @@ buildscript {
 
     dependencies {
         classpath "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.7.2"
-        classpath "se.bjurr.violations:violations-gradle-plugin:1.50.15"
+        classpath "se.bjurr.violations:violations-gradle-plugin:1.50.16"
         classpath 'org.owasp:dependency-check-gradle:6.2.2'
     }
 }
