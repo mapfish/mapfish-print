@@ -155,7 +155,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
                 @Nullable final HttpContext context) {
             this.client = client;
             this.request = request;
-            this.context = context;
+            this.context = context==null? new HttpClientContext():context;
             this.outputStream = new ByteArrayOutputStream();
         }
 
@@ -231,9 +231,9 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             
             //FIXME: Typecheck?!
             final HttpClientContext httpClientContext = (HttpClientContext) this.context;
-            if(this.context==null) {
-                this.context = new HttpClientContext();
-            }
+//            if(this.context==null) {
+//                this.context = new HttpClientContext();
+//            }
             
             // @Override
 //            protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
