@@ -231,6 +231,9 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             
             //FIXME: Typecheck?!
             final HttpClientContext httpClientContext = (HttpClientContext) this.context;
+            if(this.context==null) {
+                this.context = new HttpClientContext();
+            }
             
             // @Override
 //            protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
