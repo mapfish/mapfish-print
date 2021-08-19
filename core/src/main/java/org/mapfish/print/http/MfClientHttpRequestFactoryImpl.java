@@ -85,7 +85,8 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
                 setDefaultCredentialsProvider(new MfCredentialsProvider()).
                 setDefaultRequestConfig(requestConfig).
                 setMaxConnTotal(maxConnTotal).
-                setMaxConnPerRoute(maxConnPerRoute);
+                setMaxConnPerRoute(maxConnPerRoute).
+                setUserAgent(UserAgentCreator.getUserAgent());
         return httpClientBuilder.build();
     }
 
