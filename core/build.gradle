@@ -1,4 +1,5 @@
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.apache.tools.ant.filters.*
 
 apply plugin: 'war'
 apply plugin: 'distribution'
@@ -216,6 +217,13 @@ def gitRevision() {
 
 compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 compileTestJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
+
+// Add version to ressources, used for User-Agent string:
+processResources {
+    filter ReplaceTokens, tokens: [
+        "application.version": version
+    ]
+}
 
 def addManifestAttribute(manifest) {
     manifest.mainAttributes(
