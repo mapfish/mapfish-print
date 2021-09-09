@@ -5,6 +5,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.Processor;
 
 import org.mapfish.print.url.data.DataUrlConnection;
+import org.mapfish.print.url.data.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -113,7 +115,10 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
                     return executeCallbacksAndRequest(this.request);
                 }
                 if ("data".equals(this.uri.getScheme())) {
-                    final DataUrlConnection duc = new DataUrlConnection(this.uri.toURL());
+                    final String urlStr = this.uri.toString();
+                    final URL url = new URL("data", null, 0,
+                        urlStr.substring("data:".length()), new Handler());
+                    final DataUrlConnection duc = new DataUrlConnection(url);
                     final InputStream is = duc.getInputStream();
                     final String contentType = duc.getContentType();
                     final HttpHeaders responseHeaders = new HttpHeaders();
