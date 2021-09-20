@@ -218,7 +218,7 @@ def gitRevision() {
 compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 compileTestJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 
-// Add version to ressources, used for User-Agent string:
+// Add version to resources, used for User-Agent string:
 processResources {
     filter ReplaceTokens, tokens: [
         "application.version": version
