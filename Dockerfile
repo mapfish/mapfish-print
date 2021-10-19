@@ -1,8 +1,10 @@
 FROM gradle:6.6-jdk11 AS builder
 
-RUN apt update
-RUN apt install --yes fonts-liberation gettext curl
-RUN gradle --version
+RUN apt-get update && \
+  apt-get install --yes --no-install-recommends fonts-liberation gettext curl && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/* && \
+  gradle --version
 
 WORKDIR /src
 
@@ -15,19 +17,19 @@ COPY core ./core
 COPY checkstyle_* ./
 
 # '&& touch success || true' is a trick to be able to get out some artifacts
-RUN gradle :core:build :core:explodedWar :core:libSourcesJar :core:libJavadocJar && touch success || true
+RUN (gradle :core:build :core:explodedWar :core:libSourcesJar :core:libJavadocJar && touch success) || true
 
 ARG GIT_HEAD
 ENV GIT_HEAD=${GIT_HEAD}
 
 COPY publish ./publish
 
-RUN [ -e success ] &&  gradle :publish:build && touch success-publish || true
+RUN ([ -e success ] && (gradle :publish:build && touch success-publish)) || true
 
 COPY examples ./examples
 COPY docs ./docs
 
-RUN [ -e success ] && gradle :examples:build buildDocs && touch success-examples-docs || true
+RUN ([ -e success ] && (gradle :examples:build buildDocs && touch success-examples-docs)) || true
 
 FROM builder AS test-builder
 
