@@ -212,7 +212,7 @@ dependencies {
 
 def gitRevision() {
     def gitRev = System.getenv('GIT_HEAD')
-    return gitRev != null ? gitRev : "git rev-parse HEAD | tr -d '[\n]'".execute().text
+    return gitRev != null ? gitRev : "git rev-parse HEAD".execute().text.trim()
 }
 
 compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
