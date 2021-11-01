@@ -20,6 +20,13 @@ jobs:
         uses: actions/checkout@v2
         if: env.HAS_SECRETS == 'HAS_SECRETS'
 
+      - name: Setup Java JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          distribution: temurin
+        if: env.HAS_SECRETS == 'HAS_SECRETS'
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v1
         if: env.HAS_SECRETS == 'HAS_SECRETS'
