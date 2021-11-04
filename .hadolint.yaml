@@ -1,0 +1,2 @@
+ignored:
+  - DL3008 # pin version: https://github.com/hadolint/hadolint/wiki/DL3008

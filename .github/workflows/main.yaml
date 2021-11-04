@@ -70,7 +70,7 @@ jobs:
       - uses: actions/upload-artifact@v1
         with:
           name: Test results
-          path: core/build/resources/actual
+          path: core/build/resources/
           if-no-files-found: ignore
         if: failure()
       - uses: actions/upload-artifact@v1

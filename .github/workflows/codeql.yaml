@@ -11,13 +11,20 @@ env:
 
 jobs:
   CodeQL-Build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     name: Code scanning
     timeout-minutes: 15
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        if: env.HAS_SECRETS == 'HAS_SECRETS'
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          distribution: temurin
         if: env.HAS_SECRETS == 'HAS_SECRETS'
 
       - name: Initialize CodeQL
