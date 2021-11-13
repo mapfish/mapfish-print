@@ -58,7 +58,7 @@ COPY jettyRunExtraFiles/mapfish-spring-application-context-override-acceptencete
 FROM runner AS watcher
 
 RUN apt-get update && \
-    apt-get install --yes --no-install-recommends python3-pip rsync && \
+    apt-get install --yes --no-install-recommends python3-pip rsync python3-setuptools && \
     apt-get clean && \
     rm --recursive --force /var/lib/apt/lists/* && \
     python3 -m pip --disable-pip-version-check --no-cache-dir install inotify
