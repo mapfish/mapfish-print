@@ -5,6 +5,13 @@ apply plugin: 'distribution'
 
 defaultTasks 'build'
 
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
+    maven { url "https://repo.osgeo.org/repository/release/" }
+}
+
 // the task `run` of the gretty plugin conflicts with the task with the same
 // name of the plugin `application`. that's why the following tasks are defined
 // manually.
