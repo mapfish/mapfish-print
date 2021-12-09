@@ -1,8 +1,11 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 repositories {
-    maven { url 'https://maven.restlet.org' }
+    mavenCentral()
     jcenter()
+    maven { url 'https://maven.restlet.org' }
+    maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
+    maven { url "https://repo.osgeo.org/repository/release/" }
 }
 
 dependencies {
