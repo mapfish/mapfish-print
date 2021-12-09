@@ -42,7 +42,7 @@ jobs:
           sudo rm /etc/apt/sources.list.d/*.list
           sudo apt-get update
           sudo apt-get install python3-wheel python3-setuptools
-
+      - run: python3 -m pip install --user setuptools_rust
       - run: echo "${HOME}/.local/bin" >> ${GITHUB_PATH}
       - run: python3 -m pip install --user --requirement=ci/requirements.txt
 
