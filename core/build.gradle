@@ -121,7 +121,7 @@ dependencies {
     def slf4jVersion = '1.7.32'
     def metricsVersion = '4.2.5'
     def geotoolsVersion = '25.2'
-    def logbackVersion = '1.2.7'
+    def logbackVersion = '1.2.8'
 
     compile(
             "org.springframework:spring-context:$springVersion",
