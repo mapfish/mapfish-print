@@ -97,7 +97,7 @@ public final class DataSourceProcessor
 
     @PostConstruct
     private void init() {
-        // default to no processors
+        // default is no processors
         this.processorGraph = this.processorGraphFactory.build(Collections.emptyList(),
                                                                Collections.emptyMap());
     }
