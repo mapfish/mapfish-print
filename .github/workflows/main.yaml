@@ -62,8 +62,6 @@ jobs:
       - run: docker-compose logs || true
         if: failure()
 
-      - run: make acceptance-tests-down
-
       - run: mkdir -p core/build/resources/actual examples/build/reports core/build/reports
           examples/build/resources/test/examples
         if: always()
