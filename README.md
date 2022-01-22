@@ -35,7 +35,7 @@ The test (part of the build) requires the 'Liberation Sans' font, which can be d
 
 </div>
 
-# Auto-releoad mode
+# Auto-reload mode
 
 To be able to quickly test modifications in the print you should:
 
