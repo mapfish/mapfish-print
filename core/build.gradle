@@ -163,7 +163,7 @@ dependencies {
     jasper(
             "net.sf.jasperreports:jasperreports:$project.jasperreportVersion",
             "org.codehaus.groovy:groovy-all:$project.groovyVersion",
-            'ar.com.fdvs:DynamicJasper:5.3.2',
+            'ar.com.fdvs:DynamicJasper:5.3.3',
             "net.sf.jasperreports:jasperreports-fonts:$project.jasperreportVersion",
             "net.sf.jasperreports:jasperreports-functions:$project.jasperreportVersion",
             'joda-time:joda-time:2.10.13'
