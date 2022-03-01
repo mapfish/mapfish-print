@@ -49,7 +49,7 @@
 				<textElement markup="html">
 					<font fontName="Cadastra" size="8"/>
 				</textElement>
-				<text><![CDATA[&mdash;]]></text>
+				<text><![CDATA[—]]></text>
 			</staticText>
 		</band>
 	</detail>
