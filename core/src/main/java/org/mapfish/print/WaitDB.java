@@ -21,6 +21,11 @@ public abstract class WaitDB {
         while (true) {
             try {
                 Class.forName("org.postgresql.Driver");
+                System.out.println("Try to connect to the database with URI: jdbc:postgresql://" +
+                                            System.getProperty("db.host") +
+                                            ":" + System.getProperty("db.port", "5432") + "/" +
+                                            System.getProperty("db.name") +
+                                            ", username: " + System.getProperty("db.username"));
                 DriverManager.getConnection("jdbc:postgresql://" + System.getProperty("db.host") +
                                             ":" + System.getProperty("db.port", "5432") + "/" +
                                             System.getProperty("db.name"),
