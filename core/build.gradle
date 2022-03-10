@@ -119,7 +119,7 @@ ext {
 
 dependencies {
     def slf4jVersion = '1.7.36'
-    def metricsVersion = '4.2.8'
+    def metricsVersion = '4.2.9'
     def geotoolsVersion = '26.3'
     def logbackVersion = '1.2.11'
 
