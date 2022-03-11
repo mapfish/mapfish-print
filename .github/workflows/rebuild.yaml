@@ -15,7 +15,6 @@ jobs:
       fail-fast: false
       matrix:
         branch:
-          - '3.24'
           - '3.25'
           - '3.26'
           - '3.27'
