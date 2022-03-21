@@ -176,7 +176,7 @@ dependencies {
             "org.slf4j:jul-to-slf4j:${slf4jVersion}",
             "ch.qos.logback:logback-classic:${logbackVersion}",
             "ch.qos.logback:logback-access:${logbackVersion}",
-            'org.json:json:20211205',
+            'org.json:json:20220320',
             'org.yaml:snakeyaml:1.30',
             'com.github.spullara.cli-parser:cli-parser:1.1.5',
             'org.apache.httpcomponents:httpclient:4.5.13',
