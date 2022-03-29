@@ -1,0 +1,33 @@
+{
+  extends: ['config:base', 'schedule:earlyMondays'],
+  baseBranches: ['master', '3.20', '3.27', '3.28', '3.29'],
+  packageRules: [
+    /** Automerge the patch, the minor and the dev dependency */
+    {
+      matchBaseBranches: ['master'],
+      matchUpdateTypes: ['minor', 'patch'],
+      automerge: true,
+    },
+    {
+      matchDepTypes: ['devDependencies'],
+      automerge: true,
+    },
+    /** Group the patch and the minor */
+    {
+      matchUpdateTypes: ['patch'],
+      groupName: 'all patch versions',
+      automerge: true,
+    },
+    {
+      matchUpdateTypes: ['minor'],
+      groupName: 'all minor versions',
+      automerge: true,
+    },
+    /** Accept only the patch on the stabilization branches */
+    {
+      branchPrefix: ['3.'],
+      matchUpdateTypes: ['major', 'minor', 'pin', 'digest', 'lockFileMaintenance', 'rollback', 'bump'],
+      enabled: false,
+    },
+  ],
+}

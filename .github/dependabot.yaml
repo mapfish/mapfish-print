@@ -5,26 +5,26 @@ updates:
   - package-ecosystem: gradle
     directory: '/'
     schedule:
-      interval: daily
+      interval: monthly
     ignore:
       - dependency-name: none
 
   - package-ecosystem: pip
     directory: '/ci'
     schedule:
-      interval: daily
+      interval: monthly
     ignore:
       - dependency-name: none
 
   - package-ecosystem: docker
     directory: '/'
     schedule:
-      interval: daily
+      interval: monthly
     ignore:
       - dependency-name: none
   - package-ecosystem: docker
     directory: '/core'
     schedule:
-      interval: daily
+      interval: monthly
     ignore:
       - dependency-name: none
