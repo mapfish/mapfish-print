@@ -25,7 +25,7 @@
     },
     /** Accept only the patch on the stabilization branches */
     {
-      branchPrefix: ['3.'],
+      matchBaseBranches: ['/3\\..*/'],
       matchUpdateTypes: ['major', 'minor', 'pin', 'digest', 'lockFileMaintenance', 'rollback', 'bump'],
       enabled: false,
     },
