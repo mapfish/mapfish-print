@@ -32,7 +32,7 @@
     },
     {
       matchUpdateTypes: ['minor'],
-      matchPackagePrefixes: ['org.springframework:spring-'],
+      matchPackagePrefixes: ['org.springframework:spring-', 'org.springframework.security:spring-'],
       groupName: 'spring',
       automerge: true,
     },
