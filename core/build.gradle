@@ -108,7 +108,7 @@ configurations {
 
 dependencies {
     def springSecurityVersion = '5.1.5.RELEASE'
-    def slf4jVersion = '1.7.26'
+    def slf4jVersion = '1.7.36'
     def metricsVersion = '4.1.0'
     def geotoolsVersion = '21.1'
 
@@ -123,7 +123,7 @@ dependencies {
             'org.hibernate:hibernate-core:5.4.2.Final',
             'org.postgresql:postgresql:42.2.5',
             'com.vladmihalcea:hibernate-types-52:2.4.3',
-            'com.mchange:c3p0:0.9.5.4',
+            'com.mchange:c3p0:0.9.5.5',
             "org.springframework:spring-orm:$project.springVersion",
             "org.springframework:spring-jdbc:$project.springVersion",
             "org.springframework:spring-tx:$project.springVersion"
@@ -154,7 +154,7 @@ dependencies {
             'ar.com.fdvs:DynamicJasper:5.1.2',
             'net.sf.jasperreports:jasperreports-fonts:6.8.1',
             'net.sf.jasperreports:jasperreports-functions:6.8.1',
-            'joda-time:joda-time:2.10.2'
+            'joda-time:joda-time:2.10.14'
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile(
@@ -162,13 +162,13 @@ dependencies {
             "org.slf4j:slf4j-api:${slf4jVersion}",
             "org.slf4j:jcl-over-slf4j:${slf4jVersion}",
             'org.json:json:20180813',
-            'ch.qos.logback:logback-classic:1.2.3',
+            'ch.qos.logback:logback-classic:1.2.11',
             'org.yaml:snakeyaml:1.24',
             'com.github.spullara.cli-parser:cli-parser:1.1.5',
-            'org.apache.httpcomponents:httpclient:4.5.8',
+            'org.apache.httpcomponents:httpclient:4.5.13',
             'com.sun.mail:javax.mail:1.6.2',
             'com.amazonaws:aws-java-sdk-s3:1.11.559',
-            'com.adobe.xmp:xmpcore:6.1.10'
+            'com.adobe.xmp:xmpcore:6.1.11'
     )
 
     compile(configurations.metrics) {
