@@ -56,12 +56,12 @@ jobs:
       - run: docker cp builder:/src/core/build/ core/build/
         if: always()
 
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: Test results
           path: core/build/resources/actual
         if: failure()
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: Reports core
           path: core/build/reports
@@ -72,7 +72,7 @@ jobs:
           mkdir -p /tmp/test_results/junit
           find . -name '*TEST-*.xml' -exec cp -v {} /tmp/test_results/junit/ \;
         if: failure()
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: Test results
           path: /tmp/test_results
