@@ -65,25 +65,25 @@ jobs:
       - run: mkdir -p core/build/resources/actual examples/build/reports core/build/reports
           examples/build/resources/test/examples
         if: always()
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: Test results
           path: core/build/resources/
           if-no-files-found: ignore
         if: failure()
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: Reports examples
           path: examples/build/reports
           if-no-files-found: ignore
         if: failure()
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: Reports core
           path: core/build/reports
           if-no-files-found: ignore
         if: failure()
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: Examples
           path: examples/build/resources/test/examples
@@ -95,7 +95,7 @@ jobs:
           mkdir -p /tmp/test_results/junit
           find . -name '*TEST-*.xml' -exec cp -v {} /tmp/test_results/junit/ \;
         if: failure()
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: Test results
           path: /tmp/test_results
