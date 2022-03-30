@@ -23,6 +23,13 @@
       groupName: 'all minor versions',
       automerge: true,
     },
+    /** Ungroup some minor */
+    {
+      matchUpdateTypes: ['minor'],
+      matchPackageNames: ['gradle'],
+      groupName: 'gradle',
+      automerge: true,
+    },
     /** Accept only the patch on the stabilization branches */
     {
       matchBaseBranches: ['/3\\..*/'],
