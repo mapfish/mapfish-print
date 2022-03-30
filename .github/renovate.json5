@@ -30,6 +30,12 @@
       groupName: 'gradle',
       automerge: true,
     },
+    {
+      matchUpdateTypes: ['minor'],
+      matchPackagePrefixes: ['org.springframework:spring-'],
+      groupName: 'spring',
+      automerge: true,
+    },
     /** Accept only the patch on the stabilization branches */
     {
       matchBaseBranches: ['/3\\..*/'],
