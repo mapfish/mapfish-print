@@ -27,7 +27,7 @@ jobs:
 
       - name: Get tag
         id: tag2
-        uses: frabert/replace-string-action@v1.1
+        uses: frabert/replace-string-action@v1.3
         with:
           pattern: 'refs/tags/(.*)'
           string: '{{ github.ref }}'
