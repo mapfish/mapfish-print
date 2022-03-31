@@ -23,17 +23,45 @@
       groupName: 'all minor versions',
       automerge: true,
     },
-    /** Ungroup some minor */
+    /** Define the groups */
     {
-      matchUpdateTypes: ['minor'],
       matchPackageNames: ['gradle'],
       groupName: 'gradle',
       automerge: true,
     },
     {
-      matchUpdateTypes: ['minor'],
-      matchPackagePrefixes: ['org.springframework:spring-', 'org.springframework.security:spring-'],
+      matchPackagePrefixes: ['org.springframework:', 'org.springframework.security:'],
       groupName: 'spring',
+      automerge: true,
+    },
+    {
+      matchPackagePrefixes: ['net.sf.jasperreports:'],
+      groupName: 'jasperreports',
+      automerge: true,
+    },
+    {
+      matchPackagePrefixes: ['org.slf4j:'],
+      groupName: 'slf4j',
+      automerge: true,
+    },
+    {
+      matchPackagePrefixes: ['io.dropwizard.metrics:'],
+      groupName: 'metrics',
+      automerge: true,
+    },
+    {
+      matchPackagePrefixes: ['org.geotools:'],
+      groupName: 'geotools',
+      automerge: true,
+    },
+    {
+      matchPackagePrefixes: ['ch.qos.logback:'],
+      groupName: 'logback',
+      automerge: true,
+    },
+    {
+      matchPackagePrefixes: ['org.apache.xmlgraphics:batik-'],
+      groupName: 'batik',
       automerge: true,
     },
     /** Accept only the patch on the stabilization branches */
