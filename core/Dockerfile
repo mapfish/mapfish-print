@@ -2,7 +2,7 @@ FROM mapfish_print_builder AS builder
 
 
 
-FROM tomcat:9.0-jdk11-openjdk-slim AS runner
+FROM tomcat:10.1-jdk11-openjdk-slim AS runner
 LABEL maintainer="Camptocamp <info@camptocamp.com>"
 
 RUN perl -0777 -i -pe 's/(<Valve className="org.apache.catalina.valves.AccessLogValve"[^>]*>)/<Valve className="ch.qos.logback.access.tomcat.LogbackValve" quiet="true"\/>/s' "${CATALINA_HOME}/conf/server.xml" && \
