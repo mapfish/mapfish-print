@@ -3,8 +3,6 @@ name: Audit
 
 on:
   push:
-  schedule:
-    - cron: '30 2 * * *'
 
 jobs:
   audit:
@@ -12,20 +10,8 @@ jobs:
     name: Audit
     timeout-minutes: 20
 
-    strategy:
-      fail-fast: false
-      matrix:
-        branch:
-          - '3.20'
-          - '3.27'
-          - '3.28'
-          - '3.29'
-          - master
-
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: ${{ matrix.branch }}
 
       - uses: camptocamp/initialise-gopass-summon-action@v2
         with:
@@ -42,5 +28,5 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: dependencyCheckAnalyze
-          path: security-report
+          path: dependency-check
           if-no-files-found: ignore
