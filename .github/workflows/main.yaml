@@ -24,3 +24,44 @@ jobs:
 
       - name: Checks
         run: c2cciutils-checks
+
+      - name: Install OS dependencies
+        run: sudo apt install fonts-liberation
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 8
+
+      - name: Build
+        run: ./gradlew build
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Test results
+          path: core/build/resources/
+          if-no-files-found: ignore
+        if: failure()
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Reports examples
+          path: examples/build/reports
+          if-no-files-found: ignore
+        if: failure()
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Reports core
+          path: core/build/reports
+          if-no-files-found: ignore
+        if: failure()
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Examples
+          path: examples/build/resources/test/examples
+          if-no-files-found: ignore
+        if: failure()
+
+      - run: ./gradlew createDocker
+
+      - name: Publish
+        run: c2cciutils-publish
+        if: env.HAS_SECRETS == 'HAS_SECRETS'
