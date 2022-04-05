@@ -27,7 +27,7 @@ def examplesDir = "${project(':examples').projectDir}/src/test/resources/example
 
 task geoserverRun(type: Exec) {
     description 'Run GeoServer with test data'
-    commandLine 'docker', 'run', '--rm', '--name=geoserver', '--publish=8090:8080', "--volume=${projectDir}/geoserver-data:/mnt/geoserver_datadir", '--detach', 'camptocamp/geoserver'
+    commandLine 'docker', 'run', '--rm', '--name=geoserver', '--publish=8090:8080', "--volume=${projectDir}/geoserver-data:/mnt/geoserver_datadir", '--detach', 'camptocamp/geoserver:2.17'
 }
 
 task geoserverSleep(type: Exec) {
