@@ -3,6 +3,9 @@ name: Continuous integration
 on:
   push:
 
+env:
+  HAS_SECRETS: ${{ secrets.HAS_SECRETS }}
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -17,6 +20,7 @@ jobs:
         with:
           ci-gpg-private-key: ${{secrets.CI_GPG_PRIVATE_KEY}}
           github-gopass-ci-token: ${{secrets.GOPASS_CI_GITHUB_TOKEN}}
+          patterns: docker
         if: github.repository == 'mapfish/mapfish-print'
 
       - run: echo "${HOME}/.local/bin" >> ${GITHUB_PATH}
