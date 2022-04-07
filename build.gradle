@@ -23,7 +23,7 @@ wrapper {
 
 allprojects {
     group = 'org.mapfish.print'
-    version = '3.29.0-SNAPSHOT'
+    version = '3.29.2'
     ext.junitVersion = "4.13.2"
     ext.groovyVersion = "3.0.9"
     ext.spotbugsVersion = '4.5.3'
