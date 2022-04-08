@@ -44,7 +44,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
     private final Processor.ExecutionContext context;
     private final MfClientHttpRequestFactory httpRequestFactory;
     private final HttpRequestFetcher requestCache;
-    private Optional<Geometry> cachedRotatedMapBounds = null;
+    private Optional<Geometry> cachedRotatedMapBounds = Optional.empty();
 
     /**
      * Constructor.
@@ -199,7 +199,8 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
     }
 
     private Optional<Geometry> getRotatedMapBounds(final GeometryFactory gfac) {
-        if (this.cachedRotatedMapBounds != null) {
+
+        if (this.cachedRotatedMapBounds.isPresent()) {
             return this.cachedRotatedMapBounds;
         }
 
