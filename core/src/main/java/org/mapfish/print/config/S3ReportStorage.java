@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class S3ReportStorage implements ReportStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger(S3ReportStorage.class);
-    private static final long PURGE_INTERVAL_MS = 6 * 60 * 60 * 1000;
+    private static final long PURGE_INTERVAL_MS = 6L * 60L * 60L * 1000L;
     private static long nextPurge = 0;
 
     private String bucket = null;
