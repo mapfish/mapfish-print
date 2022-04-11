@@ -519,9 +519,11 @@ public class ThreadPoolJobManager implements JobManager {
         final File stoppedFile = new File(this.workingDirectories.getWorking(), "stopped");
         try {
             LOGGER.info("The print has finished processing jobs and can now stop");
-            stoppedFile.createNewFile();
+            if (!stoppedFile.createNewFile()) {
+                LOGGER.warn("Cannot create the file, because it already exists: {}", stoppedFile);
+            }
         } catch (IOException e) {
-            LOGGER.warn("Cannot create the {} file", stoppedFile, e);
+            LOGGER.warn("Cannot create the file: {}", stoppedFile, e);
         }
     }
 
