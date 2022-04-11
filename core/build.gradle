@@ -126,7 +126,7 @@ dependencies {
             // Hibernate & Postgres
             'org.hibernate:hibernate-core:5.6.7.Final',
             'org.postgresql:postgresql:42.3.3',
-            'com.vladmihalcea:hibernate-types-52:2.14.1',
+            'com.vladmihalcea:hibernate-types-52:2.15.2',
             'com.mchange:c3p0:0.9.5.5',
             "org.springframework:spring-orm:5.3.18",
             "org.springframework:spring-jdbc:5.3.18",
@@ -177,7 +177,7 @@ dependencies {
             'com.amazonaws:aws-java-sdk-s3:1.12.196',
             'com.adobe.xmp:xmpcore:6.1.11',
             'io.sentry:sentry-logback:5.7.2',
-            'net.logstash.logback:logstash-logback-encoder:7.0.1',
+            'net.logstash.logback:logstash-logback-encoder:7.1',
     )
 
     compile(configurations.metrics) {
