@@ -124,8 +124,8 @@ dependencies {
             "org.springframework.security:spring-security-web:5.6.2",
             'com.thetransactioncompany:cors-filter:2.10',
             // Hibernate & Postgres
-            'org.hibernate:hibernate-core:5.6.7.Final',
-            'org.postgresql:postgresql:42.3.3',
+            'org.hibernate:hibernate-core:5.6.8.Final',
+            'org.postgresql:postgresql:42.3.4',
             'com.vladmihalcea:hibernate-types-52:2.16.1',
             'com.mchange:c3p0:0.9.5.5',
             "org.springframework:spring-orm:5.3.18",
@@ -174,10 +174,10 @@ dependencies {
             'com.github.spullara.cli-parser:cli-parser:1.1.5',
             'org.apache.httpcomponents:httpclient:4.5.13',
             'com.sun.mail:javax.mail:1.6.2',
-            'com.amazonaws:aws-java-sdk-s3:1.12.196',
+            'com.amazonaws:aws-java-sdk-s3:1.12.201',
             'com.adobe.xmp:xmpcore:6.1.11',
-            'io.sentry:sentry-logback:5.7.2',
-            'net.logstash.logback:logstash-logback-encoder:7.1',
+            'io.sentry:sentry-logback:5.7.3',
+            'net.logstash.logback:logstash-logback-encoder:7.1.1',
     )
 
     compile(configurations.metrics) {
