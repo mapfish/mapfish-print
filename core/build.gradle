@@ -126,7 +126,7 @@ dependencies {
             // Hibernate & Postgres
             'org.hibernate:hibernate-core:5.6.7.Final',
             'org.postgresql:postgresql:42.3.3',
-            'com.vladmihalcea:hibernate-types-52:2.15.2',
+            'com.vladmihalcea:hibernate-types-52:2.16.1',
             'com.mchange:c3p0:0.9.5.5',
             "org.springframework:spring-orm:5.3.18",
             "org.springframework:spring-jdbc:5.3.18",
@@ -149,7 +149,7 @@ dependencies {
             "org.geotools:gt-geojson:26.3",
             "org.geotools:gt-geotiff:26.3",
             "org.geotools:gt-wms:26.3",
-            "org.geotools.xsd:gt-xsd-gml3:26.3",
+            "org.geotools.xsd:gt-xsd-gml3:26.4",
             "org.geotools:gt-svg:26.3",
             "org.geotools:gt-cql:26.3"
     )
