@@ -39,7 +39,7 @@ public abstract class WaitDB {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e1) {
-                    //ignored
+                    Thread.currentThread().interrupt();
                 }
             }
         }
