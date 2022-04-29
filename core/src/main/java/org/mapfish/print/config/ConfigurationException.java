@@ -4,7 +4,12 @@ package org.mapfish.print.config;
  * Represents an error made in the config.yaml file.
  */
 public class ConfigurationException extends RuntimeException {
-    private Configuration configuration;
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = -5693438899003802581L;
+
 
     /**
      * Constructor.
@@ -24,14 +29,5 @@ public class ConfigurationException extends RuntimeException {
      */
     public ConfigurationException(final String message, final Throwable cause) {
         super(message, cause);
-    }
-
-
-    public final Configuration getConfiguration() {
-        return this.configuration;
-    }
-
-    public final void setConfiguration(final Configuration configuration) {
-        this.configuration = configuration;
     }
 }
