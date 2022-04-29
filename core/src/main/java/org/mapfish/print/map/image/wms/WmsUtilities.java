@@ -31,6 +31,8 @@ import java.util.List;
  * A few methods to help make wms requests for all types of wms layers.
  */
 public final class WmsUtilities {
+    private static final String FORMAT_OPTIONS = "FORMAT_OPTIONS";
+
     private WmsUtilities() {
         // intentionally empty
     }
@@ -122,8 +124,8 @@ public final class WmsUtilities {
                 }
                 break;
             case GEOSERVER:
-                if (!contains(extraParams, "FORMAT_OPTIONS")) {
-                    extraParams.put("FORMAT_OPTIONS", "dpi:" + Integer.toString(dpi));
+                if (!contains(extraParams, FORMAT_OPTIONS)) {
+                    extraParams.put(FORMAT_OPTIONS, "dpi:" + Integer.toString(dpi));
                 } else if (!isDpiSet(extraParams)) {
                     setDpiValue(extraParams, dpi);
                 }
@@ -169,9 +171,8 @@ public final class WmsUtilities {
      * Checks if the DPI value is already set for GeoServer.
      */
     private static boolean isDpiSet(final Multimap<String, String> extraParams) {
-        String searchKey = "FORMAT_OPTIONS";
         for (String key: extraParams.keys()) {
-            if (key.equalsIgnoreCase(searchKey)) {
+            if (key.equalsIgnoreCase(FORMAT_OPTIONS)) {
                 for (String value: extraParams.get(key)) {
                     if (value.toLowerCase().contains("dpi:")) {
                         return true;
@@ -186,9 +187,8 @@ public final class WmsUtilities {
      * Set the DPI value for GeoServer if there are already FORMAT_OPTIONS.
      */
     private static void setDpiValue(final Multimap<String, String> extraParams, final int dpi) {
-        String searchKey = "FORMAT_OPTIONS";
         for (String key: extraParams.keys()) {
-            if (key.equalsIgnoreCase(searchKey)) {
+            if (key.equalsIgnoreCase(FORMAT_OPTIONS)) {
                 Collection<String> values = extraParams.removeAll(key);
                 List<String> newValues = new ArrayList<>();
                 for (String value: values) {
