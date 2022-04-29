@@ -77,42 +77,7 @@ public final class FontTools {
                         description = new FontConfigDescription();
                         descriptions.add(description);
                     } else if (description != null) {
-                        String[] split = inputLine.trim().split(": ");
-                        if (split[0].equals("family")) {
-                            description.family = split[1].substring(1, split[1].length() - 4)
-                                .split(Pattern.quote("\"(s) \""));
-                        } else if (split[0].equals("style")) {
-                            description.style = split[1].substring(1, split[1].length() - 4)
-                                .split(Pattern.quote("\"(s) \""));
-                        } else if (split[0].equals("fullname")) {
-                            description.name = split[1].substring(1, split[1].length() - 4);
-                        } else if (split[0].equals("weight")) {
-                            int weight = Integer.parseInt(split[1]
-                                .substring(0, split[1].length() - 6));
-                            // See more information:
-                            // https://work.lisk.in/2020/07/18/font-weight-300.html
-                            // https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight
-                            // #Common_weight_name_mapping
-                            if (weight < 20) {
-                                description.weight = 100;
-                            } else if (weight < 45) {
-                                description.weight = 200;
-                            } else if (weight < 65) {
-                                description.weight = 300;
-                            } else if (weight < 90) {
-                                description.weight = 400;
-                            } else if (weight < 140) {
-                                description.weight = 500;
-                            } else if (weight < 190) {
-                                description.weight = 600;
-                            } else if (weight < 203) {
-                                description.weight = 700;
-                            } else if (weight < 208) {
-                                description.weight = 800;
-                            } else {
-                                description.weight = 900;
-                            }
-                        }
+                        augmentFontConfigDescription(description, inputLine);
                     }
                 }
             } catch (IOException e) {
@@ -135,5 +100,58 @@ public final class FontTools {
             }
         }
         return descriptions;
+    }
+
+    /**
+     * parses the inputLine and adds information to the FontConfigDescription.
+     * 
+     * @param description
+     * @param inputLine
+     */
+    private static void augmentFontConfigDescription(final FontConfigDescription description,
+            final String inputLine) {
+        String[] split = inputLine.trim().split(": ");
+        if (split[0].equals("family")) {
+            description.family = split[1].substring(1, split[1].length() - 4)
+                .split(Pattern.quote("\"(s) \""));
+        } else if (split[0].equals("style")) {
+            description.style = split[1].substring(1, split[1].length() - 4)
+                .split(Pattern.quote("\"(s) \""));
+        } else if (split[0].equals("fullname")) {
+            description.name = split[1].substring(1, split[1].length() - 4);
+        } else if (split[0].equals("weight")) {
+            final int weight = Integer.parseInt(split[1]
+                .substring(0, split[1].length() - 6));
+            description.weight = recalculateWeight(weight);
+        }
+    }
+
+    private static int recalculateWeight(final int weight) {
+        int result;
+        // See more information:
+        // https://work.lisk.in/2020/07/18/font-weight-300.html
+        // https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight
+        // #Common_weight_name_mapping
+        if (weight < 20) {
+            result = 100;
+        } else if (weight < 45) {
+            result = 200;
+        } else if (weight < 65) {
+            result = 300;
+        } else if (weight < 90) {
+            result = 400;
+        } else if (weight < 140) {
+            result = 500;
+        } else if (weight < 190) {
+            result = 600;
+        } else if (weight < 203) {
+            result = 700;
+        } else if (weight < 208) {
+            result = 800;
+        } else {
+            result = 900;
+        }
+
+        return result;
     }
 }
