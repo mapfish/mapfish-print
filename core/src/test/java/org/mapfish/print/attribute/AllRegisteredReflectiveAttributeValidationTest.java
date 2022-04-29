@@ -24,7 +24,7 @@ public class AllRegisteredReflectiveAttributeValidationTest extends AbstractMapf
     @Autowired
     List<Attribute> allAttributes;
 
-    @Test
+    @Test(expected = Test.None.class /* no exception expected */)
     public void testAllAttributesHaveLegalValues() {
         for (ReflectiveAttribute<?> attribute: allReflectiveAttributes) {
             attribute.init();
