@@ -148,7 +148,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
             gmlV3Parser.setRootElementType(new QName("http://www.opengis.net/wfs", "FeatureCollection"));
             try {
                 final Object featureCollection = gmlV3Parser.parse(new StringReader(gmlData));
-                if (featureCollection != null && featureCollection instanceof SimpleFeatureCollection) {
+                if (featureCollection instanceof SimpleFeatureCollection) {
                     return (SimpleFeatureCollection) featureCollection;
                 }
             } catch (SAXException | ParserConfigurationException e) {
@@ -163,7 +163,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
             gmlV2Parser.setRootElementType(new QName("http://www.opengis.net/wfs", "FeatureCollection"));
             try {
                 final Object featureCollection = gmlV2Parser.parse(new StringReader(gmlData));
-                if (featureCollection != null && featureCollection instanceof SimpleFeatureCollection) {
+                if (featureCollection instanceof SimpleFeatureCollection) {
                     return (SimpleFeatureCollection) featureCollection;
                 }
             } catch (SAXException | ParserConfigurationException e) {
@@ -178,7 +178,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
             gmlV32Parser.setRootElementType(new QName("http://www.opengis.net/wfs/2.0", "FeatureCollection"));
             try {
                 final Object featureCollection = gmlV32Parser.parse(new StringReader(gmlData));
-                if (featureCollection != null && featureCollection instanceof SimpleFeatureCollection) {
+                if (featureCollection instanceof SimpleFeatureCollection) {
                     return (SimpleFeatureCollection) featureCollection;
                 } else {
                     throw new RuntimeException("unable to parse gml: \n\n" + gmlData);

@@ -271,7 +271,7 @@ public class FeaturesParser {
     }
 
     @SuppressWarnings("unchecked")
-    private Class<Geometry> parseGeometryType(@Nonnull final JSONObject featureJson) throws JSONException {
+    private Class<Geometry> parseGeometryType(@Nonnull final JSONObject featureJson) {
         JSONObject geomJson = featureJson.optJSONObject("geometry");
         if (geomJson == null) {
             return null;
