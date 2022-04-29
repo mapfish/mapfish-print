@@ -36,7 +36,7 @@ public interface Attribute extends ConfigurationObject {
      *
      * @return the value class
      */
-    Class getValueType();
+    Class<?> getValueType();
 
     /**
      * Get the attribute value.

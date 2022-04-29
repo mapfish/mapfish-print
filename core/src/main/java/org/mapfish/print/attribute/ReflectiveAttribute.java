@@ -91,7 +91,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
         return classes;
     }
 
-    private void validateParamObject(final Class<?> typeToTest, final Set<Class> tested) {
+    private void validateParamObject(final Class<?> typeToTest, final Set<Class<?>> tested) {
         if (!tested.contains(typeToTest)) {
             final Collection<Field> allAttributes = ParserUtils.getAllAttributes(typeToTest);
             Assert.isTrue(!allAttributes.isEmpty(),
@@ -239,7 +239,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
     @Override
     public final void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
         try {
-            Set<Class> printed = new HashSet<>();
+            Set<Class<?>> printed = new HashSet<>();
             final Value exampleValue = createValue(template);
             json.key(JSON_NAME).value(this.configName);
             json.key(JSON_ATTRIBUTE_TYPE).value(getValueType().getSimpleName());
@@ -271,7 +271,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
             final Object exampleValue,
             final Class<?> valueType,
             final PObject defaultValue,
-            final Set<Class> printed) throws JSONException, IllegalAccessException {
+            final Set<Class<?>> printed) throws JSONException, IllegalAccessException {
 
         final Collection<Field> mutableFields = ParserUtils.getAttributes(
                 valueType, ParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES::test);
@@ -304,7 +304,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
             final Object exampleValue,
             final Object defaultValue,
             final Field attribute,
-            final Set<Class> printed) throws JSONException, IllegalAccessException {
+            final Set<Class<?>> printed) throws JSONException, IllegalAccessException {
         json.key(attribute.getName());
         json.object();
         final Class<?> type = attribute.getType();
@@ -315,7 +315,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
             if (printed.contains(typeOrComponentType)) {
                 json.key(JSON_ATTRIBUTE_TYPE).value("recursiveDefinition");
             } else {
-                Set<Class> printedForSubTree = new HashSet<>(printed);
+                Set<Class<?>> printedForSubTree = new HashSet<>(printed);
                 printedForSubTree.add(typeOrComponentType);
 
                 json.key(JSON_ATTRIBUTE_TYPE).value(stringRepresentation(type));
