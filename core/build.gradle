@@ -144,7 +144,7 @@ dependencies {
             'com.readytalk:metrics3-statsd:4.2.0'
     )
     geotools(
-            "org.geotools:gt-epsg-hsql:26.3",
+            "org.geotools:gt-epsg-hsql:26.4",
             "org.geotools:gt-render:26.3",
             "org.geotools:gt-geojson:26.3",
             "org.geotools:gt-geotiff:26.3",
