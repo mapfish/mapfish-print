@@ -146,7 +146,7 @@ dependencies {
     geotools(
             "org.geotools:gt-epsg-hsql:26.3",
             "org.geotools:gt-render:26.3",
-            "org.geotools:gt-geojson:26.3",
+            "org.geotools:gt-geojson:26.4",
             "org.geotools:gt-geotiff:26.3",
             "org.geotools:gt-wms:26.3",
             "org.geotools.xsd:gt-xsd-gml3:26.4",
