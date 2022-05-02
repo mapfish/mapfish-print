@@ -23,14 +23,14 @@ import javax.annotation.Nonnull;
  * <li>{@link java.lang.Boolean}</li>
  * </ul>
  *
- * @param <Value> The value type of the attribute
+ * @param <VALUE> The value type of the attribute
  */
-public abstract class PrimitiveAttribute<Value> implements Attribute {
+public abstract class PrimitiveAttribute<VALUE> implements Attribute {
     /**
      * The default value.
      */
-    protected Value defaultValue;
-    private Class<Value> valueClass;
+    protected VALUE defaultValue;
+    private Class<VALUE> valueClass;
     private String configName;
 
     /**
@@ -38,15 +38,15 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
      *
      * @param valueClass the type of the value of this attribute
      */
-    protected PrimitiveAttribute(final Class<Value> valueClass) {
+    protected PrimitiveAttribute(final Class<VALUE> valueClass) {
         this.valueClass = valueClass;
     }
 
-    public final Class<Value> getValueClass() {
+    public final Class<VALUE> getValueClass() {
         return this.valueClass;
     }
 
-    public final Value getDefault() {
+    public final VALUE getDefault() {
         return this.defaultValue;
     }
 
@@ -55,7 +55,7 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
      *
      * @param value The default value.
      */
-    public abstract void setDefault(Value value);
+    public abstract void setDefault(VALUE value);
 
     @Override
     public final void setConfigName(final String configName) {

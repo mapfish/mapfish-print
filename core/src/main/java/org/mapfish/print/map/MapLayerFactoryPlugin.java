@@ -10,10 +10,10 @@ import javax.annotation.Nonnull;
 /**
  * Parses layer request data and creates a MapLayer from it.
  *
- * @param <Param> the type of object that will be populated from the JSON and passed to the factory to
+ * @param <PARAM> the type of object that will be populated from the JSON and passed to the factory to
  *         create the layer.
  */
-public interface MapLayerFactoryPlugin<Param> {
+public interface MapLayerFactoryPlugin<PARAM> {
 
     /**
      * Return a set of all the values the json 'type' property should have for this plugin to apply typenames
@@ -33,7 +33,7 @@ public interface MapLayerFactoryPlugin<Param> {
      * org.mapfish.print.attribute.ReflectiveAttribute#createValue(org.mapfish.print.config.Template)}()} for
      * details on how the parsing mechanism works.
      */
-    Param createParameter();
+    PARAM createParameter();
 
     /**
      * Inspect the json data and return Optional&lt;MapLayer&gt; or Optional.absent().
@@ -44,5 +44,5 @@ public interface MapLayerFactoryPlugin<Param> {
     @Nonnull
     MapLayer parse(
             @Nonnull Template template,
-            @Nonnull Param layerData) throws IOException;
+            @Nonnull PARAM layerData) throws IOException;
 }
