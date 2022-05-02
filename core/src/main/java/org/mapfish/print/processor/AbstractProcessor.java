@@ -19,16 +19,16 @@ import javax.annotation.Nonnull;
 /**
  * Basic functionality of a processor.  Mostly utility methods.
  *
- * @param <In> A Java bean input parameter object of the execute method. Object is populated from the
+ * @param <IN> A Java bean input parameter object of the execute method. Object is populated from the
  *         {@link org.mapfish.print.output.Values} object.
- * @param <Out> A Java bean output/return object from the execute method. properties will be put into
+ * @param <OUT> A Java bean output/return object from the execute method. properties will be put into
  *         the {@link org.mapfish.print.output.Values} object so other processor can access the values.
  */
-public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
+public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
     private final BiMap<String, String> inputMapper = HashBiMap.create();
     private final BiMap<String, String> outputMapper = HashBiMap.create();
 
-    private final Class<Out> outputType;
+    private final Class<OUT> outputType;
     private String prefix;
     private String inputPrefix;
     private String outputPrefix;
@@ -39,12 +39,12 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
      * @param outputType the type of the output of this processor.  Used to calculate processor
      *         dependencies.
      */
-    protected AbstractProcessor(final Class<Out> outputType) {
+    protected AbstractProcessor(final Class<OUT> outputType) {
         this.outputType = outputType;
     }
 
     @Override
-    public final Class<Out> getOutputType() {
+    public final Class<OUT> getOutputType() {
         return this.outputType;
     }
 
@@ -133,7 +133,7 @@ public abstract class AbstractProcessor<In, Out> implements Processor<In, Out> {
 
     @Override
     public final void validate(final List<Throwable> errors, final Configuration configuration) {
-        final In inputParameter = createInputParameter();
+        final IN inputParameter = createInputParameter();
         final Set<String> allInputAttributeNames;
         if (inputParameter != null) {
             allInputAttributeNames = ParserUtils.getAllAttributeNames(inputParameter.getClass());

@@ -33,13 +33,13 @@ public final class ProcessorUtils {
      *
      * @param processor the processor that the input object will be for.
      * @param values the object containing the values to put into the input object
-     * @param <In> type of the processor input object
-     * @param <Out> type of the processor output object
+     * @param <IN> type of the processor input object
+     * @param <OUT> type of the processor output object
      */
-    public static <In, Out> In populateInputParameter(
-            final Processor<In, Out> processor,
+    public static <IN, OUT> IN populateInputParameter(
+            final Processor<IN, OUT> processor,
             @Nonnull final Values values) {
-        In inputObject = processor.createInputParameter();
+        IN inputObject = processor.createInputParameter();
         if (inputObject != null) {
             Collection<Field> fields = getAllAttributes(inputObject.getClass());
             for (Field field: fields) {

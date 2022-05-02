@@ -37,9 +37,9 @@ import static org.mapfish.print.parser.MapfishParser.stringRepresentation;
 /**
  * Used for attribute that can have defaults specified in the YAML config file.
  *
- * @param <Value>
+ * @param <VALUE>
  */
-public abstract class ReflectiveAttribute<Value> implements Attribute {
+public abstract class ReflectiveAttribute<VALUE> implements Attribute {
     /**
      * Name of attribute in the client config json.
      *
@@ -133,7 +133,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
     /**
      * Return the type created by {@link #createValue(Template)}.
      */
-    public abstract Class<? extends Value> getValueType();
+    public abstract Class<? extends VALUE> getValueType();
 
     /**
      * The YAML config default values.
@@ -217,7 +217,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
      *
      * @param template the template that this attribute is part of.
      */
-    public abstract Value createValue(Template template);
+    public abstract VALUE createValue(Template template);
 
     /**
      * Uses reflection on the object created by {@link #createValue(Template)} to
@@ -240,7 +240,7 @@ public abstract class ReflectiveAttribute<Value> implements Attribute {
     public final void printClientConfig(final JSONWriter json, final Template template) throws JSONException {
         try {
             Set<Class<?>> printed = new HashSet<>();
-            final Value exampleValue = createValue(template);
+            final VALUE exampleValue = createValue(template);
             json.key(JSON_NAME).value(this.configName);
             json.key(JSON_ATTRIBUTE_TYPE).value(getValueType().getSimpleName());
             final Class<?> valueType = exampleValue.getClass();

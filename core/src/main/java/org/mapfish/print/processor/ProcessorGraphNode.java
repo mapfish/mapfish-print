@@ -22,12 +22,12 @@ import javax.annotation.Nonnull;
  * Represents one node in the Processor dependency graph ({@link ProcessorDependencyGraph}).
  *
  *
- * @param <In> Same as {@link Processor} <em>In</em> parameter
- * @param <Out> Same as {@link Processor} <em>Out</em> parameter
+ * @param <IN> Same as {@link Processor} <em>In</em> parameter
+ * @param <OUT> Same as {@link Processor} <em>Out</em> parameter
  */
-public final class ProcessorGraphNode<In, Out> {
+public final class ProcessorGraphNode<IN, OUT> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessorGraphNode.class);
-    private final Processor<In, Out> processor;
+    private final Processor<IN, OUT> processor;
 
     /**
      * The list of processors that get values from the output of this processor.
@@ -48,7 +48,7 @@ public final class ProcessorGraphNode<In, Out> {
      * @param metricRegistry registry for timing the execution time of the processor.
      */
     public ProcessorGraphNode(
-            @Nonnull final Processor<In, Out> processor,
+            @Nonnull final Processor<IN, OUT> processor,
             @Nonnull final MetricRegistry metricRegistry) {
         this.processor = processor;
         this.metricRegistry = metricRegistry;
@@ -95,7 +95,7 @@ public final class ProcessorGraphNode<In, Out> {
      * @param execContext the execution context, used for tracking certain aspects of the execution.
      * @return a task ready to be submitted to a fork join pool.
      */
-    public Optional<ProcessorNodeForkJoinTask<In, Out>> createTask(
+    public Optional<ProcessorNodeForkJoinTask<IN, OUT>> createTask(
             @Nonnull final ProcessorExecutionContext execContext) {
         if (!execContext.tryStart(this)) {
             return Optional.empty();
