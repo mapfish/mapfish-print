@@ -40,10 +40,10 @@ public class CenterScaleMapBoundsTest {
         // It would be nice to nail this down in the future to the exact value but the method I used for
         // measurement was openlayers and
         // I don't know what the DPI it was using and I don't know how accurate its calculation is either.
-        assertEquals(657851, envelope.getMinX(), 1);
-        assertEquals(661341, envelope.getMaxX(), 1);
-        assertEquals(184505, envelope.getMinY(), 1);
-        assertEquals(186715, envelope.getMaxY(), 1);
+        assertEquals(657851d, envelope.getMinX(), 1);
+        assertEquals(661341d, envelope.getMaxX(), 1);
+        assertEquals(184505d, envelope.getMinY(), 1);
+        assertEquals(186715d, envelope.getMaxY(), 1);
         assertEquals(CH1903, envelope.getCoordinateReferenceSystem());
     }
 
@@ -58,10 +58,10 @@ public class CenterScaleMapBoundsTest {
         // It would be nice to nail this down in the future to the exact value but the method I used for
         // measurement was openlayers and
         // I don't know what the DPI it was using and I don't know how accurate its calculation is either.
-        assertEquals(443674, envelope.getMinX(), 1);
-        assertEquals(446325, envelope.getMaxX(), 1);
-        assertEquals(6353375, envelope.getMinY(), 1);
-        assertEquals(6356624, envelope.getMaxY(), 1);
+        assertEquals(443674d, envelope.getMinX(), 1);
+        assertEquals(446325d, envelope.getMaxX(), 1);
+        assertEquals(6353375d, envelope.getMinY(), 1);
+        assertEquals(6356624d, envelope.getMaxY(), 1);
         assertEquals(LAMBERT, envelope.getCoordinateReferenceSystem());
     }
 
