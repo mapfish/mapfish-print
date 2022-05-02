@@ -66,7 +66,7 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
      * @param registry the metrics registry.
      * @param configuration the configuration.
      */
-    public AbstractTiledLayer(
+    protected AbstractTiledLayer(
             final AbstractGeotoolsLayer other,
             @Nullable final StyleSupplier<GridCoverage2D> styleSupplier,
             @Nullable final MetricRegistry registry,

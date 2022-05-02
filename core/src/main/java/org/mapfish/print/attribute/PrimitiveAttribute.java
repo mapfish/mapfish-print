@@ -38,7 +38,7 @@ public abstract class PrimitiveAttribute<Value> implements Attribute {
      *
      * @param valueClass the type of the value of this attribute
      */
-    public PrimitiveAttribute(final Class<Value> valueClass) {
+    protected PrimitiveAttribute(final Class<Value> valueClass) {
         this.valueClass = valueClass;
     }
 

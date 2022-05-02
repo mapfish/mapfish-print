@@ -12,7 +12,7 @@ public abstract class PAbstractObject extends PElement implements PObject {
      * @param parent the parent element
      * @param contextName the field name of this element in the parent.
      */
-    public PAbstractObject(final PElement parent, final String contextName) {
+    protected PAbstractObject(final PElement parent, final String contextName) {
         super(parent, contextName);
     }
 

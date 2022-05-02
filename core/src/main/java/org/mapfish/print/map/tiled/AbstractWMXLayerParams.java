@@ -59,7 +59,7 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
     /**
      * Constructor.
      */
-    public AbstractWMXLayerParams() {
+    protected AbstractWMXLayerParams() {
         super();
     }
 
@@ -68,7 +68,7 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
      *
      * @param other the object to copy
      */
-    public AbstractWMXLayerParams(final AbstractWMXLayerParams other) {
+    protected AbstractWMXLayerParams(final AbstractWMXLayerParams other) {
         super(other);
         this.additionalCustomParam.putAll(other.additionalCustomParam);
         this.customParams = other.customParams;
