@@ -54,7 +54,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
      * @param tileCacheInfo the object used to create the tile requests.
      * @param configuration the configuration.
      */
-    public CoverageTask(
+    protected CoverageTask(
             @Nonnull final TilePreparationInfo tilePreparationInfo,
             final boolean failOnError,
             @Nonnull final MetricRegistry registry,

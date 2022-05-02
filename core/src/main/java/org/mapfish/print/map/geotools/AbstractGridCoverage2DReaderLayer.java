@@ -32,7 +32,7 @@ public abstract class AbstractGridCoverage2DReaderLayer extends AbstractGeotools
      * @param executorService the thread pool for doing the rendering.
      * @param params the parameters for this layer
      */
-    public AbstractGridCoverage2DReaderLayer(
+    protected AbstractGridCoverage2DReaderLayer(
             final Function<MfClientHttpRequestFactory,
                     @Nullable AbstractGridCoverage2DReader> coverage2DReader,
             final StyleSupplier<AbstractGridCoverage2DReader> style,

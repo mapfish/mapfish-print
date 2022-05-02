@@ -41,7 +41,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
      * @param renderAsSvg is the layer rendered as SVG?
      * @param params the parameters for this layer
      */
-    public AbstractFeatureSourceLayer(
+    protected AbstractFeatureSourceLayer(
             final ExecutorService executorService,
             final FeatureSourceSupplier featureSourceSupplier,
             final StyleSupplier<FeatureSource> styleSupplier,

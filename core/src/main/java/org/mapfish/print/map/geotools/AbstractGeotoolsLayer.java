@@ -53,7 +53,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
      *
      * @param other The source.
      */
-    public AbstractGeotoolsLayer(final AbstractGeotoolsLayer other) {
+    protected AbstractGeotoolsLayer(final AbstractGeotoolsLayer other) {
         this.executorService = other.executorService;
         this.params = other.params;
     }

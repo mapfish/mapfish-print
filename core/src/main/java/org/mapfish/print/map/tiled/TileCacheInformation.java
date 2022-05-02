@@ -43,7 +43,7 @@ public abstract class TileCacheInformation {
      * @param dpi the DPI to render at
      * @param params the params with the data for creating the layer.
      */
-    public TileCacheInformation(
+    protected TileCacheInformation(
             final MapBounds bounds, final Rectangle paintArea, final double dpi,
             final AbstractTiledLayerParams params) {
         this.bounds = bounds;

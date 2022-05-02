@@ -20,7 +20,7 @@ public abstract class AbstractTiledLayerParams extends AbstractLayerParams {
     /**
      * Constructor.
      */
-    public AbstractTiledLayerParams() {
+    protected AbstractTiledLayerParams() {
         super();
     }
 
@@ -29,7 +29,7 @@ public abstract class AbstractTiledLayerParams extends AbstractLayerParams {
      *
      * @param other the object to copy
      */
-    public AbstractTiledLayerParams(final AbstractTiledLayerParams other) {
+    protected AbstractTiledLayerParams(final AbstractTiledLayerParams other) {
         super(other);
         this.rasterStyle = other.rasterStyle;
     }

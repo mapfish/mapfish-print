@@ -40,7 +40,7 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
      * @param typeNames additional strings used to identify if this plugin can handle the layer
      *         definition.
      */
-    public AbstractFeatureSourceLayerPlugin(final String typeName, final String... typeNames) {
+    protected AbstractFeatureSourceLayerPlugin(final String typeName, final String... typeNames) {
         this.typeNames = SetsUtils.create(typeNames);
         this.typeNames.add(typeName);
     }

@@ -30,7 +30,7 @@ public abstract class ScalebarDrawer {
      * @param graphics2d The graphics context.
      * @param settings Parameters for rendering the scalebar.
      */
-    public ScalebarDrawer(final Graphics2D graphics2d, final ScaleBarRenderSettings settings) {
+    protected ScalebarDrawer(final Graphics2D graphics2d, final ScaleBarRenderSettings settings) {
         this.graphics2d = graphics2d;
         this.transform = new AffineTransform(graphics2d.getTransform());
         this.settings = settings;
