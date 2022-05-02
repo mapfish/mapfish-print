@@ -124,7 +124,7 @@ dependencies {
             "org.springframework.security:spring-security-web:5.6.3",
             'com.thetransactioncompany:cors-filter:2.10',
             // Hibernate & Postgres
-            'org.hibernate:hibernate-core:5.6.8.Final',
+            'org.hibernate:hibernate-core:6.0.0.Final',
             'org.postgresql:postgresql:42.3.4',
             'com.vladmihalcea:hibernate-types-52:2.16.1',
             'com.mchange:c3p0:0.9.5.5',
