@@ -93,15 +93,15 @@ public class HibernateJobQueue implements JobQueue {
     public final PrintJobStatus get(final String referenceId, final boolean external)
             throws NoSuchReferenceException {
         long now = System.currentTimeMillis();
-        PrintJobStatusExtImpl record = this.dao.get(referenceId);
-        if (record == null) {
+        PrintJobStatusExtImpl statusRecord = this.dao.get(referenceId);
+        if (statusRecord == null) {
             throw new NoSuchReferenceException(referenceId);
         }
-        record.setStatusTime(now);
-        if (!record.isDone() && external) {
+        statusRecord.setStatusTime(now);
+        if (!statusRecord.isDone() && external) {
             this.dao.updateLastCheckTime(referenceId, System.currentTimeMillis());
         }
-        return record;
+        return statusRecord;
     }
 
     @Override
@@ -113,57 +113,57 @@ public class HibernateJobQueue implements JobQueue {
     public final synchronized void cancel(
             final String referenceId, final String message, final boolean forceFinal)
             throws NoSuchReferenceException {
-        PrintJobStatusExtImpl record = this.dao.get(referenceId, true);
-        if (record == null) {
+        PrintJobStatusExtImpl statusRecord = this.dao.get(referenceId, true);
+        if (statusRecord == null) {
             throw new NoSuchReferenceException(referenceId);
         }
-        if (!forceFinal && record.getStatus() == PrintJobStatus.Status.RUNNING) {
-            record.setStatus(PrintJobStatus.Status.CANCELING);
+        if (!forceFinal && statusRecord.getStatus() == PrintJobStatus.Status.RUNNING) {
+            statusRecord.setStatus(PrintJobStatus.Status.CANCELING);
         } else {
-            record.setCompletionTime(System.currentTimeMillis());
-            record.setStatus(PrintJobStatus.Status.CANCELLED);
+            statusRecord.setCompletionTime(System.currentTimeMillis());
+            statusRecord.setStatus(PrintJobStatus.Status.CANCELLED);
         }
-        record.setError(message);
-        this.dao.save(record);
+        statusRecord.setError(message);
+        this.dao.save(statusRecord);
     }
 
     @Override
     public final synchronized void fail(final String referenceId, final String message)
             throws NoSuchReferenceException {
-        PrintJobStatusExtImpl record = this.dao.get(referenceId, true);
-        if (record == null) {
+        PrintJobStatusExtImpl statusRecord = this.dao.get(referenceId, true);
+        if (statusRecord == null) {
             throw new NoSuchReferenceException(referenceId);
         }
-        record.setCompletionTime(System.currentTimeMillis());
-        record.setStatus(PrintJobStatus.Status.ERROR);
-        record.setError(message);
-        this.dao.save(record);
+        statusRecord.setCompletionTime(System.currentTimeMillis());
+        statusRecord.setStatus(PrintJobStatus.Status.ERROR);
+        statusRecord.setError(message);
+        this.dao.save(statusRecord);
     }
 
     @Override
     public final synchronized void start(final String referenceId) throws NoSuchReferenceException {
-        PrintJobStatusExtImpl record = this.dao.get(referenceId, true);
-        if (record == null) {
+        PrintJobStatusExtImpl statusRecord = this.dao.get(referenceId, true);
+        if (statusRecord == null) {
             throw new NoSuchReferenceException(referenceId);
         }
-        record.setStatus(PrintJobStatus.Status.RUNNING);
-        record.setWaitingTime(0);
-        this.dao.save(record);
+        statusRecord.setStatus(PrintJobStatus.Status.RUNNING);
+        statusRecord.setWaitingTime(0);
+        this.dao.save(statusRecord);
     }
 
     @Override
     public final synchronized void done(final String referenceId, final PrintJobResult result)
             throws NoSuchReferenceException {
-        PrintJobStatusExtImpl record = this.dao.get(referenceId, true);
-        if (record == null) {
+        PrintJobStatusExtImpl statusRecord = this.dao.get(referenceId, true);
+        if (statusRecord == null) {
             throw new NoSuchReferenceException(referenceId);
         }
-        record.setStatus(
-                record.getStatus() == PrintJobStatus.Status.CANCELING ? PrintJobStatus.Status.CANCELLED
+        statusRecord.setStatus(
+                statusRecord.getStatus() == PrintJobStatus.Status.CANCELING ? PrintJobStatus.Status.CANCELLED
                         : PrintJobStatus.Status.FINISHED);
-        record.setResult(result);
-        record.setCompletionTime(System.currentTimeMillis());
-        this.dao.save(record);
+        statusRecord.setResult(result);
+        statusRecord.setCompletionTime(System.currentTimeMillis());
+        this.dao.save(statusRecord);
     }
 
     @Override
@@ -176,10 +176,10 @@ public class HibernateJobQueue implements JobQueue {
     @Override
     public final synchronized List<? extends PrintJobStatus> start(final int number) {
         List<PrintJobStatusExtImpl> list = this.dao.poll(number);
-        for (PrintJobStatusExtImpl record: list) {
-            record.setStatus(PrintJobStatus.Status.RUNNING);
-            record.setWaitingTime(0);
-            this.dao.save(record);
+        for (PrintJobStatusExtImpl statusRecord: list) {
+            statusRecord.setStatus(PrintJobStatus.Status.RUNNING);
+            statusRecord.setWaitingTime(0);
+            this.dao.save(statusRecord);
         }
         return list;
     }

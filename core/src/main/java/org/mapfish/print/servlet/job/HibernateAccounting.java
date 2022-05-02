@@ -47,30 +47,30 @@ public class HibernateAccounting extends Accounting {
         @Override
         public long onJobSuccess(final PrintJob.PrintResult printResult) {
             final long duractionUSec = super.onJobSuccess(printResult);
-            final HibernateAccountingEntry record1 = new HibernateAccountingEntry(
+            final HibernateAccountingEntry accountingEntry1 = new HibernateAccountingEntry(
                     this.entry, PrintJobStatus.Status.FINISHED, this.configuration);
-            final HibernateAccountingEntry record = record1;
-            record.setProcessingTimeMS(duractionUSec / 1000000L);
-            record.setFileSize(printResult.fileSize);
-            record.setStats(printResult.executionContext.getStats());
-            insertRecord(record);
+            final HibernateAccountingEntry accountingEntry = accountingEntry1;
+            accountingEntry.setProcessingTimeMS(duractionUSec / 1000000L);
+            accountingEntry.setFileSize(printResult.fileSize);
+            accountingEntry.setStats(printResult.executionContext.getStats());
+            insertRecord(accountingEntry);
             return duractionUSec;
         }
 
         @Override
         public void onJobCancel() {
             super.onJobCancel();
-            final HibernateAccountingEntry record = new HibernateAccountingEntry(
+            final HibernateAccountingEntry accountingEntry = new HibernateAccountingEntry(
                     this.entry, PrintJobStatus.Status.CANCELLED, this.configuration);
-            insertRecord(record);
+            insertRecord(accountingEntry);
         }
 
         @Override
         public void onJobError() {
             super.onJobError();
-            final HibernateAccountingEntry record = new HibernateAccountingEntry(
+            final HibernateAccountingEntry accountingEntry = new HibernateAccountingEntry(
                     this.entry, PrintJobStatus.Status.ERROR, this.configuration);
-            insertRecord(record);
+            insertRecord(accountingEntry);
         }
 
         private void insertRecord(final HibernateAccountingEntry tuple) {
