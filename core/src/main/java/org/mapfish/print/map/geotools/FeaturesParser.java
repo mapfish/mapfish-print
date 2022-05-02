@@ -238,7 +238,7 @@ public class FeaturesParser {
                 for (int i = 0; i < features.length(); i++) {
                     final JSONObject feature = features.getJSONObject(i);
                     final JSONObject properties = feature.getJSONObject("properties");
-                    final Iterator keys = properties.keys();
+                    final Iterator<String> keys = properties.keys();
                     while (keys.hasNext()) {
                         String nextKey = (String) keys.next();
                         if (!allAttributes.contains(nextKey)) {
