@@ -29,10 +29,10 @@ public class BBoxMapBoundsTest {
         final ReferencedEnvelope envelope = bboxMapBounds.toReferencedEnvelope(new Rectangle(10, 5));
 
 
-        assertEquals(-180, envelope.getMinX(), 0.001);
-        assertEquals(180, envelope.getMaxX(), 0.001);
-        assertEquals(-90, envelope.getMinY(), 0.001);
-        assertEquals(90, envelope.getMaxY(), 0.001);
+        assertEquals(-180d, envelope.getMinX(), 0.001);
+        assertEquals(180d, envelope.getMaxX(), 0.001);
+        assertEquals(-90d, envelope.getMinY(), 0.001);
+        assertEquals(90d, envelope.getMaxY(), 0.001);
         assertEquals(WGS84, envelope.getCoordinateReferenceSystem());
     }
 
@@ -42,10 +42,10 @@ public class BBoxMapBoundsTest {
         final MapBounds mapBounds = bboxMapBounds.adjustedEnvelope(new Rectangle(5, 5));
         final ReferencedEnvelope envelope = mapBounds.toReferencedEnvelope(new Rectangle(5, 5));
 
-        assertEquals(-90, envelope.getMinX(), 0.001);
-        assertEquals(90, envelope.getMaxX(), 0.001);
-        assertEquals(-90, envelope.getMinY(), 0.001);
-        assertEquals(90, envelope.getMaxY(), 0.001);
+        assertEquals(-90d, envelope.getMinX(), 0.001);
+        assertEquals(90d, envelope.getMaxX(), 0.001);
+        assertEquals(-90d, envelope.getMinY(), 0.001);
+        assertEquals(90d, envelope.getMaxY(), 0.001);
         assertEquals(WGS84, envelope.getCoordinateReferenceSystem());
     }
 
@@ -126,10 +126,10 @@ public class BBoxMapBoundsTest {
         bounds = bboxMapBounds.zoomOut(2);
         ReferencedEnvelope envelope = bounds.toReferencedEnvelope(new Rectangle(5, 5));
 
-        assertEquals(-20, envelope.getMinX(), 0.001);
-        assertEquals(20, envelope.getMaxX(), 0.001);
-        assertEquals(-20, envelope.getMinY(), 0.001);
-        assertEquals(20, envelope.getMaxY(), 0.001);
+        assertEquals(-20d, envelope.getMinX(), 0.001);
+        assertEquals(20d, envelope.getMaxX(), 0.001);
+        assertEquals(-20d, envelope.getMinY(), 0.001);
+        assertEquals(20d, envelope.getMaxY(), 0.001);
         assertEquals(WGS84, envelope.getCoordinateReferenceSystem());
 
         bboxMapBounds = new BBoxMapBounds(WGS84, -10, -5, 10, 5);
@@ -139,10 +139,10 @@ public class BBoxMapBoundsTest {
         bounds = bboxMapBounds.zoomOut(4);
         envelope = bounds.toReferencedEnvelope(new Rectangle(40, 20));
 
-        assertEquals(-40, envelope.getMinX(), 0.001);
-        assertEquals(40, envelope.getMaxX(), 0.001);
-        assertEquals(-20, envelope.getMinY(), 0.001);
-        assertEquals(20, envelope.getMaxY(), 0.001);
+        assertEquals(-40d, envelope.getMinX(), 0.001);
+        assertEquals(40d, envelope.getMaxX(), 0.001);
+        assertEquals(-20d, envelope.getMinY(), 0.001);
+        assertEquals(20d, envelope.getMaxY(), 0.001);
         assertEquals(WGS84, envelope.getCoordinateReferenceSystem());
     }
 
@@ -174,11 +174,11 @@ public class BBoxMapBoundsTest {
                      newMapBounds.getScale(screen, dpi).getGeodeticDenominator(
                              SPHERICAL_MERCATOR, dpi, newBBox.centre()),
                      1);
-        assertEquals(26428, newMapBounds.getScale(screen, dpi).getDenominator(dpi), 1);
-        assertEquals(399664, newBBox.getMinX(), 1);
-        assertEquals(4999664, newBBox.getMinY(), 1);
-        assertEquals(400335, newBBox.getMaxX(), 1);
-        assertEquals(5000335, newBBox.getMaxY(), 1);
+        assertEquals(26428d, newMapBounds.getScale(screen, dpi).getDenominator(dpi), 1d);
+        assertEquals(399664d, newBBox.getMinX(), 1d);
+        assertEquals(4999664d, newBBox.getMinY(), 1d);
+        assertEquals(400335d, newBBox.getMaxX(), 1d);
+        assertEquals(5000335d, newBBox.getMaxY(), 1d);
     }
 
     @Test
