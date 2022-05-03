@@ -36,6 +36,23 @@ jobs:
       - run: gpg --export-secret-keys --armor D121AF2DFA8E140688BD968930C9B913FD42EF13 > CI.asc
         if: env.SECRETS == 'TRUE'
 
+      - id: tag
+        run: echo "##[set-output name=tag;]$(echo ${{ github.ref }}|sed 's%refs/tags/%%g')"
+        if: startsWith(github.ref, 'refs/tags/')
+      - run: sed --in-place 's/version = .*/version = "${{ steps.tag.outputs.tag }}"/g' build.gradle
+        if: startsWith(github.ref, 'refs/tags/')
+
+      - id: last-tag
+        run: echo "##[set-output name=tag;]$(git describe --tags --abbrev=0)"
+        if: "!startsWith(github.ref, 'refs/tags/')"
+      - id: no-tag
+        run: echo "##[set-output name=nb;]$(git log --oneline ${{ steps.last-tag.outputs.tag }}..HEAD|wc -l)"
+        if: "!startsWith(github.ref, 'refs/tags/')"
+      - run: sed --in-place 's/version = .*/version = "${{ steps.last-tag.outputs.tag }}"/g' build.gradle
+        if: "!startsWith(github.ref, 'refs/tags/') && steps.no-tag.outputs.nb == 0"
+      - run: sed --in-place 's/version = .*/version = "${{ steps.last-tag.outputs.tag }}+${{ steps.no-tag.outputs.nb }}"/g' build.gradle
+        if: "!startsWith(github.ref, 'refs/tags/') && steps.no-tag.outputs.nb > 0"
+
       - run: echo "enablePublishing=true" > gradle.properties
         if: env.SECRETS == 'TRUE'
 
@@ -105,11 +122,10 @@ jobs:
       - name: Publish
         run: c2cciutils-publish
         if: env.SECRETS == 'TRUE'
+      - run: docker run --rm --env=GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} mapfish_print_builder bash -c 'gradle build && gradle publish'
 
       - id: version
         run: echo "##[set-output name=version;]$(grep version build.gradle|sed "s/ \+version = .\(.*\)./\1/g")"
-      - id: tag
-        run: echo "##[set-output name=tag;]$(echo ${{ github.ref }}|sed 's%refs/tags/%%g')"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
