@@ -43,7 +43,17 @@ jobs:
 
       - run: gpg --export-secret-keys --armor D121AF2DFA8E140688BD968930C9B913FD42EF13 > CI.asc
 
+      - id: last-tag
+        run: echo "##[set-output name=tag;]$(git describe --tags --abbrev=0)"
+      - id: no-tag
+        run: echo "##[set-output name=nb;]$(git log --oneline ${{ steps.last-tag.outputs.tag }}..HEAD|wc -l)"
+      - run: sed --in-place 's/version = .*/version = "${{ steps.last-tag.outputs.tag }}"/g' build.gradle
+        if: 'steps.no-tag.outputs.nb == 0'
+      - run: sed --in-place 's/version = .*/version = "${{ steps.last-tag.outputs.tag }}+${{ steps.no-tag.outputs.nb }}"/g' build.gradle
+        if: 'steps.no-tag.outputs.nb > 0'
+
       - run: echo "enablePublishing=true" > gradle.properties
+      - run: git diff
 
       - run: echo "${HOME}/.local/bin" >> ${GITHUB_PATH}
       - run: python3 -m pip install --user --requirement=ci/requirements.txt
