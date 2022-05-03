@@ -55,8 +55,6 @@ jobs:
         if: "!startsWith(github.ref, 'refs/tags/') && steps.no-tag.outputs.nb == 0"
       - run: sed --in-place 's/version = .*/version = "${{ steps.last-tag.outputs.tag }}+${{ steps.no-tag.outputs.nb }}"/g' build.gradle
         if: "!startsWith(github.ref, 'refs/tags/') && steps.no-tag.outputs.nb > 0"
-      - run: sed --in-place 's/version = .*/version = "SNAPSHOT"/g' build.gradle
-        if: "github.ref == 'refs/heads/master'"
 
       - run: echo "enablePublishing=true" > gradle.properties
         if: env.HAS_SECRETS == 'HAS_SECRETS'
@@ -127,7 +125,6 @@ jobs:
         run: c2cciutils-publish
         if: env.HAS_SECRETS == 'HAS_SECRETS'
       - run: docker run --rm --env=GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} mapfish_print_builder bash -c 'gradle build && gradle publish'
-        if: ( startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master' ) && env.HAS_SECRETS == 'HAS_SECRETS'
 
       - id: version
         run: echo "##[set-output name=version;]$(grep version build.gradle|sed "s/ \+version = .\(.*\)./\1/g")"
