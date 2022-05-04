@@ -7,9 +7,7 @@ which is the staging repository for maven central.
 
 # Automated Process
 
-1.  Edit the root `build.gradle` to change the `allprojects/version` and commit that with a
-    `release/${version}` tag.
-2.  Push the commit and the tag to GitHub.
+1.  Create a `x.y.z` tag.
 
 ## Docker daily build
 
