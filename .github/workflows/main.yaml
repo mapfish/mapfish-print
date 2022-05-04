@@ -16,6 +16,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Get tag
         id: tag2
@@ -122,7 +124,9 @@ jobs:
       - name: Publish
         run: c2cciutils-publish
         if: env.SECRETS == 'TRUE'
+      - run: git diff
       - run: docker run --rm --env=GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} mapfish_print_builder bash -c 'gradle build && gradle publish'
+        if: ( startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master' ) && env.SECRETS == 'TRUE'
 
       - id: version
         run: echo "##[set-output name=version;]$(grep version build.gradle|sed "s/ \+version = .\(.*\)./\1/g")"
