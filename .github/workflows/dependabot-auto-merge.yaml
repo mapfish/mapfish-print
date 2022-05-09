@@ -1,6 +1,12 @@
 name: Auto reviews updates
 
-on: pull_request
+on:
+  pull_request:
+  workflow_run:
+    workflows:
+      - Continuous integration
+    types:
+      - completed
 
 jobs:
   auto-merge:
