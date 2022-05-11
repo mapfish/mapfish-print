@@ -12,6 +12,10 @@ import org.mapfish.print.attribute.map.GenericMapAttribute;
  * CHECKSTYLE:OFF
  */
 public class AttributeTesting {
+
+    private AttributeTesting() {
+        throw new IllegalStateException("Utility class");
+    }
     /**
      * A few attributes will throw exceptions if not initialized this method can be called when an attribute
      * needs testing but the test is generic and does not necessarily want or need to know the specific type
