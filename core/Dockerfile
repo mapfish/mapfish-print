@@ -1,8 +1,7 @@
 FROM mapfish_print_builder AS builder
 
 
-
-FROM tomcat:9.0-jdk17-openjdk-slim-bullseye AS runner
+FROM tomcat:9.0-jdk11-openjdk-slim-bullseye AS runner
 LABEL maintainer="Camptocamp <info@camptocamp.com>"
 
 RUN perl -0777 -i -pe 's/(<Valve className="org.apache.catalina.valves.AccessLogValve"[^>]*>)/<Valve className="ch.qos.logback.access.tomcat.LogbackValve" quiet="true"\/>/s' ${CATALINA_HOME}/conf/server.xml && \
@@ -18,6 +17,7 @@ RUN mkdir --parent /usr/local/tomcat/conf/Catalina /usr/local/tomcat/work/Catali
 
 RUN \
   apt-get update && \
+  apt-get upgrade --assume-yes && \
   apt-get install --assume-yes --no-install-recommends curl \
   fonts-liberation fonts-dejavu fontconfig && \
   apt-get clean && \
