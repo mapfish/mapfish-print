@@ -15,6 +15,7 @@ RUN perl -0777 -i -pe 's/(<Valve className="org.apache.catalina.valves.AccessLog
   chgrp -R root /usr/local/tomcat/conf/Catalina /usr/local/tomcat/work && \
   chmod g+r /usr/local/tomcat/conf/* && \
   apt-get update && \
+  apt-get upgrade --assume-yes && \
   apt-get install --assume-yes --no-install-recommends curl \
   fonts-liberation fonts-dejavu fontconfig && \
   apt-get clean && \
