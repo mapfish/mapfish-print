@@ -52,8 +52,8 @@ public final class ImageSimilarity {
     public ImageSimilarity(final File expectedFile) throws IOException {
         this.expectedImage = expectedFile.exists() ? ImageIO.read(expectedFile) : null;
         if (GENERATE_IN_SOURCE) {
-            this.expectedPath = new File(expectedFile.toString().replaceAll(
-                    "/out/", "/src/").replaceAll("/build/classes/test/", "/src/test/resources/"));
+            this.expectedPath = new File(expectedFile.toString().replace(
+                    "/out/", "/src/").replace("/build/classes/test/", "/src/test/resources/"));
         } else {
             this.expectedPath = expectedFile;
         }
