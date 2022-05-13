@@ -1,6 +1,11 @@
 FROM camptocamp/tomcat-logback:8.5-jre8
 LABEL maintainer="info@camptocamp.com"
 
+RUN apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get upgrade --assume-yes -o Dpkg::Options::="--force-confold" && \
+  apt-get clean && \
+  rm --recursive --force /var/lib/apt/lists/*
+
 COPY build/webapp ${CATALINA_HOME}/webapps/ROOT
 COPY docker /
 
