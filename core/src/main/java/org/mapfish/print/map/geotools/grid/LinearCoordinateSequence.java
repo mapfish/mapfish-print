@@ -189,6 +189,12 @@ public final class LinearCoordinateSequence implements CoordinateSequence, Clone
                 this.ordinate0AxisDirection == AxisDirection.DISPLAY_UP;
     }
 
+    /**
+     * This is only here because we need to override the interface.
+     *
+     * @deprecated Recommend {@link #copy()}
+
+     */
     @Override
     public Object clone() {
         return copy();
