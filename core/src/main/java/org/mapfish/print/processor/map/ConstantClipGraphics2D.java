@@ -184,8 +184,8 @@ final class ConstantClipGraphics2D extends Graphics2D {
     }
 
     @Override
-    public void transform(AffineTransform Tx) {
-        wrapped.transform(Tx);
+    public void transform(AffineTransform tx) {
+        wrapped.transform(tx);
     }
 
     @Override
@@ -194,8 +194,8 @@ final class ConstantClipGraphics2D extends Graphics2D {
     }
 
     @Override
-    public void setTransform(AffineTransform Tx) {
-        wrapped.setTransform(Tx);
+    public void setTransform(AffineTransform tx) {
+        wrapped.setTransform(tx);
     }
 
     @Override
@@ -438,6 +438,10 @@ final class ConstantClipGraphics2D extends Graphics2D {
         wrapped.dispose();
     }
 
+    /**
+     *
+     * @deprecated As the underlying super-method is deprecated as well.
+     */
     @Override
     @Deprecated
     public Rectangle getClipRect() {
