@@ -125,7 +125,7 @@ jobs:
         if: env.HAS_SECRETS == 'HAS_SECRETS'
       - run: git diff
       - run: docker run --rm --env=GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} mapfish_print_builder bash -c 'gradle build && gradle publish'
-        if: ( startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master' ) && env.SECRETS == 'TRUE'
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master' ) && env.HAS_SECRETS == 'HAS_SECRETS'
 
       - id: version
         run: echo "##[set-output name=version;]$(grep version build.gradle|sed "s/ \+version = .\(.*\)./\1/g")"
