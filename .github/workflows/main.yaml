@@ -55,7 +55,10 @@ jobs:
         if: "!startsWith(github.ref, 'refs/tags/') && steps.no-tag.outputs.nb == 0"
       - run: sed --in-place 's/version = .*/version = "${{ steps.last-tag.outputs.tag }}+${{ steps.no-tag.outputs.nb }}"/g' build.gradle
         if: "!startsWith(github.ref, 'refs/tags/') && steps.no-tag.outputs.nb > 0"
-      - run: sed --in-place 's/version = .*/version = "0.$(date +%Y%m%d.%H%M%S).SNAPSHOT"/g' build.gradle
+      - id: date
+        run: echo echo "##[set-output name=date;]$(date +%Y%m%d.%H%M%S)"
+        if: "github.ref == 'refs/heads/master'"
+      - run: sed --in-place 's/version = .*/version = "0.${{ steps.date.outputs.date }}.SNAPSHOT"/g' build.gradle
         if: "github.ref == 'refs/heads/master'"
 
       - run: echo "enablePublishing=true" > gradle.properties
