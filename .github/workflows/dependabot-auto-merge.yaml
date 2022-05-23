@@ -19,5 +19,4 @@ jobs:
         uses: golfzaptw/action-auto-reviews-from-branches@1.2.3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCHES: master
-          AUTHOR: dependabot[bot],renovatebot
+          AUTHOR: renovate[bot]
