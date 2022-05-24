@@ -5,9 +5,9 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mapfish.print</groupId>
-  <artifactId>print-servlet</artifactId>
+  <artifactId>print-lib</artifactId>
   <version>3.29.0-SNAPSHOT</version>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
 
   <properties>
     <maven.compiler.target>11</maven.compiler.target>
