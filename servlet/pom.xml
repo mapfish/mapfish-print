@@ -4,10 +4,18 @@
   xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>org.mapfish.print</groupId>
-  <artifactId>mapfish-print</artifactId>
-  <version>3.29.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
+  <artifactId>print-servlet</artifactId>
+  <packaging>war</packaging>
+
+  <parent>
+    <groupId>org.mapfish.print</groupId>
+    <artifactId>mapfish-print</artifactId>
+    <version>3.29.0-SNAPSHOT</version>
+  </parent>
+
+
 
   <properties>
     <maven.compiler.target>11</maven.compiler.target>
@@ -54,7 +62,6 @@
 
   </repositories>
 
-  <dependencyManagement>
   <dependencies>
 
     <dependency>
@@ -443,12 +450,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  </dependencyManagement>
-
-  <modules>
-    <module>core</module>
-    <module>servlet</module>
-
-  </modules>
-
 </project>
