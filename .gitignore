@@ -10,6 +10,9 @@
 
 /build/
 /*/build/
+target
+core/target
+servlet/target
 
 /examples/geoserver-data/.updatepassword.lock
 /examples/geoserver-data/controlflow.properties
@@ -20,3 +23,5 @@
 /examples/geoserver-data/wps.xml
 
 /CI.asc
+*~
+
