@@ -204,11 +204,12 @@ jobs:
           path: mapfish-print-doc
       - name: Extract the documentation
         run: |
+          docker run --rm --detach --name=doc mapfish_print_builder
           cd ${GITHUB_WORKSPACE}/mapfish-print-doc
           git config user.email "ci@camptocamp.com"
           git config user.name "CI"
           git rm --ignore-unmatch -rqf .
-          docker cp builder:/src/docs/build/site/. .
+          docker cp doc:/src/docs/build/site/. .
           git add -A .
           git commit -m 'Update docs'
       - name: Publish the documentation
