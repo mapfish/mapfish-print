@@ -214,5 +214,6 @@ jobs:
           git commit -m 'Update docs'
       - name: Publish the documentation
         run: |
+          cd ${GITHUB_WORKSPACE}/mapfish-print-doc
           git push origin gh-pages
         if: github.ref == 'refs/heads/master' && env.HAS_SECRETS == 'HAS_SECRETS'
