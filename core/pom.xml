@@ -64,6 +64,14 @@
 
   <dependencies>
 
+    <!--  Force it to higher version, to prevent an Exception
+    Exception was: ClassNotFoundException: AnnotationIntrospector$XmlExtensions -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
+      <version>2.13.2</version>
+    </dependency>
+
     <dependency>
       <groupId>ar.com.fdvs</groupId>
       <artifactId>DynamicJasper</artifactId>

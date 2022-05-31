@@ -18,7 +18,8 @@
     <spring.version>5.3.20</spring.version>
     <spring-security.version>5.7.1</spring-security.version>
     <batik.version>1.14</batik.version>
-    <spotbugsVersion>4.6.0</spotbugsVersion>
+    <spotbugsVersion>4.7.0</spotbugsVersion>
+    <dropvizard.version>4.2.9</dropvizard.version>
   </properties>
 
   <repositories>
@@ -61,6 +62,25 @@
       <groupId>ar.com.fdvs</groupId>
       <artifactId>DynamicJasper</artifactId>
       <version>5.3.4</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.jasperreports</groupId>
+      <artifactId>jasperreports-fonts</artifactId>
+      <version>6.19.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.jasperreports</groupId>
+      <artifactId>jasperreports-functions</artifactId>
+      <version>6.19.1</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.10.14</version>
     </dependency>
 
     <dependency>
@@ -127,43 +147,43 @@
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-core</artifactId>
-      <version>4.1.19</version>
+      <version>${dropvizard.version}</version>
     </dependency>
 
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-healthchecks</artifactId>
-      <version>4.1.19</version>
+      <version>${dropvizard.version}</version>
     </dependency>
 
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-servlets</artifactId>
-      <version>4.1.19</version>
+      <version>${dropvizard.version}</version>
     </dependency>
 
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-servlet</artifactId>
-      <version>4.1.19</version>
+      <version>${dropvizard.version}</version>
     </dependency>
 
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-httpclient</artifactId>
-      <version>4.1.19</version>
+      <version>${dropvizard.version}</version>
     </dependency>
 
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-jmx</artifactId>
-      <version>4.1.19</version>
+      <version>${dropvizard.version}</version>
     </dependency>
 
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-logback</artifactId>
-      <version>4.1.19</version>
+      <version>${dropvizard.version}</version>
     </dependency>
 
     <dependency>
@@ -237,13 +257,13 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>42.3.5</version>
+      <version>42.3.6</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.vladmihalcea</groupId>
       <artifactId>hibernate-types-52</artifactId>
-      <version>2.10.4</version>
+      <version>2.16.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -285,49 +305,49 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.30</version>
+      <version>1.7.36</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
-      <version>1.7.30</version>
+      <version>1.7.36</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jul-to-slf4j</artifactId>
-      <version>1.7.30</version>
+      <version>1.7.36</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.2.3</version>
+      <version>1.2.11</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-access</artifactId>
-      <version>1.2.3</version>
+      <version>1.2.11</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20210307</version>
+      <version>20220320</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
-      <version>1.28</version>
+      <version>1.30</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.github.spullara.cli-parser</groupId>
       <artifactId>cli-parser</artifactId>
-      <version>1.1.5</version>
+      <version>1.1.6</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -345,7 +365,7 @@
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-s3</artifactId>
-      <version>1.11.1000</version>
+      <version>1.12.230</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -357,19 +377,19 @@
     <dependency>
       <groupId>io.sentry</groupId>
       <artifactId>sentry-logback</artifactId>
-      <version>4.3.0</version>
+      <version>5.7.4</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>net.logstash.logback</groupId>
       <artifactId>logstash-logback-encoder</artifactId>
-      <version>6.6</version>
+      <version>7.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>xmlgraphics-commons</artifactId>
-      <version>2.6</version>
+      <version>2.7</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
