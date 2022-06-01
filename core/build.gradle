@@ -151,7 +151,7 @@ dependencies {
             "org.geotools:gt-wms:26.4",
             "org.geotools.xsd:gt-xsd-gml3:26.4",
             "org.geotools:gt-svg:26.4",
-            "org.geotools:gt-cql:26.4"
+            "org.geotools:gt-cql:27.0"
     )
     jasper(
             "net.sf.jasperreports:jasperreports:6.19.1",
