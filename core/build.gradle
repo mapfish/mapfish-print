@@ -149,7 +149,7 @@ dependencies {
             "org.geotools:gt-geojson:26.4",
             "org.geotools:gt-geotiff:26.4",
             "org.geotools:gt-wms:26.4",
-            "org.geotools.xsd:gt-xsd-gml3:26.4",
+            "org.geotools.xsd:gt-xsd-gml3:27.0",
             "org.geotools:gt-svg:26.4",
             "org.geotools:gt-cql:26.4"
     )
