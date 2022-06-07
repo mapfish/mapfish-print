@@ -45,22 +45,20 @@ To be able to quickly test modifications in the print you should:
 
 # Create new stabilisation branch
 
-- Update _CHANGELOG.md_
-- In the `builds.gradle` file , set the version to `x.y.0`.
-- Create a new branch name x.y from master.
-- Create a new label names 'backport x.y' in the right color (github: Issues->Labels->New Label).
-- Create a tag 'release/x.y.0'.
+- Update `CHANGELOG.md`
+- Create a new branch name `x.y` from master.
+- Create a new label names `backport x.y` in the right color (GitHub: Issues->Labels->New Label).
+- Create a tag `x.y.0`.
 - On the master branch: Update the `SECURITY.md` file, add a policy for the new and old version.
 - On the master branch update the `.github/workflows/rebuild.yaml` file by adding the new branch name.
 - On the master branch update the `.github/workflows/audit.yaml` file by adding the new branch name.
-- On the master branch set in the `build.gradle` file the new `x.y+1.0-SNAPSHOT` version.
 
-# Run from commandline
+# Run from command line
 
-The following command will run the mapfish printer. The arguments must be supplied to the -PprintArgs="..."
+The following command will run the MapFish printer. The arguments must be supplied to the -PprintArgs="..."
 parameter.
 
-To list all the commandline options then execute (the current direstory is ./core):
+To list all the command line options then execute (the current directory is ./core):
 
 ```{.sourceCode .}
 > ./gradlew print -PprintArgs="-help"
@@ -76,7 +74,7 @@ If you want to run in debug mode you can do the following:
 > ./gradlew print --debug-jvm -PprintArgs="-config ../examples/src/test/resources/examples/simple/config.yaml -spec ../examples/src/test/resources/examples/simple/requestData.json -output ./output.pdf"
 ```
 
-For the examples that use geoserver you shoul run it in the composition, then build and start the composition:
+For the examples that use GeoServer you should run it in the composition, then build and start the composition:
 
 ```
 make build
