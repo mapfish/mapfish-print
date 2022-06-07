@@ -144,14 +144,14 @@ dependencies {
             'com.readytalk:metrics3-statsd:4.2.0'
     )
     geotools(
-            "org.geotools:gt-epsg-hsql:26.4",
-            "org.geotools:gt-render:26.4",
-            "org.geotools:gt-geojson:26.4",
-            "org.geotools:gt-geotiff:26.4",
-            "org.geotools:gt-wms:26.4",
-            "org.geotools.xsd:gt-xsd-gml3:26.4",
-            "org.geotools:gt-svg:26.4",
-            "org.geotools:gt-cql:26.4"
+            "org.geotools:gt-epsg-hsql:27.0",
+            "org.geotools:gt-render:27.0",
+            "org.geotools:gt-geojson:27.0",
+            "org.geotools:gt-geotiff:27.0",
+            "org.geotools:gt-wms:27.0",
+            "org.geotools.xsd:gt-xsd-gml3:27.0",
+            "org.geotools:gt-svg:27.0",
+            "org.geotools:gt-cql:27.0"
     )
     jasper(
             "net.sf.jasperreports:jasperreports:6.19.1",
@@ -174,7 +174,7 @@ dependencies {
             'com.github.spullara.cli-parser:cli-parser:1.1.6',
             'org.apache.httpcomponents:httpclient:4.5.13',
             'com.sun.mail:javax.mail:1.6.2',
-            'com.amazonaws:aws-java-sdk-s3:1.12.233',
+            'com.amazonaws:aws-java-sdk-s3:1.12.234',
             'com.adobe.xmp:xmpcore:6.1.11',
             'io.sentry:sentry-logback:5.7.4',
             'net.logstash.logback:logstash-logback-encoder:7.2',
