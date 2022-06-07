@@ -50,7 +50,7 @@
       automerge: true,
     },
     {
-      matchPackagePrefixes: ['org.geotools:'],
+      matchPackagePrefixes: ['org.geotools[:.]'],
       groupName: 'geotools',
       automerge: true,
     },
