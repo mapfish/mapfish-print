@@ -51,7 +51,7 @@
     <repository>
       <id>readytalk</id>
       <name>Spring Plugins</name>
-      <url>https://dl.bintray.com/readytalk/maven</url>
+      <url>https://repo.spring.io/plugins-release/</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
