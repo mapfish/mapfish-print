@@ -21,8 +21,8 @@ RUN perl -0777 -i -pe 's/(<Valve className="org.apache.catalina.valves.AccessLog
   apt-get clean && \
   rm --recursive --force /var/lib/apt/lists/*
 
-COPY --from=builder /src/core/build/webapp "${CATALINA_HOME}/webapps/ROOT/"
-COPY --from=builder /src/examples/build/classes/java/test/org/mapfish/print/HumanAlphaSerie.class "${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes/org/mapfish/print/"
+#COPY --from=builder /src/core/build/webapp "${CATALINA_HOME}/webapps/ROOT/"
+#COPY --from=builder /src/examples/build/classes/java/test/org/mapfish/print/HumanAlphaSerie.class "${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes/org/mapfish/print/"
 COPY docker /
 
 RUN mkdir -p "${CATALINA_HOME}/extlib/classes/org/mapfish/print" && \
@@ -51,12 +51,12 @@ ENV LOG_LEVEL=INFO \
 
 CMD ["/usr/local/tomcat/bin/docker-start-print"]
 
-FROM runner AS tester
+#FROM runner AS tester
 
-COPY jettyRunExtraFiles/mapfish-spring-application-context-override-acceptencetests.xml \
-  webapps/ROOT/WEB-INF/classes/mapfish-spring-application-context-override.xml
+#COPY jettyRunExtraFiles/mapfish-spring-application-context-override-acceptencetests.xml \
+#  webapps/ROOT/WEB-INF/classes/mapfish-spring-application-context-override.xml
 
-FROM runner AS watcher
+#FROM runner AS watcher
 
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends python3-pip rsync python3-setuptools && \
