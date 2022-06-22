@@ -3,3 +3,7 @@ examples/src/test/resources/examples_to_port/*/config.yaml
 core/src/test/resources/org/mapfish/print/**/requestData.json
 core/src/test/resources/org/mapfish/print/**/config.yaml
 core/src/test/resources/org/mapfish/print/processor/map/*/config-*.yaml
+examples/geoserver-data/user_projections/epsg.properties
+core/src/main/resources/mapfish-spring.properties
+Dockerfile
+examples/src/test/resources/examples/oereb/Report*.properties
