@@ -5,7 +5,6 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.mapfish.print</groupId>
   <artifactId>print-lib</artifactId>
   <packaging>jar</packaging>
 
@@ -15,57 +14,10 @@
     <version>3.29.0-SNAPSHOT</version>
   </parent>
 
-
-
-  <properties>
-    <maven.compiler.target>11</maven.compiler.target>
-    <maven.compiler.source>11</maven.compiler.source>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-    <geotools.version>26.4</geotools.version>
-    <spring.version>5.3.20</spring.version>
-    <spring-security.version>5.7.1</spring-security.version>
-    <batik.version>1.14</batik.version>
-    <spotbugsVersion>4.6.0</spotbugsVersion>
-  </properties>
-
-  <repositories>
-    <repository>
-      <id>osgeo-release</id>
-      <name>OSGeo Repository</name>
-      <url>https://repo.osgeo.org/repository/release/</url>
-      <!-- Contains releases for OSGeo projects: GeoTools, GeoWebCache, GeoServer,
-        ... -->
-      <!-- Includes third-party-dependences, and caches of: -->
-      <!-- ucar (https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases) -->
-      <!-- geosolutions (http://maven.geo-solutions.it/) -->
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-
-    <!-- for statsd -->
-    <repository>
-      <id>readytalk</id>
-      <name>Spring Plugins</name>
-      <url>https://artifactory.georchestra.org/artifactory/bintray-readytalk-cache/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-
-  </repositories>
-
   <dependencies>
 
-    <!--  Force it to higher version, to prevent an Exception
-    Exception was: ClassNotFoundException: AnnotationIntrospector$XmlExtensions -->
+    <!-- Force it to higher version, to prevent an Exception Exception was: 
+      ClassNotFoundException: AnnotationIntrospector$XmlExtensions -->
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-xml</artifactId>
@@ -75,322 +27,297 @@
     <dependency>
       <groupId>ar.com.fdvs</groupId>
       <artifactId>DynamicJasper</artifactId>
-      <version>5.3.4</version>
     </dependency>
 
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-epsg-hsql</artifactId>
-      <version>${geotools.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-render</artifactId>
-      <version>${geotools.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-coverage</artifactId>
-      <version>${geotools.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-geojson</artifactId>
-      <version>${geotools.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-geotiff</artifactId>
-      <version>${geotools.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-wms</artifactId>
-      <version>${geotools.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-svg</artifactId>
-      <version>${geotools.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-cql</artifactId>
-      <version>${geotools.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.geotools.xsd</groupId>
       <artifactId>gt-xsd-gml3</artifactId>
-      <version>${geotools.version}</version>
     </dependency>
 
     <dependency>
       <groupId>com.github.spotbugs</groupId>
       <artifactId>spotbugs-annotations</artifactId>
-      <version>${spotbugsVersion}</version>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-core</artifactId>
-      <version>4.1.19</version>
     </dependency>
 
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-healthchecks</artifactId>
-      <version>4.1.19</version>
     </dependency>
 
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-servlets</artifactId>
-      <version>4.1.19</version>
     </dependency>
 
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-servlet</artifactId>
-      <version>4.1.19</version>
     </dependency>
 
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-httpclient</artifactId>
-      <version>4.1.19</version>
     </dependency>
 
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-jmx</artifactId>
-      <version>4.1.19</version>
     </dependency>
 
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-logback</artifactId>
-      <version>4.1.19</version>
     </dependency>
 
     <dependency>
       <groupId>com.readytalk</groupId>
       <artifactId>metrics3-statsd</artifactId>
-      <version>4.2.0</version>
     </dependency>
 
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
-      <version>3.2.2</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
-      <version>4.4</version>
     </dependency>
 
     <dependency>
       <groupId>net.sf.jasperreports</groupId>
       <artifactId>jasperreports</artifactId>
-      <version>6.19.1</version>
     </dependency>
-
-
 
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>${spring.version}</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
-      <version>${spring.version}</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>${spring.version}</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-config</artifactId>
-      <version>${spring-security.version}</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-web</artifactId>
-      <version>${spring-security.version}</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>com.thetransactioncompany</groupId>
       <artifactId>cors-filter</artifactId>
-      <version>2.10</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
-      <version>5.6.9.Final</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>42.3.5</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>com.vladmihalcea</groupId>
       <artifactId>hibernate-types-52</artifactId>
-      <version>2.10.4</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>com.mchange</groupId>
       <artifactId>c3p0</artifactId>
-      <version>0.9.5.5</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-orm</artifactId>
-      <version>${spring.version}</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-jdbc</artifactId>
-      <version>${spring.version}</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-tx</artifactId>
-      <version>${spring.version}</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>${spring.version}</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>30.1.1-jre</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.30</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
-      <version>1.7.30</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jul-to-slf4j</artifactId>
-      <version>1.7.30</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.2.3</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-access</artifactId>
-      <version>1.2.3</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20210307</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
-      <version>1.28</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>com.github.spullara.cli-parser</groupId>
       <artifactId>cli-parser</artifactId>
-      <version>1.1.5</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.5.13</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>com.sun.mail</groupId>
       <artifactId>javax.mail</artifactId>
-      <version>1.6.2</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-s3</artifactId>
-      <version>1.11.1000</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>com.adobe.xmp</groupId>
       <artifactId>xmpcore</artifactId>
-      <version>6.1.11</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>io.sentry</groupId>
       <artifactId>sentry-logback</artifactId>
-      <version>4.3.0</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>net.logstash.logback</groupId>
       <artifactId>logstash-logback-encoder</artifactId>
-      <version>6.6</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>xmlgraphics-commons</artifactId>
-      <version>2.6</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-transcoder</artifactId>
-      <version>1.14</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -400,10 +327,10 @@
         </exclusion>
       </exclusions>
     </dependency>
+
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-bridge</artifactId>
-      <version>1.14</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -413,16 +340,16 @@
         </exclusion>
       </exclusions>
     </dependency>
+
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-codec</artifactId>
-      <version>1.14</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-svg-dom</artifactId>
-      <version>1.14</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -431,30 +358,29 @@
           <!-- 1.4.01 -->
         </exclusion>
       </exclusions>
-
     </dependency>
+
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <version>4.0.1</version>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>3.9.0</version>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>de.saly</groupId>
       <artifactId>javamail-mock2-fullmock</artifactId>
-      <version>0.5-beta4</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
