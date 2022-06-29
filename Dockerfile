@@ -14,7 +14,7 @@ COPY core ./core
 COPY servlet ./servlet
 
 FROM base AS builder
-RUN mvn -B dependency:resolve
+RUN mvn -B dependency:resolve -projects core
 
 FROM builder AS cachedbuiler
 
@@ -26,7 +26,7 @@ FROM builder AS cachedbuiler
 
 # '&& touch success || true' is a trick to be able to get out some artifacts
 #RUN (gradle :core:build :core:explodedWar :core:libSourcesJar :core:libJavadocJar && touch success) || true
-RUN mvn clean verify
+RUN mvn -B clean install
 
 # ARG GIT_HEAD
 # ENV GIT_HEAD=${GIT_HEAD}

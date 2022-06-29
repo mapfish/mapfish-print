@@ -51,7 +51,7 @@
     <repository>
       <id>readytalk</id>
       <name>Spring Plugins</name>
-      <url>https://repo.spring.io/plugins-release/</url>
+      <url>https://artifactory.georchestra.org/artifactory/bintray-readytalk-cache/</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
