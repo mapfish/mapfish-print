@@ -5,7 +5,6 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.mapfish.print</groupId>
   <artifactId>print-servlet</artifactId>
   <packaging>war</packaging>
 
@@ -14,53 +13,6 @@
     <artifactId>mapfish-print</artifactId>
     <version>3.29.0-SNAPSHOT</version>
   </parent>
-
-
-
-  <properties>
-    <maven.compiler.target>11</maven.compiler.target>
-    <maven.compiler.source>11</maven.compiler.source>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-    <geotools.version>26.4</geotools.version>
-    <spring.version>5.3.20</spring.version>
-    <spring-security.version>5.7.1</spring-security.version>
-    <batik.version>1.14</batik.version>
-    <spotbugsVersion>4.6.0</spotbugsVersion>
-  </properties>
-
-  <repositories>
-    <repository>
-      <id>osgeo-release</id>
-      <name>OSGeo Repository</name>
-      <url>https://repo.osgeo.org/repository/release/</url>
-      <!-- Contains releases for OSGeo projects: GeoTools, GeoWebCache, GeoServer,
-        ... -->
-      <!-- Includes third-party-dependences, and caches of: -->
-      <!-- ucar (https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases) -->
-      <!-- geosolutions (http://maven.geo-solutions.it/) -->
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-
-    <!-- for statsd -->
-    <repository>
-      <id>readytalk</id>
-      <name>Spring Plugins</name>
-      <url>https://artifactory.georchestra.org/artifactory/bintray-readytalk-cache/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-
-  </repositories>
 
   <dependencies>
     <dependency>
