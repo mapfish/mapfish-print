@@ -1,6 +1,6 @@
 {
   extends: ['config:base', 'schedule:earlyMondays'],
-  baseBranches: ['master', '3.20', '3.27', '3.28', '3.29'],
+  baseBranches: ['master', '3.27', '3.28', '3.29'],
   packageRules: [
     /** Automerge the patch, the minor and the dev dependency */
     {
