@@ -155,7 +155,7 @@ dependencies {
     )
     jasper(
             "net.sf.jasperreports:jasperreports:6.19.1",
-            "org.codehaus.groovy:groovy-all:3.0.11",
+            "org.codehaus.groovy:groovy-all:3.0.12",
             'ar.com.fdvs:DynamicJasper:5.3.4',
             "net.sf.jasperreports:jasperreports-fonts:6.19.1",
             "net.sf.jasperreports:jasperreports-functions:6.19.1",
@@ -174,7 +174,7 @@ dependencies {
             'com.github.spullara.cli-parser:cli-parser:1.1.6',
             'org.apache.httpcomponents:httpclient:4.5.13',
             'com.sun.mail:javax.mail:1.6.2',
-            'com.amazonaws:aws-java-sdk-s3:1.12.263',
+            'com.amazonaws:aws-java-sdk-s3:1.12.268',
             'com.adobe.xmp:xmpcore:6.1.11',
             'io.sentry:sentry-logback:6.1.4',
             'net.logstash.logback:logstash-logback-encoder:7.2',
