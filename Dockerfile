@@ -1,4 +1,4 @@
-FROM gradle:6.9-jdk11 AS builder
+FROM gradle:7.5.0-jdk11 AS builder
 
 RUN apt-get update && \
   apt-get install --yes --no-install-recommends fonts-liberation gettext curl && \
