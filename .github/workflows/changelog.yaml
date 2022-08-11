@@ -2,8 +2,6 @@ name: Changelog Generator
 
 on:
   push:
-    branches:
-      - master
     tags:
       - '*'
 
