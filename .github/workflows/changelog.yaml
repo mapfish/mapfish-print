@@ -7,7 +7,6 @@ jobs:
   changelog:
     name: Changelog Generator
     runs-on: ubuntu-20.04
-    timeout-minutes: 200
 
     steps:
       - uses: actions/checkout@v3
@@ -19,7 +18,7 @@ jobs:
         id: get-date
         run: |
           echo "::set-output name=date::$(/bin/date -u "+%Y%m%d%H%M%S")"
-      - uses: actions/cache@v3
+      - uses: pat-s/always-upload-cache@main
         with:
           path: |
             .github/changelog-generator-cache
