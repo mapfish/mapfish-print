@@ -7,7 +7,7 @@ jobs:
   changelog:
     name: Changelog Generator
     runs-on: ubuntu-20.04
-    timeout-minutes: 120
+    timeout-minutes: 200
 
     steps:
       - uses: actions/checkout@v3
@@ -37,7 +37,7 @@ jobs:
           token: ${{ secrets.GOPASS_CI_GITHUB_TOKEN }}
           configureSections: ${{ steps.config.outputs.config }}
           cacheFile: .github/changelog-generator-cache
-          sinceTag: release/3.27.0
+          sinceTag: release/3.28.0
 
       - run: c2cciutils-checks --fix --check=prettier
       - run: git add CHANGELOG.md
