@@ -159,7 +159,7 @@ dependencies {
             'ar.com.fdvs:DynamicJasper:5.3.5',
             "net.sf.jasperreports:jasperreports-fonts:6.19.1",
             "net.sf.jasperreports:jasperreports-functions:6.19.1",
-            'joda-time:joda-time:2.10.14'
+            'joda-time:joda-time:2.11.0'
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile(
