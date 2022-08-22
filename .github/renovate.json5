@@ -14,9 +14,9 @@
       versioning: 'loose',
     },
     {
-      matchDatasources: ['docker'],
+      matchDatasources: ['docker', 'tomcat'],
       matchPackageNames: ['gradle'],
-      versioning: 'regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)?(-(?<compatibility>.*))$',
+      versioning: 'regex:^(?<major>\\d+)\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?(-(?<compatibility>.*))$',
     },
     /** Automerge the patch, the minor and the dev dependency */
     {
