@@ -8,6 +8,11 @@
   lockFileMaintenance: { enabled: true, automerge: true },
   baseBranches: ['master', '3.27', '3.28', '3.29'],
   packageRules: [
+    /** Less strict version for Docker images */
+    {
+      matchDatasources: ['docker'],
+      versioning: 'loose',
+    },
     /** Automerge the patch, the minor and the dev dependency */
     {
       matchBaseBranches: ['master'],
