@@ -312,7 +312,7 @@ public final class ProcessorDependencyGraphFactory {
         }
         Assert.isTrue(
                 missingProcessors.isEmpty(),
-                "The processor graph:\n" + graph + "\ndoes not contain all the processors, missing:" +
+                "The processor graph:\n" + graph + "\n" + "does not contain all the processors, missing:" +
                         missingProcessorsName);
 
         return graph;
