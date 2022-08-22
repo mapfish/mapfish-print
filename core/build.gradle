@@ -157,7 +157,7 @@ dependencies {
             "net.sf.jasperreports:jasperreports:6.19.1",
             "org.codehaus.groovy:groovy-all:3.0.12",
             'ar.com.fdvs:DynamicJasper:5.3.6',
-            "net.sf.jasperreports:jasperreports-fonts:6.19.1",
+            "net.sf.jasperreports:jasperreports-fonts:6.20.0",
             "net.sf.jasperreports:jasperreports-functions:6.19.1",
             'joda-time:joda-time:2.11.0'
     )
