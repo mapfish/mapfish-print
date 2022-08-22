@@ -8,10 +8,15 @@
   lockFileMaintenance: { enabled: true, automerge: true },
   baseBranches: ['master', '3.27', '3.28', '3.29'],
   packageRules: [
-    /** Less strict version for Docker images */
+    /** Docker images versioning */
     {
       matchDatasources: ['docker'],
       versioning: 'loose',
+    },
+    {
+      matchDatasources: ['docker'],
+      matchPackageNames: ['gradle'],
+      versioning: 'regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)?(-(?<compatibility>.*))$',
     },
     /** Automerge the patch, the minor and the dev dependency */
     {
