@@ -89,7 +89,7 @@ jobs:
       - run: docker cp mapfish-print_tests_1:/src/examples/build/ examples/build/ || true
         if: always()
 
-      - run: docker-compose logs || true
+      - run: c2cciutils-docker-logs || true
         if: failure()
 
       - run: mkdir -p core/build/resources/actual examples/build/reports core/build/reports
