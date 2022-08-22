@@ -114,7 +114,7 @@ configurations {
 }
 
 ext {
-    springVersion = '5.2.20.RELEASE'
+    springVersion = '5.2.22.RELEASE'
 }
 
 dependencies {
@@ -127,8 +127,8 @@ dependencies {
             "org.springframework:spring-context:$springVersion",
             "org.springframework:spring-web:$springVersion",
             "org.springframework:spring-webmvc:$springVersion",
-            "org.springframework.security:spring-security-config:5.5.7",
-            "org.springframework.security:spring-security-web:5.5.7",
+            "org.springframework.security:spring-security-config:5.5.8",
+            "org.springframework.security:spring-security-web:5.5.8",
             'com.thetransactioncompany:cors-filter:2.10',
             // Hibernate & Postgres
             'org.hibernate:hibernate-core:5.6.10.Final',
