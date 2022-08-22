@@ -691,7 +691,7 @@
 **Merged pull requests:**
 
 - Resizing of the legends was broken [\#1125](https://github.com/mapfish/mapfish-print/pull/1125) ([pvalsecc](https://github.com/pvalsecc))
-- Add automerge dependebot pullrequest on success [\#1110](https://github.com/mapfish/mapfish-print/pull/1110) ([sbrunner](https://github.com/sbrunner))
+- Add automerge dependebot pull request on success [\#1110](https://github.com/mapfish/mapfish-print/pull/1110) ([sbrunner](https://github.com/sbrunner))
 - Finally write my own backporter [\#1107](https://github.com/mapfish/mapfish-print/pull/1107) ([sbrunner](https://github.com/sbrunner))
 - Use an other backporter action [\#1106](https://github.com/mapfish/mapfish-print/pull/1106) ([sbrunner](https://github.com/sbrunner))
 - Add backport action [\#1105](https://github.com/mapfish/mapfish-print/pull/1105) ([sbrunner](https://github.com/sbrunner))
@@ -699,7 +699,7 @@
 - Fix javadoc [\#1090](https://github.com/mapfish/mapfish-print/pull/1090) ([pvalsecc](https://github.com/pvalsecc))
 - Typo [\#1086](https://github.com/mapfish/mapfish-print/pull/1086) ([sbrunner](https://github.com/sbrunner))
 - Improves logs [\#1085](https://github.com/mapfish/mapfish-print/pull/1085) ([sbrunner](https://github.com/sbrunner))
-- Add more informations in the logs [\#1083](https://github.com/mapfish/mapfish-print/pull/1083) ([sbrunner](https://github.com/sbrunner))
+- Add more information in the logs [\#1083](https://github.com/mapfish/mapfish-print/pull/1083) ([sbrunner](https://github.com/sbrunner))
 - Fix the createReportAndGet timeout to match the print timeout [\#1082](https://github.com/mapfish/mapfish-print/pull/1082) ([pvalsecc](https://github.com/pvalsecc))
 - Upgrade geotools [\#1081](https://github.com/mapfish/mapfish-print/pull/1081) ([pvalsecc](https://github.com/pvalsecc))
 
@@ -831,8 +831,8 @@
 - Set a default maxIdleTime for DB connections [\#1079](https://github.com/mapfish/mapfish-print/pull/1079) ([pvalsecc](https://github.com/pvalsecc))
 - Fix scale transparency image in legend [\#1057](https://github.com/mapfish/mapfish-print/pull/1057) ([sbrunner](https://github.com/sbrunner))
 - Be able to print a legend without maxWidth [\#1055](https://github.com/mapfish/mapfish-print/pull/1055) ([sbrunner](https://github.com/sbrunner))
-- Fix ttf-liberation instalation [\#1054](https://github.com/mapfish/mapfish-print/pull/1054) ([sbrunner](https://github.com/sbrunner))
-- Remove connexion error throw [\#1038](https://github.com/mapfish/mapfish-print/pull/1038) ([sbrunner](https://github.com/sbrunner))
+- Fix ttf-liberation installation [\#1054](https://github.com/mapfish/mapfish-print/pull/1054) ([sbrunner](https://github.com/sbrunner))
+- Remove connection error throw [\#1038](https://github.com/mapfish/mapfish-print/pull/1038) ([sbrunner](https://github.com/sbrunner))
 - Logs the headers on HTTP error as warn [\#1037](https://github.com/mapfish/mapfish-print/pull/1037) ([sbrunner](https://github.com/sbrunner))
 - set charset in index.html [\#1027](https://github.com/mapfish/mapfish-print/pull/1027) ([aruneko](https://github.com/aruneko))
 - Upgrade gradle [\#1011](https://github.com/mapfish/mapfish-print/pull/1011) ([pvalsecc](https://github.com/pvalsecc))
