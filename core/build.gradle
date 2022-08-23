@@ -132,7 +132,7 @@ dependencies {
             'com.thetransactioncompany:cors-filter:2.10',
             // Hibernate & Postgres
             'org.hibernate:hibernate-core:5.6.10.Final',
-            'org.postgresql:postgresql:42.3.5',
+            'org.postgresql:postgresql:42.3.6',
             'com.vladmihalcea:hibernate-types-52:2.14.1',
             'com.mchange:c3p0:0.9.5.5',
             "org.springframework:spring-orm:$springVersion",
@@ -163,7 +163,7 @@ dependencies {
     jasper(
             "net.sf.jasperreports:jasperreports:$project.jasperreportVersion",
             "org.codehaus.groovy:groovy-all:$project.groovyVersion",
-            'ar.com.fdvs:DynamicJasper:5.3.4',
+            'ar.com.fdvs:DynamicJasper:5.3.6',
             "net.sf.jasperreports:jasperreports-fonts:$project.jasperreportVersion",
             "net.sf.jasperreports:jasperreports-functions:$project.jasperreportVersion",
             'joda-time:joda-time:2.10.14'
@@ -181,9 +181,9 @@ dependencies {
             'com.github.spullara.cli-parser:cli-parser:1.1.6',
             'org.apache.httpcomponents:httpclient:4.5.13',
             'com.sun.mail:javax.mail:1.6.2',
-            'com.amazonaws:aws-java-sdk-s3:1.12.257',
+            'com.amazonaws:aws-java-sdk-s3:1.12.287',
             'com.adobe.xmp:xmpcore:6.1.11',
-            'io.sentry:sentry-logback:5.6.1',
+            'io.sentry:sentry-logback:5.6.3',
             'net.logstash.logback:logstash-logback-encoder:7.0.1',
     )
 
