@@ -1,4 +1,4 @@
-FROM gradle:6.6-jdk11 AS builder
+FROM gradle:6.6.1-jdk11 AS builder
 
 RUN apt update
 RUN apt install --yes fonts-liberation gettext curl
