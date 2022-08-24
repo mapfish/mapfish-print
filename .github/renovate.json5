@@ -46,6 +46,12 @@
       automerge: true,
     },
     {
+      matchDatasources: ['docker'],
+      matchPackageNames: ['camptocamp/geoserver'],
+      groupName: 'geoserver',
+      automerge: true,
+    },
+    {
       matchPackagePrefixes: ['org.springframework:', 'org.springframework.security:'],
       groupName: 'spring',
       automerge: true,
