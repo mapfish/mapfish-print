@@ -24,7 +24,6 @@ wrapper {
 allprojects {
     group = 'org.mapfish.print'
     version = '1.0.0'
-    ext.spotbugsVersion = '4.6.0'
 
     apply plugin: 'org.owasp.dependencycheck'
     dependencyCheck {
@@ -61,7 +60,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     checkstyleTest.enabled = false
 
     spotbugs {
-        toolVersion = "${project.spotbugsVersion}"
+        toolVersion = "4.6.0"
         ignoreFailures = true
         reportsDir = file("$project.buildDir/reports/spotbugsReports")
         effort = "max"
