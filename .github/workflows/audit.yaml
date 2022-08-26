@@ -31,7 +31,7 @@ jobs:
           github-gopass-ci-token: ${{secrets.GOPASS_CI_GITHUB_TOKEN}}
 
       - run: echo "${HOME}/.local/bin" >> ${GITHUB_PATH}
-      - run: python3 -m pip install --user --pre c2cciutils
+      - run: python3 -m pip install --user --pre c2cciutils[audit]
 
       - name: Audit
         run: c2cciutils-audit --branch=${{ matrix.branch }}
