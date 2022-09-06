@@ -124,7 +124,7 @@ dependencies {
             "org.springframework.security:spring-security-web:5.7.3",
             'com.thetransactioncompany:cors-filter:2.10',
             // Hibernate & Postgres
-            'org.hibernate:hibernate-core:5.6.10.Final',
+            'org.hibernate:hibernate-core:5.6.11.Final',
             'org.postgresql:postgresql:42.5.0',
             'com.vladmihalcea:hibernate-types-52:2.19.0',
             'com.mchange:c3p0:0.9.5.5',
@@ -140,7 +140,7 @@ dependencies {
             "io.dropwizard.metrics:metrics-servlets:4.2.11",
             "io.dropwizard.metrics:metrics-jvm:4.2.11",
             "io.dropwizard.metrics:metrics-jmx:4.2.11",
-            "io.dropwizard.metrics:metrics-logback:4.2.11",
+            "io.dropwizard.metrics:metrics-logback:4.2.12",
             'com.readytalk:metrics3-statsd:4.2.0'
     )
     geotools(
@@ -174,9 +174,9 @@ dependencies {
             'com.github.spullara.cli-parser:cli-parser:1.1.6',
             'org.apache.httpcomponents:httpclient:4.5.13',
             'com.sun.mail:javax.mail:1.6.2',
-            'com.amazonaws:aws-java-sdk-s3:1.12.290',
+            'com.amazonaws:aws-java-sdk-s3:1.12.296',
             'com.adobe.xmp:xmpcore:6.1.11',
-            'io.sentry:sentry-logback:6.4.0',
+            'io.sentry:sentry-logback:6.4.1',
             'net.logstash.logback:logstash-logback-encoder:7.2',
     )
 
@@ -197,7 +197,7 @@ dependencies {
     )
 
     providedCompile('javax.servlet:javax.servlet-api:4.0.1')
-    compileOnly "com.github.spotbugs:spotbugs-annotations:4.7.1"
+    compileOnly "com.github.spotbugs:spotbugs-annotations:4.7.2"
 
     testCompile group: 'de.saly', name: 'javamail-mock2-fullmock', version: '0.5-beta4'
 }
