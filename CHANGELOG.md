@@ -691,7 +691,7 @@
 **Merged pull requests:**
 
 - Resizing of the legends was broken [\#1125](https://github.com/mapfish/mapfish-print/pull/1125) ([pvalsecc](https://github.com/pvalsecc))
-- Add automerge dependebot pull request on success [\#1110](https://github.com/mapfish/mapfish-print/pull/1110) ([sbrunner](https://github.com/sbrunner))
+- Add automerge Dependebot pull request on success [\#1110](https://github.com/mapfish/mapfish-print/pull/1110) ([sbrunner](https://github.com/sbrunner))
 - Finally write my own backporter [\#1107](https://github.com/mapfish/mapfish-print/pull/1107) ([sbrunner](https://github.com/sbrunner))
 - Use an other backporter action [\#1106](https://github.com/mapfish/mapfish-print/pull/1106) ([sbrunner](https://github.com/sbrunner))
 - Add backport action [\#1105](https://github.com/mapfish/mapfish-print/pull/1105) ([sbrunner](https://github.com/sbrunner))
