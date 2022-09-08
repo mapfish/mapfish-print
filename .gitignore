@@ -20,3 +20,4 @@
 /examples/geoserver-data/wps.xml
 
 /CI.asc
+/.github/changelog-generator-cache

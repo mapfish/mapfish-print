@@ -1,9 +1,8 @@
----
 name: Rebuild
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: 0 0 * * *
 
 jobs:
   rebuild:
@@ -21,6 +20,7 @@ jobs:
           - master
 
     steps:
+      - run: docker system prune --all --force
       - uses: actions/checkout@v3
         with:
           ref: ${{ matrix.branch }}
@@ -29,10 +29,10 @@ jobs:
         id: tag2
         uses: frabert/replace-string-action@v2.2
         with:
-          pattern: 'refs/tags/(.*)'
+          pattern: refs/tags/(.*)
           string: '{{ github.ref }}'
-          replace-with: '$1'
-        if: "startsWith(github.ref, 'refs/tags/')"
+          replace-with: $1
+        if: startsWith(github.ref, 'refs/tags/')
       - run: echo --${{ steps.tag2.outputs.replaced }}--
 
       - uses: camptocamp/initialise-gopass-summon-action@v2
@@ -48,9 +48,11 @@ jobs:
       - id: no-tag
         run: echo "##[set-output name=nb;]$(git log --oneline ${{ steps.last-tag.outputs.tag }}..HEAD|wc -l)"
       - run: sed --in-place 's/version = .*/version = "${{ steps.last-tag.outputs.tag }}"/g' build.gradle
-        if: 'steps.no-tag.outputs.nb == 0'
-      - run: sed --in-place 's/version = .*/version = "${{ steps.last-tag.outputs.tag }}+${{ steps.no-tag.outputs.nb }}"/g' build.gradle
-        if: 'steps.no-tag.outputs.nb > 0'
+        if: steps.no-tag.outputs.nb == 0
+      - run:
+          sed --in-place 's/version = .*/version = "${{ steps.last-tag.outputs.tag }}+${{ steps.no-tag.outputs.nb
+          }}"/g' build.gradle
+        if: steps.no-tag.outputs.nb > 0
 
       - run: echo "enablePublishing=true" > gradle.properties
       - run: git diff
@@ -60,7 +62,7 @@ jobs:
 
       - run: make build
 
-      # Extract artifacts
+        # Extract artifacts
       - run: docker run --rm --detach --name=builder mapfish_print_builder
         if: always()
       - run: docker cp builder:/src/core/build/ core/build/
@@ -92,9 +94,9 @@ jobs:
         run: c2cciutils-publish --type=rebuild --branch=${{ matrix.branch }}
 
       - run: ./gradlew :core:libSourcesJar
-        if: "startsWith(github.ref, 'refs/tags/')"
+        if: startsWith(github.ref, 'refs/tags/')
       - run: ./gradlew :core:libJavadocJar
-        if: "startsWith(github.ref, 'refs/tags/')"
+        if: startsWith(github.ref, 'refs/tags/')
       - id: version
         run: echo "##[set-output name=version;]$(grep version build.gradle|sed "s/ \+version = .\(.*\)./\1/g")"
       - id: tag
@@ -109,7 +111,7 @@ jobs:
           release_name: Release ${{ steps.tag.outputs.tag }}
           draft: false
           prerelease: false
-        if: "startsWith(github.ref, 'refs/tags/')"
+        if: startsWith(github.ref, 'refs/tags/')
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.2
         env:
@@ -119,7 +121,7 @@ jobs:
           asset_path: ./core/build/libs/print-servlet-${{ steps.version.outputs.version }}.war
           asset_name: print-servlet-${{ steps.version.outputs.version }}.war
           asset_content_type: application/java-archive
-        if: "startsWith(github.ref, 'refs/tags/')"
+        if: startsWith(github.ref, 'refs/tags/')
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.2
         env:
@@ -129,7 +131,7 @@ jobs:
           asset_path: ./core/build/distributions/core-${{ steps.version.outputs.version }}.zip
           asset_name: print-cli-${{ steps.version.outputs.version }}.zip
           asset_content_type: application/zip
-        if: "startsWith(github.ref, 'refs/tags/')"
+        if: startsWith(github.ref, 'refs/tags/')
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.2
         env:
@@ -139,7 +141,7 @@ jobs:
           asset_path: ./core/build/libs/print-lib-${{ steps.version.outputs.version }}.jar
           asset_name: print-lib-${{ steps.version.outputs.version }}.jar
           asset_content_type: application/java-archive
-        if: "startsWith(github.ref, 'refs/tags/')"
+        if: startsWith(github.ref, 'refs/tags/')
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.2
         env:
@@ -149,7 +151,7 @@ jobs:
           asset_path: ./core/build/libs/print-lib-${{ steps.version.outputs.version }}-sources.jar
           asset_name: print-lib-${{ steps.version.outputs.version }}-sources.jar
           asset_content_type: application/java-archive
-        if: "startsWith(github.ref, 'refs/tags/')"
+        if: startsWith(github.ref, 'refs/tags/')
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1.0.2
         env:
@@ -159,4 +161,4 @@ jobs:
           asset_path: ./core/build/libs/print-lib-${{ steps.version.outputs.version }}-javadoc.jar
           asset_name: print-lib-${{ steps.version.outputs.version }}-javadoc.jar
           asset_content_type: application/java-archive
-        if: "startsWith(github.ref, 'refs/tags/')"
+        if: startsWith(github.ref, 'refs/tags/')
