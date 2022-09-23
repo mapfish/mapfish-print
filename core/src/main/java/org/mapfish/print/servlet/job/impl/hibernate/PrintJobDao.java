@@ -175,7 +175,7 @@ public class PrintJobDao {
                                     builder.lessThan(root.get("lastCheckTime"), checkTimeThreshold))
                 )
         ));
-        update.set(root.get("status"), PrintJobStatus.Status.CANCELLED);
+        update.set(root.get("status"), PrintJobStatus.Status.CANCELED);
         update.set(root.get("error"), message);
         getSession().createQuery(update).executeUpdate();
     }

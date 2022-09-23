@@ -278,7 +278,7 @@
 - No intermediate Docker image [\#1596](https://github.com/mapfish/mapfish-print/pull/1596) ([sbrunner](https://github.com/sbrunner))
 - \[Backport master\] Use Ubuntu 20.04 [\#1578](https://github.com/mapfish/mapfish-print/pull/1578) ([c2c-bot-gis-ci](https://github.com/c2c-bot-gis-ci))
 - \[Backport master\] Fix clean Docker hub tags [\#1577](https://github.com/mapfish/mapfish-print/pull/1577) ([c2c-bot-gis-ci](https://github.com/c2c-bot-gis-ci))
-- \[Backport master\] Use secret defined in organisation [\#1569](https://github.com/mapfish/mapfish-print/pull/1569) ([c2c-bot-gis-ci](https://github.com/c2c-bot-gis-ci))
+- \[Backport master\] Use secret defined in organization [\#1569](https://github.com/mapfish/mapfish-print/pull/1569) ([c2c-bot-gis-ci](https://github.com/c2c-bot-gis-ci))
 - \[Backport master\] Add Clean docker hub tags workflow [\#1568](https://github.com/mapfish/mapfish-print/pull/1568) ([c2c-bot-gis-ci](https://github.com/c2c-bot-gis-ci))
 - Merge 3.26 in master [\#1558](https://github.com/mapfish/mapfish-print/pull/1558) ([gberaudo](https://github.com/gberaudo))
 - Add font Awesome [\#1542](https://github.com/mapfish/mapfish-print/pull/1542) ([sbrunner](https://github.com/sbrunner))
@@ -626,7 +626,7 @@
 - Add missing authentication to clean docker hub tags [\#1154](https://github.com/mapfish/mapfish-print/pull/1154) ([sbrunner](https://github.com/sbrunner))
 - Add missing authentication to clean docker hub tags [\#1153](https://github.com/mapfish/mapfish-print/pull/1153) ([sbrunner](https://github.com/sbrunner))
 - Clean Docker hub tags [\#1152](https://github.com/mapfish/mapfish-print/pull/1152) ([sbrunner](https://github.com/sbrunner))
-- Moved to Camptocamp organisation [\#1151](https://github.com/mapfish/mapfish-print/pull/1151) ([sbrunner](https://github.com/sbrunner))
+- Moved to Camptocamp organization [\#1151](https://github.com/mapfish/mapfish-print/pull/1151) ([sbrunner](https://github.com/sbrunner))
 - \[Backport master\] Fix the build [\#1150](https://github.com/mapfish/mapfish-print/pull/1150) ([github-actions[bot]](https://github.com/apps/github-actions))
 - Use GitHub actions [\#1126](https://github.com/mapfish/mapfish-print/pull/1126) ([sbrunner](https://github.com/sbrunner))
 

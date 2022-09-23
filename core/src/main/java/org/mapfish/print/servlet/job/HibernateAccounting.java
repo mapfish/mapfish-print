@@ -61,7 +61,7 @@ public class HibernateAccounting extends Accounting {
         public void onJobCancel() {
             super.onJobCancel();
             final HibernateAccountingEntry accountingEntry = new HibernateAccountingEntry(
-                    this.entry, PrintJobStatus.Status.CANCELLED, this.configuration);
+                    this.entry, PrintJobStatus.Status.CANCELED, this.configuration);
             insertRecord(accountingEntry);
         }
 

@@ -155,7 +155,7 @@ public interface Processor<IN, OUT> extends ConfigurationObject {
     interface ExecutionContext {
 
         /**
-         * Throws a CancellationException if the job was cancelled.
+         * Throws a CancellationException if the job was canceled.
          */
         void stopIfCanceled();
 

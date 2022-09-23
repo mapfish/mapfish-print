@@ -112,9 +112,9 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         setUpConfigFiles();
 
         final MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("referer", "http://www.example.com/toto");
+        request.addHeader("referrer", "http://www.example.com/toto");
         final MockHttpServletResponse getExampleResponseImplicit = new MockHttpServletResponse();
-        this.servlet.getExampleRequest("referer", request, getExampleResponseImplicit);
+        this.servlet.getExampleRequest("referrer", request, getExampleResponseImplicit);
         assertEquals(HttpStatus.OK.value(), getExampleResponseImplicit.getStatus());
     }
 
@@ -123,9 +123,9 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         setUpConfigFiles();
 
         final MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("referer", "http://www.google.com/");
+        request.addHeader("referrer", "http://www.google.com/");
         final MockHttpServletResponse getExampleResponseImplicit = new MockHttpServletResponse();
-        this.servlet.getExampleRequest("referer", request, getExampleResponseImplicit);
+        this.servlet.getExampleRequest("referrer", request, getExampleResponseImplicit);
         assertEquals(HttpStatus.FORBIDDEN.value(), getExampleResponseImplicit.getStatus());
     }
 
@@ -421,7 +421,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
     private void addHeaders(MockHttpServletRequest servletStatusRequest) {
         servletStatusRequest.addHeader("Cookie", "cookie=value");
-        servletStatusRequest.addHeader("Referer", "http://localhost:8080/print/");
+        servletStatusRequest.addHeader("Referrer", "http://localhost:8080/print/");
     }
 
     @Test(timeout = 60000)
@@ -526,8 +526,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
         assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
-        assertEquals("task cancelled", statusJson.getString(MapPrinterServlet.JSON_ERROR));
-        assertEquals("cancelled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
+        assertEquals("task canceled", statusJson.getString(MapPrinterServlet.JSON_ERROR));
+        assertEquals("canceled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
     }
 
     @Test(timeout = 60000)
@@ -560,8 +560,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
         assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
-        assertEquals("task cancelled", statusJson.getString(MapPrinterServlet.JSON_ERROR));
-        assertEquals("cancelled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
+        assertEquals("task canceled", statusJson.getString(MapPrinterServlet.JSON_ERROR));
+        assertEquals("canceled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
     }
 
     @Test(timeout = 60000)
@@ -593,8 +593,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
         assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
-        assertEquals("task cancelled", statusJson.getString(MapPrinterServlet.JSON_ERROR));
-        assertEquals("cancelled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
+        assertEquals("task canceled", statusJson.getString(MapPrinterServlet.JSON_ERROR));
+        assertEquals("canceled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
     }
 
     @Test(timeout = 60000)
@@ -633,8 +633,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
         assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
-        assertEquals("task cancelled", statusJson.getString(MapPrinterServlet.JSON_ERROR));
-        assertEquals("cancelled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
+        assertEquals("task canceled", statusJson.getString(MapPrinterServlet.JSON_ERROR));
+        assertEquals("canceled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
     }
 
     @Test(timeout = 60000)
@@ -693,12 +693,12 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
         assertEquals("true", statusJson.getString(MapPrinterServlet.JSON_DONE));
-        assertEquals("task cancelled (timeout)", statusJson.getString(MapPrinterServlet.JSON_ERROR));
-        assertEquals("cancelled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
+        assertEquals("task canceled (timeout)", statusJson.getString(MapPrinterServlet.JSON_ERROR));
+        assertEquals("canceled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
     }
 
     /**
-     * Check that a job is not cancelled, when status requests are made. Test case for:
+     * Check that a job is not canceled, when status requests are made. Test case for:
      * https://github.com/mapfish/mapfish-print/issues/404
      */
     @Test(timeout = 60000)
@@ -719,7 +719,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
         String ref = createResponseJson.getString(MapPrinterServlet.JSON_PRINT_JOB_REF);
 
-        // check that the job is not cancelled when doing status requests
+        // check that the job is not canceled when doing status requests
         for (int i = 0; i < 4; i++) {
             Thread.sleep(500);
 
@@ -727,7 +727,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
             final MockHttpServletResponse statusResponse = new MockHttpServletResponse();
             servlet.getStatus(ref, statusRequest, statusResponse);
             final PJsonObject statusJson = parseJSONObjectFromString(statusResponse.getContentAsString());
-            assertNotEquals("cancelled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
+            assertNotEquals("canceled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
         }
         waitForNotCanceled(ref);
     }
@@ -742,7 +742,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
                 Thread.sleep(500);
             } else if (status == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 String error = servletGetReportResponse.getContentAsString();
-                assertTrue(error.contains("cancelled"));
+                assertTrue(error.contains("canceled"));
                 return;
             } else {
                 fail(status + " was not one of the expected response codes.  Expected: 500 or 202");
@@ -762,7 +762,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
                 // report was created, ok
                 return;
             } else if (status == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-                fail("should not be cancelled");
+                fail("should not be canceled");
             } else {
                 fail(status + " was not one of the expected response codes.  Expected: 500 or 202");
             }
@@ -1137,7 +1137,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
                                            "config.yaml").getAbsolutePath());
         configFiles.put("timeout", getFile(MapPrinterServletTest.class,
                                            "config-timeout.yaml").getAbsolutePath());
-        configFiles.put("referer", getFile(MapPrinterServletTest.class,
+        configFiles.put("referrer", getFile(MapPrinterServletTest.class,
                                            "config-referer.yaml").getAbsolutePath());
         configFiles.put("email-s3", getFile(MapPrinterServletTest.class,
                                             "config-email-s3.yaml").getAbsolutePath());

@@ -76,11 +76,11 @@ public class ThreadPoolJobManager implements JobManager {
      */
     private long maxIdleTime = DEFAULT_THREAD_IDLE_TIME;
     /**
-     * A print job is cancelled, if it is not completed after this amount of time (in seconds).
+     * A print job is canceled, if it is not completed after this amount of time (in seconds).
      */
     private long timeout = DEFAULT_TIMEOUT_IN_SECONDS;
     /**
-     * A print job is cancelled, if this amount of time (in seconds) has passed, without that the user checked
+     * A print job is canceled, if this amount of time (in seconds) has passed, without that the user checked
      * the status of the job.
      */
     private long abandonedTimeout = DEFAULT_ABANDONED_TIMEOUT_IN_SECONDS;
@@ -349,8 +349,8 @@ public class ThreadPoolJobManager implements JobManager {
                     LOGGER.info("Could not cancel job {}", referenceId);
                 }
                 this.runningTasksFutures.remove(referenceId);
-                //now from canceling to cancelled state
-                this.jobQueue.cancel(referenceId, "task cancelled", true);
+                //now from canceling to canceled state
+                this.jobQueue.cancel(referenceId, "task canceled", true);
             }
         }
     }
@@ -358,8 +358,8 @@ public class ThreadPoolJobManager implements JobManager {
     @Override
     public final void cancel(final String referenceId) throws NoSuchReferenceException {
         // check if the reference id is valid
-        // and set canceling / cancelled status already
-        this.jobQueue.cancel(referenceId, "task cancelled", false);
+        // and set canceling / canceled status already
+        this.jobQueue.cancel(referenceId, "task canceled", false);
         cancelJobIfRunning(referenceId);
     }
 
@@ -388,11 +388,11 @@ public class ThreadPoolJobManager implements JobManager {
         //cancel old tasks
         this.jobQueue.cancelOld(TimeUnit.MILLISECONDS.convert(this.timeout, TimeUnit.SECONDS),
                                 TimeUnit.MILLISECONDS.convert(this.abandonedTimeout, TimeUnit.SECONDS),
-                                "task cancelled (timeout)");
+                                "task canceled (timeout)");
     }
 
     private void pollRegistry() {
-        //check if anything needs to be cancelled
+        //check if anything needs to be canceled
         for (PrintJobStatus stat: this.jobQueue.toCancel()) {
             try {
                 cancelJobIfRunning(stat.getReferenceId());
@@ -416,12 +416,12 @@ public class ThreadPoolJobManager implements JobManager {
             final SubmittedPrintJob printJob = submittedJobs.next();
             if (!printJob.getReportFuture().isDone() &&
                     (isTimeoutExceeded(printJob) || isAbandoned(printJob))) {
-                LOGGER.info("Cancelling job after timeout {}", printJob.getEntry().getReferenceId());
+                LOGGER.info("Canceling job after timeout {}", printJob.getEntry().getReferenceId());
                 if (!printJob.getReportFuture().cancel(true)) {
                     LOGGER.info("Could not cancel job after timeout {}",
                                 printJob.getEntry().getReferenceId());
                 }
-                // remove all cancelled tasks from the work queue (otherwise the queue comparator
+                // remove all canceled tasks from the work queue (otherwise the queue comparator
                 // might stumble on non-PrintJob entries)
                 this.executor.purge();
             }
@@ -455,7 +455,7 @@ public class ThreadPoolJobManager implements JobManager {
                     } catch (CancellationException e) {
                         //cancellation occurred, set cancellation status
                         this.jobQueue.cancel(printJob.getEntry().getReferenceId(),
-                                             "task cancelled (timeout)", true);
+                                             "task canceled (timeout)", true);
                     }
                     notifyIfStopped();
                 } catch (NoSuchReferenceException e) { // shouldn't really happen

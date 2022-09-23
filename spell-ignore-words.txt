@@ -1,2 +1,6 @@
 testin
 compiletime
+centre
+cloneable
+nto
+thead

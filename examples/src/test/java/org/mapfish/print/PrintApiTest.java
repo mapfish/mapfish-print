@@ -415,7 +415,7 @@ public class PrintApiTest extends AbstractApiTest {
             final JSONObject statusResult = new JSONObject(
                     getBodyAsText(response));
             assertTrue(statusResult.getBoolean(MapPrinterServlet.JSON_DONE));
-            assertEquals("task cancelled", statusResult.getString(MapPrinterServlet.JSON_ERROR));
+            assertEquals("task canceled", statusResult.getString(MapPrinterServlet.JSON_ERROR));
         }
     }
 

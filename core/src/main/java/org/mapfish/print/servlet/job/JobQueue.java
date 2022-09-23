@@ -59,7 +59,7 @@ public interface JobQueue {
     void add(PrintJobEntry jobEntry);
 
     /**
-     * Mark job as canceling (if running) or cancelled (if waiting / finished).
+     * Mark job as canceling (if running) or canceled (if waiting / finished).
      *
      * @param referenceId reference id to the job that has failed.
      * @param message the error message
@@ -112,7 +112,7 @@ public interface JobQueue {
     List<? extends PrintJobStatus> start(int number);
 
     /**
-     * Get the jobs that are marked as "CANCELING" and must be cancelled.
+     * Get the jobs that are marked as "CANCELING" and must be canceled.
      */
     List<? extends PrintJobStatus> toCancel();
 

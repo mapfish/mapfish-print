@@ -42,7 +42,7 @@ public class HibernateAccountingEntry {
 
     @Column
     @Type(type = "org.hibernate.type.TextType")
-    private String referer;
+    private String referrer;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -98,11 +98,11 @@ public class HibernateAccountingEntry {
                     getObject(MapPrinterServlet.JSON_ATTRIBUTES).
                     getObject(MapPrinterServlet.JSON_REQUEST_HEADERS).
                     getObject(MapPrinterServlet.JSON_REQUEST_HEADERS);
-            if (headers.has("referer")) {
-                this.referer = headers.getArray("referer").getString(0);
+            if (headers.has("referrer")) {
+                this.referrer = headers.getArray("referrer").getString(0);
             }
         } catch (ObjectMissingException ex) {
-            LOGGER.info("Cannot get the referer", ex);
+            LOGGER.info("Cannot get the referrer", ex);
         }
 
         try {
@@ -132,7 +132,7 @@ public class HibernateAccountingEntry {
     }
 
     public String getReferer() {
-        return this.referer;
+        return this.referrer;
     }
 
     public PrintJobStatus.Status getStatus() {

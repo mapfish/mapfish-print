@@ -77,7 +77,7 @@ class RequiresTracker {
             }
         }
         Assert.equals(0, errors.length(),
-                      "\nErrors were detected when analysing the @Requires dependencies of '" +
+                      "\nErrors were detected when analyzing the @Requires dependencies of '" +
                               currentPath + "': " + errors);
     }
 }

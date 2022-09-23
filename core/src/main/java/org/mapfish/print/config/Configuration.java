@@ -674,14 +674,14 @@ public class Configuration implements ConfigurationObject {
     }
 
     /**
-     * @return the list of referer checks (null = no check)
+     * @return the list of referrer checks (null = no check)
      */
     public final UriMatchers getAllowedReferersImpl() {
         return this.allowedReferers;
     }
 
     /**
-     * The matchers used to authorize the incoming requests in function of the referer. For example:
+     * The matchers used to authorize the incoming requests in function of the referrer. For example:
      * <pre><code>
      * allowedReferers:
      *   - !hostnameMatch
@@ -689,9 +689,9 @@ public class Configuration implements ConfigurationObject {
      *     allowSubDomains: true
      * </code></pre>
      * <p>
-     * By default, the referer is not checked
+     * By default, the referrer is not checked
      *
-     * @param matchers the list of matcher to use to check if a referer is permitted or null for no
+     * @param matchers the list of matcher to use to check if a referrer is permitted or null for no
      *         check
      * @see org.mapfish.print.processor.http.matcher.URIMatcher
      */

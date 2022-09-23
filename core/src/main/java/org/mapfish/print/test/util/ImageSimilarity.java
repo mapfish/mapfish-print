@@ -260,7 +260,7 @@ public final class ImageSimilarity {
             }
         }
         diffGraphics.dispose();
-        // Normalise
+        // Normalize
         dist = dist / this.expectedImage.getWidth() / this.expectedImage.getHeight() * 10000;
         LOGGER.debug("Current distance: {}", dist);
         return dist;

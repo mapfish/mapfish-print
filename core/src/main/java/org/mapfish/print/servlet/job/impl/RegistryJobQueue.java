@@ -136,10 +136,10 @@ public class RegistryJobQueue implements JobQueue {
                     this.registry.incrementLong(TOTAL_PRINT_TIME, status.getElapsedTime());
                     this.registry.incrementInt(LAST_PRINT_COUNT, 1);
                 }
-                // even if the job is already finished, we store it as "cancelled" in the registry,
-                // so that all subsequent status requests return "cancelled"
+                // even if the job is already finished, we store it as "canceled" in the registry,
+                // so that all subsequent status requests return "canceled"
                 status.setCompletionTime(System.currentTimeMillis());
-                status.setStatus(PrintJobStatus.Status.CANCELLED);
+                status.setStatus(PrintJobStatus.Status.CANCELED);
             }
 
             status.setError(message);
@@ -160,8 +160,8 @@ public class RegistryJobQueue implements JobQueue {
                 this.registry.incrementInt(LAST_PRINT_COUNT, 1);
             }
 
-            // even if the job is already finished, we store it as "cancelled" in the registry,
-            // so that all subsequent status requests return "cancelled"
+            // even if the job is already finished, we store it as "canceled" in the registry,
+            // so that all subsequent status requests return "canceled"
             status.setCompletionTime(System.currentTimeMillis());
             status.setStatus(PrintJobStatus.Status.ERROR);
             status.setError(message);
