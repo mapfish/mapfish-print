@@ -39,7 +39,7 @@ public class Accounting {
         protected final Configuration configuration;
 
         /**
-         * The timer to use in cas of success.
+         * The timer to use in case of success.
          */
         protected final Timer.Context successTimer;
 
@@ -66,7 +66,7 @@ public class Accounting {
         }
 
         /**
-         * To be called when a job is cancelled.
+         * To be called when a job is canceled.
          */
         public void onJobCancel() {
             Accounting.this.metricRegistry.counter(getMetricName("cancel")).inc();

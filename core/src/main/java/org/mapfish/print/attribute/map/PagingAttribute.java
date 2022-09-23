@@ -55,7 +55,7 @@ public final class PagingAttribute extends ReflectiveAttribute<PagingAttribute.P
          * Indicates how to render the area of interest on this sub-map. This makes it easier to how the all
          * the sub-maps fit together to for the complete map.  Also if the map is rendered as a whole in one
          * part of the report one can easily see where in the complete map the sub-map fits, even without
-         * looking at the labelling.
+         * looking at the labeling.
          * <p>
          * For options see: {@link org.mapfish.print.attribute.map.AreaOfInterest.AoiDisplay}
          * </p>

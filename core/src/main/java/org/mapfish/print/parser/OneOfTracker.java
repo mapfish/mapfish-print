@@ -96,7 +96,7 @@ final class OneOfTracker {
         }
 
         Assert.equals(0, errors.length(),
-                      "\nErrors were detected when analysing the @OneOf dependencies of '" + currentPath +
+                      "\nErrors were detected when analyzing the @OneOf dependencies of '" + currentPath +
                               "': \n" + errors);
     }
 

@@ -135,7 +135,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          * </ul>
          *
          * <p>If the value is too big or too small, the module will switch to one of the unit in parenthesis
-         * (the same unit is used for every interval). If this behaviour is not desired, the `lockUnits`
+         * (the same unit is used for every interval). If this behavior is not desired, the `lockUnits`
          * parameter will force the declared unit (or map unit if no unit is declared) to be used for the
          * scalebar.</p>
          */

@@ -131,7 +131,7 @@ public class MapPrinterServlet extends BaseMapServlet {
      * <li>waiting</li>
      * <li>running</li>
      * <li>finished</li>
-     * <li>cancelled</li>
+     * <li>canceled</li>
      * <li>error</li>
      * </ul>
      * Part of the {@link #getStatus(String, javax.servlet.http.HttpServletRequest,
@@ -751,7 +751,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         try {
             printer = this.printerFactory.create(appId);
             if (!checkReferer(request, printer)) {
-                error(capabilitiesResponse, "Invalid referer", HttpStatus.FORBIDDEN);
+                error(capabilitiesResponse, "Invalid referrer", HttpStatus.FORBIDDEN);
                 return;
             }
         } catch (NoSuchAppException e) {
@@ -825,7 +825,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         try {
             final MapPrinter mapPrinter = this.printerFactory.create(appId);
             if (!checkReferer(request, mapPrinter)) {
-                error(getExampleResponse, "Invalid referer", HttpStatus.FORBIDDEN);
+                error(getExampleResponse, "Invalid referrer", HttpStatus.FORBIDDEN);
                 return;
             }
             final String requestDataPrefix = "requestData";
@@ -1095,15 +1095,15 @@ public class MapPrinterServlet extends BaseMapServlet {
         if (allowedReferers == null) {
             return true;
         }
-        String referer = request.getHeader("referer");
-        if (referer == null) {
-            referer = "http://localhost/";
+        String referrer = request.getHeader("referrer");
+        if (referrer == null) {
+            referrer = "http://localhost/";
         }
         try {
-            return allowedReferers.matches(new URI(referer),
+            return allowedReferers.matches(new URI(referrer),
                                            HttpMethod.resolve(request.getMethod()));
         } catch (SocketException | UnknownHostException | URISyntaxException | MalformedURLException e) {
-            LOGGER.error("Referer {} invalid", referer, e);
+            LOGGER.error("Referrer {} invalid", referrer, e);
             return false;
         }
     }

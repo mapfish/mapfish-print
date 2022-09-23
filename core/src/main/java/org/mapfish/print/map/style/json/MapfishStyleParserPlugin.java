@@ -312,7 +312,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * <li><strong>haloRadius</strong> (ECQL) - (text) the radius of the halo around the text</li>
  * <li>
  * <strong>label</strong> (ECQL) - (text) the expression used to create the label e.  See the
- * section on labelling for more details
+ * section on labeling for more details
  * </li>
  * <li>
  * <strong>labelAlign</strong> - (Point Placement) the indicator of how to align the text with
@@ -353,9 +353,9 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * line the label should be drawn.</li>
  * </ul>
  *
- * <h2 id="labels">Labelling: <a class="headerlink" href="#labels">¶</a></h2>
+ * <h2 id="labels">Labeling: <a class="headerlink" href="#labels">¶</a></h2>
  * <p>
- * Labelling in this style format is done by defining a text symbolizer ("type": "text").  All text
+ * Labeling in this style format is done by defining a text symbolizer ("type": "text").  All text
  * symbolizers consist of:
  * </p>
  * <ul>
@@ -448,7 +448,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
  * geometry to allow drawing the label. Works only on polygons.
  * </li>
  * <li><strong>group</strong> (false): If true, geometries with the same labels are grouped and considered
- * a single entity to be labelled. This allows to avoid or control repeated labels.
+ * a single entity to be labeled. This allows to avoid or control repeated labels.
  * </li>
  * <li><strong>maxDisplacement</strong> (400): The distance, in pixel, a label can be displaced from its
  * natural position in an attempt to find a position that does not conflict with already drawn labels.

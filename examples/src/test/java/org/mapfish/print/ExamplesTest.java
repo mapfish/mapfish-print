@@ -276,7 +276,7 @@ public class ExamplesTest {
                         byte[] data = requestData.getBytes(StandardCharsets.UTF_8);
                         http.setFixedLengthStreamingMode(data.length);
                         http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                        connection.setRequestProperty("Referer", "http://print:8080");
+                        connection.setRequestProperty("Referrer", "http://print:8080");
                         connection.setRequestProperty("Cache-Control", "max-age=0");
                         http.connect();
                         try (OutputStream os = http.getOutputStream()) {

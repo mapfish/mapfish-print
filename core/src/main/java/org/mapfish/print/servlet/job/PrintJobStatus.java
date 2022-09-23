@@ -104,7 +104,7 @@ public interface PrintJobStatus {
          */
         RUNNING,
         /**
-         * The job is still running, but needs to be cancelled.
+         * The job is still running, but needs to be canceled.
          */
         CANCELING,
         /**
@@ -112,9 +112,9 @@ public interface PrintJobStatus {
          */
         FINISHED,
         /**
-         * The job was cancelled.
+         * The job was canceled.
          */
-        CANCELLED,
+        CANCELED,
         /**
          * There was an error executing the job.
          */

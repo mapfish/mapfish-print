@@ -60,7 +60,7 @@ public class HibernateJobQueue implements JobQueue {
 
     @Override
     public final long getLastPrintCount() {
-        return this.dao.count(PrintJobStatus.Status.FINISHED, PrintJobStatus.Status.CANCELLED,
+        return this.dao.count(PrintJobStatus.Status.FINISHED, PrintJobStatus.Status.CANCELED,
                               PrintJobStatus.Status.ERROR);
     }
 
@@ -121,7 +121,7 @@ public class HibernateJobQueue implements JobQueue {
             statusRecord.setStatus(PrintJobStatus.Status.CANCELING);
         } else {
             statusRecord.setCompletionTime(System.currentTimeMillis());
-            statusRecord.setStatus(PrintJobStatus.Status.CANCELLED);
+            statusRecord.setStatus(PrintJobStatus.Status.CANCELED);
         }
         statusRecord.setError(message);
         this.dao.save(statusRecord);
@@ -159,7 +159,7 @@ public class HibernateJobQueue implements JobQueue {
             throw new NoSuchReferenceException(referenceId);
         }
         statusRecord.setStatus(
-                statusRecord.getStatus() == PrintJobStatus.Status.CANCELING ? PrintJobStatus.Status.CANCELLED
+                statusRecord.getStatus() == PrintJobStatus.Status.CANCELING ? PrintJobStatus.Status.CANCELED
                         : PrintJobStatus.Status.FINISHED);
         statusRecord.setResult(result);
         statusRecord.setCompletionTime(System.currentTimeMillis());
