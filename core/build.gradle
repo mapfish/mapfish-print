@@ -190,10 +190,10 @@ dependencies {
 
     compile(
             'org.apache.xmlgraphics:xmlgraphics-commons:2.7',
-            "org.apache.xmlgraphics:batik-transcoder:1.14",
-            "org.apache.xmlgraphics:batik-bridge:1.14",
-            "org.apache.xmlgraphics:batik-codec:1.14",
-            "org.apache.xmlgraphics:batik-svg-dom:1.14"
+            "org.apache.xmlgraphics:batik-transcoder:1.15",
+            "org.apache.xmlgraphics:batik-bridge:1.15",
+            "org.apache.xmlgraphics:batik-codec:1.15",
+            "org.apache.xmlgraphics:batik-svg-dom:1.15"
     )
 
     providedCompile('javax.servlet:javax.servlet-api:4.0.1')
