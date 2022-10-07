@@ -1,13 +1,5 @@
 # Changelog
 
-## [Unreleased](https://github.com/mapfish/mapfish-print/tree/HEAD)
-
-[Full Changelog](https://github.com/mapfish/mapfish-print/compare/3.29.4...HEAD)
-
-**Closed issues:**
-
-- Artifact publishing to central repository [\#2390](https://github.com/mapfish/mapfish-print/issues/2390)
-
 ## [3.29.4](https://github.com/mapfish/mapfish-print/tree/3.29.4) (2022-05-18)
 
 [Full Changelog](https://github.com/mapfish/mapfish-print/compare/3.29.3...3.29.4)
@@ -267,7 +259,7 @@
 **Merged pull requests:**
 
 - Be able to run an example that use GeoServer [\#1695](https://github.com/mapfish/mapfish-print/pull/1695) ([sbrunner](https://github.com/sbrunner))
-- AbstractSingleImageLayer: Correct logging. [\#1687](https://github.com/mapfish/mapfish-print/pull/1687) ([8b70c9d79fdb0fbe4affb952159c3776ee9f563](https://github.com/8b70c9d79fdb0fbe4affb952159c3776ee9f563))
+- AbstractSingleImageLayer: Correct logging. [\#1687](https://github.com/mapfish/mapfish-print/pull/1687) ([ghost](https://github.com/ghost))
 - Upgrade GeoTools to 24.2 [\#1683](https://github.com/mapfish/mapfish-print/pull/1683) ([sbrunner](https://github.com/sbrunner))
 - Try to fix the manifest [\#1679](https://github.com/mapfish/mapfish-print/pull/1679) ([sbrunner](https://github.com/sbrunner))
 - Live rebuild [\#1647](https://github.com/mapfish/mapfish-print/pull/1647) ([sbrunner](https://github.com/sbrunner))
