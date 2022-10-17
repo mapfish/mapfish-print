@@ -31,10 +31,11 @@ jobs:
           ci-gpg-private-key: ${{secrets.CI_GPG_PRIVATE_KEY}}
           github-gopass-ci-token: ${{secrets.GOPASS_CI_GITHUB_TOKEN}}
 
-      - run: echo "${HOME}/.local/bin" >> ${GITHUB_PATH}
-      - run: python3 -m pip install --user --pre c2cciutils[audit]
+      - run: python3 -m venv ~/.venv
+      - run: ~/.venv/bin/pip install --pre c2cciutils[audit]
+      - run: python3 -m pip install --pre c2cciutils[audit]
 
       - name: Audit
-        run: c2cciutils-audit --branch=${{ matrix.branch }}
+        run: ~/.venv/bin/c2cciutils-audit --branch=${{ matrix.branch }}
 
       - run: ./gradlew dependencyCheckAnalyze
