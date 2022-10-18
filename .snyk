@@ -2,20 +2,24 @@
 version: v1.25.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
-    SNYK-JAVA-COMPUPPYCRAWLTOOLS-543266:
-        - '*':
-              reason: Used in check style
-              created: 2022-10-06T13:13:54.748Z
-    SNYK-JAVA-COMPUPPYCRAWLTOOLS-173770:
-        - '*':
-              reason: Used in check style
-              created: 2022-10-06T13:13:54.748Z
-    SNYK-JAVA-COMGOOGLEGUAVA-32236:
-        - '*':
-              reason: Used in check style
-              created: 2022-10-06T13:13:54.748Z
-    SNYK-JAVA-COMMONSBEANUTILS-460111:
-        - '*':
-              reason: Used in check style
-              created: 2022-10-06T13:13:54.748Z
+  SNYK-JAVA-COMPUPPYCRAWLTOOLS-543266:
+    - '*':
+        reason: Used in check style
+        created: 2022-10-06T13:13:54.748Z
+  SNYK-JAVA-COMPUPPYCRAWLTOOLS-173770:
+    - '*':
+        reason: Used in check style
+        created: 2022-10-06T13:13:54.748Z
+  SNYK-JAVA-COMGOOGLEGUAVA-32236:
+    - '*':
+        reason: Used in check style
+        created: 2022-10-06T13:13:54.748Z
+  SNYK-JAVA-COMMONSBEANUTILS-460111:
+    - '*':
+        reason: Used in check style
+        created: 2022-10-06T13:13:54.748Z
+  SNYK-JAVA-ORGAPACHECOMMONS-3043138:
+    - '*':
+        reason: Used in check style
+        created: 2022-10-18T05:49:44.892Z
 patch: {}
