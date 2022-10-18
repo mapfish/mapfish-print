@@ -14,7 +14,7 @@
   regexManagers: [
     {
       fileMatch: ['^build.gradle$', '.*/build.gradle$'],
-      matchStrings: ['toolVersion = "(?<currentValue>.*)" # (?<depName>.*)'],
+      matchStrings: ['toolVersion = "(?<currentValue>.*)" // (?<depName>.*)'],
       datasourceTemplate: 'maven',
     },
   ],
