@@ -51,7 +51,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     jar.dependsOn(checkstyleMain)
 
     checkstyle {
-        toolVersion = "7.8.2"
+        toolVersion = "7.8.2" // com.puppycrawl.tools:checkstyle
         configFile = file("$rootProject.rootDir/checkstyle_checks.xml")
         configProperties = ['basedir': project.rootDir.path]
         ignoreFailures = true
@@ -60,7 +60,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     checkstyleTest.enabled = false
 
     spotbugs {
-        toolVersion = "4.6.0"
+        toolVersion = "4.7.3" // com.github.spotbugs:spotbugs-annotations
         ignoreFailures = true
         reportsDir = file("$project.buildDir/reports/spotbugsReports")
         effort = "max"

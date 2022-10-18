@@ -10,6 +10,13 @@
   lockFileMaintenance: { enabled: true, automerge: true },
   semanticCommits: 'disabled',
   baseBranches: ['master', '3.27', '3.28', '3.29'],
+  // Upgrade the tool versions
+  regexManagers: [
+    {
+      fileMatch: ['^build.gradle$', '.*/build.gradle$'],
+      matchStrings: ['toolVersion = "(?<currentValue>.*)" # (?<depName>.*)'],
+    },
+  ],
   packageRules: [
     /** Docker images versioning */
     {
