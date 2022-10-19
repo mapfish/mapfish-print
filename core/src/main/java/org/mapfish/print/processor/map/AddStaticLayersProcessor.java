@@ -11,6 +11,7 @@ import org.mapfish.print.wrapper.PJoinedArray;
 
 import java.util.Arrays;
 import java.util.List;
+
 import javax.annotation.Nullable;
 
 /**

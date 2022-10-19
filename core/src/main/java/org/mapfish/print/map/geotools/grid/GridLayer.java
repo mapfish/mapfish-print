@@ -1,6 +1,7 @@
 package org.mapfish.print.map.geotools.grid;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.geotools.data.FeatureSource;
 import org.geotools.map.Layer;
 import org.mapfish.print.Constants;
@@ -25,6 +26,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+
 import javax.annotation.Nonnull;
 
 /**

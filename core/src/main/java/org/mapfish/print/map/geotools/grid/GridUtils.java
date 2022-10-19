@@ -15,9 +15,11 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+
 import si.uom.NonSI;
 
 import java.awt.geom.AffineTransform;
+
 import javax.annotation.Nonnull;
 
 import static org.mapfish.print.map.geotools.grid.GridLabel.Side.BOTTOM;

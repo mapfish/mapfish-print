@@ -2,6 +2,7 @@ package org.mapfish.print.servlet.fileloader;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
@@ -14,6 +15,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.annotation.PostConstruct;
 
 /**

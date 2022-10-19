@@ -3,6 +3,7 @@ package org.mapfish.print.map.tiled;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -25,6 +26,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.RecursiveTask;
+
 import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 
@@ -102,7 +104,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                     if (tile.getImage() != null) {
                         // crop the image here
                         BufferedImage noBufferTileImage;
-                        if (this.tiledLayer.getTileBufferWidth() > 0 || 
+                        if (this.tiledLayer.getTileBufferWidth() > 0 ||
                                 this.tiledLayer.getTileBufferHeight() > 0) {
                             int noBufferWidth = Math.min(
                                     this.tiledLayer.getTileSize().width,

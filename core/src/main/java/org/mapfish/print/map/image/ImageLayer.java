@@ -1,6 +1,7 @@
 package org.mapfish.print.map.image;
 
 import com.codahale.metrics.MetricRegistry;
+
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -39,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
+
 import javax.annotation.Nonnull;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;

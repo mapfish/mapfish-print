@@ -1,6 +1,7 @@
 package org.mapfish.print.processor;
 
 import com.google.common.collect.BiMap;
+
 import org.apache.commons.lang3.StringUtils;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.output.Values;
@@ -12,6 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 

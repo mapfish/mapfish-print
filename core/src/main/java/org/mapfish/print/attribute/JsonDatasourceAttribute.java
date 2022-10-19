@@ -2,6 +2,7 @@ package org.mapfish.print.attribute;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JsonDataSource;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -12,6 +13,7 @@ import org.mapfish.print.wrapper.PObject;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
 import javax.annotation.Nonnull;
 
 /**

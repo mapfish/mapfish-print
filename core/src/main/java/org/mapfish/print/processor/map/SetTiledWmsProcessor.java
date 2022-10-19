@@ -2,6 +2,7 @@ package org.mapfish.print.processor.map;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.math.IntMath;
+
 import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Configuration;

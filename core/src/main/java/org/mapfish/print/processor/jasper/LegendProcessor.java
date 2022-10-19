@@ -2,8 +2,10 @@ package org.mapfish.print.processor.jasper;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
+
 import org.mapfish.print.Constants;
 import org.mapfish.print.ImageUtils;
 import org.mapfish.print.StatsUtils;
@@ -39,6 +41,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
+
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 

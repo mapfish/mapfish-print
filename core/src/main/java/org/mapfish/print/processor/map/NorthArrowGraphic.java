@@ -1,6 +1,7 @@
 package org.mapfish.print.processor.map;
 
 import com.google.common.io.Closer;
+
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.dom.util.DOMUtilities;
@@ -39,6 +40,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+
 import javax.imageio.ImageIO;
 
 /**

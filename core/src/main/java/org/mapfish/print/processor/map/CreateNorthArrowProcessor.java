@@ -1,6 +1,7 @@
 package org.mapfish.print.processor.map;
 
 import net.sf.jasperreports.engine.JRException;
+
 import org.mapfish.print.attribute.NorthArrowAttribute;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.config.Configuration;

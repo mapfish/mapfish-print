@@ -1,10 +1,12 @@
 package org.mapfish.print.processor;
 
 import com.google.common.collect.BiMap;
+
 import org.mapfish.print.config.ConfigurationObject;
 
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
+
 import javax.annotation.Nullable;
 
 /**

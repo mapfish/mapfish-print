@@ -1,6 +1,7 @@
 package org.mapfish.print.config;
 
 import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 

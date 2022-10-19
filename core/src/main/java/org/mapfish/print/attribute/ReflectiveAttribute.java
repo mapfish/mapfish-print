@@ -1,6 +1,7 @@
 package org.mapfish.print.attribute;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +30,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
 import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 

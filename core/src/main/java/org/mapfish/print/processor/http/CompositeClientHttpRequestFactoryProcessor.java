@@ -8,6 +8,7 @@ import org.mapfish.print.processor.ProcessorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.annotation.Nullable;
 
 /**

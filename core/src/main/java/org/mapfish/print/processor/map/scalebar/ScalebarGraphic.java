@@ -1,6 +1,7 @@
 package org.mapfish.print.processor.map.scalebar;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.geotools.referencing.GeodeticCalculator;
 import org.mapfish.print.ImageUtils;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.parsers.ParserConfigurationException;
 
 import static java.awt.image.BufferedImage.TYPE_3BYTE_BGR;

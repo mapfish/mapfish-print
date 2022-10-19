@@ -2,6 +2,7 @@ package org.mapfish.print.output;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+
 import org.mapfish.print.PrintException;
 import org.mapfish.print.config.Template;
 import org.slf4j.Logger;

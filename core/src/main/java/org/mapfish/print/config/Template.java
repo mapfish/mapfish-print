@@ -1,6 +1,7 @@
 package org.mapfish.print.config;
 
 import com.google.common.collect.Sets;
+
 import org.geotools.styling.Style;
 import org.json.JSONException;
 import org.json.JSONWriter;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
 import javax.annotation.Nonnull;
 
 import static org.mapfish.print.OptionalUtils.or;

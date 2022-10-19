@@ -11,6 +11,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -94,7 +95,7 @@ public abstract class TileCacheInformation {
      * Obtain the image tile size of the tiles that will be loaded from the server.
      */
     public abstract Dimension getTileSize();
-    
+
     /**
      * Obtain the buffer width for meta tiling.
      */
