@@ -3,13 +3,16 @@ package org.mapfish.print.processor;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import net.sf.jasperreports.engine.PrintPageFormat;
+
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.mail.internet.InternetAddress;
 
 /**

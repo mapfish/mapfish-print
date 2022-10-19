@@ -2,6 +2,7 @@ package org.mapfish.print.http;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+
 import org.apache.commons.io.IOUtils;
 import org.mapfish.print.StatsUtils;
 import org.mapfish.print.processor.Processor;
@@ -24,6 +25,7 @@ import java.net.URI;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
+
 import javax.annotation.Nullable;
 
 /**

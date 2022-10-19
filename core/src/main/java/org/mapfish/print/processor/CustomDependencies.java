@@ -1,6 +1,7 @@
 package org.mapfish.print.processor;
 
 import java.util.Collection;
+
 import javax.annotation.Nonnull;
 
 /**

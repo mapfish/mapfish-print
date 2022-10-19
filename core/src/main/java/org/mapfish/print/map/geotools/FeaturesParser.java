@@ -1,6 +1,7 @@
 package org.mapfish.print.map.geotools;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.apache.commons.io.IOUtils;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -37,6 +38,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
 import javax.annotation.Nonnull;
 
 /**

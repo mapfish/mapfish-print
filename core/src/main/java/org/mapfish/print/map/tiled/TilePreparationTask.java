@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+
 import javax.annotation.Nonnull;
 
 
@@ -83,12 +84,12 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
                 int tileBufferHeight = this.tiledLayer.getTileBufferHeight();
 
                 Dimension tileSizeOnScreenWithBuffer = new Dimension(
-                        tileSizeOnScreen.width + 2 * tileBufferWidth, 
+                        tileSizeOnScreen.width + 2 * tileBufferWidth,
                         tileSizeOnScreen.height + 2 * tileBufferHeight);
 
                 final double resolution = this.tiledLayer.getResolution();
                 Coordinate tileSizeInWorld = new Coordinate(
-                        tileSizeOnScreen.width * resolution, 
+                        tileSizeOnScreen.width * resolution,
                         tileSizeOnScreen.height * resolution);
                 Coordinate bufferSizeInWorld = new Coordinate(
                         tileBufferWidth * resolution, tileBufferHeight * resolution);

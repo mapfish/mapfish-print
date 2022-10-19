@@ -2,6 +2,7 @@ package org.mapfish.print.map.tiled.osm;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+
 import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.util.Assert;

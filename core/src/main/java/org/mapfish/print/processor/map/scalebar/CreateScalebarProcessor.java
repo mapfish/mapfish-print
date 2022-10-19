@@ -1,6 +1,7 @@
 package org.mapfish.print.processor.map.scalebar;
 
 import net.sf.jasperreports.engine.JRException;
+
 import org.mapfish.print.attribute.ScalebarAttribute;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+
 import javax.xml.parsers.ParserConfigurationException;
 
 /**

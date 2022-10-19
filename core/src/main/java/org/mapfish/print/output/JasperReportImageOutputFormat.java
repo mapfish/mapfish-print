@@ -3,6 +3,7 @@ package org.mapfish.print.output;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
+
 import org.mapfish.print.ImageUtils;
 
 import java.awt.BasicStroke;

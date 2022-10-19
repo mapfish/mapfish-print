@@ -2,6 +2,7 @@ package org.mapfish.print.processor;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.BiMap;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.attribute.Attribute;

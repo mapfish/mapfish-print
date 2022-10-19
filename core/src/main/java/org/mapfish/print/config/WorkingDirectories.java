@@ -2,6 +2,7 @@ package org.mapfish.print.config;
 
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Date;
 import java.util.Objects;
+
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 

@@ -9,6 +9,7 @@ import org.mapfish.print.servlet.job.PrintJobStatus;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

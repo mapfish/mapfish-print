@@ -1,6 +1,7 @@
 package org.mapfish.print.parser;
 
 import com.google.common.collect.Collections2;
+
 import org.locationtech.jts.util.Assert;
 
 import java.lang.reflect.Field;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.Nonnull;
 
 /**

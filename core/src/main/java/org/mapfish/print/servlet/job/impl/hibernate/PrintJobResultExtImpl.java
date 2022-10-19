@@ -3,6 +3,7 @@ package org.mapfish.print.servlet.job.impl.hibernate;
 import org.mapfish.print.servlet.job.impl.PrintJobResultImpl;
 
 import java.net.URI;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 

@@ -1,6 +1,7 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
 import com.codahale.metrics.MetricRegistry;
+
 import org.mapfish.print.servlet.job.JobQueue;
 import org.mapfish.print.servlet.job.NoSuchReferenceException;
 import org.mapfish.print.servlet.job.PrintJobEntry;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 

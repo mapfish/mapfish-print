@@ -2,6 +2,7 @@ package org.mapfish.print.servlet.job;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+
 import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.MapPrinter;
@@ -34,6 +35,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.Authenticator;

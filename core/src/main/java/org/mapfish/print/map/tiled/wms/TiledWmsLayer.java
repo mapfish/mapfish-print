@@ -1,6 +1,7 @@
 package org.mapfish.print.map.tiled.wms;
 
 import com.codahale.metrics.MetricRegistry;
+
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapBounds;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ForkJoinPool;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -59,7 +61,7 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
      * @param tileBufferWidth The width of the the buffer tile for meta tile
      * @param tileBufferHeight The height of the the buffer tile for meta tile
      */
-    public TiledWmsLayer(final WmsLayer wmsLayer, final Dimension tileSize, final int tileBufferWidth, 
+    public TiledWmsLayer(final WmsLayer wmsLayer, final Dimension tileSize, final int tileBufferWidth,
             final int tileBufferHeight) {
         super(wmsLayer, wmsLayer.getStyleSupplier(), wmsLayer.getRegistry(), wmsLayer.getConfiguration());
         this.param = new TiledWmsLayerParam(
@@ -169,12 +171,12 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
         public int getTileBufferHeight() {
             return TiledWmsLayer.this.param.getTileBufferHeight();
         }
-        
+
         @Override
         public int getTileBufferWidth() {
             return TiledWmsLayer.this.param.getTileBufferWidth();
         }
-        
+
         @Nonnull
         @Override
         protected ReferencedEnvelope getTileCacheBounds() {

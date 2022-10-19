@@ -20,6 +20,7 @@ import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.type.StretchTypeEnum;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
+
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.mapfish.print.Constants;

@@ -6,6 +6,7 @@ import net.sf.jasperreports.engine.export.JRGraphics2DExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleGraphics2DExporterOutput;
 import net.sf.jasperreports.export.SimpleGraphics2DReportConfiguration;
+
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
@@ -78,7 +80,9 @@ public final class ImageSimilarity {
         }
         if (this.expectedImage != null) {
             this.diffImage = new BufferedImage(
-                    this.expectedImage.getWidth(), this.expectedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+                    this.expectedImage.getWidth(),
+                    this.expectedImage.getHeight(),
+                    BufferedImage.TYPE_INT_RGB);
         } else {
             this.diffImage = null;
         }

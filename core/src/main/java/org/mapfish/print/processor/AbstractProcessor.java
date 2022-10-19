@@ -2,6 +2,7 @@ package org.mapfish.print.processor;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.parser.ParserUtils;
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.function.Supplier;
+
 import javax.annotation.Nonnull;
 
 /**

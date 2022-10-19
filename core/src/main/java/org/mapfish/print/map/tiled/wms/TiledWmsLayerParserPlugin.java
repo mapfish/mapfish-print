@@ -1,6 +1,7 @@
 package org.mapfish.print.map.tiled.wms;
 
 import com.codahale.metrics.MetricRegistry;
+
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
+
 import javax.annotation.Nonnull;
 
 /**

@@ -11,6 +11,7 @@ import org.mapfish.print.map.geotools.StyleSupplier;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.ForkJoinPool;
+
 import javax.annotation.Nonnull;
 
 

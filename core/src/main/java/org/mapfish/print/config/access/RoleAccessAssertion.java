@@ -1,6 +1,7 @@
 package org.mapfish.print.config.access;
 
 import com.google.common.collect.Collections2;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,6 +18,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.annotation.Nullable;
 
 /**

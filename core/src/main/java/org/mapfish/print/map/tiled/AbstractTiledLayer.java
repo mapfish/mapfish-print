@@ -1,6 +1,7 @@
 package org.mapfish.print.map.tiled;
 
 import com.codahale.metrics.MetricRegistry;
+
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
@@ -18,6 +19,7 @@ import java.awt.Rectangle;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 

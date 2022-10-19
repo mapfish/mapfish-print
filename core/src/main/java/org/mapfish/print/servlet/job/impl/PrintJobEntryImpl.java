@@ -12,6 +12,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 

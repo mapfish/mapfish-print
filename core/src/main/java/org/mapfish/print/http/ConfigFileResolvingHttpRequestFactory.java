@@ -3,7 +3,6 @@ package org.mapfish.print.http;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.Processor;
-
 import org.mapfish.print.url.data.DataUrlConnection;
 import org.mapfish.print.url.data.Handler;
 import org.slf4j.Logger;
@@ -25,6 +24,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CopyOnWriteArrayList;
+
 import javax.annotation.Nonnull;
 
 

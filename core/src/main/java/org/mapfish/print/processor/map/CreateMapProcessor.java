@@ -6,7 +6,9 @@ import com.google.common.annotations.VisibleForTesting;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfWriter;
+
 import net.sf.jasperreports.engine.JRException;
+
 import org.apache.batik.svggen.DefaultStyleHandler;
 import org.apache.batik.svggen.SVGGeneratorContext;
 import org.apache.batik.svggen.SVGGraphics2D;
@@ -79,6 +81,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ForkJoinPool;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.Resource;

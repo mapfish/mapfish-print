@@ -8,6 +8,7 @@ import net.sf.jasperreports.repo.PersistenceService;
 import net.sf.jasperreports.repo.PersistenceUtil;
 import net.sf.jasperreports.repo.Resource;
 import net.sf.jasperreports.repo.StreamRepositoryService;
+
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import javax.annotation.Nonnull;
 
 /**

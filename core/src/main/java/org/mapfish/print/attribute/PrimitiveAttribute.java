@@ -11,6 +11,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.mapfish.print.wrapper.multi.PMultiObject;
 
 import java.util.List;
+
 import javax.annotation.Nonnull;
 
 /**
