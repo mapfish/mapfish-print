@@ -210,6 +210,7 @@ jobs:
           repository: mapfish/mapfish-print-doc
           token: ${{ secrets.GOPASS_CI_GITHUB_TOKEN }}
           path: mapfish-print-doc
+        if: github.ref == 'refs/heads/master' && env.HAS_SECRETS == 'HAS_SECRETS'
       - name: Extract the documentation
         run: |
           docker run --rm --detach --name=doc mapfish_print_builder
@@ -220,6 +221,7 @@ jobs:
           docker cp doc:/src/docs/build/site/. .
           git add -A .
           git commit -m 'Update docs'
+        if: github.ref == 'refs/heads/master' && env.HAS_SECRETS == 'HAS_SECRETS'
       - name: Publish the documentation
         run: |
           cd ${GITHUB_WORKSPACE}/mapfish-print-doc
