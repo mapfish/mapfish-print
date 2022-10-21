@@ -1,8 +1,8 @@
-name: Continuous integration
+name: Delete old workflow runs
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 * * * *'
 
 env:
   HAS_SECRETS: ${{ secrets.HAS_SECRETS }}
