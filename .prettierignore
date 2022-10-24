@@ -7,3 +7,4 @@ examples/geoserver-data/user_projections/epsg.properties
 core/src/main/resources/mapfish-spring.properties
 Dockerfile
 examples/src/test/resources/examples/oereb/Report*.properties
+gradlew
