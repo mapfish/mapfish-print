@@ -2,7 +2,7 @@ name: Delete old workflow runs
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '0 0 * * *'
 
 env:
   HAS_SECRETS: ${{ secrets.HAS_SECRETS }}
@@ -11,15 +11,13 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     timeout-minutes: 25
-    name: Continuous integration
-    if: "!startsWith(github.event.head_commit.message, '[skip ci] ')"
+    name: Delete old workflow runs
 
     steps:
       - name: Delete old workflow runs
         uses: MajorScruffy/delete-old-workflow-runs@v0.3.0
         with:
           repository: mapfish/mapfish-print # replace this with your own repository
-          older-than-seconds: 43200000
-          #workflow: .github/workflows/main.yml
+          older-than-seconds: 43200000 # 500 days
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
