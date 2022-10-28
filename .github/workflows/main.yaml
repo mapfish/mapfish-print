@@ -68,7 +68,7 @@ jobs:
       - run: sed --in-place 's/version=.*/version=0.${{ steps.date.outputs.date }}.SNAPSHOT/g' gradle.properties
         if: github.ref == 'refs/heads/master'
 
-      - run: echo "enablePublishing=true" > gradle.properties
+      - run: sed --in-place 's/enablePublishing=false/enablePublishing=true/g' gradle.properties
         if: env.HAS_SECRETS == 'HAS_SECRETS'
       - run: git diff
 
