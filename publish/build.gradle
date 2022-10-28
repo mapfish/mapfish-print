@@ -4,7 +4,7 @@ plugins {
 }
 
 def coreProject = tasks.getByPath(':core:jar').project
-if (enablePublishing.toBoolean()) {
+if (enablePublishing.toBoolean() || System.getenv("JITPACK") == "true") {
     publishing {
         publications {
             lib(MavenPublication) {
@@ -42,26 +42,30 @@ if (enablePublishing.toBoolean()) {
             }
         }
 
-        repositories {
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/mapfish/mapfish-print")
-                credentials(HttpHeaderCredentials) {
-                    name = "authorization"
-                    value = "Bearer " + System.getenv("GITHUB_TOKEN")
-                }
-                authentication {
-                    header(HttpHeaderAuthentication)
+        if (System.getenv("JITPACK") != "true") {
+            repositories {
+                maven {
+                    name = "GitHubPackages"
+                    url = uri("https://maven.pkg.github.com/mapfish/mapfish-print")
+                    credentials(HttpHeaderCredentials) {
+                        name = "authorization"
+                        value = "Bearer " + System.getenv("GITHUB_TOKEN")
+                    }
+                    authentication {
+                        header(HttpHeaderAuthentication)
+                    }
                 }
             }
         }
     }
 
-    signing {
-        sign publishing.publications.lib
-        sign publishing.publications.servlet
-        sign publishing.publications.standalone
-        useInMemoryPgpKeys(new File('CI.asc').text, "")
+    if (System.getenv("JITPACK") != "true") {
+        signing {
+            sign publishing.publications.lib
+            sign publishing.publications.servlet
+            sign publishing.publications.standalone
+            useInMemoryPgpKeys(new File('CI.asc').text, "")
+        }
     }
 }
 

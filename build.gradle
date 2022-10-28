@@ -22,8 +22,8 @@ wrapper {
 }
 
 allprojects {
-    group = 'org.mapfish.print'
-    version = '1.0.0'
+    group = group
+    version = version
 
     apply plugin: 'org.owasp.dependencycheck'
     dependencyCheck {
