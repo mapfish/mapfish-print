@@ -144,14 +144,14 @@ dependencies {
             'com.readytalk:metrics3-statsd:4.2.0'
     )
     geotools(
-            "org.geotools:gt-epsg-hsql:27.1",
-            "org.geotools:gt-render:27.1",
-            "org.geotools:gt-geojson:27.1",
-            "org.geotools:gt-geotiff:27.1",
-            "org.geotools:gt-wms:27.1",
-            "org.geotools.xsd:gt-xsd-gml3:27.1",
-            "org.geotools:gt-svg:27.1",
-            "org.geotools:gt-cql:27.1"
+            "org.geotools:gt-epsg-hsql:27.2",
+            "org.geotools:gt-render:27.2",
+            "org.geotools:gt-geojson:27.2",
+            "org.geotools:gt-geotiff:27.2",
+            "org.geotools:gt-wms:27.2",
+            "org.geotools.xsd:gt-xsd-gml3:27.2",
+            "org.geotools:gt-svg:27.2",
+            "org.geotools:gt-cql:27.2"
     )
     jasper(
             "net.sf.jasperreports:jasperreports:6.20.0",
