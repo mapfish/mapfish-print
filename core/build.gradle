@@ -8,7 +8,7 @@ defaultTasks 'build'
 
 repositories {
     mavenCentral()
-    jcenter()
+    maven { url "https://repo.spring.io/plugins-release/" }
     maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
     maven { url "https://repo.osgeo.org/repository/release/" }
 }
