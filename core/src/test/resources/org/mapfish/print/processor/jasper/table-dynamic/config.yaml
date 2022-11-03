@@ -19,5 +19,5 @@ templates:
         headerStyle: header_style_2
         lastHeaderStyle: header_style_3
         dynamic: true
-        maxColumns: 4
+        maxColumns: 5
         excludeColumns: ['exclude']
