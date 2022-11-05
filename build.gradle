@@ -51,7 +51,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     jar.dependsOn(checkstyleMain)
 
     checkstyle {
-        toolVersion = "10.3.4" // com.puppycrawl.tools:checkstyle
+        toolVersion = "10.4" // com.puppycrawl.tools:checkstyle
         configFile = file("$rootProject.rootDir/checkstyle_checks.xml")
         configProperties = ['basedir': project.rootDir.path]
         ignoreFailures = true
