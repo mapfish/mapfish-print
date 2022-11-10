@@ -2,11 +2,10 @@ name: Auto reviews updates
 
 on:
   pull_request:
-  workflow_run:
-    workflows:
-      - None
     types:
-      - completed
+      - opened
+      - reopened
+      - synchronize
 
 jobs:
   auto-merge:
@@ -16,7 +15,7 @@ jobs:
 
     steps:
       - name: Auto reviews updates
-        uses: golfzaptw/action-auto-reviews-from-branches@1.2.3
+        uses: golfzaptw/action-auto-reviews-from-branches@master
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AUTHOR: renovate[bot]
