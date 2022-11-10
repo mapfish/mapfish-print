@@ -6,7 +6,7 @@
     <bean id="jobQueue" class="org.mapfish.print.servlet.job.impl.hibernate.HibernateJobQueue"/>
     <bean id="mfDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="driverClass" value="org.postgresql.Driver"/>
-        <property name="jdbcUrl" value="jdbc:postgresql://${db.host}/${db.name}"/>
+        <property name="jdbcUrl" value="jdbc:postgresql://${db.host}:${db.port}/${db.name}"/>
         <property name="user" value="${db.username}"/>
         <property name="password" value="${db.password}"/>
         <property name="minPoolSize" value="1"/>
