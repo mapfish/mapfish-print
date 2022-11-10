@@ -1,13 +1,5 @@
 checks:
-  required_workflows:
-    audit.yaml:
-      steps: []
-    rebuild.yaml:
-      steps: []
-    rebuild-3-23.yaml:
-      steps: []
-    rebuild-3-20-3-22.yaml:
-      steps: []
+  required_workflows: False
   versions: false
   codespell:
     ignore_re:
