@@ -40,6 +40,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -292,6 +293,28 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                 row.put(columnName, rowValue);
             }
             table.add(row);
+        }
+
+        // check if there are columns with mixed int and bigdecimal values
+        HashSet<String> toCorrect = new HashSet<>();
+        for (Map.Entry<String, Class<?>> entry : columns.entrySet()) {
+            if (entry.getValue().equals(Integer.class)) {
+                for (Map<String, ?> row : table) {
+                    if (row.get(entry.getKey()) instanceof BigDecimal) {
+                        toCorrect.add(entry.getKey());
+                    }
+                }
+            }
+        }
+        // convert all int values in columns with mixed values to bigdecimal and change the column type
+        for (String name : toCorrect) {
+            columns.put(name, BigDecimal.class);
+            for (Map row : table) {
+                Object val = row.get(name);
+                if (val instanceof Integer) {
+                    row.put(name, new BigDecimal((Integer) val));
+                }
+            }
         }
 
         String subreport = null;
