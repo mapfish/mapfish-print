@@ -189,7 +189,7 @@ dependencies {
     compile(configurations.jasper)
 
     compile(
-            'org.apache.xmlgraphics:xmlgraphics-commons:2.7',
+            'org.apache.xmlgraphics:xmlgraphics-commons:2.8',
             "org.apache.xmlgraphics:batik-transcoder:1.16",
             "org.apache.xmlgraphics:batik-bridge:1.16",
             "org.apache.xmlgraphics:batik-codec:1.16",
