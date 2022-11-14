@@ -55,10 +55,10 @@ To be able to quickly test modifications in the print you should:
 
 # Run from command line
 
-The following command will run the MapFish printer. The arguments must be supplied to the -PprintArgs="..."
+The following command will run the MapFish printer. The arguments must be supplied to the `-PprintArgs="..."`
 parameter.
 
-To list all the command line options then execute (the current directory is ./core):
+To list all the command line options then execute (the current directory is `./core`):
 
 ```{.sourceCode .}
 > ./gradlew print -PprintArgs="-help"
