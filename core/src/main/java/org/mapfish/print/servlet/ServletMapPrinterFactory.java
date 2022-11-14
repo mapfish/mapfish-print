@@ -242,6 +242,10 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
         if (StringUtils.countMatches(app, ":") > MAX_DEPTH) {
             return null;
         }
+        if (!app.matches("^[a-zA-Z0-9:]+$")) {
+            return null;
+        }
+
         final Optional<File> child;
         try {
             child = this.configFileLoader.toFile(new URI(this.appsRootDirectory + "/" +
