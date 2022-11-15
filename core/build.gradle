@@ -139,6 +139,10 @@ dependencies {
             "org.springframework:spring-jdbc:$springVersion",
             "org.springframework:spring-tx:$springVersion",
             "org.springframework:spring-test:$springVersion",
+            // Indirect dependencies
+            'org.apache.commons:commons-text:1.10.0',
+            'org.hsqldb:hsqldb:2.7.1',
+            'com.fasterxml.jackson.core:jackson-databind:2.13.2.1'
     )
     metrics(
             "io.dropwizard.metrics:metrics-core:$metricsVersion",
