@@ -142,7 +142,7 @@ dependencies {
             // Indirect dependencies
             'org.apache.commons:commons-text:1.10.0',
             'org.hsqldb:hsqldb:2.7.1',
-            'com.fasterxml.jackson.core:jackson-databind:2.13.2.1'
+            'com.fasterxml.jackson.core:jackson-databind:2.13.4.2'
     )
     metrics(
             "io.dropwizard.metrics:metrics-core:$metricsVersion",
