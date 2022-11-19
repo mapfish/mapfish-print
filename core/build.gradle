@@ -117,9 +117,9 @@ configurations {
 
 dependencies {
     compile(
-            "org.springframework:spring-context:5.3.23",
-            "org.springframework:spring-web:5.3.23",
-            "org.springframework:spring-webmvc:5.3.23",
+            "org.springframework:spring-context:5.3.24",
+            "org.springframework:spring-web:5.3.24",
+            "org.springframework:spring-webmvc:5.3.24",
             "org.springframework.security:spring-security-config:5.7.5",
             "org.springframework.security:spring-security-web:5.7.5",
             'com.thetransactioncompany:cors-filter:2.10',
@@ -128,10 +128,10 @@ dependencies {
             'org.postgresql:postgresql:42.5.0',
             'com.vladmihalcea:hibernate-types-52:2.20.0',
             'com.mchange:c3p0:0.9.5.5',
-            "org.springframework:spring-orm:5.3.23",
-            "org.springframework:spring-jdbc:5.3.23",
-            "org.springframework:spring-tx:5.3.23",
-            "org.springframework:spring-test:5.3.23",
+            "org.springframework:spring-orm:5.3.24",
+            "org.springframework:spring-jdbc:5.3.24",
+            "org.springframework:spring-tx:5.3.24",
+            "org.springframework:spring-test:5.3.24",
     )
     metrics(
             "io.dropwizard.metrics:metrics-core:4.2.13",
