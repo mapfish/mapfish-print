@@ -1,9 +1,4 @@
 checks:
-  required_workflows:
-    audit.yaml:
-      steps: []
-    rebuild.yaml:
-      steps: []
   codespell:
     ignore_re:
       - ^examples/src/test/resources/examples/.*
