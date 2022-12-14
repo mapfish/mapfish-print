@@ -37,5 +37,7 @@ jobs:
 
       - name: Audit
         run: ~/.venv/bin/c2cciutils-audit --branch=${{ matrix.branch }}
+        with:
+          GITHUB_TOKEN: ${{ secrets.GOPASS_CI_GITHUB_TOKEN }}
 
       - run: ./gradlew dependencyCheckAnalyze
