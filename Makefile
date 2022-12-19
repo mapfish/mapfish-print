@@ -1,4 +1,5 @@
 GIT_HEAD_ARG = --build-arg=GIT_HEAD=$(shell git rev-parse HEAD)
+export DOCKER_BUILDKIT = 0
 
 .PHONY: build
 build:

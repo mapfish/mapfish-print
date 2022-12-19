@@ -8,7 +8,6 @@ defaultTasks 'build'
 
 repositories {
     mavenCentral()
-    jcenter()
     maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
     maven { url "https://repo.osgeo.org/repository/release/" }
 }
@@ -141,7 +140,6 @@ dependencies {
             "io.dropwizard.metrics:metrics-jvm:4.2.13",
             "io.dropwizard.metrics:metrics-jmx:4.2.13",
             "io.dropwizard.metrics:metrics-logback:4.2.13",
-            'com.readytalk:metrics3-statsd:4.2.0'
     )
     geotools(
             "org.geotools:gt-epsg-hsql:28.0",

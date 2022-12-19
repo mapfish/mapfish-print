@@ -66,7 +66,6 @@
     <bean id="loggingMetricsConfigurator" class="org.mapfish.print.metrics.LoggingMetricsConfigurator" lazy-init="false"/>
     <bean id="jvmMetricsConfigurator" class="org.mapfish.print.metrics.JvmMetricsConfigurator" lazy-init="false"/>
     <bean id="jmxMetricsReporter" class="org.mapfish.print.metrics.JmxMetricsReporter" lazy-init="false"/>
-    <bean id="statsDReporterInit" class="org.mapfish.print.metrics.StatsDReporterInit" lazy-init="false"/>
     <bean id="accounting" class="org.mapfish.print.servlet.job.Accounting" lazy-init="false"/>
 
     <bean id="forkJoinPool" class="java.util.concurrent.ForkJoinPool" destroy-method="shutdownNow">
