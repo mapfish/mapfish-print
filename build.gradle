@@ -48,7 +48,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     jar.dependsOn(checkstyleMain)
 
     checkstyle {
-        toolVersion = "10.5.0" // com.puppycrawl.tools:checkstyle
+        toolVersion = "10.6.0" // com.puppycrawl.tools:checkstyle
         configFile = file("$rootProject.rootDir/checkstyle_checks.xml")
         configProperties = ['basedir': project.rootDir.path]
         ignoreFailures = true
@@ -85,7 +85,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     dependencies {
         testCompile(
                 "junit:junit:4.13.2",
-                'org.mockito:mockito-core:4.9.0',
+                'org.mockito:mockito-core:4.11.0',
         )
     }
 
