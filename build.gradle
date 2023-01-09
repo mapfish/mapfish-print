@@ -7,7 +7,6 @@ buildscript {
     dependencies {
         classpath "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.7.5"
         classpath "se.bjurr.violations:violations-gradle-plugin:1.52.2"
-        classpath 'org.owasp:dependency-check-gradle:7.4.3'
     }
 }
 
@@ -21,11 +20,6 @@ wrapper {
 allprojects {
     group = group
     version = version
-
-    apply plugin: 'org.owasp.dependencycheck'
-    dependencyCheck {
-        outputDirectory = "security-report"
-    }
 }
 
 configurations.all {
@@ -33,8 +27,6 @@ configurations.all {
         force 'xml-apis:xml-apis:2.0.2'
     }
 }
-
-apply plugin: 'org.owasp.dependencycheck'
 
 configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     apply plugin: 'java'
