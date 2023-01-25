@@ -15,6 +15,7 @@ import org.mapfish.print.map.tiled.TilePreparationInfo.SingleTilePreparationInfo
 import org.mapfish.print.processor.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
@@ -226,8 +227,13 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                         return new Tile(null, getTileIndexX(), getTileIndexY());
                     } else if (statusCode != HttpStatus.OK) {
                         String errorMessage = String.format(
-                                "Error making tile request: %s\n\tStatus: %s\n\toutMessage: %s",
+                                "Error making tile request: %s\n\tStatus: %s\n\tStatus message: %s",
                                 this.tileRequest.getURI(), statusCode, response.getStatusText());
+                        LOGGER.debug(String.format(
+                                "Error making tile request: %s\nStatus: %s\n" +
+                                "Status message: %s\nServer:%s\nBody:\n%s",
+                                this.tileRequest.getURI(), statusCode, response.getStatusText(),
+                                response.getHeaders().getFirst(HttpHeaders.SERVER), response.getBody()));
                         this.registry.counter(baseMetricName + ".error").inc();
                         if (this.failOnError) {
                             throw new RuntimeException(errorMessage);
