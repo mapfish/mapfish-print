@@ -4,6 +4,7 @@ package org.mapfish.print.map.tiled;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
+import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
@@ -25,6 +26,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 import java.util.concurrent.RecursiveTask;
 
@@ -235,7 +237,8 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                                 "Error making tile request: %s\nStatus: %s\n" +
                                 "Status message: %s\nServer:%s\nBody:\n%s",
                                 this.tileRequest.getURI(), statusCode, response.getStatusText(),
-                                response.getHeaders().getFirst(HttpHeaders.SERVER), response.getBody()));
+                                response.getHeaders().getFirst(HttpHeaders.SERVER),
+                                IOUtils.toString(response.getBody(), StandardCharsets.UTF_8)));
                         this.registry.counter(baseMetricName + ".error").inc();
                         if (this.failOnError) {
                             throw new RuntimeException(errorMessage);
