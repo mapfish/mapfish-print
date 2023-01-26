@@ -136,7 +136,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
                         final InputStream is = new ByteArrayInputStream(bytes);
                         final ConfigFileResolverHttpResponse response =
                                 new ConfigFileResolverHttpResponse(is, headers);
-                        LOGGER.debug("Resolved request: {} using mapfish print config file loaders.",
+                        LOGGER.debug("Resolved request: {} using MapFish print config file loaders.",
                                      uriString);
                         return response;
                     } catch (NoSuchElementException e) {
