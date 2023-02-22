@@ -203,7 +203,7 @@ public final class HttpRequestFetcher {
                     context.stopIfCanceled();
                     this.response = new CachedClientHttpResponse(originalResponse);
                 } catch (IOException e) {
-                    LOGGER.warn("Request failed {}", this.originalRequest.getURI(), e);
+                    LOGGER.error("Request failed {}", this.originalRequest.getURI(), e);
                     this.response = new AbstractClientHttpResponse() {
                         @Override
                         public HttpHeaders getHeaders() {
