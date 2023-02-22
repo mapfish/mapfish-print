@@ -39,13 +39,6 @@
         <module name="IllegalImport"/>
         <module name="RedundantImport"/>
         <module name="UnusedImports"/>
-        <module name="ImportOrder">
-            <property name="groups"
-                      value="/^ar\./,/^ch\./,/^com\./,/^io\./,/^net\./,/^org\./,/^si\./,/^java\./,/^javax\./"/>
-            <property name="option" value="bottom"/>
-            <property name="sortStaticImportsAlphabetically" value="true"/>
-            <property name="separated" value="true"/>
-        </module>
         <module name="MethodLength"/>
         <module name="ParameterNumber"/>
         <module name="EmptyForIteratorPad">

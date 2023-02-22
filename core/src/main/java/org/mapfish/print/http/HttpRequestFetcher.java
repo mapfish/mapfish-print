@@ -14,6 +14,8 @@ import org.springframework.http.client.AbstractClientHttpResponse;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.retry.annotation.Backoff;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -191,6 +193,13 @@ public final class HttpRequestFetcher {
             return result;
         }
 
+        @Retryable(value = IOException.class, maxAttemptsExpression = "${httpfetch.retry.maxAttempts}",
+               backoff = @Backoff(delayExpression = "${httpfetch.retry.backoffDelay}"))
+        private ClientHttpResponse fetch() throws IOException {
+            ClientHttpResponse originalResponse = this.originalRequest.execute();
+            context.stopIfCanceled();
+            return new CachedClientHttpResponse(originalResponse);
+        }
         @Override
         public Void call() throws Exception {
             return context.mdcContextEx(() -> {
@@ -199,9 +208,8 @@ public final class HttpRequestFetcher {
                                 StatsUtils.quotePart(getURI().getHost());
                 final Timer.Context timerDownload =
                         HttpRequestFetcher.this.registry.timer(baseMetricName).time();
-                try (ClientHttpResponse originalResponse = this.originalRequest.execute()) {
-                    context.stopIfCanceled();
-                    this.response = new CachedClientHttpResponse(originalResponse);
+                try {
+                    this.response = this.fetch();
                 } catch (IOException e) {
                     LOGGER.error("Request failed {}", this.originalRequest.getURI(), e);
                     this.response = new AbstractClientHttpResponse() {
