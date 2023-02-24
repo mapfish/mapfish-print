@@ -126,8 +126,8 @@ Agreement](http://goo.gl/forms/QO9UELxM9m).
 
 [Docker](https://hub.docker.com/r/camptocamp/mapfish_print)
 
-[War and jar from version 3.23](https://github.com/orgs/mapfish/packages)
+[War and jar](https://github.com/orgs/mapfish/packages)
 
-[War and jar before version 3.23](https://mvnrepository.com/artifact/org.mapfish.print)
+[From JitPack repository](https://jitpack.io/#mapfish/mapfish-print)
 
 [Releases, including various assets](https://github.com/mapfish/mapfish-print/releases)
