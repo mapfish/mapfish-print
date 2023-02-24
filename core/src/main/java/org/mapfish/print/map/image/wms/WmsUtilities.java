@@ -140,8 +140,8 @@ public final class WmsUtilities {
             final Multimap<String, String> extraParams, final double angle, final ServerType type) {
         switch (type) {
             case MAPSERVER:
-                if (!contains(extraParams, "MAP_ANGLE")) {
-                    extraParams.put("MAP_ANGLE", Double.toString(Math.toDegrees(angle)));
+                if (!contains(extraParams, "ANGLE")) {
+                    extraParams.put("ANGLE", Double.toString(Math.toDegrees(angle)));
                 }
                 break;
             case QGISSERVER:
