@@ -57,8 +57,8 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
     }
 
     /**
-     * The prefix to apply to each value.  This provides a simple way to make all output values have unique
-     * values.
+     * The prefix to apply to each value.  This provides a simple way to make all input and output values
+     * have unique values.
      *
      * @param prefix the new prefix
      */
@@ -72,7 +72,7 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
     }
 
     /**
-     * The prefix to apply to each input value.  This provides a simple way to make all output values have
+     * The prefix to apply to each input value.  This provides a simple way to make all input values have
      * unique values.
      *
      * @param inputPrefix the new prefix
@@ -110,7 +110,10 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
     }
 
     /**
-     * The input mapper.
+     * <p>The input mapper. See "Processors" to know more. Example:</p>
+     * <pre><code>
+     * inputMapper: {attributeName: defaultInputParamName}
+     * </code></pre>
      *
      * @param inputMapper the values.
      */
@@ -125,7 +128,10 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
     }
 
     /**
-     * The output mapper.
+     * <p>The output mapper. See "Processors" to know more. Example:</p>
+     * <pre><code>
+     * outputMapper: {defaultOutputName: templateParamName}
+     * </code></pre>
      *
      * @param outputMapper the values.
      */
