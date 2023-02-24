@@ -13,7 +13,7 @@
     schedule: 'after 5pm on the first day of the month',
   },
   semanticCommits: 'disabled',
-  baseBranches: ['master', '3.27', '3.28', '3.29'],
+  baseBranches: ['master', '3.27', '3.28', '3.29', '3.30'],
   // Upgrade the tool versions
   regexManagers: [
     {
