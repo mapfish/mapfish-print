@@ -87,6 +87,8 @@ jobs:
         if: always()
       - run: docker cp builder:/src/core/build/ core/build/ || true
         if: always()
+      - run: ls -l core/build/libs core/build/distributions
+        if: always()
 
       - run: docker cp mapfish-print_tests_1:/src/examples/build/ examples/build/ || true
         if: always()
@@ -135,13 +137,14 @@ jobs:
       - name: Publish
         run: c2cciutils-publish
         if: env.HAS_SECRETS == 'HAS_SECRETS'
-      - run:
-          docker run --rm --env=GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} mapfish_print_builder bash -c 'gradle
-          build && gradle publish'
+      - run: >
+          docker run --rm --env=GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} mapfish_print_builder
+          bash -c 'gradle build && gradle publish'
         if: ( startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master' ) && env.HAS_SECRETS == 'HAS_SECRETS'
 
       - id: version
-        run: echo "version=$(grep version gradle.properties|sed "s/ \+version=.\(.*\)./\1/g")" > $GITHUB_OUTPUT
+        run: echo "version=$(grep version gradle.properties|sed "s/version=\(.*\)/\1/g")" > $GITHUB_OUTPUT
+      - run: echo "${{ steps.version.outputs.version }}"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
