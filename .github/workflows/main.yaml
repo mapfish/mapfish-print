@@ -45,16 +45,16 @@ jobs:
         if: env.HAS_SECRETS == 'HAS_SECRETS'
 
       - id: tag
-        run: echo "##[set-output name=tag;]$(echo ${{ github.ref }}|sed 's%refs/tags/%%g')"
+        run: echo "tag=$(echo ${{ github.ref }}|sed 's%refs/tags/%%g')" >> $GITHUB_OUTPUT
         if: startsWith(github.ref, 'refs/tags/')
       - run: sed --in-place 's/version=.*/version=${{ steps.tag.outputs.tag }}/g' gradle.properties
         if: startsWith(github.ref, 'refs/tags/')
 
       - id: last-tag
-        run: echo "##[set-output name=tag;]$(git describe --tags --abbrev=0)"
+        run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
         if: "!startsWith(github.ref, 'refs/tags/')"
       - id: no-tag
-        run: echo "##[set-output name=nb;]$(git log --oneline ${{ steps.last-tag.outputs.tag }}..HEAD|wc -l)"
+        run: echo "nb=$(git log --oneline ${{ steps.last-tag.outputs.tag }}..HEAD|wc -l)" >> $GITHUB_OUTPUT
         if: "!startsWith(github.ref, 'refs/tags/')"
       - run: sed --in-place 's/version=.*/version=${{ steps.last-tag.outputs.tag }}/g' gradle.properties
         if: "!startsWith(github.ref, 'refs/tags/') && steps.no-tag.outputs.nb == 0"
@@ -63,7 +63,7 @@ jobs:
           }}/g' gradle.properties
         if: "!startsWith(github.ref, 'refs/tags/') && steps.no-tag.outputs.nb > 0"
       - id: date
-        run: echo echo "##[set-output name=date;]$(date +%Y%m%d.%H%M%S)"
+        run: echo echo "date=$(date +%Y%m%d.%H%M%S)" >> $GITHUB_OUTPUT
         if: github.ref == 'refs/heads/master'
       - run: sed --in-place 's/version=.*/version=0.${{ steps.date.outputs.date }}.SNAPSHOT/g' gradle.properties
         if: github.ref == 'refs/heads/master'
@@ -141,7 +141,7 @@ jobs:
         if: ( startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master' ) && env.HAS_SECRETS == 'HAS_SECRETS'
 
       - id: version
-        run: echo "##[set-output name=version;]$(grep version gradle.properties|sed "s/ \+version=.\(.*\)./\1/g")"
+        run: echo "version=$(grep version gradle.properties|sed "s/ \+version=.\(.*\)./\1/g")" > $GITHUB_OUTPUT
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
