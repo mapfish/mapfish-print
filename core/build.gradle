@@ -133,6 +133,7 @@ dependencies {
             "org.springframework:spring-tx:5.3.25",
             "org.springframework:spring-test:5.3.25",
             "org.springframework.retry:spring-retry:1.3.4",
+            'net.logstash.logback:logstash-logback-encoder:7.3',
     )
     metrics(
             "io.dropwizard.metrics:metrics-core:4.2.15",
