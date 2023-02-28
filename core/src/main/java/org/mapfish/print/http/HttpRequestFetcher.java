@@ -196,6 +196,7 @@ public final class HttpRequestFetcher {
         @Retryable(value = IOException.class, maxAttemptsExpression = "${httpfetch.retry.maxAttempts}",
                backoff = @Backoff(delayExpression = "${httpfetch.retry.backoffDelay}"))
         private ClientHttpResponse fetch() throws IOException {
+            LOGGER.debug("Fetching URI resource {}", this.originalRequest.getURI());
             ClientHttpResponse originalResponse = this.originalRequest.execute();
             context.stopIfCanceled();
             return new CachedClientHttpResponse(originalResponse);
