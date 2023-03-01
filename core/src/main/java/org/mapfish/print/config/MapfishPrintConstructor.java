@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Node;
@@ -34,7 +35,7 @@ public final class MapfishPrintConstructor extends Constructor {
      * @param context the application context object for creating
      */
     public MapfishPrintConstructor(final ConfigurableApplicationContext context) {
-        super(new TypeDescription(Configuration.class, CONFIGURATION_TAG));
+        super(new TypeDescription(Configuration.class, CONFIGURATION_TAG), new LoaderOptions());
         this.context = context;
         Map<String, ConfigurationObject> yamlObjects = context.getBeansOfType(ConfigurationObject.class);
         for (Map.Entry<String, ConfigurationObject> entry: yamlObjects.entrySet()) {
