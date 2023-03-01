@@ -44,12 +44,8 @@ public class ConfigurationFactory {
         if (maxAliases != null) {
             loaderOptions.setMaxAliasesForCollections(Integer.parseInt(maxAliases));
         }
-        Representer representer = new Representer();
         DumperOptions dumperOptions = new DumperOptions();
-        dumperOptions.setDefaultFlowStyle(representer.getDefaultFlowStyle());
-        dumperOptions.setDefaultScalarStyle(representer.getDefaultScalarStyle());
-        dumperOptions.setAllowReadOnlyProperties(representer.getPropertyUtils().isAllowReadOnlyProperties());
-        dumperOptions.setTimeZone(representer.getTimeZone());
+        Representer representer = new Representer(dumperOptions);
         this.yaml = new Yaml(constructor, representer, dumperOptions, loaderOptions);
     }
 
