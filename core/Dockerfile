@@ -3,7 +3,9 @@ FROM mapfish_print_builder AS builder
 FROM tomcat:9.0.62-jdk17-openjdk-slim-bullseye AS runner
 LABEL maintainer="Camptocamp <info@camptocamp.com>"
 
-RUN perl -0777 -i -pe 's/(<Valve className="org.apache.catalina.valves.AccessLogValve"[^>]*>)/<Valve className="ch.qos.logback.access.tomcat.LogbackValve" quiet="true"\/>/s' "${CATALINA_HOME}/conf/server.xml" \
+RUN --mount=type=cache,target=/var/cache,sharing=locked \
+    --mount=type=cache,target=/root/.cache \
+  perl -0777 -i -pe 's/(<Valve className="org.apache.catalina.valves.AccessLogValve"[^>]*>)/<Valve className="ch.qos.logback.access.tomcat.LogbackValve" quiet="true"\/>/s' "${CATALINA_HOME}/conf/server.xml" \
   && echo "tomcat.util.scan.StandardJarScanFilter.jarsToSkip=*" >> "${CATALINA_HOME}/conf/catalina.properties" \
   && echo "org.apache.catalina.startup.TldConfig.jarsToSkip=*" >> "${CATALINA_HOME}/conf/catalina.properties" \
   && echo "tomcat.util.scan.DefaultJarScanner.jarsToSkip=*" >> "${CATALINA_HOME}/conf/catalina.properties" \
@@ -15,9 +17,7 @@ RUN perl -0777 -i -pe 's/(<Valve className="org.apache.catalina.valves.AccessLog
   && apt-get update \
   && apt-get upgrade --assume-yes \
   && apt-get install --assume-yes --no-install-recommends curl \
-    fonts-liberation fonts-dejavu fontconfig \
-  && apt-get clean \
-  && rm --recursive --force /var/lib/apt/lists/*
+    fonts-liberation fonts-dejavu fontconfig
 
 COPY --from=builder /src/core/build/webapp "${CATALINA_HOME}/webapps/ROOT/"
 COPY --from=builder /src/examples/build/classes/java/test/org/mapfish/print/HumanAlphaSerie.class "${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes/org/mapfish/print/"
@@ -52,14 +52,14 @@ CMD ["/usr/local/tomcat/bin/docker-start-print"]
 FROM runner AS tester
 
 COPY jettyRunExtraFiles/mapfish-spring-application-context-override-acceptencetests.xml \
-  webapps/ROOT/WEB-INF/classes/mapfish-spring-application-context-override.xml
+  /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/mapfish-spring-application-context-override.xml
 
 FROM runner AS watcher
 
-RUN apt-get update \
+RUN --mount=type=cache,target=/var/cache,sharing=locked \
+    --mount=type=cache,target=/root/.cache \
+  apt-get update \
   && apt-get install --yes --no-install-recommends python3-pip rsync python3-setuptools \
-  && apt-get clean \
-  && rm --recursive --force /var/lib/apt/lists/* \
   && python3 -m pip --disable-pip-version-check --no-cache-dir install inotify
 
 FROM runner AS final

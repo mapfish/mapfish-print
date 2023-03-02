@@ -17,11 +17,10 @@ services:
       PRINT_YAML_MAX_ALIASES: 200
       LOG_LEVEL: DEBUG
       JASPER_LOG_LEVEL: DEBUG
-      CATALINA_OUT: /dev/stdout
 
   tests:
     image: mapfish_print_builder
-    command: sleep infinity
+    command: tail --follow /dev/null
     volumes:
       - ./examples/src/test/resources/examples:/src/examples/src/test/resources/examples
     environment:

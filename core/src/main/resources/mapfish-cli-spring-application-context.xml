@@ -5,5 +5,4 @@
     <import resource="mapfish-spring-application-context.xml" />
     <bean id="servletContext" class="org.mapfish.print.cli.CliServletContext"/>
     <bean id="main" class="org.mapfish.print.cli.Main"/>
-
 </beans>
