@@ -3,7 +3,7 @@ export DOCKER_BUILDKIT = 1
 
 .PHONY: build
 build:
-	# Required and not nesseerly exists
+	# Required and not necessarily exists
 	touch CI.asc
 
 	docker build $(GIT_HEAD_ARG) --target=builder --tag=mapfish_print_builder .

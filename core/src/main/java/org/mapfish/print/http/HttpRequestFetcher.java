@@ -14,20 +14,21 @@ import org.springframework.http.client.AbstractClientHttpResponse;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;
-import org.springframework.retry.annotation.Retryable;
-import org.springframework.retry.annotation.Backoff;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.file.Files;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -39,6 +40,8 @@ import javax.annotation.Nullable;
 public final class HttpRequestFetcher {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestFetcher.class);
+    public static final int MAX_NUMBER_FETCH_RETRY = 3;
+    public static final int FETCH_RETRY_INTERVAL_MILLIS = 100;
 
     private final File temporaryDirectory;
 
@@ -94,12 +97,13 @@ public final class HttpRequestFetcher {
             this.statusText = originalResponse.getStatusText();
             this.cachedFile =
                     File.createTempFile("cacheduri", null, HttpRequestFetcher.this.temporaryDirectory);
-            try (OutputStream os = new FileOutputStream(this.cachedFile)) {
+            try (OutputStream os = Files.newOutputStream(this.cachedFile.toPath())) {
                 IOUtils.copy(originalResponse.getBody(), os);
             }
         }
 
         @Override
+        @Nonnull
         public InputStream getBody() throws IOException {
             if (this.body == null) {
                 this.body = new FileInputStream(this.cachedFile);
@@ -108,6 +112,7 @@ public final class HttpRequestFetcher {
         }
 
         @Override
+        @Nonnull
         public HttpHeaders getHeaders() {
             return this.headers;
         }
@@ -118,6 +123,7 @@ public final class HttpRequestFetcher {
         }
 
         @Override
+        @Nonnull
         public String getStatusText() {
             return this.statusText;
         }
@@ -154,28 +160,33 @@ public final class HttpRequestFetcher {
         }
 
         @Override
+        @Nonnull
         public String getMethodValue() {
             final HttpMethod method = this.originalRequest.getMethod();
             return method != null ? method.name() : "";
         }
 
         @Override
+        @Nonnull
         public URI getURI() {
             return this.originalRequest.getURI();
         }
 
         @Override
+        @Nonnull
         public HttpHeaders getHeaders() {
             return this.originalRequest.getHeaders();
         }
 
         @Override
+        @Nonnull
         public OutputStream getBody() {
             //body should be written before creating this object
             throw new UnsupportedOperationException();
         }
 
         @Override
+        @Nonnull
         public ClientHttpResponse execute() {
             assert this.future != null;
             final Timer.Context timerWait =
@@ -193,14 +204,24 @@ public final class HttpRequestFetcher {
             return result;
         }
 
-        @Retryable(value = IOException.class, maxAttemptsExpression = "${httpfetch.retry.maxAttempts}",
-               backoff = @Backoff(delayExpression = "${httpfetch.retry.backoffDelay}"))
-        private ClientHttpResponse fetch() throws IOException {
+        private ClientHttpResponse fetch() throws IOException, InterruptedException {
             LOGGER.debug("Fetching URI resource {}", this.originalRequest.getURI());
-            ClientHttpResponse originalResponse = this.originalRequest.execute();
-            context.stopIfCanceled();
-            return new CachedClientHttpResponse(originalResponse);
+            AtomicInteger counter = new AtomicInteger();
+            do {
+                try {
+                    ClientHttpResponse originalResponse = this.originalRequest.execute();
+                    context.stopIfCanceled();
+                    return new CachedClientHttpResponse(originalResponse);
+                } catch (final IOException e) {
+                    if (counter.incrementAndGet() < MAX_NUMBER_FETCH_RETRY) {
+                        TimeUnit.MILLISECONDS.sleep(FETCH_RETRY_INTERVAL_MILLIS);
+                    } else {
+                        throw e;
+                    }
+                }
+            } while (true);
         }
+
         @Override
         public Void call() throws Exception {
             return context.mdcContextEx(() -> {
@@ -215,11 +236,13 @@ public final class HttpRequestFetcher {
                     LOGGER.error("Request failed {}", this.originalRequest.getURI(), e);
                     this.response = new AbstractClientHttpResponse() {
                         @Override
+                        @Nonnull
                         public HttpHeaders getHeaders() {
                             return new HttpHeaders();
                         }
 
                         @Override
+                        @Nonnull
                         public InputStream getBody() {
                             return StreamUtils.emptyInput();
                         }
@@ -230,6 +253,7 @@ public final class HttpRequestFetcher {
                         }
 
                         @Override
+                        @Nonnull
                         public String getStatusText() {
                             return e.getMessage();
                         }
