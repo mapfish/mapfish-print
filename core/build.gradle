@@ -152,7 +152,7 @@ dependencies {
             'joda-time:joda-time:2.12.2'
     )
     implementation fileTree(dir: "$projectDir/libs", include: '*.jar')
-    implementation(
+    compile(
             'com.google.guava:guava:31.1-jre',
             "org.slf4j:slf4j-api:2.0.6",
             "org.slf4j:jcl-over-slf4j:2.0.6",
