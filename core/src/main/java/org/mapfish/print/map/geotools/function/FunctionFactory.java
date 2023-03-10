@@ -31,10 +31,12 @@ public final class FunctionFactory implements org.geotools.filter.FunctionFactor
         for (FunctionExpressionImpl template: FUNCTIONS) {
             if (template.getName().equals(name)) {
                 try {
-                    final FunctionExpressionImpl function = template.getClass().getDeclaredConstructor().newInstance();
+                    final FunctionExpressionImpl function = template.getClass().getDeclaredConstructor()
+                        .newInstance();
                     function.setParameters(args);
                     return function;
-                } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+                } catch (InvocationTargetException | NoSuchMethodException | InstantiationException
+                        | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
             }

@@ -333,7 +333,8 @@ public abstract class ReflectiveAttribute<VALUE> implements Attribute {
                     } else {
                         try {
                             value = typeOrComponentType.getDeclaredConstructor().newInstance();
-                        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException e) {
+                        } catch (InvocationTargetException | NoSuchMethodException
+                                | InstantiationException e) {
                             throw ExceptionUtils.getRuntimeException(e);
                         }
                     }

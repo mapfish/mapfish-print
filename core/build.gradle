@@ -96,16 +96,6 @@ configurations {
     compile.transitive = true
     compile.exclude module: 'jai_core'
 
-    metrics {
-        description = 'Libraries for measuring performance and load.  See http://metrics.codahale.com/'
-    }
-    geotools {
-        description = 'Geotools spatial libraries'
-    }
-    jasper {
-        description = 'Dependencies for the jasper reports generation'
-    }
-
     // Want to use the slf4j bridge instead
     all*.exclude group: 'commons-logging'
     // Obscure stack trace if we let this dependency: https://stackoverflow.com/a/15808940
@@ -115,7 +105,7 @@ configurations {
 
 
 dependencies {
-    compile(
+    implementation(
             "org.springframework:spring-context:5.3.25",
             "org.springframework:spring-web:5.3.25",
             "org.springframework:spring-webmvc:5.3.25",
@@ -134,7 +124,7 @@ dependencies {
             "org.springframework:spring-test:5.3.25",
             "org.springframework.retry:spring-retry:1.3.4",
     )
-    metrics(
+    implementation(
             "io.dropwizard.metrics:metrics-core:4.2.17",
             "io.dropwizard.metrics:metrics-servlet:4.2.17",
             "io.dropwizard.metrics:metrics-httpclient:4.2.17",
@@ -143,7 +133,7 @@ dependencies {
             "io.dropwizard.metrics:metrics-jmx:4.2.17",
             "io.dropwizard.metrics:metrics-logback:4.2.17",
     )
-    geotools(
+    implementation(
             "org.geotools:gt-epsg-hsql:28.2",
             "org.geotools:gt-render:28.2",
             "org.geotools:gt-geojson:28.2",
@@ -153,7 +143,7 @@ dependencies {
             "org.geotools:gt-svg:28.2",
             "org.geotools:gt-cql:28.2"
     )
-    jasper(
+    implementation(
             "net.sf.jasperreports:jasperreports:6.20.0",
             "org.codehaus.groovy:groovy-all:3.0.15",
             'ar.com.fdvs:DynamicJasper:5.3.6',
@@ -161,8 +151,8 @@ dependencies {
             "net.sf.jasperreports:jasperreports-functions:6.20.0",
             'joda-time:joda-time:2.12.2'
     )
-    compile fileTree(dir: "$projectDir/libs", include: '*.jar')
-    compile(
+    implementation fileTree(dir: "$projectDir/libs", include: '*.jar')
+    implementation(
             'com.google.guava:guava:31.1-jre',
             "org.slf4j:slf4j-api:2.0.6",
             "org.slf4j:jcl-over-slf4j:2.0.6",
@@ -180,15 +170,7 @@ dependencies {
             'net.logstash.logback:logstash-logback-encoder:7.3',
     )
 
-    compile(configurations.metrics) {
-        exclude module: 'httpclient'
-        exclude module: 'slf4j-api'
-        exclude module: 'logback-classic'
-    }
-    compile(configurations.geotools)
-    compile(configurations.jasper)
-
-    compile(
+    implementation(
             'org.apache.xmlgraphics:xmlgraphics-commons:2.8',
             "org.apache.xmlgraphics:batik-transcoder:1.16",
             "org.apache.xmlgraphics:batik-bridge:1.16",
@@ -199,7 +181,7 @@ dependencies {
     providedCompile('javax.servlet:javax.servlet-api:4.0.1')
     compileOnly "com.github.spotbugs:spotbugs-annotations:4.7.3"
 
-    testCompile group: 'de.saly', name: 'javamail-mock2-fullmock', version: '0.5-beta4'
+    testImplementation group: 'de.saly', name: 'javamail-mock2-fullmock', version: '0.5-beta4'
 }
 
 def gitRevision() {
@@ -232,12 +214,12 @@ def addManifestAttribute(manifest) {
 
 jar {
     enabled = true
-    baseName = 'print-lib'
+    archiveBaseName = 'print-lib'
     addManifestAttribute(manifest)
 }
 
 war {
-    baseName = 'print-servlet'
+    archiveBaseName = 'print-servlet'
     addManifestAttribute(manifest)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
@@ -250,14 +232,14 @@ show.doLast {
 }
 
 task libJavadocJar(type: Jar, dependsOn: javadoc) {
-    baseName = 'print-lib'
+    archiveBaseName = 'print-lib'
     classifier = 'javadoc'
     from 'build/docs/javadoc'
 }
 
 
 task libSourcesJar(type: Jar) {
-    baseName = 'print-lib'
+    archiveBaseName = 'print-lib'
     from sourceSets.main.allSource
     classifier = 'sources'
 }

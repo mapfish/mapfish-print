@@ -22,7 +22,7 @@ public class MapSubReportTest {
     public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
-    public void testCompile() throws Exception {
+    public void testImplementation() throws Exception {
         File layer0Tiff = new File("/tmp/mfp/3/layer_0.tiff").getAbsoluteFile();
         File layer1SVG = new File("/tmp/mfp/3/layer_1.svg").getAbsoluteFile();
         File layer2Tiff = new File("/tmp/mfp/3/layer_2.tiff").getAbsoluteFile();
