@@ -143,7 +143,7 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
                                            e);
             } catch (Throwable e) {
                 LOGGER.error(
-                    "Error occurred while reading configuration file '{}', '{}'", configFile, e)
+                    "Error occurred while reading configuration file '{}', '{}'", configFile, e
                 );
                 throw new RuntimeException(String.format(
                         "Error occurred while reading configuration file '%s'", configFile), e);
