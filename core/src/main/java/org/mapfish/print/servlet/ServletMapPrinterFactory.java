@@ -1,6 +1,5 @@
 package org.mapfish.print.servlet;
 
-import org.apache.commons.io.DirectoryWalker;
 import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.MapPrinter;
@@ -16,6 +15,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.channels.ClosedByInterruptException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -205,8 +209,7 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
             }
         }
 
-        final AppWalker walker = new AppWalker();
-        for (File child: walker.getAppDirs(realRoot)) {
+        for (File child: getAppDirs(realRoot)) {
             final File configFile = new File(child, CONFIG_YAML);
             String appName = realRoot.toURI().relativize(child.toURI()).getPath().replace('/', ':');
             if (appName.endsWith(":")) {
@@ -267,22 +270,23 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
         return null;
     }
 
-    private static class AppWalker extends DirectoryWalker<File> {
-        public List<File> getAppDirs(final File base) throws IOException {
-            List<File> results = new ArrayList<>();
-            walk(base, results);
-            return results;
-        }
 
-        @Override
-        protected boolean handleDirectory(
-                final File directory, final int depth,
-                final Collection<File> results) {
-            final File configFile = new File(directory, CONFIG_YAML);
-            if (configFile.exists()) {
-                results.add(directory);
+    private static List<File> getAppDirs(final File base) throws IOException {
+
+        List<File> results = new ArrayList<>();
+
+        Files.walkFileTree(base.toPath(), new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                final File configFile = new File(dir.toFile(), CONFIG_YAML);
+                if (configFile.exists()) {
+                    results.add(dir.toFile());
+                }
+                return null;
             }
-            return depth < MAX_DEPTH;
-        }
+        });
+
+        return results;
     }
+
 }

@@ -203,9 +203,7 @@ public final class PdfConfigurationProcessor extends AbstractProcessor<PdfConfig
             final Field field;
             try {
                 field = value.getClass().getField(part);
-                if (!field.isAccessible()) {
-                    field.setAccessible(true);
-                }
+                field.setAccessible(true);
                 value = field.get(value);
             } catch (NoSuchFieldException e) {
                 throw new IllegalArgumentException(

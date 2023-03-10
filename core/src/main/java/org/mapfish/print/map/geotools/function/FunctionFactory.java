@@ -7,6 +7,7 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Function;
 import org.opengis.filter.expression.Literal;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,10 +31,10 @@ public final class FunctionFactory implements org.geotools.filter.FunctionFactor
         for (FunctionExpressionImpl template: FUNCTIONS) {
             if (template.getName().equals(name)) {
                 try {
-                    final FunctionExpressionImpl function = template.getClass().newInstance();
+                    final FunctionExpressionImpl function = template.getClass().getDeclaredConstructor().newInstance();
                     function.setParameters(args);
                     return function;
-                } catch (InstantiationException | IllegalAccessException e) {
+                } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
             }
