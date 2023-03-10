@@ -124,7 +124,7 @@ dependencies {
             "org.springframework:spring-test:5.3.25",
             "org.springframework.retry:spring-retry:1.3.4",
     )
-    implementation(
+    compile(
             "io.dropwizard.metrics:metrics-core:4.2.17",
             "io.dropwizard.metrics:metrics-servlet:4.2.17",
             "io.dropwizard.metrics:metrics-httpclient:4.2.17",
