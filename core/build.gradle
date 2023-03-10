@@ -151,8 +151,8 @@ dependencies {
             "net.sf.jasperreports:jasperreports-functions:6.20.0",
             'joda-time:joda-time:2.12.2'
     )
-    implementation fileTree(dir: "$projectDir/libs", include: '*.jar')
-    implementation(
+    providedCompile fileTree(dir: "$projectDir/libs", include: '*.jar')
+    providedCompile(
             'com.google.guava:guava:31.1-jre',
             "org.slf4j:slf4j-api:2.0.6",
             "org.slf4j:jcl-over-slf4j:2.0.6",
@@ -170,7 +170,7 @@ dependencies {
             'net.logstash.logback:logstash-logback-encoder:7.3',
     )
 
-    implementation(
+    providedCompile(
             'org.apache.xmlgraphics:xmlgraphics-commons:2.8',
             "org.apache.xmlgraphics:batik-transcoder:1.16",
             "org.apache.xmlgraphics:batik-bridge:1.16",
