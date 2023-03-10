@@ -81,7 +81,7 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
                 "There is no configurationFile registered in the {}" +
                 " bean with the id: '{}' from configurationFiles:\n {}",
                 getClass().getName(), finalApp,
-                String.join("\n", this.configurationFiles.keySet())
+                LOGGER.isErrorEnabled() ? String.join("\n", this.configurationFiles.keySet()) : ""
             );
             throw new NoSuchAppException(
                     "There is no configurationFile registered in the " + getClass().getName() +
@@ -136,14 +136,14 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
                 // see also http://bugs.java.com/view_bug.do?bug_id=7043425
                 Thread.currentThread().interrupt();
                 LOGGER.error(
-                    "Error occurred while reading configuration file '{}', '{}'", configFile, e.getMessage()
+                    "Error occurred while reading configuration file '{}', '{}'", configFile, e
                 );
                 throw new RuntimeException(String.format(
                         "Error occurred while reading configuration file '%s': ", configFile),
                                            e);
             } catch (Throwable e) {
                 LOGGER.error(
-                    "Error occurred while reading configuration file '{}', '{}'", configFile, e.getMessage()
+                    "Error occurred while reading configuration file '{}', '{}'", configFile, e)
                 );
                 throw new RuntimeException(String.format(
                         "Error occurred while reading configuration file '%s'", configFile), e);
