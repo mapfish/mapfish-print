@@ -94,7 +94,7 @@ build.dependsOn tasks.distZip, tasks.testCLI
 
 configurations {
     compile.transitive = true
-    //compile.exclude module: 'jai_core'
+    compile.exclude module: 'jai_core'
 
     // Want to use the slf4j bridge instead
     all*.exclude group: 'commons-logging'
@@ -151,8 +151,7 @@ dependencies {
             "net.sf.jasperreports:jasperreports-functions:6.20.0",
             'joda-time:joda-time:2.12.2'
     )
-    providedCompile fileTree(dir: "$projectDir/libs", include: '*.jar')
-    providedRuntime fileTree(dir: "$projectDir/libs", include: '*.jar')
+    compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     providedCompile(
             'com.google.guava:guava:31.1-jre',
             //"org.slf4j:slf4j-api:2.0.6",

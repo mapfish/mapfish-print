@@ -14,7 +14,7 @@ dependencies {
 }
 
 configurations {
-    compile.exclude module: 'jai_core'
+    //compile.exclude module: 'jai_core'
 
     // need to exclude those two to get rid of stuff taken from geotools dependencies (they break the tests)
     compile.exclude group: 'org.eclipse.emf', module: 'ecore'
