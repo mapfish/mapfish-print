@@ -18,3 +18,9 @@ services:
       - /usr/local/tomcat/bin/docker-start-watch
     volumes_from:
       - builder
+    ports:
+      # Forward the port for Java remote debugging defined in the JAVA_OPTS environment variable
+      - 5005:5005
+    environment:
+      CATALINA_PID: /usr/local/tomcat/bin/catalina.pid
+      JAVA_OPTS: -Dsun.net.inetaddr.ttl=30 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005

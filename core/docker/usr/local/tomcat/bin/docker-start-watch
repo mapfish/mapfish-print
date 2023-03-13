@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import subprocess
 from threading import Lock, Timer
 
@@ -20,10 +21,10 @@ def start():
             "/usr/local/tomcat/webapps/ROOT/WEB-INF/classes/org/mapfish/print/",
         ]
     )
+    print("Start Tomcat")
     subprocess.check_call(["catalina.sh", "start"])
     started = True
     timer = None
-    print("PYTHON: &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& 555")
 
 
 def main():
@@ -38,17 +39,19 @@ def main():
             with lock:
 
                 if timer is not None:
-                    print("cancel")
                     timer.cancel()
                     timer = None
 
                 if started:
-                    subprocess.check_call(["catalina.sh", "stop"])
+                    print("Stop Tomcat")
+                    subprocess.check_call(["catalina.sh", "stop", "5", "-force"])
+                    # Remove the pid file so that the next start will not fail
+                    with open(os.environ["CATALINA_PID"], "w"):
+                        pass
                     started = False
 
-                timer = Timer(1, start)
+                timer = Timer(10, start)
                 timer.start()
-                print("start")
 
 
 if __name__ == "__main__":

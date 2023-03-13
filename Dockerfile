@@ -1,9 +1,9 @@
 FROM gradle:6.9.3-jdk11 AS builder
 
-RUN apt-get update && \
+RUN --mount=type=cache,target=/var/cache,sharing=locked \
+    --mount=type=cache,target=/root/.cache \
+  apt-get update && \
   apt-get install --yes --no-install-recommends fonts-liberation gettext curl && \
-  apt-get clean && \
-  rm -rf /var/lib/apt/lists/* && \
   gradle --version
 
 WORKDIR /src
@@ -15,26 +15,30 @@ COPY docs/build.gradle ./docs/
 COPY publish/build.gradle ./publish/
 COPY core ./core
 
-RUN gradle :core:processResources :core:classes
+RUN --mount=type=cache,target=/home/gradle/.gradle \
+   gradle :core:processResources :core:classes
 COPY checkstyle_* ./
 # '&& touch success || true' is a trick to be able to get out some artifacts
-RUN gradle :core:checkstyleMain :core:spotbugsMain :core:violations --stacktrace \
-    && ( (gradle :core:build :core:explodedWar :core:libSourcesJar :core:libJavadocJar && touch success) || true)
+RUN --mount=type=cache,target=/home/gradle/.gradle \
+   (gradle :core:checkstyleMain :core:spotbugsMain :core:violations --stacktrace > /tmp/logs 2>&1) \
+   && ( (gradle :core:build :core:explodedWar :core:libSourcesJar :core:libJavadocJar && touch success) || true)
 
 ARG GIT_HEAD
 ENV GIT_HEAD=${GIT_HEAD}
 
 COPY publish ./publish
 
-RUN ([ -e success ] && (gradle :publish:build && touch success-publish)) || true
+RUN --mount=type=cache,target=/home/gradle/.gradle \
+   ([ -e success ] && ( (gradle :publish:build >> /tmp/logs 2>&1) && touch success-publish)) || true
 
 COPY examples ./examples
 COPY docs ./docs
 
-RUN ([ -e success ] && (gradle :examples:build buildDocs && touch success-examples-docs)) || true
+RUN --mount=type=cache,target=/home/gradle/.gradle \
+   ([ -e success ] && ( (gradle :examples:build buildDocs >> /tmp/logs 2>&1) && touch success-examples-docs)) || true
 
 FROM builder AS test-builder
 
-RUN [ -e success ] && [ -e success-publish ] && [ -e success-examples-docs ]
+RUN cat /tmp/logs && [ -e success ] && [ -e success-publish ] && [ -e success-examples-docs ]
 
 VOLUME [ "/src/core" ]
