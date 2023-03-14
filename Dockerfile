@@ -20,8 +20,8 @@ RUN --mount=type=cache,target=/home/gradle/.gradle \
 COPY checkstyle_* ./
 # '&& touch success || true' is a trick to be able to get out some artifacts
 RUN --mount=type=cache,target=/home/gradle/.gradle \
-   (gradle :core:checkstyleMain :core:spotbugsMain :core:violations --stacktrace > /tmp/logs 2>&1) \
-   && ( (gradle :core:build :core:explodedWar :core:libSourcesJar :core:libJavadocJar && touch success) || true)
+   (gradle :core:checkstyleMain :core:spotbugsMain :core:violations --stacktrace) \
+   && ( (gradle :core:build :core:explodedWar :core:libSourcesJar :core:libJavadocJar > /tmp/logs 2>&1 && touch success) || true)
 
 ARG GIT_HEAD
 ENV GIT_HEAD=${GIT_HEAD}
@@ -39,6 +39,6 @@ RUN --mount=type=cache,target=/home/gradle/.gradle \
 
 FROM builder AS test-builder
 
-RUN cat /tmp/logs && [ -e success ] && [ -e success-publish ] && [ -e success-examples-docs ]
+RUN cat /tmp/logs && ls success success-publish success-examples-docs
 
 VOLUME [ "/src/core" ]
