@@ -74,12 +74,14 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
         }
 
         if (configFile == null) {
-            LOGGER.error(
-                "There is no configurationFile registered in the {}" +
-                " bean with the id: '{}' from configurationFiles:\n {}",
-                getClass().getName(), finalApp,
-                String.join("\n", this.configurationFiles.keySet())
-            );
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(
+                    "There is no configurationFile registered in the {}" +
+                    " bean with the id: '{}' from configurationFiles:\n {}",
+                    getClass().getName(), finalApp,
+                    String.join("\n", this.configurationFiles.keySet())
+                );
+            }
             throw new NoSuchAppException(
                     "There is no configurationFile registered in the " + getClass().getName() +
                             " bean with the id: '" + finalApp + "'");
@@ -285,4 +287,5 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
             return depth < MAX_DEPTH;
         }
     }
+
 }

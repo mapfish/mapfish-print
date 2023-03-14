@@ -237,10 +237,10 @@ public final class MapfishParser {
             value = parseEnum(type, layer.getPath(fieldName), layer.getString(name));
         } else {
             try {
-                value = type.newInstance();
+                value = type.getDeclaredConstructor().newInstance();
                 PObject object = layer.getObject(name);
                 parse(errorOnExtraProperties, object, value, extraPropertyToIgnore);
-            } catch (InstantiationException e) {
+            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException e) {
                 throw new UnsupportedTypeException(type, e);
             } catch (IllegalAccessException e) {
                 throw ExceptionUtils.getRuntimeException(e);
@@ -310,10 +310,10 @@ public final class MapfishParser {
             value = parseEnum(type, array.getPath("" + i), array.getString(i));
         } else {
             try {
-                value = type.newInstance();
+                value = type.getDeclaredConstructor().newInstance();
                 PObject object = array.getObject(i);
                 parse(errorOnExtraProperties, object, value, extraPropertyToIgnore);
-            } catch (InstantiationException e) {
+            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException e) {
                 throw new UnsupportedTypeException(type, e);
             } catch (IllegalAccessException e) {
                 throw ExceptionUtils.getRuntimeException(e);
