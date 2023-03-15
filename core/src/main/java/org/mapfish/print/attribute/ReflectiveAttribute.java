@@ -24,6 +24,7 @@ import org.mapfish.print.wrapper.yaml.PYamlArray;
 import org.mapfish.print.wrapper.yaml.PYamlObject;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -331,8 +332,9 @@ public abstract class ReflectiveAttribute<VALUE> implements Attribute {
                         }
                     } else {
                         try {
-                            value = typeOrComponentType.newInstance();
-                        } catch (InstantiationException e) {
+                            value = typeOrComponentType.getDeclaredConstructor().newInstance();
+                        } catch (InvocationTargetException | NoSuchMethodException
+                                | InstantiationException e) {
                             throw ExceptionUtils.getRuntimeException(e);
                         }
                     }

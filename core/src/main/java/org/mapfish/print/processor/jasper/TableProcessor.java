@@ -18,6 +18,7 @@ import net.sf.jasperreports.engine.type.HorizontalImageAlignEnum;
 import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.type.StretchTypeEnum;
+import net.sf.jasperreports.engine.type.TextAdjustEnum;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
@@ -426,7 +427,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             colHeaderField.setHeight(headerHeight);
             colHeaderField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
             colHeaderField.setStyle(columnHeaderStyle);
-            colHeaderField.setStretchWithOverflow(true);
+            colHeaderField.setTextAdjust(TextAdjustEnum.STRETCH_HEIGHT);
             colHeaderField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
 
             JRDesignExpression headerExpression = new JRDesignExpression();
@@ -495,7 +496,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         JRDesignExpression expression = new JRDesignExpression();
         expression.setText("$F{" + columnName + "}");
         textField.setExpression(expression);
-        textField.setStretchWithOverflow(true);
+        textField.setTextAdjust(TextAdjustEnum.STRETCH_HEIGHT);
         return textField;
     }
 

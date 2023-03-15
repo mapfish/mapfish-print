@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.channels.ClosedByInterruptException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -74,12 +73,14 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
         }
 
         if (configFile == null) {
-            LOGGER.error(
-                "There is no configurationFile registered in the {}" +
-                " bean with the id: '{}' from configurationFiles:\n {}",
-                getClass().getName(), finalApp,
-                String.join("\n", this.configurationFiles.keySet())
-            );
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(
+                    "There is no configurationFile registered in the {}" +
+                    " bean with the id: '{}' from configurationFiles:\n {}",
+                    getClass().getName(), finalApp,
+                    String.join("\n", this.configurationFiles.keySet())
+                );
+            }
             throw new NoSuchAppException(
                     "There is no configurationFile registered in the " + getClass().getName() +
                             " bean with the id: '" + finalApp + "'");
@@ -127,17 +128,6 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
                 printer.setConfiguration(configFile, bytes);
 
                 this.printers.put(finalApp, printer);
-            } catch (ClosedByInterruptException e) {
-                // because of a bug in the JDK, the interrupted status might not be set
-                // when throwing a ClosedByInterruptException. so, we do it manually.
-                // see also http://bugs.java.com/view_bug.do?bug_id=7043425
-                Thread.currentThread().interrupt();
-                LOGGER.error(
-                    "Error occurred while reading configuration file '{}', '{}'", configFile, e.getMessage()
-                );
-                throw new RuntimeException(String.format(
-                        "Error occurred while reading configuration file '%s': ", configFile),
-                                           e);
             } catch (Throwable e) {
                 LOGGER.error(
                     "Error occurred while reading configuration file '{}', '{}'", configFile, e.getMessage()
@@ -285,4 +275,5 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
             return depth < MAX_DEPTH;
         }
     }
+
 }
