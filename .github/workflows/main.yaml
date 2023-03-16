@@ -12,6 +12,9 @@ on:
 env:
   HAS_SECRETS: ${{ secrets.HAS_SECRETS }}
 
+permissions:
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-20.04
