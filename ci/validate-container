@@ -1,7 +1,7 @@
 #!/bin/bash -x
 container_name=mapfish-print-$RANDOM
 
-function cleanup(){
+function cleanup() {
   docker rm -f $container_name
 }
 
@@ -10,7 +10,7 @@ docker run --detach --rm --network none --name $container_name camptocamp/mapfis
 sleep 15
 
 server_status=$(docker logs $container_name 2>&1 | grep 'INFO \[main\] org.apache.catalina.startup.Catalina.start Server startup')
-if [[ -z "${server_status}" ]] ; then
+if [[ -z "${server_status}" ]]; then
   echo "container unhealthy"
   docker logs $container_name
   cleanup
@@ -20,11 +20,10 @@ else
   cleanup
 fi
 
-
 docker run --detach --rm --name $container_name camptocamp/mapfish_print:latest
 sleep 15
 http_code=$(docker exec $container_name curl -sL -w "%{http_code}" -I localhost:8080/metrics/healthcheck -o /dev/null)
-if [[ $http_code = 501 ]] ; then
+if [[ $http_code = 501 ]]; then
   echo "container healthy"
   cleanup
   exit 0
