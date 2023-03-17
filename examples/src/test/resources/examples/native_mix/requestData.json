@@ -1,69 +1,54 @@
 {
-  "layout": "A4 portrait",
-  "outputFormat": "pdf",
-  "attributes": {
-    "map": {
-      "projection": "EPSG:3857",
-      "dpi": 72,
-      "rotation": 45,
-      "center": [
-        -8233518.5005945,
-        4980320.4059228
-      ],
-      "scale": 25000,
-      "layers": [
-        {
-          "baseURL": "http://geoserver:8080/wms",
-          "serverType": "geoserver",
-          "useNativeAngle": "false",
-          "opacity": 0.5,
-          "type": "WMS",
-          "layers": [
-            "tiger:tiger_roads"
-          ],
-          "imageFormat": "image/png",
-          "styles": [
-            "line"
-          ],
-          "customParams": {
-            "TRANSPARENT": "true"
-          }
-        },
-        {
-          "baseURL": "http://geoserver:8080/wms",
-          "serverType": "geoserver",
-          "useNativeAngle": "true",
-          "opacity": 0.5,
-          "type": "WMS",
-          "layers": [
-            "tiger:tiger_roads"
-          ],
-          "imageFormat": "image/png",
-          "styles": [
-            "line"
-          ],
-          "customParams": {
-            "TRANSPARENT": "true"
-          }
-        },
-        {
-          "baseURL": "http://geoserver:8080/wms",
-          "serverType": "geoserver",
-          "useNativeAngle": "false",
-          "opacity": 0.5,
-          "type": "WMS",
-          "layers": [
-            "tiger:tiger_roads"
-          ],
-          "imageFormat": "image/png",
-          "styles": [
-            "line"
-          ],
-          "customParams": {
-            "TRANSPARENT": "true"
-          }
+    "layout": "A4 portrait",
+    "outputFormat": "pdf",
+    "attributes": {
+        "map": {
+            "projection": "EPSG:3857",
+            "dpi": 72,
+            "rotation": 45,
+            "center": [-8233518.5005945, 4980320.4059228],
+            "scale": 25000,
+            "layers": [
+                {
+                    "baseURL": "http://geoserver:8080/wms",
+                    "serverType": "geoserver",
+                    "useNativeAngle": "false",
+                    "opacity": 0.5,
+                    "type": "WMS",
+                    "layers": ["tiger:tiger_roads"],
+                    "imageFormat": "image/png",
+                    "styles": ["line"],
+                    "customParams": {
+                        "TRANSPARENT": "true"
+                    }
+                },
+                {
+                    "baseURL": "http://geoserver:8080/wms",
+                    "serverType": "geoserver",
+                    "useNativeAngle": "true",
+                    "opacity": 0.5,
+                    "type": "WMS",
+                    "layers": ["tiger:tiger_roads"],
+                    "imageFormat": "image/png",
+                    "styles": ["line"],
+                    "customParams": {
+                        "TRANSPARENT": "true"
+                    }
+                },
+                {
+                    "baseURL": "http://geoserver:8080/wms",
+                    "serverType": "geoserver",
+                    "useNativeAngle": "false",
+                    "opacity": 0.5,
+                    "type": "WMS",
+                    "layers": ["tiger:tiger_roads"],
+                    "imageFormat": "image/png",
+                    "styles": ["line"],
+                    "customParams": {
+                        "TRANSPARENT": "true"
+                    }
+                }
+            ]
         }
-      ]
     }
-  }
 }

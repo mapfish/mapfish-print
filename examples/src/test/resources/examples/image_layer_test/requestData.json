@@ -1,33 +1,23 @@
 {
-  "layout": "A4 landscape",
-  "outputFormat": "pdf",
-  "attributes": {
-    "map": {
-      "bbox": [
-        4150836.3839982115,
-        7600898.092677928,
-        4588667.682015701,
-        8257645.039704161
-      ],
-      "dpi": 300,
-      "layers": [
-        {
-          "baseURL": "http://geoserver:8080/www/GeoServer.png",
-          "extent": [
-            4392836.015549079,
-            7861166.1739889495,
-            4481502.968359884,
-            7924914.6555787865
-          ],
-          "name": "image",
-          "opacity": 1,
-          "type": "image"
+    "layout": "A4 landscape",
+    "outputFormat": "pdf",
+    "attributes": {
+        "map": {
+            "bbox": [4150836.3839982115, 7600898.092677928, 4588667.682015701, 8257645.039704161],
+            "dpi": 300,
+            "layers": [
+                {
+                    "baseURL": "http://geoserver:8080/www/GeoServer.png",
+                    "extent": [4392836.015549079, 7861166.1739889495, 4481502.968359884, 7924914.6555787865],
+                    "name": "image",
+                    "opacity": 1,
+                    "type": "image"
+                }
+            ],
+            "longitudeFirst": true,
+            "projection": "EPSG:3857",
+            "rotation": 0,
+            "scale": 100000000
         }
-      ],
-      "longitudeFirst": true,
-      "projection": "EPSG:3857",
-      "rotation": 0,
-      "scale": 100000000
     }
-  }
 }

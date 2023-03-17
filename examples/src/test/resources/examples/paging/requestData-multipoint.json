@@ -1,41 +1,33 @@
 {
-  "layout": "A4 landscape",
-  "outputFormat": "pdf",
-  "attributes": {
-    "map": {
-      "projection": "EPSG:3857",
-      "dpi": 72,
-      "areaOfInterest": {
-        "area": {
-          "type": "MultiPoint",
-          "coordinates": [
-            [
-              -8233000,
-              4979000
-            ],
-            [
-              -8234000,
-              4981000
+    "layout": "A4 landscape",
+    "outputFormat": "pdf",
+    "attributes": {
+        "map": {
+            "projection": "EPSG:3857",
+            "dpi": 72,
+            "areaOfInterest": {
+                "area": {
+                    "type": "MultiPoint",
+                    "coordinates": [
+                        [-8233000, 4979000],
+                        [-8234000, 4981000]
+                    ]
+                }
+            },
+            "longitudeFirst": true,
+            "layers": [
+                {
+                    "type": "WMS",
+                    "layers": ["tiger-ny"],
+                    "baseURL": "http://geoserver:8080/wms",
+                    "imageFormat": "image/png",
+                    "version": "1.1.1",
+                    "customParams": {
+                        "TRANSPARENT": "true",
+                        "EXCEPTIONS": "INIMAGE"
+                    }
+                }
             ]
-          ]
         }
-      },
-      "longitudeFirst": true,
-      "layers": [
-        {
-          "type": "WMS",
-          "layers": [
-            "tiger-ny"
-          ],
-          "baseURL": "http://geoserver:8080/wms",
-          "imageFormat": "image/png",
-          "version": "1.1.1",
-          "customParams": {
-            "TRANSPARENT": "true",
-            "EXCEPTIONS": "INIMAGE"
-          }
-        }
-      ]
     }
-  }
 }

@@ -1,32 +1,27 @@
 {
-  "layout": "A4 landscape",
-  "outputFormat": "pdf",
-  "attributes": {
-    "map": {
-      "projection": "EPSG:4326",
-      "dpi": 72,
-      "rotation": 0,
-      "center": [
-        -95.8506355,
-        37.163851
-      ],
-      "longitudeFirst": true,
-      "scale": 45000000,
-      "layers": [
-        {
-          "type": "WMS",
-          "layers": [
-            "topp:states"
-          ],
-          "baseURL": "http://geoserver:8080/wms",
-          "imageFormat": "image/png",
-          "version": "1.3.0",
-          "customParams": {
-            "TRANSPARENT": "true",
-            "EXCEPTIONS": "INIMAGE"
-          }
+    "layout": "A4 landscape",
+    "outputFormat": "pdf",
+    "attributes": {
+        "map": {
+            "projection": "EPSG:4326",
+            "dpi": 72,
+            "rotation": 0,
+            "center": [-95.8506355, 37.163851],
+            "longitudeFirst": true,
+            "scale": 45000000,
+            "layers": [
+                {
+                    "type": "WMS",
+                    "layers": ["topp:states"],
+                    "baseURL": "http://geoserver:8080/wms",
+                    "imageFormat": "image/png",
+                    "version": "1.3.0",
+                    "customParams": {
+                        "TRANSPARENT": "true",
+                        "EXCEPTIONS": "INIMAGE"
+                    }
+                }
+            ]
         }
-      ]
     }
-  }
 }

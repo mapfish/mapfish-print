@@ -1,16 +1,14 @@
 {
-  "layout": "A4 landscape",
-  "outputFormat": "pdf",
-  "attributes":
-  {
-    "map":
-    {
-      "projection": "EPSG:3857",
-      "dpi": 72,
-      "rotation": 0,
-      "center": [-8235878.4938425, 4979784.7605681],
-      "scale": 26000,
-      "layers": []
+    "layout": "A4 landscape",
+    "outputFormat": "pdf",
+    "attributes": {
+        "map": {
+            "projection": "EPSG:3857",
+            "dpi": 72,
+            "rotation": 0,
+            "center": [-8235878.4938425, 4979784.7605681],
+            "scale": 26000,
+            "layers": []
+        }
     }
-  }
 }

@@ -1,38 +1,26 @@
 {
-  "layout": "A4 landscape",
-  "outputFormat": "pdf",
-  "attributes": {
-    "map": {
-      "projection": "EPSG:3857",
-      "dpi": 72,
-      "rotation": 0,
-      "center": [
-        -8240656,
-        4969880,
-        -8235548,
-        4973782
-      ],
-      "scale": 25000,
-      "layers": [
-        {
-          "baseURL": "http://geoserver:8080/wms",
-          "opacity": 1,
-          "type": "WMS",
-          "layers": [
-            "nurc:Img_Sample",
-            "tiger:poly_landmarks",
-            "tiger:tiger_roads",
-            "tiger:poi"
-          ],
-          "imageFormat": "image/png",
-          "styles": [
-            ""
-          ],
-          "customParams": {
-            "TRANSPARENT": "true"
-          }
+    "layout": "A4 landscape",
+    "outputFormat": "pdf",
+    "attributes": {
+        "map": {
+            "projection": "EPSG:3857",
+            "dpi": 72,
+            "rotation": 0,
+            "center": [-8240656, 4969880, -8235548, 4973782],
+            "scale": 25000,
+            "layers": [
+                {
+                    "baseURL": "http://geoserver:8080/wms",
+                    "opacity": 1,
+                    "type": "WMS",
+                    "layers": ["nurc:Img_Sample", "tiger:poly_landmarks", "tiger:tiger_roads", "tiger:poi"],
+                    "imageFormat": "image/png",
+                    "styles": [""],
+                    "customParams": {
+                        "TRANSPARENT": "true"
+                    }
+                }
+            ]
         }
-      ]
     }
-  }
 }

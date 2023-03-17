@@ -1,339 +1,275 @@
 {
-  "attributes": {
-    "map": {
-      "center": [
-        0,
-        0
-      ],
-      "dpi": 128,
-      "layers": [{
-        "geoJson": {
-          "type": "FeatureCollection",
-          "features": [{
-              "type": "Feature",
-              "properties": {
-                "_type": "join-miter"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    -400,
-                    200
-                  ],
-                  [
-                    -300,
-                    100
-                  ],
-                  [
-                    -200,
-                    200
-                  ]
-                ]
-              }
-            },
-            {
-              "type": "Feature",
-              "properties": {
-                "_type": "join-round"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    -100,
-                    200
-                  ],
-                  [
-                    0,
-                    100
-                  ],
-                  [
-                    100,
-                    200
-                  ]
-                ]
-              }
-            },
-            {
-              "type": "Feature",
-              "properties": {
-                "_type": "join-bevel"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    200,
-                    200
-                  ],
-                  [
-                    300,
-                    100
-                  ],
-                  [
-                    400,
-                    200
-                  ]
-                ]
-              }
-            },
-            {
-              "type": "Feature",
-              "properties": {
-                "_type": "none"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    -700,
-                    -200
-                  ],
-                  [
-                    -600,
-                    -100
-                  ],
-                  [
-                    -500,
-                    -200
-                  ]
-                ]
-              }
-            },
-            {
-              "type": "Feature",
-              "properties": {
-                "_type": "cap-butt"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    -400,
-                    -200
-                  ],
-                  [
-                    -300,
-                    -100
-                  ],
-                  [
-                    -200,
-                    -200
-                  ]
-                ]
-              }
-            },
-            {
-              "type": "Feature",
-              "properties": {
-                "_type": "cap-round"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    -100,
-                    -200
-                  ],
-                  [
-                    0,
-                    -100
-                  ],
-                  [
-                    100,
-                    -200
-                  ]
-                ]
-              }
-            },
-            {
-              "type": "Feature",
-              "properties": {
-                "_type": "cap-square"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    200,
-                    -200
-                  ],
-                  [
-                    300,
-                    -100
-                  ],
-                  [
-                    400,
-                    -200
-                  ]
-                ]
-              }
-            },
-            {
-              "type": "Feature",
-              "properties": {
-                "_type": "dash"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    -700,
-                    -300
-                  ],
-                  [
-                    -50,
-                    -300
-                  ]
-                ]
-              }
-            },
-            {
-              "type": "Feature",
-              "properties": {
-                "_type": "dash-offset"
-              },
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [
-                    -700,
-                    -400
-                  ],
-                  [
-                    -50,
-                    -400
-                  ]
-                ]
-              }
-            }
-          ]
-        },
-        "style": {
-          "version": "2",
-          "[_type = 'join-miter']": {
-            "symbolizers": [{
-                "type": "line",
-                "strokeColor": "blue",
-                "strokeLinejoin": "miter",
-                "strokeWidth": 20
-              },
-              {
-                "type": "line",
-                "strokeColor": "black",
-                "strokeWidth": 1
-              }
-            ]
-          },
-          "[_type = 'join-round']": {
-            "symbolizers": [{
-                "type": "line",
-                "strokeColor": "blue",
-                "strokeLinejoin": "round",
-                "strokeWidth": 20
-              },
-              {
-                "type": "line",
-                "strokeColor": "black",
-                "strokeWidth": 1
-              }
-            ]
-          },
-          "[_type = 'join-bevel']": {
-            "symbolizers": [{
-                "type": "line",
-                "strokeColor": "blue",
-                "strokeLinejoin": "bevel",
-                "strokeWidth": 20
-              },
-              {
-                "type": "line",
-                "strokeColor": "black",
-                "strokeWidth": 1
-              }
-            ]
-          },
-          "[_type = 'cap-butt']": {
-            "symbolizers": [{
-                "type": "line",
-                "strokeColor": "green",
-                "strokeLinecap": "butt",
-                "strokeWidth": 20
-              },
-              {
-                "type": "line",
-                "strokeColor": "black",
-                "strokeWidth": 1
-              }
-            ]
-          },
-          "[_type = 'cap-round']": {
-            "symbolizers": [{
-                "type": "line",
-                "strokeColor": "green",
-                "strokeLinecap": "round",
-                "strokeWidth": 20
-              },
-              {
-                "type": "line",
-                "strokeColor": "black",
-                "strokeWidth": 1
-              }
-            ]
-          },
-          "[_type = 'cap-square']": {
-            "symbolizers": [{
-                "type": "line",
-                "strokeColor": "green",
-                "strokeLinecap": "square",
-                "strokeWidth": 20
-              },
-              {
-                "type": "line",
-                "strokeColor": "black",
-                "strokeWidth": 1
-              }
-            ]
-          },
-          "[_type = 'none']": {
-            "symbolizers": [{
-                "type": "line",
-                "strokeColor": "gray",
-                "strokeWidth": 20
-              },
-              {
-                "type": "line",
-                "strokeColor": "black",
-                "strokeWidth": 1
-              }
-            ]
-          },
-          "[_type = 'dash']": {
-            "symbolizers": [{
-              "type": "line",
-              "strokeColor": "black",
-              "strokeWidth": 2,
-              "strokeDashstyle": "10 3"
-            }]
-          },
-          "[_type = 'dash-offset']": {
-            "symbolizers": [{
-              "type": "line",
-              "strokeColor": "black",
-              "strokeWidth": 2,
-              "strokeDashstyle": "10 3",
-              "strokeDashoffset": 8
-            }]
-          }
-        },
-        "type": "geojson"
-      }],
-      "projection": "EPSG:3857",
-      "rotation": 0,
-      "scale": 10000
-    }
-  },
-  "layout": "A4 landscape",
-  "outputFormat": "pdf"
+    "attributes": {
+        "map": {
+            "center": [0, 0],
+            "dpi": 128,
+            "layers": [
+                {
+                    "geoJson": {
+                        "type": "FeatureCollection",
+                        "features": [
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "_type": "join-miter"
+                                },
+                                "geometry": {
+                                    "type": "LineString",
+                                    "coordinates": [
+                                        [-400, 200],
+                                        [-300, 100],
+                                        [-200, 200]
+                                    ]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "_type": "join-round"
+                                },
+                                "geometry": {
+                                    "type": "LineString",
+                                    "coordinates": [
+                                        [-100, 200],
+                                        [0, 100],
+                                        [100, 200]
+                                    ]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "_type": "join-bevel"
+                                },
+                                "geometry": {
+                                    "type": "LineString",
+                                    "coordinates": [
+                                        [200, 200],
+                                        [300, 100],
+                                        [400, 200]
+                                    ]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "_type": "none"
+                                },
+                                "geometry": {
+                                    "type": "LineString",
+                                    "coordinates": [
+                                        [-700, -200],
+                                        [-600, -100],
+                                        [-500, -200]
+                                    ]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "_type": "cap-butt"
+                                },
+                                "geometry": {
+                                    "type": "LineString",
+                                    "coordinates": [
+                                        [-400, -200],
+                                        [-300, -100],
+                                        [-200, -200]
+                                    ]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "_type": "cap-round"
+                                },
+                                "geometry": {
+                                    "type": "LineString",
+                                    "coordinates": [
+                                        [-100, -200],
+                                        [0, -100],
+                                        [100, -200]
+                                    ]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "_type": "cap-square"
+                                },
+                                "geometry": {
+                                    "type": "LineString",
+                                    "coordinates": [
+                                        [200, -200],
+                                        [300, -100],
+                                        [400, -200]
+                                    ]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "_type": "dash"
+                                },
+                                "geometry": {
+                                    "type": "LineString",
+                                    "coordinates": [
+                                        [-700, -300],
+                                        [-50, -300]
+                                    ]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "_type": "dash-offset"
+                                },
+                                "geometry": {
+                                    "type": "LineString",
+                                    "coordinates": [
+                                        [-700, -400],
+                                        [-50, -400]
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "style": {
+                        "version": "2",
+                        "[_type = 'join-miter']": {
+                            "symbolizers": [
+                                {
+                                    "type": "line",
+                                    "strokeColor": "blue",
+                                    "strokeLinejoin": "miter",
+                                    "strokeWidth": 20
+                                },
+                                {
+                                    "type": "line",
+                                    "strokeColor": "black",
+                                    "strokeWidth": 1
+                                }
+                            ]
+                        },
+                        "[_type = 'join-round']": {
+                            "symbolizers": [
+                                {
+                                    "type": "line",
+                                    "strokeColor": "blue",
+                                    "strokeLinejoin": "round",
+                                    "strokeWidth": 20
+                                },
+                                {
+                                    "type": "line",
+                                    "strokeColor": "black",
+                                    "strokeWidth": 1
+                                }
+                            ]
+                        },
+                        "[_type = 'join-bevel']": {
+                            "symbolizers": [
+                                {
+                                    "type": "line",
+                                    "strokeColor": "blue",
+                                    "strokeLinejoin": "bevel",
+                                    "strokeWidth": 20
+                                },
+                                {
+                                    "type": "line",
+                                    "strokeColor": "black",
+                                    "strokeWidth": 1
+                                }
+                            ]
+                        },
+                        "[_type = 'cap-butt']": {
+                            "symbolizers": [
+                                {
+                                    "type": "line",
+                                    "strokeColor": "green",
+                                    "strokeLinecap": "butt",
+                                    "strokeWidth": 20
+                                },
+                                {
+                                    "type": "line",
+                                    "strokeColor": "black",
+                                    "strokeWidth": 1
+                                }
+                            ]
+                        },
+                        "[_type = 'cap-round']": {
+                            "symbolizers": [
+                                {
+                                    "type": "line",
+                                    "strokeColor": "green",
+                                    "strokeLinecap": "round",
+                                    "strokeWidth": 20
+                                },
+                                {
+                                    "type": "line",
+                                    "strokeColor": "black",
+                                    "strokeWidth": 1
+                                }
+                            ]
+                        },
+                        "[_type = 'cap-square']": {
+                            "symbolizers": [
+                                {
+                                    "type": "line",
+                                    "strokeColor": "green",
+                                    "strokeLinecap": "square",
+                                    "strokeWidth": 20
+                                },
+                                {
+                                    "type": "line",
+                                    "strokeColor": "black",
+                                    "strokeWidth": 1
+                                }
+                            ]
+                        },
+                        "[_type = 'none']": {
+                            "symbolizers": [
+                                {
+                                    "type": "line",
+                                    "strokeColor": "gray",
+                                    "strokeWidth": 20
+                                },
+                                {
+                                    "type": "line",
+                                    "strokeColor": "black",
+                                    "strokeWidth": 1
+                                }
+                            ]
+                        },
+                        "[_type = 'dash']": {
+                            "symbolizers": [
+                                {
+                                    "type": "line",
+                                    "strokeColor": "black",
+                                    "strokeWidth": 2,
+                                    "strokeDashstyle": "10 3"
+                                }
+                            ]
+                        },
+                        "[_type = 'dash-offset']": {
+                            "symbolizers": [
+                                {
+                                    "type": "line",
+                                    "strokeColor": "black",
+                                    "strokeWidth": 2,
+                                    "strokeDashstyle": "10 3",
+                                    "strokeDashoffset": 8
+                                }
+                            ]
+                        }
+                    },
+                    "type": "geojson"
+                }
+            ],
+            "projection": "EPSG:3857",
+            "rotation": 0,
+            "scale": 10000
+        }
+    },
+    "layout": "A4 landscape",
+    "outputFormat": "pdf"
 }

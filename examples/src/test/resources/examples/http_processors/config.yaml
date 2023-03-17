@@ -1,8 +1,6 @@
-
 templates:
   #===========================================================================
-  A4 landscape: !template
-  #===========================================================================
+  A4 landscape: !template #===========================================================================
     reportTemplate: simpleReport.jrxml
     attributes:
       map: !map
@@ -25,7 +23,7 @@ templates:
           # !mapUri can have multiple mappings but this only shows a single example
           - !mapUri
             mapping:
-              (http)://myhost.com(.*): "$1://geoserver$2"
+              (http)://myhost.com(.*): '$1://geoserver$2'
           # Take the Cookie and Referrer headers from the print request and add them to all http requests of the associated print job
           - !forwardHeaders
             headers:

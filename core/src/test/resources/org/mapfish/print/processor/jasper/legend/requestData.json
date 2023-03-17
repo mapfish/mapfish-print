@@ -2,19 +2,24 @@
     "attributes": {
         "legend": {
             "name": "",
-            "classes": [{
-                "name": "Arbres",
-                "icons": ["http://legend.com/arbres.png"]
-            }, {
-                "name": "Peturbations",
-                "icons": ["http://legend.com/perturbations.png"]
-            }, {
-                "name": "Points de vente",
-                "icons": ["http://legend.com/points-de-vente.png"]
-            }, {
-                "name": "Stationement",
-                "icons": ["http://legend.com/stationement.png"]
-            }]
+            "classes": [
+                {
+                    "name": "Arbres",
+                    "icons": ["http://legend.com/arbres.png"]
+                },
+                {
+                    "name": "Peturbations",
+                    "icons": ["http://legend.com/perturbations.png"]
+                },
+                {
+                    "name": "Points de vente",
+                    "icons": ["http://legend.com/points-de-vente.png"]
+                },
+                {
+                    "name": "Stationement",
+                    "icons": ["http://legend.com/stationement.png"]
+                }
+            ]
         }
     }
 }

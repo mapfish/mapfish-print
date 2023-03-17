@@ -1,16 +1,16 @@
 {
-  "attributes": {
-    "map": {
-      "scale": 7500000,
-      "center": [676984.536, 332646.513],
-      "projection": "EPSG:21781",
-      "dpi": 72,
-      "layers": [
-        {
-          "type": "geotiff",
-          "url": "file://sampleGeoTiff.tif"
+    "attributes": {
+        "map": {
+            "scale": 7500000,
+            "center": [676984.536, 332646.513],
+            "projection": "EPSG:21781",
+            "dpi": 72,
+            "layers": [
+                {
+                    "type": "geotiff",
+                    "url": "file://sampleGeoTiff.tif"
+                }
+            ]
         }
-      ]
     }
-  }
 }

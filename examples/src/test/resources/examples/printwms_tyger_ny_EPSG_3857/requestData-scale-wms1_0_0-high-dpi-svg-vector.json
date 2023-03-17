@@ -1,35 +1,30 @@
 {
-  "attributes": {
-    "map": {
-      "center": [
-        -8233518.5005945,
-        4980320.4059228
-      ],
-      "dpi": 300,
-      "layers": [
-        {
-          "type": "geojson",
-          "geojson": "http://geoserver:8080/www/geojson/ny-roads-3857.json",
-          "renderAsSvg": true
-        },
-        {
-          "baseURL": "http://geoserver:8080/wms",
-          "customParams": {
-            "TRANSPARENT": "true"
-          },
-          "imageFormat": "image/png",
-          "layers": [
-            "tiger-ny"
-          ],
-          "opacity": 1,
-          "type": "WMS"
+    "attributes": {
+        "map": {
+            "center": [-8233518.5005945, 4980320.4059228],
+            "dpi": 300,
+            "layers": [
+                {
+                    "type": "geojson",
+                    "geojson": "http://geoserver:8080/www/geojson/ny-roads-3857.json",
+                    "renderAsSvg": true
+                },
+                {
+                    "baseURL": "http://geoserver:8080/wms",
+                    "customParams": {
+                        "TRANSPARENT": "true"
+                    },
+                    "imageFormat": "image/png",
+                    "layers": ["tiger-ny"],
+                    "opacity": 1,
+                    "type": "WMS"
+                }
+            ],
+            "projection": "EPSG:3857",
+            "rotation": 0,
+            "scale": 25000
         }
-      ],
-      "projection": "EPSG:3857",
-      "rotation": 0,
-      "scale": 25000
-    }
-  },
-  "layout": "A4 landscape",
-  "outputFormat": "pdf"
+    },
+    "layout": "A4 landscape",
+    "outputFormat": "pdf"
 }

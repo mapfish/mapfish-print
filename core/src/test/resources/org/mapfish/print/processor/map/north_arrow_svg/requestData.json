@@ -1,18 +1,18 @@
 {
-  "attributes": {
-    "map": {
-      "center": [-8235878.4938425, 4979784.7605681],
-      "scale": 26000,
-      "projection": "EPSG:3857",
-      "dpi": 72,
-      "rotation": 135,
-      "layers": [
-        {
-          "type": "osm",
-          "baseURL": "http://north_arrow.osm:1234",
-          "imageExtension": "tiff"
+    "attributes": {
+        "map": {
+            "center": [-8235878.4938425, 4979784.7605681],
+            "scale": 26000,
+            "projection": "EPSG:3857",
+            "dpi": 72,
+            "rotation": 135,
+            "layers": [
+                {
+                    "type": "osm",
+                    "baseURL": "http://north_arrow.osm:1234",
+                    "imageExtension": "tiff"
+                }
+            ]
         }
-      ]
     }
-  }
 }

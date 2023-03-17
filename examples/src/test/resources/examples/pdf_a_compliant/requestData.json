@@ -1,43 +1,36 @@
 {
-  "layout": "A4 landscape",
-  "outputFormat": "pdf",
-  "attributes": {
-    "map": {
-      "projection": "EPSG:3857",
-      "dpi": 72,
-      "rotation": 0,
-      "center": [
-        -8235878.4938425,
-        4979784.7605681
-      ],
-      "scale": 26000,
-      "layers": [
-        {
-          "type": "geojson",
-          "geojson": "file://ny_feature.geojson",
-          "renderAsSvg": true
-        },
-        {
-          "baseURL": "http://geoserver:8080/wms",
-          "opacity": 1,
-          "type": "WMS",
-          "layers": [
-            "tiger:tiger_roads"
-          ],
-          "imageFormat": "image/png",
-          "styles": [
-            "line"
-          ],
-          "customParams": {
-            "TRANSPARENT": "true"
-          }
-        },
-        {
-          "baseURL": "http://geoserver:8080/www/osm",
-          "type": "OSM",
-          "imageExtension": "png"
+    "layout": "A4 landscape",
+    "outputFormat": "pdf",
+    "attributes": {
+        "map": {
+            "projection": "EPSG:3857",
+            "dpi": 72,
+            "rotation": 0,
+            "center": [-8235878.4938425, 4979784.7605681],
+            "scale": 26000,
+            "layers": [
+                {
+                    "type": "geojson",
+                    "geojson": "file://ny_feature.geojson",
+                    "renderAsSvg": true
+                },
+                {
+                    "baseURL": "http://geoserver:8080/wms",
+                    "opacity": 1,
+                    "type": "WMS",
+                    "layers": ["tiger:tiger_roads"],
+                    "imageFormat": "image/png",
+                    "styles": ["line"],
+                    "customParams": {
+                        "TRANSPARENT": "true"
+                    }
+                },
+                {
+                    "baseURL": "http://geoserver:8080/www/osm",
+                    "type": "OSM",
+                    "imageExtension": "png"
+                }
+            ]
         }
-      ]
     }
-  }
 }

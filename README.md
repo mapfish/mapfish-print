@@ -43,16 +43,17 @@ The test (part of the build) requires the 'Liberation Sans' font, which can be d
 # Auto-releoad mode
 
 To be able to quickly test modifications in the print you should:
-- Copy the file `docker-compose.override.sample.yaml` to `docker-compose.override.yaml`.
-- Run `docker compose up -d`,
-The print will be available on port `8080` and on code modification will be built and trigger a restart.
+
+-   Copy the file `docker-compose.override.sample.yaml` to `docker-compose.override.yaml`.
+-   Run `docker compose up -d`,
+    The print will be available on port `8080` and on code modification will be built and trigger a restart.
 
 # Create new stabilisation branch
 
-- Create a new branch name x.y from master.
-- Create a new label names 'backport x.y'.
-- On the master branch update the `.github/workflows/rebuild.yaml` file by adding the new branch name.
-- On the master branch update the `.github/workflows/audit.yaml` file by adding the new branch name.
+-   Create a new branch name x.y from master.
+-   Create a new label names 'backport x.y'.
+-   On the master branch update the `.github/workflows/rebuild.yaml` file by adding the new branch name.
+-   On the master branch update the `.github/workflows/audit.yaml` file by adding the new branch name.
 
 # Run from commandline
 
@@ -101,9 +102,9 @@ Import project into Eclipse
 
 # Run in Eclipse
 
-- Create new Java Run Configuration
-- Main class is org.mapfish.print.cli.Main
-- Program arguments: -config samples/config.yaml -spec samples/spec.json -output \$HOME/print.pdf
+-   Create new Java Run Configuration
+-   Main class is org.mapfish.print.cli.Main
+-   Program arguments: -config samples/config.yaml -spec samples/spec.json -output \$HOME/print.pdf
 
 # Contributor License Agreement
 

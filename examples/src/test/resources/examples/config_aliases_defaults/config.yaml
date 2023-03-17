@@ -2,41 +2,40 @@ throwErrorOnExtraParameters: true
 
 templates:
   #===========================================================================
-  PDF Preview portrait: !template
-  #===========================================================================
+  PDF Preview portrait: !template #===========================================================================
     reportTemplate: pdf-preview-portrait.jrxml
     attributes:
       mapTitle: !string
-        default: "Default Title"
+        default: 'Default Title'
       mainMap: !map
         maxDpi: &MAX_DPI 254
         dpiSuggestions: &DPI [56, 72, 127, 190, 254]
         width: 555
         height: 711
         default: &DEFAULT_MAP
-          projection: "EPSG:3857"
+          projection: 'EPSG:3857'
           rotation: 0
           layers:
             - type: WMS
-              baseURL: "http://geoserver:8080/wms"
+              baseURL: 'http://geoserver:8080/wms'
               opacity: 1
-              layers: ["tiger:tiger_roads"]
-              imageFormat: "image/png"
-              styles: ["line"]
+              layers: ['tiger:tiger_roads']
+              imageFormat: 'image/png'
+              styles: ['line']
               customParams:
-                TRANSPARENT: "true"
-            - type: "OSM"
-              baseURL: "http://geoserver:8080/www/osm/"
-              imageExtension: "png"
+                TRANSPARENT: 'true'
+            - type: 'OSM'
+              baseURL: 'http://geoserver:8080/www/osm/'
+              imageExtension: 'png'
     processors: &PROCESSORS
       - !restrictUris
         matchers:
-         - !dnsMatch
-           host: geoserver
-           port: 8080
-         - !dnsMatch
-           host: mapfish.org
-           port: 80
+          - !dnsMatch
+            host: geoserver
+            port: 8080
+          - !dnsMatch
+            host: mapfish.org
+            port: 80
       - !reportBuilder # compile all reports in current directory
         directory: '.'
       - !createMap
@@ -44,15 +43,14 @@ templates:
         outputPrefix: main
 
   #===========================================================================
-  PDF Preview: !template
-  #===========================================================================
+  PDF Preview: !template #===========================================================================
     pdfConfig: !pdfConfig
-      title: "PDF Preview"
-      keywords: ["Preview", "Landscape"]
+      title: 'PDF Preview'
+      keywords: ['Preview', 'Landscape']
     reportTemplate: pdf-preview-landscape.jrxml
     attributes:
       mapTitle: !string
-        default: "Default Title"
+        default: 'Default Title'
       mainMap: !map
         maxDpi: *MAX_DPI
         dpiSuggestions: *DPI

@@ -1,74 +1,45 @@
 {
-  "layout": "A4 portrait",
-  "outputFormat": "pdf",
-  "attributes": {
-    "number": 45,
-    "name": "Hello",
-    "description": "Hello every body !",
-    "length": 45.123,
-    "datasource": [
-      {
-        "displayName": "Feature 1",
-        "table": {
-          "columns": [
-            "id",
-            "name",
-            "icon"
-          ],
-          "data": [
-            [
-              1,
-              "blah",
-              "icon_pan"
-            ],
-            [
-              2,
-              "blip",
-              "icon_zoomin"
+    "layout": "A4 portrait",
+    "outputFormat": "pdf",
+    "attributes": {
+        "number": 45,
+        "name": "Hello",
+        "description": "Hello every body !",
+        "length": 45.123,
+        "datasource": [
+            {
+                "displayName": "Feature 1",
+                "table": {
+                    "columns": ["id", "name", "icon"],
+                    "data": [
+                        [1, "blah", "icon_pan"],
+                        [2, "blip", "icon_zoomin"]
+                    ]
+                }
+            },
+            {
+                "displayName": "Feature 2",
+                "table": {
+                    "columns": ["id", "name", "icon"],
+                    "data": [
+                        [10, "blah2", "icon_pan2"],
+                        [20, "blip2", "icon_zoomin2"]
+                    ]
+                }
+            }
+        ],
+        "map": {
+            "bbox": [100, -1, 106, 2],
+            "projection": "CRS:84",
+            "dpi": 72,
+            "rotation": 0,
+            "layers": [
+                {
+                    "type": "geojson",
+                    "style": "polygon",
+                    "geoJson": "http://geoserver:8080/www/test-data/simple-squares-geojson.json"
+                }
             ]
-          ]
         }
-      },
-      {
-        "displayName": "Feature 2",
-        "table": {
-          "columns": [
-            "id",
-            "name",
-            "icon"
-          ],
-          "data": [
-            [
-              10,
-              "blah2",
-              "icon_pan2"
-            ],
-            [
-              20,
-              "blip2",
-              "icon_zoomin2"
-            ]
-          ]
-        }
-      }
-    ],
-    "map": {
-      "bbox": [
-        100,
-        -1,
-        106,
-        2
-      ],
-      "projection": "CRS:84",
-      "dpi": 72,
-      "rotation": 0,
-      "layers": [
-        {
-          "type": "geojson",
-          "style": "polygon",
-          "geoJson": "http://geoserver:8080/www/test-data/simple-squares-geojson.json"
-        }
-      ]
     }
-  }
 }

@@ -1,34 +1,35 @@
 {
-  "outputFormat": "png",
-  "layout" : "main",
-  "attributes": {
-    "map": {
-      "areaOfInterest" : {
-        "area" : {
-          "type": "Polygon",
-          "coordinates": [
-            [-11543954.518771818, 5537222.634774348], [-11537451.870253371, 5537222.634774348],
-            [-11537451.870253371, 5532362.069215104], [-11543954.518771818, 5532362.069215104],
-            [-11543954.518771818, 5537222.634774348]
-          ]
+    "outputFormat": "png",
+    "layout": "main",
+    "attributes": {
+        "map": {
+            "areaOfInterest": {
+                "area": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [-11543954.518771818, 5537222.634774348],
+                        [-11537451.870253371, 5537222.634774348],
+                        [-11537451.870253371, 5532362.069215104],
+                        [-11543954.518771818, 5532362.069215104],
+                        [-11543954.518771818, 5537222.634774348]
+                    ]
+                }
+            },
+            "projection": "EPSG:3857",
+            "dpi": 72,
+            "layers": [
+                {
+                    "type": "geojson",
+                    "style": "file://thinline.sld",
+                    "geojson": "file://streams.json",
+                    "renderAsSvg": "true"
+                },
+                {
+                    "type": "geojson",
+                    "style": "file://streams.sld",
+                    "geojson": "file://streams.json"
+                }
+            ]
         }
-      },
-      "projection": "EPSG:3857",
-      "dpi": 72,
-      "layers": [
-        {
-          "type": "geojson",
-          "style": "file://thinline.sld",
-          "geojson": "file://streams.json",
-          "renderAsSvg" : "true"
-        },
-        {
-          "type": "geojson",
-          "style": "file://streams.sld",
-          "geojson": "file://streams.json"
-        }
-
-      ]
     }
-  }
 }

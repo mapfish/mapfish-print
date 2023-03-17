@@ -1,91 +1,85 @@
 {
-   "type": "geojson",
-   "style": {
-      "version": "1",
-      "styleProperty": "_gx_style",
-      "1": {
-         "fillColor": "#FF0000",
-         "fillOpacity": 0,
-         "rotation": "30",
-         "graphicName": "square",
-         "hoverFillColor": "white",
-         "hoverFillOpacity": 0.8,
-         "strokeColor": "#FFA829",
-         "strokeOpacity": 1,
-         "strokeWidth": 5,
-         "strokeLinecap": "round",
-         "strokeDashstyle": "solid",
-         "hoverStrokeColor": "red",
-         "hoverStrokeOpacity": 1,
-         "hoverStrokeWidth": 0.2,
-         "pointRadius": 5,
-         "hoverPointRadius": 1,
-         "hoverPointUnit": "%",
-         "pointerEvents": "visiblePainted",
-         "cursor": "inherit",
-         "fontColor": "#000000",
-         "label": "${label}",
-         "labelAlign": "cm",
-         "labelOutlineColor": "white",
-         "labelOutlineWidth": 3
-      }
-   },
-   "geoJson": {
-      "type": "FeatureCollection",
-      "features": [
-         {
-            "type": "Feature",
-            "properties": {
-               "_gx_style": 1,
-               "signalnr": "15993&nbsp&nbsp&nbsp&nbsp <img src=\"http://budweb04/signalisation/signale/15993.bmp\" alt=\"Signal\">",
-               "signaltyp": "Parkieren verboten",
-               "axe": "2/12 : Muttenz-Pratteln-Liestal",
-               "vss_nr": "2.50",
-               "eigtsignal": "Kanton",
-               "signtraegernr": "6954",
-               "signtraegertyp": "Kandelaber",
-               "eigtsigntraeger": "Kanton",
-               "grundeigentuemer": "Kanton",
-               "text": " ",
-               "tba_kreis": "",
-               "gemeinde_name": ""
+    "type": "geojson",
+    "style": {
+        "version": "1",
+        "styleProperty": "_gx_style",
+        "1": {
+            "fillColor": "#FF0000",
+            "fillOpacity": 0,
+            "rotation": "30",
+            "graphicName": "square",
+            "hoverFillColor": "white",
+            "hoverFillOpacity": 0.8,
+            "strokeColor": "#FFA829",
+            "strokeOpacity": 1,
+            "strokeWidth": 5,
+            "strokeLinecap": "round",
+            "strokeDashstyle": "solid",
+            "hoverStrokeColor": "red",
+            "hoverStrokeOpacity": 1,
+            "hoverStrokeWidth": 0.2,
+            "pointRadius": 5,
+            "hoverPointRadius": 1,
+            "hoverPointUnit": "%",
+            "pointerEvents": "visiblePainted",
+            "cursor": "inherit",
+            "fontColor": "#000000",
+            "label": "${label}",
+            "labelAlign": "cm",
+            "labelOutlineColor": "white",
+            "labelOutlineWidth": 3
+        }
+    },
+    "geoJson": {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {
+                    "_gx_style": 1,
+                    "signalnr": "15993&nbsp&nbsp&nbsp&nbsp <img src=\"http://budweb04/signalisation/signale/15993.bmp\" alt=\"Signal\">",
+                    "signaltyp": "Parkieren verboten",
+                    "axe": "2/12 : Muttenz-Pratteln-Liestal",
+                    "vss_nr": "2.50",
+                    "eigtsignal": "Kanton",
+                    "signtraegernr": "6954",
+                    "signtraegertyp": "Kandelaber",
+                    "eigtsigntraeger": "Kanton",
+                    "grundeigentuemer": "Kanton",
+                    "text": " ",
+                    "tba_kreis": "",
+                    "gemeinde_name": ""
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [2613970.99, 1265562.86]
+                }
             },
-            "geometry": {
-               "type": "Point",
-               "coordinates": [
-                  2613970.99,
-                  1265562.86
-               ]
+            {
+                "type": "Feature",
+                "properties": {
+                    "_gx_style": 1,
+                    "signalnr": "15992&nbsp&nbsp&nbsp&nbsp <img src=\"http://budweb04/signalisation/signale/15992.bmp\" alt=\"Signal\">",
+                    "signaltyp": "Parkieren verboten",
+                    "axe": "2/12 : Muttenz-Pratteln-Liestal",
+                    "vss_nr": "2.50",
+                    "eigtsignal": "Kanton",
+                    "signtraegernr": "6954",
+                    "signtraegertyp": "Kandelaber",
+                    "eigtsigntraeger": "Kanton",
+                    "grundeigentuemer": "Kanton",
+                    "text": " ",
+                    "tba_kreis": "",
+                    "gemeinde_name": ""
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [2613970.99, 1265562.86]
+                }
             }
-         },
-         {
-            "type": "Feature",
-            "properties": {
-               "_gx_style": 1,
-               "signalnr": "15992&nbsp&nbsp&nbsp&nbsp <img src=\"http://budweb04/signalisation/signale/15992.bmp\" alt=\"Signal\">",
-               "signaltyp": "Parkieren verboten",
-               "axe": "2/12 : Muttenz-Pratteln-Liestal",
-               "vss_nr": "2.50",
-               "eigtsignal": "Kanton",
-               "signtraegernr": "6954",
-               "signtraegertyp": "Kandelaber",
-               "eigtsigntraeger": "Kanton",
-               "grundeigentuemer": "Kanton",
-               "text": " ",
-               "tba_kreis": "",
-               "gemeinde_name": ""
-            },
-            "geometry": {
-               "type": "Point",
-               "coordinates": [
-                  2613970.99,
-                  1265562.86
-               ]
-            }
-         }
-      ]
-   },
-   "name": "c2cgeoportal118",
-   "opacity": 1,
-   "useNativeAngle": false
+        ]
+    },
+    "name": "c2cgeoportal118",
+    "opacity": 1,
+    "useNativeAngle": false
 }

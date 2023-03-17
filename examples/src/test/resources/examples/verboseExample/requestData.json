@@ -1,154 +1,90 @@
 {
-  "layout": "A4 portrait",
-  "outputFormat": "pdf",
-  "attributes": {
-    "number": 45,
-    "name": "Hello",
-    "description": "Hello every body !",
-    "length": 45.123,
-    "table": {
-      "columns": [
-        "id",
-        "name",
-        "icon"
-      ],
-      "data": [
-        [
-          1,
-          "blah",
-          "icon_pan"
+    "layout": "A4 portrait",
+    "outputFormat": "pdf",
+    "attributes": {
+        "number": 45,
+        "name": "Hello",
+        "description": "Hello every body !",
+        "length": 45.123,
+        "table": {
+            "columns": ["id", "name", "icon"],
+            "data": [
+                [1, "blah", "icon_pan"],
+                [2, "blip", "icon_zoomin"]
+            ]
+        },
+        "datasource": [
+            {
+                "displayName": "Feature 1",
+                "table": {
+                    "columns": ["id", "name", "icon"],
+                    "data": [
+                        [1, "blah", "icon_pan"],
+                        [2, "blip", "icon_zoomin"]
+                    ]
+                }
+            },
+            {
+                "displayName": "Feature 2",
+                "table": {
+                    "columns": ["id", "name", "icon"],
+                    "data": [
+                        [10, "blah2", "icon_pan2"],
+                        [20, "blip2", "icon_zoomin2"]
+                    ]
+                }
+            }
         ],
-        [
-          2,
-          "blip",
-          "icon_zoomin"
-        ]
-      ]
-    },
-    "datasource": [
-      {
-        "displayName": "Feature 1",
-        "table": {
-          "columns": [
-            "id",
-            "name",
-            "icon"
-          ],
-          "data": [
-            [
-              1,
-              "blah",
-              "icon_pan"
-            ],
-            [
-              2,
-              "blip",
-              "icon_zoomin"
+        "legend": {
+            "name": "",
+            "classes": [
+                {
+                    "name": "Arbres",
+                    "icons": ["http://geoserver:8080/www/legends/arbres.png"]
+                },
+                {
+                    "name": "Peturbations",
+                    "icons": ["http://geoserver:8080/www/legends/perturbations.png"]
+                },
+                {
+                    "name": "Points de vente",
+                    "icons": ["http://geoserver:8080/www/legends/points-de-vente.png"]
+                },
+                {
+                    "name": "Stationement",
+                    "icons": ["http://geoserver:8080/www/legends/stationement.png"]
+                }
             ]
-          ]
-        }
-      },
-      {
-        "displayName": "Feature 2",
-        "table": {
-          "columns": [
-            "id",
-            "name",
-            "icon"
-          ],
-          "data": [
-            [
-              10,
-              "blah2",
-              "icon_pan2"
-            ],
-            [
-              20,
-              "blip2",
-              "icon_zoomin2"
+        },
+        "map": {
+            "bbox": [100, -1, 106, 2],
+            "projection": "CRS:84",
+            "dpi": 72,
+            "rotation": 0,
+            "areaOfInterest": {
+                "style": "overview-map",
+                "display": "RENDER",
+                "renderAsSvg": true,
+                "area": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [101, -0.5],
+                            [105, -0.5],
+                            [105, 1.75],
+                            [101, 1.75],
+                            [101, -0.5]
+                        ]
+                    ]
+                }
+            },
+            "layers": [
+                {
+                    "type": "geojson",
+                    "style": "polygon",
+                    "geoJson": "file://resources/geojson.json"
+                }
             ]
-          ]
         }
-      }
-    ],
-    "legend": {
-      "name": "",
-      "classes": [
-        {
-          "name": "Arbres",
-          "icons": [
-            "http://geoserver:8080/www/legends/arbres.png"
-          ]
-        },
-        {
-          "name": "Peturbations",
-          "icons": [
-            "http://geoserver:8080/www/legends/perturbations.png"
-          ]
-        },
-        {
-          "name": "Points de vente",
-          "icons": [
-            "http://geoserver:8080/www/legends/points-de-vente.png"
-          ]
-        },
-        {
-          "name": "Stationement",
-          "icons": [
-            "http://geoserver:8080/www/legends/stationement.png"
-          ]
-        }
-      ]
-    },
-    "map": {
-      "bbox": [
-        100,
-        -1,
-        106,
-        2
-      ],
-      "projection": "CRS:84",
-      "dpi": 72,
-      "rotation": 0,
-      "areaOfInterest": {
-        "style": "overview-map",
-        "display": "RENDER",
-        "renderAsSvg": true,
-        "area": {
-          "type": "Polygon",
-          "coordinates": [
-            [
-              [
-                101,
-                -0.5
-              ],
-              [
-                105,
-                -0.5
-              ],
-              [
-                105,
-                1.75
-              ],
-              [
-                101,
-                1.75
-              ],
-              [
-                101,
-                -0.5
-              ]
-            ]
-          ]
-        }
-      },
-      "layers": [
-        {
-          "type": "geojson",
-          "style": "polygon",
-          "geoJson": "file://resources/geojson.json"
-        }
-      ]
     }
-  }
 }

@@ -1,16 +1,16 @@
 {
-  "attributes": {
-    "map": {
-      "center": [598181.89626436, 4920032.0647426],
-      "scale": 140092.9510627969,
-      "projection": "EPSG:3587",
-      "dpi": 72,
-      "layers": [
-        {
-          "type": "gml",
-          "style": "line"
+    "attributes": {
+        "map": {
+            "center": [598181.89626436, 4920032.0647426],
+            "scale": 140092.9510627969,
+            "projection": "EPSG:3587",
+            "dpi": 72,
+            "layers": [
+                {
+                    "type": "gml",
+                    "style": "line"
+                }
+            ]
         }
-      ]
     }
-  }
 }

@@ -31,8 +31,7 @@ hosts:
 
 templates:
   #===========================================================================
-  A4 landscape: !template
-  #===========================================================================
+  A4 landscape: !template #===========================================================================
     reportTemplate: simpleReport.jrxml
     attributes:
       map: !map
@@ -40,6 +39,6 @@ templates:
         width: 780
         height: 330
     processors:
-    - !reportBuilder # compile all reports in current directory
-      directory: '.'
-    - !createMap {}
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createMap {}

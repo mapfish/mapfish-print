@@ -1,27 +1,22 @@
 {
-  "attributes": {
-    "mapDef": {
-      "center": [-8236566.427097, 4976131.070529],
-      "scale": 50000,
-      "projection": "EPSG:3857",
-      "dpi": 75,
-      "rotation": 45,
+    "attributes": {
+        "mapDef": {
+            "center": [-8236566.427097, 4976131.070529],
+            "scale": 50000,
+            "projection": "EPSG:3857",
+            "dpi": 75,
+            "rotation": 45,
 
-      "layers": [
-        {
-          "layers": [
-            "tiling"
-          ],
-          "baseURL": "http://center_wms_rotation_small_tiles.com:1234/wms",
-          "version": "1.0.0",
-          "type": "TILEDWMS",
-          "imageFormat": "image/png",
-          "tileSize": [
-            25,
-            25
-          ]
+            "layers": [
+                {
+                    "layers": ["tiling"],
+                    "baseURL": "http://center_wms_rotation_small_tiles.com:1234/wms",
+                    "version": "1.0.0",
+                    "type": "TILEDWMS",
+                    "imageFormat": "image/png",
+                    "tileSize": [25, 25]
+                }
+            ]
         }
-      ]
     }
-  }
 }

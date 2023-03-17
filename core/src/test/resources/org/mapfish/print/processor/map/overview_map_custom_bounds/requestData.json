@@ -1,33 +1,34 @@
 {
-  "attributes": {
-    "style": {
-      "style": '<?xml version="1.0" encoding="UTF-8"?><StyledLayerDescriptor version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><NamedLayer><Name>default_line</Name><UserStyle><Title>Default Line</Title><FeatureTypeStyle><Rule><Name>rule1</Name><LineSymbolizer><Stroke><CssParameter name="stroke">#B37A66</CssParameter></Stroke></LineSymbolizer></Rule></FeatureTypeStyle></UserStyle></NamedLayer></StyledLayerDescriptor>'
-    },
-    "map": {
-      "center": [-8235878.4938425, 4979784.7605681],
-      "scale": 26000,
-      "projection": "EPSG:3857",
-      "dpi": 72,
-      "layers": [
-        {
-          "type": "geojson",
-          "geojson": "http://overview_map_custom_bounds.json/geojson/ny-roads-3857.json"
-        }, {
-          "type": "osm",
-          "baseURL": "http://overview_map_custom_bounds.osm:1234",
-          "imageExtension": "png"
+    "attributes": {
+        "style": {
+            "style": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><StyledLayerDescriptor version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/sld StyledLayerDescriptor.xsd\" xmlns=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><NamedLayer><Name>default_line</Name><UserStyle><Title>Default Line</Title><FeatureTypeStyle><Rule><Name>rule1</Name><LineSymbolizer><Stroke><CssParameter name=\"stroke\">#B37A66</CssParameter></Stroke></LineSymbolizer></Rule></FeatureTypeStyle></UserStyle></NamedLayer></StyledLayerDescriptor>"
+        },
+        "map": {
+            "center": [-8235878.4938425, 4979784.7605681],
+            "scale": 26000,
+            "projection": "EPSG:3857",
+            "dpi": 72,
+            "layers": [
+                {
+                    "type": "geojson",
+                    "geojson": "http://overview_map_custom_bounds.json/geojson/ny-roads-3857.json"
+                },
+                {
+                    "type": "osm",
+                    "baseURL": "http://overview_map_custom_bounds.osm:1234",
+                    "imageExtension": "png"
+                }
+            ]
+        },
+        "overviewMap": {
+            "center": [-8235878.4938425, 4979784.7605681],
+            "scale": 500000,
+            "layers": [
+                {
+                    "type": "geojson",
+                    "geojson": "http://overview_map_custom_bounds.json/geojson/ny-roads-3857.json"
+                }
+            ]
         }
-      ]
-    },
-    "overviewMap": {
-      "center": [-8235878.4938425, 4979784.7605681],
-      "scale": 500000,
-      "layers": [
-        {
-          "type": "geojson",
-          "geojson": "http://overview_map_custom_bounds.json/geojson/ny-roads-3857.json"
-        }
-      ]
     }
-  }
 }

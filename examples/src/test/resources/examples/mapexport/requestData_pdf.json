@@ -1,171 +1,107 @@
 {
-  "outputFormat": "pdf",
-  "layout": "plain",
-  "attributes": {
-    "map": {
-      "width": 780,
-      "height": 660,
-      "projection": "EPSG:3857",
-      "dpi": 72,
-      "rotation": 0,
-      "center": [
-        -8233518.5005945,
-        4980320.4059228
-      ],
-      "scale": 25000,
-      "layers": [
-        {
-          "type": "grid",
-          "gridType": "points",
-          "numberOfLines": [
-            5,
-            5
-          ],
-          "renderAsSvg": true,
-          "haloColor": "#CCFFCC",
-          "labelColor": "black",
-          "labelFormat": "%1.0f %s",
-          "indent": 10,
-          "haloRadius": 4,
-          "font": {
-            "name": [
-              "Liberation Sans",
-              "Helvetica",
-              "Nimbus Sans L",
-              "Liberation Sans",
-              "FreeSans",
-              "Sans-serif"
-            ],
-            "size": 8,
-            "style": "BOLD"
-          }
-        },
-        {
-          "baseURL": "http://geoserver:8080/wms",
-          "opacity": 1,
-          "type": "WMS",
-          "layers": [
-            "tiger:tiger_roads"
-          ],
-          "imageFormat": "image/png",
-          "styles": [
-            "line"
-          ],
-          "customParams": {
-            "TRANSPARENT": "true"
-          }
-        },
-        {
-          "type": "WMTS",
-          "baseURL": "http://geoserver:8080/gwc/service/wmts",
-          "opacity": 1,
-          "layer": "tiger-ny",
-          "version": "1.0.0",
-          "requestEncoding": "KVP",
-          "dimensions": null,
-          "dimensionParams": {},
-          "matrixSet": "EPSG:900913",
-          "matrices": [
-            {
-              "identifier": "EPSG:900913:12",
-              "matrixSize": [
-                4096,
-                4096
-              ],
-              "scaleDenominator": 136494.69334738597,
-              "tileSize": [
-                256,
-                256
-              ],
-              "topLeftCorner": [
-                -20037508.34,
-                20037508
-              ]
-            },
-            {
-              "identifier": "EPSG:900913:13",
-              "matrixSize": [
-                8192,
-                8192
-              ],
-              "scaleDenominator": 68247.34667369298,
-              "tileSize": [
-                256,
-                256
-              ],
-              "topLeftCorner": [
-                -20037508.34,
-                20037508
-              ]
-            },
-            {
-              "identifier": "EPSG:900913:14",
-              "matrixSize": [
-                16384,
-                16384
-              ],
-              "scaleDenominator": 34123.67333684649,
-              "tileSize": [
-                256,
-                256
-              ],
-              "topLeftCorner": [
-                -20037508.34,
-                20037508
-              ]
-            },
-            {
-              "identifier": "EPSG:900913:15",
-              "matrixSize": [
-                32768,
-                32768
-              ],
-              "scaleDenominator": 17061.836668423246,
-              "tileSize": [
-                256,
-                256
-              ],
-              "topLeftCorner": [
-                -20037508.34,
-                20037508
-              ]
-            },
-            {
-              "identifier": "EPSG:900913:16",
-              "matrixSize": [
-                65536,
-                65536
-              ],
-              "scaleDenominator": 8530.918334211623,
-              "tileSize": [
-                256,
-                256
-              ],
-              "topLeftCorner": [
-                -20037508.34,
-                20037508
-              ]
-            },
-            {
-              "identifier": "EPSG:900913:17",
-              "matrixSize": [
-                131072,
-                131072
-              ],
-              "scaleDenominator": 4265.4591671058115,
-              "tileSize": [
-                256,
-                256
-              ],
-              "topLeftCorner": [
-                -20037508.34,
-                20037508
-              ]
-            }
-          ],
-          "imageFormat": "image/png"
+    "outputFormat": "pdf",
+    "layout": "plain",
+    "attributes": {
+        "map": {
+            "width": 780,
+            "height": 660,
+            "projection": "EPSG:3857",
+            "dpi": 72,
+            "rotation": 0,
+            "center": [-8233518.5005945, 4980320.4059228],
+            "scale": 25000,
+            "layers": [
+                {
+                    "type": "grid",
+                    "gridType": "points",
+                    "numberOfLines": [5, 5],
+                    "renderAsSvg": true,
+                    "haloColor": "#CCFFCC",
+                    "labelColor": "black",
+                    "labelFormat": "%1.0f %s",
+                    "indent": 10,
+                    "haloRadius": 4,
+                    "font": {
+                        "name": [
+                            "Liberation Sans",
+                            "Helvetica",
+                            "Nimbus Sans L",
+                            "Liberation Sans",
+                            "FreeSans",
+                            "Sans-serif"
+                        ],
+                        "size": 8,
+                        "style": "BOLD"
+                    }
+                },
+                {
+                    "baseURL": "http://geoserver:8080/wms",
+                    "opacity": 1,
+                    "type": "WMS",
+                    "layers": ["tiger:tiger_roads"],
+                    "imageFormat": "image/png",
+                    "styles": ["line"],
+                    "customParams": {
+                        "TRANSPARENT": "true"
+                    }
+                },
+                {
+                    "type": "WMTS",
+                    "baseURL": "http://geoserver:8080/gwc/service/wmts",
+                    "opacity": 1,
+                    "layer": "tiger-ny",
+                    "version": "1.0.0",
+                    "requestEncoding": "KVP",
+                    "dimensions": null,
+                    "dimensionParams": {},
+                    "matrixSet": "EPSG:900913",
+                    "matrices": [
+                        {
+                            "identifier": "EPSG:900913:12",
+                            "matrixSize": [4096, 4096],
+                            "scaleDenominator": 136494.69334738597,
+                            "tileSize": [256, 256],
+                            "topLeftCorner": [-20037508.34, 20037508]
+                        },
+                        {
+                            "identifier": "EPSG:900913:13",
+                            "matrixSize": [8192, 8192],
+                            "scaleDenominator": 68247.34667369298,
+                            "tileSize": [256, 256],
+                            "topLeftCorner": [-20037508.34, 20037508]
+                        },
+                        {
+                            "identifier": "EPSG:900913:14",
+                            "matrixSize": [16384, 16384],
+                            "scaleDenominator": 34123.67333684649,
+                            "tileSize": [256, 256],
+                            "topLeftCorner": [-20037508.34, 20037508]
+                        },
+                        {
+                            "identifier": "EPSG:900913:15",
+                            "matrixSize": [32768, 32768],
+                            "scaleDenominator": 17061.836668423246,
+                            "tileSize": [256, 256],
+                            "topLeftCorner": [-20037508.34, 20037508]
+                        },
+                        {
+                            "identifier": "EPSG:900913:16",
+                            "matrixSize": [65536, 65536],
+                            "scaleDenominator": 8530.918334211623,
+                            "tileSize": [256, 256],
+                            "topLeftCorner": [-20037508.34, 20037508]
+                        },
+                        {
+                            "identifier": "EPSG:900913:17",
+                            "matrixSize": [131072, 131072],
+                            "scaleDenominator": 4265.4591671058115,
+                            "tileSize": [256, 256],
+                            "topLeftCorner": [-20037508.34, 20037508]
+                        }
+                    ],
+                    "imageFormat": "image/png"
+                }
+            ]
         }
-      ]
     }
-  }
 }

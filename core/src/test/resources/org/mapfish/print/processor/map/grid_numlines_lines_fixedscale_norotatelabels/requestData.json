@@ -9,28 +9,31 @@
             "center": [-95, 35],
             "longitudeFirst": true,
             "scale": 30000000,
-            "layers": [{
-                "type": "grid",
-                "gridType": "lines",
-                "numberOfLines": [5, 5],
-                "labelColor": "green",
-                "renderAsSvg": false,
-                "labelFormat": "%1.2f %s",
-                "font": {
-                    "name": ["Liberation Sans"],
-                    "size": "10"
+            "layers": [
+                {
+                    "type": "grid",
+                    "gridType": "lines",
+                    "numberOfLines": [5, 5],
+                    "labelColor": "green",
+                    "renderAsSvg": false,
+                    "labelFormat": "%1.2f %s",
+                    "font": {
+                        "name": ["Liberation Sans"],
+                        "size": "10"
+                    },
+                    "rotateLabels": false,
+                    "horizontalYOffset": 20.0,
+                    "verticalXOffset": 40.0
                 },
-                "rotateLabels": false,
-                "horizontalYOffset": 20.0,
-                "verticalXOffset": 40.0
-            },{
-                "type": "tiledwms",
-                "layers": ["topp:states"],
-                "baseURL": "http://grid_numlines_lines_fixedscale_norotatelabels.wms/",
-                "imageFormat": "image/png",
-                "version": "1.1.1",
-                "tileSize": [256, 256]
-            }]
+                {
+                    "type": "tiledwms",
+                    "layers": ["topp:states"],
+                    "baseURL": "http://grid_numlines_lines_fixedscale_norotatelabels.wms/",
+                    "imageFormat": "image/png",
+                    "version": "1.1.1",
+                    "tileSize": [256, 256]
+                }
+            ]
         }
     }
 }

@@ -1,7 +1,6 @@
 templates:
   #===========================================================================
-  A4 landscape: !template
-  #===========================================================================
+  A4 landscape: !template #===========================================================================
     reportTemplate: simpleReport.jrxml
     attributes:
       map: !map
@@ -13,19 +12,19 @@ templates:
         height: 40
         createSubReport: false
         default:
-          backgroundColor: "rgba(214, 214, 214, 200)"
-          align: "right"
+          backgroundColor: 'rgba(214, 214, 214, 200)'
+          align: 'right'
       northArrowDef: !northArrow
         size: 50
         createSubReport: false
         default:
-          graphic: "file://NorthArrow_10.svg"
-          backgroundColor: "rgba(214, 214, 214, 200)"
+          graphic: 'file://NorthArrow_10.svg'
+          backgroundColor: 'rgba(214, 214, 214, 200)'
     processors:
-    - !reportBuilder # compile all reports in current directory
-      directory: '.'
-    - !createMap {}
-    - !createScalebar {}
-    - !createNorthArrow
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createMap {}
+      - !createScalebar {}
+      - !createNorthArrow
         inputMapper:
-            northArrowDef: northArrow
+          northArrowDef: northArrow

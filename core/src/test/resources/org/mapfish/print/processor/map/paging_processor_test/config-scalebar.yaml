@@ -1,7 +1,6 @@
 templates:
   #===========================================================================
-  main: !template
-  #===========================================================================
+  main: !template #===========================================================================
     reportTemplate: simpleReport.jrxml
     attributes:
       map: !map
@@ -17,16 +16,16 @@ templates:
           scale: 10000
           overlap: 0
     processors:
-    - !reportBuilder # compile all reports in current directory
-      directory: '.'
-    - !createMapPages {} # creates the iterable<Values> consumed by dataSource
-    - !createMap {}
-    - !createDataSource
-      attributes:
-        scalebar: !scalebar
-          height: 20
-          width: 143
-      processors:
-        - !createMap {}
-        - !createScalebar {}
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createMapPages {} # creates the iterable<Values> consumed by dataSource
+      - !createMap {}
+      - !createDataSource
+        attributes:
+          scalebar: !scalebar
+            height: 20
+            width: 143
+        processors:
+          - !createMap {}
+          - !createScalebar {}
     tableData: jrDataSource

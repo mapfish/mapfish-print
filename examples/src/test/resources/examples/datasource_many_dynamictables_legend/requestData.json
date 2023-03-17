@@ -1,235 +1,191 @@
 {
-  "layout": "A4 portrait",
-  "outputFormat": "pdf",
-  "attributes": {
-    "title": "",
-    "comments": "",
-    "datasource": [
-      {
-        "title": "bus_stop",
-        "table": {
-          "columns": [
-            "osm_id",
-            "timestamp",
-            "name",
-            "Type"
-          ],
-          "data": [
-            [
-              "337907707",
-              "2010-11-09T22:54:26Z",
-              "Alpes",
-              "bus_stop"
-            ],
-            [
-              "337907710",
-              "2010-11-09T22:54:25Z",
-              "Alpes",
-              "bus_stop"
-            ],
-            [
-              "347352116",
-              "2010-11-09T22:54:23Z",
-              "Mirabeau",
-              "bus_stop"
-            ]
-          ]
-        }
-      },
-      {
-        "title": "restaurant",
-        "table": {
-          "columns": [
-            "icon",
-            "osm_id",
-            "timestamp",
-            "name",
-            "Type"
-          ],
-          "data": [
-            [
-              "http://geoserver:8080/www/icons/men-at-work.jpeg",
-              "629119177",
-              "2010-02-04T18:42:23Z",
-              "Oh! Liban",
-              "restaurant"
-            ],
-            [
-              "http://geoserver:8080/www/icons/men-at-work.jpeg",
-              "1423114737",
-              "2011-09-04T15:05:13Z",
-              "Restaurant Mirabeau",
-              "restaurant"
-            ]
-          ]
-        }
-      }
-    ],
-    "map": {
-      "projection": "EPSG:21781",
-      "dpi": 254,
-      "rotation": 0,
-      "center": [
-        542000,
-        154000
-      ],
-      "scale": 100000,
-      "longitudeFirst": true,
-      "layers": [
-        {
-          "type": "geojson",
-          "style": {
-            "1": {
-              "fillColor": "red",
-              "strokeColor": "red",
-              "fillOpacity": 0.6,
-              "hoverFillColor": "white",
-              "hoverFillOpacity": 0.8,
-              "strokeOpacity": 1,
-              "strokeWidth": 2,
-              "strokeLinecap": "round",
-              "strokeDashstyle": "solid",
-              "hoverStrokeColor": "red",
-              "hoverStrokeOpacity": 1,
-              "hoverStrokeWidth": 0.2,
-              "pointRadius": 6,
-              "hoverPointRadius": 1,
-              "hoverPointUnit": "%",
-              "pointerEvents": "visiblePainted",
-              "cursor": "inherit",
-              "fontColor": "#000000",
-              "fontFamily": "Liberation Sans",
-              "labelAlign": "cm",
-              "labelOutlineColor": "white",
-              "labelOutlineWidth": 3
-            },
-            "version": "1",
-            "styleProperty": "_gx_style"
-          },
-          "geoJson": {
-            "type": "FeatureCollection",
-            "features": [
-              {
-                "type": "Feature",
-                "properties": {
-                  "_gx_style": 1,
-                  "osm_id": "337907707",
-                  "timestamp": "2010-11-09T22:54:26Z",
-                  "name": "Alpes",
-                  "type": "bus_stop"
-                },
-                "geometry": {
-                  "type": "Point",
-                  "coordinates": [
-                    538442.421319,
-                    151817.140031
-                  ]
-                }
-              },
-              {
-                "type": "Feature",
-                "properties": {
-                  "_gx_style": 1,
-                  "osm_id": "337907710",
-                  "timestamp": "2010-11-09T22:54:25Z",
-                  "name": "Alpes",
-                  "type": "bus_stop"
-                },
-                "geometry": {
-                  "type": "Point",
-                  "coordinates": [
-                    538474.353811,
-                    151862.615586
-                  ]
-                }
-              },
-              {
-                "type": "Feature",
-                "properties": {
-                  "_gx_style": 1,
-                  "osm_id": "347352116",
-                  "timestamp": "2010-11-09T22:54:23Z",
-                  "name": "Mirabeau",
-                  "type": "bus_stop"
-                },
-                "geometry": {
-                  "type": "Point",
-                  "coordinates": [
-                    538314.149264,
-                    152046.467663
-                  ]
-                }
-              },
-              {
-                "type": "Feature",
-                "properties": {
-                  "_gx_style": 1,
-                  "osm_id": "629119177",
-                  "timestamp": "2010-02-04T18:42:23Z",
-                  "name": "Oh! Liban",
-                  "type": "restaurant"
-                },
-                "geometry": {
-                  "type": "Point",
-                  "coordinates": [
-                    538396.724407,
-                    152032.68026
-                  ]
-                }
-              },
-              {
-                "type": "Feature",
-                "properties": {
-                  "_gx_style": 1,
-                  "osm_id": "1423114737",
-                  "timestamp": "2011-09-04T15:05:13Z",
-                  "name": "Restaurant Mirabeau",
-                  "type": "restaurant"
-                },
-                "geometry": {
-                  "type": "Point",
-                  "coordinates": [
-                    538371.262438,
-                    152033.652827
-                  ]
-                }
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "legend": {
-      "classes": [
-        {
-          "name": "",
-          "classes": [
+    "layout": "A4 portrait",
+    "outputFormat": "pdf",
+    "attributes": {
+        "title": "",
+        "comments": "",
+        "datasource": [
             {
-              "name": "osm",
-              "icons": [
-                "http://geoserver:8080/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states"
-              ]
+                "title": "bus_stop",
+                "table": {
+                    "columns": ["osm_id", "timestamp", "name", "Type"],
+                    "data": [
+                        ["337907707", "2010-11-09T22:54:26Z", "Alpes", "bus_stop"],
+                        ["337907710", "2010-11-09T22:54:25Z", "Alpes", "bus_stop"],
+                        ["347352116", "2010-11-09T22:54:23Z", "Mirabeau", "bus_stop"]
+                    ]
+                }
+            },
+            {
+                "title": "restaurant",
+                "table": {
+                    "columns": ["icon", "osm_id", "timestamp", "name", "Type"],
+                    "data": [
+                        [
+                            "http://geoserver:8080/www/icons/men-at-work.jpeg",
+                            "629119177",
+                            "2010-02-04T18:42:23Z",
+                            "Oh! Liban",
+                            "restaurant"
+                        ],
+                        [
+                            "http://geoserver:8080/www/icons/men-at-work.jpeg",
+                            "1423114737",
+                            "2011-09-04T15:05:13Z",
+                            "Restaurant Mirabeau",
+                            "restaurant"
+                        ]
+                    ]
+                }
             }
-          ]
+        ],
+        "map": {
+            "projection": "EPSG:21781",
+            "dpi": 254,
+            "rotation": 0,
+            "center": [542000, 154000],
+            "scale": 100000,
+            "longitudeFirst": true,
+            "layers": [
+                {
+                    "type": "geojson",
+                    "style": {
+                        "1": {
+                            "fillColor": "red",
+                            "strokeColor": "red",
+                            "fillOpacity": 0.6,
+                            "hoverFillColor": "white",
+                            "hoverFillOpacity": 0.8,
+                            "strokeOpacity": 1,
+                            "strokeWidth": 2,
+                            "strokeLinecap": "round",
+                            "strokeDashstyle": "solid",
+                            "hoverStrokeColor": "red",
+                            "hoverStrokeOpacity": 1,
+                            "hoverStrokeWidth": 0.2,
+                            "pointRadius": 6,
+                            "hoverPointRadius": 1,
+                            "hoverPointUnit": "%",
+                            "pointerEvents": "visiblePainted",
+                            "cursor": "inherit",
+                            "fontColor": "#000000",
+                            "fontFamily": "Liberation Sans",
+                            "labelAlign": "cm",
+                            "labelOutlineColor": "white",
+                            "labelOutlineWidth": 3
+                        },
+                        "version": "1",
+                        "styleProperty": "_gx_style"
+                    },
+                    "geoJson": {
+                        "type": "FeatureCollection",
+                        "features": [
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "_gx_style": 1,
+                                    "osm_id": "337907707",
+                                    "timestamp": "2010-11-09T22:54:26Z",
+                                    "name": "Alpes",
+                                    "type": "bus_stop"
+                                },
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [538442.421319, 151817.140031]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "_gx_style": 1,
+                                    "osm_id": "337907710",
+                                    "timestamp": "2010-11-09T22:54:25Z",
+                                    "name": "Alpes",
+                                    "type": "bus_stop"
+                                },
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [538474.353811, 151862.615586]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "_gx_style": 1,
+                                    "osm_id": "347352116",
+                                    "timestamp": "2010-11-09T22:54:23Z",
+                                    "name": "Mirabeau",
+                                    "type": "bus_stop"
+                                },
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [538314.149264, 152046.467663]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "_gx_style": 1,
+                                    "osm_id": "629119177",
+                                    "timestamp": "2010-02-04T18:42:23Z",
+                                    "name": "Oh! Liban",
+                                    "type": "restaurant"
+                                },
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [538396.724407, 152032.68026]
+                                }
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "_gx_style": 1,
+                                    "osm_id": "1423114737",
+                                    "timestamp": "2011-09-04T15:05:13Z",
+                                    "name": "Restaurant Mirabeau",
+                                    "type": "restaurant"
+                                },
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [538371.262438, 152033.652827]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
         },
-        {
-          "name": "",
-          "classes": [
-            {
-              "name": "fluel",
-              "icons": [
-                "http://geoserver:8080/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:tasmania_cities"
-              ]
-            },
-            {
-              "name": "hotel",
-              "icons": [
-                "http://geoserver:8080/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=tiger-ny"
-              ]
-            }
-          ]
+        "legend": {
+            "classes": [
+                {
+                    "name": "",
+                    "classes": [
+                        {
+                            "name": "osm",
+                            "icons": [
+                                "http://geoserver:8080/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "",
+                    "classes": [
+                        {
+                            "name": "fluel",
+                            "icons": [
+                                "http://geoserver:8080/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:tasmania_cities"
+                            ]
+                        },
+                        {
+                            "name": "hotel",
+                            "icons": [
+                                "http://geoserver:8080/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=tiger-ny"
+                            ]
+                        }
+                    ]
+                }
+            ]
         }
-      ]
     }
-  }
 }

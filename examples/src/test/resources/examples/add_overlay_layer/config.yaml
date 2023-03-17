@@ -1,8 +1,6 @@
-
 templates:
   #===========================================================================
-  A4 landscape: !template
-  #===========================================================================
+  A4 landscape: !template #===========================================================================
     reportTemplate: simpleReport.jrxml
     attributes:
       map: !map
@@ -17,16 +15,16 @@ templates:
       overlayLayers: !staticLayers
         default:
           layers:
-            - type: "grid"
+            - type: 'grid'
               numberOfLines: [10, 10]
               labelColor: rgba(0,0,0,0)
               haloColor: rgba(0,0,0,0)
     processors:
-    - !addBackgroundLayers
-      inputMapper:
+      - !addBackgroundLayers
+        inputMapper:
           overlayLayers: staticLayers
           map: map
-    - !reportBuilder # compile all reports in current directory
-      directory: '.'
-    - !createMap {}
-    - !createOverviewMap {}
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createMap {}
+      - !createOverviewMap {}

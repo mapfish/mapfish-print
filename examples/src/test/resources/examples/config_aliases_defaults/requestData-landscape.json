@@ -1,33 +1,26 @@
 {
-  "layout": "PDF Preview",
-  "title": "dm[geo] map print",
-  "outputFilename": "dmgeo-print",
-  "outputFormat": "pdf",
-  "attributes": {
-    "mainMap": {
-      "dpi": "72",
-      "center": [
-        -8235878.4938425,
-        4979784.7605681
-      ],
-      "scale": 26000,
-      "layers": [
-        {
-          "baseURL": "http://geoserver:8080/wms",
-          "opacity": 1,
-          "type": "WMS",
-          "layers": [
-            "tiger:tiger_roads"
-          ],
-          "imageFormat": "image/png",
-          "styles": [
-            "line"
-          ],
-          "customParams": {
-            "TRANSPARENT": "true"
-          }
+    "layout": "PDF Preview",
+    "title": "dm[geo] map print",
+    "outputFilename": "dmgeo-print",
+    "outputFormat": "pdf",
+    "attributes": {
+        "mainMap": {
+            "dpi": "72",
+            "center": [-8235878.4938425, 4979784.7605681],
+            "scale": 26000,
+            "layers": [
+                {
+                    "baseURL": "http://geoserver:8080/wms",
+                    "opacity": 1,
+                    "type": "WMS",
+                    "layers": ["tiger:tiger_roads"],
+                    "imageFormat": "image/png",
+                    "styles": ["line"],
+                    "customParams": {
+                        "TRANSPARENT": "true"
+                    }
+                }
+            ]
         }
-      ]
     }
-  }
 }

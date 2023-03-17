@@ -1,25 +1,26 @@
 {
-  "attributes": {
-    "map": {
-      "center": [-8235878.4938425, 4979784.7605681],
-      "scale": 26000,
-      "projection": "EPSG:3857",
-      "dpi": 72,
-      "layers": [
-        {
-          "type": "geojson",
-          "style": "file://thinline.sld",
-          "geojson": "http://osm_custom_params.json/geojson/ny-roads-3857.json"
-        }, {
-          "type": "osm",
-          "baseURL": "http://osm_custom_params.osm:1234",
-          "imageExtension": "png",
-          "customParams": {
-            "access_token": "pk.eyJ1IjoibWFwYm94IiwiYSI6IlpIdEpjOHcifQ",
-            "PRINT-USERNAME": "bob.lenon"
-          }
+    "attributes": {
+        "map": {
+            "center": [-8235878.4938425, 4979784.7605681],
+            "scale": 26000,
+            "projection": "EPSG:3857",
+            "dpi": 72,
+            "layers": [
+                {
+                    "type": "geojson",
+                    "style": "file://thinline.sld",
+                    "geojson": "http://osm_custom_params.json/geojson/ny-roads-3857.json"
+                },
+                {
+                    "type": "osm",
+                    "baseURL": "http://osm_custom_params.osm:1234",
+                    "imageExtension": "png",
+                    "customParams": {
+                        "access_token": "pk.eyJ1IjoibWFwYm94IiwiYSI6IlpIdEpjOHcifQ",
+                        "PRINT-USERNAME": "bob.lenon"
+                    }
+                }
+            ]
         }
-      ]
     }
-  }
 }

@@ -1,5 +1,5 @@
 {
-    "layout" : "main",
+    "layout": "main",
     "attributes": {
         "table": {
             "columns": ["id", "name", "icon"],

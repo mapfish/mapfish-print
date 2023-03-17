@@ -8,8 +8,8 @@ wishes to reuse the objct.
 
 The purpose of YAML aliasing in a YAML file is to reduce duplication in the files.
 
-A YAML object can be tagged with a &TAG_NAME and then reused using \*TAG_NAME as a dereference. It is
-important to remember that this is _not_ a copy of the object, it is the same object, thus any changes to the
+A YAML object can be tagged with a &TAG*NAME and then reused using \*TAG_NAME as a dereference. It is
+important to remember that this is \_not* a copy of the object, it is the same object, thus any changes to the
 object (by a setter for example) will affect all referencing instance.
 
 For example:

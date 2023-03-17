@@ -1,24 +1,19 @@
 {
-  "layout": "A4 portrait",
-  "outputFormat": "pdf",
-  "attributes": {
-    "map": {
-      "bbox": [
-        100,
-        -1,
-        106,
-        1.538
-      ],
-      "projection": "CRS:84",
-      "dpi": 72,
-      "rotation": 0,
-      "layers": [
-        {
-          "type": "geojson",
-          "style": "polygon",
-          "geoJson": "http://geoserver:8080/www/test-data/simple-squares-geojson.json"
+    "layout": "A4 portrait",
+    "outputFormat": "pdf",
+    "attributes": {
+        "map": {
+            "bbox": [100, -1, 106, 1.538],
+            "projection": "CRS:84",
+            "dpi": 72,
+            "rotation": 0,
+            "layers": [
+                {
+                    "type": "geojson",
+                    "style": "polygon",
+                    "geoJson": "http://geoserver:8080/www/test-data/simple-squares-geojson.json"
+                }
+            ]
         }
-      ]
     }
-  }
 }

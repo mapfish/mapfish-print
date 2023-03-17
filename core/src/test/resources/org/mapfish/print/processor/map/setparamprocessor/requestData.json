@@ -1,27 +1,28 @@
 {
-  "attributes": {
-    "customP1": "1",
-    "customP2": "2",
-    "map": {
-      "center": [-8236566.427097, 4976131.070529],
-      "scale": 100000,
-      "projection": "EPSG:3857",
-      "dpi": 72,
-      "layers": [
-        {
-          "type": "geojson",
-          "style": "file://thinline.sld",
-          "geojson": "http://setparamprocessor.json/geojson/ny-roads-3857.json"
-        }, {
-          "type": "wms",
-          "baseURL": "http://setparamprocessor.wms:1234/wms",
-          "opacity": 1.0,
-          "layers": ["tiger-ny"],
-          "styles": ["line"],
-          "version": "1.0.0",
-          "imageFormat": "image/png"
+    "attributes": {
+        "customP1": "1",
+        "customP2": "2",
+        "map": {
+            "center": [-8236566.427097, 4976131.070529],
+            "scale": 100000,
+            "projection": "EPSG:3857",
+            "dpi": 72,
+            "layers": [
+                {
+                    "type": "geojson",
+                    "style": "file://thinline.sld",
+                    "geojson": "http://setparamprocessor.json/geojson/ny-roads-3857.json"
+                },
+                {
+                    "type": "wms",
+                    "baseURL": "http://setparamprocessor.wms:1234/wms",
+                    "opacity": 1.0,
+                    "layers": ["tiger-ny"],
+                    "styles": ["line"],
+                    "version": "1.0.0",
+                    "imageFormat": "image/png"
+                }
+            ]
         }
-      ]
     }
-  }
 }

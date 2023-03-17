@@ -1,21 +1,23 @@
-{"attributes": {
-  "title": "title",
-  "count": 134,
-  "ratio": 2,
-  "legend": {
-    "name": "legendName"
-  },
-  "datasource": [
-    {
-      "name": "requestDataName",
-      "count": 0,
-      "table": {
-        "columns": ["requestId", "name", "icon"],
-        "data": [
-          [1, "blah", "icon_pan"],
-          [2, "blip", "icon_zoomin"]
+{
+    "attributes": {
+        "title": "title",
+        "count": 134,
+        "ratio": 2,
+        "legend": {
+            "name": "legendName"
+        },
+        "datasource": [
+            {
+                "name": "requestDataName",
+                "count": 0,
+                "table": {
+                    "columns": ["requestId", "name", "icon"],
+                    "data": [
+                        [1, "blah", "icon_pan"],
+                        [2, "blip", "icon_zoomin"]
+                    ]
+                }
+            }
         ]
-      }
     }
-  ]
-}}
+}

@@ -1,8 +1,6 @@
-
 templates:
   #===========================================================================
-  A4 landscape: !template
-  #===========================================================================
+  A4 landscape: !template #===========================================================================
     reportTemplate: simpleReport.jrxml
     attributes:
       titleAtt: !string {}
@@ -13,13 +11,13 @@ templates:
         width: 780
         height: 330
     processors:
-    - !reportBuilder # compile all reports in current directory
-      directory: '.'
-    - !updatePdfConfig
-      updates:
-        title: !updatePdfConfigUpdate
-          format: "Update Metadata Example Report: %s"
-          valueKey: "titleAtt"
-        subject: subjectAtt
-        keywords: keywordsAtt
-    - !createMap {}
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !updatePdfConfig
+        updates:
+          title: !updatePdfConfigUpdate
+            format: 'Update Metadata Example Report: %s'
+            valueKey: 'titleAtt'
+          subject: subjectAtt
+          keywords: keywordsAtt
+      - !createMap {}

@@ -9,25 +9,28 @@
             "center": [-95, 35],
             "longitudeFirst": true,
             "scale": 30000000,
-            "layers": [{
-                "type": "grid",
-                "gridType": "points",
-                "numberOfLines": [5, 5],
-                "labelColor": "green",
-                "renderAsSvg": false,
-                "labelProjection": "EPSG:3857",
-                "font": {
-                    "name": ["Liberation Sans"],
-                    "size": "10"
+            "layers": [
+                {
+                    "type": "grid",
+                    "gridType": "points",
+                    "numberOfLines": [5, 5],
+                    "labelColor": "green",
+                    "renderAsSvg": false,
+                    "labelProjection": "EPSG:3857",
+                    "font": {
+                        "name": ["Liberation Sans"],
+                        "size": "10"
+                    }
+                },
+                {
+                    "type": "tiledwms",
+                    "layers": ["topp:states"],
+                    "baseURL": "http://grid_numlines_points_fixedscale_alt_label_proj.wms/",
+                    "imageFormat": "image/png",
+                    "version": "1.1.1",
+                    "tileSize": [256, 256]
                 }
-            }, {
-                "type": "tiledwms",
-                "layers": ["topp:states"],
-                "baseURL": "http://grid_numlines_points_fixedscale_alt_label_proj.wms/",
-                "imageFormat": "image/png",
-                "version": "1.1.1",
-                "tileSize": [256, 256]
-            }]
+            ]
         }
     }
 }

@@ -1,22 +1,23 @@
 {
-  "attributes": {
-    "map": {
-      "center": [-8235878.4938425, 4979784.7605681],
-      "scale": 26000,
-      "projection": "EPSG:3857",
-      "dpi": 72,
-      "layers": [
-        {
-          "type": "grid",
-          "numberOfLines": [8, 8],
-          "pointsInLine": 100,
-          "renderAsSvg": false
-        }, {
-          "type": "osm",
-          "baseURL": "http://center_osm_fixedscale.osm:1234",
-          "imageExtension": "png"
+    "attributes": {
+        "map": {
+            "center": [-8235878.4938425, 4979784.7605681],
+            "scale": 26000,
+            "projection": "EPSG:3857",
+            "dpi": 72,
+            "layers": [
+                {
+                    "type": "grid",
+                    "numberOfLines": [8, 8],
+                    "pointsInLine": 100,
+                    "renderAsSvg": false
+                },
+                {
+                    "type": "osm",
+                    "baseURL": "http://center_osm_fixedscale.osm:1234",
+                    "imageExtension": "png"
+                }
+            ]
         }
-      ]
     }
-  }
 }

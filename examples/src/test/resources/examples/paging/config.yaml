@@ -1,8 +1,6 @@
-
 templates:
   #===========================================================================
-  A4 landscape: !template
-  #===========================================================================
+  A4 landscape: !template #===========================================================================
     reportTemplate: simpleReport.jrxml
     attributes:
       map: !map
@@ -10,7 +8,7 @@ templates:
         width: 780
         height: 330
         default:
-            useAdjustBounds: true
+          useAdjustBounds: true
       paging: !paging
         default:
           scale: 800
@@ -19,19 +17,19 @@ templates:
         width: 240
         height: 40
     processors:
-    - !reportBuilder # compile all reports in current directory
-      directory: '.'
-    - !createMapPages {}
-    - !createMap {}
-    - !createScalebar
-      outputMapper: {}
-    - !createDataSource
-      inputMapper: {}
-      attributes:
-        scalebar: !scalebar
-          width: 240
-          height: 40
-      processors:
-        - !createMap {}
-        - !createScalebar {}
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createMapPages {}
+      - !createMap {}
+      - !createScalebar
+        outputMapper: {}
+      - !createDataSource
+        inputMapper: {}
+        attributes:
+          scalebar: !scalebar
+            width: 240
+            height: 40
+        processors:
+          - !createMap {}
+          - !createScalebar {}
     tableData: jrDataSource

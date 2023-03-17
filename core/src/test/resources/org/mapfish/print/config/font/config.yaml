@@ -1,7 +1,6 @@
 templates:
   #===========================================================================
-  A4 landscape: !template
-  #===========================================================================
+  A4 landscape: !template #===========================================================================
     reportTemplate: simpleReport.jrxml
     attributes:
       map: !map
@@ -12,11 +11,11 @@ templates:
         width: 240
         height: 40
         default:
-          backgroundColor: "rgba(214, 214, 214, 200)"
-          align: "right"
-          font: "Coming Soon"
+          backgroundColor: 'rgba(214, 214, 214, 200)'
+          align: 'right'
+          font: 'Coming Soon'
     processors:
-    - !reportBuilder # compile all reports in current directory
-      directory: '.'
-    - !createMap {}
-    - !createScalebar {}
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createMap {}
+      - !createScalebar {}

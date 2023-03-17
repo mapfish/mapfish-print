@@ -22,7 +22,7 @@ ENV GIT_HEAD=${GIT_HEAD}
 
 COPY publish ./publish
 
-RUN [ -e success ] &&  gradle :publish:build && touch success-publish || true
+RUN [ -e success ] && gradle :publish:build && touch success-publish || true
 
 COPY examples ./examples
 COPY docs ./docs
