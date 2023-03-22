@@ -37,7 +37,7 @@ import org.mapfish.print.OptionalUtils;
 public final class ColorParser {
   private static final float MAX_INT_COLOR = 255f;
 
-  private static final String NUMBER_PATTERN = "\\s*(\\d*\\.?\\d*[%f]?)\\s*";
+  private static final String NUMBER_PATTERN = "\\s?(\\d{0,3}\\.?\\d{0,10}[%f]?)\\s?";
   private static final Pattern RGB_COLOR_EXTRACTOR =
       Pattern.compile(
           "rgb\\s*\\(" + NUMBER_PATTERN + "," + NUMBER_PATTERN + "," + NUMBER_PATTERN + "\\)");
@@ -132,7 +132,8 @@ public final class ColorParser {
   }
 
   private static Color parseRgbColor(final String colorString) {
-    final Matcher matcher = RGB_COLOR_EXTRACTOR.matcher(colorString);
+    final Matcher matcher =
+        RGB_COLOR_EXTRACTOR.matcher(colorString.replaceAll("  ", " ").replace("  ", " "));
     if (matcher.matches()) {
       String red = matcher.group(1);
       String green = matcher.group(2);
@@ -144,7 +145,8 @@ public final class ColorParser {
   }
 
   private static Color parseRgbaColor(final String colorString) {
-    final Matcher matcher = RGBA_COLOR_EXTRACTOR.matcher(colorString);
+    final Matcher matcher =
+        RGBA_COLOR_EXTRACTOR.matcher(colorString.replaceAll("  ", " ").replace("  ", " "));
     if (matcher.matches()) {
       String red = matcher.group(1);
       String green = matcher.group(2);
@@ -157,7 +159,8 @@ public final class ColorParser {
   }
 
   private static Color parseHslColor(final String colorString) {
-    final Matcher matcher = HSL_COLOR_EXTRACTOR.matcher(colorString);
+    final Matcher matcher =
+        HSL_COLOR_EXTRACTOR.matcher(colorString.replaceAll("  ", " ").replace("  ", " "));
     if (matcher.matches()) {
       String hue = matcher.group(1);
       String saturation = matcher.group(2);
@@ -170,7 +173,8 @@ public final class ColorParser {
   }
 
   private static Color parseHslaColor(final String colorString) {
-    final Matcher matcher = HSLA_COLOR_EXTRACTOR.matcher(colorString);
+    final Matcher matcher =
+        HSLA_COLOR_EXTRACTOR.matcher(colorString.replaceAll("  ", " ").replace("  ", " "));
     if (matcher.matches()) {
       String hue = matcher.group(1);
       String saturation = matcher.group(2);
