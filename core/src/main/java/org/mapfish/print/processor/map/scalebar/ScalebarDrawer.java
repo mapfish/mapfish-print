@@ -135,9 +135,10 @@ public abstract class ScalebarDrawer {
     if (this.params.getOrientation() == Orientation.HORIZONTAL_LABELS_BELOW) {
       x = this.settings.getPadding() + this.settings.getLeftLabelMargin();
       y =
-          this.settings.getPadding()
-              + this.settings.getBarSize()
-              + this.settings.getLabelDistance();
+          (float)
+              (this.settings.getPadding()
+                  + this.settings.getBarSize()
+                  + this.settings.getLabelDistance());
     } else if (this.params.getOrientation() == Orientation.HORIZONTAL_LABELS_ABOVE) {
       x = this.settings.getPadding() + this.settings.getLeftLabelMargin();
       y =
@@ -152,9 +153,10 @@ public abstract class ScalebarDrawer {
       y = this.settings.getPadding() + this.settings.getTopLabelMargin();
     } else { // if (this.params.getOrientation() == Orientation.VERTICAL_LABELS_RIGHT)
       x =
-          this.settings.getPadding()
-              + this.settings.getBarSize()
-              + this.settings.getLabelDistance();
+          (float)
+              (this.settings.getPadding()
+                  + this.settings.getBarSize()
+                  + this.settings.getLabelDistance());
       y = this.settings.getPadding() + this.settings.getTopLabelMargin();
     }
     labelTransform.translate(Math.round(x), Math.round(y));
