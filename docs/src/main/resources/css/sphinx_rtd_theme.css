@@ -2453,7 +2453,6 @@ a .icon {
   color: #fff;
   font-weight: bold;
   display: block;
-  color: #fff;
   background: #6ab0de;
   margin: -12px;
   padding: 6px 12px;
@@ -3071,7 +3070,6 @@ textarea {
   max-width: 68em;
   margin-left: auto;
   margin-right: auto;
-  *zoom: 1;
 }
 .wy-control-group:before,
 .wy-control-group:after {
@@ -4552,10 +4550,7 @@ div[class^='highlight'] pre {
   z-index: 200;
   background-color: #2980b9;
   text-align: center;
-  padding: 0.809em;
-  display: block;
   color: #fcfcfc;
-  margin-bottom: 0.809em;
 }
 .wy-side-nav-search input[type='text'] {
   width: 100%;
