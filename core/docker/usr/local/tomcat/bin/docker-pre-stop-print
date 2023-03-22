@@ -5,7 +5,7 @@ cd /usr/local/tomcat/temp/mapfish-print/ROOT
 touch stop
 
 x=0
-while [ "$x" -lt ${TIMEOUT} -a ! -e stopped ]; do
+while [ "$x" -lt "${TIMEOUT}" ] && [ ! -e stopped ]; do
     x=$((x + 1))
     sleep 1
 done
