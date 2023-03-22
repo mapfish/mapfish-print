@@ -291,9 +291,7 @@ public class ThreadPoolJobManager implements JobManager {
    * @param entry the entry
    * @return the job
    */
-  // CHECKSTYLE:OFF
   protected PrintJob createJob(final PrintJobEntry entry) {
-    // CHECKSTYLE:ON
     PrintJob job = this.context.getBean(PrintJob.class);
     job.setEntry(entry);
     job.setSecurityContext(SecurityContextHolder.getContext());

@@ -98,8 +98,6 @@ public class DnsHostMatcher extends HostMatcher {
     }
   }
 
-  // CHECKSTYLE:OFF
-  // Don't run checkstyle on generated methods
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder();
@@ -148,5 +146,4 @@ public class DnsHostMatcher extends HostMatcher {
     }
     return true;
   }
-  // CHECKSTYLE:ON
 }

@@ -407,14 +407,11 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
 
   /** The print information for doing the export. */
   public static final class Print {
-    // CHECKSTYLE:OFF
     @Nonnull public final JasperPrint print;
     @Nonnegative public final double dpi;
     @Nonnull public final Processor.ExecutionContext executionContext;
     @Nonnull public final JasperReportsContext context;
     @Nonnull public final Values values;
-
-    // CHECKSTYLE:ON
 
     private Print(
         @Nonnull final JasperReportsContext context,

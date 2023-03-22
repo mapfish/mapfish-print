@@ -151,8 +151,6 @@ public enum ZoomLevelSnapStrategy {
       return this.zoomLevels.get(this.zoomLevel, unit);
     }
 
-    // CHECKSTYLE:OFF
-
     @Override
     public boolean equals(Object o) {
       if (this == o) {
@@ -180,9 +178,6 @@ public enum ZoomLevelSnapStrategy {
           "SearchResult{zoomLevel=%s, scale=%s, zoomLevels=%s}",
           zoomLevel, zoomLevels.get(zoomLevel, DistanceUnit.M), zoomLevels);
     }
-
-    // CHECKSTYLE:ON
-
   }
 
   private static class Constants {

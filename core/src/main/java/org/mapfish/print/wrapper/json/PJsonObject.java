@@ -211,8 +211,6 @@ public class PJsonObject extends PAbstractObject {
     return this.obj.length();
   }
 
-  // CHECKSTYLE:OFF
-  // Don't run checkstyle on generated methods
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -242,7 +240,6 @@ public class PJsonObject extends PAbstractObject {
     }
     return true;
   }
-  // CHECKSTYLE:ON
 
   /**
    * Get the internal json object.

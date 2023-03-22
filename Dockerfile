@@ -17,10 +17,9 @@ COPY core ./core
 
 RUN --mount=type=cache,target=/home/gradle/.gradle \
    gradle :core:processResources :core:classes
-COPY checkstyle_* ./
 # '&& touch success || true' is a trick to be able to get out some artifacts
 RUN --mount=type=cache,target=/home/gradle/.gradle \
-   (gradle :core:checkstyleMain :core:spotbugsMain :core:violations --stacktrace) \
+   (gradle :core:spotbugsMain :core:violations --stacktrace) \
    && ( (gradle :core:build :core:explodedWar :core:libSourcesJar :core:libJavadocJar > /tmp/logs 2>&1 && touch success) || true)
 
 ARG GIT_HEAD

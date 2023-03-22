@@ -30,11 +30,7 @@ import org.mapfish.print.SvgUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Class for comparing an expected image to an actual image.
- *
- * <p>CHECKSTYLE:OFF
- */
+/** Class for comparing an expected image to an actual image. */
 public final class ImageSimilarity {
   private static final Logger LOGGER = LoggerFactory.getLogger(ImageSimilarity.class);
 

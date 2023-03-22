@@ -175,7 +175,6 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
   public boolean supportsNativeRotation() {
     return false;
   }
-  // CHECKSTYLE:ON
 
   public final String getName() {
     return this.params.name;
