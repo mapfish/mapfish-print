@@ -11,8 +11,8 @@ import java.lang.annotation.Target;
 @Target(value = ElementType.FIELD)
 @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 public @interface OneOf {
-    /**
-     * The choice group id.  One of the options in the choice group must be present in the parsed JSON.
-     */
-    String value();
+  /**
+   * The choice group id. One of the options in the choice group must be present in the parsed JSON.
+   */
+  String value();
 }

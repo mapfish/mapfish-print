@@ -1,5 +1,16 @@
 package org.mapfish.print.processor.map;
 
+import static org.junit.Assert.assertEquals;
+import static org.mapfish.print.Constants.PDF_DPI;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -15,92 +26,76 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static org.junit.Assert.assertEquals;
-import static org.mapfish.print.Constants.PDF_DPI;
-
 /**
  * Basic test of the Map processor.
  *
- * Created by Jesse on 3/26/14.
+ * <p>Created by Jesse on 3/26/14.
  */
 public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR = "center_wmts_fixedscale_rest/";
+  public static final String BASE_DIR = "center_wmts_fixedscale_rest/";
 
-    @Autowired
-    private ConfigurationFactory configurationFactory;
-    @Autowired
-    private TestHttpClientFactory requestFactory;
-    @Autowired
-    private ForkJoinPool forkJoinPool;
+  @Autowired private ConfigurationFactory configurationFactory;
+  @Autowired private TestHttpClientFactory requestFactory;
+  @Autowired private ForkJoinPool forkJoinPool;
 
-    public static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFixedScaleAndCenterWMTSRestTest.class,
-                                       BASE_DIR + "requestData.json");
-    }
+  public static PJsonObject loadJsonRequestData() throws IOException {
+    return parseJSONObjectFromFile(
+        CreateMapProcessorFixedScaleAndCenterWMTSRestTest.class, BASE_DIR + "requestData.json");
+  }
 
-    @Test
-    @DirtiesContext
-    public void testExecute() throws Exception {
-        requestFactory.registerHandler(
-                input -> {
-                    final String host = "center_wmts_fixedscale_rest.com";
-                    return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
-                },
-                new TestHttpClientFactory.Handler() {
-                    @Override
-                    public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
-                            throws Exception {
-                        Pattern pattern = Pattern.compile(".*\\/([0-9]+)\\/([0-9]+).*");
-                        Matcher matcher = pattern.matcher(uri.toString());
-                        if (!matcher.matches()) {
-                            return error404(uri, httpMethod);
-                        }
-                        String column = matcher.group(1);
-                        String row = matcher.group(2);
-                        try {
-                            byte[] bytes = getFileBytes("/map-data/ny-tiles/" + column + "x" + row + ".png");
-                            return ok(uri, bytes, httpMethod);
-                        } catch (AssertionError e) {
-                            return error404(uri, httpMethod);
-                        }
-                    }
-                }
-        );
-        requestFactory.registerHandler(
-                input -> {
-                    final String host = "center_wmts_fixedscale_rest.json";
-                    return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
-                },
-                createFileHandler(uri -> "/map-data" + uri.getPath())
-        );
+  @Test
+  @DirtiesContext
+  public void testExecute() throws Exception {
+    requestFactory.registerHandler(
+        input -> {
+          final String host = "center_wmts_fixedscale_rest.com";
+          return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
+        },
+        new TestHttpClientFactory.Handler() {
+          @Override
+          public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+              throws Exception {
+            Pattern pattern = Pattern.compile(".*\\/([0-9]+)\\/([0-9]+).*");
+            Matcher matcher = pattern.matcher(uri.toString());
+            if (!matcher.matches()) {
+              return error404(uri, httpMethod);
+            }
+            String column = matcher.group(1);
+            String row = matcher.group(2);
+            try {
+              byte[] bytes = getFileBytes("/map-data/ny-tiles/" + column + "x" + row + ".png");
+              return ok(uri, bytes, httpMethod);
+            } catch (AssertionError e) {
+              return error404(uri, httpMethod);
+            }
+          }
+        });
+    requestFactory.registerHandler(
+        input -> {
+          final String host = "center_wmts_fixedscale_rest.json";
+          return (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host);
+        },
+        createFileHandler(uri -> "/map-data" + uri.getPath()));
 
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
-        final Template template = config.getTemplate("main");
-        PJsonObject requestData = loadJsonRequestData();
-        Values values = new Values("test", requestData, template, getTaskDirectory(),
-                                   this.requestFactory, new File("."));
+    final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+    final Template template = config.getTemplate("main");
+    PJsonObject requestData = loadJsonRequestData();
+    Values values =
+        new Values(
+            "test", requestData, template, getTaskDirectory(), this.requestFactory, new File("."));
 
-        final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
-                template.getProcessorGraph().createTask(values));
-        taskFuture.get();
+    final ForkJoinTask<Values> taskFuture =
+        this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
+    taskFuture.get();
 
-        @SuppressWarnings("unchecked")
-        List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
-        assertEquals(2, layerGraphics.size());
+    @SuppressWarnings("unchecked")
+    List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
+    assertEquals(2, layerGraphics.size());
 
-        MapfishMapContext mapContext = values.getObject("mapContext", MapfishMapContext.class);
-        assertEquals(110000.0, mapContext.getScale().getDenominator(PDF_DPI), 1E-6);
+    MapfishMapContext mapContext = values.getObject("mapContext", MapfishMapContext.class);
+    assertEquals(110000.0, mapContext.getScale().getDenominator(PDF_DPI), 1E-6);
 
-        new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-                .assertSimilarity(layerGraphics, 630, 294, 40);
-    }
+    new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+        .assertSimilarity(layerGraphics, 630, 294, 40);
+  }
 }

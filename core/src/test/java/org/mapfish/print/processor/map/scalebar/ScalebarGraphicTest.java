@@ -1,5 +1,10 @@
 package org.mapfish.print.processor.map.scalebar;
 
+import static org.junit.Assert.assertEquals;
+
+import java.awt.Dimension;
+import java.io.File;
+import java.net.URI;
 import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,175 +21,154 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.test.util.ImageSimilarity;
 
-import java.awt.Dimension;
-import java.io.File;
-import java.net.URI;
-
-import static org.junit.Assert.assertEquals;
-
-
 public class ScalebarGraphicTest {
 
-    private final double TOLERANCE = 0.000000001;
+  private final double TOLERANCE = 0.000000001;
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
-    private Template template;
+  @Rule public TemporaryFolder folder = new TemporaryFolder();
+  private Template template;
 
-    @Before
-    public void setUp() {
-        Configuration configuration = new Configuration();
-        this.template = new Template();
-        this.template.setConfiguration(configuration);
+  @Before
+  public void setUp() {
+    Configuration configuration = new Configuration();
+    this.template = new Template();
+    this.template.setConfiguration(configuration);
+  }
 
-    }
+  @Test
+  public void testGetNearestNiceValue() {
+    ScalebarGraphic scalebar = new ScalebarGraphic();
+    assertEquals(10.0, scalebar.getNearestNiceValue(10.0, DistanceUnit.M, false), TOLERANCE);
+    assertEquals(10.0, scalebar.getNearestNiceValue(13.0, DistanceUnit.M, false), TOLERANCE);
+    assertEquals(50.0, scalebar.getNearestNiceValue(67.66871, DistanceUnit.M, false), TOLERANCE);
+    assertEquals(0.02, scalebar.getNearestNiceValue(0.0315, DistanceUnit.M, false), TOLERANCE);
+    assertEquals(
+        1000000000.0, scalebar.getNearestNiceValue(1240005466, DistanceUnit.M, false), TOLERANCE);
+    assertEquals(50.0, scalebar.getNearestNiceValue(98.66871, DistanceUnit.M, false), TOLERANCE);
+  }
 
-    @Test
-    public void testGetNearestNiceValue() {
-        ScalebarGraphic scalebar = new ScalebarGraphic();
-        assertEquals(10.0, scalebar.getNearestNiceValue(10.0, DistanceUnit.M,
-                                                        false), TOLERANCE);
-        assertEquals(10.0, scalebar.getNearestNiceValue(13.0, DistanceUnit.M,
-                                                        false), TOLERANCE);
-        assertEquals(50.0, scalebar.getNearestNiceValue(67.66871, DistanceUnit.M,
-                                                        false), TOLERANCE);
-        assertEquals(0.02, scalebar.getNearestNiceValue(0.0315, DistanceUnit.M,
-                                                        false), TOLERANCE);
-        assertEquals(1000000000.0, scalebar.getNearestNiceValue(1240005466, DistanceUnit.M,
-                                                                false), TOLERANCE);
-        assertEquals(50.0, scalebar.getNearestNiceValue(98.66871, DistanceUnit.M,
-                                                        false), TOLERANCE);
-    }
+  @Test
+  public void testGetSize() {
+    // horizontal
+    ScalebarAttribute attribute = new ScalebarAttribute();
+    attribute.setWidth(180);
+    attribute.setHeight(40);
+    ScalebarAttributeValues params = attribute.createValue(null);
+    params.labelDistance = 3;
+    params.barSize = 8;
+    ScaleBarRenderSettings settings = new ScaleBarRenderSettings();
+    settings.setParams(params);
+    settings.setIntervalLengthInPixels(40);
+    settings.setLeftLabelMargin(3.0f);
+    settings.setRightLabelMargin(4.0f);
+    settings.setMaxSize(new Dimension(180, 40));
+    settings.setBarSize(8);
+    settings.setPadding(4);
+    settings.setLabelDistance(3);
 
-    @Test
-    public void testGetSize() {
-        // horizontal
-        ScalebarAttribute attribute = new ScalebarAttribute();
-        attribute.setWidth(180);
-        attribute.setHeight(40);
-        ScalebarAttributeValues params = attribute.createValue(null);
-        params.labelDistance = 3;
-        params.barSize = 8;
-        ScaleBarRenderSettings settings = new ScaleBarRenderSettings();
-        settings.setParams(params);
-        settings.setIntervalLengthInPixels(40);
-        settings.setLeftLabelMargin(3.0f);
-        settings.setRightLabelMargin(4.0f);
-        settings.setMaxSize(new Dimension(180, 40));
-        settings.setBarSize(8);
-        settings.setPadding(4);
-        settings.setLabelDistance(3);
+    assertEquals(
+        new Dimension(135, 31), ScalebarGraphic.getSize(params, settings, new Dimension(30, 12)));
 
-        assertEquals(
-                new Dimension(135, 31),
-                ScalebarGraphic.getSize(params, settings, new Dimension(30, 12)));
+    // horizontal: barSize and labelDistance calculated from height
+    params.orientation = Orientation.HORIZONTAL_LABELS_ABOVE.getLabel();
+    params.labelDistance = null;
+    params.barSize = null;
+    settings.setBarSize(ScalebarGraphic.getBarSize(settings));
+    settings.setLabelDistance(ScalebarGraphic.getLabelDistance(settings));
 
+    assertEquals(
+        new Dimension(135, 34), ScalebarGraphic.getSize(params, settings, new Dimension(30, 12)));
 
-        // horizontal: barSize and labelDistance calculated from height
-        params.orientation = Orientation.HORIZONTAL_LABELS_ABOVE.getLabel();
-        params.labelDistance = null;
-        params.barSize = null;
-        settings.setBarSize(ScalebarGraphic.getBarSize(settings));
-        settings.setLabelDistance(ScalebarGraphic.getLabelDistance(settings));
+    // vertical
+    attribute.setWidth(60);
+    attribute.setHeight(180);
+    settings.setMaxSize(new Dimension(60, 180));
+    params = attribute.createValue(null);
+    settings.setParams(params);
+    params.orientation = Orientation.VERTICAL_LABELS_LEFT.getLabel();
+    params.labelDistance = 3;
+    params.barSize = 8;
+    settings.setTopLabelMargin(5.0f);
+    settings.setBottomLabelMargin(6.0f);
+    settings.setBarSize(8);
+    settings.setLabelDistance(3);
 
-        assertEquals(
-                new Dimension(135, 34),
-                ScalebarGraphic.getSize(params, settings, new Dimension(30, 12)));
+    assertEquals(
+        new Dimension(49, 139), ScalebarGraphic.getSize(params, settings, new Dimension(30, 12)));
 
+    // vertical: barSize and labelDistance calculated from height
+    params.labelDistance = null;
+    params.barSize = null;
+    settings.setBarSize(ScalebarGraphic.getBarSize(settings));
+    settings.setLabelDistance(ScalebarGraphic.getLabelDistance(settings));
 
-        // vertical
-        attribute.setWidth(60);
-        attribute.setHeight(180);
-        settings.setMaxSize(new Dimension(60, 180));
-        params = attribute.createValue(null);
-        settings.setParams(params);
-        params.orientation = Orientation.VERTICAL_LABELS_LEFT.getLabel();
-        params.labelDistance = 3;
-        params.barSize = 8;
-        settings.setTopLabelMargin(5.0f);
-        settings.setBottomLabelMargin(6.0f);
-        settings.setBarSize(8);
-        settings.setLabelDistance(3);
+    assertEquals(
+        new Dimension(57, 139), ScalebarGraphic.getSize(params, settings, new Dimension(30, 12)));
+  }
 
-        assertEquals(
-                new Dimension(49, 139),
-                ScalebarGraphic.getSize(params, settings, new Dimension(30, 12)));
+  @Test
+  public void testRender() throws Exception {
+    MapBounds bounds =
+        new CenterScaleMapBounds(CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, 26000);
+    MapfishMapContext mapParams =
+        new MapfishMapContext(bounds, new Dimension(780, 330), 0, 72, true, false);
 
+    ScalebarAttribute scalebarAttibute = new ScalebarAttribute();
+    scalebarAttibute.setWidth(300);
+    scalebarAttibute.setHeight(40);
+    ScalebarAttributeValues scalebarParams = scalebarAttibute.createValue(null);
+    scalebarParams.verticalAlign = VerticalAlign.TOP.getLabel();
+    scalebarParams.font = "Liberation Sans";
+    scalebarParams.renderAsSvg = false;
 
-        // vertical: barSize and labelDistance calculated from height
-        params.labelDistance = null;
-        params.barSize = null;
-        settings.setBarSize(ScalebarGraphic.getBarSize(settings));
-        settings.setLabelDistance(ScalebarGraphic.getLabelDistance(settings));
+    ScalebarGraphic scalebar = new ScalebarGraphic();
+    URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
+    new ImageSimilarity(getFile("expected-scalebar-graphic.png"))
+        .assertSimilarity(new File(file), 160);
+  }
 
-        assertEquals(
-                new Dimension(57, 139),
-                ScalebarGraphic.getSize(params, settings, new Dimension(30, 12)));
-    }
+  @Test
+  public void testRenderDoubleDpi() throws Exception {
+    MapBounds bounds =
+        new CenterScaleMapBounds(CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, 26000);
+    MapfishMapContext mapParams =
+        new MapfishMapContext(bounds, new Dimension(780, 330), 0, 144, true, false);
 
-    @Test
-    public void testRender() throws Exception {
-        MapBounds bounds = new CenterScaleMapBounds(
-                CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, 26000);
-        MapfishMapContext mapParams = new MapfishMapContext(
-                bounds, new Dimension(780, 330), 0, 72, true, false);
+    ScalebarAttribute scalebarAttibute = new ScalebarAttribute();
+    scalebarAttibute.setWidth(300);
+    scalebarAttibute.setHeight(40);
+    ScalebarAttributeValues scalebarParams = scalebarAttibute.createValue(null);
+    scalebarParams.font = "Liberation Sans";
+    scalebarParams.renderAsSvg = false;
 
-        ScalebarAttribute scalebarAttibute = new ScalebarAttribute();
-        scalebarAttibute.setWidth(300);
-        scalebarAttibute.setHeight(40);
-        ScalebarAttributeValues scalebarParams = scalebarAttibute.createValue(null);
-        scalebarParams.verticalAlign = VerticalAlign.TOP.getLabel();
-        scalebarParams.font = "Liberation Sans";
-        scalebarParams.renderAsSvg = false;
+    ScalebarGraphic scalebar = new ScalebarGraphic();
+    URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
+    new ImageSimilarity(getFile("expected-scalebar-graphic-dpi.png"))
+        .assertSimilarity(new File(file), 370);
+  }
 
-        ScalebarGraphic scalebar = new ScalebarGraphic();
-        URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
-        new ImageSimilarity(getFile("expected-scalebar-graphic.png"))
-                .assertSimilarity(new File(file), 160);
-    }
+  @Test
+  public void testRenderSvg() throws Exception {
+    MapBounds bounds =
+        new CenterScaleMapBounds(CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, 26000);
+    MapfishMapContext mapParams =
+        new MapfishMapContext(bounds, new Dimension(780, 330), 0, 72, true, false);
 
-    @Test
-    public void testRenderDoubleDpi() throws Exception {
-        MapBounds bounds = new CenterScaleMapBounds(
-                CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, 26000);
-        MapfishMapContext mapParams = new MapfishMapContext(
-                bounds, new Dimension(780, 330), 0, 144, true, false);
+    ScalebarAttribute scalebarAttibute = new ScalebarAttribute();
+    scalebarAttibute.setWidth(300);
+    scalebarAttibute.setHeight(40);
+    ScalebarAttributeValues scalebarParams = scalebarAttibute.createValue(null);
+    scalebarParams.verticalAlign = VerticalAlign.TOP.getLabel();
+    scalebarParams.renderAsSvg = true;
+    scalebarParams.font = "Liberation Sans";
 
-        ScalebarAttribute scalebarAttibute = new ScalebarAttribute();
-        scalebarAttibute.setWidth(300);
-        scalebarAttibute.setHeight(40);
-        ScalebarAttributeValues scalebarParams = scalebarAttibute.createValue(null);
-        scalebarParams.font = "Liberation Sans";
-        scalebarParams.renderAsSvg = false;
+    ScalebarGraphic scalebar = new ScalebarGraphic();
+    URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
+    new ImageSimilarity(getFile("expected-scalebar-graphic-svg.png"))
+        .assertSimilarity(file, 300, 40, 140);
+  }
 
-        ScalebarGraphic scalebar = new ScalebarGraphic();
-        URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
-        new ImageSimilarity(getFile("expected-scalebar-graphic-dpi.png"))
-                .assertSimilarity(new File(file), 370);
-    }
-
-    @Test
-    public void testRenderSvg() throws Exception {
-        MapBounds bounds = new CenterScaleMapBounds(
-                CRS.decode("EPSG:3857"), -8235878.4938425, 4979784.7605681, 26000);
-        MapfishMapContext mapParams = new MapfishMapContext(
-                bounds, new Dimension(780, 330), 0, 72, true, false);
-
-        ScalebarAttribute scalebarAttibute = new ScalebarAttribute();
-        scalebarAttibute.setWidth(300);
-        scalebarAttibute.setHeight(40);
-        ScalebarAttributeValues scalebarParams = scalebarAttibute.createValue(null);
-        scalebarParams.verticalAlign = VerticalAlign.TOP.getLabel();
-        scalebarParams.renderAsSvg = true;
-        scalebarParams.font = "Liberation Sans";
-
-        ScalebarGraphic scalebar = new ScalebarGraphic();
-        URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
-        new ImageSimilarity(getFile("expected-scalebar-graphic-svg.png"))
-                .assertSimilarity(file, 300, 40, 140);
-    }
-
-    private File getFile(String fileName) {
-        return AbstractMapfishSpringTest.getFile(getClass(), fileName);
-    }
+  private File getFile(String fileName) {
+    return AbstractMapfishSpringTest.getFile(getClass(), fileName);
+  }
 }

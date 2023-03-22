@@ -1,5 +1,6 @@
 package org.mapfish.print.processor.map;
 
+import java.util.List;
 import org.geotools.styling.Style;
 import org.mapfish.print.attribute.StyleAttribute;
 import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
@@ -13,77 +14,61 @@ import org.mapfish.print.processor.InputOutputValue;
 import org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
+/** Processor to set a style on vector layers from the attributes. [[examples=report]] */
+public class SetStyleProcessor extends AbstractProcessor<SetStyleProcessor.Input, Void> {
 
-/**
- * <p>Processor to set a style on vector layers from the attributes.</p>
- * [[examples=report]]
- */
-public class SetStyleProcessor extends
-        AbstractProcessor<SetStyleProcessor.Input, Void> {
+  @Autowired private StyleParserPlugin mapfishJsonParser;
 
-    @Autowired
-    private StyleParserPlugin mapfishJsonParser;
+  /** Constructor. */
+  protected SetStyleProcessor() {
+    super(Void.class);
+  }
 
-    /**
-     * Constructor.
-     */
-    protected SetStyleProcessor() {
-        super(Void.class);
-    }
+  @Override
+  public final Input createInputParameter() {
+    return new Input();
+  }
 
-    @Override
-    public final Input createInputParameter() {
-        return new Input();
-    }
-
-    @Override
-    public final Void execute(final Input values, final ExecutionContext context) {
-        final Style style = this.mapfishJsonParser.parseStyle(
+  @Override
+  public final Void execute(final Input values, final ExecutionContext context) {
+    final Style style =
+        this.mapfishJsonParser
+            .parseStyle(
                 values.template.getConfiguration(),
                 values.clientHttpRequestFactoryProvider.get(),
-                values.style.style
-        ).get();
-        for (MapLayer layer: values.map.getLayers()) {
-            context.stopIfCanceled();
-            if (layer instanceof AbstractFeatureSourceLayer) {
-                ((AbstractFeatureSourceLayer) layer).setStyle((requestFactory, featureSource) -> style);
-            }
-        }
-
-        return null;
+                values.style.style)
+            .get();
+    for (MapLayer layer : values.map.getLayers()) {
+      context.stopIfCanceled();
+      if (layer instanceof AbstractFeatureSourceLayer) {
+        ((AbstractFeatureSourceLayer) layer).setStyle((requestFactory, featureSource) -> style);
+      }
     }
 
-    @Override
-    protected void extraValidation(
-            final List<Throwable> validationErrors, final Configuration configuration) {
-        // no validation needed
-    }
+    return null;
+  }
 
+  @Override
+  protected void extraValidation(
+      final List<Throwable> validationErrors, final Configuration configuration) {
+    // no validation needed
+  }
+
+  /** The input parameter object for {@link SetStyleProcessor}. */
+  public static final class Input {
     /**
-     * The input parameter object for {@link SetStyleProcessor}.
+     * A factory for making http requests. This is added to the values by the framework and
+     * therefore does not need to be set in configuration
      */
-    public static final class Input {
-        /**
-         * A factory for making http requests.  This is added to the values by the framework and therefore
-         * does not need to be set in configuration
-         */
-        public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;
+    public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;
 
-        /**
-         * The template containing this table processor.
-         */
-        public Template template;
+    /** The template containing this table processor. */
+    public Template template;
 
-        /**
-         * The map to update.
-         */
-        @InputOutputValue
-        public GenericMapAttributeValues map;
+    /** The map to update. */
+    @InputOutputValue public GenericMapAttributeValues map;
 
-        /**
-         * The style.
-         */
-        public StyleAttribute.StylesAttributeValues style;
-    }
+    /** The style. */
+    public StyleAttribute.StylesAttributeValues style;
+  }
 }

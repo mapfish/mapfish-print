@@ -1,5 +1,11 @@
 package org.mapfish.print.http;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,160 +23,148 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Files;
-
-import static org.junit.Assert.assertEquals;
-
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSpringTest {
 
-    static {
-        Handler.configureProtocolHandler();
-    }
-    private static final String BASE_DIR = "/org/mapfish/print/servlet/";
-    private static final String HOST = "host.com";
+  static {
+    Handler.configureProtocolHandler();
+  }
 
-    final File logbackXml = getFile("/logback.xml");
-    @Autowired
-    private ConfigurationFactory configurationFactory;
-    @Autowired
-    private TestHttpClientFactory requestFactory;
+  private static final String BASE_DIR = "/org/mapfish/print/servlet/";
+  private static final String HOST = "host.com";
 
-    private ConfigFileResolvingHttpRequestFactory resolvingFactory;
+  final File logbackXml = getFile("/logback.xml");
+  @Autowired private ConfigurationFactory configurationFactory;
+  @Autowired private TestHttpClientFactory requestFactory;
 
-    @Before
-    public void setUp() throws Exception {
-        requestFactory.registerHandler(input -> true,
-                createFileHandler(URI::getPath)
-        );
+  private ConfigFileResolvingHttpRequestFactory resolvingFactory;
 
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+  @Before
+  public void setUp() throws Exception {
+    requestFactory.registerHandler(input -> true, createFileHandler(URI::getPath));
 
-        this.resolvingFactory =
-                new ConfigFileResolvingHttpRequestFactory(this.requestFactory, config, "test");
-    }
+    final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
 
-    @Test
-    public void testCreateRequestServlet() throws Exception {
-        final String path = BASE_DIR + "requestData.json";
-        final URI uri = new URI("servlet://" + path);
-        final ClientHttpRequest request =
-                resolvingFactory.createRequest(uri, HttpMethod.GET);
+    this.resolvingFactory =
+        new ConfigFileResolvingHttpRequestFactory(this.requestFactory, config, "test");
+  }
 
-        final ClientHttpResponse response = request.execute();
+  @Test
+  public void testCreateRequestServlet() throws Exception {
+    final String path = BASE_DIR + "requestData.json";
+    final URI uri = new URI("servlet://" + path);
+    final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+    final ClientHttpResponse response = request.execute();
 
-        String expected = getFileContent(path);
-        final String actual =
-                new String(IOUtils.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
-        assertEquals(expected, actual);
-    }
+    assertEquals(HttpStatus.OK, response.getStatusCode());
 
-    @Test
-    public void testCreateRequestHttpGet() throws Exception {
-        final URI uri = new URI("http://" + HOST + ".test/logback.xml");
-        final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
-        final ClientHttpResponse response = request.execute();
-        final String actual =
-                new String(IOUtils.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
-        assertEquals(getExpected(), actual);
-    }
+    String expected = getFileContent(path);
+    final String actual =
+        new String(IOUtils.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
+    assertEquals(expected, actual);
+  }
 
-    private String getExpected() throws IOException {
-        return new String(Files.readAllBytes(logbackXml.toPath()), Constants.DEFAULT_CHARSET);
-    }
+  @Test
+  public void testCreateRequestHttpGet() throws Exception {
+    final URI uri = new URI("http://" + HOST + ".test/logback.xml");
+    final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
+    final ClientHttpResponse response = request.execute();
+    final String actual =
+        new String(IOUtils.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
+    assertEquals(getExpected(), actual);
+  }
 
-    @Test
-    public void testCreateRequestHttpPost() throws Exception {
-        URI uri = new URI("http://" + HOST + ".test/logback.xml");
-        ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.POST);
-        ClientHttpResponse response = request.execute();
-        String actual = new String(IOUtils.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
-        assertEquals(getExpected(), actual);
+  private String getExpected() throws IOException {
+    return new String(Files.readAllBytes(logbackXml.toPath()), Constants.DEFAULT_CHARSET);
+  }
 
-        uri = logbackXml.toURI();
-        request = resolvingFactory.createRequest(uri, HttpMethod.POST);
-        response = request.execute();
+  @Test
+  public void testCreateRequestHttpPost() throws Exception {
+    URI uri = new URI("http://" + HOST + ".test/logback.xml");
+    ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.POST);
+    ClientHttpResponse response = request.execute();
+    String actual = new String(IOUtils.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
+    assertEquals(getExpected(), actual);
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    uri = logbackXml.toURI();
+    request = resolvingFactory.createRequest(uri, HttpMethod.POST);
+    response = request.execute();
 
-    }
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
 
-    @Test
-    public void testCreateRequestHttpWriteToBody() throws Exception {
+  @Test
+  public void testCreateRequestHttpWriteToBody() throws Exception {
 
-        URI uri = new URI("http://" + HOST + ".test/logback.xml");
-        ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
-        request.getBody().write(new byte[]{1, 2, 3});
-        ClientHttpResponse response = request.execute();
-        String actual = new String(IOUtils.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
-        assertEquals(getExpected(), actual);
+    URI uri = new URI("http://" + HOST + ".test/logback.xml");
+    ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
+    request.getBody().write(new byte[] {1, 2, 3});
+    ClientHttpResponse response = request.execute();
+    String actual = new String(IOUtils.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
+    assertEquals(getExpected(), actual);
 
-        uri = logbackXml.toURI();
-        request = resolvingFactory.createRequest(uri, HttpMethod.GET);
-        request.getBody().write(new byte[]{1, 2, 3});
-        response = request.execute();
+    uri = logbackXml.toURI();
+    request = resolvingFactory.createRequest(uri, HttpMethod.GET);
+    request.getBody().write(new byte[] {1, 2, 3});
+    response = request.execute();
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    }
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
 
-    @Test
-    public void testCreateRequestFile() throws Exception {
-        final String path = BASE_DIR + "requestData.json";
-        final URI uri = getFile(path).toURI();
-        final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
+  @Test
+  public void testCreateRequestFile() throws Exception {
+    final String path = BASE_DIR + "requestData.json";
+    final URI uri = getFile(path).toURI();
+    final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
 
-        final ClientHttpResponse response = request.execute();
+    final ClientHttpResponse response = request.execute();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        String expected = getFileContent(path);
-        final String actual =
-                new String(IOUtils.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
-        assertEquals(expected, actual);
-    }
+    String expected = getFileContent(path);
+    final String actual =
+        new String(IOUtils.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
+    assertEquals(expected, actual);
+  }
 
-    @Test
-    public void testCreateRequestRelativeFileToConfig() throws Exception {
-        final String path = BASE_DIR + "requestData.json";
-        final URI uri = new URI("file://requestData.json");
-        final ClientHttpRequest request =
-                resolvingFactory.createRequest(uri, HttpMethod.GET);
+  @Test
+  public void testCreateRequestRelativeFileToConfig() throws Exception {
+    final String path = BASE_DIR + "requestData.json";
+    final URI uri = new URI("file://requestData.json");
+    final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
 
-        final ClientHttpResponse response = request.execute();
+    final ClientHttpResponse response = request.execute();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        String expected = getFileContent(path);
-        final String actual =
-                new String(IOUtils.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
-        assertEquals(expected, actual);
-    }
+    String expected = getFileContent(path);
+    final String actual =
+        new String(IOUtils.toByteArray(response.getBody()), Constants.DEFAULT_CHARSET);
+    assertEquals(expected, actual);
+  }
 
-    @Test(expected = IllegalFileAccessException.class)
-    public void testCreateRequestIllegalFile() throws Exception {
-        final URI uri = logbackXml.toURI();
-        final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
+  @Test(expected = IllegalFileAccessException.class)
+  public void testCreateRequestIllegalFile() throws Exception {
+    final URI uri = logbackXml.toURI();
+    final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
 
-        request.execute();
-    }
+    request.execute();
+  }
 
-    @Test
-    public void testCreateRequestDataGet() throws Exception {
-        final URI uri = new URI(
-                "data:image/png;base64,iVBORw0KGgoAAA" +
-                        "ANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4" +
-                        "//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU" +
-                        "5ErkJggg==");
-        final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
-        final ClientHttpResponse response = request.execute();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+  @Test
+  public void testCreateRequestDataGet() throws Exception {
+    final URI uri =
+        new URI(
+            "data:image/png;base64,iVBORw0KGgoAAA"
+                + "ANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4"
+                + "//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU"
+                + "5ErkJggg==");
+    final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
+    final ClientHttpResponse response = request.execute();
+    assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        final byte[] actual = IOUtils.toByteArray(response.getBody());
-        assertEquals(85, actual.length);
-    }
+    final byte[] actual = IOUtils.toByteArray(response.getBody());
+    assertEquals(85, actual.length);
+  }
 }

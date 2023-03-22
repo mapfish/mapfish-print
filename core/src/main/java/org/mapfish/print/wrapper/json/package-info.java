@@ -1,4 +1,2 @@
-/**
- * Json wrappers, errors and utilities.
- */
+/** Json wrappers, errors and utilities. */
 package org.mapfish.print.wrapper.json;
