@@ -134,3 +134,12 @@ Agreement](http://goo.gl/forms/QO9UELxM9m).
 [From JitPack repository](https://jitpack.io/#mapfish/mapfish-print)
 
 [Releases, including various assets](https://github.com/mapfish/mapfish-print/releases)
+
+## Contributing
+
+Install the pre-commit hooks:
+
+```bash
+pip install pre-commit
+pre-commit install --allow-missing-config
+```
