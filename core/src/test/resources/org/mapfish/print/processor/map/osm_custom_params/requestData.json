@@ -16,7 +16,7 @@
           "baseURL": "http://osm_custom_params.osm:1234",
           "imageExtension": "png",
           "customParams": {
-            "access_token": "pk.eyJ1IjoibWFwYm94IiwiYSI6IlpIdEpjOHcifQ",
+            "access_token": "secret-token",
             "PRINT-USERNAME": "bob.lenon"
           }
         }
