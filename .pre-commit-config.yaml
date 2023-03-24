@@ -5,3 +5,8 @@ repos:
       - id: prettier
         additional_dependencies:
           - prettier@2.8.4
+        exclude_types:
+          - json
+          - html
+          - markdown
+        exclude: ^(examples|core|docs)/.*
