@@ -1,19 +1,5 @@
 checks:
-  codespell:
-    ignore_re:
-      - ^examples/src/test/resources/examples/.*
-      - ^examples/geoserver-data/.*
-      - ^core/src/test/java/org/mapfish/print/parser/MapfishParserTest\.java$
-      - ^core/src/test/resources/map-data/geojson/states\.json$
-      - ^core/src/test/resources/org/mapfish/print/parser/mapAttributeTest\.json$
-      - ^core/src/test/resources/map-data/openlayers/OpenLayers\.js$
-      - ^core/src/test/resources/map-data/geojson/ny-roads-3857\.json$
-      - ^core/src/main/resources/net/opengis/schemas/.*
-      - ^examples/src/test/resources/examples/oereb/Report_fr\.properties$
-      - ^examples/src/test/resources/examples/oereb/Report_it\.properties$
-      - ^examples/src/test/resources/examples/oereb/requestData\.json$
-      - ^examples/src/test/resources/examples/.*/countries.geojson$
-
+  codespell: false
 publish:
   pypi:
     packages: []
