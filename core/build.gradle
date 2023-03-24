@@ -113,12 +113,11 @@ configurations {
 }
 
 
-
 dependencies {
     compile(
-            "org.springframework:spring-context:5.3.25",
-            "org.springframework:spring-web:5.3.25",
-            "org.springframework:spring-webmvc:5.3.25",
+            "org.springframework:spring-context:5.3.26",
+            "org.springframework:spring-web:5.3.26",
+            "org.springframework:spring-webmvc:5.3.26",
             "org.springframework.security:spring-security-config:5.8.2",
             "org.springframework.security:spring-security-web:5.8.2",
             'com.thetransactioncompany:cors-filter:2.10',
