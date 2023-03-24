@@ -1,13 +1,14 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <xsd:schema
-   targetNamespace="http://www.opengis.net/wfs"
-   xmlns:wfs="http://www.opengis.net/wfs"
-   xmlns:ogc="http://www.opengis.net/ogc"
-   xmlns:gml="http://www.opengis.net/gml"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-   elementFormDefault="qualified"
-   version="1.0.0.3">
+    targetNamespace="http://www.opengis.net/wfs"
+    xmlns:wfs="http://www.opengis.net/wfs"
+    xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:gml="http://www.opengis.net/gml"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified"
+    version="1.0.0.3"
+>
 
    <!--
       WFS is an OGC Standard.
@@ -18,9 +19,15 @@
    <!-- ==============================================================
         Includes and Imports
         ============================================================== -->
-   <xsd:include schemaLocation="./wfs.xsd"/>
-   <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
-   <xsd:import namespace="http://www.opengis.net/ogc" schemaLocation="http://schemas.opengis.net/filter/1.0.0/filter.xsd"/>
+   <xsd:include schemaLocation="./wfs.xsd" />
+   <xsd:import
+        namespace="http://www.opengis.net/gml"
+        schemaLocation="http://schemas.opengis.net/gml/2.1.2/feature.xsd"
+    />
+   <xsd:import
+        namespace="http://www.opengis.net/ogc"
+        schemaLocation="http://schemas.opengis.net/filter/1.0.0/filter.xsd"
+    />
 
    <!-- ==============================================================
         REQUEST MESSAGES
@@ -58,9 +65,11 @@
    <!-- ==============================================================
         RESPONSE MESSAGES
         ============================================================== -->
-   <xsd:element name="FeatureCollection"
-                type="wfs:FeatureCollectionType"
-                substitutionGroup="gml:_FeatureCollection">
+   <xsd:element
+        name="FeatureCollection"
+        type="wfs:FeatureCollectionType"
+        substitutionGroup="gml:_FeatureCollection"
+    >
       <xsd:annotation>
          <xsd:documentation>
             This element is a container for the response to a GetFeature
@@ -111,10 +120,8 @@
             the schemas defined in WFS-capabilities.xsd.
          </xsd:documentation>
       </xsd:annotation>
-      <xsd:attribute name="version"
-                     type="xsd:string" use="optional" fixed="1.0.0"/>
-      <xsd:attribute name="service"
-                     type="xsd:string" use="required" fixed="WFS"/>
+      <xsd:attribute name="version" type="xsd:string" use="optional" fixed="1.0.0" />
+      <xsd:attribute name="service" type="xsd:string" use="required" fixed="WFS" />
    </xsd:complexType>
    <!-- DESCRIBEFEATURETYPE -->
    <xsd:complexType name="DescribeFeatureTypeType">
@@ -135,8 +142,7 @@
          </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
-         <xsd:element name="TypeName" type="xsd:QName"
-                      minOccurs="0" maxOccurs="unbounded">
+         <xsd:element name="TypeName" type="xsd:QName" minOccurs="0" maxOccurs="unbounded">
             <xsd:annotation>
                <xsd:documentation>
                   The TypeName element is used to enumerate the feature types
@@ -146,12 +152,9 @@
             </xsd:annotation>
          </xsd:element>
       </xsd:sequence>
-      <xsd:attribute name="version"
-                     type="xsd:string" use="required" fixed="1.0.0"/>
-      <xsd:attribute name="service"
-                     type="xsd:string" use="required" fixed="WFS"/>
-      <xsd:attribute name="outputFormat"
-                     type="xsd:string" use="optional" default="XMLSCHEMA">
+      <xsd:attribute name="version" type="xsd:string" use="required" fixed="1.0.0" />
+      <xsd:attribute name="service" type="xsd:string" use="required" fixed="WFS" />
+      <xsd:attribute name="outputFormat" type="xsd:string" use="optional" default="XMLSCHEMA">
          <xsd:annotation>
             <xsd:documentation>
                The outputFormat attribute is used to specify what schema
@@ -179,16 +182,12 @@
          </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
-         <xsd:element ref="wfs:Query" maxOccurs="unbounded"/>
+         <xsd:element ref="wfs:Query" maxOccurs="unbounded" />
       </xsd:sequence>
-      <xsd:attribute name="version"
-                     type="xsd:string" use="required" fixed="1.0.0"/>
-      <xsd:attribute name="service"
-                     type="xsd:string" use="required" fixed="WFS"/>
-      <xsd:attribute name="handle"
-                     type="xsd:string" use="optional"/>
-      <xsd:attribute name="outputFormat"
-                     type="xsd:string" use="optional" default="GML2">
+      <xsd:attribute name="version" type="xsd:string" use="required" fixed="1.0.0" />
+      <xsd:attribute name="service" type="xsd:string" use="required" fixed="WFS" />
+      <xsd:attribute name="handle" type="xsd:string" use="optional" />
+      <xsd:attribute name="outputFormat" type="xsd:string" use="optional" default="GML2">
          <xsd:annotation>
             <xsd:documentation>
                The outputFormat attribute is used to specify the output
@@ -205,8 +204,7 @@
             </xsd:documentation>
          </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute name="maxFeatures" type="xsd:positiveInteger"
-                     use="optional">
+      <xsd:attribute name="maxFeatures" type="xsd:positiveInteger" use="optional">
          <xsd:annotation>
             <xsd:documentation>
                The maxFeatures attribute is used to specify the maximum
@@ -272,12 +270,9 @@
           </xsd:annotation>
        </xsd:element>
      </xsd:sequence>
-     <xsd:attribute name="handle"
-                    type="xsd:string" use="optional"/>
-     <xsd:attribute name="typeName"
-                    type="xsd:QName" use="required"/>
-     <xsd:attribute name="featureVersion"
-                    type="xsd:string" use="optional">
+     <xsd:attribute name="handle" type="xsd:string" use="optional" />
+     <xsd:attribute name="typeName" type="xsd:QName" use="required" />
+     <xsd:attribute name="featureVersion" type="xsd:string" use="optional">
         <xsd:annotation>
            <xsd:documentation>
               For systems that implement versioning, the featureVersion

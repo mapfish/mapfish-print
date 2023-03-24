@@ -1,12 +1,13 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <xsd:schema
-   targetNamespace="http://www.opengis.net/wfs"
-   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-   xmlns:gml="http://www.opengis.net/gml"
-   xmlns:ogc="http://www.opengis.net/ogc"
-   xmlns:wfs="http://www.opengis.net/wfs"
-   elementFormDefault="qualified"
-   version="1.0.0.3">
+    targetNamespace="http://www.opengis.net/wfs"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:gml="http://www.opengis.net/gml"
+    xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:wfs="http://www.opengis.net/wfs"
+    elementFormDefault="qualified"
+    version="1.0.0.3"
+>
 
    <!--
       WFS is an OGC Standard.
@@ -17,9 +18,15 @@
    <!-- ==============================================================
         Includes and Imports
         ============================================================== -->
-   <xsd:include schemaLocation="./wfs.xsd"/>
-   <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
-   <xsd:import namespace="http://www.opengis.net/ogc" schemaLocation="http://schemas.opengis.net/filter/1.0.0/filter.xsd"/>
+   <xsd:include schemaLocation="./wfs.xsd" />
+   <xsd:import
+        namespace="http://www.opengis.net/gml"
+        schemaLocation="http://schemas.opengis.net/gml/2.1.2/feature.xsd"
+    />
+   <xsd:import
+        namespace="http://www.opengis.net/ogc"
+        schemaLocation="http://schemas.opengis.net/filter/1.0.0/filter.xsd"
+    />
 
    <!-- ==============================================================
          REQUEST MESSAGES
@@ -58,8 +65,7 @@
    <!-- ==============================================================
          RESPONSE MESSAGES
          ============================================================== -->
-   <xsd:element name="WFS_LockFeatureResponse"
-                type="wfs:WFS_LockFeatureResponseType">
+   <xsd:element name="WFS_LockFeatureResponse" type="wfs:WFS_LockFeatureResponseType">
       <xsd:annotation>
          <xsd:documentation>
             The WFS_LockFeatureResponse element contains a report
@@ -67,8 +73,7 @@
          </xsd:documentation>
       </xsd:annotation>
    </xsd:element>
-   <xsd:element name="WFS_TransactionResponse"
-                type="wfs:WFS_TransactionResponseType">
+   <xsd:element name="WFS_TransactionResponse" type="wfs:WFS_TransactionResponseType">
       <xsd:annotation>
          <xsd:documentation>
             The WFS_TransactionResponse element contains a report
@@ -111,20 +116,14 @@
          </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
-         <xsd:element ref="wfs:Query" maxOccurs="unbounded"/>
+         <xsd:element ref="wfs:Query" maxOccurs="unbounded" />
       </xsd:sequence>
-      <xsd:attribute name="version"
-                     type="xsd:string" use="required" fixed="1.0.0"/>
-      <xsd:attribute name="service"
-                     type="xsd:string" use="required" fixed="WFS"/>
-      <xsd:attribute name="handle"
-                     type="xsd:string" use="optional"/>
-      <xsd:attribute name="expiry"
-                     type="xsd:positiveInteger" use="optional"/>
-      <xsd:attribute name="outputFormat"
-                     type="xsd:string" use="optional" default="GML2"/>
-      <xsd:attribute name="maxFeatures"
-                     type="xsd:positiveInteger" use="optional"/>
+      <xsd:attribute name="version" type="xsd:string" use="required" fixed="1.0.0" />
+      <xsd:attribute name="service" type="xsd:string" use="required" fixed="WFS" />
+      <xsd:attribute name="handle" type="xsd:string" use="optional" />
+      <xsd:attribute name="expiry" type="xsd:positiveInteger" use="optional" />
+      <xsd:attribute name="outputFormat" type="xsd:string" use="optional" default="GML2" />
+      <xsd:attribute name="maxFeatures" type="xsd:positiveInteger" use="optional" />
    </xsd:complexType>
    <!-- LOCKFEATURE -->
    <xsd:complexType name="LockFeatureType">
@@ -148,14 +147,10 @@
             </xsd:annotation>
          </xsd:element>
       </xsd:sequence>
-      <xsd:attribute name="version"
-                     type="xsd:string" use="required" fixed="1.0.0"/>
-      <xsd:attribute name="service"
-                     type="xsd:string" use="required" fixed="WFS"/>
-      <xsd:attribute name="expiry"
-                     type="xsd:positiveInteger" use="optional"/>
-      <xsd:attribute name="lockAction"
-                     type="wfs:AllSomeType" use="optional">
+      <xsd:attribute name="version" type="xsd:string" use="required" fixed="1.0.0" />
+      <xsd:attribute name="service" type="xsd:string" use="required" fixed="WFS" />
+      <xsd:attribute name="expiry" type="xsd:positiveInteger" use="optional" />
+      <xsd:attribute name="lockAction" type="wfs:AllSomeType" use="optional">
          <xsd:annotation>
             <xsd:documentation>
                The lockAction attribute is used to indicate what
@@ -190,12 +185,10 @@
          </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
-         <xsd:element ref="ogc:Filter" minOccurs="0" maxOccurs="1"/>
+         <xsd:element ref="ogc:Filter" minOccurs="0" maxOccurs="1" />
       </xsd:sequence>
-      <xsd:attribute name="handle"
-                     type="xsd:string" use="optional"/>
-      <xsd:attribute name="typeName"
-                     type="xsd:QName" use="required"/>
+      <xsd:attribute name="handle" type="xsd:string" use="optional" />
+      <xsd:attribute name="typeName" type="xsd:QName" use="required" />
    </xsd:complexType>
    <!-- TRANSACTION -->
    <xsd:complexType name="TransactionType">
@@ -228,20 +221,16 @@
             </xsd:annotation>
          </xsd:element>
          <xsd:choice minOccurs="0" maxOccurs="unbounded">
-            <xsd:element ref="wfs:Insert"/>
-            <xsd:element ref="wfs:Update"/>
-            <xsd:element ref="wfs:Delete"/>
-            <xsd:element ref="wfs:Native"/>
+            <xsd:element ref="wfs:Insert" />
+            <xsd:element ref="wfs:Update" />
+            <xsd:element ref="wfs:Delete" />
+            <xsd:element ref="wfs:Native" />
          </xsd:choice>
       </xsd:sequence>
-      <xsd:attribute name="version"
-                     type="xsd:string" use="required" fixed="1.0.0"/>
-      <xsd:attribute name="service"
-                     type="xsd:string" use="required" fixed="WFS"/>
-      <xsd:attribute name="handle"
-                     type="xsd:string" use="optional"/>
-      <xsd:attribute name="releaseAction"
-                     type="wfs:AllSomeType" use="optional">
+      <xsd:attribute name="version" type="xsd:string" use="required" fixed="1.0.0" />
+      <xsd:attribute name="service" type="xsd:string" use="required" fixed="WFS" />
+      <xsd:attribute name="handle" type="xsd:string" use="optional" />
+      <xsd:attribute name="releaseAction" type="wfs:AllSomeType" use="optional">
          <xsd:annotation>
             <xsd:documentation>
                The releaseAction attribute is used to control how a Web
@@ -291,9 +280,9 @@
    </xsd:element>
    <xsd:complexType name="InsertElementType">
       <xsd:sequence>
-         <xsd:element ref="gml:_Feature" maxOccurs="unbounded"/>
+         <xsd:element ref="gml:_Feature" maxOccurs="unbounded" />
       </xsd:sequence>
-      <xsd:attribute name="handle" type="xsd:string" use="optional"/>
+      <xsd:attribute name="handle" type="xsd:string" use="optional" />
    </xsd:complexType>
    <xsd:element name="Update" type="wfs:UpdateElementType">
       <xsd:annotation>
@@ -328,8 +317,8 @@
             </xsd:annotation>
          </xsd:element>
       </xsd:sequence>
-      <xsd:attribute name="handle" type="xsd:string" use="optional"/>
-      <xsd:attribute name="typeName" type="xsd:QName" use="required"/>
+      <xsd:attribute name="handle" type="xsd:string" use="optional" />
+      <xsd:attribute name="typeName" type="xsd:QName" use="required" />
    </xsd:complexType>
    <xsd:element name="Delete" type="wfs:DeleteElementType">
       <xsd:annotation>
@@ -359,8 +348,8 @@
             </xsd:annotation>
          </xsd:element>
       </xsd:sequence>
-      <xsd:attribute name="handle" type="xsd:string" use="optional"/>
-      <xsd:attribute name="typeName" type="xsd:QName" use="required"/>
+      <xsd:attribute name="handle" type="xsd:string" use="optional" />
+      <xsd:attribute name="typeName" type="xsd:QName" use="required" />
    </xsd:complexType>
    <xsd:element name="Native" type="wfs:NativeType">
       <xsd:annotation>
@@ -447,8 +436,7 @@
                </xsd:documentation>
             </xsd:annotation>
          </xsd:element>
-         <xsd:element name="FeaturesLocked"
-                      type="wfs:FeaturesLockedType" minOccurs="0">
+         <xsd:element name="FeaturesLocked" type="wfs:FeaturesLockedType" minOccurs="0">
             <xsd:annotation>
                <xsd:documentation>
                   The LockFeature or GetFeatureWithLock operations
@@ -466,8 +454,7 @@
                </xsd:documentation>
             </xsd:annotation>
          </xsd:element>
-         <xsd:element name="FeaturesNotLocked"
-                      type="wfs:FeaturesNotLockedType" minOccurs="0">
+         <xsd:element name="FeaturesNotLocked" type="wfs:FeaturesNotLockedType" minOccurs="0">
             <xsd:annotation>
                <xsd:documentation>
                   In contrast to the FeaturesLocked element, the
@@ -482,12 +469,12 @@
    </xsd:complexType>
    <xsd:complexType name="FeaturesLockedType">
      <xsd:sequence maxOccurs="unbounded">
-       <xsd:element ref="ogc:FeatureId"/>
+       <xsd:element ref="ogc:FeatureId" />
      </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="FeaturesNotLockedType">
      <xsd:sequence maxOccurs="unbounded">
-       <xsd:element ref="ogc:FeatureId"/>
+       <xsd:element ref="ogc:FeatureId" />
      </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="WFS_TransactionResponseType">
@@ -502,9 +489,7 @@
          </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
-         <xsd:element name="InsertResult"
-                      type="wfs:InsertResultType"
-                      minOccurs="0" maxOccurs="unbounded">
+         <xsd:element name="InsertResult" type="wfs:InsertResultType" minOccurs="0" maxOccurs="unbounded">
             <xsd:annotation>
                <xsd:documentation>
                   The InsertResult element contains a list of ogc:FeatureId
@@ -512,8 +497,7 @@
                </xsd:documentation>
             </xsd:annotation>
          </xsd:element>
-         <xsd:element name="TransactionResult"
-                      type="wfs:TransactionResultType">
+         <xsd:element name="TransactionResult" type="wfs:TransactionResultType">
             <xsd:annotation>
                <xsd:documentation>
                   The TransactionResult element contains a Status element
@@ -525,8 +509,7 @@
             </xsd:annotation>
          </xsd:element>
       </xsd:sequence>
-      <xsd:attribute name="version"
-                     type="xsd:string" use="required" fixed="1.0.0"/>
+      <xsd:attribute name="version" type="xsd:string" use="required" fixed="1.0.0" />
    </xsd:complexType>
    <xsd:complexType name="TransactionResultType">
       <xsd:sequence>
@@ -564,30 +547,30 @@
             </xsd:annotation>
          </xsd:element>
       </xsd:sequence>
-      <xsd:attribute name="handle" type="xsd:string" use="optional"/>
+      <xsd:attribute name="handle" type="xsd:string" use="optional" />
    </xsd:complexType>
    <xsd:complexType name="InsertResultType">
       <xsd:sequence>
-         <xsd:element ref="ogc:FeatureId" maxOccurs="unbounded"/>
+         <xsd:element ref="ogc:FeatureId" maxOccurs="unbounded" />
       </xsd:sequence>
-      <xsd:attribute name="handle" type="xsd:string" use="optional"/>
+      <xsd:attribute name="handle" type="xsd:string" use="optional" />
    </xsd:complexType>
    <xsd:complexType name="StatusType">
       <xsd:choice>
-         <xsd:element ref="wfs:SUCCESS"/>
-         <xsd:element ref="wfs:FAILED"/>
-         <xsd:element ref="wfs:PARTIAL"/>
+         <xsd:element ref="wfs:SUCCESS" />
+         <xsd:element ref="wfs:FAILED" />
+         <xsd:element ref="wfs:PARTIAL" />
       </xsd:choice>
    </xsd:complexType>
-   <xsd:element name="SUCCESS" type="wfs:EmptyType"/>
-   <xsd:element name="FAILED" type="wfs:EmptyType"/>
-   <xsd:element name="PARTIAL" type="wfs:EmptyType"/>
+   <xsd:element name="SUCCESS" type="wfs:EmptyType" />
+   <xsd:element name="FAILED" type="wfs:EmptyType" />
+   <xsd:element name="PARTIAL" type="wfs:EmptyType" />
    <!-- MISC TYPES -->
-   <xsd:complexType name="EmptyType"/>
+   <xsd:complexType name="EmptyType" />
    <xsd:simpleType name="AllSomeType">
       <xsd:restriction base="xsd:string">
-         <xsd:enumeration value="ALL"/>
-         <xsd:enumeration value="SOME"/>
+         <xsd:enumeration value="ALL" />
+         <xsd:enumeration value="SOME" />
       </xsd:restriction>
    </xsd:simpleType>
 </xsd:schema>

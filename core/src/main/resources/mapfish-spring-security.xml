@@ -1,26 +1,27 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xmlns="http://www.springframework.org/schema/security"
-             xsi:schemaLocation="
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans:beans
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/security"
+    xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd"
+>
 
     <!-- needed to allow double slashes in the URLs -->
     <beans:bean id="httpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall">
-        <beans:property name="allowUrlEncodedSlash" value="true"/>
+        <beans:property name="allowUrlEncodedSlash" value="true" />
     </beans:bean>
 
-    <http-firewall ref="httpFirewall"/>
+    <http-firewall ref="httpFirewall" />
 
     <http use-expressions="true">
         <!-- in order to get a challenge (for capabilities for example) you need to use the print/sec/* urls -->
-        <csrf disabled="true"/>
-        <intercept-url pattern="/sec/print/**" requires-channel="https" access="isAuthenticated()"/>
-        <intercept-url pattern="/**" access="permitAll()"/>
-        <http-basic/>
-        <anonymous/>
+        <csrf disabled="true" />
+        <intercept-url pattern="/sec/print/**" requires-channel="https" access="isAuthenticated()" />
+        <intercept-url pattern="/**" access="permitAll()" />
+        <http-basic />
+        <anonymous />
     </http>
 
     <!--
@@ -28,6 +29,8 @@
         See https://docs.spring.io/spring-security/site/docs/5.1.3.RELEASE/reference/htmlsingle/#ns-config
         for some help
     -->
-    <beans:bean name="org.springframework.security.authenticationManager"
-                class="org.mapfish.print.servlet.NoOpAuthenticationManager"/>
+    <beans:bean
+        name="org.springframework.security.authenticationManager"
+        class="org.mapfish.print.servlet.NoOpAuthenticationManager"
+    />
 </beans:beans>

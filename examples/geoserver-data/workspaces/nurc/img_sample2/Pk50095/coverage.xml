@@ -122,7 +122,7 @@
   <parameters>
     <entry>
       <string>ReadGridGeometry2D</string>
-      <string></string>
+      <string />
     </entry>
   </parameters>
 </coverage>

@@ -16,10 +16,10 @@
     </layer>
   </layers>
   <styles>
-    <style/>
-    <style/>
-    <style/>
-    <style/>
+    <style />
+    <style />
+    <style />
+    <style />
   </styles>
   <bounds>
     <minx>-74.047185</minx>
@@ -29,6 +29,6 @@
     <crs>EPSG:4326</crs>
   </bounds>
   <metadata>
-    <entry key="rawStyleList"></entry>
+    <entry key="rawStyleList" />
   </metadata>
 </layerGroup>

@@ -1,12 +1,15 @@
 <!-- Performs a get coverage.  Feel free to play with the elements,        -->
 <!-- to get different results.                                             -->
-<GetCoverage service="WCS" version="1.0.0"
-  xmlns="http://www.opengis.net/wcs"
-  xmlns:nurc="http://www.nurc.nato.int"
-  xmlns:ogc="http://www.opengis.net/ogc"
-  xmlns:gml="http://www.opengis.net/gml"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd">
+<GetCoverage
+    service="WCS"
+    version="1.0.0"
+    xmlns="http://www.opengis.net/wcs"
+    xmlns:nurc="http://www.nurc.nato.int"
+    xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:gml="http://www.opengis.net/gml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd"
+>
 <sourceCoverage>nurc:Pk50095</sourceCoverage>
   <domainSubset>
     <spatialSubset>

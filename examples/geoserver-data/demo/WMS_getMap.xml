@@ -1,7 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ogc:GetMap xmlns:ogc="http://www.opengis.net/ows"
-            xmlns:gml="http://www.opengis.net/gml"
-   version="1.1.1" service="WMS">
+<?xml version="1.0" encoding="UTF-8" ?>
+<ogc:GetMap
+    xmlns:ogc="http://www.opengis.net/ows"
+    xmlns:gml="http://www.opengis.net/gml"
+    version="1.1.1"
+    service="WMS"
+>
    <StyledLayerDescriptor version="1.0.0">
       <NamedLayer>
         <Name>topp:states</Name>

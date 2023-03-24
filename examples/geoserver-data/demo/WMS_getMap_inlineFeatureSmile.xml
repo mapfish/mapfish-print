@@ -1,16 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ogc:GetMap xmlns:ogc="http://www.opengis.net/ows"
-            xmlns:gml="http://www.opengis.net/gml"
-            version="1.2.0"
-            service="WMS">
+<?xml version="1.0" encoding="UTF-8" ?>
+<ogc:GetMap
+    xmlns:ogc="http://www.opengis.net/ows"
+    xmlns:gml="http://www.opengis.net/gml"
+    version="1.2.0"
+    service="WMS"
+>
 
-  <StyledLayerDescriptor version="1.0.0"
-                         xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
-                         xmlns="http://www.opengis.net/sld"
-                         xmlns:ogc="http://www.opengis.net/ogc"
-                         xmlns:xlink="http://www.w3.org/1999/xlink"
-                         xmlns:dave="http://blasby.com"
-                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <StyledLayerDescriptor
+        version="1.0.0"
+        xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
+        xmlns="http://www.opengis.net/sld"
+        xmlns:ogc="http://www.opengis.net/ogc"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:dave="http://blasby.com"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    >
     <UserLayer>
       <Name>Inline</Name>
 

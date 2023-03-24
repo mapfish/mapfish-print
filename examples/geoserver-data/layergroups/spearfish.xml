@@ -22,12 +22,12 @@
     </layer>
   </layers>
   <styles>
-    <style/>
-    <style/>
-    <style/>
-    <style/>
-    <style/>
-    <style/>
+    <style />
+    <style />
+    <style />
+    <style />
+    <style />
+    <style />
   </styles>
   <bounds>
     <minx>589425.9342365642</minx>
@@ -37,6 +37,6 @@
     <crs class="projected">EPSG:26713</crs>
   </bounds>
   <metadata>
-    <entry key="rawStyleList"></entry>
+    <entry key="rawStyleList" />
   </metadata>
 </layerGroup>

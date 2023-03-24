@@ -6,7 +6,8 @@
     <id>NamespaceInfoImpl--570ae188:124761b8d78:-7ff6</id>
   </namespace>
   <title>Manhattan (NY) points of interest</title>
-  <abstract>Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.</abstract>
+  <abstract
+    >Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.</abstract>
   <keywords>
     <string>poi</string>
     <string>Manhattan</string>

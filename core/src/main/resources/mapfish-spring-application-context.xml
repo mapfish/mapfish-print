@@ -1,9 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<beans default-lazy-init="false" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans
+    default-lazy-init="false"
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:context="http://www.springframework.org/schema/context"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd"
+>
     <import resource="mapfish-spring-custom-fonts.xml" />
     <import resource="mapfish-spring-config-objects.xml" />
     <import resource="mapfish-spring-attributes.xml" />
@@ -16,8 +19,12 @@
     <import resource="mapfish-spring-named-styles.xml" />
     <import resource="mapfish-spring-hibernate.xml" />
 
-    <context:annotation-config/>
-    <context:property-placeholder system-properties-mode="OVERRIDE" file-encoding="UTF-8" location="classpath:mapfish-spring.properties"/>
+    <context:annotation-config />
+    <context:property-placeholder
+        system-properties-mode="OVERRIDE"
+        file-encoding="UTF-8"
+        location="classpath:mapfish-spring.properties"
+    />
 
     <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">-->
         <!--<property name="pathMatcher">-->
@@ -35,14 +42,17 @@
         <property name="maxAgeTaskDir" value="${fileCleanUpMaxAgeTaskDir}" />
     </bean>
 
-    <bean id="configurationFactory" class="org.mapfish.print.config.ConfigurationFactory"/>
-    <bean id="processorDependencyGraphFactory" class="org.mapfish.print.processor.ProcessorDependencyGraphFactory" />
+    <bean id="configurationFactory" class="org.mapfish.print.config.ConfigurationFactory" />
+    <bean
+        id="processorDependencyGraphFactory"
+        class="org.mapfish.print.processor.ProcessorDependencyGraphFactory"
+    />
 
     <bean id="registry" class="org.mapfish.print.servlet.registry.BasicRegistry">
         <property name="timeToKeepAfterAccessInMinutes" value="30" />
     </bean>
 
-    <bean id="jobQueue" class="org.mapfish.print.servlet.job.impl.RegistryJobQueue"></bean>
+    <bean id="jobQueue" class="org.mapfish.print.servlet.job.impl.RegistryJobQueue" />
     <bean id="jobManager" class="org.mapfish.print.servlet.job.impl.ThreadPoolJobManager">
         <property name="maxNumberOfRunningPrintJobs" value="${maxNumberOfRunningPrintJobs}" />
         <property name="maxNumberOfWaitingJobs" value="5000" />
@@ -53,20 +63,32 @@
         <property name="oldFileCleanUp" value="${fileCleanUp}" />
         <property name="oldFileCleanupInterval" value="${fileCleanUpInterval}" />
     </bean>
-    <bean id="printJobPrototype" class="org.mapfish.print.servlet.job.impl.FilePrintJob" scope="prototype"/>
-    <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.loader.FileReportLoader"/>
+    <bean id="printJobPrototype" class="org.mapfish.print.servlet.job.impl.FilePrintJob" scope="prototype" />
+    <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.loader.FileReportLoader" />
 
-    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
-    <bean id="healthCheckRegistry" class="com.codahale.metrics.health.HealthCheckRegistry"/>
+    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
+    <bean id="healthCheckRegistry" class="com.codahale.metrics.health.HealthCheckRegistry" />
     <bean id="httpClientFactory" class="org.mapfish.print.http.MfClientHttpRequestFactoryImpl">
         <constructor-arg index="0" value="${maxConnectionsTotal}" />
         <constructor-arg index="1" value="${maxConnectionsPerRoute}" />
     </bean>
-    <bean id="metricNameStrategy" class="org.mapfish.print.metrics.MetricsNameStrategyFactory" factory-method="hostAndMethod" />
-    <bean id="loggingMetricsConfigurator" class="org.mapfish.print.metrics.LoggingMetricsConfigurator" lazy-init="false"/>
-    <bean id="jvmMetricsConfigurator" class="org.mapfish.print.metrics.JvmMetricsConfigurator" lazy-init="false"/>
-    <bean id="jmxMetricsReporter" class="org.mapfish.print.metrics.JmxMetricsReporter" lazy-init="false"/>
-    <bean id="accounting" class="org.mapfish.print.servlet.job.Accounting" lazy-init="false"/>
+    <bean
+        id="metricNameStrategy"
+        class="org.mapfish.print.metrics.MetricsNameStrategyFactory"
+        factory-method="hostAndMethod"
+    />
+    <bean
+        id="loggingMetricsConfigurator"
+        class="org.mapfish.print.metrics.LoggingMetricsConfigurator"
+        lazy-init="false"
+    />
+    <bean
+        id="jvmMetricsConfigurator"
+        class="org.mapfish.print.metrics.JvmMetricsConfigurator"
+        lazy-init="false"
+    />
+    <bean id="jmxMetricsReporter" class="org.mapfish.print.metrics.JmxMetricsReporter" lazy-init="false" />
+    <bean id="accounting" class="org.mapfish.print.servlet.job.Accounting" lazy-init="false" />
 
     <bean id="forkJoinPool" class="java.util.concurrent.ForkJoinPool" destroy-method="shutdownNow">
         <!--
@@ -75,15 +97,20 @@
         <constructor-arg index="0" value="${threadsParallelProcessors}" />
     </bean>
 
-    <bean id="requestForkJoinPool" class="java.util.concurrent.ForkJoinPool" destroy-method="shutdownNow" autowire-candidate="false">
+    <bean
+        id="requestForkJoinPool"
+        class="java.util.concurrent.ForkJoinPool"
+        destroy-method="shutdownNow"
+        autowire-candidate="false"
+    >
         <!--
             Thread pool used for making requests for tile/image layers.
         -->
         <constructor-arg index="0" value="${threadsParallelRequests}" />
     </bean>
 
-    <bean id="mapPrinter" class="org.mapfish.print.MapPrinter" scope="prototype"/>
-    <bean id="configuration" class="org.mapfish.print.config.Configuration" scope="prototype"/>
+    <bean id="mapPrinter" class="org.mapfish.print.MapPrinter" scope="prototype" />
+    <bean id="configuration" class="org.mapfish.print.config.Configuration" scope="prototype" />
 
     <bean id="styleParser" class="org.mapfish.print.map.style.StyleParser" />
     <bean id="imageIOPluginScanner" class="org.mapfish.print.ImageIOPluginScanner" />

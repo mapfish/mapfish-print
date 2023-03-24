@@ -1,9 +1,27 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-    <bean id="springInjectionProcessor" class="org.mapfish.print.config.ProcessorWithSpringInjection" scope="prototype" />
-    <bean id="springInjectionAttribute" class="org.mapfish.print.config.AttributeWithSpringInjection" scope="prototype" />
-    <bean id="configInjectionProcessor" class="org.mapfish.print.config.ProcessorWithConfigurationInjection" scope="prototype" />
-    <bean id="configInjectionAttribute" class="org.mapfish.print.config.AttributeWithConfigurationInjection" scope="prototype" />
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+>
+    <bean
+        id="springInjectionProcessor"
+        class="org.mapfish.print.config.ProcessorWithSpringInjection"
+        scope="prototype"
+    />
+    <bean
+        id="springInjectionAttribute"
+        class="org.mapfish.print.config.AttributeWithSpringInjection"
+        scope="prototype"
+    />
+    <bean
+        id="configInjectionProcessor"
+        class="org.mapfish.print.config.ProcessorWithConfigurationInjection"
+        scope="prototype"
+    />
+    <bean
+        id="configInjectionAttribute"
+        class="org.mapfish.print.config.AttributeWithConfigurationInjection"
+        scope="prototype"
+    />
 </beans>

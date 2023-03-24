@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <xsd:schema
-   targetNamespace="http://www.opengis.net/ogc"
-   xmlns:ogc="http://www.opengis.net/ogc"
-   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-   elementFormDefault="qualified"
-   version="1.0.0.3">
+    targetNamespace="http://www.opengis.net/ogc"
+    xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified"
+    version="1.0.0.3"
+>
 
    <!--
       WFS is an OGC Standard.
@@ -22,9 +23,12 @@
       </xsd:annotation>
       <xsd:complexType>
          <xsd:sequence>
-            <xsd:element name="ServiceException"
-                         type="ogc:ServiceExceptionType"
-                         minOccurs="0" maxOccurs="unbounded">
+            <xsd:element
+                    name="ServiceException"
+                    type="ogc:ServiceExceptionType"
+                    minOccurs="0"
+                    maxOccurs="unbounded"
+                >
                <xsd:annotation>
                   <xsd:documentation>
                      The Service exception element is used to describe
@@ -33,7 +37,7 @@
                </xsd:annotation>
             </xsd:element>
          </xsd:sequence>
-         <xsd:attribute name="version" type="xsd:string" fixed="1.2.0"/>
+         <xsd:attribute name="version" type="xsd:string" fixed="1.2.0" />
       </xsd:complexType>
    </xsd:element>
 

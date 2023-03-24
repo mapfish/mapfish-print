@@ -1,17 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:util="http://www.springframework.org/schema/util"
     xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd"
+>
 
-    <bean id="forwardHeadersTestProcessor" class="org.mapfish.print.processor.http.ForwardHeadersProcessorTest$TestProcessor" scope="prototype"/>
-    <bean id="forwardHeadersTestProcessor2" class="org.mapfish.print.processor.http.ForwardHeadersProcessorTest$TestProcessor2" scope="prototype"/>
+    <bean
+        id="forwardHeadersTestProcessor"
+        class="org.mapfish.print.processor.http.ForwardHeadersProcessorTest$TestProcessor"
+        scope="prototype"
+    />
+    <bean
+        id="forwardHeadersTestProcessor2"
+        class="org.mapfish.print.processor.http.ForwardHeadersProcessorTest$TestProcessor2"
+        scope="prototype"
+    />
 
     <bean class="org.mapfish.print.processor.ProcessorDependency">
-        <constructor-arg type="java.lang.Class" index="0" value="org.mapfish.print.processor.http.AddHeadersProcessor" />
-        <constructor-arg type="java.lang.Class" index="1" value="org.mapfish.print.processor.http.ForwardHeadersProcessorTest$TestProcessor"/>
+        <constructor-arg
+            type="java.lang.Class"
+            index="0"
+            value="org.mapfish.print.processor.http.AddHeadersProcessor"
+        />
+        <constructor-arg
+            type="java.lang.Class"
+            index="1"
+            value="org.mapfish.print.processor.http.ForwardHeadersProcessorTest$TestProcessor"
+        />
         <constructor-arg type="java.util.Set" index="2">
             <util:set>
                 <value>clientHttpRequestFactory</value>
@@ -19,8 +37,16 @@
         </constructor-arg>
     </bean>
     <bean class="org.mapfish.print.processor.ProcessorDependency">
-        <constructor-arg type="java.lang.Class" index="0" value="org.mapfish.print.processor.http.AddHeadersProcessor" />
-        <constructor-arg type="java.lang.Class" index="1" value="org.mapfish.print.processor.http.ForwardHeadersProcessorTest$TestProcessor2"/>
+        <constructor-arg
+            type="java.lang.Class"
+            index="0"
+            value="org.mapfish.print.processor.http.AddHeadersProcessor"
+        />
+        <constructor-arg
+            type="java.lang.Class"
+            index="1"
+            value="org.mapfish.print.processor.http.ForwardHeadersProcessorTest$TestProcessor2"
+        />
         <constructor-arg type="java.util.Set" index="2">
             <util:set>
                 <value>clientHttpRequestFactory</value>

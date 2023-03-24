@@ -1,13 +1,15 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <xsd:schema
-   targetNamespace="http://www.opengis.net/wfs"
-   xmlns:wfs="http://www.opengis.net/wfs"
-   xmlns:ogc="http://www.opengis.net/ogc"
-   xmlns:ows="http://www.opengis.net/ows"
-   xmlns:gml="http://www.opengis.net/gml"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-   elementFormDefault="qualified" version="1.1.2.0">
+    targetNamespace="http://www.opengis.net/wfs"
+    xmlns:wfs="http://www.opengis.net/wfs"
+    xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:ows="http://www.opengis.net/ows"
+    xmlns:gml="http://www.opengis.net/gml"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified"
+    version="1.1.2.0"
+>
 
    <!--
       WFS is an OGC Standard.
@@ -18,9 +20,18 @@
    <!-- ==============================================================
         Includes and Imports
         ============================================================== -->
-   <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/gml.xsd"/>
-   <xsd:import namespace="http://www.opengis.net/ogc" schemaLocation="http://schemas.opengis.net/filter/1.1.0/filter.xsd"/>
-   <xsd:import namespace="http://www.opengis.net/ows" schemaLocation="http://schemas.opengis.net/ows/1.0.0/owsAll.xsd"/>
+   <xsd:import
+        namespace="http://www.opengis.net/gml"
+        schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/gml.xsd"
+    />
+   <xsd:import
+        namespace="http://www.opengis.net/ogc"
+        schemaLocation="http://schemas.opengis.net/filter/1.1.0/filter.xsd"
+    />
+   <xsd:import
+        namespace="http://www.opengis.net/ows"
+        schemaLocation="http://schemas.opengis.net/ows/1.0.0/owsAll.xsd"
+    />
 
    <!-- ================================================================== -->
    <!-- =   BASE REQUEST TYPE                                            = -->
@@ -32,8 +43,7 @@
             except GetCapabilities.
          </xsd:documentation>
       </xsd:annotation>
-      <xsd:attribute name="service" type="ows:ServiceType"
-                     use="optional" default="WFS">
+      <xsd:attribute name="service" type="ows:ServiceType" use="optional" default="WFS">
         <xsd:annotation>
            <xsd:documentation>
               The service attribute is included to support service
@@ -52,8 +62,7 @@
            </xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute name="version" type="xsd:string"
-                     use="optional" default="1.1.0">
+      <xsd:attribute name="version" type="xsd:string" use="optional" default="1.1.0">
         <xsd:annotation>
            <xsd:documentation>
                The version attribute is used to indicate the version of the
@@ -66,8 +75,7 @@
            </xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute name="handle"
-                     type="xsd:string" use="optional">
+      <xsd:attribute name="handle" type="xsd:string" use="optional">
          <xsd:annotation>
             <xsd:documentation>
                The handle attribute allows a client application
@@ -125,8 +133,7 @@
       <xsd:complexType>
          <xsd:simpleContent>
             <xsd:extension base="xsd:string">
-               <xsd:attribute name="traverseXlinkDepth"
-                              type="xsd:string" use="required">
+               <xsd:attribute name="traverseXlinkDepth" type="xsd:string" use="required">
                   <xsd:annotation>
                      <xsd:documentation>
                   This attribute indicates the depth to which nested property
@@ -144,9 +151,7 @@
                      </xsd:documentation>
                   </xsd:annotation>
                </xsd:attribute>
-               <xsd:attribute name="traverseXlinkExpiry"
-                              type="xsd:positiveInteger"
-                              use="optional">
+               <xsd:attribute name="traverseXlinkExpiry" type="xsd:positiveInteger" use="optional">
                   <xsd:annotation>
                      <xsd:documentation>
                   The traverseXlinkExpiry attribute value is specified in
@@ -164,7 +169,7 @@
    <!-- =   GETCAPABILITIES Request and Response                         = -->
    <!-- ================================================================== -->
    <!-- REQUEST -->
-   <xsd:element name="GetCapabilities" type="wfs:GetCapabilitiesType"/>
+   <xsd:element name="GetCapabilities" type="wfs:GetCapabilitiesType" />
    <xsd:complexType name="GetCapabilitiesType">
      <xsd:annotation>
        <xsd:documentation>
@@ -182,15 +187,13 @@
      </xsd:annotation>
      <xsd:complexContent>
        <xsd:extension base="ows:GetCapabilitiesType">
-         <xsd:attribute name="service" type="ows:ServiceType"
-                        use="optional" default="WFS"/>
+         <xsd:attribute name="service" type="ows:ServiceType" use="optional" default="WFS" />
 
        </xsd:extension>
      </xsd:complexContent>
    </xsd:complexType>
    <!-- RESPONSE -->
-   <xsd:element name="WFS_Capabilities"
-                type="wfs:WFS_CapabilitiesType"/>
+   <xsd:element name="WFS_Capabilities" type="wfs:WFS_CapabilitiesType" />
    <xsd:complexType name="WFS_CapabilitiesType">
       <xsd:annotation>
          <xsd:documentation>
@@ -212,15 +215,15 @@
       <xsd:complexContent>
          <xsd:extension base="ows:CapabilitiesBaseType">
             <xsd:sequence>
-               <xsd:element ref="wfs:FeatureTypeList" minOccurs="0"/>
-               <xsd:element ref="wfs:ServesGMLObjectTypeList" minOccurs="0"/>
-               <xsd:element ref="wfs:SupportsGMLObjectTypeList" minOccurs="0"/>
-               <xsd:element ref="ogc:Filter_Capabilities"/>
+               <xsd:element ref="wfs:FeatureTypeList" minOccurs="0" />
+               <xsd:element ref="wfs:ServesGMLObjectTypeList" minOccurs="0" />
+               <xsd:element ref="wfs:SupportsGMLObjectTypeList" minOccurs="0" />
+               <xsd:element ref="ogc:Filter_Capabilities" />
             </xsd:sequence>
          </xsd:extension>
       </xsd:complexContent>
    </xsd:complexType>
-   <xsd:element name="FeatureTypeList" type="wfs:FeatureTypeListType"/>
+   <xsd:element name="FeatureTypeList" type="wfs:FeatureTypeListType" />
    <xsd:complexType name="FeatureTypeListType">
       <xsd:annotation>
          <xsd:documentation>
@@ -228,12 +231,8 @@
          </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
-         <xsd:element name="Operations"
-                      type="wfs:OperationsType"
-                      minOccurs="0"/>
-         <xsd:element name="FeatureType"
-                      type="wfs:FeatureTypeType"
-                      maxOccurs="unbounded"/>
+         <xsd:element name="Operations" type="wfs:OperationsType" minOccurs="0" />
+         <xsd:element name="FeatureType" type="wfs:FeatureTypeType" maxOccurs="unbounded" />
       </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="FeatureTypeType">
@@ -268,11 +267,10 @@
                </xsd:documentation>
             </xsd:annotation>
          </xsd:element>
-         <xsd:element ref="ows:Keywords" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element ref="ows:Keywords" minOccurs="0" maxOccurs="unbounded" />
          <xsd:choice>
             <xsd:sequence>
-               <xsd:element name="DefaultSRS"
-                            type="xsd:anyURI">
+               <xsd:element name="DefaultSRS" type="xsd:anyURI">
                   <xsd:annotation>
                      <xsd:documentation>
                         The DefaultSRS element indicated which spatial
@@ -286,9 +284,7 @@
                      </xsd:documentation>
                   </xsd:annotation>
                </xsd:element>
-               <xsd:element name="OtherSRS"
-                            type="xsd:anyURI"
-                            minOccurs="0" maxOccurs="unbounded">
+               <xsd:element name="OtherSRS" type="xsd:anyURI" minOccurs="0" maxOccurs="unbounded">
                   <xsd:annotation>
                      <xsd:documentation>
                         The OtherSRS element is used to indicate other
@@ -304,42 +300,33 @@
                </xsd:element>
             </xsd:sequence>
             <xsd:element name="NoSRS">
-              <xsd:complexType/>
+              <xsd:complexType />
             </xsd:element>
          </xsd:choice>
-         <xsd:element name="Operations"
-                      type="wfs:OperationsType"
-                      minOccurs="0"/>
-         <xsd:element name="OutputFormats"
-                      type="wfs:OutputFormatListType"
-                      minOccurs="0"/>
-         <xsd:element ref="ows:WGS84BoundingBox"
-                      minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:element name="MetadataURL"
-                      type="wfs:MetadataURLType"
-                      minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="Operations" type="wfs:OperationsType" minOccurs="0" />
+         <xsd:element name="OutputFormats" type="wfs:OutputFormatListType" minOccurs="0" />
+         <xsd:element ref="ows:WGS84BoundingBox" minOccurs="0" maxOccurs="unbounded" />
+         <xsd:element name="MetadataURL" type="wfs:MetadataURLType" minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="OperationsType">
       <xsd:sequence>
-         <xsd:element name="Operation"
-                      type="wfs:OperationType"
-                      maxOccurs="unbounded"/>
+         <xsd:element name="Operation" type="wfs:OperationType" maxOccurs="unbounded" />
       </xsd:sequence>
    </xsd:complexType>
    <xsd:simpleType name="OperationType">
       <xsd:restriction base="xsd:string">
-         <xsd:enumeration value="Insert"/>
-         <xsd:enumeration value="Update"/>
-         <xsd:enumeration value="Delete"/>
-         <xsd:enumeration value="Query"/>
-         <xsd:enumeration value="Lock"/>
-         <xsd:enumeration value="GetGmlObject"/>
+         <xsd:enumeration value="Insert" />
+         <xsd:enumeration value="Update" />
+         <xsd:enumeration value="Delete" />
+         <xsd:enumeration value="Query" />
+         <xsd:enumeration value="Lock" />
+         <xsd:enumeration value="GetGmlObject" />
       </xsd:restriction>
    </xsd:simpleType>
    <xsd:complexType name="OutputFormatListType">
       <xsd:sequence maxOccurs="unbounded">
-         <xsd:element name="Format" type="xsd:string"/>
+         <xsd:element name="Format" type="xsd:string" />
       </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="MetadataURLType">
@@ -361,36 +348,34 @@
             <xsd:attribute name="type" use="required">
                <xsd:simpleType>
                   <xsd:restriction base="xsd:string">
-                     <xsd:enumeration value="TC211"/>
-                     <xsd:enumeration value="FGDC"/>
-                     <xsd:enumeration value="19115"/>
-                     <xsd:enumeration value="19139"/>
+                     <xsd:enumeration value="TC211" />
+                     <xsd:enumeration value="FGDC" />
+                     <xsd:enumeration value="19115" />
+                     <xsd:enumeration value="19139" />
                   </xsd:restriction>
                </xsd:simpleType>
             </xsd:attribute>
             <xsd:attribute name="format" use="required">
                <xsd:simpleType>
                   <xsd:restriction base="xsd:string">
-                     <xsd:enumeration value="text/xml"/>
-                     <xsd:enumeration value="text/html"/>
-                     <xsd:enumeration value="text/sgml"/>
-                     <xsd:enumeration value="text/plain"/>
+                     <xsd:enumeration value="text/xml" />
+                     <xsd:enumeration value="text/html" />
+                     <xsd:enumeration value="text/sgml" />
+                     <xsd:enumeration value="text/plain" />
                   </xsd:restriction>
                </xsd:simpleType>
             </xsd:attribute>
          </xsd:extension>
       </xsd:simpleContent>
    </xsd:complexType>
-   <xsd:element name="ServesGMLObjectTypeList"
-                type="wfs:GMLObjectTypeListType">
+   <xsd:element name="ServesGMLObjectTypeList" type="wfs:GMLObjectTypeListType">
       <xsd:annotation>
          <xsd:documentation>
             List of GML Object types available for GetGmlObject requests
          </xsd:documentation>
       </xsd:annotation>
    </xsd:element>
-   <xsd:element name="SupportsGMLObjectTypeList"
-                type="wfs:GMLObjectTypeListType">
+   <xsd:element name="SupportsGMLObjectTypeList" type="wfs:GMLObjectTypeListType">
       <xsd:annotation>
          <xsd:documentation>
             List of GML Object types that WFS is capable of serving, either
@@ -401,8 +386,7 @@
    </xsd:element>
    <xsd:complexType name="GMLObjectTypeListType">
       <xsd:sequence>
-         <xsd:element name="GMLObjectType" type="wfs:GMLObjectTypeType"
-            maxOccurs="unbounded">
+         <xsd:element name="GMLObjectType" type="wfs:GMLObjectTypeType" maxOccurs="unbounded">
             <xsd:annotation>
                <xsd:documentation>
                   Name of this GML object type, including any namespace prefix
@@ -443,10 +427,8 @@
                </xsd:documentation>
             </xsd:annotation>
          </xsd:element>
-         <xsd:element ref="ows:Keywords"
-                      minOccurs="0" maxOccurs="unbounded"/>
-         <xsd:element name="OutputFormats"
-                      type="wfs:OutputFormatListType" minOccurs="0"/>
+         <xsd:element ref="ows:Keywords" minOccurs="0" maxOccurs="unbounded" />
+         <xsd:element name="OutputFormats" type="wfs:OutputFormatListType" minOccurs="0" />
       </xsd:sequence>
    </xsd:complexType>
 
@@ -483,8 +465,7 @@
       <xsd:complexContent>
          <xsd:extension base="wfs:BaseRequestType">
             <xsd:sequence>
-               <xsd:element name="TypeName" type="xsd:QName"
-                            minOccurs="0" maxOccurs="unbounded">
+               <xsd:element name="TypeName" type="xsd:QName" minOccurs="0" maxOccurs="unbounded">
                   <xsd:annotation>
                      <xsd:documentation>
                         The TypeName element is used to enumerate the
@@ -497,9 +478,12 @@
                   </xsd:annotation>
                </xsd:element>
             </xsd:sequence>
-            <xsd:attribute name="outputFormat"
-                           type="xsd:string" use="optional"
-                           default="text/xml; subtype=gml/3.1.1">
+            <xsd:attribute
+                    name="outputFormat"
+                    type="xsd:string"
+                    use="optional"
+                    default="text/xml; subtype=gml/3.1.1"
+                >
                <xsd:annotation>
                   <xsd:documentation>
                      The outputFormat attribute is used to specify what schema
@@ -558,11 +542,9 @@
       <xsd:complexContent>
          <xsd:extension base="wfs:BaseRequestType">
             <xsd:sequence>
-               <xsd:element ref="wfs:Query" maxOccurs="unbounded"/>
+               <xsd:element ref="wfs:Query" maxOccurs="unbounded" />
             </xsd:sequence>
-            <xsd:attribute name="resultType"
-                           type="wfs:ResultTypeType" use="optional"
-                           default="results">
+            <xsd:attribute name="resultType" type="wfs:ResultTypeType" use="optional" default="results">
                <xsd:annotation>
                   <xsd:documentation>
                      The resultType attribute is used to indicate
@@ -581,9 +563,12 @@
                   </xsd:documentation>
                </xsd:annotation>
             </xsd:attribute>
-            <xsd:attribute name="outputFormat"
-                           type="xsd:string" use="optional"
-                           default="text/xml; subtype=gml/3.1.1">
+            <xsd:attribute
+                    name="outputFormat"
+                    type="xsd:string"
+                    use="optional"
+                    default="text/xml; subtype=gml/3.1.1"
+                >
                <xsd:annotation>
                   <xsd:documentation>
                      The outputFormat attribute is used to specify the output
@@ -603,8 +588,7 @@
                   </xsd:documentation>
                </xsd:annotation>
             </xsd:attribute>
-            <xsd:attribute name="maxFeatures"
-                           type="xsd:positiveInteger" use="optional">
+            <xsd:attribute name="maxFeatures" type="xsd:positiveInteger" use="optional">
                <xsd:annotation>
                   <xsd:documentation>
                      The maxFeatures attribute is used to specify the maximum
@@ -613,8 +597,7 @@
                   </xsd:documentation>
                </xsd:annotation>
             </xsd:attribute>
-            <xsd:attribute name="traverseXlinkDepth"
-                           type="xsd:string" use="optional">
+            <xsd:attribute name="traverseXlinkDepth" type="xsd:string" use="optional">
                <xsd:annotation>
                   <xsd:documentation>
                      This attribute indicates the depth to which nested property
@@ -635,9 +618,7 @@
                   </xsd:documentation>
                </xsd:annotation>
             </xsd:attribute>
-            <xsd:attribute name="traverseXlinkExpiry"
-                           type="xsd:positiveInteger"
-                           use="optional">
+            <xsd:attribute name="traverseXlinkExpiry" type="xsd:positiveInteger" use="optional">
                <xsd:annotation>
                   <xsd:documentation>
                      The traverseXlinkExpiry attribute value is specified in
@@ -722,7 +703,7 @@
                 </xsd:documentation>
              </xsd:annotation>
           </xsd:element>
-          <xsd:element ref="wfs:XlinkPropertyName"/>
+          <xsd:element ref="wfs:XlinkPropertyName" />
           <xsd:element ref="ogc:Function">
              <xsd:annotation>
                 <xsd:documentation>
@@ -755,8 +736,7 @@
           </xsd:annotation>
        </xsd:element>
      </xsd:sequence>
-     <xsd:attribute name="handle"
-                    type="xsd:string" use="optional">
+     <xsd:attribute name="handle" type="xsd:string" use="optional">
          <xsd:annotation>
             <xsd:documentation>
                The handle attribute allows a client application
@@ -770,8 +750,7 @@
             </xsd:documentation>
          </xsd:annotation>
      </xsd:attribute>
-     <xsd:attribute name="typeName"
-                    type="wfs:TypeNameListType" use="required">
+     <xsd:attribute name="typeName" type="wfs:TypeNameListType" use="required">
         <xsd:annotation>
            <xsd:documentation>
               The typeName attribute is a list of one or more
@@ -785,8 +764,7 @@
            </xsd:documentation>
         </xsd:annotation>
      </xsd:attribute>
-     <xsd:attribute name="featureVersion"
-                    type="xsd:string" use="optional">
+     <xsd:attribute name="featureVersion" type="xsd:string" use="optional">
         <xsd:annotation>
            <xsd:documentation>
               For systems that implement versioning, the featureVersion
@@ -814,7 +792,7 @@
      </xsd:attribute>
    </xsd:complexType>
    <xsd:simpleType name="Base_TypeNameListType">
-      <xsd:list itemType="xsd:QName"/>
+      <xsd:list itemType="xsd:QName" />
    </xsd:simpleType>
    <xsd:simpleType name="TypeNameListType">
       <xsd:restriction base="wfs:Base_TypeNameListType">
@@ -833,9 +811,11 @@
       </xsd:restriction>
    </xsd:simpleType>
    <!-- RESPONSE -->
-   <xsd:element name="FeatureCollection"
-                type="wfs:FeatureCollectionType"
-                substitutionGroup="gml:_FeatureCollection">
+   <xsd:element
+        name="FeatureCollection"
+        type="wfs:FeatureCollectionType"
+        substitutionGroup="gml:_FeatureCollection"
+    >
       <xsd:annotation>
          <xsd:documentation>
             This element is a container for the response to a GetFeature
@@ -875,9 +855,7 @@
                </xsd:documentation>
             </xsd:annotation>
          </xsd:attribute>
-         <xsd:attribute name="numberOfFeatures"
-                        type="xsd:nonNegativeInteger"
-                        use="optional">
+         <xsd:attribute name="numberOfFeatures" type="xsd:nonNegativeInteger" use="optional">
             <xsd:annotation>
                <xsd:documentation>
                   The numberOfFeatures attribute should contain a
@@ -915,12 +893,10 @@
       <xsd:complexContent>
          <xsd:extension base="wfs:BaseRequestType">
             <xsd:sequence>
-               <xsd:element ref="ogc:GmlObjectId"/>
+               <xsd:element ref="ogc:GmlObjectId" />
             </xsd:sequence>
-            <xsd:attribute name="outputFormat"
-                           type="xsd:string" use="optional" default="GML3"/>
-            <xsd:attribute name="traverseXlinkDepth"
-                           type="xsd:string" use="required">
+            <xsd:attribute name="outputFormat" type="xsd:string" use="optional" default="GML3" />
+            <xsd:attribute name="traverseXlinkDepth" type="xsd:string" use="required">
                <xsd:annotation>
                   <xsd:documentation>
                      This attribute indicates the depth to which nested
@@ -939,9 +915,7 @@
                   </xsd:documentation>
                </xsd:annotation>
             </xsd:attribute>
-            <xsd:attribute name="traverseXlinkExpiry"
-                           type="xsd:positiveInteger"
-                           use="optional">
+            <xsd:attribute name="traverseXlinkExpiry" type="xsd:positiveInteger" use="optional">
                <xsd:annotation>
                   <xsd:documentation>
                      The traverseXlinkExpiry attribute value is specified
@@ -993,11 +967,9 @@
       <xsd:complexContent>
          <xsd:extension base="wfs:BaseRequestType">
             <xsd:sequence>
-               <xsd:element ref="wfs:Query" maxOccurs="unbounded"/>
+               <xsd:element ref="wfs:Query" maxOccurs="unbounded" />
             </xsd:sequence>
-            <xsd:attribute name="expiry"
-                           type="xsd:positiveInteger"
-                           use="optional" default="5">
+            <xsd:attribute name="expiry" type="xsd:positiveInteger" use="optional" default="5">
                <xsd:annotation>
                   <xsd:documentation>
                      The expiry attribute is used to set the length
@@ -1010,42 +982,40 @@
                   </xsd:documentation>
                </xsd:annotation>
             </xsd:attribute>
-            <xsd:attribute name="resultType"
-                           type="wfs:ResultTypeType" use="optional"
-                           default="results">
+            <xsd:attribute name="resultType" type="wfs:ResultTypeType" use="optional" default="results">
                <xsd:annotation>
                   <xsd:documentation>
                      See definition of wfs:GetFeatureType.
                   </xsd:documentation>
                </xsd:annotation>
             </xsd:attribute>
-            <xsd:attribute name="outputFormat"
-                           type="xsd:string" use="optional"
-                           default="text/xml; subtype=gml/3.1.1">
+            <xsd:attribute
+                    name="outputFormat"
+                    type="xsd:string"
+                    use="optional"
+                    default="text/xml; subtype=gml/3.1.1"
+                >
                <xsd:annotation>
                   <xsd:documentation>
                      See definition of wfs:GetFeatureType.
                   </xsd:documentation>
                </xsd:annotation>
             </xsd:attribute>
-            <xsd:attribute name="maxFeatures"
-                           type="xsd:positiveInteger" use="optional">
+            <xsd:attribute name="maxFeatures" type="xsd:positiveInteger" use="optional">
                <xsd:annotation>
                   <xsd:documentation>
                      See definition of wfs:GetFeatureType.
                   </xsd:documentation>
                </xsd:annotation>
             </xsd:attribute>
-            <xsd:attribute name="traverseXlinkDepth"
-                           type="xsd:string" use="optional">
+            <xsd:attribute name="traverseXlinkDepth" type="xsd:string" use="optional">
                <xsd:annotation>
                   <xsd:documentation>
                      See definition of wfs:GetFeatureType.
                   </xsd:documentation>
                </xsd:annotation>
             </xsd:attribute>
-            <xsd:attribute name="traverseXlinkExpiry"
-                           type="xsd:positiveInteger" use="optional">
+            <xsd:attribute name="traverseXlinkExpiry" type="xsd:positiveInteger" use="optional">
                <xsd:annotation>
                   <xsd:documentation>
                      See definition of wfs:GetFeatureType.
@@ -1083,8 +1053,7 @@
       <xsd:complexContent>
          <xsd:extension base="wfs:BaseRequestType">
             <xsd:sequence>
-               <xsd:element name="Lock" type="wfs:LockType"
-                            maxOccurs="unbounded">
+               <xsd:element name="Lock" type="wfs:LockType" maxOccurs="unbounded">
                   <xsd:annotation>
                      <xsd:documentation>
                         The lock element is used to indicate which feature
@@ -1093,9 +1062,7 @@
                   </xsd:annotation>
                </xsd:element>
             </xsd:sequence>
-            <xsd:attribute name="expiry"
-                           type="xsd:positiveInteger"
-                           use="optional" default="5">
+            <xsd:attribute name="expiry" type="xsd:positiveInteger" use="optional" default="5">
                <xsd:annotation>
                   <xsd:documentation>
                      The expiry attribute is used to set the length
@@ -1108,9 +1075,7 @@
                   </xsd:documentation>
                </xsd:annotation>
             </xsd:attribute>
-            <xsd:attribute name="lockAction"
-                           type="wfs:AllSomeType"
-                           use="optional" default="ALL">
+            <xsd:attribute name="lockAction" type="wfs:AllSomeType" use="optional" default="ALL">
                <xsd:annotation>
                   <xsd:documentation>
                      The lockAction attribute is used to indicate what
@@ -1136,8 +1101,8 @@
    </xsd:complexType>
    <xsd:simpleType name="AllSomeType">
       <xsd:restriction base="xsd:string">
-         <xsd:enumeration value="ALL"/>
-         <xsd:enumeration value="SOME"/>
+         <xsd:enumeration value="ALL" />
+         <xsd:enumeration value="SOME" />
       </xsd:restriction>
    </xsd:simpleType>
    <xsd:complexType name="LockType">
@@ -1153,7 +1118,7 @@
          </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
-         <xsd:element ref="ogc:Filter" minOccurs="0" maxOccurs="1"/>
+         <xsd:element ref="ogc:Filter" minOccurs="0" maxOccurs="1" />
       </xsd:sequence>
       <xsd:attribute name="handle" type="xsd:string" use="optional">
          <xsd:annotation>
@@ -1183,8 +1148,7 @@
       </xsd:attribute>
    </xsd:complexType>
    <!-- RESPONSE -->
-   <xsd:element name="LockFeatureResponse"
-                type="wfs:LockFeatureResponseType">
+   <xsd:element name="LockFeatureResponse" type="wfs:LockFeatureResponseType">
       <xsd:annotation>
          <xsd:documentation>
             The LockFeatureResponse element contains a report
@@ -1211,8 +1175,7 @@
                </xsd:documentation>
             </xsd:annotation>
          </xsd:element>
-         <xsd:element name="FeaturesLocked"
-                      type="wfs:FeaturesLockedType" minOccurs="0">
+         <xsd:element name="FeaturesLocked" type="wfs:FeaturesLockedType" minOccurs="0">
             <xsd:annotation>
                <xsd:documentation>
                   The LockFeature or GetFeatureWithLock operations
@@ -1230,8 +1193,7 @@
                </xsd:documentation>
             </xsd:annotation>
          </xsd:element>
-         <xsd:element name="FeaturesNotLocked"
-                      type="wfs:FeaturesNotLockedType" minOccurs="0">
+         <xsd:element name="FeaturesNotLocked" type="wfs:FeaturesNotLockedType" minOccurs="0">
             <xsd:annotation>
                <xsd:documentation>
                   In contrast to the FeaturesLocked element, the
@@ -1246,12 +1208,12 @@
    </xsd:complexType>
    <xsd:complexType name="FeaturesLockedType">
      <xsd:sequence maxOccurs="unbounded">
-       <xsd:element ref="ogc:FeatureId"/>
+       <xsd:element ref="ogc:FeatureId" />
      </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="FeaturesNotLockedType">
      <xsd:sequence maxOccurs="unbounded">
-       <xsd:element ref="ogc:FeatureId"/>
+       <xsd:element ref="ogc:FeatureId" />
      </xsd:sequence>
    </xsd:complexType>
 
@@ -1302,14 +1264,13 @@
                   </xsd:annotation>
                </xsd:element>
                <xsd:choice minOccurs="0" maxOccurs="unbounded">
-                  <xsd:element ref="wfs:Insert"/>
-                  <xsd:element ref="wfs:Update"/>
-                  <xsd:element ref="wfs:Delete"/>
-                  <xsd:element ref="wfs:Native"/>
+                  <xsd:element ref="wfs:Insert" />
+                  <xsd:element ref="wfs:Update" />
+                  <xsd:element ref="wfs:Delete" />
+                  <xsd:element ref="wfs:Native" />
                </xsd:choice>
             </xsd:sequence>
-            <xsd:attribute name="releaseAction"
-                           type="wfs:AllSomeType" use="optional">
+            <xsd:attribute name="releaseAction" type="wfs:AllSomeType" use="optional">
                <xsd:annotation>
                   <xsd:documentation>
                      The releaseAction attribute is used to control how a Web
@@ -1370,11 +1331,14 @@
          </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
-         <xsd:element ref="gml:_Feature" maxOccurs="unbounded"/>
+         <xsd:element ref="gml:_Feature" maxOccurs="unbounded" />
       </xsd:sequence>
-      <xsd:attribute name="idgen"
-                     type="wfs:IdentifierGenerationOptionType"
-                     use="optional" default="GenerateNew">
+      <xsd:attribute
+            name="idgen"
+            type="wfs:IdentifierGenerationOptionType"
+            use="optional"
+            default="GenerateNew"
+        >
          <xsd:annotation>
             <xsd:documentation>
                The idgen attribute control how a WFS generates identifiers
@@ -1400,8 +1364,12 @@
             </xsd:documentation>
          </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute name="inputFormat" type="xsd:string"
-                     use="optional" default="text/xml; subtype=gml/3.1.1">
+      <xsd:attribute
+            name="inputFormat"
+            type="xsd:string"
+            use="optional"
+            default="text/xml; subtype=gml/3.1.1"
+        >
          <xsd:annotation>
             <xsd:documentation>
                This inputFormat attribute is used to indicate
@@ -1531,8 +1499,7 @@
            </xsd:documentation>
         </xsd:annotation>
       </xsd:attribute>
-      <xsd:attribute name="inputFormat" type="xsd:string"
-                     use="optional" default="x-application/gml:3">
+      <xsd:attribute name="inputFormat" type="xsd:string" use="optional" default="x-application/gml:3">
          <xsd:annotation>
             <xsd:documentation>
                This inputFormat attribute is used to indicate
@@ -1675,8 +1642,7 @@
       </xsd:attribute>
    </xsd:complexType>
    <!-- REPONSE -->
-   <xsd:element name="TransactionResponse"
-                type="wfs:TransactionResponseType">
+   <xsd:element name="TransactionResponse" type="wfs:TransactionResponseType">
       <xsd:annotation>
          <xsd:documentation>
             The TransactionResponse element contains a report
@@ -1693,8 +1659,7 @@
          </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
-         <xsd:element name="TransactionSummary"
-                      type="wfs:TransactionSummaryType">
+         <xsd:element name="TransactionSummary" type="wfs:TransactionSummaryType">
             <xsd:annotation>
                <xsd:documentation xml:lang="en">
                   The TransactionSummary element is used to summarize
@@ -1703,9 +1668,7 @@
                </xsd:documentation>
             </xsd:annotation>
          </xsd:element>
-         <xsd:element name="TransactionResults"
-                      type="wfs:TransactionResultsType"
-                      minOccurs="0">
+         <xsd:element name="TransactionResults" type="wfs:TransactionResultsType" minOccurs="0">
             <xsd:annotation>
                <xsd:documentation xml:lang="en">
                   For systems that do not support atomic transactions,
@@ -1715,9 +1678,7 @@
                </xsd:documentation>
             </xsd:annotation>
          </xsd:element>
-         <xsd:element name="InsertResults"
-                      type="wfs:InsertResultsType"
-                      minOccurs="0">
+         <xsd:element name="InsertResults" type="wfs:InsertResultsType" minOccurs="0">
             <xsd:annotation>
                <xsd:documentation xml:lang="en">
                   A transaction is a collection of Insert,Update and Delete
@@ -1729,8 +1690,7 @@
             </xsd:annotation>
          </xsd:element>
       </xsd:sequence>
-      <xsd:attribute name="version"
-                     type="xsd:string" use="required" fixed="1.1.0">
+      <xsd:attribute name="version" type="xsd:string" use="required" fixed="1.1.0">
          <xsd:annotation>
             <xsd:documentation>
                The version attribute contains the version of the request
@@ -1748,15 +1708,9 @@
          </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
-         <xsd:element name="totalInserted"
-                      type="xsd:nonNegativeInteger"
-                      minOccurs="0"/>
-         <xsd:element name="totalUpdated"
-                      type="xsd:nonNegativeInteger"
-                      minOccurs="0"/>
-         <xsd:element name="totalDeleted"
-                      type="xsd:nonNegativeInteger"
-                      minOccurs="0"/>
+         <xsd:element name="totalInserted" type="xsd:nonNegativeInteger" minOccurs="0" />
+         <xsd:element name="totalUpdated" type="xsd:nonNegativeInteger" minOccurs="0" />
+         <xsd:element name="totalDeleted" type="xsd:nonNegativeInteger" minOccurs="0" />
       </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="TransactionResultsType">
@@ -1768,8 +1722,7 @@
          </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
-         <xsd:element name="Action" type="wfs:ActionType"
-                      minOccurs="0" maxOccurs="unbounded">
+         <xsd:element name="Action" type="wfs:ActionType" minOccurs="0" maxOccurs="unbounded">
             <xsd:annotation>
                <xsd:documentation>
                   The Action element reports an exception code
@@ -1783,8 +1736,7 @@
    </xsd:complexType>
    <xsd:complexType name="ActionType">
       <xsd:sequence>
-         <xsd:element name="Message" type="xsd:string"
-                      minOccurs="0" maxOccurs="1">
+         <xsd:element name="Message" type="xsd:string" minOccurs="0" maxOccurs="1">
             <xsd:annotation>
                <xsd:documentation>
                   If an action fails, the message element may be used
@@ -1834,9 +1786,7 @@
          </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
-         <xsd:element name="Feature"
-                      type="wfs:InsertedFeatureType"
-                      maxOccurs="unbounded"/>
+         <xsd:element name="Feature" type="wfs:InsertedFeatureType" maxOccurs="unbounded" />
       </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="InsertedFeatureType">

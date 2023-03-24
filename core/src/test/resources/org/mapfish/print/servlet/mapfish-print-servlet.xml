@@ -1,28 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns="http://www.springframework.org/schema/beans"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd"
+>
 
-<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns="http://www.springframework.org/schema/beans"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
-
-    <context:property-placeholder system-properties-mode="OVERRIDE" file-encoding="UTF-8"
-                                  location="classpath:mapfish-spring.properties"/>
+    <context:property-placeholder
+        system-properties-mode="OVERRIDE"
+        file-encoding="UTF-8"
+        location="classpath:mapfish-spring.properties"
+    />
 
     <bean id="mapfishPrintServlet" class="org.mapfish.print.servlet.MapPrinterServlet">
-        <property name="maxCreateAndGetWaitTimeInSeconds" value="${printTimeout}"/>
+        <property name="maxCreateAndGetWaitTimeInSeconds" value="${printTimeout}" />
     </bean>
 
     <bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory">
         <property name="configurationFiles">
             <map>
-                <entry key="default" value="classpath://org/mapfish/print/servlet/config.yaml"/>
+                <entry key="default" value="classpath://org/mapfish/print/servlet/config.yaml" />
             </map>
         </property>
     </bean>
 
-    <bean id="sleeper" class="org.mapfish.print.servlet.MapPrinterServletTest.SleepProcessor"
-          scope="prototype"/>
-    <bean id="s3reportStorage" class="org.mapfish.print.servlet.TestS3ReportStorage" scope="prototype"/>
+    <bean
+        id="sleeper"
+        class="org.mapfish.print.servlet.MapPrinterServletTest.SleepProcessor"
+        scope="prototype"
+    />
+    <bean id="s3reportStorage" class="org.mapfish.print.servlet.TestS3ReportStorage" scope="prototype" />
 
 </beans>

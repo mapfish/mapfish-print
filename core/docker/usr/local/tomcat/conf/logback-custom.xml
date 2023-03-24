@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0" encoding="UTF-8" ?>
 <included>
     <logger name="org.mapfish" level="${LOG_LEVEL}" />
     <logger name="org.springframework" level="${SPRING_LOG_LEVEL}" />

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
     <appender name="classic" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -24,11 +24,11 @@
         </filter>
     </appender>
 
-    <logger name="org.apache.catalina" level="${TOMCAT_LOG_LEVEL}"/>
-    <logger name="org.apache.coyote" level="${TOMCAT_LOG_LEVEL}"/>
-    <logger name="io.sentry" level="${SENTRY_LOG_LEVEL}"/>
+    <logger name="org.apache.catalina" level="${TOMCAT_LOG_LEVEL}" />
+    <logger name="org.apache.coyote" level="${TOMCAT_LOG_LEVEL}" />
+    <logger name="io.sentry" level="${SENTRY_LOG_LEVEL}" />
 
-    <include file="${CATALINA_HOME}/conf/logback-custom.xml"/>
+    <include file="${CATALINA_HOME}/conf/logback-custom.xml" />
 
     <root level="${DEFAULT_LOG_LEVEL}">
         <appender-ref ref="${TOMCAT_LOG_TYPE}" />

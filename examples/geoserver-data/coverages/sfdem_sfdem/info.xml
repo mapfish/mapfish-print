@@ -1,9 +1,9 @@
-<coverage format = "sfdem" >
+<coverage format="sfdem">
   <name>sfdem</name>
   <label>sfdem is a Tagged Image File Format with Geographic information</label>
   <description>Generated from sfdem</description>
   <wmspath>/</wmspath>
-  <metadataLink about = "http://www.remotesensing.org:16080/websites/geotiff/geotiff.html" metadataType = "other" >
+  <metadataLink about="http://www.remotesensing.org:16080/websites/geotiff/geotiff.html" metadataType="other">
 
     null
 
@@ -13,8 +13,9 @@
     the default style this CoverageInfoDTO can be represented by.
     at least must contain the "default" attribute
   -->
-  <styles default = "dem" />
-  <envelope crs = "PROJCS['NAD27 / UTM zone 13N',
+  <styles default="dem" />
+  <envelope
+        crs="PROJCS['NAD27 / UTM zone 13N',
   GEOGCS['NAD27',
     DATUM['North American Datum 1927',
       SPHEROID['Clarke 1866', 6378206.4, 294.9786982138982, AUTHORITY['EPSG','7008']],
@@ -34,15 +35,17 @@
   UNIT['m', 1.0],
   AXIS['Easting', EAST],
   AXIS['Northing', NORTH],
-  AUTHORITY['EPSG','26713']]" srsName = "EPSG:26713" >
+  AUTHORITY['EPSG','26713']]"
+        srsName="EPSG:26713"
+    >
     <pos>589980.0 4913700.0</pos>
     <pos>609000.0 4928010.0</pos>
   </envelope>
-  <grid dimension = "2" >
+  <grid dimension="2">
     <low>0 0 </low>
     <high>634 477 </high>
     <axisName>GRAY_INDEX</axisName>
-    <geoTransform >
+    <geoTransform>
       <scaleX>30.0</scaleX>
       <scaleY>-30.0</scaleY>
       <shearX>0.0</shearX>
@@ -51,25 +54,25 @@
       <translateY>4927995.0</translateY>
     </geoTransform>
   </grid>
-  <CoverageDimension >
+  <CoverageDimension>
     <name>GRAY_INDEX</name>
     <description>GridSampleDimension[-9.999999933815813E36,-9.999999933815813E36]</description>
-    <interval >
+    <interval>
       <min>-9.999999933815813E36</min>
       <max>-9.999999933815813E36</max>
     </interval>
-    <nullValues >
+    <nullValues>
       <value>-9.999999933815813E36</value>
     </nullValues>
   </CoverageDimension>
-  <supportedCRSs >
+  <supportedCRSs>
     <requestCRSs>EPSG:26713</requestCRSs>
     <responseCRSs>EPSG:26713</responseCRSs>
   </supportedCRSs>
-  <supportedFormats nativeFormat = "GeoTIFF" >
+  <supportedFormats nativeFormat="GeoTIFF">
     <formats>ARCGRID,IMAGEMOSAIC,GTOPO30,GEOTIFF,GIF,PNG,JPEG,TIFF</formats>
   </supportedFormats>
-  <supportedInterpolations default = "nearest neighbor" >
+  <supportedInterpolations default="nearest neighbor">
     <interpolationMethods>nearest neighbor,bilinear,bicubic</interpolationMethods>
   </supportedInterpolations>
 </coverage>

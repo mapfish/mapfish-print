@@ -6,7 +6,8 @@
     <id>NamespaceInfoImpl--570ae188:124761b8d78:-7ff6</id>
   </namespace>
   <title>World rectangle</title>
-  <abstract>A simple rectangular polygon covering most of the world, it&apos;s only used for the purpose of providing a background (WMS bgcolor could be used instead)</abstract>
+  <abstract
+    >A simple rectangular polygon covering most of the world, it&apos;s only used for the purpose of providing a background (WMS bgcolor could be used instead)</abstract>
   <keywords>
     <string>DS_giant_polygon</string>
     <string>giant_polygon</string>

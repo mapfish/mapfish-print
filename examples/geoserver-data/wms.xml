@@ -4,7 +4,8 @@
   <name>WMS</name>
   <title>GeoServer Web Map Service</title>
   <maintainer>http://geoserver.org/comm</maintainer>
-  <abstrct>A compliant implementation of WMS plus most of the SLD extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</abstrct>
+  <abstrct
+    >A compliant implementation of WMS plus most of the SLD extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</abstrct>
   <accessConstraints>NONE</accessConstraints>
   <fees>NONE</fees>
   <versions>
@@ -20,7 +21,7 @@
     <string>WMS</string>
     <string>GEOSERVER</string>
   </keywords>
-  <metadataLink/>
+  <metadataLink />
   <citeCompliant>false</citeCompliant>
   <onlineResource>http://geoserver.sourceforge.net/html/index.php</onlineResource>
   <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>

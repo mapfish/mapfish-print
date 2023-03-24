@@ -124,7 +124,7 @@
     </entry>
     <entry>
       <string>Filter</string>
-      <null/>
+      <null />
     </entry>
     <entry>
       <string>MaxAllowedTiles</string>
@@ -148,7 +148,7 @@
     </entry>
     <entry>
       <string>BackgroundValues</string>
-      <null/>
+      <null />
     </entry>
   </parameters>
 </coverage>

@@ -10,9 +10,10 @@
 
   -->
 <GetCapabilities
-  service="WCS"
-  version="1.0.0"
-  xmlns="http://www.opengis.net/wcs"
-  xmlns:nurc="http://www.nurc.nato.int"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/wcsCapabilities.xsd"/>
+    service="WCS"
+    version="1.0.0"
+    xmlns="http://www.opengis.net/wcs"
+    xmlns:nurc="http://www.nurc.nato.int"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/wcsCapabilities.xsd"
+/>

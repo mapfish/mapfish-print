@@ -7,12 +7,13 @@
       The getCapabilities demo will tell you the names of all the layers!
   -->
 <DescribeCoverage
-  version="1.0.0"
-  service="WCS"
-  xmlns="http://www.opengis.net/wcs"
-  xmlns:nurc="http://www.nurc.nato.int"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/describeCoverage.xsd">
+    version="1.0.0"
+    service="WCS"
+    xmlns="http://www.opengis.net/wcs"
+    xmlns:nurc="http://www.nurc.nato.int"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/describeCoverage.xsd"
+>
 
     <Coverage>nurc:Pk50095</Coverage>
 

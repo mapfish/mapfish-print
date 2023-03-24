@@ -4,7 +4,8 @@
   <name>WFS</name>
   <title>GeoServer Web Feature Service</title>
   <maintainer>http://geoserver.org/comm</maintainer>
-  <abstrct>This is the reference implementation of WFS 1.0.0 and WFS 1.1.0, supports all WFS operations including Transaction.</abstrct>
+  <abstrct
+    >This is the reference implementation of WFS 1.0.0 and WFS 1.1.0, supports all WFS operations including Transaction.</abstrct>
   <accessConstraints>NONE</accessConstraints>
   <fees>NONE</fees>
   <versions>
@@ -23,7 +24,7 @@
     <string>WMS</string>
     <string>GEOSERVER</string>
   </keywords>
-  <metadataLink/>
+  <metadataLink />
   <citeCompliant>false</citeCompliant>
   <onlineResource>http://geoserver.sourceforge.net/html/index.php</onlineResource>
   <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
