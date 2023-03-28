@@ -42,11 +42,6 @@ public class HibernateJobQueue implements JobQueue {
     private ScheduledExecutorService cleanUpTimer;
 
     /**
-     * The interval at which old records are deleted (in seconds).
-     */
-    private final long cleanupInterval = DEFAULT_CLEAN_UP_INTERVAL;
-
-    /**
      * The minimum time to keep records after last access.
      */
     private int timeToKeepAfterAccessInMinutes = DEFAULT_TIME_TO_KEEP_AFTER_ACCESS;
@@ -206,7 +201,11 @@ public class HibernateJobQueue implements JobQueue {
             thread.setDaemon(true);
             return thread;
         });
-        this.cleanUpTimer.scheduleAtFixedRate(this::cleanup, this.cleanupInterval, this.cleanupInterval,
+        /**
+         * The interval at which old records are deleted (in seconds).
+         */
+        long cleanupInterval = DEFAULT_CLEAN_UP_INTERVAL;
+        this.cleanUpTimer.scheduleAtFixedRate(this::cleanup, cleanupInterval, cleanupInterval,
                                               TimeUnit.SECONDS);
     }
 
