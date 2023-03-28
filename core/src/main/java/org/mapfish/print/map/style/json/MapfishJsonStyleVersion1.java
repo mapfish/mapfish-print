@@ -127,7 +127,7 @@ public final class MapfishJsonStyleVersion1 {
 
     @SafeVarargs
     //CHECKSTYLE:OFF
-    private final Rule createGeometryFilteredRule(
+    private Rule createGeometryFilteredRule(
             final Symbolizer symb,
             final String styleKey,
             final String styleProperty,

@@ -156,7 +156,7 @@ public class MapfishStyleParserPluginTest {
     }
 
     @SafeVarargs
-    private final void assertFilter(Filter geomSelectFunction, Class<? extends Geometry>... geomClasses) {
+    private void assertFilter(Filter geomSelectFunction, Class<? extends Geometry>... geomClasses) {
 
         List<Class<? extends Geometry>> allowed = Arrays.asList(geomClasses);
 
