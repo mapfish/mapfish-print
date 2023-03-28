@@ -74,10 +74,10 @@ public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest
             assertTrue(testFile.getAbsolutePath() + " is not accessible",
                        getLoader().isAccessible(CONFIG_FILE.toURI(),
                                                 testFile.getAbsolutePath()));
-            assertTrue(testFile.getAbsoluteFile().toURI().toString() + " is not accessible",
+            assertTrue(testFile.getAbsoluteFile().toURI() + " is not accessible",
                        getLoader().isAccessible(CONFIG_FILE.toURI
                                (), testFile.getAbsoluteFile().toURI().toString()));
-            assertTrue(testFile.toURI().toString() + " is not accessible",
+            assertTrue(testFile.toURI() + " is not accessible",
                        getLoader().isAccessible(CONFIG_FILE.toURI(), testFile.toURI().toString()));
         } finally {
             testFile.delete();

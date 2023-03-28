@@ -1054,7 +1054,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             return null;
         }
         String ref = maybeAddRequestId(
-                UUID.randomUUID().toString() + "@" + this.servletInfo.getServletId(),
+                UUID.randomUUID() + "@" + this.servletInfo.getServletId(),
                 httpServletRequest);
         MDC.put(Processor.MDC_JOB_ID_KEY, ref);
         LOGGER.debug("{}", specJson);

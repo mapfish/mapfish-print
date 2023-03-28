@@ -123,7 +123,7 @@ public final class OsmLayer extends AbstractTiledLayer {
                 path.append('/').append(row);
                 path.append('.').append(OsmLayer.this.param.imageExtension);
 
-                uri = new URI(commonUrl + path.toString());
+                uri = new URI(commonUrl + path);
             }
 
             return httpRequestFactory.createRequest(

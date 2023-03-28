@@ -225,7 +225,7 @@ public final class Values {
                         "' attribute for the '" +
                         templateName + "' template.\n\nThe JSON is: \n" + requestJsonAttributes + defaults +
                         "\n" +
-                        e.toString();
+                    e;
 
                 throw new AttributeParsingException(errorMsg, e);
             }

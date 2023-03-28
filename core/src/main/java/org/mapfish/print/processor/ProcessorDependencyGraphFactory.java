@@ -271,7 +271,7 @@ public final class ProcessorDependencyGraphFactory {
                     // there is already an output with the same name
                     if (value.canBeRenamed) {
                         // if this is just a debug output, we can simply rename it
-                        outputName = outputName + "_" + UUID.randomUUID().toString();
+                        outputName = outputName + "_" + UUID.randomUUID();
                     } else {
                         ProcessorGraphNode<Object, Object> provider = provideByProcessor.get(outputName);
                         if (provider == null) {

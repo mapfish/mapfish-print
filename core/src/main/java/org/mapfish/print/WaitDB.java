@@ -35,7 +35,7 @@ public abstract class WaitDB {
                 System.exit(0);
                 return;
             } catch (Exception e) {
-                System.out.println("Failed to connect to the DB: " + e.toString());
+                System.out.println("Failed to connect to the DB: " + e);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e1) {

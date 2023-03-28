@@ -217,7 +217,7 @@ public class ExamplesTest {
                 errorReport.append("Failed with the error:\n");
                 final StringWriter sw = new StringWriter();
                 error.getValue().printStackTrace(new PrintWriter(sw));
-                errorReport.append(sw.toString());
+                errorReport.append(sw);
                 errorReport.append('\n');
             }
             errorReport.append("\n\n");
@@ -310,7 +310,7 @@ public class ExamplesTest {
                             if (!expectedOutput.exists()) {
                                 errors.put(
                                         example.getName() + " (" + requestFile.getName() + ")",
-                                        new Exception("File not found: " + expectedOutput.toString()));
+                                        new Exception("File not found: " + expectedOutput));
                             }
 
                             int similarity = 0;
