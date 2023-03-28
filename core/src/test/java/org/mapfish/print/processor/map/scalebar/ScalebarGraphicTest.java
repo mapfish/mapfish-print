@@ -42,17 +42,17 @@ public class ScalebarGraphicTest {
     @Test
     public void testGetNearestNiceValue() {
         ScalebarGraphic scalebar = new ScalebarGraphic();
-        assertEquals(10.0, scalebar.getNearestNiceValue(10.0, DistanceUnit.M,
+        assertEquals(10.0, ScalebarGraphic.getNearestNiceValue(10.0, DistanceUnit.M,
                                                         false), TOLERANCE);
-        assertEquals(10.0, scalebar.getNearestNiceValue(13.0, DistanceUnit.M,
+        assertEquals(10.0, ScalebarGraphic.getNearestNiceValue(13.0, DistanceUnit.M,
                                                         false), TOLERANCE);
-        assertEquals(50.0, scalebar.getNearestNiceValue(67.66871, DistanceUnit.M,
+        assertEquals(50.0, ScalebarGraphic.getNearestNiceValue(67.66871, DistanceUnit.M,
                                                         false), TOLERANCE);
-        assertEquals(0.02, scalebar.getNearestNiceValue(0.0315, DistanceUnit.M,
+        assertEquals(0.02, ScalebarGraphic.getNearestNiceValue(0.0315, DistanceUnit.M,
                                                         false), TOLERANCE);
-        assertEquals(1000000000.0, scalebar.getNearestNiceValue(1240005466, DistanceUnit.M,
+        assertEquals(1000000000.0, ScalebarGraphic.getNearestNiceValue(1240005466, DistanceUnit.M,
                                                                 false), TOLERANCE);
-        assertEquals(50.0, scalebar.getNearestNiceValue(98.66871, DistanceUnit.M,
+        assertEquals(50.0, ScalebarGraphic.getNearestNiceValue(98.66871, DistanceUnit.M,
                                                         false), TOLERANCE);
     }
 

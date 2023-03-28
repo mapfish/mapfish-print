@@ -693,7 +693,7 @@ public class JsonStyleParserHelperTest {
     }
 
     private Set<String> findCompatibleMimeTypes(String mimeType) {
-        for (Set<String> compatibleMimetypes: helper.COMPATIBLE_MIMETYPES) {
+        for (Set<String> compatibleMimetypes: JsonStyleParserHelper.COMPATIBLE_MIMETYPES) {
             if (compatibleMimetypes.contains(mimeType)) {
                 return compatibleMimetypes;
             }

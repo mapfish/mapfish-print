@@ -36,7 +36,7 @@ public class ConfigurationFactoryTest extends AbstractMapfishSpringTest {
     @Test
     public void testSpringInjection() throws Exception {
         File configFile =
-                super.getFile(ConfigurationFactoryTest.class, "configRequiringSpringInjection.yaml");
+                getFile(ConfigurationFactoryTest.class, "configRequiringSpringInjection.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
 
         assertNotNull(config.getDirectory());
@@ -59,7 +59,7 @@ public class ConfigurationFactoryTest extends AbstractMapfishSpringTest {
     @Test
     public void testConfigurationInjection() throws Exception {
         File configFile =
-                super.getFile(ConfigurationFactoryTest.class, "configRequiringConfigurationInjection.yaml");
+                getFile(ConfigurationFactoryTest.class, "configRequiringConfigurationInjection.yaml");
         final Configuration config = configurationFactory.getConfig(configFile);
         assertNotNull(config.getDirectory());
 
@@ -81,14 +81,14 @@ public class ConfigurationFactoryTest extends AbstractMapfishSpringTest {
 
     @Test(expected = ConstructorException.class)
     public void testConfigurationAttributeMustImplementAttribute() throws Exception {
-        File configFile = super.getFile(ConfigurationFactoryTest.class,
+        File configFile = getFile(ConfigurationFactoryTest.class,
                                         "configWithProcessorAsAttribute_bad_config.yaml");
         configurationFactory.getConfig(configFile);
     }
 
     @Test(expected = ConstructorException.class)
     public void testConfigurationProcessorMustImplementProcessor() throws Exception {
-        File configFile = super.getFile(ConfigurationFactoryTest.class,
+        File configFile = getFile(ConfigurationFactoryTest.class,
                                         "configWithAttributeAsProcessor_bad_config.yaml");
         configurationFactory.getConfig(configFile);
     }
