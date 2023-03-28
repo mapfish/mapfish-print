@@ -42,7 +42,7 @@ public interface HandleReportLoadResult<R> {
      */
     R successfulPrint(
             PrintJobStatus successfulPrintResult, HttpServletResponse httpServletResponse, URI reportURI,
-            ReportLoader loader) throws IOException, ServletException;
+            ReportLoader loader) throws IOException;
 
     /**
      * Called when a print job failed.

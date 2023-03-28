@@ -44,7 +44,7 @@ public final class WmtsLayerParserPlugin extends AbstractGridCoverageLayerPlugin
             @Nonnull final WMTSLayerParam param) {
         String styleRef = param.rasterStyle;
         return new WMTSLayer(this.forkJoinPool,
-                             super.<GridCoverage2D>createStyleSupplier(template, styleRef),
+                             super.createStyleSupplier(template, styleRef),
                              param, this.registry, template.getConfiguration());
     }
 }

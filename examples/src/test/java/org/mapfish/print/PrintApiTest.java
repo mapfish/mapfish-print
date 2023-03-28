@@ -518,8 +518,7 @@ public class PrintApiTest extends AbstractApiTest {
         }
     }
 
-    private void addAuthHeader(ClientHttpRequest request, String credentials)
-            throws UnsupportedEncodingException {
+    private void addAuthHeader(ClientHttpRequest request, String credentials) {
         request.getHeaders().add("Authorization",
                                  "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(
                                          StandardCharsets.UTF_8)));

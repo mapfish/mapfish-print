@@ -85,7 +85,7 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
             String styleRef = param.style;
 
             return new GeotiffLayer(geotiffReader::apply,
-                                    super.<AbstractGridCoverage2DReader>createStyleSupplier(template,
+                                    super.createStyleSupplier(template,
                                                                                             styleRef),
                                     this.forkJoinPool,
                                     param);

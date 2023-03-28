@@ -332,7 +332,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
      */
     private Object tryConvert(
             final MfClientHttpRequestFactory clientHttpRequestFactory,
-            final Object rowValue) throws URISyntaxException, IOException {
+            final Object rowValue) {
         if (this.converters.isEmpty()) {
             return rowValue;
         }

@@ -94,7 +94,7 @@ public final class ImageSimilarity {
      * @param image image to write
      * @param file path and file name (extension will be ignored and changed to tiff.
      */
-    private static void writeUncompressedImage(BufferedImage image, String file) throws IOException {
+    private static void writeUncompressedImage(BufferedImage image, String file) {
         try {
             final File parentFile = new File(file).getParentFile();
             Iterator<ImageWriter> writers = ImageIO.getImageWritersBySuffix("png");

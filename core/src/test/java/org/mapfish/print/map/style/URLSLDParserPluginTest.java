@@ -27,7 +27,7 @@ public class URLSLDParserPluginTest extends AbstractMapfishSpringTest {
 
     @Test
     @DirtiesContext
-    public void testParseStyle() throws Throwable {
+    public void testParseStyle() {
         final String host = "URLSLDParserPluginTest.com";
         clientHttpRequestFactory.registerHandler(
                 input -> (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host),

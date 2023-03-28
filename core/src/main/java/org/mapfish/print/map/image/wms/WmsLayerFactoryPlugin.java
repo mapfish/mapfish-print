@@ -44,7 +44,7 @@ public final class WmsLayerFactoryPlugin extends AbstractGridCoverageLayerPlugin
             @Nonnull final WmsLayerParam layerData) {
         String styleRef = layerData.rasterStyle;
         return new WmsLayer(this.forkJoinPool,
-                            super.<GridCoverage2D>createStyleSupplier(template, styleRef),
+                            super.createStyleSupplier(template, styleRef),
                             layerData, this.metricRegistry, template.getConfiguration());
     }
 }

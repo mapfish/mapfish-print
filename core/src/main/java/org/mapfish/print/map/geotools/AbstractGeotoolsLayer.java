@@ -164,7 +164,7 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
      */
     protected abstract List<? extends Layer> getLayers(
             MfClientHttpRequestFactory httpRequestFactory,
-            MapfishMapContext transformer, Processor.ExecutionContext context) throws Exception;
+            MapfishMapContext transformer, Processor.ExecutionContext context);
 
     @Override
     public boolean supportsNativeRotation() {

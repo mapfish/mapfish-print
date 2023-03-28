@@ -155,7 +155,7 @@ public abstract class TileCacheInformation {
      * the layer desires. That is up to the layer implementation because the layer is responsible for taking
      * the commonUrl and transforming it to a final tile URI.
      */
-    protected String createCommonUrl() throws URISyntaxException, UnsupportedEncodingException {
+    protected String createCommonUrl() throws URISyntaxException {
         return this.params.createCommonUrl();
     }
 

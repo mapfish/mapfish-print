@@ -145,7 +145,7 @@ public class ConfigurationTest {
 
 
     @Test
-    public void testTemplateAccess() throws Exception {
+    public void testTemplateAccess() {
         Configuration configuration = new Configuration();
         Map<String, Template> templates = new HashMap<>();
         Template unrestricted = new Template();
@@ -191,7 +191,7 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void testTemplateAccess_ConfigHasAccess() throws Exception {
+    public void testTemplateAccess_ConfigHasAccess() {
         Configuration configuration = new Configuration();
         Map<String, Template> templates = new HashMap<>();
         Template template1 = new Template();

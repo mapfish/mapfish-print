@@ -44,7 +44,7 @@ public final class OsmLayerParserPlugin extends AbstractGridCoverageLayerPlugin
             @Nonnull final OsmLayerParam param) {
         String styleRef = param.rasterStyle;
         return new OsmLayer(this.forkJoinPool,
-                            super.<GridCoverage2D>createStyleSupplier(template, styleRef),
+                            super.createStyleSupplier(template, styleRef),
                             param, this.registry, template.getConfiguration());
     }
 }

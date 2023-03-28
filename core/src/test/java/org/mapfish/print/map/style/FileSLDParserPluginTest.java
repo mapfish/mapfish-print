@@ -118,7 +118,7 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
         assertFalse(this.parser.parseStyle(config, requestFactory, file.getAbsolutePath()).isPresent());
     }
 
-    private Optional<Style> loadStyle(String fileName, String styleString) throws Throwable {
+    private Optional<Style> loadStyle(String fileName, String styleString) {
         File file = getFile(FileSLDParserPluginTest.class, fileName);
         Configuration config = new Configuration();
         config.setConfigurationFile(file);

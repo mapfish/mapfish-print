@@ -160,7 +160,7 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
         int insertNameIndex = tasks.size();
         final URL[] icons = legendAttributes.icons;
         final double dpi = legendAttributes.dpi != null ? legendAttributes.dpi : this.dpi;
-        if (icons != null && icons.length > 0) {
+        if (icons != null) {
             for (URL icon: icons) {
                 tasks.add(new IconTask(icon, dpi, context, level, tempTaskDirectory,
                                        clientHttpRequestFactory));
@@ -234,8 +234,8 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
         final BufferedImage inter = (image.getType() == BufferedImage.TYPE_BYTE_INDEXED ||
             image.getType() == BufferedImage.TYPE_BYTE_BINARY) ? new BufferedImage(
-                (int) Math.round(image.getWidth()),
-                (int) Math.round(image.getHeight()),
+            Math.round(image.getWidth()),
+            Math.round(image.getHeight()),
                 BufferedImage.TYPE_4BYTE_ABGR
             ) : image;
         if (image.getType() == BufferedImage.TYPE_BYTE_INDEXED ||

@@ -792,7 +792,7 @@ public class MapPrinterServlet extends BaseMapServlet {
 
         if (pretty) {
             final JSONObject jsonObject =
-                    new JSONObject(new String(prettyPrintBuffer.toByteArray(), Constants.DEFAULT_CHARSET));
+                    new JSONObject(prettyPrintBuffer.toString(Constants.DEFAULT_CHARSET));
             capabilitiesResponse.getOutputStream().print(jsonObject.toString(JSON_INDENT_FACTOR));
         }
     }

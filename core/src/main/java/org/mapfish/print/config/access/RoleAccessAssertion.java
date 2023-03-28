@@ -46,7 +46,7 @@ public final class RoleAccessAssertion implements AccessAssertion {
                                              " result in an exception");
         }
         if (assertionRequiredRoles == null) {
-            this.requiredRoles = Collections.unmodifiableSet(Collections.emptySet());
+            this.requiredRoles = Collections.emptySet();
         } else {
             if (assertionRequiredRoles instanceof Set) {
                 Set roles = (Set) assertionRequiredRoles;

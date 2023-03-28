@@ -180,7 +180,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
                 @Nonnull final ImageParam layerData) {
             String styleRef = layerData.style;
             return new ImageLayer(this.forkJoinPool,
-                                  super.<GridCoverage2D>createStyleSupplier(template, styleRef),
+                                  super.createStyleSupplier(template, styleRef),
                                   layerData, template.getConfiguration(), metricRegistry);
         }
     }
