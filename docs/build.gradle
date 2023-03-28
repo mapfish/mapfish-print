@@ -20,13 +20,13 @@ dependencies {
 
 def site = new File(buildDir, "site").path
 
-tasks.register('copyJavadocs', Copy) {
+task copyJavadocs(type: Copy) {
     dependsOn ':core:javadoc'
     from project(':core').tasks.javadoc.destinationDir
     into new File(site, 'javadoc')
 }
 
-tasks.register('copySite', Copy) {
+task copySite(type: Copy) {
     from(sourceSets.main.output.resourcesDir) {
         exclude 'pages.json', 'templates/*', 'templates'
     }
@@ -37,7 +37,7 @@ tasks.register('copySite', Copy) {
     into site
 }
 
-tasks.register('buildDocs', JavaExec) {
+task('buildDocs', type: JavaExec) {
     dependsOn compileGroovy
     dependsOn copyJavadocs
     dependsOn copySite

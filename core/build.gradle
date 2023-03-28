@@ -15,9 +15,9 @@ repositories {
 // the task `run` of the gretty plugin conflicts with the task with the same
 // name of the plugin `application`. that's why the following tasks are defined
 // manually.
-tasks.register('startScripts', CreateStartScripts) {
+task startScripts(type: CreateStartScripts) {
 }
-tasks.register('print', JavaExec) {
+task print(type: JavaExec) {
     main = 'org.mapfish.print.cli.Main'
     classpath = sourceSets.main.runtimeClasspath
 }
@@ -47,14 +47,14 @@ def appDir = new File(project.buildDir, 'install')
 installDist.doFirst {
     appDir.deleteDir()
 }
-tasks.withType(Javadoc).configureEach {
+tasks.withType(Javadoc) {
     options.encoding = 'utf-8'
     title = "Mapfish Print Core Module $version"
     if (JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption('html5', true)
     }
 }
-tasks.register('testCLI', Exec) {
+task testCLI(type: Exec) {
     dependsOn installDist
     workingDir new File(appDir, 'core/bin')
     def cmd
@@ -68,9 +68,9 @@ tasks.register('testCLI', Exec) {
     File configFile = file('src/test/resources/org/mapfish/print/cli/config.yaml')
     File v3ApiRequestFile = file('src/test/resources/org/mapfish/print/cli/v3Request.json')
     cmd.addAll([
-        '-config', configFile.getAbsolutePath(),
-        '-spec', v3ApiRequestFile.getAbsolutePath(),
-        '-output', outputFile.getAbsolutePath()])
+            '-config', configFile.getAbsolutePath(),
+            '-spec', v3ApiRequestFile.getAbsolutePath(),
+            '-output', outputFile.getAbsolutePath()])
     commandLine cmd
     environment('JAVA_OPTS', '-Xmx500m')
     doFirst {
@@ -242,22 +242,21 @@ war {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-tasks.register('show') {
+task show {
 }
 
 show.doLast {
     war.classpath.files.each { println it }
 }
 
-tasks.register('libJavadocJar', Jar) {
-    dependsOn javadoc
+task libJavadocJar(type: Jar, dependsOn: javadoc) {
     baseName = 'print-lib'
     classifier = 'javadoc'
     from 'build/docs/javadoc'
 }
 
 
-tasks.register('libSourcesJar', Jar) {
+task libSourcesJar(type: Jar) {
     baseName = 'print-lib'
     from sourceSets.main.allSource
     classifier = 'sources'
@@ -293,7 +292,7 @@ startScripts {
     }
 }
 
-tasks.register('explodedWar', Sync) {
+task explodedWar(type: Sync) {
     into "${buildDir}/webapp"
     with war
 }

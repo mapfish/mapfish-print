@@ -22,7 +22,7 @@ allprojects {
     version = version
 }
 
-configurations.configureEach {
+configurations.all {
     resolutionStrategy {
         force 'xml-apis:xml-apis:2.0.2'
     }
@@ -57,14 +57,14 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     }
     spotbugsTest.enabled = false
 
-    tasks.register('violations', se.bjurr.violations.gradle.plugin.ViolationsTask) {
+    task violations(type: se.bjurr.violations.gradle.plugin.ViolationsTask) {
         minSeverity = 'INFO'
         detailLevel = 'VERBOSE' // PER_FILE_COMPACT, COMPACT or VERBOSE
         maxViolations = 0
         printViolations = true
         violations = [
-            ["FINDBUGS", ".", ".*/reports/spotbugsReports/.*\\.xml", "Spotbugs"],
-            ["CHECKSTYLE", ".", ".*/reports/checkstyleReports/.*\\.xml", "Checkstyle"]
+                ["FINDBUGS", ".", ".*/reports/spotbugsReports/.*\\.xml", "Spotbugs"],
+                ["CHECKSTYLE", ".", ".*/reports/checkstyleReports/.*\\.xml", "Checkstyle"]
         ]
     }
     check.finalizedBy violations
@@ -90,12 +90,10 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
         }
     }
 
-    tasks.withType(JavaCompile).configureEach {
+    tasks.withType(JavaCompile) {
         options.encoding = 'utf-8'
     }
-    tasks.withType(Javadoc).tap {
-        configureEach {
-            options.encoding = 'utf-8'
-        }
+    tasks.withType(Javadoc) {
+        options.encoding = 'utf-8'
     }
 }

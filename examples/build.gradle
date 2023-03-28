@@ -22,7 +22,7 @@ configurations {
     compile.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }
 
-tasks.register('geoserver', Exec) {
+task geoserver(type: Exec) {
     description 'Run and wait for GeoServer with test data'
     commandLine 'curl', 'http://geoserver:8080/web/', '--output', '/dev/null'
 }
@@ -33,7 +33,7 @@ tasks.register('geoserver', Exec) {
 test {}
 test.onlyIf { false }
 
-tasks.register('integrationTest', Test) {
+task integrationTest(type: Test) {
     testLogging {
         exceptionFormat = 'full'
         showCauses true
