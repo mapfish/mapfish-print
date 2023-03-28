@@ -56,13 +56,12 @@ public class JsonStyleParserHelperTest {
     JsonStyleParserHelper helper;
 
     static void assertStroke(
-            double stokeOpacity, String lineCap, Stroke stroke, String strokeColor, float[] dashArray,
-            double strokeWidth) {
-        assertEquals(stokeOpacity, valueOf(stroke.getOpacity()));
-        assertEquals(strokeColor, valueOf(stroke.getColor()));
+        Stroke stroke, float[] dashArray) {
+        assertEquals(0.2, valueOf(stroke.getOpacity()));
+        assertEquals("#FFFFFF", valueOf(stroke.getColor()));
         assertArrayEquals(dashArray, stroke.getDashArray(), 0.001f);
-        assertEquals(strokeWidth, valueOf(stroke.getWidth()));
-        assertEquals(lineCap, valueOf(stroke.getLineCap()));
+        assertEquals(2.0, valueOf(stroke.getWidth()));
+        assertEquals("round", valueOf(stroke.getLineCap()));
     }
 
     static Object valueOf(Expression expr) {
@@ -146,7 +145,7 @@ public class JsonStyleParserHelperTest {
 
         assertFill(fillOpacity, "#EEEEEE", externalGraphic.getFill());
 
-        assertStroke(stokeOpacity, lineCap, externalGraphic.getStroke(), "#FFFFFF", new float[]{5f, 2f}, 2.0);
+        assertStroke(externalGraphic.getStroke(), new float[]{5f, 2f});
 
         assertEquals(0.4, valueOf(graphic.getOpacity()));
         assertEquals(10.0, valueOf(graphic.getSize()));
@@ -169,7 +168,7 @@ public class JsonStyleParserHelperTest {
 
         transformer.transform(symbolizer); // verify it converts to xml correctly
 
-        assertStroke(0.2, "round", symbolizer.getStroke(), "#FFFFFF", new float[]{5f, 2f}, 2.0);
+        assertStroke(symbolizer.getStroke(), new float[]{5f, 2f});
         assertFill(0.3, "#EEEEEE", symbolizer.getFill());
     }
 
@@ -187,7 +186,7 @@ public class JsonStyleParserHelperTest {
 
         transformer.transform(symbolizer); // verify it converts to xml correctly
 
-        assertStroke(0.2, "round", symbolizer.getStroke(), "#FFFFFF", new float[]{5f, 2f}, 2.0);
+        assertStroke(symbolizer.getStroke(), new float[]{5f, 2f});
     }
 
     @Test
@@ -530,7 +529,7 @@ public class JsonStyleParserHelperTest {
 
     @Test
     public void testDefaultPointSymbolizer() {
-        helper.setAllowNullSymbolizer(false);
+        helper.setAllowNullSymbolizer();
         JSONObject json = new JSONObject();
         PJsonObject pJson = new PJsonObject(json, "symbolizers");
         final PointSymbolizer pointSymbolizer = this.helper.createPointSymbolizer(pJson);
@@ -547,7 +546,7 @@ public class JsonStyleParserHelperTest {
 
     @Test
     public void testSomeDefaultPointSymbolizer() {
-        helper.setAllowNullSymbolizer(false);
+        helper.setAllowNullSymbolizer();
         JSONObject json = new JSONObject();
         json.put(JsonStyleParserHelper.JSON_STROKE_DASHSTYLE, "5 4");
 
@@ -564,7 +563,7 @@ public class JsonStyleParserHelperTest {
 
     @Test
     public void testDefaultLineSymbolizer() {
-        helper.setAllowNullSymbolizer(false);
+        helper.setAllowNullSymbolizer();
         JSONObject json = new JSONObject();
         PJsonObject pJson = new PJsonObject(json, "symbolizers");
         final LineSymbolizer lineSymbolizer = this.helper.createLineSymbolizer(pJson);
@@ -578,7 +577,7 @@ public class JsonStyleParserHelperTest {
 
     @Test
     public void testSomeDefaultLineSymbolizer() {
-        helper.setAllowNullSymbolizer(false);
+        helper.setAllowNullSymbolizer();
         JSONObject json = new JSONObject();
         json.put(JsonStyleParserHelper.JSON_STROKE_DASHSTYLE, "5 4");
 
@@ -593,7 +592,7 @@ public class JsonStyleParserHelperTest {
 
     @Test
     public void testDefaultPolygonSymbolizer() {
-        helper.setAllowNullSymbolizer(false);
+        helper.setAllowNullSymbolizer();
         JSONObject json = new JSONObject();
         PJsonObject pJson = new PJsonObject(json, "symbolizers");
         final PolygonSymbolizer polygonSymbolizer = this.helper.createPolygonSymbolizer(pJson);
@@ -608,7 +607,7 @@ public class JsonStyleParserHelperTest {
 
     @Test
     public void testSomeDefaultPolygonSymbolizer() {
-        helper.setAllowNullSymbolizer(false);
+        helper.setAllowNullSymbolizer();
         JSONObject json = new JSONObject();
         json.put(JsonStyleParserHelper.JSON_STROKE_DASHSTYLE, "5 4");
 
@@ -627,7 +626,7 @@ public class JsonStyleParserHelperTest {
     public void testDefaultTextSymbolizer() {
         final String label = "label";
 
-        helper.setAllowNullSymbolizer(false);
+        helper.setAllowNullSymbolizer();
         JSONObject json = new JSONObject();
         json.put(JsonStyleParserHelper.JSON_LABEL, label);
         PJsonObject pJson = new PJsonObject(json, "symbolizers");
@@ -641,7 +640,7 @@ public class JsonStyleParserHelperTest {
     public void testSomeDefaultTextSymbolizer() {
         final String label = "label";
 
-        helper.setAllowNullSymbolizer(false);
+        helper.setAllowNullSymbolizer();
         JSONObject json = new JSONObject();
         json.put(JsonStyleParserHelper.JSON_LABEL, label);
         json.put(JsonStyleParserHelper.JSON_FONT_COLOR, "red");

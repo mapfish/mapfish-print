@@ -167,16 +167,16 @@ public class MapfishStyleParserPluginTest {
 
         for (Class<? extends Geometry> geomType: allGeomTypes) {
             final SimpleFeature feature =
-                    createFeature(geomType, MapfishJsonStyleVersion1.DEFAULT_GEOM_ATT_NAME);
+                    createFeature(geomType);
             assertEquals(allowed.contains(geomType), geomSelectFunction.evaluate(feature));
 
         }
 
     }
 
-    private SimpleFeature createFeature(final Class<? extends Geometry> geomClass, String geomAttName) {
+    private SimpleFeature createFeature(final Class<? extends Geometry> geomClass) {
         final SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.add(geomAttName, geomClass);
+        builder.add(MapfishJsonStyleVersion1.DEFAULT_GEOM_ATT_NAME, geomClass);
         builder.setName(geomClass.getName() + "Feature");
         GeometryFactory factory = new GeometryFactory();
         Geometry geom = createGeometry(geomClass, factory);

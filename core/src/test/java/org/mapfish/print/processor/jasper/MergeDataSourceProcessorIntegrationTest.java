@@ -42,7 +42,7 @@ public class MergeDataSourceProcessorIntegrationTest extends AbstractMapfishSpri
         final List<ProcessorGraphNode<?, ?>> roots = processorGraph.getRoots();
         assertEquals(0, Collections2.filter(roots, FIND_MERGE_PROCESSOR::test).size());
         assertEquals(processorGraph.toString(), 3,
-                     count(processorGraph.toString(), " -> \"MergeDataSourceProcessor"));
+                     count(processorGraph.toString()));
 
         MergeDataSourceProcessor mergeDataSourceProcessor = null;
         List<ProcessorGraphNode<?, ?>> allNodes = new ArrayList<>();
@@ -58,8 +58,8 @@ public class MergeDataSourceProcessorIntegrationTest extends AbstractMapfishSpri
         assertEquals(3, result.size());
     }
 
-    private int count(String string, String toFind) {
-        final Matcher matcher = Pattern.compile(Pattern.quote(toFind)).matcher(string);
+    private int count(String string) {
+        final Matcher matcher = Pattern.compile(Pattern.quote(" -> \"MergeDataSourceProcessor")).matcher(string);
         int count = 0;
         while (matcher.find()) {
             count += 1;

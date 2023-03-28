@@ -65,18 +65,18 @@ public class AddBackgroundLayersTest extends AbstractMapfishSpringTest {
                 template.getProcessorGraph().createTask(values));
         taskFuture.get();
 
-        assertImage(values, 1, "layerGraphics",
+        assertImage(values, "layerGraphics",
                     "expectedSimpleImage.png", 630, 294, 40);
-        assertImage(values, 1, "overviewMapLayerGraphics",
+        assertImage(values, "overviewMapLayerGraphics",
                     "expectedOverviewImage.png", 320, 200, 10);
     }
 
     private void assertImage(
-            Values values, int numberOfLayers, String graphicsValueKey, String imageName,
-            int width, int height, double tolerance) throws IOException, TranscoderException {
+        Values values, String graphicsValueKey, String imageName,
+        int width, int height, double tolerance) throws IOException, TranscoderException {
         @SuppressWarnings("unchecked")
         List<URI> layerGraphics = (List<URI>) values.getObject(graphicsValueKey, List.class);
-        assertEquals(numberOfLayers, layerGraphics.size());
+        assertEquals(1, layerGraphics.size());
 
         new ImageSimilarity(getFile(BASE_DIR + imageName))
                 .assertSimilarity(layerGraphics, width, height, tolerance);

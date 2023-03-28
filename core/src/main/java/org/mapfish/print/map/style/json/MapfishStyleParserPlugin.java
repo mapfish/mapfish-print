@@ -17,8 +17,6 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_GEOM_ATT_NAME;
-
 /**
  * Supports all style format.
  * <p>
@@ -549,7 +547,7 @@ public final class MapfishStyleParserPlugin implements StyleParserPlugin {
                     @Nullable final Configuration configuration,
                     @Nonnull final ClientHttpRequestFactory requestFactory) {
                 return new MapfishJsonStyleVersion1(
-                        json, styleBuilder, configuration, requestFactory, DEFAULT_GEOM_ATT_NAME)
+                        json, styleBuilder, configuration, requestFactory)
                         .parseStyle();
             }
         }, TWO("2") {

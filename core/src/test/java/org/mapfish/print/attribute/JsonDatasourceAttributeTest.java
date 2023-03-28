@@ -29,12 +29,11 @@ public class JsonDatasourceAttributeTest extends AbstractMapfishSpringTest {
 
     @SuppressWarnings("unchecked")
     private <T> T getValue(
-            final JsonDataSource datasource, final String expression,
-            final Class<T> type) throws JRException {
+            final JsonDataSource datasource) throws JRException {
         assertNotNull(datasource);
         JRDesignField field = new JRDesignField();
-        field.setName(expression);
-        field.setValueClass(type);
+        field.setName("a.b");
+        field.setValueClass(String.class);
         return (T) datasource.getFieldValue(field);
     }
 
@@ -47,7 +46,7 @@ public class JsonDatasourceAttributeTest extends AbstractMapfishSpringTest {
         Values values = new Values("test", requestData, template, config.getDirectory(), httpClientFactory,
                                    config.getDirectory());
 
-        assertEquals("s1", getValue(values.getObject("json", JsonDataSource.class), "a.b", String.class));
+        assertEquals("s1", getValue(values.getObject("json", JsonDataSource.class)));
     }
 
     private PJsonObject loadJsonRequestData() throws IOException {

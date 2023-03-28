@@ -19,7 +19,7 @@ public class MainTest {
         this.outputFile = File.createTempFile("main-test", ".png");
         this.configFile = getFile("config.yaml");
         this.v3ApiRequestFile = getFile("v3Request.json");
-        Main.setExceptionOnFailure(true);
+        Main.setExceptionOnFailure();
     }
 
     private File getFile(String fileName) {

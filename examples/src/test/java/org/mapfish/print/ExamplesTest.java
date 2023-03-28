@@ -125,10 +125,10 @@ public class ExamplesTest {
         }
     }
 
-    private static File getFile(Class<?> testClass, String fileName) {
-        final URL resource = testClass.getResource(fileName);
+    private static File getFile() {
+        final URL resource = ExamplesTest.class.getResource("/examples");
         if (resource == null) {
-            throw new AssertionError("Unable to find test resource: " + fileName);
+            throw new AssertionError("Unable to find test resource: " + "/examples");
         }
 
         return new File(resource.getFile());
@@ -160,7 +160,7 @@ public class ExamplesTest {
     @Test
     public void testExampleDirectoryNames() {
         final String namePattern = "[a-zA-Z0-9_]+";
-        final File examplesDir = getFile(ExamplesTest.class, "/examples");
+        final File examplesDir = getFile();
         StringBuilder errors = new StringBuilder();
         for (File example: Objects.requireNonNull(examplesDir.listFiles())) {
             if (example.isDirectory() && !examplesDir.getName().matches(namePattern)) {
@@ -180,7 +180,7 @@ public class ExamplesTest {
         Map<String, Throwable> errors = new HashMap<>();
 
         int testsRan = 0;
-        final File examplesDir = getFile(ExamplesTest.class, "/examples");
+        final File examplesDir = getFile();
 
         for (File example: Objects.requireNonNull(examplesDir.listFiles())) {
             if (example.isDirectory() && exampleFilter.matcher(example.getName()).matches()) {
@@ -227,7 +227,7 @@ public class ExamplesTest {
 
     @Test
     public void testPDFA() {
-        final File examplesDir = getFile(ExamplesTest.class, "/examples");
+        final File examplesDir = getFile();
         Map<String, Throwable> errors = new HashMap<>();
         runExample(new File(examplesDir, "pdf_a_compliant"), errors, false);
         reportErrors(errors, 1);

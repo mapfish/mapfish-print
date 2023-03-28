@@ -53,13 +53,12 @@ public final class MapfishJsonStyleVersion1 {
             @Nonnull final PJsonObject json,
             @Nonnull final StyleBuilder styleBuilder,
             @Nullable final Configuration configuration,
-            @Nonnull final ClientHttpRequestFactory requestFactory,
-            @Nonnull final String defaultGeomAttName) {
+            @Nonnull final ClientHttpRequestFactory requestFactory) {
         this.json = json;
         this.sldStyleBuilder = styleBuilder;
         this.parserHelper = new JsonStyleParserHelper(configuration, requestFactory, this.sldStyleBuilder,
                                                       true);
-        this.geometryProperty = defaultGeomAttName;
+        this.geometryProperty = MapfishJsonStyleVersion1.DEFAULT_GEOM_ATT_NAME;
     }
 
     Style parseStyle() {

@@ -27,7 +27,7 @@ public class MetricsApiTest extends AbstractApiTest {
 
     @Test
     public void testMetrics() throws Exception {
-        ClientHttpRequest request = getMetricsRequest("metrics", HttpMethod.GET);
+        ClientHttpRequest request = getMetricsRequest("metrics");
         try (ClientHttpResponse response = request.execute()) {
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
@@ -38,7 +38,7 @@ public class MetricsApiTest extends AbstractApiTest {
 
     @Test
     public void testPing() throws Exception {
-        ClientHttpRequest request = getMetricsRequest("ping", HttpMethod.GET);
+        ClientHttpRequest request = getMetricsRequest("ping");
         try (ClientHttpResponse response = request.execute()) {
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertEquals("pong", getBodyAsText(response).trim());
@@ -47,7 +47,7 @@ public class MetricsApiTest extends AbstractApiTest {
 
     @Test
     public void testThreads() throws Exception {
-        ClientHttpRequest request = getMetricsRequest("threads", HttpMethod.GET);
+        ClientHttpRequest request = getMetricsRequest("threads");
         try (ClientHttpResponse response = request.execute()) {
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertEquals(MediaType.TEXT_PLAIN, response.getHeaders().getContentType());
@@ -57,7 +57,7 @@ public class MetricsApiTest extends AbstractApiTest {
 
     @Test
     public void testHealthcheck() throws Exception {
-        ClientHttpRequest request = getMetricsRequest("healthcheck", HttpMethod.GET);
+        ClientHttpRequest request = getMetricsRequest("healthcheck");
         try (ClientHttpResponse response = request.execute()) {
             // TODO not implemented?
             assertEquals(HttpStatus.NOT_IMPLEMENTED, response.getStatusCode());
@@ -67,9 +67,9 @@ public class MetricsApiTest extends AbstractApiTest {
         }
     }
 
-    private ClientHttpRequest getMetricsRequest(String path, HttpMethod method) throws IOException,
+    private ClientHttpRequest getMetricsRequest(String path) throws IOException,
             URISyntaxException {
-        return getRequest("metrics/" + path, method);
+        return getRequest("metrics/" + path, HttpMethod.GET);
     }
 
 }

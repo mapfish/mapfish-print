@@ -31,12 +31,12 @@ import static org.junit.Assert.fail;
  */
 public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTest {
     private static final String EXECUTION_TRACKER = "executionOrder";
-    private static TestProcessor RootNoOutput = new RootNoOutputClass("RootNoOutput", Void.class);
-    private static TestProcessor RootMapOut = new RootMapOutClass("RootMapOut", MapOutput.class);
+    private static TestProcessor RootNoOutput = new RootNoOutputClass();
+    private static TestProcessor RootMapOut = new RootMapOutClass("RootMapOut");
     private static TestProcessor RootDebugMapOut1 =
-            new RootDebugMapOutClass("RootDebugMapOut1", DebugMapOutput.class);
+            new RootDebugMapOutClass("RootDebugMapOut1");
     private static TestProcessor RootDebugMapOut2 =
-            new RootDebugMapOutClass("RootDebugMapOut2", DebugMapOutput.class);
+            new RootDebugMapOutClass("RootDebugMapOut2");
     private static TestProcessor RootTableAndWidthOut =
             new TestProcessor<TrackerContainer, TableAndWidth>("RootTableAndWidthOut",
                                                                TableAndWidth.class) {
@@ -59,11 +59,11 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
                     return new MapOutput();
                 }
             };
-    private static TestProcessor NeedsMap = new NeedsMapClass("NeedsMap", Void.class);
-    private static TestProcessor NeedsMapList = new NeedsMapListClass("NeedsMapList", Void.class);
-    private static TestProcessor StyleNeedsMap = new StyleNeedsMapClass("StyleNeedsMap", Void.class);
+    private static TestProcessor NeedsMap = new NeedsMapClass("NeedsMap");
+    private static TestProcessor NeedsMapList = new NeedsMapListClass();
+    private static TestProcessor StyleNeedsMap = new StyleNeedsMapClass("StyleNeedsMap");
     private static TestProcessor<OverviewMapInput, Void> NeedsOverviewMapAndMap =
-            new NeedsOverviewMapAndMapClass("NeedsOverviewMapAndMap", Void.class);
+            new NeedsOverviewMapAndMapClass();
     private static TestProcessor<TableInput, Void> NeedsTable =
             new TestProcessor<TableInput, Void>("NeedsTable", Void.class) {
                 @Override
@@ -210,11 +210,11 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     @Test
     @DirtiesContext
     public void testSimpleBuild_ExternalDependency_SameInputWithDifferentName() {
-        RootMapOutClass rootMap2Out = new RootMapOutClass("rootMap2Out", MapOutput.class);
+        RootMapOutClass rootMap2Out = new RootMapOutClass("rootMap2Out");
         rootMap2Out.getOutputMapperBiMap().put("map", "map2");
         NeedsOverviewMapAndMap.getInputMapperBiMap().put("map2", "overviewMap");
         TestProcessor<MapInputOutput, Void> styleNeedsMap2 =
-                new StyleNeedsMapClass("StyleNeedsMap2", Void.class);
+                new StyleNeedsMapClass("StyleNeedsMap2");
         styleNeedsMap2.getInputMapperBiMap().put("map2", "map");
         final List<TestProcessor> processors = Arrays.asList(
                 RootNoOutput, RootMapOut, rootMap2Out, RootTableAndWidthOut,
@@ -253,11 +253,11 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     @DirtiesContext
     public void testSimpleBuild_ExternalDependency_SameInputTwoMaps() {
         // add processors for a second map
-        RootMapOutClass rootMap2Out = new RootMapOutClass("rootMap2Out", MapOutput.class);
+        RootMapOutClass rootMap2Out = new RootMapOutClass("rootMap2Out");
         rootMap2Out.getOutputMapperBiMap().put("map", "map2");
-        TestProcessor<?, ?> needsMap2 = new NeedsMapClass("NeedsMap2", Void.class);
+        TestProcessor<?, ?> needsMap2 = new NeedsMapClass("NeedsMap2");
         needsMap2.getInputMapperBiMap().put("map2", "map");
-        TestProcessor<?, ?> styleNeedsMap2 = new StyleNeedsMapClass("StyleNeedsMap2", Void.class);
+        TestProcessor<?, ?> styleNeedsMap2 = new StyleNeedsMapClass("StyleNeedsMap2");
         styleNeedsMap2.getInputMapperBiMap().put("map2", "map");
 
         final List<TestProcessor> processors = Arrays.asList(
@@ -343,7 +343,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     @Test
     public void testBuildProcessInputHasValuesAndOtherInput_WithInputMapping() {
         final NeedsValuesAndMap needsValuesAndMap = new NeedsValuesAndMap();
-        final RootMapOutClass outMapProcessor = new RootMapOutClass("mapSubReport", MapOutput.class);
+        final RootMapOutClass outMapProcessor = new RootMapOutClass("mapSubReport");
         outMapProcessor.getOutputMapperBiMap().put("map", "mapSubReportput");
         needsValuesAndMap.getInputMapperBiMap().put("mapSubReportput", "map");
         final List<Processor> processors = Arrays.asList(
@@ -521,8 +521,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
 
     private static class RootNoOutputClass extends TestProcessor<TrackerContainer, Void> {
 
-        protected RootNoOutputClass(String name, Class<Void> outputType) {
-            super(name, outputType);
+        protected RootNoOutputClass() {
+            super("RootNoOutput", Void.class);
         }
 
         @Override
@@ -538,8 +538,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
 
     private static class RootMapOutClass extends TestProcessor<TrackerContainer, MapOutput> {
 
-        protected RootMapOutClass(String name, Class<MapOutput> outputType) {
-            super(name, outputType);
+        protected RootMapOutClass(String name) {
+            super(name, MapOutput.class);
         }
 
         @Override
@@ -555,8 +555,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
 
     private static class RootDebugMapOutClass extends TestProcessor<TrackerContainer, DebugMapOutput> {
 
-        protected RootDebugMapOutClass(String name, Class<DebugMapOutput> outputType) {
-            super(name, outputType);
+        protected RootDebugMapOutClass(String name) {
+            super(name, DebugMapOutput.class);
         }
 
         @Override
@@ -585,8 +585,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     }
 
     private static class NeedsMapClass extends TestProcessor<MapInput, Void> {
-        protected NeedsMapClass(String name, Class<Void> outputType) {
-            super(name, outputType);
+        protected NeedsMapClass(String name) {
+            super(name, Void.class);
         }
 
         @Override
@@ -605,8 +605,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     }
 
     private static class NeedsMapListClass extends TestProcessor<MapListInput, Void> {
-        protected NeedsMapListClass(String name, Class<Void> outputType) {
-            super(name, outputType);
+        protected NeedsMapListClass() {
+            super("NeedsMapList", Void.class);
         }
 
         @Override
@@ -621,8 +621,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     }
 
     private static class StyleNeedsMapClass extends TestProcessor<MapInputOutput, Void> {
-        protected StyleNeedsMapClass(String name, Class<Void> outputType) {
-            super(name, outputType);
+        protected StyleNeedsMapClass(String name) {
+            super(name, Void.class);
         }
 
         @Override
@@ -642,8 +642,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     }
 
     private static class NeedsOverviewMapAndMapClass extends TestProcessor<OverviewMapInput, Void> {
-        protected NeedsOverviewMapAndMapClass(String name, Class<Void> outputType) {
-            super(name, outputType);
+        protected NeedsOverviewMapAndMapClass() {
+            super("NeedsOverviewMapAndMap", Void.class);
         }
 
         @Override

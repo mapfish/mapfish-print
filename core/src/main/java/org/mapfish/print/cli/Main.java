@@ -164,13 +164,10 @@ public final class Main {
     /**
      * Instead of calling system.exit an exception will be thrown.  This is useful for testing so a test won't
      * shutdown jvm.
-     *
-     * @param exceptionOnFailure if true then an exception will be thrown instead of system.exit being
-     *         called.
      */
     @VisibleForTesting
-    static void setExceptionOnFailure(final boolean exceptionOnFailure) {
-        Main.exceptionOnFailure = exceptionOnFailure;
+    static void setExceptionOnFailure() {
+        Main.exceptionOnFailure = true;
     }
 
     private void run(final CliDefinition cli) throws Exception {

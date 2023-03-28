@@ -159,8 +159,8 @@ public final class JsonStyleParserHelper {
         this.allowNullSymbolizer = allowNullSymbolizer;
     }
 
-    void setAllowNullSymbolizer(final boolean allowNullSymbolizer) {
-        this.allowNullSymbolizer = allowNullSymbolizer;
+    void setAllowNullSymbolizer() {
+        this.allowNullSymbolizer = false;
     }
 
     /**

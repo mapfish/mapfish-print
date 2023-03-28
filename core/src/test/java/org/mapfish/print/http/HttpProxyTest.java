@@ -203,7 +203,7 @@ public class HttpProxyTest {
 
         assertCorrectResponse(
                 httpProxy, MESSAGE_FROM_PROXY,
-                "http://" + LOCALHOST + ":" + TARGET_PORT, path);
+            path);
     }
 
     @Test
@@ -240,7 +240,7 @@ public class HttpProxyTest {
 
         assertCorrectResponse(
                 httpProxy, MESSAGE_FROM_PROXY,
-                "http://" + LOCALHOST + ":" + TARGET_PORT, path);
+            path);
     }
 
     @Test
@@ -276,7 +276,7 @@ public class HttpProxyTest {
         });
 
         assertCorrectResponse(
-                httpProxy, MESSAGE_FROM_PROXY, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
+                httpProxy, MESSAGE_FROM_PROXY, path);
     }
 
     @Test
@@ -304,7 +304,7 @@ public class HttpProxyTest {
             }
         });
 
-        assertCorrectResponse(httpProxy, message, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
+        assertCorrectResponse(httpProxy, message, path);
     }
 
     @Test
@@ -332,11 +332,11 @@ public class HttpProxyTest {
             }
         });
 
-        assertCorrectResponse(httpProxy, message, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
+        assertCorrectResponse(httpProxy, message, path);
     }
 
-    private void assertCorrectResponse(HttpProxy httpProxy, String expected, String target, String path)
+    private void assertCorrectResponse(HttpProxy httpProxy, String expected, String path)
             throws Exception {
-        assertCorrectResponse(configurationFactory, requestFactory, httpProxy, expected, target, path);
+        assertCorrectResponse(configurationFactory, requestFactory, httpProxy, expected, "http://localhost:22434", path);
     }
 }

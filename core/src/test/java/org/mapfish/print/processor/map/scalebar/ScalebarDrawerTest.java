@@ -386,7 +386,7 @@ public class ScalebarDrawerTest {
         ScaleBarRenderSettings settings = new ScaleBarRenderSettings();
         settings.setParams(params);
 
-        setLabels(settings, graphics2d, params, 40, 50);
+        setLabels(settings, graphics2d, params);
         settings.setScaleUnit(DistanceUnit.M);
         settings.setIntervalLengthInPixels(40);
         settings.setIntervalLengthInWorldUnits(0);
@@ -405,20 +405,19 @@ public class ScalebarDrawerTest {
     }
 
     private void setLabels(
-            ScaleBarRenderSettings settings, Graphics2D graphics2d, ScalebarAttributeValues params,
-            int intervalWidthInPixels, int intervalWidthInWorldUnits) {
+            ScaleBarRenderSettings settings, Graphics2D graphics2d, ScalebarAttributeValues params) {
         final Font font = new Font(params.font, Font.PLAIN, params.fontSize);
         final FontRenderContext frc = new FontRenderContext(null, true, true);
 
         final List<Label> labels = new ArrayList<>(params.intervals + 1);
         for (int i = 0; i <= params.intervals; i++) {
             String labelText = ScalebarGraphic.createLabelText(DistanceUnit.M,
-                                                               intervalWidthInWorldUnits * i, DistanceUnit.M);
+                                                               50 * i, DistanceUnit.M);
             if (i == params.intervals) {
                 labelText += DistanceUnit.M;
             }
             TextLayout labelLayout = new TextLayout(labelText, font, frc);
-            labels.add(new Label(intervalWidthInPixels * i, labelLayout, graphics2d));
+            labels.add(new Label(40 * i, labelLayout, graphics2d));
         }
         settings.setLabels(labels);
 
