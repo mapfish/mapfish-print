@@ -313,8 +313,6 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         assertHasOrdering(correctTracker, RootTableAndWidthOut, NeedsTable);
     }
 
-    ;
-
     @Test
     public void testBuildProcessInputHasValuesAndOtherInput() {
         final NeedsValuesAndMap needsValuesAndMap = new NeedsValuesAndMap();
