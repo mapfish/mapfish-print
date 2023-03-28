@@ -191,12 +191,8 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
         final GeometryFactory gfac = new GeometryFactory();
         final Optional<Geometry> rotatedMapBounds = getRotatedMapBounds(gfac);
 
-        if (rotatedMapBounds.isPresent()) {
-            return rotatedMapBounds.get().intersects(gfac.toGeometry(tileBounds));
-        } else {
-            // in case of an error, we simply load the tile
-            return true;
-        }
+        // in case of an error, we simply load the tile
+        return rotatedMapBounds.map(geometry -> geometry.intersects(gfac.toGeometry(tileBounds))).orElse(true);
     }
 
     private Optional<Geometry> getRotatedMapBounds(final GeometryFactory gfac) {
