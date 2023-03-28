@@ -310,9 +310,9 @@ public final class NorthArrowGraphic {
     private static String getRotateTransformation(
             final Dimension targetSize,
             final double rotation) {
-        return "rotate(" + Double.toString(Math.toDegrees(rotation)) + " "
-                + Integer.toString(targetSize.width / 2) + " "
-                + Integer.toString(targetSize.height / 2) + ")";
+        return "rotate(" + Math.toDegrees(rotation) + " "
+                + targetSize.width / 2 + " "
+                + targetSize.height / 2 + ")";
     }
 
     private static SVGElement parseSvg(final InputStream inputStream)

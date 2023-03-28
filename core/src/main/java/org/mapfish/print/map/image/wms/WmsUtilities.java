@@ -126,7 +126,7 @@ public final class WmsUtilities {
                 break;
             case GEOSERVER:
                 if (!contains(extraParams, FORMAT_OPTIONS)) {
-                    extraParams.put(FORMAT_OPTIONS, "dpi:" + Integer.toString(dpi));
+                    extraParams.put(FORMAT_OPTIONS, "dpi:" + dpi);
                 } else if (!isDpiSet(extraParams)) {
                     setDpiValue(extraParams, dpi);
                 }
@@ -194,7 +194,7 @@ public final class WmsUtilities {
                 List<String> newValues = new ArrayList<>();
                 for (String value: values) {
                     if (!StringUtils.isEmpty(value)) {
-                        value += ";dpi:" + Integer.toString(dpi);
+                        value += ";dpi:" + dpi;
                         newValues.add(value);
                     }
                 }
