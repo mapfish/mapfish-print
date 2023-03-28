@@ -132,13 +132,8 @@ public class DnsHostMatcher extends HostMatcher {
         }
         DnsHostMatcher other = (DnsHostMatcher) obj;
         if (host == null) {
-            if (other.host != null) {
-                return false;
-            }
-        } else if (!host.equals(other.host)) {
-            return false;
-        }
-        return true;
+            return other.host == null;
+        } else return host.equals(other.host);
     }
     // CHECKSTYLE:ON
 }

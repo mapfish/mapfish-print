@@ -158,13 +158,8 @@ public class AddressHostMatcher extends InetHostMatcher {
             return false;
         }
         if (maskAddress == null) {
-            if (other.maskAddress != null) {
-                return false;
-            }
-        } else if (!maskAddress.equals(other.maskAddress)) {
-            return false;
-        }
-        return true;
+            return other.maskAddress == null;
+        } else return maskAddress.equals(other.maskAddress);
     }
     // CHECKSTYLE:ON
 }

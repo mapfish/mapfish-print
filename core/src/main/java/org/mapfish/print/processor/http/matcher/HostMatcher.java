@@ -38,9 +38,7 @@ public abstract class HostMatcher extends AbstractMatcher {
 
             if (this.pathRegex != null && matchInfo.getPath() != MatchInfo.ANY_PATH) {
                 Matcher matcher = Pattern.compile(this.pathRegex).matcher(matchInfo.getPath());
-                if (!matcher.matches()) {
-                    return false;
-                }
+                return matcher.matches();
             }
             return true;
         }
@@ -108,10 +106,7 @@ public abstract class HostMatcher extends AbstractMatcher {
         } else if (!pathRegex.equals(other.pathRegex)) {
             return false;
         }
-        if (port != other.port) {
-            return false;
-        }
-        return true;
+        return port == other.port;
     }
     // CHECKSTYLE:ON
 

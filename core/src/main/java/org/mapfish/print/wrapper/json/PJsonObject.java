@@ -239,13 +239,8 @@ public class PJsonObject extends PAbstractObject {
         }
         PJsonObject other = (PJsonObject) obj;
         if (this.obj == null) {
-            if (other.obj != null) {
-                return false;
-            }
-        } else if (!this.obj.equals(other.obj)) {
-            return false;
-        }
-        return true;
+            return other.obj == null;
+        } else return this.obj.equals(other.obj);
     }
     // CHECKSTYLE:ON
 

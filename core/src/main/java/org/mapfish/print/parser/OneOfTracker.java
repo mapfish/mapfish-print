@@ -154,11 +154,7 @@ final class OneOfTracker {
 
             OneOfSatisfier that = (OneOfSatisfier) o;
 
-            if (!field.equals(that.field)) {
-                return false;
-            }
-
-            return true;
+            return field.equals(that.field);
         }
 
         @Override
