@@ -78,15 +78,15 @@ public abstract class ReflectiveAttribute<VALUE> implements Attribute {
      * Json field that declares if the param is an array.
      */
     public static final String JSON_ATTRIBUTE_IS_ARRAY = "isArray";
-    private static final HashSet<Class<? extends Object>> VALUE_OBJ_FIELD_TYPE_THAT_SHOULD_BE_P_TYPE =
+    private static final HashSet<Class<?>> VALUE_OBJ_FIELD_TYPE_THAT_SHOULD_BE_P_TYPE =
             createClassSet(PJsonArray.class, PJsonObject.class,
                            JSONObject.class, JSONArray.class);
-    private static final HashSet<Class<? extends Object>> VALUE_OBJ_FIELD_NON_RECURSIVE_TYPE =
+    private static final HashSet<Class<?>> VALUE_OBJ_FIELD_NON_RECURSIVE_TYPE =
             createClassSet(PElement.class, PArray.class, PObject.class);
     private PYamlObject defaults;
     private String configName;
 
-    private static HashSet<Class<? extends Object>> createClassSet(final Object... args) {
+    private static HashSet<Class<?>> createClassSet(final Object... args) {
         final HashSet<Class<?>> classes = new HashSet<>();
         for (Object arg: args) {
             classes.add((Class<?>) arg);

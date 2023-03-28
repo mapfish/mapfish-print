@@ -626,7 +626,7 @@ public abstract class GenericMapAttribute
          * @param defaultValue The default value.
          * @param <T> A type.
          */
-        protected final <T extends Object> T getValueOr(final T value, final T defaultValue) {
+        protected final <T> T getValueOr(final T value, final T defaultValue) {
             if (value != null) {
                 return value;
             } else {
