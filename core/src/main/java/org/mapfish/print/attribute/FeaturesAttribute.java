@@ -65,7 +65,7 @@ public final class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribu
                 final MfClientHttpRequestFactory httpRequestFactory) throws
                 IOException {
             if (this.featuresCollection == null) {
-                final boolean forceLongitudeFirst = this.longitudeFirst == null ? false : this.longitudeFirst;
+                final boolean forceLongitudeFirst = this.longitudeFirst != null && this.longitudeFirst;
                 final FeaturesParser parser = new FeaturesParser(httpRequestFactory, forceLongitudeFirst);
                 this.featuresCollection = parser.autoTreat(this.template, this.features);
             }

@@ -97,7 +97,7 @@ public final class MapfishMapContext {
         this.mapSize = mapSize;
         this.rotation = rotation;
         this.dpi = dpi;
-        this.forceLongitudeFirst = forceLongitudeFirst == null ? false : forceLongitudeFirst;
+        this.forceLongitudeFirst = forceLongitudeFirst != null && forceLongitudeFirst;
         this.dpiSensitiveStyle = dpiSensitiveStyle;
     }
 
