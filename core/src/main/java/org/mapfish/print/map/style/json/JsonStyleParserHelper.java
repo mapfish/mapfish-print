@@ -137,7 +137,7 @@ public final class JsonStyleParserHelper {
     private final Configuration configuration;
     private final ClientHttpRequestFactory requestFactory;
     private boolean allowNullSymbolizer;
-    private StyleBuilder styleBuilder;
+    private final StyleBuilder styleBuilder;
 
     /**
      * Constructor.

@@ -44,7 +44,7 @@ public class PrintJobResultImpl implements PrintJobResult {
     @OneToOne(targetEntity = PrintJobStatusImpl.class, fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "referenceId", insertable = false, updatable = false)
-    private PrintJobStatus status = null;
+    private final PrintJobStatus status = null;
 
     @Column()
     @Type(type = "org.hibernate.type.TextType")
