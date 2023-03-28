@@ -53,17 +53,15 @@ public class BasicRegistry implements Registry {
     }
 
     @Override
-    public final synchronized long incrementLong(final String key, final long amount) {
+    public final synchronized void incrementLong(final String key, final long amount) {
         long newValue = opt(key, 0L) + amount;
         put(key, newValue);
-        return newValue;
     }
 
     @Override
-    public final synchronized int incrementInt(final String key, final int amount) {
+    public final synchronized void incrementInt(final String key, final int amount) {
         int newValue = opt(key, 0) + amount;
         put(key, newValue);
-        return newValue;
     }
 
     @Override

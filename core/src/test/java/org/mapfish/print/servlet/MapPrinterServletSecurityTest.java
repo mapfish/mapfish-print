@@ -143,7 +143,7 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
         }
     }
 
-    private byte[] assertCorrectResponse(MockHttpServletResponse servletGetReportResponse)
+    private void assertCorrectResponse(MockHttpServletResponse servletGetReportResponse)
             throws IOException {
         byte[] report;
         report = servletGetReportResponse.getContentAsByteArray();
@@ -157,7 +157,6 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
 
         new ImageSimilarity(getFile(MapPrinterServletSecurityTest.class, "expectedSimpleImage.png"))
                 .assertSimilarity(report, 1);
-        return report;
     }
 
     private void setUpConfigFiles() throws URISyntaxException {

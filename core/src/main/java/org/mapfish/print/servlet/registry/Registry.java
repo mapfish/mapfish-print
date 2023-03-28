@@ -93,22 +93,20 @@ public interface Registry {
      * <p>
      * If there is not value present in registry then a value will be registered as amount.
      *
-     * @param key the key of the element to increment
+     * @param key    the key of the element to increment
      * @param amount th amount to increment
-     * @return the new value
      */
-    int incrementInt(String key, int amount);
+    void incrementInt(String key, int amount);
 
     /**
      * Increment the value currently stored in the registry by the amount.  This assumes it is an long.
      * <p>
      * If there is not value present in registry then a value will be registered as amount.
      *
-     * @param key the key of the element to increment
+     * @param key    the key of the element to increment
      * @param amount the amount to increment
-     * @return the new value
      */
-    long incrementLong(String key, long amount);
+    void incrementLong(String key, long amount);
 
     /**
      * Return the amount of time the registry will keep an entry before purging the record.  This ability to

@@ -77,10 +77,10 @@ public final class FileUtils {
      * will be thrown if the assertion does not hold.
      *
      * @param descriptorOfBase a simple description of the base file, for example: configuration
-     * @param child the file to test that is is a child of base.
-     * @param baseFiles the directories that can legally contain the child.
+     * @param child            the file to test that is is a child of base.
+     * @param baseFiles        the directories that can legally contain the child.
      */
-    public static boolean assertIsSubDirectory(
+    public static void assertIsSubDirectory(
             final String descriptorOfBase, final File child, final File... baseFiles) {
         File canonicalChild;
         try {
@@ -103,7 +103,7 @@ public final class FileUtils {
             File parentFile = canonicalChild;
             while (parentFile != null) {
                 if (canonicalBase.equals(parentFile)) {
-                    return true;
+                    return;
                 }
                 parentFile = parentFile.getParentFile();
             }
