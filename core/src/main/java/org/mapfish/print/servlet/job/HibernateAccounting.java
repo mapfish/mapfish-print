@@ -47,13 +47,14 @@ public class HibernateAccounting extends Accounting {
         @Override
         public long onJobSuccess(final PrintJob.PrintResult printResult) {
             final long duractionUSec = super.onJobSuccess(printResult);
-            final HibernateAccountingEntry accountingEntry1 = new HibernateAccountingEntry(
-                    this.entry, PrintJobStatus.Status.FINISHED, this.configuration);
-            final HibernateAccountingEntry accountingEntry = accountingEntry1;
-            accountingEntry.setProcessingTimeMS(duractionUSec / 1000000L);
-            accountingEntry.setFileSize(printResult.fileSize);
-            accountingEntry.setStats(printResult.executionContext.getStats());
-            insertRecord(accountingEntry);
+            new HibernateAccountingEntry(
+                    this.entry, PrintJobStatus.Status.FINISHED, this.configuration).setProcessingTimeMS(duractionUSec / 1000000L);
+            new HibernateAccountingEntry(
+                    this.entry, PrintJobStatus.Status.FINISHED, this.configuration).setFileSize(printResult.fileSize);
+            new HibernateAccountingEntry(
+                    this.entry, PrintJobStatus.Status.FINISHED, this.configuration).setStats(printResult.executionContext.getStats());
+            insertRecord(new HibernateAccountingEntry(
+                    this.entry, PrintJobStatus.Status.FINISHED, this.configuration));
             return duractionUSec;
         }
 

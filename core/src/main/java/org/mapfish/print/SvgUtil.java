@@ -49,9 +49,8 @@ public final class SvgUtil {
 
         @Override
         public BufferedImage createImage(final int w, final int h) {
-            BufferedImage bi = new BufferedImage(w, h,
+            return new BufferedImage(w, h,
                                                  BufferedImage.TYPE_INT_ARGB);
-            return bi;
         }
 
         @Override

@@ -79,14 +79,13 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
         }
 
         public MockClientHttpRequest failOnExecute(final URI uri, final HttpMethod httpMethod) {
-            MockClientHttpRequest request = new MockClientHttpRequest(httpMethod, uri) {
+            return new MockClientHttpRequest(httpMethod, uri) {
                 @Override
                 protected ClientHttpResponse executeInternal() throws IOException {
                     fail("request should not be executed " + uri.toString());
                     throw new IOException();
                 }
             };
-            return request;
         }
     }
 

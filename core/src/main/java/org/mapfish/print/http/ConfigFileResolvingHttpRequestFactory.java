@@ -91,9 +91,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
 
         private synchronized ClientHttpRequest createRequestFromWrapped(final HttpHeaders headers)
                 throws IOException {
-            final MfClientHttpRequestFactoryImpl requestFactory =
-                    ConfigFileResolvingHttpRequestFactory.this.httpRequestFactory;
-            ConfigurableRequest httpRequest = requestFactory.createRequest(this.uri, this.httpMethod);
+            ConfigurableRequest httpRequest = ConfigFileResolvingHttpRequestFactory.this.httpRequestFactory.createRequest(this.uri, this.httpMethod);
             httpRequest.setConfiguration(ConfigFileResolvingHttpRequestFactory.this.config);
 
             httpRequest.getHeaders().putAll(headers);
@@ -130,9 +128,8 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
                 }
                 if (this.httpMethod == HttpMethod.GET) {
                     final String uriString = this.uri.toString();
-                    final Configuration configuration = ConfigFileResolvingHttpRequestFactory.this.config;
                     try {
-                        final byte[] bytes = configuration.loadFile(uriString);
+                        final byte[] bytes = ConfigFileResolvingHttpRequestFactory.this.config.loadFile(uriString);
                         final InputStream is = new ByteArrayInputStream(bytes);
                         final ConfigFileResolverHttpResponse response =
                                 new ConfigFileResolverHttpResponse(is, headers);
