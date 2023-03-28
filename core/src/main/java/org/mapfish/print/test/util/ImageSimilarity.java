@@ -191,7 +191,7 @@ public final class ImageSimilarity {
         return pageImage;
     }
 
-    public static void main(final String args[]) throws IOException {
+    public static void main(final String[] args) throws IOException {
         final String path = "core/src/test/resources/map-data";
         final File root = new File(path);
         final Iterable<File> files = FileUtils.listFiles(root, new String[]{"png"}, true);
