@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * This is use to load the utf-8 ResourceBundle files.
@@ -37,7 +38,7 @@ public class ResourceBundleClassLoader extends ClassLoader {
             final InputStream is = super.getResourceAsStream(resource);
             byte[] bytes = new byte[is.available()];
             is.read(bytes);
-            return new ByteArrayInputStream(new String(bytes, "utf-8").getBytes("iso-8859-1"));
+            return new ByteArrayInputStream(new String(bytes, StandardCharsets.UTF_8).getBytes(StandardCharsets.ISO_8859_1));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

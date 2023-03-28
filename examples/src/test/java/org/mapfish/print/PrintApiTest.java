@@ -357,7 +357,7 @@ public class PrintApiTest extends AbstractApiTest {
         ClientHttpResponse exampleResp =
                 getPrintRequest(MapPrinterServlet.EXAMPLE_REQUEST_URL, HttpMethod.GET).execute();
         JSONObject examples =
-                new JSONObject(IOUtils.toString(exampleResp.getBody(), "UTF-8"));
+                new JSONObject(IOUtils.toString(exampleResp.getBody(), StandardCharsets.UTF_8));
         return examples.getString(examples.keys().next());
     }
 

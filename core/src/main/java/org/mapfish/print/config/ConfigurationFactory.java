@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -74,7 +75,7 @@ public class ConfigurationFactory {
         MapfishPrintConstructor.setConfigurationUnderConstruction(configuration);
 
         final Configuration config =
-                this.yaml.load(new InputStreamReader(configData, "UTF-8"));
+                this.yaml.load(new InputStreamReader(configData, StandardCharsets.UTF_8));
         if (this.doValidation) {
             final List<Throwable> validate = config.validate();
             if (!validate.isEmpty()) {

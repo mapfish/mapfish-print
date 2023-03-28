@@ -40,6 +40,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import javax.imageio.ImageIO;
 
@@ -328,7 +329,7 @@ public final class NorthArrowGraphic {
             final File workingDir) throws IOException {
         final File path = File.createTempFile("north-arrow-", ".svg", workingDir);
         try (FileWriterWithEncoding fw = new FileWriterWithEncoding(path,
-                                                                    Charset.forName("UTF-8").newEncoder())) {
+                                                                    StandardCharsets.UTF_8.newEncoder())) {
             DOMUtilities.writeDocument(document, fw);
             fw.flush();
         }

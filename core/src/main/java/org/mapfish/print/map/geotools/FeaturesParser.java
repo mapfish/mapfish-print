@@ -177,7 +177,7 @@ public class FeaturesParser {
 
         final String geojsonString;
         if (url.getProtocol().equalsIgnoreCase("file")) {
-            geojsonString = IOUtils.toString(url, Constants.DEFAULT_CHARSET.name());
+            geojsonString = IOUtils.toString(url, Constants.DEFAULT_CHARSET);
         } else {
             geojsonString = URIUtils.toString(this.httpRequestFactory, url);
         }

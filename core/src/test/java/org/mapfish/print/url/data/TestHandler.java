@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -15,7 +16,7 @@ public class TestHandler {
         Handler.configureProtocolHandler();
         final URL url = new URL("data:text/plain;base64,SGVsbG8gd29ybGQ=");
         final InputStream content = (InputStream) url.getContent();
-        assertEquals("Hello world", IOUtils.toString(content, "utf-8"));
+        assertEquals("Hello world", IOUtils.toString(content, StandardCharsets.UTF_8));
     }
 
     @Test
@@ -23,6 +24,6 @@ public class TestHandler {
         Handler.configureProtocolHandler();
         final URL url = new URL("data:text/plain;charset=utf-8,HelloWorld");
         final InputStream content = (InputStream) url.getContent();
-        assertEquals("HelloWorld", IOUtils.toString(content, "utf-8"));
+        assertEquals("HelloWorld", IOUtils.toString(content, StandardCharsets.UTF_8));
     }
 }

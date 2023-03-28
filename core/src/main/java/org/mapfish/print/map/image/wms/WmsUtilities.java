@@ -93,7 +93,7 @@ public final class WmsUtilities {
 
         Multimap<String, String> extraParams = HashMultimap.create();
         if (commonURI.getQuery() != null) {
-            for (NameValuePair pair: URLEncodedUtils.parse(commonURI, Charset.forName("UTF-8"))) {
+            for (NameValuePair pair: URLEncodedUtils.parse(commonURI, StandardCharsets.UTF_8)) {
                 extraParams.put(pair.getName(), pair.getValue());
             }
         }
