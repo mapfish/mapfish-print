@@ -277,7 +277,7 @@ public abstract class ReflectiveAttribute<VALUE> implements Attribute {
             final Set<Class<?>> printed) throws JSONException, IllegalAccessException {
 
         final Collection<Field> mutableFields = ParserUtils.getAttributes(
-                valueType, ParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES::test);
+                valueType, ParserUtils.FILTER_ONLY_REQUIRED_ATTRIBUTES);
         if (!mutableFields.isEmpty()) {
             for (Field attribute: mutableFields) {
                 encodeAttributeValue(true, json, exampleValue, getDefaultValue(defaultValue, attribute),
@@ -285,7 +285,7 @@ public abstract class ReflectiveAttribute<VALUE> implements Attribute {
             }
         }
         final Collection<Field> hasDefaultFields = ParserUtils.getAttributes(
-                valueType, ParserUtils.FILTER_HAS_DEFAULT_ATTRIBUTES::test);
+                valueType, ParserUtils.FILTER_HAS_DEFAULT_ATTRIBUTES);
         if (!hasDefaultFields.isEmpty()) {
             for (Field attribute: hasDefaultFields) {
                 encodeAttributeValue(false, json, exampleValue, getDefaultValue(defaultValue, attribute),

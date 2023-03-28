@@ -45,7 +45,7 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
             final StyleSupplier<AbstractGridCoverage2DReader> style,
             final ExecutorService executorService,
             final AbstractLayerParams params) {
-        super(reader::apply, style, executorService, params);
+        super(reader, style, executorService, params);
     }
 
     @Override
@@ -84,7 +84,7 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
 
             String styleRef = param.style;
 
-            return new GeotiffLayer(geotiffReader::apply,
+            return new GeotiffLayer(geotiffReader,
                                     super.createStyleSupplier(template,
                                                                                             styleRef),
                                     this.forkJoinPool,
