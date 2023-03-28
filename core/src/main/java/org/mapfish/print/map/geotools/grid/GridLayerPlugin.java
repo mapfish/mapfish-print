@@ -63,7 +63,7 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
                         () -> template.getStyle(styleRef),
                         () -> GridLayerPlugin.super.parser.loadStyle(template.getConfiguration(),
                                                                      requestFactory, styleRef))
-                        .orElseGet(() -> layerData.gridType.strategy.defaultStyle(template, layerData));
+                        .orElseGet(() -> layerData.gridType.strategy.defaultStyle(layerData));
             }
         };
     }
@@ -72,6 +72,6 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
             final Template template,
             final GridParam layerData,
             final LabelPositionCollector labels) {
-        return layerData.gridType.strategy.createFeatureSource(template, layerData, labels);
+        return layerData.gridType.strategy.createFeatureSource(layerData, labels);
     }
 }

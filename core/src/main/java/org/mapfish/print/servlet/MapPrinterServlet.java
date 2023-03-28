@@ -1123,7 +1123,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
 
         if (!metadata.isDone()) {
-            return handler.printJobPending(httpServletResponse, referenceId);
+            return handler.printJobPending(httpServletResponse);
         } else if (metadata.getResult() != null) {
             URI pdfURI = metadata.getResult().getReportURI();
 

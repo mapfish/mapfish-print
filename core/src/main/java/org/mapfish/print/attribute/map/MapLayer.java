@@ -18,12 +18,10 @@ public interface MapLayer {
      * For example: 2 WMS layers from the same WMS server can be combined into a single WMS layer and the map
      * can be rendered with a single WMS request.
      *
-     * @param newLayer the layer to combine with this layer.  The new layer will be rendered
-     *         <em>below</em> the current layer.
      * @return If the two layers can be combined then a map layer representing the two layers will be
      *         returned.  If the two layers cannot be combined then Option.absent() will be returned.
      */
-    Optional<MapLayer> tryAddLayer(MapLayer newLayer);
+    Optional<MapLayer> tryAddLayer();
 
     /**
      * Get the scale ratio between the tiles resolution and the target resolution. Used to don't scale the

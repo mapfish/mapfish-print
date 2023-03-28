@@ -483,7 +483,7 @@ public abstract class GenericMapAttribute
                     } else {
                         final int lastLayerIndex = layerList.size() - 1;
                         final MapLayer lastLayer = layerList.get(lastLayerIndex);
-                        Optional<MapLayer> combinedLayer = lastLayer.tryAddLayer(newLayer);
+                        Optional<MapLayer> combinedLayer = lastLayer.tryAddLayer();
                         if (combinedLayer.isPresent()) {
                             layerList.remove(lastLayerIndex);
                             layerList.add(lastLayerIndex, combinedLayer.get());

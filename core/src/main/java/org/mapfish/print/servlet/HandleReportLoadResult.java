@@ -6,7 +6,6 @@ import org.mapfish.print.servlet.job.loader.ReportLoader;
 import java.io.IOException;
 import java.net.URI;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -56,7 +55,6 @@ public interface HandleReportLoadResult<R> {
      * Called when the print job has not yet completed.
      *
      * @param httpServletResponse the object for writing response
-     * @param referenceId report id
      */
-    R printJobPending(HttpServletResponse httpServletResponse, String referenceId);
+    R printJobPending(HttpServletResponse httpServletResponse);
 }
