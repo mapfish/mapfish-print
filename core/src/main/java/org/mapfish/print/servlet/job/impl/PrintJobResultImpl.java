@@ -46,7 +46,7 @@ public class PrintJobResultImpl implements PrintJobResult {
     @JoinColumn(name = "referenceId", insertable = false, updatable = false)
     private PrintJobStatus status = null;
 
-    @Column(insertable = true, updatable = true)
+    @Column()
     @Type(type = "org.hibernate.type.TextType")
     private String referenceId;
 

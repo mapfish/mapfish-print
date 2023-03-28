@@ -45,7 +45,7 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
                 .assertSimilarity(print, 0, 5);
     }
 
-    @Test(expected = Test.None.class /* no exception expected */)
+    @Test( /* no exception expected */)
     public void testAllOutputFormats() throws Exception {
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final PJsonObject requestData = loadJsonRequestData();

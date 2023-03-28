@@ -43,7 +43,7 @@ public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
         assertEquals(new Dimension(300, 120), values.getSize());
     }
 
-    @Test(expected = Test.None.class /* no exception expected */)
+    @Test( /* no exception expected */)
     public void testPostConstruct() {
         ScalebarAttributeValues values = getValues();
         values.postConstruct();
