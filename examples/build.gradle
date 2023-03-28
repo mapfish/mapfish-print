@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    testCompile(
+    testImplementation(
         project(':core'),
     )
 }
@@ -22,7 +22,7 @@ configurations {
     compile.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }
 
-task geoserver(type: Exec) {
+tasks.register('geoserver', Exec) {
     description 'Run and wait for GeoServer with test data'
     commandLine 'curl', 'http://geoserver:8080/web/', '--output', '/dev/null'
 }
@@ -33,7 +33,7 @@ task geoserver(type: Exec) {
 test {}
 test.onlyIf { false }
 
-task integrationTest(type: Test) {
+tasks.register('integrationTest', Test) {
     testLogging {
         exceptionFormat = 'full'
         showCauses true

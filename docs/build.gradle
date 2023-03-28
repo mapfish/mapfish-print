@@ -11,8 +11,8 @@ repositories {
 }
 
 dependencies {
-    compile project(':core')
-    compile "org.codehaus.groovy:groovy-all:3.0.15",
+    implementation project(':core')
+    implementation "org.codehaus.groovy:groovy-all:3.0.15",
             "org.springframework:spring-test:5.3.25",
             'org.ccil.cowan.tagsoup:tagsoup:1.2.1',
             'com.samskivert:jmustache:1.15'
@@ -20,13 +20,13 @@ dependencies {
 
 def site = new File(buildDir, "site").path
 
-task copyJavadocs(type: Copy) {
+tasks.register('copyJavadocs', Copy) {
     dependsOn ':core:javadoc'
     from project(':core').tasks.javadoc.destinationDir
     into new File(site, 'javadoc')
 }
 
-task copySite(type: Copy) {
+tasks.register('copySite', Copy) {
     from(sourceSets.main.output.resourcesDir) {
         exclude 'pages.json', 'templates/*', 'templates'
     }
@@ -37,7 +37,7 @@ task copySite(type: Copy) {
     into site
 }
 
-task('buildDocs', type: JavaExec) {
+tasks.register('buildDocs', JavaExec) {
     dependsOn compileGroovy
     dependsOn copyJavadocs
     dependsOn copySite

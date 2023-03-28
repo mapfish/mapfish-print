@@ -15,9 +15,9 @@ repositories {
 // the task `run` of the gretty plugin conflicts with the task with the same
 // name of the plugin `application`. that's why the following tasks are defined
 // manually.
-task startScripts(type: CreateStartScripts) {
+tasks.register('startScripts', CreateStartScripts) {
 }
-task print(type: JavaExec) {
+tasks.register('print', JavaExec) {
     main = 'org.mapfish.print.cli.Main'
     classpath = sourceSets.main.runtimeClasspath
 }
@@ -47,14 +47,14 @@ def appDir = new File(project.buildDir, 'install')
 installDist.doFirst {
     appDir.deleteDir()
 }
-tasks.withType(Javadoc) {
+tasks.withType(Javadoc).configureEach {
     options.encoding = 'utf-8'
     title = "Mapfish Print Core Module $version"
     if (JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption('html5', true)
     }
 }
-task testCLI(type: Exec) {
+tasks.register('testCLI', Exec) {
     dependsOn installDist
     workingDir new File(appDir, 'core/bin')
     def cmd
@@ -68,9 +68,9 @@ task testCLI(type: Exec) {
     File configFile = file('src/test/resources/org/mapfish/print/cli/config.yaml')
     File v3ApiRequestFile = file('src/test/resources/org/mapfish/print/cli/v3Request.json')
     cmd.addAll([
-            '-config', configFile.getAbsolutePath(),
-            '-spec', v3ApiRequestFile.getAbsolutePath(),
-            '-output', outputFile.getAbsolutePath()])
+        '-config', configFile.getAbsolutePath(),
+        '-spec', v3ApiRequestFile.getAbsolutePath(),
+        '-output', outputFile.getAbsolutePath()])
     commandLine cmd
     environment('JAVA_OPTS', '-Xmx500m')
     doFirst {
@@ -115,7 +115,7 @@ configurations {
 
 
 dependencies {
-    compile(
+    implementation(
             "org.springframework:spring-context:5.3.25",
             "org.springframework:spring-web:5.3.25",
             "org.springframework:spring-webmvc:5.3.25",
@@ -161,8 +161,8 @@ dependencies {
             "net.sf.jasperreports:jasperreports-functions:6.20.0",
             'joda-time:joda-time:2.12.2'
     )
-    compile fileTree(dir: "$projectDir/libs", include: '*.jar')
-    compile(
+    implementation fileTree(dir: "$projectDir/libs", include: '*.jar')
+    implementation(
             'com.google.guava:guava:31.1-jre',
             "org.slf4j:slf4j-api:2.0.6",
             "org.slf4j:jcl-over-slf4j:2.0.6",
@@ -180,15 +180,15 @@ dependencies {
             'net.logstash.logback:logstash-logback-encoder:7.3',
     )
 
-    compile(configurations.metrics) {
+    implementation(configurations.metrics) {
         exclude module: 'httpclient'
         exclude module: 'slf4j-api'
         exclude module: 'logback-classic'
     }
-    compile(configurations.geotools)
-    compile(configurations.jasper)
+    implementation(configurations.geotools)
+    implementation(configurations.jasper)
 
-    compile(
+    implementation(
             'org.apache.xmlgraphics:xmlgraphics-commons:2.8',
             "org.apache.xmlgraphics:batik-transcoder:1.16",
             "org.apache.xmlgraphics:batik-bridge:1.16",
@@ -199,7 +199,7 @@ dependencies {
     providedCompile('javax.servlet:javax.servlet-api:4.0.1')
     compileOnly "com.github.spotbugs:spotbugs-annotations:4.7.3"
 
-    testCompile group: 'de.saly', name: 'javamail-mock2-fullmock', version: '0.5-beta4'
+    testImplementation group: 'de.saly', name: 'javamail-mock2-fullmock', version: '0.5-beta4'
 }
 
 def gitRevision() {
@@ -242,21 +242,22 @@ war {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-task show {
+tasks.register('show') {
 }
 
 show.doLast {
     war.classpath.files.each { println it }
 }
 
-task libJavadocJar(type: Jar, dependsOn: javadoc) {
+tasks.register('libJavadocJar', Jar) {
+    dependsOn javadoc
     baseName = 'print-lib'
     classifier = 'javadoc'
     from 'build/docs/javadoc'
 }
 
 
-task libSourcesJar(type: Jar) {
+tasks.register('libSourcesJar', Jar) {
     baseName = 'print-lib'
     from sourceSets.main.allSource
     classifier = 'sources'
@@ -292,7 +293,7 @@ startScripts {
     }
 }
 
-task explodedWar(type: Sync) {
+tasks.register('explodedWar', Sync) {
     into "${buildDir}/webapp"
     with war
 }
