@@ -64,7 +64,7 @@ public class FeaturesParser {
     }
 
     @VisibleForTesting
-    static final CoordinateReferenceSystem parseCoordinateReferenceSystem(
+    static CoordinateReferenceSystem parseCoordinateReferenceSystem(
             final MfClientHttpRequestFactory requestFactory,
             final JSONObject geojson,
             final boolean forceLongitudeFirst) {
