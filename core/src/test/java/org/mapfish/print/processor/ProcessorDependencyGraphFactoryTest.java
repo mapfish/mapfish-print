@@ -31,13 +31,13 @@ import static org.junit.Assert.fail;
  */
 public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTest {
     private static final String EXECUTION_TRACKER = "executionOrder";
-    private static TestProcessor RootNoOutput = new RootNoOutputClass();
-    private static TestProcessor RootMapOut = new RootMapOutClass("RootMapOut");
-    private static TestProcessor RootDebugMapOut1 =
+    private static final TestProcessor RootNoOutput = new RootNoOutputClass();
+    private static final TestProcessor RootMapOut = new RootMapOutClass("RootMapOut");
+    private static final TestProcessor RootDebugMapOut1 =
             new RootDebugMapOutClass("RootDebugMapOut1");
-    private static TestProcessor RootDebugMapOut2 =
+    private static final TestProcessor RootDebugMapOut2 =
             new RootDebugMapOutClass("RootDebugMapOut2");
-    private static TestProcessor RootTableAndWidthOut =
+    private static final TestProcessor RootTableAndWidthOut =
             new TestProcessor<TrackerContainer, TableAndWidth>("RootTableAndWidthOut",
                                                                TableAndWidth.class) {
 
@@ -46,7 +46,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
                     return new TableAndWidth();
                 }
             };
-    private static TestProcessor NeedsMapAndWidthOutputsMap =
+    private static final TestProcessor NeedsMapAndWidthOutputsMap =
             new TestProcessor<MapAndWidth, MapOutput>("NeedsMapAndWidthOutputsMap",
                                                       MapOutput.class) {
                 @Override
@@ -59,12 +59,12 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
                     return new MapOutput();
                 }
             };
-    private static TestProcessor NeedsMap = new NeedsMapClass("NeedsMap");
-    private static TestProcessor NeedsMapList = new NeedsMapListClass();
-    private static TestProcessor StyleNeedsMap = new StyleNeedsMapClass("StyleNeedsMap");
-    private static TestProcessor<OverviewMapInput, Void> NeedsOverviewMapAndMap =
+    private static final TestProcessor NeedsMap = new NeedsMapClass("NeedsMap");
+    private static final TestProcessor NeedsMapList = new NeedsMapListClass();
+    private static final TestProcessor StyleNeedsMap = new StyleNeedsMapClass("StyleNeedsMap");
+    private static final TestProcessor<OverviewMapInput, Void> NeedsOverviewMapAndMap =
             new NeedsOverviewMapAndMapClass();
-    private static TestProcessor<TableInput, Void> NeedsTable =
+    private static final TestProcessor<TableInput, Void> NeedsTable =
             new TestProcessor<TableInput, Void>("NeedsTable", Void.class) {
                 @Override
                 protected Void getExtras() {
@@ -76,7 +76,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
                     return new TableInput();
                 }
             };
-    private static Processor RootOutputExecutionTracker =
+    private static final Processor RootOutputExecutionTracker =
             new AbstractProcessor<Void, TrackerContainer>(TrackerContainer.class) {
                 @Override
                 public Void createInputParameter() {
@@ -102,7 +102,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
                     return "RootOutputExecutionTracker";
                 }
             };
-    private static TestProcessor NeedsMapProducesMap =
+    private static final TestProcessor NeedsMapProducesMap =
             new TestProcessor<MapInput, MapOutput>("NeedsMapProducesMap",
                                                    MapOutput.class) {
                 @Override
@@ -115,7 +115,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
                     return new MapOutput();
                 }
             };
-    private static TestProcessor NeedsTableProducesTable =
+    private static final TestProcessor NeedsTableProducesTable =
             new TestProcessor<TableInput, TableOutput>("NeedsTableProducesTable",
                                                        TableOutput.class) {
 
@@ -470,7 +470,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     }
 
     static class TestOrderExecution {
-        List<TestProcessor> testOrderExecution = new ArrayList<>();
+        final List<TestProcessor> testOrderExecution = new ArrayList<>();
 
         public void doExecute(TestProcessor p) {
             testOrderExecution.add(p);
@@ -484,7 +484,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
 
     private abstract static class TestProcessor<In extends TrackerContainer, Out>
             extends AbstractProcessor<In, Out> {
-        public String name;
+        public final String name;
 
         protected TestProcessor(String name, Class<Out> outputType) {
             super(outputType);

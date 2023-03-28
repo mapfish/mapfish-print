@@ -21,7 +21,7 @@ public abstract class AbstractApiTest {
 
     protected static final String PRINT_SERVER = "http://print:8080/";
 
-    protected ClientHttpRequestFactory httpRequestFactory = new MfClientHttpRequestFactoryImpl(10, 10);
+    protected final ClientHttpRequestFactory httpRequestFactory = new MfClientHttpRequestFactoryImpl(10, 10);
 
     protected ClientHttpRequest getRequest(String path, HttpMethod method) throws IOException,
             URISyntaxException {

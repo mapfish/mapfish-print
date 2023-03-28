@@ -16,9 +16,9 @@ import java.util.Map;
  * end of the json parsing.
  */
 class RequiresTracker {
-    private Multimap<Field, String> dependantToRequirementsMap = HashMultimap.create();
-    private Map<String, Field> requirementToDependantMap = new HashMap<>();
-    private Collection<Field> dependantsInJson = new ArrayList<>();
+    private final Multimap<Field, String> dependantToRequirementsMap = HashMultimap.create();
+    private final Map<String, Field> requirementToDependantMap = new HashMap<>();
+    private final Collection<Field> dependantsInJson = new ArrayList<>();
 
     /**
      * Check if field has the {@link org.mapfish.print.parser.Requires} annotation and registers it and its

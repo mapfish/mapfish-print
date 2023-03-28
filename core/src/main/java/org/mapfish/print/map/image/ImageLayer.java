@@ -54,7 +54,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
     private final ImageParam params;
     private final StyleSupplier<GridCoverage2D> styleSupplier;
     private final ExecutorService executorService;
-    private RenderType renderType;
+    private final RenderType renderType;
 
     /**
      * Constructor.
@@ -205,13 +205,13 @@ public final class ImageLayer extends AbstractSingleImageLayer {
          * The styles to apply to the image.
          */
         @HasDefaultValue
-        public String style = Constants.Style.Raster.NAME;
+        public final String style = Constants.Style.Raster.NAME;
 
         /**
          * The format of the image. for example image/png, image/jpeg, etc...
          */
         @HasDefaultValue
-        public String imageFormat = "";
+        public final String imageFormat = "";
 
         /**
          * Validate the properties have the correct values.

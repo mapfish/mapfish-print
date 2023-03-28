@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
 public final class StyleParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(StyleParser.class);
     @Autowired
-    private List<StyleParserPlugin> plugins = new ArrayList<>();
+    private final List<StyleParserPlugin> plugins = new ArrayList<>();
 
     /**
      * Load style using one of the plugins or return Optional.empty().

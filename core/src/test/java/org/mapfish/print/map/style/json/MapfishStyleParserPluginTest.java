@@ -62,7 +62,7 @@ public class MapfishStyleParserPluginTest {
     final TestHttpClientFactory httpClient = new TestHttpClientFactory();
 
     final SLDTransformer transformer = new SLDTransformer();
-    MapfishStyleParserPlugin parser = new MapfishStyleParserPlugin();
+    final MapfishStyleParserPlugin parser = new MapfishStyleParserPlugin();
 
     @Test
     public void testVersion1StyleParser() throws Throwable {

@@ -491,7 +491,7 @@ import javax.annotation.Nullable;
  */
 public final class MapfishStyleParserPlugin implements StyleParserPlugin {
     static final String JSON_VERSION = "version";
-    private StyleBuilder sldStyleBuilder = new StyleBuilder();
+    private final StyleBuilder sldStyleBuilder = new StyleBuilder();
 
     @Override
     public Optional<Style> parseStyle(

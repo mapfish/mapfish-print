@@ -44,7 +44,7 @@ public final class FeaturesAttribute extends ReflectiveAttribute<FeaturesAttribu
          * However the requestor can override this by explicitly declaring that longitude axis is first.
          */
         @HasDefaultValue
-        public Boolean longitudeFirst = null;
+        public final Boolean longitudeFirst = null;
         private SimpleFeatureCollection featuresCollection;
 
         /**

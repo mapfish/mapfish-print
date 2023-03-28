@@ -16,7 +16,7 @@ import javax.net.ssl.SSLContext;
  * A ssl socket factory that obtains the keystore from the current configuration.
  */
 public final class MfSSLSocketFactory implements LayeredConnectionSocketFactory {
-    private LayeredConnectionSocketFactory defaultFactory =
+    private final LayeredConnectionSocketFactory defaultFactory =
             SSLConnectionSocketFactory.getSystemSocketFactory();
 
     @Override

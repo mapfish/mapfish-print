@@ -49,7 +49,7 @@ public final class PagingAttribute extends ReflectiveAttribute<PagingAttribute.P
          * </p>
          */
         @HasDefaultValue
-        public double overlap = 0;
+        public final double overlap = 0;
 
         /**
          * Indicates how to render the area of interest on this sub-map. This makes it easier to how the all
@@ -72,6 +72,6 @@ public final class PagingAttribute extends ReflectiveAttribute<PagingAttribute.P
          * <a href="index.html#/attributes?location=!map">map attribute's</a> Area of Interest definition.
          */
         @HasDefaultValue
-        public String aoiStyle = null;
+        public final String aoiStyle = null;
     }
 }

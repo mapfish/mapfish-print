@@ -10,7 +10,7 @@ public class CliHelpDefinition {
      * Print all the commandline options.
      */
     @Argument(description = "Print all the commandline options.", alias = "?")
-    public boolean help = false;
+    public final boolean help = false;
 
     CliHelpDefinition() {
         // this is intentionally empty

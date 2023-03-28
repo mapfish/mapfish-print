@@ -35,7 +35,7 @@ import javax.annotation.Nonnull;
 public final class GridLayer implements MapLayer {
     private final GridParam params;
     private final LabelPositionCollector labels;
-    AbstractFeatureSourceLayer grid;
+    final AbstractFeatureSourceLayer grid;
 
     /**
      * Constructor.

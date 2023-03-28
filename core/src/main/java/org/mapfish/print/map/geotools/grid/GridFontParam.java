@@ -20,17 +20,17 @@ public final class GridFontParam {
      * The name of the font.
      */
     @HasDefaultValue
-    public String[] name = {DEFAULT_FONT_NAME.getFontName()};
+    public final String[] name = {DEFAULT_FONT_NAME.getFontName()};
     /**
      * The size of the font. 10.
      */
     @HasDefaultValue
-    public int size = DEFAULT_FONT_SIZE;
+    public final int size = DEFAULT_FONT_SIZE;
     /**
      * The style of the font.  Default BOLD
      */
     @HasDefaultValue
-    public FontStyle style = FontStyle.BOLD;
+    public final FontStyle style = FontStyle.BOLD;
 
     /**
      * Initialize default values and validate that config is correct.

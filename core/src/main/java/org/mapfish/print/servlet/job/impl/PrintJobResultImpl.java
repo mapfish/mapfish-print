@@ -48,7 +48,7 @@ public class PrintJobResultImpl implements PrintJobResult {
 
     @Column()
     @Type(type = "org.hibernate.type.TextType")
-    private String referenceId;
+    private final String referenceId;
 
     /**
      * Default Constructor.

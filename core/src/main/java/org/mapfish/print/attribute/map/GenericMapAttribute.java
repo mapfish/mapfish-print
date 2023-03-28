@@ -381,7 +381,7 @@ public abstract class GenericMapAttribute
          * If this property is set to `true`, the style definitions will be scaled to the target DPI value.
          */
         @HasDefaultValue
-        public boolean dpiSensitiveStyle = true;
+        public final boolean dpiSensitiveStyle = true;
         private List<MapLayer> mapLayers;
 
         /**
@@ -390,7 +390,7 @@ public abstract class GenericMapAttribute
          * Also see the pdfA option of the print config.
          */
         @HasDefaultValue
-        public Boolean pdfA = null;
+        public final Boolean pdfA = null;
 
         /**
          * Constructor.

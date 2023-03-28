@@ -78,7 +78,7 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
     }
 
     private class TestJobManager extends ThreadPoolJobManager {
-        private String name;
+        private final String name;
 
         private int jobsRun;
 

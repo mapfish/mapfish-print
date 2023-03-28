@@ -122,7 +122,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          * </ul>
          */
         @HasDefaultValue
-        public String type = Type.BAR.getLabel();
+        public final String type = Type.BAR.getLabel();
 
         /**
          * The unit to use.
@@ -146,7 +146,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          * Use geodetic measurement calculations for the scalebar.
          */
         @HasDefaultValue
-        public boolean geodetic = false;
+        public final boolean geodetic = false;
 
         /**
          * Force that the given unit is used (default: false). For example if the unit is set to meters and
@@ -154,7 +154,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          * values.
          */
         @HasDefaultValue
-        public Boolean lockUnits = false;
+        public final Boolean lockUnits = false;
 
         /**
          * The number of intervals (default: 3). There must be at least two intervals.
@@ -168,7 +168,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          * visual guidance. The number of sub-intervals depends on the length of an interval.</p>
          */
         @HasDefaultValue
-        public Boolean subIntervals = false;
+        public final Boolean subIntervals = false;
 
         /**
          * The thickness of the bar or the height of the tick marks on the line (in pixel).
@@ -180,7 +180,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          * The thickness of the lines or the bar border (in pixel).
          */
         @HasDefaultValue
-        public Integer lineWidth = null;
+        public final Integer lineWidth = null;
 
         /**
          * The distance between scalebar and labels (in pixel).
@@ -192,7 +192,7 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          * The padding around the scalebar (in pixel).
          */
         @HasDefaultValue
-        public Integer padding = null;
+        public final Integer padding = null;
 
         /**
          * The font used for the labels (default: Helvetica).
@@ -204,25 +204,25 @@ public class ScalebarAttribute extends ReflectiveAttribute<ScalebarAttribute.Sca
          * The font size (in pt) of the labels (default: 12).
          */
         @HasDefaultValue
-        public Integer fontSize = DEFAULT_FONT_SIZE;
+        public final Integer fontSize = DEFAULT_FONT_SIZE;
 
         /**
          * The font color of the labels (default: black).
          */
         @HasDefaultValue
-        public String fontColor = DEFAULT_FONT_COLOR;
+        public final String fontColor = DEFAULT_FONT_COLOR;
 
         /**
          * The color used to draw the bar and lines (default: black).
          */
         @HasDefaultValue
-        public String color = DEFAULT_COLOR;
+        public final String color = DEFAULT_COLOR;
 
         /**
          * The color used to draw the alternating blocks for style "bar" and "bar_sub" (default: white).
          */
         @HasDefaultValue
-        public String barBgColor = DEFAULT_BAR_BG_COLOR;
+        public final String barBgColor = DEFAULT_BAR_BG_COLOR;
 
         /**
          * The background color for the scalebar graphic (default: rgba(255, 255, 255, 0)).

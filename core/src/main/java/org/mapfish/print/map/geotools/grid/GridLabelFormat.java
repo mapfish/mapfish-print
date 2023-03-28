@@ -57,10 +57,10 @@ public abstract class GridLabelFormat {
      * Label format where value and unit are formatted with different patterns.
      */
     public static class Detailed extends GridLabelFormat {
-        private String valueFormat;
-        private String unitFormat;
-        private String formatDecimalSeparator;
-        private String formatGroupingSeparator;
+        private final String valueFormat;
+        private final String unitFormat;
+        private final String formatDecimalSeparator;
+        private final String formatGroupingSeparator;
 
         /**
          * Constructor.

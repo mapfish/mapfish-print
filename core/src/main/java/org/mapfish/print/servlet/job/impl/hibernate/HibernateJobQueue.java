@@ -44,7 +44,7 @@ public class HibernateJobQueue implements JobQueue {
     /**
      * The interval at which old records are deleted (in seconds).
      */
-    private long cleanupInterval = DEFAULT_CLEAN_UP_INTERVAL;
+    private final long cleanupInterval = DEFAULT_CLEAN_UP_INTERVAL;
 
     /**
      * The minimum time to keep records after last access.

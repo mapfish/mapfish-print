@@ -68,7 +68,7 @@ public final class OverviewMapAttribute extends GenericMapAttribute {
          * The output dpi of the printed map.
          */
         @HasDefaultValue
-        public Double dpi = null;
+        public final Double dpi = null;
         /**
          * An array of 4 doubles, minX, minY, maxX, maxY.  The bounding box of the overview-map.
          *

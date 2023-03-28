@@ -31,7 +31,7 @@ public abstract class PrimitiveAttribute<VALUE> implements Attribute {
      * The default value.
      */
     protected VALUE defaultValue;
-    private Class<VALUE> valueClass;
+    private final Class<VALUE> valueClass;
     private String configName;
 
     /**

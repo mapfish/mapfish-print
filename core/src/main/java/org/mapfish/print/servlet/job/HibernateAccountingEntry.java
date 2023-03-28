@@ -51,7 +51,7 @@ public class HibernateAccountingEntry {
     private PrintJobStatus.Status status;
 
     @Column(nullable = false, name = "completion_time")
-    private Date completionTime = new Date();
+    private final Date completionTime = new Date();
 
     @Column(name = "processing_time_ms")
     private Long processingTimeMS = null;

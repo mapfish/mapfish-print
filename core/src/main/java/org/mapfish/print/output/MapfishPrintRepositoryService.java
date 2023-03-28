@@ -31,7 +31,7 @@ class MapfishPrintRepositoryService implements StreamRepositoryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MapfishPrintRepositoryService.class);
 
     private final MfClientHttpRequestFactory httpRequestFactory;
-    private JasperReportsContext jasperReportsContext;
+    private final JasperReportsContext jasperReportsContext;
 
     MapfishPrintRepositoryService(
             @Nonnull final MfClientHttpRequestFactory httpRequestFactory) {

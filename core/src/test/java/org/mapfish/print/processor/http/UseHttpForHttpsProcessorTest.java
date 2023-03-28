@@ -34,11 +34,11 @@ public class UseHttpForHttpsProcessorTest extends AbstractHttpProcessorTest {
 
     public static class TestProcessor extends AbstractTestProcessor {
 
-        String userinfo = "user:pass";
-        String host = "localhost";
-        String path = "path";
-        String query = "query";
-        String fragment = "fragment";
+        final String userinfo = "user:pass";
+        final String host = "localhost";
+        final String path = "path";
+        final String query = "query";
+        final String fragment = "fragment";
 
         @Nullable
         @Override

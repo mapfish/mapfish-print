@@ -31,7 +31,7 @@ public final class TestMapAttribute extends GenericMapAttribute {
         @HasDefaultValue
         public EmbeddedTestAttribute optionalEmbedded;
         @HasDefaultValue
-        public int[] optionalArray;
+        public final int[] optionalArray;
 
         public TestMapAttributeValues(Template template) {
             super(template);

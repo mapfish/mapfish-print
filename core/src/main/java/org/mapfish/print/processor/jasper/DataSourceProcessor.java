@@ -77,7 +77,7 @@ public final class DataSourceProcessor
         implements RequireAttributes, CustomDependencies {
 
     private Map<String, Attribute> internalAttributes = new HashMap<>();
-    private Map<String, Attribute> allAttributes = new HashMap<>();
+    private final Map<String, Attribute> allAttributes = new HashMap<>();
 
     @Autowired
     private ProcessorDependencyGraphFactory processorGraphFactory;

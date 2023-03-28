@@ -17,10 +17,10 @@ import static org.junit.Assert.assertTrue;
 public class ProcessorGraphNodeTest {
     final String iMappingName = "integer";
     final String bMappingName = "bool";
-    Integer intVal = 1;
-    String sVal = "sValue";
-    List<String> lsVal = Arrays.asList("one", "two");
-    double[] daVal = new double[]{1.2, 2.3};
+    final Integer intVal = 1;
+    final String sVal = "sValue";
+    final List<String> lsVal = Arrays.asList("one", "two");
+    final double[] daVal = new double[]{1.2, 2.3};
 
     @Test
     public void testPopulateInputParameter() {

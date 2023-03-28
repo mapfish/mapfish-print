@@ -29,7 +29,7 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
     private static final int IMAGE_SIZE = 48;
     private Pattern urlExtractor = Pattern.compile("(.*)");
     private int urlGroup = 1;
-    private BufferedImage defaultImage;
+    private final BufferedImage defaultImage;
 
     /**
      * Constructor.

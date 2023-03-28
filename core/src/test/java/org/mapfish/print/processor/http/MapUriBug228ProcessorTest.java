@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 })
 public class MapUriBug228ProcessorTest extends AbstractMapfishSpringTest {
     @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
     @Autowired
     ConfigurationFactory configurationFactory;
     @Autowired

@@ -312,9 +312,9 @@ public class MapfishParserTest {
     static class TestParam {
         public String s;
         @HasDefaultValue
-        public String defS = "default";
+        public final String defS = "default";
         @HasDefaultValue
-        public String defS2 = "default2";
+        public final String defS2 = "default2";
         public Integer bigI;
         public int littleI;
         public Double bigD;
@@ -343,7 +343,7 @@ public class MapfishParserTest {
     static class EmbeddedClass {
         public String embeddedValue;
         @HasDefaultValue
-        public String embeddedDefault = "def";
+        public final String embeddedDefault = "def";
         private boolean calledByPostConstruct = false;
 
         public void postConstruct() {
@@ -357,10 +357,10 @@ public class MapfishParserTest {
     }
 
     static class TestEnumParam {
-        public TestEnum e1 = TestEnum.DEF;
+        public final TestEnum e1 = TestEnum.DEF;
         public TestEnum[] e2;
         @HasDefaultValue
-        public TestEnum def2 = TestEnum.DEF;
+        public final TestEnum def2 = TestEnum.DEF;
     }
 
     static class TestChoiceClass {

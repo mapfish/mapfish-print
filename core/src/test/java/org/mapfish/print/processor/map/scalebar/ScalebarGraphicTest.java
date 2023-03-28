@@ -28,7 +28,7 @@ public class ScalebarGraphicTest {
     private final double TOLERANCE = 0.000000001;
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public final TemporaryFolder folder = new TemporaryFolder();
     private Template template;
 
     @Before

@@ -133,6 +133,6 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
          * A string identifying a style to use when rendering the raster.
          */
         @HasDefaultValue
-        public String style = Constants.Style.Raster.NAME;
+        public final String style = Constants.Style.Raster.NAME;
     }
 }

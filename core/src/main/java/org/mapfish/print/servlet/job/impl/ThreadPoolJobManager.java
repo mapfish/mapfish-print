@@ -76,7 +76,7 @@ public class ThreadPoolJobManager implements JobManager {
     /**
      * The amount of time to let a thread wait before being shutdown.
      */
-    private long maxIdleTime = DEFAULT_THREAD_IDLE_TIME;
+    private final long maxIdleTime = DEFAULT_THREAD_IDLE_TIME;
     /**
      * A print job is canceled, if it is not completed after this amount of time (in seconds).
      */

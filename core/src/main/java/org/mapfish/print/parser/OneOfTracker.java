@@ -18,7 +18,7 @@ import javax.annotation.Nonnull;
  * Keeps track of which OneOf groups there are and which ones are satisfied.
  */
 final class OneOfTracker {
-    private Map<String, OneOfGroup> mapping = new HashMap<>();
+    private final Map<String, OneOfGroup> mapping = new HashMap<>();
 
     /**
      * Check if a field is part of a  {@link org.mapfish.print.parser.OneOf} relationship and add if
@@ -122,9 +122,9 @@ final class OneOfTracker {
     }
 
     private static final class OneOfGroup {
-        private String name;
-        private Collection<Field> choices = new ArrayList<>();
-        private Set<OneOfSatisfier> satisfiedBy = new HashSet<>();
+        private final String name;
+        private final Collection<Field> choices = new ArrayList<>();
+        private final Set<OneOfSatisfier> satisfiedBy = new HashSet<>();
 
         private OneOfGroup(final String name) {
             this.name = name;

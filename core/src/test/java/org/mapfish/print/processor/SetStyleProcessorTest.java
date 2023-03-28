@@ -27,7 +27,7 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
     public static final String BASE_DIR = "setstyle/";
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public final TemporaryFolder folder = new TemporaryFolder();
     @Autowired
     private ConfigurationFactory configurationFactory;
     @Autowired

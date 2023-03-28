@@ -46,7 +46,7 @@ import java.util.Optional;
  * [[examples=http_processors]]
  */
 public class DnsHostMatcher extends HostMatcher {
-    private List<AddressHostMatcher> matchersForHost = new ArrayList<>();
+    private final List<AddressHostMatcher> matchersForHost = new ArrayList<>();
     private String host;
 
     /**

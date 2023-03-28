@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 public class HttpCredential implements ConfigurationObject {
     private String username;
     private char[] password;
-    private UriMatchers matchers = new UriMatchers();
+    private final UriMatchers matchers = new UriMatchers();
 
     /**
      * Matchers are used to choose which requests the credentials apply to.

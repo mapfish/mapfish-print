@@ -665,7 +665,7 @@ public final class CreateMapProcessor
          * The output format.
          */
         @HasDefaultValue
-        public String outputFormat = null;
+        public final String outputFormat = null;
     }
 
     /**

@@ -93,7 +93,7 @@ public class NorthArrowAttribute extends ReflectiveAttribute<NorthArrowAttribute
          * The background color for the north-arrow graphic (default: rgba(255, 255, 255, 0)).
          */
         @HasDefaultValue
-        public String backgroundColor = DEFAULT_BACKGROUND_COLOR;
+        public final String backgroundColor = DEFAULT_BACKGROUND_COLOR;
 
         /**
          * Constructor.

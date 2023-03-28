@@ -19,9 +19,9 @@ import javax.mail.internet.InternetAddress;
  * Statisctics about the execution of a print job.
  */
 public class ExecutionStats {
-    private List<MapStats> mapStats = new ArrayList<>();
-    private List<PageStats> pageStats = new ArrayList<>();
-    private List<String> emailDests = new ArrayList<>();
+    private final List<MapStats> mapStats = new ArrayList<>();
+    private final List<PageStats> pageStats = new ArrayList<>();
+    private final List<String> emailDests = new ArrayList<>();
     private boolean storageUsed = false;
 
     /**

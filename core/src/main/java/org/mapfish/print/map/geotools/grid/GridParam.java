@@ -82,7 +82,7 @@ public final class GridParam extends AbstractLayerParams {
      * (will default to {@link org.mapfish.print.config.Configuration#defaultToSvg}).
      */
     @HasDefaultValue
-    public Boolean renderAsSvg = false;
+    public final Boolean renderAsSvg = false;
 
     /**
      * The number of points that will be in the grid line (if the gridType is LINES).  If the line will be
@@ -97,41 +97,41 @@ public final class GridParam extends AbstractLayerParams {
      * The size of the halo around the Grid Labels. The default is {@value #DEFAULT_HALO_RADIUS}.
      */
     @HasDefaultValue
-    public double haloRadius = DEFAULT_HALO_RADIUS;
+    public final double haloRadius = DEFAULT_HALO_RADIUS;
     /**
      * The color of the halo around grid label text. The color is defined the same as colors in CSS. Default
      * is white ({@value #DEFAULT_HALO_COLOR})
      */
     @HasDefaultValue
-    public String haloColor = DEFAULT_HALO_COLOR;
+    public final String haloColor = DEFAULT_HALO_COLOR;
     /**
      * The color of the grid label text.  Default is dark gray ({@value #DEFAULT_LABEL_COLOR})
      */
     @HasDefaultValue
-    public String labelColor = DEFAULT_LABEL_COLOR;
+    public final String labelColor = DEFAULT_LABEL_COLOR;
     /**
      * The color of the grid points or lines.  Default is gray ({@value #DEFAULT_GRID_COLOR})
      */
     @HasDefaultValue
-    public String gridColor = DEFAULT_GRID_COLOR;
+    public final String gridColor = DEFAULT_GRID_COLOR;
 
     /**
      * Configuration for the font of the grid labels.  The default is the default system font.
      */
     @HasDefaultValue
-    public GridFontParam font = new GridFontParam();
+    public final GridFontParam font = new GridFontParam();
     /**
      * The number of pixels to indent the grid labels from the end of the map.  The default is {@value
      * #DEFAULT_INDENT}.
      */
     @HasDefaultValue
-    public int indent = DEFAULT_INDENT;
+    public final int indent = DEFAULT_INDENT;
     /**
      * The projection code to use for the labels.  The value should be the string <code>authority:code</code>
      * form identifying the projection.  By default it will be the same projection as the map.
      */
     @HasDefaultValue
-    public String labelProjection = null;
+    public final String labelProjection = null;
     /**
      * The formatting string used to format the label (for example "%1.2f %s"). By default the label is
      * formatted according to the unit and label value. For the format syntax, see
@@ -140,14 +140,14 @@ public final class GridParam extends AbstractLayerParams {
      * separator characters will be ignored.
      */
     @HasDefaultValue
-    public String labelFormat = null;
+    public final String labelFormat = null;
     /**
      * The formatting string used to format the decimal part of a label (for example "###,###"). This
      * parameter is ignored if <code>labelFormat</code> is set. For the format syntax, see
      * <a href="https://docs.oracle.com/javase/tutorial/i18n/format/decimalFormat.html">DecimalFormat</a>.
      */
     @HasDefaultValue
-    public String valueFormat = null;
+    public final String valueFormat = null;
     /**
      * The formatting string used to format the unit part of a label (for example " %s"). This parameter is
      * ignored if <code>labelFormat</code> is set. <code>valueFormat</code> must be set to use this parameter.
@@ -155,43 +155,43 @@ public final class GridParam extends AbstractLayerParams {
      * <a href="https://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html">java.util.Formatter</a>.
      */
     @HasDefaultValue
-    public String unitFormat = null;
+    public final String unitFormat = null;
     /**
      * The character used to separate the decimal part (for example ","). This parameter is only used if
      * <code>valueFormat</code> is used. The default is the character of the default locale.
      */
     @HasDefaultValue
-    public String formatDecimalSeparator = null;
+    public final String formatDecimalSeparator = null;
     /**
      * The character used for the thousands separator (for example "'"). This parameter is only used if
      * <code>valueFormat</code> is used. The default is the character of the default locale.
      */
     @HasDefaultValue
-    public String formatGroupingSeparator = null;
+    public final String formatGroupingSeparator = null;
     /**
      * By default the normal axis order as specified in EPSG code will be used when parsing projections.
      * However the requestor can override this by explicitly declaring that longitude axis is first.
      */
     @HasDefaultValue
-    public Boolean longitudeFirst = null;
+    public final Boolean longitudeFirst = null;
     /**
      * If true (the default), the labels will be rotated to follow the lines they belong to. Otherwise they
      * are orientated west to east.
      */
     @HasDefaultValue
-    public boolean rotateLabels = true;
+    public final boolean rotateLabels = true;
     /**
      * Apply an X offset to the vertical grid line labels, relative to the vertical grid lines. Defaults to
      * 0.
      */
     @HasDefaultValue
-    public double verticalXOffset = 0;
+    public final double verticalXOffset = 0;
     /**
      * Apply an Y offset to horizontal grid line labels, relative to the horizontal grid lines. Defaults to
      * 0.
      */
     @HasDefaultValue
-    public double horizontalYOffset = 0;
+    public final double horizontalYOffset = 0;
     private GridLabelFormat gridLabelFormat = null;
     private CoordinateReferenceSystem labelCRS;
 

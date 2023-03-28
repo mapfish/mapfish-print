@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 public class MapSubReportTest {
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public final TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void testCompile() throws Exception {

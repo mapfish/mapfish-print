@@ -18,7 +18,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class StyleAttributeTest extends AbstractMapfishSpringTest {
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public final TemporaryFolder folder = new TemporaryFolder();
     @Autowired
     private ConfigurationFactory configurationFactory;
     @Autowired

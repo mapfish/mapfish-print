@@ -65,9 +65,9 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
     @Resource(name = "requestForkJoinPool")
     private ForkJoinPool requestForkJoinPool;
 
-    private Dimension missingImageSize = new Dimension(24, 24);
+    private final Dimension missingImageSize = new Dimension(24, 24);
     private BufferedImage missingImage;
-    private Color missingImageColor = Color.PINK;
+    private final Color missingImageColor = Color.PINK;
     private String template;
     private Integer maxWidth = null;
     private Double dpi = Constants.PDF_DPI;
@@ -335,8 +335,8 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
     private static final class NameTask implements Callable<Object[]> {
 
-        private String name;
-        private int level;
+        private final String name;
+        private final int level;
 
         private NameTask(final String name, final int level) {
             this.name = name;
@@ -351,12 +351,12 @@ public final class LegendProcessor extends AbstractProcessor<LegendProcessor.Inp
 
     private final class IconTask implements Callable<Object[]> {
 
-        private URL icon;
-        private double iconDPI;
-        private ExecutionContext context;
-        private MfClientHttpRequestFactory clientHttpRequestFactory;
-        private int level;
-        private File tempTaskDirectory;
+        private final URL icon;
+        private final double iconDPI;
+        private final ExecutionContext context;
+        private final MfClientHttpRequestFactory clientHttpRequestFactory;
+        private final int level;
+        private final File tempTaskDirectory;
 
         private IconTask(
                 final URL icon, final double iconDPI, final ExecutionContext context,

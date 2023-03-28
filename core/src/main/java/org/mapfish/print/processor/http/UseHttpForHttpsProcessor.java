@@ -41,8 +41,8 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
     private static final int JAVA_HTTP_STANDARD_PORT = 8080;
     private static final Pattern HTTP_AUTHORITY_PORT_EXTRACTOR = Pattern.compile("(.*@)?.*:(\\d+)");
     private static final Pattern HTTP_AUTHORITY_HOST_EXTRACTOR = Pattern.compile("(.*@)?([^:]*)(:\\d+)?");
-    private Map<Integer, Integer> portMapping = new HashMap<>();
-    private List<Pattern> hosts = new ArrayList<>();
+    private final Map<Integer, Integer> portMapping = new HashMap<>();
+    private final List<Pattern> hosts = new ArrayList<>();
 
     /**
      * Constructor.
