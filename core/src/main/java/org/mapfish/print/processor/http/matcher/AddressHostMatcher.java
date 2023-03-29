@@ -97,8 +97,6 @@ public class AddressHostMatcher extends InetHostMatcher {
         this.mask = mask;
     }
 
-    // Don't use checkstyle on generated methods
-    // CHECKSTYLE:OFF
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
@@ -166,5 +164,4 @@ public class AddressHostMatcher extends InetHostMatcher {
         }
         return true;
     }
-    // CHECKSTYLE:ON
 }

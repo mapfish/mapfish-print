@@ -116,7 +116,6 @@ public class DateFormatProcessor
         /**
          * The values.
          */
-        @SuppressWarnings("checkstyle:MemberName")
         public Locale REPORT_LOCALE;
     }
 

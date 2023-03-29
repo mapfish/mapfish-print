@@ -386,7 +386,6 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
      * The print information for doing the export.
      */
     public static final class Print {
-        // CHECKSTYLE:OFF
         @Nonnull
         public final JasperPrint print;
         @Nonnegative
@@ -397,8 +396,6 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         public final JasperReportsContext context;
         @Nonnull
         public final Values values;
-
-        // CHECKSTYLE:ON
 
         private Print(
                 @Nonnull final JasperReportsContext context, @Nonnull final JasperPrint print,

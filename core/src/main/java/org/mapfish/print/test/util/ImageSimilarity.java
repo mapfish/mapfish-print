@@ -35,8 +35,6 @@ import javax.media.jai.iterator.RandomIterFactory;
 
 /**
  * Class for comparing an expected image to an actual image.
- * <p>
- * CHECKSTYLE:OFF
  */
 public final class ImageSimilarity {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageSimilarity.class);

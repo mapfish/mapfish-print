@@ -21,7 +21,6 @@ import javax.servlet.descriptor.JspConfigDescriptor;
  * An essentially non-functional servlet context that is used by the CLI application to satisfy the spring
  * dependencies.
  */
-// CHECKSTYLE:OFF
 public final class CliServletContext implements ServletContext {
     @Override
     public String getContextPath() {

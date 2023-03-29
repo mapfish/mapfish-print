@@ -34,19 +34,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
     apply plugin: 'project-report'
-    apply plugin: 'checkstyle'
     apply plugin: 'se.bjurr.violations.violations-gradle-plugin'
-
-    jar.dependsOn(checkstyleMain)
-
-    checkstyle {
-        toolVersion = "10.8.1" // com.puppycrawl.tools:checkstyle
-        configFile = file("$rootProject.rootDir/checkstyle_checks.xml")
-        configProperties = ['basedir': project.rootDir.path]
-        ignoreFailures = true
-        reportsDir = file("$project.buildDir/reports/checkstyleReports")
-    }
-    checkstyleTest.enabled = false
 
     spotbugs {
         toolVersion = "4.7.3" // com.github.spotbugs:spotbugs-annotations
@@ -64,7 +52,6 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
         printViolations = true
         violations = [
                 ["FINDBUGS", ".", ".*/reports/spotbugsReports/.*\\.xml", "Spotbugs"],
-                ["CHECKSTYLE", ".", ".*/reports/checkstyleReports/.*\\.xml", "Checkstyle"]
         ]
     }
     check.finalizedBy violations

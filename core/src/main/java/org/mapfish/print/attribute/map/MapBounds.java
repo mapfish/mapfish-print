@@ -161,7 +161,6 @@ public abstract class MapBounds {
      */
     public abstract Coordinate getCenter();
 
-    // CHECKSTYLE:OFF
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -180,5 +179,4 @@ public abstract class MapBounds {
     public int hashCode() {
         return projection.hashCode();
     }
-    // CHECKSTYLE:ON
 }

@@ -78,8 +78,6 @@ public final class HostnameMatcher extends HostMatcher {
         return match;
     }
 
-    // CHECKSTYLE:OFF
-    // Don't run checkstyle on generated methods
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
@@ -135,5 +133,4 @@ public final class HostnameMatcher extends HostMatcher {
     public int hashCode() {
         return Objects.hash(super.hashCode(), host, allowSubDomains);
     }
-    // CHECKSTYLE:ON
 }

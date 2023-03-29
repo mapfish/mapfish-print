@@ -100,8 +100,6 @@ public abstract class InetHostMatcher extends HostMatcher {
         this.authorizedIPs = null;
     }
 
-    // CHECKSTYLE:OFF
-    // Don't run checkstyle on generated methods
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -180,6 +178,4 @@ public abstract class InetHostMatcher extends HostMatcher {
             return Arrays.equals(this.address, other.address) && Arrays.equals(this.mask, other.mask);
         }
     }
-    // CHECKSTYLE:ON
-
 }

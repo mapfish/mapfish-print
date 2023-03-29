@@ -319,9 +319,7 @@ public final class ProcessorDependencyGraphFactory {
         return graph;
     }
 
-    //CHECKSTYLE:OFF
     private static class InputValue {
-        //CHECKSTYLE:ON
         public final String name;
         public final String internalName;
         public final Class<?> type;

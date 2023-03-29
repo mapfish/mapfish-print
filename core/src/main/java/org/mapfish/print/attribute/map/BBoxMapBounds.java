@@ -235,7 +235,6 @@ public final class BBoxMapBounds extends MapBounds {
                                  minGeoX, minGeoY, maxGeoX, maxGeoY);
     }
 
-    // CHECKSTYLE:OFF
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -267,5 +266,4 @@ public final class BBoxMapBounds extends MapBounds {
                 "bbox=" + bbox +
                 '}';
     }
-    // CHECKSTYLE:ON
 }
