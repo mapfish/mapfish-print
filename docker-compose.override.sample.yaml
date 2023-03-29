@@ -4,6 +4,7 @@ version: '2.1'
 services:
   builder:
     image: mapfish_print_builder
+    user: ${USER_ID}
     volumes:
       - ./core:/src/core
       - ./examples:/src/examples

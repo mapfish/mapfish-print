@@ -24,7 +24,7 @@ acceptance-tests-up:
 	cp -r examples/geoserver-data/* /tmp/geoserver-data/
 	cp -r core/src/test/resources/map-data/* /tmp/geoserver-data/www/
 
-	docker-compose up -d
+	USER_ID=$(shell id -u):$(shell id -g) docker-compose up -d
 
 .PHONY: acceptance-tests-run
 acceptance-tests-run:
