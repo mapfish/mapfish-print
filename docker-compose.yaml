@@ -11,11 +11,11 @@ services:
     image: mapfish_print_tester
     user: ${USER_ID}
     volumes:
-      - ./examples/src/test/resources/examples:/usr/local/tomcat/webapps/ROOT/print-apps
+      - ./examples/src/test/resources/examples:/usr/local/tomcat/webapps/ROOT/print-apps:ro
     ports:
       - 8080:8080
     environment:
-      PRINT_YAML_MAX_ALIASES: 200
+      PRINT_YAML_MAX_ALIASES: '200'
       LOG_LEVEL: DEBUG
       JASPER_LOG_LEVEL: DEBUG
 
@@ -24,7 +24,8 @@ services:
     user: ${USER_ID}
     command: tail --follow /dev/null
     volumes:
-      - ./examples/src/test/resources/examples:/src/examples/src/test/resources/examples
+      - ./examples/src/test/resources/examples:/src/examples/src/test/resources/examples:ro
+      - ./examples/build/reports:/src/examples/build/reports
     environment:
-      PRINT_YAML_MAX_ALIASES: 200
+      PRINT_YAML_MAX_ALIASES: '200'
       GRADLE_USER_HOME: /home/gradle/.gradle

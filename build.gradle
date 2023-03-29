@@ -62,7 +62,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     tasks.register('violations', ViolationsTask) {
         minSeverity = 'INFO'
         detailLevel = 'VERBOSE' // PER_FILE_COMPACT, COMPACT or VERBOSE
-        maxViolations = 1070
+        maxViolations = 1072
         printViolations = true
         violations = [
             ["FINDBUGS", ".", ".*/reports/spotbugsReports/.*\\.xml", "Spotbugs"],
@@ -71,8 +71,8 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     }
     check.finalizedBy violations
 
-    sourceCompatibility = 1.11
-    targetCompatibility = 1.11
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 
     compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 

@@ -2,19 +2,42 @@ GIT_HEAD_ARG = --build-arg=GIT_HEAD=$(shell git rev-parse HEAD)
 export DOCKER_BUILDKIT = 1
 
 .PHONY: build
-build:
+build: build-builder
 	# Required and not necessarily exists
 	touch CI.asc
-
-	docker build $(GIT_HEAD_ARG) --target=builder --tag=mapfish_print_builder .
-	docker build $(GIT_HEAD_ARG) .
 
 	docker build $(GIT_HEAD_ARG) --target=runner --tag=camptocamp/mapfish_print core
 	docker build $(GIT_HEAD_ARG) --target=tester --tag=mapfish_print_tester core
 	docker build $(GIT_HEAD_ARG) --target=watcher --tag=mapfish_print_watcher core
 
+.PHONY: build-builder
+build-builder:
+	docker build $(GIT_HEAD_ARG) --target=builder --tag=mapfish_print_builder .
+
+.PHONY: checks
+checks: build-builder
+	mkdir --parent reports
+	docker run --rm --user=$(shell id -u):$(shell id -g) \
+		--volume=$(PWD)/core/src/:/src/core/src/:ro \
+		--volume=$(PWD)/reports/:/src/core/build/reports/ \
+		mapfish_print_builder \
+		gradle --parallel :core:spotbugsMain :core:checkstyleMain :core:violations
+
+.PHONY: tests
+tests: build-builder
+	mkdir --parent core/build/reports/
+	mkdir --parent core/build/resources/
+	docker run --rm --user=$(shell id -u):$(shell id -g) \
+		--volume=$(PWD)/core/src/:/src/core/src/:ro \
+		--volume=$(PWD)/core/build/reports/:/src/core/build/reports/ \
+		--volume=$(PWD)/core/build/resources/:/src/core/build/resources/ \
+		mapfish_print_builder \
+		gradle --parallel --exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain --exclude-task=:core:violations \
+			--exclude-task=:core:spotbugsTest --exclude-task=:core:checkstyleTest \
+			:core:test
+
 .PHONY: acceptance-tests-up
-acceptance-tests-up:
+acceptance-tests-up: build
 	docker-compose down --remove-orphan
 
 	mkdir /tmp/geoserver-data || true
@@ -24,7 +47,7 @@ acceptance-tests-up:
 	cp -r examples/geoserver-data/* /tmp/geoserver-data/
 	cp -r core/src/test/resources/map-data/* /tmp/geoserver-data/www/
 
-	USER_ID=$(shell id -u):$(shell id -g) docker-compose up -d
+	USER_ID=$(shell id -u):$(shell id -g) docker-compose up --detach
 
 .PHONY: acceptance-tests-run
 acceptance-tests-run:

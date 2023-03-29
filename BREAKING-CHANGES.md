@@ -1,13 +1,18 @@
 # Known breaking changes
 
+## Version 3.31
+
+- `HumanAlphaSerie` is moved from package `org.mapfish.print` to `org.mapfish.print.jasperreports`.
+
 ## Version 3.30
 
 - Add support of MapServer 8.0, remove support of MapServer <= 7.4 (MAP_ANGLE => ANGLE).
+- Upgrade to Java 17.
 
 ## Version 3.26
 
 - Upgrade to Java 11 and Tomcat 9.0
-- Update the font view
+- Update the font view.
 
 ## Version 3.25
 

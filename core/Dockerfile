@@ -20,7 +20,6 @@ RUN --mount=type=cache,target=/var/cache,sharing=locked \
     fonts-liberation fonts-dejavu fontconfig
 
 COPY --from=builder /src/core/build/webapp "${CATALINA_HOME}/webapps/ROOT/"
-COPY --from=builder /src/examples/build/classes/java/test/org/mapfish/print/HumanAlphaSerie.class "${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes/org/mapfish/print/"
 COPY docker /
 
 RUN mkdir -p "${CATALINA_HOME}/extlib/classes/org/mapfish/print" \

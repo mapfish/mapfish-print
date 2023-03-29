@@ -82,59 +82,40 @@ jobs:
         run: c2cciutils-checks
 
       - run: make build
+
+      - run: make checks
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Checkstyle and Spotbugs reports
+          path: reports
+          if-no-files-found: ignore
+        if: always()
+
+      - run: make tests
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Unit test results
+          path: core/build/resources/test/org/mapfish/print/
+          if-no-files-found: ignore
+        if: failure()
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Unit test report
+          path: core/build/reports/tests/test/
+          if-no-files-found: ignore
+        if: always()
+
       - run: make acceptance-tests-up
       - run: make acceptance-tests-run
-
-        # Extract artifacts
-      - run: docker run --rm --detach --name=builder mapfish_print_builder || true
-        if: always()
-      - run: docker cp builder:/src/core/build/ core/build/ || true
-        if: always()
-      - run: ls -l core/build/distributions
-        if: always()
-
-      - run: docker cp mapfish-print_tests_1:/src/examples/build/ examples/build/ || true
-        if: always()
-
       - run: c2cciutils-docker-logs || true
-        if: failure()
-
-      - run: mkdir -p core/build/resources/actual examples/build/reports core/build/reports examples/build/resources/test/examples
         if: always()
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Test results
-          path: core/build/resources/
-          if-no-files-found: ignore
-        if: failure()
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Reports examples
-          path: examples/build/reports
-          if-no-files-found: ignore
-        if: failure()
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Reports core
-          path: core/build/reports
-          if-no-files-found: ignore
-        if: failure()
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Examples
-          path: examples/build/resources/test/examples
-          if-no-files-found: ignore
-        if: failure()
 
-      - name: Collect test results
-        run: |
-          mkdir -p /tmp/test_results/junit
-          find . -name '*TEST-*.xml' -exec cp -v {} /tmp/test_results/junit/ \;
-        if: failure()
       - uses: actions/upload-artifact@v3
         with:
-          name: Test results
-          path: /tmp/test_results
+          name: Acceptance tests (Examples)
+          path: examples/build/resources/test/examples/
+          if-no-files-found: ignore
         if: failure()
 
       - name: Publish

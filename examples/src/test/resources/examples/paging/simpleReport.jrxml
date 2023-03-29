@@ -23,19 +23,19 @@
 	<field name="left" class="java.lang.Integer"/>
 	<field name="right" class="java.lang.Integer"/>
 	<variable name="name" class="java.lang.String">
-		<variableExpression><![CDATA[org.mapfish.print.HumanAlphaSerie.toString($F{name})]]></variableExpression>
+		<variableExpression><![CDATA[org.mapfish.print.jasperreports.HumanAlphaSerie.toString($F{name})]]></variableExpression>
 	</variable>
 	<variable name="top" class="java.lang.String">
-		<variableExpression><![CDATA[org.mapfish.print.HumanAlphaSerie.toString($F{top})]]></variableExpression>
+		<variableExpression><![CDATA[org.mapfish.print.jasperreports.HumanAlphaSerie.toString($F{top})]]></variableExpression>
 	</variable>
 	<variable name="bottom" class="java.lang.String">
-		<variableExpression><![CDATA[org.mapfish.print.HumanAlphaSerie.toString($F{bottom})]]></variableExpression>
+		<variableExpression><![CDATA[org.mapfish.print.jasperreports.HumanAlphaSerie.toString($F{bottom})]]></variableExpression>
 	</variable>
 	<variable name="left" class="java.lang.String">
-		<variableExpression><![CDATA[org.mapfish.print.HumanAlphaSerie.toString($F{left})]]></variableExpression>
+		<variableExpression><![CDATA[org.mapfish.print.jasperreports.HumanAlphaSerie.toString($F{left})]]></variableExpression>
 	</variable>
 	<variable name="right" class="java.lang.String">
-		<variableExpression><![CDATA[org.mapfish.print.HumanAlphaSerie.toString($F{right})]]></variableExpression>
+		<variableExpression><![CDATA[org.mapfish.print.jasperreports.HumanAlphaSerie.toString($F{right})]]></variableExpression>
 	</variable>
 	<title>
 		<band height="390" splitType="Stretch">
