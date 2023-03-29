@@ -82,59 +82,26 @@ jobs:
         run: c2cciutils-checks
 
       - run: make build
-      - run: make acceptance-tests-up
-      - run: make acceptance-tests-run
+      - run: make checks
+      - run: make tests
 
-        # Extract artifacts
-      - run: docker run --rm --detach --name=builder mapfish_print_builder || true
-        if: always()
-      - run: docker cp builder:/src/core/build/ core/build/ || true
-        if: always()
-      - run: ls -l core/build/libs core/build/distributions
-        if: always()
-
-      - run: docker cp mapfish-print_tests_1:/src/examples/build/ examples/build/ || true
-        if: always()
-
-      - run: c2cciutils-docker-logs || true
-        if: failure()
-
-      - run: mkdir -p core/build/resources/actual examples/build/reports core/build/reports examples/build/resources/test/examples
-        if: always()
       - uses: actions/upload-artifact@v3
         with:
           name: Test results
-          path: core/build/resources/
+          path: core/build/resources/test/org/mapfish/print/
           if-no-files-found: ignore
         if: failure()
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Reports examples
-          path: examples/build/reports
-          if-no-files-found: ignore
+
+      - run: make acceptance-tests-up
+      - run: make acceptance-tests-run
+      - run: c2cciutils-docker-logs || true
         if: failure()
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Reports core
-          path: core/build/reports
-          if-no-files-found: ignore
-        if: failure()
+
       - uses: actions/upload-artifact@v3
         with:
           name: Examples
           path: examples/build/resources/test/examples
           if-no-files-found: ignore
-        if: failure()
-
-      - name: Collect test results
-        run: |
-          mkdir -p /tmp/test_results/junit
-          find . -name '*TEST-*.xml' -exec cp -v {} /tmp/test_results/junit/ \;
-        if: failure()
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Test results
-          path: /tmp/test_results
         if: failure()
 
       - name: Publish
