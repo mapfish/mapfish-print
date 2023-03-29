@@ -2,6 +2,7 @@ package org.mapfish.print.processor.map;
 
 import static org.geotools.renderer.lite.RendererUtilities.worldToScreenTransform;
 import static org.mapfish.print.Constants.PDF_DPI;
+import static org.mapfish.print.output.JasperReportImageOutputFormat.IMAGE_TYPES;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -305,12 +306,11 @@ public final class CreateMapProcessor
         document.close();
       }
     } else {
-      boolean isJpeg = RenderType.fromFileExtension(outputFormat) == RenderType.JPEG;
-      final BufferedImage bufferedImage =
-          new BufferedImage(
-              width, height, isJpeg ? BufferedImage.TYPE_3BYTE_BGR : BufferedImage.TYPE_4BYTE_ABGR);
+
+      final int imageType = IMAGE_TYPES.get(outputFormat.toLowerCase());
+      final BufferedImage bufferedImage = new BufferedImage(width, height, imageType);
       Graphics g = bufferedImage.getGraphics();
-      if (isJpeg) {
+      if (imageType != BufferedImage.TYPE_4BYTE_ABGR) {
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, width, height);
       }

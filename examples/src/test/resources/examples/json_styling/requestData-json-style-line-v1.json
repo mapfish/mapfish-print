@@ -204,5 +204,5 @@
     }
   },
   "layout": "A4 landscape",
-  "outputFormat": "pdf"
+  "outputFormat": "png"
 }

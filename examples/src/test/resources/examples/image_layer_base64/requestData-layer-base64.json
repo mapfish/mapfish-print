@@ -19,6 +19,6 @@
       ]
     }
   },
-  "outputFormat": "pdf",
+  "outputFormat": "png",
   "layout": "A4 landscape"
 }

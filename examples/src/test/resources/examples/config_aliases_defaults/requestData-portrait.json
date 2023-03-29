@@ -2,7 +2,7 @@
   "layout": "PDF Preview portrait",
   "title": "dm[geo] map print",
   "outputFilename": "dmgeo-print",
-  "outputFormat": "pdf",
+  "outputFormat": "png",
   "attributes": {
     "mainMap": {
       "dpi": "72",

@@ -1,6 +1,6 @@
 {
   "layout": "A4 landscape",
-  "outputFormat": "pdf",
+  "outputFormat": "png",
   "attributes": {
     "map": {
       "projection": "EPSG:4326",

@@ -23,7 +23,10 @@ public final class ImageUtils {
   public static void writeImage(final BufferedImage im, final String formatName, final File output)
       throws IOException {
     if (!ImageIO.write(im, formatName, output)) {
-      throw new RuntimeException("Image format not supported: " + formatName);
+      throw new RuntimeException(
+          String.format(
+              "Image format '%s' not supported, supported format: %s",
+              formatName, String.join(", ", ImageIO.getWriterFormatNames())));
     }
   }
 
@@ -39,7 +42,10 @@ public final class ImageUtils {
       final BufferedImage im, final String formatName, final OutputStream output)
       throws IOException {
     if (!ImageIO.write(im, formatName, output)) {
-      throw new RuntimeException("Image format not supported: " + formatName);
+      throw new RuntimeException(
+          String.format(
+              "Image format '%s' not supported, supported format: %s",
+              formatName, String.join(", ", ImageIO.getWriterFormatNames())));
     }
   }
 }

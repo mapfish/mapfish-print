@@ -1,6 +1,6 @@
 {
   "layout": "A0 landscape",
-  "outputFormat": "pdf",
+  "outputFormat": "png",
   "attributes": {
     "map": {
       "longitudeFirst": true,

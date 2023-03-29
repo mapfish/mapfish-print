@@ -7,6 +7,10 @@
     <bean id="pdfOutputFormat" class="org.mapfish.print.output.JasperReportPDFOutputFormat" scope="prototype" />
     <bean id="pngOutputFormat" class="org.mapfish.print.output.JasperReportImageOutputFormat" scope="prototype"
         p:fileSuffix="png"/>
+    <bean id="jpgOutputFormat" class="org.mapfish.print.output.JasperReportImageOutputFormat" scope="prototype"
+        p:fileSuffix="jpg"/>
+    <bean id="jpegOutputFormat" class="org.mapfish.print.output.JasperReportImageOutputFormat" scope="prototype"
+        p:fileSuffix="jpeg"/>
     <bean id="tifOutputFormat" class="org.mapfish.print.output.JasperReportImageOutputFormat" scope="prototype"
         p:fileSuffix="tif"/>
     <bean id="tiffOutputFormat" class="org.mapfish.print.output.JasperReportImageOutputFormat" scope="prototype"
@@ -17,16 +21,20 @@
         p:fileSuffix="bmp"/>
     <bean id="svgOutputFormat" class="org.mapfish.print.output.JasperReportSvgOutputFormat" scope="prototype" />
 
+    <bean id="pdfMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
+        p:fileSuffix="pdf" p:contentType="application/pdf" />
     <bean id="pngMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
         p:fileSuffix="png" p:contentType="image/png"/>
     <bean id="jpgMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
         p:fileSuffix="jpg" p:contentType="image/jpeg"/>
     <bean id="jpegMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
         p:fileSuffix="jpeg" p:contentType="image/jpeg"/>
-    <bean id="tiffMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
-        p:fileSuffix="tiff" p:contentType="image/tiff"/>
     <bean id="tifMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
         p:fileSuffix="tif" p:contentType="image/tiff" />
-    <bean id="pdfMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
-        p:fileSuffix="pdf" p:contentType="application/pdf" />
+    <bean id="tiffMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
+        p:fileSuffix="tiff" p:contentType="image/tiff"/>
+    <bean id="gifMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
+        p:fileSuffix="gif" p:contentType="image/gif" />
+    <bean id="bmpMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
+        p:fileSuffix="bmp" p:contentType="image/bmp" />
 </beans>
