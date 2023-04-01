@@ -6,7 +6,7 @@ buildscript {
 
     dependencies {
         classpath "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.7.5"
-        classpath "se.bjurr.violations:violations-gradle-plugin:1.52.4"
+        classpath "se.bjurr.violations:violations-gradle-plugin:1.52.5"
     }
 }
 
@@ -40,7 +40,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     jar.dependsOn(checkstyleMain)
 
     checkstyle {
-        toolVersion = "10.8.0" // com.puppycrawl.tools:checkstyle
+        toolVersion = "10.8.1" // com.puppycrawl.tools:checkstyle
         configFile = file("$rootProject.rootDir/checkstyle_checks.xml")
         configProperties = ['basedir': project.rootDir.path]
         ignoreFailures = true
