@@ -154,11 +154,11 @@ dependencies {
             "org.geotools:gt-cql:28.2"
     )
     jasper(
-            "net.sf.jasperreports:jasperreports:6.20.0",
+            "net.sf.jasperreports:jasperreports:6.20.1",
             "org.codehaus.groovy:groovy-all:3.0.17",
             'ar.com.fdvs:DynamicJasper:5.3.8',
-            "net.sf.jasperreports:jasperreports-fonts:6.20.0",
-            "net.sf.jasperreports:jasperreports-functions:6.20.0",
+            "net.sf.jasperreports:jasperreports-fonts:6.20.1",
+            "net.sf.jasperreports:jasperreports-functions:6.20.1",
             'joda-time:joda-time:2.12.5'
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
