@@ -33,12 +33,7 @@
       matchPackageNames: ['gradle', 'tomcat'],
       versioning: 'regex:^(?<major>\\d+)\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?(-(?<compatibility>.*))$',
     },
-    /** Automerge the patch, the minor and the dev dependency */
-    {
-      matchBaseBranches: ['master'],
-      matchUpdateTypes: ['minor', 'patch'],
-      automerge: true,
-    },
+    /** Automerge the dev dependency */
     {
       matchDepTypes: ['devDependencies'],
       automerge: true,
@@ -57,47 +52,56 @@
     /** Define the groups */
     {
       matchPackageNames: ['gradle'],
+      matchUpdateTypes: ['major'],
       groupName: 'gradle',
       automerge: true,
     },
     {
       matchDatasources: ['docker'],
       matchPackageNames: ['camptocamp/geoserver'],
+      matchUpdateTypes: ['major'],
       groupName: 'geoserver',
       automerge: true,
     },
     {
       matchPackagePrefixes: ['org.springframework:', 'org.springframework.security:'],
+      matchUpdateTypes: ['major'],
       groupName: 'spring',
       automerge: true,
     },
     {
       matchPackagePrefixes: ['net.sf.jasperreports:'],
+      matchUpdateTypes: ['major'],
       groupName: 'jasperreports',
       automerge: true,
     },
     {
       matchPackagePrefixes: ['org.slf4j:'],
+      matchUpdateTypes: ['major'],
       groupName: 'slf4j',
       automerge: true,
     },
     {
       matchPackagePrefixes: ['io.dropwizard.metrics:'],
+      matchUpdateTypes: ['major'],
       groupName: 'metrics',
       automerge: true,
     },
     {
       matchPackagePrefixes: ['org.geotools.', 'org.geotools:'],
+      matchUpdateTypes: ['major'],
       groupName: 'geotools',
       automerge: true,
     },
     {
       matchPackagePrefixes: ['ch.qos.logback:'],
+      matchUpdateTypes: ['major'],
       groupName: 'logback',
       automerge: true,
     },
     {
       matchPackagePrefixes: ['org.apache.xmlgraphics:batik-'],
+      matchUpdateTypes: ['major'],
       groupName: 'batik',
       automerge: true,
     },
