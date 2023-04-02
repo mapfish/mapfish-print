@@ -118,9 +118,9 @@ ext {
 
 dependencies {
     def slf4jVersion = '1.7.36'
-    def metricsVersion = '4.2.17'
+    def metricsVersion = '4.2.18'
     def geotoolsVersion = '24.7'
-    def logbackVersion = '1.2.11'
+    def logbackVersion = '1.2.12'
 
     compile(
             "org.springframework:spring-context:$springVersion",
@@ -166,7 +166,7 @@ dependencies {
     jasper(
             "net.sf.jasperreports:jasperreports:$project.jasperreportVersion",
             "org.codehaus.groovy:groovy-all:$project.groovyVersion",
-            'ar.com.fdvs:DynamicJasper:5.3.6',
+            'ar.com.fdvs:DynamicJasper:5.3.8',
             "net.sf.jasperreports:jasperreports-fonts:$project.jasperreportVersion",
             "net.sf.jasperreports:jasperreports-functions:$project.jasperreportVersion",
             'joda-time:joda-time:2.10.14'
@@ -184,7 +184,7 @@ dependencies {
             'com.github.spullara.cli-parser:cli-parser:1.1.6',
             'org.apache.httpcomponents:httpclient:4.5.14',
             'com.sun.mail:javax.mail:1.6.2',
-            'com.amazonaws:aws-java-sdk-s3:1.12.418',
+            'com.amazonaws:aws-java-sdk-s3:1.12.440',
             'com.adobe.xmp:xmpcore:6.1.11',
             'io.sentry:sentry-logback:6.0.0',
             'net.logstash.logback:logstash-logback-encoder:7.1.1',
