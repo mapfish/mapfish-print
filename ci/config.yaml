@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/camptocamp/c2cciutils/1.1/c2cciutils/schema.json
+
 checks:
   versions: False
   prettier: False
@@ -10,6 +12,7 @@ checks:
       steps: []
     rebuild-3-20-3-22.yaml:
       steps: []
+    codeql.yaml: False
   codespell:
     ignore_re:
       - ^examples/src/test/resources/examples/.*
