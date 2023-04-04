@@ -37,6 +37,8 @@ COPY docs ./docs
 RUN --mount=type=cache,target=/home/gradle/.gradle \
    ([ -e success ] && ( (gradle :examples:build buildDocs >> /tmp/logs 2>&1) && touch success-examples-docs)) || true
 
+RUN chmod -R go=u /home/gradle .
+
 FROM builder AS test-builder
 
 RUN cat /tmp/logs && ls success success-publish success-examples-docs
