@@ -1,6 +1,7 @@
 package org.mapfish.print;
 
 import java.nio.charset.Charset;
+import java.util.Locale;
 
 /**
  * Strings used in configurations etc... User: jeichar Date: Sep 30, 2010 Time: 4:27:46 PM
@@ -15,7 +16,7 @@ public final class Constants {
     /**
      * The layout tag in the json spec file.
      */
-    public static final String JSON_LAYOUT_KEY = "layout";
+    public static final String JSON_LAYOUT_KEY = "layout".toLowerCase(Locale.ENGLISH);
 
     /**
      * The output filename in the json spec file.

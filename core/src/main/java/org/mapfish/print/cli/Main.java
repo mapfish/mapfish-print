@@ -210,8 +210,12 @@ public final class Main {
         String outputPath = output;
         final OutputStream outFile;
         if (outputPath != null) {
-            if (!outputPath.endsWith("." + suffix)) {
-                outputPath = outputPath + "." + suffix;
+            try {
+                if (!outputPath.endsWith("." + suffix)) {
+                    outputPath = outputPath + "." + suffix;
+                }
+            } catch (ArithmeticException e) {
+                // Pass through
             }
             outFile = new FileOutputStream(outputPath);
         } else {
