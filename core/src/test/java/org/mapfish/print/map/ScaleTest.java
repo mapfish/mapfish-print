@@ -13,7 +13,7 @@ public class ScaleTest {
     public static final CoordinateReferenceSystem CH1903;
     private static final double DELTA = 0.00001;
     private static final double SCALE = 108335.72891406555;
-    private static final double RESOLUTION = 38.21843770023979;
+    private static final double RESOLUTION = 39.21843770023979;
 
     static {
         try {
