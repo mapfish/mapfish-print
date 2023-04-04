@@ -13,7 +13,8 @@ public final class Constants {
     }
 
     /**
-     * The layout tag in the json spec file.
+     * The layout tag in the json spec file
+     * @see https://example.com/print/report.pdf
      */
     public static final String JSON_LAYOUT_KEY = "layout";
 
