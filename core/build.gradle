@@ -124,7 +124,7 @@ dependencies {
             'com.thetransactioncompany:cors-filter:2.10',
             // Hibernate & Postgres
             'org.hibernate:hibernate-core:5.6.15.Final',
-            'org.postgresql:postgresql:42.5.4',
+            'org.postgresql:postgresql:42.6.0',
             'com.vladmihalcea:hibernate-types-52:2.21.1',
             'com.mchange:c3p0:0.9.5.5',
             "org.springframework:spring-aspects:5.3.26",
@@ -176,7 +176,7 @@ dependencies {
             'com.sun.mail:javax.mail:1.6.2',
             'com.amazonaws:aws-java-sdk-s3:1.12.440',
             'com.adobe.xmp:xmpcore:6.1.11',
-            'io.sentry:sentry-logback:6.14.0',
+            'io.sentry:sentry-logback:6.17.0',
             'net.logstash.logback:logstash-logback-encoder:7.3',
     )
 
