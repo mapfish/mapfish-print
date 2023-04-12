@@ -4,6 +4,7 @@
   schedule: 'after 5pm on the first day of the month',
   labels: ['dependencies'],
   separateMajorMinor: true,
+  separateMultipleMajor: true,
   separateMinorPatch: true,
   prHourlyLimit: 0,
   prConcurrentLimit: 0,
@@ -59,7 +60,7 @@
     {
       matchDatasources: ['docker'],
       matchPackageNames: ['camptocamp/geoserver'],
-      matchUpdateTypes: ['major'],
+      matchUpdateTypes: ['major', 'minor'],
       groupName: 'geoserver',
       automerge: true,
     },
