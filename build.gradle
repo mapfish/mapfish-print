@@ -77,7 +77,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     dependencies {
         testCompile(
                 "junit:junit:4.13.2",
-                'org.mockito:mockito-core:5.3.0',
+                'org.mockito:mockito-core:5.3.1',
         )
     }
 
