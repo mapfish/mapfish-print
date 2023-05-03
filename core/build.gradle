@@ -132,7 +132,7 @@ dependencies {
             "org.springframework:spring-jdbc:5.3.27",
             "org.springframework:spring-tx:5.3.27",
             "org.springframework:spring-test:5.3.27",
-            "org.springframework.retry:spring-retry:1.3.4",
+            "org.springframework.retry:spring-retry:2.0.1",
     )
     metrics(
             "io.dropwizard.metrics:metrics-core:4.2.18",
