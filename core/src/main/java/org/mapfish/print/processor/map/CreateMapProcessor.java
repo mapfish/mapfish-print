@@ -114,10 +114,10 @@ public final class CreateMapProcessor
     @Resource(name = "requestForkJoinPool")
     private ForkJoinPool requestForkJoinPool;
 
-    @Value("${httpRequest.maxNumberFetchRetry}")
+    @Value("${httpRequest.fetchRetry.maxNumber}")
     private int httpRequestMaxNumberFetchRetry;
 
-    @Value("${httpRequest.fetchRetryIntervalMillis}")
+    @Value("${httpRequest.fetchRetry.intervalMillis}")
     private int httpRequestFetchRetryIntervalMillis;
 
     /**
