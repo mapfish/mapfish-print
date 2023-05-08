@@ -18,7 +18,7 @@ repositories {
 task startScripts(type: CreateStartScripts) {
 }
 task print(type: JavaExec) {
-    main = 'org.mapfish.print.cli.Main'
+    mainClass = 'org.mapfish.print.cli.Main'
     classpath = sourceSets.main.runtimeClasspath
 }
 
@@ -115,7 +115,7 @@ configurations {
 
 
 dependencies {
-    compile(
+    implementation(
             "org.springframework:spring-context:5.3.27",
             "org.springframework:spring-web:5.3.27",
             "org.springframework:spring-webmvc:5.3.27",
@@ -160,8 +160,8 @@ dependencies {
             "net.sf.jasperreports:jasperreports-functions:6.20.4",
             'joda-time:joda-time:2.12.5'
     )
-    compile fileTree(dir: "$projectDir/libs", include: '*.jar')
-    compile(
+    implementation fileTree(dir: "$projectDir/libs", include: '*.jar')
+    implementation(
             'com.google.guava:guava:31.1-jre',
             "org.slf4j:slf4j-api:2.0.7",
             "org.slf4j:jcl-over-slf4j:2.0.7",
@@ -179,15 +179,15 @@ dependencies {
             'net.logstash.logback:logstash-logback-encoder:7.3',
     )
 
-    compile(configurations.metrics) {
+    implementation(configurations.metrics) {
         exclude module: 'httpclient'
         exclude module: 'slf4j-api'
         exclude module: 'logback-classic'
     }
-    compile(configurations.geotools)
-    compile(configurations.jasper)
+    implementation(configurations.geotools)
+    implementation(configurations.jasper)
 
-    compile(
+    implementation(
             'org.apache.xmlgraphics:xmlgraphics-commons:2.8',
             "org.apache.xmlgraphics:batik-transcoder:1.16",
             "org.apache.xmlgraphics:batik-bridge:1.16",
@@ -198,7 +198,7 @@ dependencies {
     providedCompile('javax.servlet:javax.servlet-api:4.0.1')
     compileOnly "com.github.spotbugs:spotbugs-annotations:4.7.3"
 
-    testCompile group: 'de.saly', name: 'javamail-mock2-fullmock', version: '0.5-beta4'
+    testImplementation group: 'de.saly', name: 'javamail-mock2-fullmock', version: '0.5-beta4'
 }
 
 def gitRevision() {
@@ -231,12 +231,12 @@ def addManifestAttribute(manifest) {
 
 jar {
     enabled = true
-    baseName = 'print-lib'
+    archiveBaseName = 'print-lib'
     addManifestAttribute(manifest)
 }
 
 war {
-    baseName = 'print-servlet'
+    archiveBaseName = 'print-servlet'
     addManifestAttribute(manifest)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
@@ -249,16 +249,16 @@ show.doLast {
 }
 
 task libJavadocJar(type: Jar, dependsOn: javadoc) {
-    baseName = 'print-lib'
-    classifier = 'javadoc'
+    archiveBaseName = 'print-lib'
+    archiveClassifier = 'javadoc'
     from 'build/docs/javadoc'
 }
 
 
 task libSourcesJar(type: Jar) {
-    baseName = 'print-lib'
+    archiveBaseName = 'print-lib'
     from sourceSets.main.allSource
-    classifier = 'sources'
+    archiveClassifier = 'sources'
 }
 
 

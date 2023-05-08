@@ -75,7 +75,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 
     dependencies {
-        testCompile(
+        testImplementation(
                 "junit:junit:4.13.2",
                 'org.mockito:mockito-core:5.3.1',
         )
