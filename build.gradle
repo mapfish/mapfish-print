@@ -69,8 +69,8 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     }
     check.finalizedBy violations
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = 1.11
+    targetCompatibility = 1.11
 
     compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 
