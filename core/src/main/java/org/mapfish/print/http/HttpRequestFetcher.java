@@ -40,14 +40,13 @@ import javax.annotation.Nullable;
 public final class HttpRequestFetcher {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestFetcher.class);
-    public static final int MAX_NUMBER_FETCH_RETRY = 3;
-    public static final int FETCH_RETRY_INTERVAL_MILLIS = 100;
 
     private final File temporaryDirectory;
-
     private final MetricRegistry registry;
     private final Processor.ExecutionContext context;
     private final ForkJoinPool requestForkJoinPool;
+    private final int maxNumberFetchRetry;
+    private final int fetchRetryIntervalMillis;
 
     /**
      * Constructor.
@@ -60,11 +59,14 @@ public final class HttpRequestFetcher {
     public HttpRequestFetcher(
             final File temporaryDirectory, final MetricRegistry registry,
             final Processor.ExecutionContext context,
-            final ForkJoinPool requestForkJoinPool) {
+            final ForkJoinPool requestForkJoinPool, final int maxNumberFetchRetry,
+            final int fetchRetryIntervalMillis) {
         this.temporaryDirectory = temporaryDirectory;
         this.registry = registry;
         this.context = context;
         this.requestForkJoinPool = requestForkJoinPool;
+        this.maxNumberFetchRetry = maxNumberFetchRetry;
+        this.fetchRetryIntervalMillis = fetchRetryIntervalMillis;
     }
 
     private CachedClientHttpRequest add(final CachedClientHttpRequest request) {
@@ -204,18 +206,23 @@ public final class HttpRequestFetcher {
             return result;
         }
 
-        private ClientHttpResponse fetch() throws IOException, InterruptedException {
-            LOGGER.debug("Fetching URI resource {}", this.originalRequest.getURI());
+        /**
+         * Retry implemented manually.
+         * @see <a href="https://github.com/spring-projects/spring-retry/issues/148">Spring issue 148</a>
+         */
+        private ClientHttpResponse fetchWithRetry() throws IOException, InterruptedException {
             AtomicInteger counter = new AtomicInteger();
             do {
                 try {
+                    LOGGER.debug("Fetching URI resource {}", this.originalRequest.getURI());
                     ClientHttpResponse originalResponse = this.originalRequest.execute();
                     context.stopIfCanceled();
                     return new CachedClientHttpResponse(originalResponse);
                 } catch (final IOException e) {
-                    if (counter.incrementAndGet() < MAX_NUMBER_FETCH_RETRY) {
-                        TimeUnit.MILLISECONDS.sleep(FETCH_RETRY_INTERVAL_MILLIS);
+                    if (counter.incrementAndGet() < HttpRequestFetcher.this.maxNumberFetchRetry) {
+                        TimeUnit.MILLISECONDS.sleep(HttpRequestFetcher.this.fetchRetryIntervalMillis);
                     } else {
+                        LOGGER.debug("Fetching failed after {}", this.originalRequest.getURI());
                         throw e;
                     }
                 }
@@ -231,7 +238,7 @@ public final class HttpRequestFetcher {
                 final Timer.Context timerDownload =
                         HttpRequestFetcher.this.registry.timer(baseMetricName).time();
                 try {
-                    this.response = this.fetch();
+                    this.response = this.fetchWithRetry();
                 } catch (IOException e) {
                     LOGGER.error("Request failed {}", this.originalRequest.getURI(), e);
                     this.response = new AbstractClientHttpResponse() {
