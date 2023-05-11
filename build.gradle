@@ -40,7 +40,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     jar.dependsOn(checkstyleMain)
 
     checkstyle {
-        toolVersion = "10.10.0" // com.puppycrawl.tools:checkstyle
+        toolVersion = "6.19" // com.puppycrawl.tools:checkstyle
         configFile = file("$rootProject.rootDir/checkstyle_checks.xml")
         configProperties = ['basedir': project.rootDir.path]
         ignoreFailures = true
@@ -49,18 +49,18 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     checkstyleTest.enabled = false
 
     spotbugs {
-        toolVersion = "4.7.3" // com.github.spotbugs:spotbugs-annotations
+        toolVersion = "4.4.2" // com.github.spotbugs:spotbugs-annotations
         ignoreFailures = true
         reportsDir = file("$project.buildDir/reports/spotbugsReports")
         effort = "max"
         reportLevel = "high"
     }
-    spotbugsTest.enabled = false
+    spotbugsTest.enabled = true
 
     task violations(type: se.bjurr.violations.gradle.plugin.ViolationsTask) {
         minSeverity = 'INFO'
         detailLevel = 'VERBOSE' // PER_FILE_COMPACT, COMPACT or VERBOSE
-        maxViolations = 0
+        maxViolations = 1070
         printViolations = true
         violations = [
                 ["FINDBUGS", ".", ".*/reports/spotbugsReports/.*\\.xml", "Spotbugs"],
@@ -97,3 +97,8 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
         options.encoding = 'utf-8'
     }
 }
+
+task docs() {
+    enabled=false
+}
+

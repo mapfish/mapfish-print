@@ -1,8 +1,9 @@
+evaluationDependsOn(':core')
+
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
-defaultTasks 'build'
 
 repositories {
     mavenCentral()
@@ -12,10 +13,16 @@ repositories {
 
 dependencies {
     implementation project(':core')
-    implementation "org.codehaus.groovy:groovy-all:3.0.17",
+    implementation ("org.codehaus.groovy:groovy-all:3.0.17",
             "org.springframework:spring-test:5.3.27",
             'org.ccil.cowan.tagsoup:tagsoup:1.2.1',
-            'com.samskivert:jmustache:1.15'
+            'com.samskivert:jmustache:1.15',
+            'com.google.guava:guava:31.1-jre',
+            'commons-io:commons-io:2.11.0',
+            "org.springframework:spring-beans:5.3.27",
+            "org.springframework:spring-web:5.3.27",
+            "org.springframework:spring-context:5.3.27"
+    )
 }
 
 def site = new File(buildDir, "site").path
@@ -52,8 +59,4 @@ task('buildDocs', type: JavaExec) {
     def overrideAppContext = 'classpath*:mapfish-spring-application-context-override.xml'
     args site, javadocs, basicAppContext, appContext, appContext2, overrideAppContext
     systemProperty 'path_to_examples', "${project(':examples').projectDir}/src/test/resources/examples"
-}
-
-build {
-    dependsOn buildDocs
 }

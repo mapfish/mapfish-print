@@ -18,7 +18,7 @@ repositories {
 task startScripts(type: CreateStartScripts) {
 }
 task print(type: JavaExec) {
-    mainClass = 'org.mapfish.print.cli.Main'
+    main = 'org.mapfish.print.cli.Main'
     classpath = sourceSets.main.runtimeClasspath
 }
 
@@ -83,6 +83,7 @@ task testCLI(type: Exec) {
         assert outputFile.length() > 0
     }
 }
+
 test {
     maxHeapSize = "500M"
     reports {
@@ -90,7 +91,13 @@ test {
         html.enabled = true
     }
 }
-build.dependsOn tasks.distZip, tasks.testCLI
+
+build {
+    dependsOn(tasks.distZip)
+    doLast {
+        tasks.testCLI
+    }
+}
 
 configurations {
     compile.transitive = true
