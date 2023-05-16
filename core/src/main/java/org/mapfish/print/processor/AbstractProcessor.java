@@ -207,15 +207,15 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
 
   /** Default implementation of {@link org.mapfish.print.processor.Processor.ExecutionContext}. */
   public static final class Context implements ExecutionContext {
-    private final String jobId;
+    @Nonnull private final Map<String, String> mdcContext;
     private volatile boolean canceled = false;
     private ExecutionStats stats = new ExecutionStats();
 
     /**
-     * @param jobId The job ID.
+     * @param mdcContext The MDC context.
      */
-    public Context(final String jobId) {
-      this.jobId = jobId;
+    public Context(@Nonnull final Map<String, String> mdcContext) {
+      this.mdcContext = mdcContext;
     }
 
     /** Sets the canceled flag. */
@@ -236,27 +236,25 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
     }
 
     @Override
-    public String getJobId() {
-      return this.jobId;
+    public Map<String, String> getMDCContext() {
+      return this.mdcContext;
     }
 
     @Override
     public <T> T mdcContext(final Supplier<T> action) {
       this.stopIfCanceled();
-      final String prev = MDC.get(MDC_JOB_ID_KEY);
-      boolean changed = prev == null || (jobId != null && jobId.equals(prev));
+      final Map<String, String> prev = MDC.getCopyOfContextMap();
+      final String prevJomId = MDC.get(MDC_JOB_ID_KEY);
+      final String jobId = this.mdcContext == null ? null : this.mdcContext.get(MDC_JOB_ID_KEY);
+      boolean changed = prevJomId == null || (jobId != null && jobId.equals(prevJomId));
       if (changed) {
-        MDC.put(MDC_JOB_ID_KEY, this.jobId);
+        MDC.setContextMap(this.mdcContext);
       }
       try {
         return action.get();
       } finally {
         if (changed) {
-          if (prev != null) {
-            MDC.put(MDC_JOB_ID_KEY, prev);
-          } else {
-            MDC.remove(MDC_JOB_ID_KEY);
-          }
+          MDC.setContextMap(prev);
         }
       }
     }
@@ -264,20 +262,16 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
     @Override
     public <T> T mdcContextEx(final Callable<T> action) throws Exception {
       this.stopIfCanceled();
-      final String prev = MDC.get(MDC_JOB_ID_KEY);
-      boolean mdcChanged = prev == null || jobId.equals(prev);
+      final Map<String, String> prev = MDC.getCopyOfContextMap();
+      boolean mdcChanged = !mdcContext.equals(prev);
       if (mdcChanged) {
-        MDC.put(MDC_JOB_ID_KEY, this.jobId);
+        MDC.setContextMap(this.mdcContext);
       }
       try {
         return action.call();
       } finally {
         if (mdcChanged) {
-          if (prev != null) {
-            MDC.put(MDC_JOB_ID_KEY, prev);
-          } else {
-            MDC.remove(MDC_JOB_ID_KEY);
-          }
+          MDC.setContextMap(prev);
         }
       }
     }

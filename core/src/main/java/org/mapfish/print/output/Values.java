@@ -51,8 +51,8 @@ public final class Values {
   /** The key for the values object for the subreport directory. */
   public static final String SUBREPORT_DIR_KEY = "SUBREPORT_DIR";
 
-  /** The key for the reference ID. */
-  public static final String JOB_ID_KEY = "jobId";
+  /** The key for the MDC context of the current print job. */
+  public static final String MDC_CONTEXT_KEY = "mdcContext";
 
   /** The key for the values object of it self. */
   public static final String VALUES_KEY = "values";
@@ -79,7 +79,7 @@ public final class Values {
   /**
    * Construct from the json request body and the associated template.
    *
-   * @param jobId the job ID
+   * @param mdcContext the MDC context
    * @param requestData the json request data
    * @param template the template
    * @param taskDirectory the temporary directory for this printing task.
@@ -87,20 +87,26 @@ public final class Values {
    * @param jasperTemplateBuild the directory where the jasper templates are compiled to
    */
   public Values(
-      final String jobId,
+      @Nonnull final Map<String, String> mdcContext,
       final PJsonObject requestData,
       final Template template,
       final File taskDirectory,
       final MfClientHttpRequestFactoryImpl httpRequestFactory,
       final File jasperTemplateBuild) {
     this(
-        jobId, requestData, template, taskDirectory, httpRequestFactory, jasperTemplateBuild, null);
+        mdcContext,
+        requestData,
+        template,
+        taskDirectory,
+        httpRequestFactory,
+        jasperTemplateBuild,
+        null);
   }
 
   /**
    * Construct from the json request body and the associated template.
    *
-   * @param jobId the job ID
+   * @param mdcContext the MDC context
    * @param requestData the json request data
    * @param template the template
    * @param taskDirectory the temporary directory for this printing task.
@@ -110,7 +116,7 @@ public final class Values {
    */
   // CHECKSTYLE:OFF
   public Values(
-      final String jobId,
+      @Nonnull final Map<String, String> mdcContext,
       final PJsonObject requestData,
       final Template template,
       final File taskDirectory,
@@ -126,7 +132,7 @@ public final class Values {
         CLIENT_HTTP_REQUEST_FACTORY_KEY,
         new MfClientHttpRequestFactoryProvider(
             new ConfigFileResolvingHttpRequestFactory(
-                httpRequestFactory, template.getConfiguration(), jobId)));
+                httpRequestFactory, template.getConfiguration(), mdcContext)));
     this.values.put(TEMPLATE_KEY, template);
     this.values.put(PDF_CONFIG_KEY, template.getPdfConfig());
     if (jasperTemplateBuild != null) {
@@ -141,7 +147,7 @@ public final class Values {
     Map<String, Attribute> attributes = new HashMap<>(template.getAttributes());
     populateFromAttributes(template, attributes, jsonAttributes);
 
-    this.values.put(JOB_ID_KEY, jobId);
+    this.values.put(MDC_CONTEXT_KEY, mdcContext);
 
     this.values.put(VALUES_KEY, this);
 
@@ -263,7 +269,7 @@ public final class Values {
     this.values.put(PDF_CONFIG_KEY, pdfConfig);
     this.values.put(SUBREPORT_DIR_KEY, subReportDir);
     this.values.put(VALUES_KEY, this);
-    this.values.put(JOB_ID_KEY, sourceValues.getString(JOB_ID_KEY));
+    this.values.put(MDC_CONTEXT_KEY, sourceValues.getStringMap(MDC_CONTEXT_KEY));
     this.values.put(LOCALE_KEY, sourceValues.getObject(LOCALE_KEY, Locale.class));
   }
 
@@ -319,7 +325,7 @@ public final class Values {
   }
 
   /**
-   * Get a value as a string.
+   * Get a value as a object.
    *
    * @param key the key for looking up the value.
    * @param type the type of the object
@@ -328,6 +334,15 @@ public final class Values {
   public <V> V getObject(final String key, final Class<V> type) {
     final Object obj = this.values.get(key);
     return type.cast(obj);
+  }
+
+  /**
+   * Get a value as a Map from String to String.
+   *
+   * @param key the key for looking up the value.
+   */
+  public Map<String, String> getStringMap(final String key) {
+    return (Map<String, String>) this.values.get(key);
   }
 
   /**

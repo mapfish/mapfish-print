@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import javax.annotation.Nonnull;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -116,18 +117,26 @@ public class MapPrinter {
   /**
    * Start a print.
    *
-   * @param jobId the job ID
+   * @param mdcContext the MDC context for the current print job.
    * @param specJson the client json request.
    * @param out the stream to write to.
    */
   public final Processor.ExecutionContext print(
-      final String jobId, final PJsonObject specJson, final OutputStream out) throws Exception {
+      @Nonnull final Map<String, String> mdcContext,
+      final PJsonObject specJson,
+      final OutputStream out)
+      throws Exception {
     final OutputFormat format = getOutputFormat(specJson);
     final File taskDirectory = this.workingDirectories.getTaskDirectory();
 
     try {
       return format.print(
-          jobId, specJson, getConfiguration(), this.configFile.getParentFile(), taskDirectory, out);
+          mdcContext,
+          specJson,
+          getConfiguration(),
+          this.configFile.getParentFile(),
+          taskDirectory,
+          out);
     } finally {
       this.workingDirectories.removeDirectory(taskDirectory);
     }

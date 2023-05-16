@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
@@ -56,7 +57,7 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             requestData,
             template,
             getTaskDirectory(),
@@ -80,7 +81,11 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     JasperPrint print =
         format.getJasperPrint(
-                "test", requestData, config, config.getDirectory(), getTaskDirectory())
+                new HashMap<String, String>(),
+                requestData,
+                config,
+                config.getDirectory(),
+                getTaskDirectory())
             .print;
 
     assertEquals(1, print.getPages().size());

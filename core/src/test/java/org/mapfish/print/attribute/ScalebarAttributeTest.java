@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.awt.Dimension;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -80,7 +81,7 @@ public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
         parseJSONObjectFromFile(ScalebarAttributeTest.class, "scalebar/requestData.json");
     final Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             pJsonObject,
             template,
             getTaskDirectory(),

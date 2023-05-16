@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.GraphicsEnvironment;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.apache.commons.lang3.ArrayUtils;
@@ -43,7 +44,7 @@ public class CustomFontLoaderTest extends AbstractMapfishSpringTest {
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     JasperPrint print =
         format.getJasperPrint(
-                "test",
+                new HashMap<String, String>(),
                 requestData,
                 config,
                 getFile(CustomFontLoaderTest.class, BASE_DIR),

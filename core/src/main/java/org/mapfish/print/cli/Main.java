@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONWriter;
@@ -196,7 +197,7 @@ public final class Main {
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug("Request Data: \n{}", jsonSpec.getInternalObj().toString(2));
         }
-        this.mapPrinter.print("main", jsonSpec, outFile);
+        this.mapPrinter.print(new HashMap<String, String>(), jsonSpec, outFile);
       }
     }
   }

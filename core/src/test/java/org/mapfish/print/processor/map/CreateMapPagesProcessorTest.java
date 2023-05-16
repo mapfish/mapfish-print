@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -128,7 +129,11 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
       throws Exception {
     JasperPrint print =
         format.getJasperPrint(
-                "test", requestData, config, config.getDirectory(), getTaskDirectory())
+                new HashMap<String, String>(),
+                requestData,
+                config,
+                config.getDirectory(),
+                getTaskDirectory())
             .print;
 
     assertEquals(7, print.getPages().size());

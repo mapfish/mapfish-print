@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
@@ -43,7 +44,7 @@ public class CreateMapProcessorFixedScaleBBoxGeoJsonTest extends AbstractMapfish
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             requestData,
             template,
             getTaskDirectory(),

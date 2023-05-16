@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import org.junit.Test;
@@ -54,7 +55,12 @@ public class CreateOverviewMapProcessorCustomLayerTest extends AbstractMapfishSp
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            "test", requestData, template, getTaskDirectory(), this.requestFactory, new File("."));
+            new HashMap<String, String>(),
+            requestData,
+            template,
+            getTaskDirectory(),
+            this.requestFactory,
+            new File("."));
     this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
     @SuppressWarnings("unchecked")

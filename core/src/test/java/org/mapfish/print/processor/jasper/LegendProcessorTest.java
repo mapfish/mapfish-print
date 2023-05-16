@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
@@ -64,7 +65,7 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             requestData,
             template,
             getTaskDirectory(),
@@ -96,7 +97,7 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
     PJsonObject requestData = loadDynamicJsonRequestData();
     Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             requestData,
             template,
             getTaskDirectory(),
@@ -157,7 +158,7 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
 
     Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             requestData,
             template,
             getTaskDirectory(),

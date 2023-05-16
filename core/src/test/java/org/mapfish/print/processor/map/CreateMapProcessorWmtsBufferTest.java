@@ -6,6 +6,7 @@ import com.google.common.collect.Multimap;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
@@ -58,7 +59,7 @@ public class CreateMapProcessorWmtsBufferTest extends AbstractMapfishSpringTest 
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             requestData,
             template,
             getTaskDirectory(),

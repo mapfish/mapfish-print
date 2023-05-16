@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.HashMap;
 import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +41,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
 
     final Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             pJsonObject,
             template,
             getTaskDirectory(),
@@ -76,7 +77,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
 
     final Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             pJsonObject,
             template,
             getTaskDirectory(),
@@ -113,7 +114,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
 
     final Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             pJsonObject,
             template,
             getTaskDirectory(),

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.TimeZone;
 import java.util.concurrent.ForkJoinPool;
 import org.junit.Test;
@@ -33,7 +34,7 @@ public class DateFormatProcessorTest extends AbstractMapfishSpringTest {
     final Template template = config.getTemplate("main");
     Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             requestData,
             template,
             getTaskDirectory(),

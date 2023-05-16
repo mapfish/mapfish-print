@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Optional;
 import org.geotools.styling.Style;
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class URLSLDParserPluginTest extends AbstractMapfishSpringTest {
 
     ConfigFileResolvingHttpRequestFactory requestFactory =
         new ConfigFileResolvingHttpRequestFactory(
-            this.clientHttpRequestFactory, configuration, "test");
+            this.clientHttpRequestFactory, configuration, new HashMap<String, String>());
     final Optional<Style> styleOptional =
         parserPlugin.parseStyle(
             configuration,

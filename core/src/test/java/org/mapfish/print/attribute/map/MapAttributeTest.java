@@ -11,6 +11,7 @@ import static org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBo
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.geotools.referencing.CRS;
 import org.json.JSONObject;
@@ -83,7 +84,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
     final Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             pJsonObject,
             template,
             getTaskDirectory(),
@@ -110,7 +111,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-yaml.json");
     final Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             pJsonObject,
             template,
             getTaskDirectory(),
@@ -138,7 +139,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
     final Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             pJsonObject,
             template,
             getTaskDirectory(),
@@ -166,7 +167,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-zoomTo.json");
     final Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             pJsonObject,
             template,
             getTaskDirectory(),
@@ -189,7 +190,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
             MapAttributeTest.class, "map_attributes/requestData-zoomToCenter" + ".json");
     final Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             pJsonObject,
             template,
             getTaskDirectory(),

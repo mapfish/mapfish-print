@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 import org.mapfish.print.config.Configuration;
@@ -25,7 +26,7 @@ public class JasperReportSvgOutputFormatTest extends AbstractJasperReportOutputF
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     OutputFormat format = this.outputFormat.get("svgOutputFormat");
     format.print(
-        "test",
+        new HashMap<String, String>(),
         requestData,
         config,
         getFile(JasperReportSvgOutputFormatTest.class, BASE_DIR),

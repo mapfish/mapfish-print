@@ -3,6 +3,7 @@ package org.mapfish.print.attribute;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.util.HashMap;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -30,7 +31,7 @@ public class StyleAttributeTest extends AbstractMapfishSpringTest {
         parseJSONObjectFromFile(StyleAttributeTest.class, "style_attributes/request.json");
     final Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             pJsonObject,
             template,
             this.folder.getRoot(),

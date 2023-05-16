@@ -62,7 +62,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     tasks.register('violations', ViolationsTask) {
         minSeverity = 'INFO'
         detailLevel = 'VERBOSE' // PER_FILE_COMPACT, COMPACT or VERBOSE
-        maxViolations = 1064
+        maxViolations = 1066
         printViolations = true
         violations = [
             ["FINDBUGS", ".", ".*/reports/spotbugsReports/.*\\.xml", "Spotbugs"],

@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.List;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -67,7 +68,12 @@ public class CreateMapProcessorCenterWMSRotationSmallTilesTest extends AbstractM
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            "test", requestData, template, getTaskDirectory(), this.requestFactory, new File("."));
+            new HashMap<String, String>(),
+            requestData,
+            template,
+            getTaskDirectory(),
+            this.requestFactory,
+            new File("."));
     template.getProcessorGraph().createTask(values).invoke();
 
     @SuppressWarnings("unchecked")

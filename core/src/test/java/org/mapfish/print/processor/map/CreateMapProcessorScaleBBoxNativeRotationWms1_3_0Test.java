@@ -8,6 +8,7 @@ import com.google.common.collect.Multimap;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
@@ -83,7 +84,12 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            "test", requestData, template, getTaskDirectory(), this.requestFactory, new File("."));
+            new HashMap<String, String>(),
+            requestData,
+            template,
+            getTaskDirectory(),
+            this.requestFactory,
+            new File("."));
     forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
     @SuppressWarnings("unchecked")

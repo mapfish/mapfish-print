@@ -3,6 +3,7 @@ package org.mapfish.print.processor.map;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.concurrent.ForkJoinPool;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -43,7 +44,12 @@ public class CreateNorthArrowProcessorSvgTest extends AbstractMapfishSpringTest 
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            "test", requestData, template, getTaskDirectory(), this.requestFactory, new File("."));
+            new HashMap<String, String>(),
+            requestData,
+            template,
+            getTaskDirectory(),
+            this.requestFactory,
+            new File("."));
     this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
     String northArrowGraphic = values.getObject("northArrowGraphic", String.class);

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 import org.locationtech.jts.util.AssertionFailedException;
@@ -45,7 +46,7 @@ public class AbstractJasperReportOutputFormatTest extends AbstractMapfishSpringT
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     try {
       format.getJasperPrint(
-          "test",
+          new HashMap<String, String>(),
           requestData,
           config,
           getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
@@ -69,7 +70,7 @@ public class AbstractJasperReportOutputFormatTest extends AbstractMapfishSpringT
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     try {
       format.getJasperPrint(
-          "test",
+          new HashMap<String, String>(),
           requestData,
           config,
           getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
@@ -95,7 +96,7 @@ public class AbstractJasperReportOutputFormatTest extends AbstractMapfishSpringT
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     try {
       format.getJasperPrint(
-          "test",
+          new HashMap<String, String>(),
           requestData,
           config,
           getFile(JasperReportOutputFormatSimpleMapTest.class, TABLE_BASE_DIR),

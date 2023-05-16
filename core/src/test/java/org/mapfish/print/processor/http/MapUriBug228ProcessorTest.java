@@ -2,6 +2,7 @@ package org.mapfish.print.processor.http;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import org.junit.Rule;
@@ -46,7 +47,8 @@ public class MapUriBug228ProcessorTest extends AbstractMapfishSpringTest {
     final Template template = config.getTemplate("main");
 
     ConfigFileResolvingHttpRequestFactory requestFactory =
-        new ConfigFileResolvingHttpRequestFactory(this.httpClientFactory, config, "test");
+        new ConfigFileResolvingHttpRequestFactory(
+            this.httpClientFactory, config, new HashMap<String, String>());
     ProcessorDependencyGraph graph = template.getProcessorGraph();
     List<ProcessorGraphNode<?, ?>> roots = graph.getRoots();
 

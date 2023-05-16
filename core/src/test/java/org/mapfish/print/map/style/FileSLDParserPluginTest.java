@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Optional;
 import org.geotools.styling.Style;
 import org.junit.Test;
@@ -115,7 +116,8 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     config.setFileLoaderManager(this.fileLoaderManager);
 
     ConfigFileResolvingHttpRequestFactory requestFactory =
-        new ConfigFileResolvingHttpRequestFactory(this.clientHttpRequestFactory, config, "test");
+        new ConfigFileResolvingHttpRequestFactory(
+            this.clientHttpRequestFactory, config, new HashMap<String, String>());
 
     assertFalse(this.parser.parseStyle(config, requestFactory, file.getAbsolutePath()).isPresent());
   }
@@ -127,7 +129,8 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     config.setFileLoaderManager(this.fileLoaderManager);
 
     ConfigFileResolvingHttpRequestFactory requestFactory =
-        new ConfigFileResolvingHttpRequestFactory(this.clientHttpRequestFactory, config, "test");
+        new ConfigFileResolvingHttpRequestFactory(
+            this.clientHttpRequestFactory, config, new HashMap<String, String>());
 
     return this.parser.parseStyle(config, requestFactory, styleString);
   }

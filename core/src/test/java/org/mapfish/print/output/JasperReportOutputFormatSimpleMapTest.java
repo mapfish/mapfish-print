@@ -3,6 +3,7 @@ package org.mapfish.print.output;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     JasperPrint print =
         format.getJasperPrint(
-                "test",
+                new HashMap<String, String>(),
                 requestData,
                 config,
                 getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
@@ -58,7 +59,7 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
       }
       final OutputStream outputStream = new ByteArrayOutputStream();
       format.print(
-          "test",
+          new HashMap<String, String>(),
           requestData,
           config,
           getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),

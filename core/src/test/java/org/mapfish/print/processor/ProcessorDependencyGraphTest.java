@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.codahale.metrics.MetricRegistry;
+import java.util.HashMap;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.junit.Test;
@@ -73,7 +74,7 @@ public class ProcessorDependencyGraphTest {
     Values values = new Values();
     // this is a misconfiguration prop should be pp thus an exception should be thrown below.
     values.put("prop", "value");
-    values.put(Values.JOB_ID_KEY, "test");
+    values.put(Values.MDC_CONTEXT_KEY, new HashMap<>());
 
     final TestProcessor processor = new TestProcessor("p");
     processor.getInputMapperBiMap().put("pp", "prop");

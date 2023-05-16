@@ -27,6 +27,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -107,7 +108,7 @@ public class MapPrinterServlet extends BaseMapServlet {
   /**
    * If the job is done (value is true) or not (value is false).
    *
-   * <p>Part of the {@link #getStatus(String, javax.servlet.http.HttpServletRequest,
+   * <p>Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest,
    * javax.servlet.http.HttpServletResponse)} response.
    */
   public static final String JSON_DONE = "done";
@@ -123,7 +124,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    *   <li>error
    * </ul>
    *
-   * Part of the {@link #getStatus(String, javax.servlet.http.HttpServletRequest,
+   * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest,
    * javax.servlet.http.HttpServletResponse)} response
    */
   public static final String JSON_STATUS = "status";
@@ -132,7 +133,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    * The elapsed time in ms from the point the job started. If the job is finished, this is the
    * duration it took to process the job.
    *
-   * <p>Part of the {@link #getStatus(String, javax.servlet.http.HttpServletRequest,
+   * <p>Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest,
    * javax.servlet.http.HttpServletResponse)} response.
    */
   public static final String JSON_ELAPSED_TIME = "elapsedTime";
@@ -141,7 +142,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    * A rough estimate for the time in ms the job still has to wait in the queue until it starts
    * processing.
    *
-   * <p>Part of the {@link #getStatus(String, javax.servlet.http.HttpServletRequest,
+   * <p>Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest,
    * javax.servlet.http.HttpServletResponse)} response.
    */
   public static final String JSON_WAITING_TIME = "waitingTime";
@@ -344,11 +345,11 @@ public class MapPrinterServlet extends BaseMapServlet {
       value = "/{appId}" + STATUS_URL + "/{referenceId:\\S+}.json",
       method = RequestMethod.GET)
   public final void getStatusSpecificAppId(
-      @SuppressWarnings("unused") @PathVariable final String appId,
-      @PathVariable final String referenceId,
+      @Nonnull @PathVariable final String appId,
+      @Nonnull @PathVariable final String referenceId,
       final HttpServletRequest statusRequest,
       final HttpServletResponse statusResponse) {
-    getStatus(referenceId, statusRequest, statusResponse);
+    getStatus(appId, referenceId, statusRequest, statusResponse);
   }
 
   /**
@@ -363,10 +364,31 @@ public class MapPrinterServlet extends BaseMapServlet {
    * @param statusResponse the response object
    */
   @RequestMapping(value = STATUS_URL + "/{referenceId:\\S+}.json", method = RequestMethod.GET)
-  public final void getStatus(
-      @PathVariable final String referenceId,
+  public final void getStatusPath(
+      @Nonnull @PathVariable final String referenceId,
       final HttpServletRequest statusRequest,
       final HttpServletResponse statusResponse) {
+    getStatus("default", referenceId, statusRequest, statusResponse);
+  }
+
+  /**
+   * Get a status report on a job. Returns the following json:
+   *
+   * <pre><code>
+   *  {"time":0,"count":0,"done":false}
+   * </code></pre>
+   *
+   * @param applicationId the application ID
+   * @param referenceId the job reference
+   * @param statusRequest the request object
+   * @param statusResponse the response object
+   */
+  public final void getStatus(
+      @Nonnull final String applicationId,
+      @Nonnull final String referenceId,
+      final HttpServletRequest statusRequest,
+      final HttpServletResponse statusResponse) {
+    MDC.put(Processor.MDC_APPLICATION_ID_KEY, applicationId);
     MDC.put(Processor.MDC_JOB_ID_KEY, referenceId);
     setNoCache(statusResponse);
     try {
@@ -410,10 +432,10 @@ public class MapPrinterServlet extends BaseMapServlet {
       value = "/{appId}" + CANCEL_URL + "/{referenceId:\\S+}",
       method = RequestMethod.DELETE)
   public final void cancelSpecificAppId(
-      @SuppressWarnings("unused") @PathVariable final String appId,
-      @PathVariable final String referenceId,
+      @Nonnull @PathVariable final String appId,
+      @Nonnull @PathVariable final String referenceId,
       final HttpServletResponse statusResponse) {
-    cancel(referenceId, statusResponse);
+    cancel(appId, referenceId, statusResponse);
   }
 
   /**
@@ -426,8 +448,26 @@ public class MapPrinterServlet extends BaseMapServlet {
    * @param statusResponse the response object
    */
   @RequestMapping(value = CANCEL_URL + "/{referenceId:\\S+}", method = RequestMethod.DELETE)
+  public final void cancelPath(
+      @Nonnull @PathVariable final String referenceId, final HttpServletResponse statusResponse) {
+    cancel("default", referenceId, statusResponse);
+  }
+
+  /**
+   * Cancel a job.
+   *
+   * <p>Even if a job was already finished, subsequent status requests will return that the job was
+   * canceled.
+   *
+   * @param applicationId the application ID
+   * @param referenceId the job reference
+   * @param statusResponse the response object
+   */
   public final void cancel(
-      @PathVariable final String referenceId, final HttpServletResponse statusResponse) {
+      @Nonnull final String applicationId,
+      @Nonnull final String referenceId,
+      final HttpServletResponse statusResponse) {
+    MDC.put(Processor.MDC_APPLICATION_ID_KEY, applicationId);
     MDC.put(Processor.MDC_JOB_ID_KEY, referenceId);
     setNoCache(statusResponse);
     try {
@@ -449,7 +489,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = "/{appId}" + REPORT_URL + ".{format:\\w+}", method = RequestMethod.POST)
   public final void createReport(
-      @PathVariable final String appId,
+      @Nonnull @PathVariable final String appId,
       @PathVariable final String format,
       @RequestBody final String requestData,
       final HttpServletRequest createReportRequest,
@@ -492,27 +532,45 @@ public class MapPrinterServlet extends BaseMapServlet {
       value = "/{appId}" + REPORT_URL + "/{referenceId:\\S+}",
       method = RequestMethod.GET)
   public final void getReportSpecificAppId(
-      @SuppressWarnings("unused") @PathVariable final String appId,
-      @PathVariable final String referenceId,
+      @Nonnull @PathVariable final String appId,
+      @Nonnull @PathVariable final String referenceId,
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
       final HttpServletResponse getReportResponse)
       throws IOException, ServletException {
-    getReport(referenceId, inline, getReportResponse);
+    getReport(appId, referenceId, inline, getReportResponse);
   }
 
   /**
    * To get the PDF created previously.
    *
-   * @param referenceId the path to the file.
+   * @param referenceId the job reference
    * @param inline whether or not to inline the
    * @param getReportResponse the response object
    */
   @RequestMapping(value = REPORT_URL + "/{referenceId:\\S+}", method = RequestMethod.GET)
-  public final void getReport(
-      @PathVariable final String referenceId,
+  public final void getReportPath(
+      @Nonnull @PathVariable final String referenceId,
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
       final HttpServletResponse getReportResponse)
       throws IOException, ServletException {
+    getReport("default", referenceId, inline, getReportResponse);
+  }
+
+  /**
+   * To get the PDF created previously.
+   *
+   * @param applicationId the application ID
+   * @param referenceId the job reference
+   * @param inline whether or not to inline the
+   * @param getReportResponse the response object
+   */
+  public final void getReport(
+      @Nonnull final String applicationId,
+      @Nonnull final String referenceId,
+      final boolean inline,
+      final HttpServletResponse getReportResponse)
+      throws IOException, ServletException {
+    MDC.put(Processor.MDC_APPLICATION_ID_KEY, applicationId);
     MDC.put(Processor.MDC_JOB_ID_KEY, referenceId);
     setNoCache(getReportResponse);
     loadReport(
@@ -592,6 +650,9 @@ public class MapPrinterServlet extends BaseMapServlet {
       return;
     }
     final String appId = spec.optString(JSON_APP, DEFAULT_CONFIGURATION_FILE_KEY);
+    if (appId == null) {
+      throw new NoSuchAppException("No app specified");
+    }
     createReport(appId, format, requestData, createReportRequest, createReportResponse);
   }
 
@@ -610,7 +671,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       value = "/{appId}" + CREATE_AND_GET_URL + ".{format:\\w+}",
       method = RequestMethod.POST)
   public final void createReportAndGet(
-      @PathVariable final String appId,
+      @Nonnull @PathVariable final String appId,
       @PathVariable final String format,
       @RequestBody final String requestData,
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
@@ -709,6 +770,9 @@ public class MapPrinterServlet extends BaseMapServlet {
       return;
     }
     String appId = spec.optString(JSON_APP, DEFAULT_CONFIGURATION_FILE_KEY);
+    if (appId == null) {
+      throw new NoSuchAppException("No app specified");
+    }
     createReportAndGet(
         appId, format, requestData, inline, createReportRequest, createReportResponse);
   }
@@ -721,6 +785,7 @@ public class MapPrinterServlet extends BaseMapServlet {
   @RequestMapping(value = LIST_APPS_URL, method = RequestMethod.GET)
   public final void listAppIds(final HttpServletResponse listAppsResponse)
       throws ServletException, IOException {
+    MDC.remove(Processor.MDC_APPLICATION_ID_KEY);
     MDC.remove(Processor.MDC_JOB_ID_KEY);
     setCache(listAppsResponse);
     Set<String> appIds = this.printerFactory.getAppIds();
@@ -767,11 +832,12 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = "/{appId}" + CAPABILITIES_URL, method = RequestMethod.GET)
   public final void getCapabilities(
-      @PathVariable final String appId,
+      @Nonnull @PathVariable final String appId,
       @RequestParam(value = "pretty", defaultValue = "false") final boolean pretty,
       final HttpServletRequest request,
       final HttpServletResponse capabilitiesResponse)
       throws ServletException, IOException {
+    MDC.remove(Processor.MDC_APPLICATION_ID_KEY);
     MDC.remove(Processor.MDC_JOB_ID_KEY);
     setCache(capabilitiesResponse);
     MapPrinter printer;
@@ -847,10 +913,11 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = "{appId}" + EXAMPLE_REQUEST_URL, method = RequestMethod.GET)
   public final void getExampleRequest(
-      @PathVariable final String appId,
+      @Nonnull @PathVariable final String appId,
       final HttpServletRequest request,
       final HttpServletResponse getExampleResponse)
       throws IOException {
+    MDC.remove(Processor.MDC_APPLICATION_ID_KEY);
     MDC.remove(Processor.MDC_JOB_ID_KEY);
     setCache(getExampleResponse);
     try {
@@ -937,6 +1004,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = FONTS_URL)
   public final void listAvailableFonts(final HttpServletResponse response) {
+    MDC.remove(Processor.MDC_APPLICATION_ID_KEY);
     MDC.remove(Processor.MDC_JOB_ID_KEY);
 
     setContentType(response);
@@ -1082,7 +1150,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    * @return the job reference id
    */
   private String createAndSubmitPrintJob(
-      final String appId,
+      @Nonnull final String appId,
       final String format,
       final String requestDataRaw,
       final HttpServletRequest httpServletRequest,
@@ -1097,6 +1165,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         maybeAddRequestId(
             UUID.randomUUID().toString() + "@" + this.servletInfo.getServletId(),
             httpServletRequest);
+    MDC.put(Processor.MDC_APPLICATION_ID_KEY, appId);
     MDC.put(Processor.MDC_JOB_ID_KEY, ref);
     LOGGER.debug("{}", specJson);
 
