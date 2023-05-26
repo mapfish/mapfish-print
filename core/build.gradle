@@ -7,7 +7,11 @@ apply plugin: 'distribution'
 defaultTasks 'build'
 
 repositories {
-    mavenCentral()
+    mavenCentral {
+        content {
+            excludeModule("javax.media", "jai_core")
+        }
+    }
     maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
     maven { url "https://repo.osgeo.org/repository/release/" }
 }
@@ -18,21 +22,19 @@ repositories {
 task startScripts(type: CreateStartScripts) {
 }
 task print(type: JavaExec) {
-    main = 'org.mapfish.print.cli.Main'
+    mainClass = 'org.mapfish.print.cli.Main'
     classpath = sourceSets.main.runtimeClasspath
 }
 
-// define what should be included as distribution. usually this configuration
-// is done when applying the plugin `application`. this is the default config
-// as in: https://github.com/gradle/gradle/blob/7df34b3f00e743cbd8f9398acb08e67edf86b527/subprojects/plugins/src/main/groovy/org/gradle/api/plugins/ApplicationPlugin.groovy#L123-L134
+// define what should be included as distribution.
 distributions {
     main {
         contents {
-            from(project.file('src/dist'))
+            from 'src/dist'
 
             into('lib') {
                 from(jar)
-                from(project.configurations.runtime)
+                from(project.configurations.runtimeClasspath)
             }
             into('bin') {
                 from(startScripts)
@@ -75,7 +77,7 @@ task testCLI(type: Exec) {
     environment('JAVA_OPTS', '-Xmx500m')
     doFirst {
         println("Testing CLI application: $workingDir")
-        outputFile.delete();
+        outputFile.delete()
         assert !outputFile.exists()
     }
     doLast {
@@ -101,7 +103,6 @@ build {
 
 configurations {
     compile.transitive = true
-    compile.exclude module: 'jai_core'
 
     metrics {
         description = 'Libraries for measuring performance and load.  See http://metrics.codahale.com/'
@@ -139,6 +140,7 @@ dependencies {
             "org.springframework:spring-jdbc:5.3.27",
             "org.springframework:spring-tx:5.3.27",
             "org.springframework:spring-test:5.3.27",
+            "javax.media:jai-core:1.1.3"
     )
     metrics(
             "io.dropwizard.metrics:metrics-core:4.2.18",
@@ -167,7 +169,6 @@ dependencies {
             "net.sf.jasperreports:jasperreports-functions:6.20.4",
             'joda-time:joda-time:2.12.5'
     )
-    implementation fileTree(dir: "$projectDir/libs", include: '*.jar')
     implementation(
             'com.google.guava:guava:31.1-jre',
             "org.slf4j:slf4j-api:2.0.7",
@@ -283,8 +284,8 @@ gradle.taskGraph.whenReady { taskGraph ->
 startScripts {
     // Clear up the classpath because the launcher jar has it.
     applicationName = 'print'
-    mainClassName = 'org.mapfish.print.cli.Main'
-    classpath = files(jar.archivePath)
+    mainClass = 'org.mapfish.print.cli.Main'
+    classpath = files(jar.archiveFile)
     outputDir = new File(project.buildDir, 'scripts')
 
     doLast {
@@ -293,7 +294,7 @@ startScripts {
             // There was a bug in the start script where all jars were listed and that failed in windows.
             // now I just have the main jar and replace it with * so that all jars in that directory
             // are loaded on classpath.
-            file.setText(file.getText(encoding).replace(jar.archivePath.name, '*'), encoding)
+            file.setText(file.getText(encoding).replace(jar.archiveFile.get().getAsFile().name, '*'), encoding)
         }
     }
 }

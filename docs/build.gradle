@@ -1,12 +1,14 @@
-evaluationDependsOn(':core')
-
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
 
 repositories {
-    mavenCentral()
+    mavenCentral {
+        content {
+            excludeModule("javax.media", "jai_core")
+        }
+    }
     maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
     maven { url "https://repo.osgeo.org/repository/release/" }
 }
@@ -21,19 +23,20 @@ dependencies {
             'commons-io:commons-io:2.11.0',
             "org.springframework:spring-beans:5.3.27",
             "org.springframework:spring-web:5.3.27",
-            "org.springframework:spring-context:5.3.27"
+            "org.springframework:spring-context:5.3.27",
+            'javax.servlet:javax.servlet-api:4.0.1'
     )
 }
 
 def site = new File(buildDir, "site").path
 
-task copyJavadocs(type: Copy) {
+tasks.register('copyJavadocs', Copy) {
     dependsOn ':core:javadoc'
     from project(':core').tasks.javadoc.destinationDir
     into new File(site, 'javadoc')
 }
 
-task copySite(type: Copy) {
+tasks.register('copySite', Copy) {
     from(sourceSets.main.output.resourcesDir) {
         exclude 'pages.json', 'templates/*', 'templates'
     }
@@ -59,4 +62,8 @@ task('buildDocs', type: JavaExec) {
     def overrideAppContext = 'classpath*:mapfish-spring-application-context-override.xml'
     args site, javadocs, basicAppContext, appContext, appContext2, overrideAppContext
     systemProperty 'path_to_examples', "${project(':examples').projectDir}/src/test/resources/examples"
+}
+
+build {
+    dependsOn buildDocs
 }
