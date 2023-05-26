@@ -19,9 +19,9 @@ repositories {
 // the task `run` of the gretty plugin conflicts with the task with the same
 // name of the plugin `application`. that's why the following tasks are defined
 // manually.
-task startScripts(type: CreateStartScripts) {
+tasks.register('startScripts', CreateStartScripts) {
 }
-task print(type: JavaExec) {
+tasks.register('print', JavaExec) {
     mainClass = 'org.mapfish.print.cli.Main'
     classpath = sourceSets.main.runtimeClasspath
 }
@@ -49,14 +49,14 @@ def appDir = new File(project.buildDir, 'install')
 installDist.doFirst {
     appDir.deleteDir()
 }
-tasks.withType(Javadoc) {
+tasks.withType(Javadoc).configureEach {
     options.encoding = 'utf-8'
     title = "Mapfish Print Core Module $version"
     if (JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption('html5', true)
     }
 }
-task testCLI(type: Exec) {
+tasks.register('testCLI', Exec) {
     dependsOn installDist
     workingDir new File(appDir, 'core/bin')
     def cmd
@@ -70,9 +70,9 @@ task testCLI(type: Exec) {
     File configFile = file('src/test/resources/org/mapfish/print/cli/config.yaml')
     File v3ApiRequestFile = file('src/test/resources/org/mapfish/print/cli/v3Request.json')
     cmd.addAll([
-            '-config', configFile.getAbsolutePath(),
-            '-spec', v3ApiRequestFile.getAbsolutePath(),
-            '-output', outputFile.getAbsolutePath()])
+        '-config', configFile.getAbsolutePath(),
+        '-spec', v3ApiRequestFile.getAbsolutePath(),
+        '-output', outputFile.getAbsolutePath()])
     commandLine cmd
     environment('JAVA_OPTS', '-Xmx500m')
     doFirst {
@@ -89,8 +89,8 @@ task testCLI(type: Exec) {
 test {
     maxHeapSize = "500M"
     reports {
-        junitXml.enabled = true
-        html.enabled = true
+        junitXml.getRequired().set(true)
+        html.getRequired().set(true)
     }
 }
 
@@ -105,7 +105,7 @@ configurations {
     compile.transitive = true
 
     metrics {
-        description = 'Libraries for measuring performance and load.  See http://metrics.codahale.com/'
+        description = 'Libraries for measuring performance and load. See https://github.com/dropwizard/metrics'
     }
     geotools {
         description = 'Geotools spatial libraries'
@@ -209,7 +209,7 @@ dependencies {
     testImplementation group: 'de.saly', name: 'javamail-mock2-fullmock', version: '0.5-beta4'
 }
 
-def gitRevision() {
+static def gitRevision() {
     def gitRev = System.getenv('GIT_HEAD')
     return gitRev != null ? gitRev : "git rev-parse HEAD".execute().text.trim()
 }
@@ -249,21 +249,22 @@ war {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-task show {
+tasks.register('show') {
 }
 
 show.doLast {
     war.classpath.files.each { println it }
 }
 
-task libJavadocJar(type: Jar, dependsOn: javadoc) {
+tasks.register('libJavadocJar', Jar) {
+    dependsOn javadoc
     archiveBaseName = 'print-lib'
     archiveClassifier = 'javadoc'
     from 'build/docs/javadoc'
 }
 
 
-task libSourcesJar(type: Jar) {
+tasks.register('libSourcesJar', Jar) {
     archiveBaseName = 'print-lib'
     from sourceSets.main.allSource
     archiveClassifier = 'sources'
@@ -299,7 +300,7 @@ startScripts {
     }
 }
 
-task explodedWar(type: Sync) {
+tasks.register('explodedWar', Sync) {
     into "${buildDir}/webapp"
     with war
 }

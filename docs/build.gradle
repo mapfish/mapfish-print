@@ -37,6 +37,7 @@ tasks.register('copyJavadocs', Copy) {
 }
 
 tasks.register('copySite', Copy) {
+    dependsOn ':docs:processResources'
     from(sourceSets.main.output.resourcesDir) {
         exclude 'pages.json', 'templates/*', 'templates'
     }
@@ -47,12 +48,12 @@ tasks.register('copySite', Copy) {
     into site
 }
 
-task('buildDocs', type: JavaExec) {
+tasks.register('buildDocs', JavaExec) {
     dependsOn compileGroovy
     dependsOn copyJavadocs
     dependsOn copySite
 
-    main = 'GenerateDocs'
+    mainClass = 'GenerateDocs'
     classpath = sourceSets.main.runtimeClasspath
 
     def javadocs = project(':core').tasks.javadoc.destinationDir
