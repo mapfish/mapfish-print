@@ -96,9 +96,8 @@ test {
 
 build {
     dependsOn(tasks.distZip)
-    doLast {
-        tasks.testCLI
-    }
+    dependsOn(tasks.testCLI)
+    processTestResources.mustRunAfter(javadoc)
 }
 
 configurations {
@@ -107,12 +106,15 @@ configurations {
     metrics {
         description = 'Libraries for measuring performance and load. See https://github.com/dropwizard/metrics'
     }
+    implementation.extendsFrom(metrics)
     geotools {
         description = 'Geotools spatial libraries'
     }
+    implementation.extendsFrom(geotools)
     jasper {
         description = 'Dependencies for the jasper reports generation'
     }
+    implementation.extendsFrom(jasper)
 
     // Want to use the slf4j bridge instead
     all*.exclude group: 'commons-logging'
@@ -186,14 +188,6 @@ dependencies {
             'io.sentry:sentry-logback:6.18.1',
             'net.logstash.logback:logstash-logback-encoder:7.3',
     )
-
-    implementation(configurations.metrics) {
-        exclude module: 'httpclient'
-        exclude module: 'slf4j-api'
-        exclude module: 'logback-classic'
-    }
-    implementation(configurations.geotools)
-    implementation(configurations.jasper)
 
     implementation(
             'org.apache.xmlgraphics:xmlgraphics-commons:2.8',

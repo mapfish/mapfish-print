@@ -2,6 +2,7 @@ apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
+defaultTasks 'build'
 
 repositories {
     mavenCentral {
