@@ -1,23 +1,8 @@
 /*/bin
-/.classpath
-/*/.classpath
 /.gradle/
-/.project
-/*/.project
-/.settings
-/*/.settings/
 /examples/*.jasper
-
+/reports/
 /build/
 /*/build/
 
-/examples/geoserver-data/.updatepassword.lock
-/examples/geoserver-data/controlflow.properties
-/examples/geoserver-data/gwc-gs.xml
-/examples/geoserver-data/security/geoserver.jceks
-/examples/geoserver-data/security/version.properties
-/examples/geoserver-data/workspaces/default.xml
-/examples/geoserver-data/wps.xml
-
 /CI.asc
-/.github/changelog-generator-cache

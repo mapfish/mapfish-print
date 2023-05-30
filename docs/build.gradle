@@ -5,28 +5,40 @@ apply plugin: 'idea'
 defaultTasks 'build'
 
 repositories {
-    mavenCentral()
+    mavenCentral {
+        content {
+            excludeModule("javax.media", "jai_core")
+        }
+    }
     maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
     maven { url "https://repo.osgeo.org/repository/release/" }
 }
 
 dependencies {
-    compile project(':core')
-    compile "org.codehaus.groovy:groovy-all:3.0.17",
+    implementation project(':core')
+    implementation ("org.codehaus.groovy:groovy-all:3.0.17",
             "org.springframework:spring-test:5.3.27",
             'org.ccil.cowan.tagsoup:tagsoup:1.2.1',
-            'com.samskivert:jmustache:1.15'
+            'com.samskivert:jmustache:1.15',
+            'com.google.guava:guava:31.1-jre',
+            'commons-io:commons-io:2.11.0',
+            "org.springframework:spring-beans:5.3.27",
+            "org.springframework:spring-web:5.3.27",
+            "org.springframework:spring-context:5.3.27",
+            'javax.servlet:javax.servlet-api:4.0.1'
+    )
 }
 
 def site = new File(buildDir, "site").path
 
-task copyJavadocs(type: Copy) {
+tasks.register('copyJavadocs', Copy) {
     dependsOn ':core:javadoc'
     from project(':core').tasks.javadoc.destinationDir
     into new File(site, 'javadoc')
 }
 
-task copySite(type: Copy) {
+tasks.register('copySite', Copy) {
+    dependsOn ':docs:processResources'
     from(sourceSets.main.output.resourcesDir) {
         exclude 'pages.json', 'templates/*', 'templates'
     }
@@ -37,12 +49,12 @@ task copySite(type: Copy) {
     into site
 }
 
-task('buildDocs', type: JavaExec) {
+tasks.register('buildDocs', JavaExec) {
     dependsOn compileGroovy
     dependsOn copyJavadocs
     dependsOn copySite
 
-    main = 'GenerateDocs'
+    mainClass = 'GenerateDocs'
     classpath = sourceSets.main.runtimeClasspath
 
     def javadocs = project(':core').tasks.javadoc.destinationDir

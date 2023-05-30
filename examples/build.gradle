@@ -1,28 +1,38 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 repositories {
-    mavenCentral()
+    mavenCentral {
+        content {
+            excludeModule("javax.media", "jai_core")
+        }
+    }
     maven { url 'https://maven.restlet.org' }
     maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
     maven { url "https://repo.osgeo.org/repository/release/" }
 }
 
 dependencies {
-    testCompile(
+    testImplementation(
         project(':core'),
+        'commons-io:commons-io:2.11.0',
+        "org.springframework:spring-web:5.3.27",
+        'org.json:json:20230227',
+        'org.apache.commons:commons-lang3:3.5',
+        "org.locationtech.jts:jts-core:1.18.2",
+        "org.slf4j:slf4j-api:2.0.7",
+        "org.springframework:spring-test:5.3.27",
+        "ch.qos.logback:logback-classic:1.4.7"
     )
 }
 
 configurations {
-    compile.exclude module: 'jai_core'
-
     // need to exclude those two to get rid of stuff taken from geotools dependencies (they break the tests)
     compile.exclude group: 'org.eclipse.emf', module: 'ecore'
     compile.exclude group: 'org.eclipse.emf', module: 'common'
     compile.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }
 
-task geoserver(type: Exec) {
+tasks.register('geoserver' , Exec) {
     description 'Run and wait for GeoServer with test data'
     commandLine 'curl', 'http://geoserver:8080/web/', '--output', '/dev/null'
 }
@@ -33,7 +43,8 @@ task geoserver(type: Exec) {
 test {}
 test.onlyIf { false }
 
-task integrationTest(type: Test) {
+tasks.register('integrationTest', Test) {
+    dependsOn(':core:compileJava', 'geoserver')
     testLogging {
         exceptionFormat = 'full'
         showCauses true
@@ -43,8 +54,7 @@ task integrationTest(type: Test) {
     }
     maxHeapSize = "750M"
     reports {
-        junitXml.enabled = true
-        html.enabled = true
+        junitXml.getRequired().set(true)
+        html.getRequired().set(true)
     }
 }
-integrationTest.dependsOn ':core:compileJava', 'geoserver'

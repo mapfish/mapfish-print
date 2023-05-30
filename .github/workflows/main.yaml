@@ -90,7 +90,7 @@ jobs:
         if: always()
       - run: docker cp builder:/src/core/build/ core/build/ || true
         if: always()
-      - run: ls -l core/build/libs core/build/distributions
+      - run: ls -l core/build/distributions
         if: always()
 
       - run: docker cp mapfish-print_tests_1:/src/examples/build/ examples/build/ || true

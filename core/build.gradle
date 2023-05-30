@@ -7,7 +7,11 @@ apply plugin: 'distribution'
 defaultTasks 'build'
 
 repositories {
-    mavenCentral()
+    mavenCentral {
+        content {
+            excludeModule("javax.media", "jai_core")
+        }
+    }
     maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
     maven { url "https://repo.osgeo.org/repository/release/" }
 }
@@ -15,24 +19,22 @@ repositories {
 // the task `run` of the gretty plugin conflicts with the task with the same
 // name of the plugin `application`. that's why the following tasks are defined
 // manually.
-task startScripts(type: CreateStartScripts) {
+tasks.register('startScripts', CreateStartScripts) {
 }
-task print(type: JavaExec) {
-    main = 'org.mapfish.print.cli.Main'
+tasks.register('print', JavaExec) {
+    mainClass = 'org.mapfish.print.cli.Main'
     classpath = sourceSets.main.runtimeClasspath
 }
 
-// define what should be included as distribution. usually this configuration
-// is done when applying the plugin `application`. this is the default config
-// as in: https://github.com/gradle/gradle/blob/7df34b3f00e743cbd8f9398acb08e67edf86b527/subprojects/plugins/src/main/groovy/org/gradle/api/plugins/ApplicationPlugin.groovy#L123-L134
+// define what should be included as distribution.
 distributions {
     main {
         contents {
-            from(project.file('src/dist'))
+            from 'src/dist'
 
             into('lib') {
                 from(jar)
-                from(project.configurations.runtime)
+                from(project.configurations.runtimeClasspath)
             }
             into('bin') {
                 from(startScripts)
@@ -47,14 +49,14 @@ def appDir = new File(project.buildDir, 'install')
 installDist.doFirst {
     appDir.deleteDir()
 }
-tasks.withType(Javadoc) {
+tasks.withType(Javadoc).configureEach {
     options.encoding = 'utf-8'
     title = "Mapfish Print Core Module $version"
     if (JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption('html5', true)
     }
 }
-task testCLI(type: Exec) {
+tasks.register('testCLI', Exec) {
     dependsOn installDist
     workingDir new File(appDir, 'core/bin')
     def cmd
@@ -68,14 +70,14 @@ task testCLI(type: Exec) {
     File configFile = file('src/test/resources/org/mapfish/print/cli/config.yaml')
     File v3ApiRequestFile = file('src/test/resources/org/mapfish/print/cli/v3Request.json')
     cmd.addAll([
-            '-config', configFile.getAbsolutePath(),
-            '-spec', v3ApiRequestFile.getAbsolutePath(),
-            '-output', outputFile.getAbsolutePath()])
+        '-config', configFile.getAbsolutePath(),
+        '-spec', v3ApiRequestFile.getAbsolutePath(),
+        '-output', outputFile.getAbsolutePath()])
     commandLine cmd
     environment('JAVA_OPTS', '-Xmx500m')
     doFirst {
         println("Testing CLI application: $workingDir")
-        outputFile.delete();
+        outputFile.delete()
         assert !outputFile.exists()
     }
     doLast {
@@ -83,28 +85,36 @@ task testCLI(type: Exec) {
         assert outputFile.length() > 0
     }
 }
+
 test {
     maxHeapSize = "500M"
     reports {
-        junitXml.enabled = true
-        html.enabled = true
+        junitXml.getRequired().set(true)
+        html.getRequired().set(true)
     }
 }
-build.dependsOn tasks.distZip, tasks.testCLI
+
+build {
+    dependsOn(tasks.distZip)
+    dependsOn(tasks.testCLI)
+    processTestResources.mustRunAfter(javadoc)
+}
 
 configurations {
     compile.transitive = true
-    compile.exclude module: 'jai_core'
 
     metrics {
-        description = 'Libraries for measuring performance and load.  See http://metrics.codahale.com/'
+        description = 'Libraries for measuring performance and load. See https://github.com/dropwizard/metrics'
     }
+    implementation.extendsFrom(metrics)
     geotools {
         description = 'Geotools spatial libraries'
     }
+    implementation.extendsFrom(geotools)
     jasper {
         description = 'Dependencies for the jasper reports generation'
     }
+    implementation.extendsFrom(jasper)
 
     // Want to use the slf4j bridge instead
     all*.exclude group: 'commons-logging'
@@ -115,7 +125,7 @@ configurations {
 
 
 dependencies {
-    compile(
+    implementation(
             "org.springframework:spring-context:5.3.27",
             "org.springframework:spring-web:5.3.27",
             "org.springframework:spring-webmvc:5.3.27",
@@ -132,6 +142,7 @@ dependencies {
             "org.springframework:spring-jdbc:5.3.27",
             "org.springframework:spring-tx:5.3.27",
             "org.springframework:spring-test:5.3.27",
+            "javax.media:jai-core:1.1.3"
     )
     metrics(
             "io.dropwizard.metrics:metrics-core:4.2.18",
@@ -160,8 +171,7 @@ dependencies {
             "net.sf.jasperreports:jasperreports-functions:6.20.4",
             'joda-time:joda-time:2.12.5'
     )
-    compile fileTree(dir: "$projectDir/libs", include: '*.jar')
-    compile(
+    implementation(
             'com.google.guava:guava:31.1-jre',
             "org.slf4j:slf4j-api:2.0.7",
             "org.slf4j:jcl-over-slf4j:2.0.7",
@@ -179,15 +189,7 @@ dependencies {
             'net.logstash.logback:logstash-logback-encoder:7.3',
     )
 
-    compile(configurations.metrics) {
-        exclude module: 'httpclient'
-        exclude module: 'slf4j-api'
-        exclude module: 'logback-classic'
-    }
-    compile(configurations.geotools)
-    compile(configurations.jasper)
-
-    compile(
+    implementation(
             'org.apache.xmlgraphics:xmlgraphics-commons:2.8',
             "org.apache.xmlgraphics:batik-transcoder:1.16",
             "org.apache.xmlgraphics:batik-bridge:1.16",
@@ -198,10 +200,10 @@ dependencies {
     providedCompile('javax.servlet:javax.servlet-api:4.0.1')
     compileOnly "com.github.spotbugs:spotbugs-annotations:4.7.3"
 
-    testCompile group: 'de.saly', name: 'javamail-mock2-fullmock', version: '0.5-beta4'
+    testImplementation group: 'de.saly', name: 'javamail-mock2-fullmock', version: '0.5-beta4'
 }
 
-def gitRevision() {
+static def gitRevision() {
     def gitRev = System.getenv('GIT_HEAD')
     return gitRev != null ? gitRev : "git rev-parse HEAD".execute().text.trim()
 }
@@ -231,34 +233,35 @@ def addManifestAttribute(manifest) {
 
 jar {
     enabled = true
-    baseName = 'print-lib'
+    archiveBaseName = 'print-lib'
     addManifestAttribute(manifest)
 }
 
 war {
-    baseName = 'print-servlet'
+    archiveBaseName = 'print-servlet'
     addManifestAttribute(manifest)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-task show {
+tasks.register('show') {
 }
 
 show.doLast {
     war.classpath.files.each { println it }
 }
 
-task libJavadocJar(type: Jar, dependsOn: javadoc) {
-    baseName = 'print-lib'
-    classifier = 'javadoc'
+tasks.register('libJavadocJar', Jar) {
+    dependsOn javadoc
+    archiveBaseName = 'print-lib'
+    archiveClassifier = 'javadoc'
     from 'build/docs/javadoc'
 }
 
 
-task libSourcesJar(type: Jar) {
-    baseName = 'print-lib'
+tasks.register('libSourcesJar', Jar) {
+    archiveBaseName = 'print-lib'
     from sourceSets.main.allSource
-    classifier = 'sources'
+    archiveClassifier = 'sources'
 }
 
 
@@ -276,8 +279,8 @@ gradle.taskGraph.whenReady { taskGraph ->
 startScripts {
     // Clear up the classpath because the launcher jar has it.
     applicationName = 'print'
-    mainClassName = 'org.mapfish.print.cli.Main'
-    classpath = files(jar.archivePath)
+    mainClass = 'org.mapfish.print.cli.Main'
+    classpath = files(jar.archiveFile)
     outputDir = new File(project.buildDir, 'scripts')
 
     doLast {
@@ -286,12 +289,12 @@ startScripts {
             // There was a bug in the start script where all jars were listed and that failed in windows.
             // now I just have the main jar and replace it with * so that all jars in that directory
             // are loaded on classpath.
-            file.setText(file.getText(encoding).replace(jar.archivePath.name, '*'), encoding)
+            file.setText(file.getText(encoding).replace(jar.archiveFile.get().getAsFile().name, '*'), encoding)
         }
     }
 }
 
-task explodedWar(type: Sync) {
+tasks.register('explodedWar', Sync) {
     into "${buildDir}/webapp"
     with war
 }
