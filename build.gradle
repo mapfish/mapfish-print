@@ -51,7 +51,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     checkstyleTest.enabled = false
 
     spotbugs {
-        toolVersion = "4.4.2" // com.github.spotbugs:spotbugs-annotations
+        toolVersion = "4.7.3" // com.github.spotbugs:spotbugs-annotations
         ignoreFailures = true
         reportsDir = file("$project.buildDir/reports/spotbugsReports")
         effort = "max"
