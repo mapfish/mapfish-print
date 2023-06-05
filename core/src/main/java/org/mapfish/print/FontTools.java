@@ -104,7 +104,7 @@ public final class FontTools {
 
     /**
      * parses the inputLine and adds information to the FontConfigDescription.
-     * 
+     *
      * @param description
      * @param inputLine
      */

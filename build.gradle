@@ -105,4 +105,3 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
 tasks.register('docs') {
     enabled = false
 }
-
