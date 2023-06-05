@@ -1,4 +1,4 @@
-package org.mapfish.print;
+package org.mapfish.print.jasperreports;
 
 import java.util.Stack;
 
@@ -7,6 +7,17 @@ import java.util.Stack;
  */
 public class HumanAlphaSerie {
 
+    private HumanAlphaSerie() {
+        // Raise exception because the class should not be instantiated
+        throw new AssertionError();
+    }
+
+    /**
+     * Convert an integer to an alpha index.
+     *
+     * @param number the number to convert
+     * @return the alpha index
+     */
     public static String toString(int number) {
         if (number <= 0) {
             return "";
@@ -34,7 +45,10 @@ public class HumanAlphaSerie {
         return convertToString(stack);
     }
 
-    private static String convertToString(Stack<Integer> array) {
+    /**
+     * Convert the stack to a string.
+     */
+    private static String convertToString(final Stack<Integer> array) {
         StringBuilder sb = new StringBuilder();
 
         while (!array.isEmpty()) {
@@ -44,7 +58,10 @@ public class HumanAlphaSerie {
         return sb.toString();
     }
 
-    private static char numberToChar(int number) {
+    /**
+     * Convert a number to a char. 1 -> A, 2 -> B, 26 -> Z.
+     */
+    private static char numberToChar(final int number) {
         if (number > 26 || number < 0) {
             return '\0';
         }
