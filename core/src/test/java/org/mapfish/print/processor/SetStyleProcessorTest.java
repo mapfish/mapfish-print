@@ -1,5 +1,10 @@
 package org.mapfish.print.processor;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -16,80 +21,81 @@ import org.mapfish.print.processor.map.SetStyleProcessor;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.File;
-import java.util.List;
-import java.util.concurrent.ForkJoinPool;
-
-import static org.junit.Assert.assertEquals;
-
 @SuppressWarnings("unchecked")
 public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR = "setstyle/";
+  public static final String BASE_DIR = "setstyle/";
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
-    @Autowired
-    private ConfigurationFactory configurationFactory;
-    @Autowired
-    private ForkJoinPool forkJoinPool;
-    @Autowired
-    private TestHttpClientFactory httpClientFactory;
+  @Rule public TemporaryFolder folder = new TemporaryFolder();
+  @Autowired private ConfigurationFactory configurationFactory;
+  @Autowired private ForkJoinPool forkJoinPool;
+  @Autowired private TestHttpClientFactory httpClientFactory;
 
-    @Test
-    public void testAssignStyleBasic() throws Exception {
-        this.configurationFactory.setDoValidation(false);
-        final Configuration config =
-                this.configurationFactory.getConfig(getFile(BASE_DIR + "basic/config.yaml"));
-        final Template template = config.getTemplate("main");
-        PJsonObject requestData =
-                parseJSONObjectFromFile(SetStyleProcessorTest.class, BASE_DIR + "basic/request.json");
-        Values values =
-                new Values("test", requestData, template, this.folder.getRoot(), this.httpClientFactory,
-                           new File("."));
-        forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
+  @Test
+  public void testAssignStyleBasic() throws Exception {
+    this.configurationFactory.setDoValidation(false);
+    final Configuration config =
+        this.configurationFactory.getConfig(getFile(BASE_DIR + "basic/config.yaml"));
+    final Template template = config.getTemplate("main");
+    PJsonObject requestData =
+        parseJSONObjectFromFile(SetStyleProcessorTest.class, BASE_DIR + "basic/request.json");
+    Values values =
+        new Values(
+            "test",
+            requestData,
+            template,
+            this.folder.getRoot(),
+            this.httpClientFactory,
+            new File("."));
+    forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
-        final MapAttribute.MapAttributeValues map =
-                values.getObject("map", MapAttribute.MapAttributeValues.class);
-        final AbstractFeatureSourceLayer layer = (AbstractFeatureSourceLayer) map.getLayers().get(0);
-        final MapfishMapContext mapContext = AbstractMapfishSpringTest.createTestMapContext();
-        assertEquals("Default Line",
-                     layer.getLayers(httpClientFactory, mapContext, CONTEXT).get(0).getStyle()
-                             .getDescription()
-                             .getTitle().toString());
-    }
+    final MapAttribute.MapAttributeValues map =
+        values.getObject("map", MapAttribute.MapAttributeValues.class);
+    final AbstractFeatureSourceLayer layer = (AbstractFeatureSourceLayer) map.getLayers().get(0);
+    final MapfishMapContext mapContext = AbstractMapfishSpringTest.createTestMapContext();
+    assertEquals(
+        "Default Line",
+        layer
+            .getLayers(httpClientFactory, mapContext, CONTEXT)
+            .get(0)
+            .getStyle()
+            .getDescription()
+            .getTitle()
+            .toString());
+  }
 
-    @Test
-    public void testAssignStyleMap() throws Exception {
-        this.configurationFactory.setDoValidation(false);
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "map/config.yaml"));
-        final Template template = config.getTemplate("main");
+  @Test
+  public void testAssignStyleMap() throws Exception {
+    this.configurationFactory.setDoValidation(false);
+    final Configuration config =
+        configurationFactory.getConfig(getFile(BASE_DIR + "map/config.yaml"));
+    final Template template = config.getTemplate("main");
 
-        ProcessorDependencyGraph graph = template.getProcessorGraph();
-        List<ProcessorGraphNode<?, ?>> roots = graph.getRoots();
+    ProcessorDependencyGraph graph = template.getProcessorGraph();
+    List<ProcessorGraphNode<?, ?>> roots = graph.getRoots();
 
-        assertEquals(1, roots.size());
-        ProcessorGraphNode<?, ?> rootNode = roots.get(0);
-        assertEquals(SetStyleProcessor.class, rootNode.getProcessor().getClass());
-        assertEquals(2, rootNode.getAllProcessors().size());
-    }
+    assertEquals(1, roots.size());
+    ProcessorGraphNode<?, ?> rootNode = roots.get(0);
+    assertEquals(SetStyleProcessor.class, rootNode.getProcessor().getClass());
+    assertEquals(2, rootNode.getAllProcessors().size());
+  }
 
-    @Test
-    public void testAssignStyleTwoMaps() throws Exception {
-        this.configurationFactory.setDoValidation(false);
-        final Configuration config =
-                configurationFactory.getConfig(getFile(BASE_DIR + "two_maps/config.yaml"));
-        final Template template = config.getTemplate("main");
+  @Test
+  public void testAssignStyleTwoMaps() throws Exception {
+    this.configurationFactory.setDoValidation(false);
+    final Configuration config =
+        configurationFactory.getConfig(getFile(BASE_DIR + "two_maps/config.yaml"));
+    final Template template = config.getTemplate("main");
 
-        ProcessorDependencyGraph graph = template.getProcessorGraph();
-        List<ProcessorGraphNode<?, ?>> roots = graph.getRoots();
+    ProcessorDependencyGraph graph = template.getProcessorGraph();
+    List<ProcessorGraphNode<?, ?>> roots = graph.getRoots();
 
-        assertEquals(2, roots.size());
-        ProcessorGraphNode<?, ?> rootNode1 = roots.get(0);
-        assertEquals(SetStyleProcessor.class, rootNode1.getProcessor().getClass());
-        assertEquals(2, rootNode1.getAllProcessors().size());
+    assertEquals(2, roots.size());
+    ProcessorGraphNode<?, ?> rootNode1 = roots.get(0);
+    assertEquals(SetStyleProcessor.class, rootNode1.getProcessor().getClass());
+    assertEquals(2, rootNode1.getAllProcessors().size());
 
-        ProcessorGraphNode<?, ?> rootNode2 = roots.get(1);
-        assertEquals(SetStyleProcessor.class, rootNode2.getProcessor().getClass());
-        assertEquals(2, rootNode2.getAllProcessors().size());
-    }
+    ProcessorGraphNode<?, ?> rootNode2 = roots.get(1);
+    assertEquals(SetStyleProcessor.class, rootNode2.getProcessor().getClass());
+    assertEquals(2, rootNode2.getAllProcessors().size());
+  }
 }

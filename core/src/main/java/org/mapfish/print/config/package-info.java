@@ -1,4 +1,2 @@
-/**
- * Contains classes used for parsing Configuration.
- */
+/** Contains classes used for parsing Configuration. */
 package org.mapfish.print.config;

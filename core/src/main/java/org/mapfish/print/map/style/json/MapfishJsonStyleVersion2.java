@@ -1,7 +1,15 @@
 package org.mapfish.print.map.style.json;
 
 import com.google.common.annotations.VisibleForTesting;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.styling.Rule;
@@ -17,235 +25,225 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.opengis.filter.Filter;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-/**
- * Support a more flexible json styling than that which is supported by version 1.
- */
+/** Support a more flexible json styling than that which is supported by version 1. */
 public final class MapfishJsonStyleVersion2 {
-    static final String JSON_SYMB = "symbolizers";
-    private static final String JSON_TYPE = "type";
-    private static final Pattern VALUE_EXPR_PATTERN = Pattern.compile("\\$\\{([\\w\\d_-]+)\\}");
-    private static final String JSON_MIN_SCALE = "minScale";
-    private static final String JSON_MAX_SCALE = "maxScale";
-    private static final String JSON_FILTER_INCLUDE = "*";
-    private final PJsonObject json;
-    private final StyleBuilder styleBuilder;
-    private final JsonStyleParserHelper parserHelper;
+  static final String JSON_SYMB = "symbolizers";
+  private static final String JSON_TYPE = "type";
+  private static final Pattern VALUE_EXPR_PATTERN = Pattern.compile("\\$\\{([\\w\\d_-]+)\\}");
+  private static final String JSON_MIN_SCALE = "minScale";
+  private static final String JSON_MAX_SCALE = "maxScale";
+  private static final String JSON_FILTER_INCLUDE = "*";
+  private final PJsonObject json;
+  private final StyleBuilder styleBuilder;
+  private final JsonStyleParserHelper parserHelper;
 
-    MapfishJsonStyleVersion2(
-            @Nonnull final PJsonObject json,
-            @Nonnull final StyleBuilder styleBuilder,
-            @Nullable final Configuration configuration,
-            @Nonnull final ClientHttpRequestFactory requestFactory) {
-        this.json = json;
-        this.styleBuilder = styleBuilder;
-        this.parserHelper = new JsonStyleParserHelper(configuration, requestFactory, styleBuilder,
-                                                      false);
-    }
+  MapfishJsonStyleVersion2(
+      @Nonnull final PJsonObject json,
+      @Nonnull final StyleBuilder styleBuilder,
+      @Nullable final Configuration configuration,
+      @Nonnull final ClientHttpRequestFactory requestFactory) {
+    this.json = json;
+    this.styleBuilder = styleBuilder;
+    this.parserHelper =
+        new JsonStyleParserHelper(configuration, requestFactory, styleBuilder, false);
+  }
 
-    @VisibleForTesting
-    static Map<String, String> resolveAllValues(final Map<String, String> values) {
-        Map<String, String> toResolve = new HashMap<>(values);
-        Map<String, String> resolved = new HashMap<>(values.size());
-        while (!toResolve.isEmpty()) {
-            Iterator<Map.Entry<String, String>> entries = toResolve.entrySet().iterator();
-            while (entries.hasNext()) {
-                Map.Entry<String, String> next = entries.next();
-                String value = next.getValue();
-                final String resolve = resolve(values, value);
-                if (resolve == null) {
-                    resolved.put(next.getKey(), value);
-                    entries.remove();
-                } else {
-                    next.setValue(resolve);
-                }
-
-            }
-        }
-
-        return resolved;
-    }
-
-    private static String resolve(final Map<String, String> values, final String value) {
-        int lastEnd = 0;
-        final Matcher matcher = VALUE_EXPR_PATTERN.matcher(value);
-        boolean changed = false;
-        StringBuilder updatedValue = new StringBuilder();
-        while (matcher.find()) {
-            final String valName = matcher.group(1);
-            String replacement;
-            if (values.containsKey(valName)) {
-                changed = true;
-                replacement = values.get(valName);
-            } else {
-                replacement = matcher.group(0);
-            }
-            updatedValue.append(value, lastEnd, matcher.start());
-            updatedValue.append(replacement);
-            lastEnd = matcher.end();
-        }
-
-        if (changed) {
-            updatedValue.append(value.substring(lastEnd));
-            return updatedValue.toString();
+  @VisibleForTesting
+  static Map<String, String> resolveAllValues(final Map<String, String> values) {
+    Map<String, String> toResolve = new HashMap<>(values);
+    Map<String, String> resolved = new HashMap<>(values.size());
+    while (!toResolve.isEmpty()) {
+      Iterator<Map.Entry<String, String>> entries = toResolve.entrySet().iterator();
+      while (entries.hasNext()) {
+        Map.Entry<String, String> next = entries.next();
+        String value = next.getValue();
+        final String resolve = resolve(values, value);
+        if (resolve == null) {
+          resolved.put(next.getKey(), value);
+          entries.remove();
         } else {
-            return null;
+          next.setValue(resolve);
         }
+      }
     }
 
-    Style parseStyle() {
-        List<Rule> rules = new ArrayList<>();
+    return resolved;
+  }
 
-        final Iterator<String> keys = this.json.keys();
-        while (keys.hasNext()) {
-            final String next = keys.next().trim();
-            if (isRule(next)) {
-                rules.add(createRule(next));
-            }
-        }
-
-        if (rules.isEmpty()) {
-            throw new IllegalArgumentException(String.format(
-                    "No rules found in style.  Rules are json objects that have the key %s or have the " +
-                            "form: [ecql]", JSON_FILTER_INCLUDE));
-        }
-
-        return this.parserHelper.createStyle(rules);
+  private static String resolve(final Map<String, String> values, final String value) {
+    int lastEnd = 0;
+    final Matcher matcher = VALUE_EXPR_PATTERN.matcher(value);
+    boolean changed = false;
+    StringBuilder updatedValue = new StringBuilder();
+    while (matcher.find()) {
+      final String valName = matcher.group(1);
+      String replacement;
+      if (values.containsKey(valName)) {
+        changed = true;
+        replacement = values.get(valName);
+      } else {
+        replacement = matcher.group(0);
+      }
+      updatedValue.append(value, lastEnd, matcher.start());
+      updatedValue.append(replacement);
+      lastEnd = matcher.end();
     }
 
-    private Rule createRule(final String jsonKey) {
-        final PJsonObject ruleJson = this.json.getJSONObject(jsonKey);
-        Filter filter = Filter.INCLUDE;
-        if (!jsonKey.equals(JSON_FILTER_INCLUDE)) {
-            try {
-                filter = ECQL.toFilter(jsonKey, this.styleBuilder.getFilterFactory());
-            } catch (CQLException e) {
-                throw new RuntimeException("Error compiling rule filter: " + jsonKey, e);
-            }
-        }
+    if (changed) {
+      updatedValue.append(value.substring(lastEnd));
+      return updatedValue.toString();
+    } else {
+      return null;
+    }
+  }
 
-        final PJsonArray symbolizerJsonArray = ruleJson.getJSONArray(JSON_SYMB);
-        final Symbolizer[] symbolizers = new Symbolizer[symbolizerJsonArray.size()];
+  Style parseStyle() {
+    List<Rule> rules = new ArrayList<>();
 
-        for (int i = 0; i < symbolizerJsonArray.size(); i++) {
-            final PJsonObject symbolizerJson = symbolizerJsonArray.getJSONObject(i);
-            updateSymbolizerProperties(ruleJson, symbolizerJson);
-
-            SymbolizerType type = SymbolizerType.valueOf(symbolizerJson.getString(JSON_TYPE).toUpperCase());
-            symbolizers[i] = type.parseJson(this.parserHelper, symbolizerJson);
-            if (symbolizers[i] == null) {
-                throw new RuntimeException(
-                        "Error creating symbolizer " + symbolizerJson.getString(JSON_TYPE) + " in rule " +
-                                jsonKey);
-            }
-        }
-
-        Map<String, String> ruleValues = buildValuesMap(ruleJson, new PJsonObject(new JSONObject(), "empty"));
-        double minScale = getScaleDenominator(ruleValues, JSON_MIN_SCALE, Double.MIN_VALUE);
-        double maxScale = getScaleDenominator(ruleValues, JSON_MAX_SCALE, Double.MAX_VALUE);
-        final Rule rule = this.styleBuilder.createRule(symbolizers, minScale, maxScale);
-        rule.setFilter(filter);
-        return rule;
+    final Iterator<String> keys = this.json.keys();
+    while (keys.hasNext()) {
+      final String next = keys.next().trim();
+      if (isRule(next)) {
+        rules.add(createRule(next));
+      }
     }
 
-    private void updateSymbolizerProperties(final PJsonObject ruleJson, final PJsonObject symbolizerJson) {
-        Map<String, String> values = buildValuesMap(ruleJson, symbolizerJson);
-        for (Map.Entry<String, String> entry: values.entrySet()) {
-            try {
-                symbolizerJson.getInternalObj().put(entry.getKey(), entry.getValue());
-            } catch (JSONException e) {
-                throw ExceptionUtils.getRuntimeException(e);
-            }
-        }
+    if (rules.isEmpty()) {
+      throw new IllegalArgumentException(
+          String.format(
+              "No rules found in style.  Rules are json objects that have the key %s or have the "
+                  + "form: [ecql]",
+              JSON_FILTER_INCLUDE));
     }
 
-    private double getScaleDenominator(
-            final Map<String, String> ruleValues, final String keyName, final double defaultValue) {
-        String scaleString = ruleValues.get(keyName);
-        if (scaleString != null) {
-            return Double.parseDouble(scaleString);
-        }
-        return defaultValue;
+    return this.parserHelper.createStyle(rules);
+  }
+
+  private Rule createRule(final String jsonKey) {
+    final PJsonObject ruleJson = this.json.getJSONObject(jsonKey);
+    Filter filter = Filter.INCLUDE;
+    if (!jsonKey.equals(JSON_FILTER_INCLUDE)) {
+      try {
+        filter = ECQL.toFilter(jsonKey, this.styleBuilder.getFilterFactory());
+      } catch (CQLException e) {
+        throw new RuntimeException("Error compiling rule filter: " + jsonKey, e);
+      }
     }
 
-    private Map<String, String> buildValuesMap(
-            final PJsonObject ruleJson,
-            final PJsonObject symbolizerJson) {
-        Map<String, String> values = new HashMap<>();
+    final PJsonArray symbolizerJsonArray = ruleJson.getJSONArray(JSON_SYMB);
+    final Symbolizer[] symbolizers = new Symbolizer[symbolizerJsonArray.size()];
 
-        Iterator<String> keys = this.json.keys();
-        while (keys.hasNext()) {
-            String key = keys.next().trim();
-            if (!isRule(key)) {
-                values.put(key, this.json.getString(key));
-            }
-        }
-        keys = ruleJson.keys();
-        while (keys.hasNext()) {
-            String key = keys.next().trim();
-            if (!key.equals(JSON_SYMB)) {
-                values.put(key, ruleJson.getString(key));
-            }
-        }
+    for (int i = 0; i < symbolizerJsonArray.size(); i++) {
+      final PJsonObject symbolizerJson = symbolizerJsonArray.getJSONObject(i);
+      updateSymbolizerProperties(ruleJson, symbolizerJson);
 
-        keys = symbolizerJson.keys();
-        while (keys.hasNext()) {
-            String key = keys.next().trim();
-            if (!key.equals(JSON_SYMB)) {
-                values.put(key, symbolizerJson.getString(key));
-            }
-        }
-
-        return resolveAllValues(values);
+      SymbolizerType type =
+          SymbolizerType.valueOf(symbolizerJson.getString(JSON_TYPE).toUpperCase());
+      symbolizers[i] = type.parseJson(this.parserHelper, symbolizerJson);
+      if (symbolizers[i] == null) {
+        throw new RuntimeException(
+            "Error creating symbolizer "
+                + symbolizerJson.getString(JSON_TYPE)
+                + " in rule "
+                + jsonKey);
+      }
     }
 
-    private boolean isRule(final String jsonKey) {
-        return this.json.optJSONObject(jsonKey) != null;
+    Map<String, String> ruleValues =
+        buildValuesMap(ruleJson, new PJsonObject(new JSONObject(), "empty"));
+    double minScale = getScaleDenominator(ruleValues, JSON_MIN_SCALE, Double.MIN_VALUE);
+    double maxScale = getScaleDenominator(ruleValues, JSON_MAX_SCALE, Double.MAX_VALUE);
+    final Rule rule = this.styleBuilder.createRule(symbolizers, minScale, maxScale);
+    rule.setFilter(filter);
+    return rule;
+  }
+
+  private void updateSymbolizerProperties(
+      final PJsonObject ruleJson, final PJsonObject symbolizerJson) {
+    Map<String, String> values = buildValuesMap(ruleJson, symbolizerJson);
+    for (Map.Entry<String, String> entry : values.entrySet()) {
+      try {
+        symbolizerJson.getInternalObj().put(entry.getKey(), entry.getValue());
+      } catch (JSONException e) {
+        throw ExceptionUtils.getRuntimeException(e);
+      }
+    }
+  }
+
+  private double getScaleDenominator(
+      final Map<String, String> ruleValues, final String keyName, final double defaultValue) {
+    String scaleString = ruleValues.get(keyName);
+    if (scaleString != null) {
+      return Double.parseDouble(scaleString);
+    }
+    return defaultValue;
+  }
+
+  private Map<String, String> buildValuesMap(
+      final PJsonObject ruleJson, final PJsonObject symbolizerJson) {
+    Map<String, String> values = new HashMap<>();
+
+    Iterator<String> keys = this.json.keys();
+    while (keys.hasNext()) {
+      String key = keys.next().trim();
+      if (!isRule(key)) {
+        values.put(key, this.json.getString(key));
+      }
+    }
+    keys = ruleJson.keys();
+    while (keys.hasNext()) {
+      String key = keys.next().trim();
+      if (!key.equals(JSON_SYMB)) {
+        values.put(key, ruleJson.getString(key));
+      }
     }
 
-    enum SymbolizerType {
-        POINT {
-            @Override
-            protected Symbolizer parseJson(
-                    final JsonStyleParserHelper parser,
-                    final PJsonObject symbolizerJson) {
-                return parser.createPointSymbolizer(symbolizerJson);
-            }
-        }, LINE {
-            @Override
-            protected Symbolizer parseJson(
-                    final JsonStyleParserHelper parser,
-                    final PJsonObject symbolizerJson) {
-                return parser.createLineSymbolizer(symbolizerJson);
-            }
-        }, POLYGON {
-            @Override
-            protected Symbolizer parseJson(
-                    final JsonStyleParserHelper parser,
-                    final PJsonObject symbolizerJson) {
-                return parser.createPolygonSymbolizer(symbolizerJson);
-            }
-        }, TEXT {
-            @Override
-            protected Symbolizer parseJson(
-                    final JsonStyleParserHelper parser,
-                    final PJsonObject symbolizerJson) {
-                return parser.createTextSymbolizer(symbolizerJson);
-            }
-        };
-
-        protected abstract Symbolizer parseJson(
-                JsonStyleParserHelper parser,
-                PJsonObject symbolizerJson);
+    keys = symbolizerJson.keys();
+    while (keys.hasNext()) {
+      String key = keys.next().trim();
+      if (!key.equals(JSON_SYMB)) {
+        values.put(key, symbolizerJson.getString(key));
+      }
     }
+
+    return resolveAllValues(values);
+  }
+
+  private boolean isRule(final String jsonKey) {
+    return this.json.optJSONObject(jsonKey) != null;
+  }
+
+  enum SymbolizerType {
+    POINT {
+      @Override
+      protected Symbolizer parseJson(
+          final JsonStyleParserHelper parser, final PJsonObject symbolizerJson) {
+        return parser.createPointSymbolizer(symbolizerJson);
+      }
+    },
+    LINE {
+      @Override
+      protected Symbolizer parseJson(
+          final JsonStyleParserHelper parser, final PJsonObject symbolizerJson) {
+        return parser.createLineSymbolizer(symbolizerJson);
+      }
+    },
+    POLYGON {
+      @Override
+      protected Symbolizer parseJson(
+          final JsonStyleParserHelper parser, final PJsonObject symbolizerJson) {
+        return parser.createPolygonSymbolizer(symbolizerJson);
+      }
+    },
+    TEXT {
+      @Override
+      protected Symbolizer parseJson(
+          final JsonStyleParserHelper parser, final PJsonObject symbolizerJson) {
+        return parser.createTextSymbolizer(symbolizerJson);
+      }
+    };
+
+    protected abstract Symbolizer parseJson(
+        JsonStyleParserHelper parser, PJsonObject symbolizerJson);
+  }
 }

@@ -9,22 +9,20 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  */
 public interface MfClientHttpRequestFactory extends ClientHttpRequestFactory {
 
-    /**
-     * Register a callback for config using a http request.
-     *
-     * @param callback the configuration callback
-     */
-    void register(RequestConfigurator callback);
+  /**
+   * Register a callback for config using a http request.
+   *
+   * @param callback the configuration callback
+   */
+  void register(RequestConfigurator callback);
 
+  /** A Callback allowing low-level customizations to an http request created by this factory. */
+  interface RequestConfigurator {
     /**
-     * A Callback allowing low-level customizations to an http request created by this factory.
+     * Configure the request.
+     *
+     * @param request the request to configure
      */
-    interface RequestConfigurator {
-        /**
-         * Configure the request.
-         *
-         * @param request the request to configure
-         */
-        void configureRequest(ClientHttpRequest request);
-    }
+    void configureRequest(ClientHttpRequest request);
+  }
 }

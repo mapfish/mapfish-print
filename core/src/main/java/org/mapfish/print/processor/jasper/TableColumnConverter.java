@@ -9,20 +9,18 @@ import org.mapfish.print.http.MfClientHttpRequestFactory;
  * @param <R> The resulting type
  */
 public interface TableColumnConverter<R> extends ConfigurationObject {
-    /**
-     * Convert the value.
-     *
-     * @param requestFactory for fetching file and http resources.
-     * @param text the cell value.
-     */
-    R resolve(
-            MfClientHttpRequestFactory requestFactory,
-            String text);
+  /**
+   * Convert the value.
+   *
+   * @param requestFactory for fetching file and http resources.
+   * @param text the cell value.
+   */
+  R resolve(MfClientHttpRequestFactory requestFactory, String text);
 
-    /**
-     * Returns true if the converter can convert the given input.
-     *
-     * @param text the input to convert.
-     */
-    boolean canConvert(String text);
+  /**
+   * Returns true if the converter can convert the given input.
+   *
+   * @param text the input to convert.
+   */
+  boolean canConvert(String text);
 }

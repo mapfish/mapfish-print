@@ -1,4 +1,2 @@
-/**
- * The main mapfish print package.
- */
+/** The main mapfish print package. */
 package org.mapfish.print;
