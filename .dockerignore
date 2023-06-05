@@ -20,9 +20,9 @@ ci
 build/
 */build/
 
-examples/*.jasper
-examples/src/test/resources/examples_to_port
-examples/src/test/resources/examples
-examples/geoserver-data
+core/docker/
+core/src/test/
 
-core/docker
+examples/*.jasper
+examples/src/test/
+examples/geoserver-data/

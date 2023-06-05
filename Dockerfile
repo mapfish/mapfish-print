@@ -3,10 +3,14 @@ FROM gradle:8.1.1-jdk11 AS builder
 RUN --mount=type=cache,target=/var/cache,sharing=locked \
     --mount=type=cache,target=/root/.cache \
   apt-get update && \
-  apt-get install --yes --no-install-recommends fonts-liberation gettext curl && \
-  gradle --version
+  apt-get install --yes --no-install-recommends fonts-liberation gettext curl
 
 WORKDIR /src
+
+ENV GRADLE_OPTS=-Dorg.gradle.daemon=false
+
+RUN --mount=type=cache,target=/home/gradle/.gradle \
+  gradle --version
 
 COPY gradle/ ./gradle/
 COPY gradle.properties build.gradle settings.gradle CI.asc ./
@@ -14,33 +18,27 @@ COPY examples/build.gradle ./examples/
 COPY docs/build.gradle ./docs/
 COPY publish/build.gradle ./publish/
 COPY core ./core
-
-RUN --mount=type=cache,target=/home/gradle/.gradle \
-   gradle :core:processResources :core:classes
-COPY checkstyle_* ./
-# '&& touch success || true' is a trick to be able to get out some artifacts
-RUN --mount=type=cache,target=/home/gradle/.gradle \
-   (gradle :core:checkstyleMain :core:spotbugsMain :core:violations --stacktrace) \
-   && ( (gradle :core:build :core:explodedWar :core:libSourcesJar :core:libJavadocJar > /tmp/logs 2>&1 && touch success) || true)
+COPY publish ./publish
+COPY examples ./examples
+COPY docs ./docs
 
 ARG GIT_HEAD
 ENV GIT_HEAD=${GIT_HEAD}
 
-COPY publish ./publish
-
+# Exclude the tasks that will run out of the docker build (in a docker run)
 RUN --mount=type=cache,target=/home/gradle/.gradle \
-   ([ -e success ] && ( (gradle :publish:build >> /tmp/logs 2>&1) && touch success-publish)) || true
+   gradle --parallel --exclude-task=:core:test \
+   --exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain --exclude-task=:core:violations \
+   --exclude-task=:core:spotbugsTest --exclude-task=:core:checkstyleTest --exclude-task=:core:testCLI \
+   :core:build :core:explodedWar :publish:build :examples:build :docs:buildDocs
 
-COPY examples ./examples
-COPY docs ./docs
+RUN mkdir -p core/build/resources/test/org/mapfish/print/ \
+    && chmod -R go=u /home/gradle /tmp/mapfish-print/ . \
+    && chmod o+t -R core/build/resources
 
+# Backup cache
 RUN --mount=type=cache,target=/home/gradle/.gradle \
-   ([ -e success ] && ( (gradle :examples:build buildDocs >> /tmp/logs 2>&1) && touch success-examples-docs)) || true
+    cp -r /home/gradle/.gradle /home/gradle/.gradle-backup
+RUN mv /home/gradle/.gradle-backup /home/gradle/.gradle
 
-RUN chmod -R go=u /home/gradle .
-
-FROM builder AS test-builder
-
-RUN cat /tmp/logs && ls success success-publish success-examples-docs
-
-VOLUME [ "/src/core" ]
+COPY checkstyle_* ./
