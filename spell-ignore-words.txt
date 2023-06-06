@@ -4,3 +4,6 @@ centre
 cloneable
 nto
 thead
+lite
+marshalling
+marshalled
