@@ -107,7 +107,7 @@
       automerge: true,
     },
     {
-      matchPackageNames: ['checkstyle', 'spotbugs'],
+      matchPackagePrefixes: ['com.puppycrawl.tools:checkstyle', 'com.github.spotbugs:spotbugs-'],
       matchUpdateTypes: ['major', 'minor'],
       enabled: false,
     },
