@@ -9,6 +9,7 @@ WORKDIR /src
 
 ENV GRADLE_OPTS=-Dorg.gradle.daemon=false
 
+# Generate the file `libnative-platform.so`
 RUN --mount=type=cache,target=/home/gradle/.gradle \
   gradle --version
 
@@ -40,5 +41,9 @@ RUN mkdir -p core/build/resources/test/org/mapfish/print/ \
 RUN --mount=type=cache,target=/home/gradle/.gradle \
     cp -r /home/gradle/.gradle /home/gradle/.gradle-backup
 RUN mv /home/gradle/.gradle-backup /home/gradle/.gradle
+
+# Be able to use the container with a different user
+ENV GRADLE_USER_HOME=/home/gradle/
+RUN chmod -R go+rw /home/gradle/
 
 COPY checkstyle_* ./
