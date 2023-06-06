@@ -106,6 +106,12 @@
       groupName: 'batik',
       automerge: true,
     },
+    /** Disable upgrade of the checkstyle and spotbugs */
+    {
+      matchPackageNames: ['checkstyle', 'spotbugs'],
+      matchUpdateTypes: ['major', 'minor'],
+      enabled: false,
+    },
     {
       matchPackagePrefixes: ['com.puppycrawl.tools:checkstyle', 'com.github.spotbugs:spotbugs-'],
       matchUpdateTypes: ['major', 'minor'],
