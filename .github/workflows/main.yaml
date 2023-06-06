@@ -92,6 +92,12 @@ jobs:
         if: failure()
       - uses: actions/upload-artifact@v1
         with:
+          name: Test generated
+          path: core/build/resources/test/org
+          if-no-files-found: ignore
+        if: failure()
+      - uses: actions/upload-artifact@v3
+        with:
           name: Reports examples
           path: examples/build/reports
           if-no-files-found: ignore
