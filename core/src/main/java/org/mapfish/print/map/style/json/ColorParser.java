@@ -77,6 +77,8 @@ public final class ColorParser {
    * on the supported color formats.
    *
    * @param colorString the color string encoded.
+   * @throws NumberFormatException when the colorString cannot be parsed
+   * @return Always return a Color or an exception
    */
   public static Color toColor(final String colorString) {
     String trimmedString = colorString.trim();
@@ -188,9 +190,9 @@ public final class ColorParser {
 
   private static Color toColorRGBA(
       final String red, final String green, final String blue, final String alpha) {
-    float finalRed = parseValue(red).get();
-    float finalGreen = parseValue(green).get();
-    float finalBlue = parseValue(blue).get();
+    float finalRed = getValue(red, "Red");
+    float finalGreen = getValue(green, "Green");
+    float finalBlue = getValue(blue, "Blue");
     float finalAlpha = parseValue(alpha).orElse(1.0f);
 
     return new Color(finalRed, finalGreen, finalBlue, finalAlpha);
@@ -204,30 +206,32 @@ public final class ColorParser {
 
   private static Optional<Float> parsePercent(final String colorString) {
     if (colorString.endsWith("%")) {
-      return Optional.of(
-          parseDouble(colorString.substring(0, colorString.length() - 1)).get() / 100f);
+      String stringWithoutPercent = colorString.substring(0, colorString.length() - 1);
+      Optional<Float> optionalFloat = parseDouble(stringWithoutPercent);
+      return optionalFloat.map(aFloat -> aFloat / 100f);
     }
-
     return Optional.empty();
   }
 
   private static Color toColorFromHSLA(
       final String hue, final String saturation, final String luminance, final String alpha) {
-    float finalHue = parseValue(hue).get();
-    float finalSaturation = parseValue(saturation).get();
-    float finalLuminance = parseValue(luminance).get();
-    float finalAlpha = parseValue(alpha).orElse(1.0f);
 
+    float finalHue = getValue(hue, "Hue");
+
+    float finalSaturation = getValue(saturation, "Saturation");
     if (finalSaturation < 0.0f || finalSaturation > 1.0f) {
       String message =
           "Color parameter outside of expected range - Saturation (" + saturation + ")";
       throw new IllegalArgumentException(message);
     }
+
+    float finalLuminance = getValue(luminance, "Luminance");
     if (finalLuminance < 0.0f || finalLuminance > 1.0f) {
       String message = "Color parameter outside of expected range - Luminance (" + luminance + ")";
       throw new IllegalArgumentException(message);
     }
 
+    float finalAlpha = parseValue(alpha).orElse(1.0f);
     if (finalAlpha < 0.0f || finalAlpha > 1.0f) {
       String message = "Color parameter outside of expected range - Alpha (" + alpha + ")";
       throw new IllegalArgumentException(message);
@@ -242,11 +246,26 @@ public final class ColorParser {
     }
 
     float p = 2 * finalLuminance - q;
-
     float red = hueToRGB(p, q, finalHue + (1.0f / 3.0f));
     float green = hueToRGB(p, q, finalHue);
     float blue = hueToRGB(p, q, finalHue - (1.0f / 3.0f));
     return new Color(red, green, blue, finalAlpha);
+  }
+
+  /**
+   * Parse the float value of the text passed as a String.
+   *
+   * @param valueAsString any text that should be a float
+   * @param valueName the identifier of the value
+   * @return a float or an {@link IllegalArgumentException}
+   */
+  private static float getValue(final String valueAsString, final String valueName) {
+    Optional<Float> aFloat = parseValue(valueAsString);
+    if (aFloat.isEmpty()) {
+      String message = String.format("%s can not be parsed using: %s", valueName, valueAsString);
+      throw new IllegalArgumentException(message);
+    }
+    return aFloat.get();
   }
 
   private static float hueToRGB(final float p, final float q, final float hue) {
@@ -309,10 +328,11 @@ public final class ColorParser {
    */
   public static boolean canParseColor(final String colorString) {
     try {
-      return ColorParser.toColor(colorString) != null;
+      ColorParser.toColor(colorString);
     } catch (Exception exc) {
       return false;
     }
+    return true;
   }
 
   /**
