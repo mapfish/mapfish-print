@@ -1,44 +1,40 @@
 package org.mapfish.print.config;
 
-import org.mapfish.print.attribute.PrimitiveAttribute;
-
 import static org.junit.Assert.assertNotNull;
 
-/**
- * Attribute that needs the configuration object injected.
- */
+import org.mapfish.print.attribute.PrimitiveAttribute;
+
+/** Attribute that needs the configuration object injected. */
 public class AttributeWithConfigurationInjection extends PrimitiveAttribute<Integer>
-        implements HasConfiguration {
+    implements HasConfiguration {
 
-    private Configuration configuration;
+  private Configuration configuration;
 
-    /**
-     * Constructor.
-     */
-    public AttributeWithConfigurationInjection() {
-        super(Integer.class);
-    }
+  /** Constructor. */
+  public AttributeWithConfigurationInjection() {
+    super(Integer.class);
+  }
 
-    /**
-     * <p>A default value for this attribute.</p>
-     *
-     * @param value The default value.
-     */
-    public final void setDefault(final Integer value) {
-        this.defaultValue = value;
-    }
+  /**
+   * A default value for this attribute.
+   *
+   * @param value The default value.
+   */
+  public final void setDefault(final Integer value) {
+    this.defaultValue = value;
+  }
 
-    public void assertInjected() {
-        assertNotNull(configuration);
-    }
+  public void assertInjected() {
+    assertNotNull(configuration);
+  }
 
-    @Override
-    public void setConfiguration(final Configuration configuration) {
-        this.configuration = configuration;
-    }
+  @Override
+  public void setConfiguration(final Configuration configuration) {
+    this.configuration = configuration;
+  }
 
-    @Override
-    public Class getValueType() {
-        return Integer.class;
-    }
+  @Override
+  public Class getValueType() {
+    return Integer.class;
+  }
 }

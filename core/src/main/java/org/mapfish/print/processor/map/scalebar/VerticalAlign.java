@@ -1,47 +1,39 @@
 package org.mapfish.print.processor.map.scalebar;
 
-/**
- * Vertical align.
- */
+/** Vertical align. */
 public enum VerticalAlign {
-    /**
-     * Top.
-     */
-    TOP("top"),
+  /** Top. */
+  TOP("top"),
 
-    /**
-     * Middle.
-     */
-    MIDDLE("middle"),
+  /** Middle. */
+  MIDDLE("middle"),
 
-    /**
-     * Bottom.
-     */
-    BOTTOM("bottom");
+  /** Bottom. */
+  BOTTOM("bottom");
 
-    private final String label;
+  private final String label;
 
-    VerticalAlign(final String label) {
-        this.label = label;
-    }
+  VerticalAlign(final String label) {
+    this.label = label;
+  }
 
-    /**
-     * Get a type from its label.
-     *
-     * @param label the type label
-     */
-    public static VerticalAlign fromString(final String label) {
-        if (label != null) {
-            for (VerticalAlign type: VerticalAlign.values()) {
-                if (label.equalsIgnoreCase(type.label)) {
-                    return type;
-                }
-            }
+  /**
+   * Get a type from its label.
+   *
+   * @param label the type label
+   */
+  public static VerticalAlign fromString(final String label) {
+    if (label != null) {
+      for (VerticalAlign type : VerticalAlign.values()) {
+        if (label.equalsIgnoreCase(type.label)) {
+          return type;
         }
-        return null;
+      }
     }
+    return null;
+  }
 
-    public final String getLabel() {
-        return this.label;
-    }
+  public final String getLabel() {
+    return this.label;
+  }
 }

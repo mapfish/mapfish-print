@@ -11,12 +11,13 @@ import org.mapfish.print.processor.Processor;
  */
 public interface HttpProcessor<PARAM> extends Processor<PARAM, Void> {
 
-    /**
-     * Create the {@link org.mapfish.print.http.MfClientHttpRequestFactory} to use.
-     *
-     * @param param extra parameters required to create the updated request factory
-     * @param requestFactory the basic request factory.  It should be unmodified and just wrapped with
-     *         a proxy class.
-     */
-    MfClientHttpRequestFactory createFactoryWrapper(PARAM param, MfClientHttpRequestFactory requestFactory);
+  /**
+   * Create the {@link org.mapfish.print.http.MfClientHttpRequestFactory} to use.
+   *
+   * @param param extra parameters required to create the updated request factory
+   * @param requestFactory the basic request factory. It should be unmodified and just wrapped with
+   *     a proxy class.
+   */
+  MfClientHttpRequestFactory createFactoryWrapper(
+      PARAM param, MfClientHttpRequestFactory requestFactory);
 }

@@ -1,4 +1,2 @@
-/**
- * The parent package for processors.
- */
+/** The parent package for processors. */
 package org.mapfish.print.processor;

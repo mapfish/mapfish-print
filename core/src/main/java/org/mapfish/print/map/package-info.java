@@ -1,4 +1,2 @@
-/**
- * Map rendering code and plugins.
- */
+/** Map rendering code and plugins. */
 package org.mapfish.print.map;

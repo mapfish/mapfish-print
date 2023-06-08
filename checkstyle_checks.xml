@@ -6,7 +6,6 @@
     <property name="severity" value="error"/>
     <module name="SuppressWarningsFilter"/>
     <module name="TreeWalker">
-        <property name="tabWidth" value="4"/>
         <module name="SuppressWarningsHolder"/>
         <module name="JavadocMethod">
             <property name="allowedAnnotations" value="Override, Autowired"/>
@@ -45,14 +44,8 @@
             <property name="option" value="space"/>
         </module>
         <module name="MethodParamPad"/>
-        <module name="NoWhitespaceAfter">
-            <property name="tokens" value="BNOT,DEC,DOT,INC,LNOT,UNARY_MINUS,UNARY_PLUS"/>
-        </module>
-        <module name="NoWhitespaceBefore"/>
         <module name="ParenPad"/>
         <module name="TypecastParenPad"/>
-        <module name="WhitespaceAfter"/>
-        <module name="WhitespaceAround"/>
         <module name="ModifierOrder"/>
         <module name="RedundantModifier"/>
         <module name="EmptyBlock">
@@ -77,9 +70,6 @@
             <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
         </module>
         <module name="UpperEll"/>
-        <module name="LineLength">
-            <property name="max" value="110"/>
-        </module>
     </module>
     <module name="SuppressionCommentFilter"/>
     <module name="SuppressionCommentFilter">
@@ -87,7 +77,6 @@
         <property name="onCommentFormat" value="CSON\:\s*([\w\|]+)"/>
         <property name="checkFormat" value="$1"/>
     </module>
-    <module name="NewlineAtEndOfFile"/>
     <module name="JavadocPackage"/>
     <module name="Translation"/>
     <module name="FileLength"/>
