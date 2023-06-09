@@ -5,14 +5,14 @@
     "map": {
       "dpi": 254,
       "rotation": 0,
-      "center": [200, 300],
+      "center": [78.75552294772558, 188.45777031631442],
       "projection": "EPSG:2056",
-      "scale": "5000",
+      "scale": "200",
       "layers": [
         {
-          "baseURL": "http://geoserver:8080/www/usa.jpeg",
-          "extent": [0, 0, 983, 598],
-          "name": "image_static",
+          "baseURL": "https://sitn.ne.ch/next/historical_cadastre/img/graphique/15.jpg",
+          "extent": [0, 0, 297.408, 348.096],
+          "name": "image_statique",
           "type": "image"
         }
       ]
