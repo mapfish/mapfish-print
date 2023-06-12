@@ -137,9 +137,10 @@ Agreement](http://goo.gl/forms/QO9UELxM9m).
 
 ## Contributing
 
-Install the pre-commit hooks:
+Install then activate pre-commit hooks in your repository:
+(The 'pre-commit install' must be run once per repository)
 
 ```bash
-pip install pre-commit
+sudo apt install pre-commit
 pre-commit install --allow-missing-config
 ```
