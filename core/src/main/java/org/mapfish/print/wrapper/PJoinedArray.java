@@ -53,32 +53,52 @@ public final class PJoinedArray implements PArray {
 
   @Override
   public int getInt(final int i) {
-    return (Integer) get(i);
+    Object o = getObjectAt(i);
+    return (Integer) o;
   }
 
   @Override
   public long getLong(final int i) {
-    return (Long) get(i);
+    Object o = getObjectAt(i);
+    return (Long) o;
   }
 
   @Override
   public float getFloat(final int i) {
-    return (Float) get(i);
+    Object o = getObjectAt(i);
+    return (Float) o;
   }
 
   @Override
   public double getDouble(final int i) {
-    return (Double) get(i);
+    Object o = getObjectAt(i);
+    return (Double) o;
   }
 
   @Override
   public String getString(final int i) {
-    return get(i).toString();
+    return getObjectAt(i).toString();
   }
 
   @Override
   public boolean getBool(final int i) {
-    return (Boolean) get(i);
+    Object o = getObjectAt(i);
+    return (Boolean) o;
+  }
+
+  /**
+   * Method avoiding uncontrolled {@link NullPointerException}.
+   *
+   * @param index in the array
+   * @return the object at this index.
+   * @throws IndexOutOfBoundsException if the object returned is null.
+   */
+  private Object getObjectAt(final int index) throws IndexOutOfBoundsException {
+    Object o = get(index);
+    if (o == null) {
+      throw new IndexOutOfBoundsException("No value found at index:" + index);
+    }
+    return o;
   }
 
   @Override

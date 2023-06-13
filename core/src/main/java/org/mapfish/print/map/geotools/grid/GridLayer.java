@@ -9,6 +9,7 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -83,20 +84,7 @@ public final class GridLayer implements MapLayer {
       double dpiScaling = transformer.getDPI() / Constants.PDF_DPI;
 
       this.grid.render(graphics2D, clientHttpRequestFactory, transformer, context);
-      Font baseFont = null;
-      for (String fontName : this.params.font.name) {
-        try {
-          baseFont =
-              new Font(
-                  fontName,
-                  this.params.font.style.styleId,
-                  (int) (this.params.font.size * dpiScaling));
-          break;
-        } catch (Exception e) {
-          // try next font in list
-        }
-      }
-
+      Font baseFont = getBaseFont(dpiScaling);
       graphics2D.setFont(baseFont);
       int halfCharHeight = (graphics2D.getFontMetrics().getAscent() / 2);
       Stroke baseStroke = graphics2D.getStroke();
@@ -132,6 +120,31 @@ public final class GridLayer implements MapLayer {
     } finally {
       graphics2D.dispose();
     }
+  }
+
+  /**
+   * Loop through available Fonts until one supports the dpiScaling.
+   *
+   * @param dpiScaling used to calculate the font physical size.
+   * @return the first available Font
+   * @throws IllegalArgumentException if no matching font is found.
+   */
+  private Font getBaseFont(final double dpiScaling) throws IllegalArgumentException {
+    if (this.params == null) {
+      throw new IllegalArgumentException("There was no font to match dpiScaling:" + dpiScaling);
+    }
+    for (String fontName : this.params.font.name) {
+      try {
+        return new Font(
+            fontName, this.params.font.style.styleId, (int) (this.params.font.size * dpiScaling));
+      } catch (RuntimeException e) {
+        // try next font in list
+      }
+    }
+    throw new IllegalArgumentException(
+        String.format(
+            "Found no matching font for dpiScaling:%s inside %s",
+            dpiScaling, Arrays.toString(this.params.font.name)));
   }
 
   private void applyOffset(final AffineTransform transform, final GridLabel.Side side) {
