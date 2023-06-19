@@ -53,8 +53,11 @@ acceptance-tests-up: build .env
 	docker-compose up --detach
 
 .PHONY: acceptance-tests-run
-acceptance-tests-run:
-	docker-compose exec -T tests gradle :examples:integrationTest
+acceptance-tests-run: .env
+	docker-compose exec -T tests gradle \
+		--exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain --exclude-task=:core:violations \
+		--exclude-task=:core:spotbugsTest --exclude-task=:core:checkstyleTest --exclude-task=:core:testCLI \
+		:examples:integrationTest
 	ci/check-fonts
 	ci/validate-container
 
