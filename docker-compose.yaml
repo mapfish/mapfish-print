@@ -24,7 +24,7 @@ services:
     user: ${USER_ID}
     command: tail --follow /dev/null
     volumes:
-      - ./examples/src/test/resources/examples:/src/examples/src/test/resources/examples:ro
+      - ./examples/src:/src/examples/src:ro
       - ./examples/build/reports:/src/examples/build/reports
     environment:
       PRINT_YAML_MAX_ALIASES: '200'
