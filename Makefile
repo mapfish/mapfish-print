@@ -50,6 +50,8 @@ acceptance-tests-up: build .env
 	cp -r examples/geoserver-data/* /tmp/geoserver-data/
 	cp -r core/src/test/resources/map-data/* /tmp/geoserver-data/www/
 
+	# Required to avoid root ownership of reports folder
+	mkdir -p examples/build/reports/ || true
 	docker-compose up --detach
 
 .PHONY: acceptance-tests-run
