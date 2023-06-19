@@ -6,5 +6,6 @@
 /*/build/
 
 /docker-compose.override.yaml
+/.env
 
 /CI.asc

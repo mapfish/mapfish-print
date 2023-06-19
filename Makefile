@@ -40,7 +40,7 @@ tests: build-builder
 			:core:test :core:testCli
 
 .PHONY: acceptance-tests-up
-acceptance-tests-up: build
+acceptance-tests-up: build .env
 	docker-compose down --remove-orphan
 
 	mkdir /tmp/geoserver-data || true
@@ -50,7 +50,7 @@ acceptance-tests-up: build
 	cp -r examples/geoserver-data/* /tmp/geoserver-data/
 	cp -r core/src/test/resources/map-data/* /tmp/geoserver-data/www/
 
-	USER_ID=$(shell id -u):$(shell id -g) docker-compose up --detach
+	docker-compose up --detach
 
 .PHONY: acceptance-tests-run
 acceptance-tests-run:
@@ -59,8 +59,11 @@ acceptance-tests-run:
 	ci/validate-container
 
 .PHONY: acceptance-tests-down
-acceptance-tests-down:
+acceptance-tests-down: .env
 	docker-compose down || true
 	docker run --rm --volume=/tmp/geoserver-data:/mnt/geoserver_datadir camptocamp/geoserver \
 		bash -c 'rm -rf /mnt/geoserver_datadir/*'
 	rmdir /tmp/geoserver-data
+
+.env:
+	echo "USER_ID=$(shell id -u):$(shell id -g)" > $@
