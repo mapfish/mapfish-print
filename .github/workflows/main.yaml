@@ -100,6 +100,8 @@ jobs:
         if: always()
 
       - run: make tests
+        # Tntented to fail earlier than the standard 30min for workflow failure
+        timeout-minutes: 10
 
       - uses: actions/upload-artifact@v3
         with:
