@@ -6,12 +6,12 @@ from threading import Lock, Timer
 
 import inotify.adapters
 
-started = True
 timer = None
+process = None
 
 
 def start():
-    global started, timer
+    global timer, process
     subprocess.check_call(
         [
             "rsync",
@@ -22,14 +22,13 @@ def start():
         ]
     )
     print("Start Tomcat")
-    subprocess.check_call(["catalina.sh", "start"])
-    started = True
+    process = subprocess.Popen(["catalina.sh", "run"])
     timer = None
 
 
 def main():
-    global started, timer
-    subprocess.check_call(["catalina.sh", "start"])
+    global timer, process
+    process = subprocess.Popen(["catalina.sh", "run"])
 
     inotify_tree = inotify.adapters.InotifyTree("/src/core/build")
 
@@ -37,18 +36,14 @@ def main():
     for _, type_names, path, filename in inotify_tree.event_gen(yield_nones=False):
         if "IN_CLOSE_WRITE" in type_names:
             with lock:
-
                 if timer is not None:
                     timer.cancel()
                     timer = None
 
-                if started:
+                if process is not None:
                     print("Stop Tomcat")
-                    subprocess.check_call(["catalina.sh", "stop", "5", "-force"])
-                    # Remove the pid file so that the next start will not fail
-                    with open(os.environ["CATALINA_PID"], "w"):
-                        pass
-                    started = False
+                    process.kill()
+                    process = None
 
                 timer = Timer(10, start)
                 timer.start()
