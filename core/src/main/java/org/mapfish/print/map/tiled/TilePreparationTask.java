@@ -165,8 +165,26 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
                     tiles.add(new SingleTilePreparationInfo(xIndex, yIndex, tileRequest));
                   }
                 } else {
-                  LOGGER.debug("Tile out of bounds: {}", tileRequest);
-                  tiles.add(new SingleTilePreparationInfo(xIndex, yIndex, null));
+                  if (LOGGER.isDebugEnabled()) {
+                    if (tileBounds != null && tileCacheBounds != null) {
+                      LOGGER.debug(
+                          "Tile '{}' bounds [{}, {}, {}, {}]  out of tile cache bounds [{}, {}, {},"
+                              + " {}]",
+                          tileRequest == null ? "-" : tileRequest.getURI(),
+                          tileBounds.getMinX(),
+                          tileBounds.getMinY(),
+                          tileBounds.getMaxX(),
+                          tileBounds.getMaxY(),
+                          tileCacheBounds.getMinX(),
+                          tileCacheBounds.getMinY(),
+                          tileCacheBounds.getMaxX(),
+                          tileCacheBounds.getMaxY());
+                    } else {
+                      LOGGER.debug(
+                          "Tile '{}' with missing bounds.",
+                          tileRequest == null ? "-" : tileRequest.getURI());
+                    }
+                  }
                 }
               }
             }
