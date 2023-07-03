@@ -35,13 +35,16 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
 
   /** The matchers that chooses if the processor is applied or not. */
   protected final UriMatchers matchers = new UriMatchers();
+
   /** The maximum width in pixels. */
   private int maxWidth;
+
   /** The maximum height in pixels. */
   private int maxHeight;
 
   /** The tile buffer width in pixels. */
   private int tileBufferWidth;
+
   /** The tile buffer height in pixels. */
   private int tileBufferHeight;
 

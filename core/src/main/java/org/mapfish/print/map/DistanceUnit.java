@@ -51,14 +51,19 @@ public enum DistanceUnit {
 
   /** Global dictionary of every textual representations of every units. */
   private static Map<String, DistanceUnit> translations = null;
+
   /** If null means that this is a base unit. Otherwise, point to the base unit. */
   private final DistanceUnit baseUnit;
+
   /** Conversion factor to the base unit. */
   private final double baseFactor;
+
   /** Conversion factor to meters. */
   private final double metersFactor;
+
   /** All the ways to represent this unit as text. */
   private final String[] texts;
+
   /** Cache all the units that share the same base unit. */
   private DistanceUnit[] allUnits = null;
 

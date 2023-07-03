@@ -22,8 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFactoryPlugin<P> {
 
   private final Set<String> typeNames;
+
   /** A parser for parsing styles. */
   @Autowired protected StyleParser parser;
+
   /** A fork join pool for running async tasks. */
   @Autowired protected ExecutorService forkJoinPool;
 

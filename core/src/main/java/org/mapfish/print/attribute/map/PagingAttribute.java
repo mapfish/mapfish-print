@@ -34,6 +34,7 @@ public final class PagingAttribute
   public static class PagingProcessorValues {
     /** The scale denominator for each page/sub-map. */
     public double scale;
+
     /**
      * The amount that each page/sub-map should overlap each other.
      *

@@ -692,10 +692,13 @@ public final class TableProcessor
      * therefore does not need to be set in configuration
      */
     public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;
+
     /** The directory to write the generated table to (if dynamic). */
     public File tempTaskDirectory;
+
     /** The template containing this table processor. */
     public Template template;
+
     /** Data for constructing the table Datasource. */
     public TableAttributeValue table;
   }

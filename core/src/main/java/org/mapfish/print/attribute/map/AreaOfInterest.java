@@ -27,17 +27,20 @@ public final class AreaOfInterest {
    * <p>The geojson must be a polygon representing the area of interest.
    */
   public String area;
+
   /**
    * The way that the Area of Interest will be represented on the map. By default it will be drawn
    * as a polygon with a solid border and a translucent interior. The style can be controlled by the
    * style parameter.
    */
   @HasDefaultValue public AoiDisplay display = AoiDisplay.RENDER;
+
   /**
    * A string representing the style. The {@link org.mapfish.print.map.style.StyleParserPlugin}s are
    * used to load the style. Because of this the styleRef can be JSON, SLD, URL, file path, etc...
    */
   @HasDefaultValue public String style;
+
   /**
    * If true the Area of Interest will be rendered as SVG (if display == RENDER).
    *

@@ -14,6 +14,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
 
   private final Multimap<String, String> additionalCustomParam = HashMultimap.create();
+
   /**
    * Custom query parameters to use when making http requests. These are related to {@link
    * #mergeableParams} except they are the parameters that will prevent two layers from the same
@@ -31,6 +32,7 @@ public abstract class AbstractWMXLayerParams extends AbstractTiledLayerParams {
    * </code></pre>
    */
   @HasDefaultValue public PObject customParams;
+
   /**
    * Custom query parameters that can be merged if multiple layers are merged together into a single
    * request.

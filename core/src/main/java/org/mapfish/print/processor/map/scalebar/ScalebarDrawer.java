@@ -11,8 +11,10 @@ public abstract class ScalebarDrawer {
   private final Graphics2D graphics2d;
 
   private final AffineTransform transform;
+
   /** Parameters for rendering the scalebar. */
   private final ScaleBarRenderSettings settings;
+
   /** Parameters for the scalebar. */
   private final ScalebarAttributeValues params;
 

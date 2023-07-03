@@ -22,18 +22,21 @@ public final class ParserUtils {
           input != null
               && input.getAnnotation(HasDefaultValue.class) == null
               && !Modifier.isFinal(input.getModifiers());
+
   /**
    * A filter (for the get attribute methods) that selects only the attributes that are NOT required
    * and excludes all of those that are considered required.
    */
   public static final Predicate<Field> FILTER_HAS_DEFAULT_ATTRIBUTES =
       input -> input != null && input.getAnnotation(HasDefaultValue.class) != null;
+
   /**
    * A filter (for the get attribute methods) that selects only the attributes that are non final.
    * (Can be modified)
    */
   public static final Predicate<Field> FILTER_NON_FINAL_FIELDS =
       input -> input != null && !Modifier.isFinal(input.getModifiers());
+
   /**
    * A filter (for the get attribute methods) that selects only the attributes that are final. (Can
    * NOT be modified)

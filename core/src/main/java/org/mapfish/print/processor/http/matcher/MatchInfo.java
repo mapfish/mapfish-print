@@ -10,18 +10,25 @@ import org.springframework.http.HttpMethod;
 public final class MatchInfo {
   /** A value representing all and any schemes. */
   public static final String ANY_SCHEME = null;
+
   /** A value representing all and any hosts. */
   public static final String ANY_HOST = null;
+
   /** A value representing all and any realms. */
   public static final String ANY_REALM = null;
+
   /** A value representing all and any paths. */
   public static final String ANY_PATH = null;
+
   /** A value representing all and any fragments. */
   public static final String ANY_FRAGMENT = null;
+
   /** A value representing all and any queries. */
   public static final String ANY_QUERY = null;
+
   /** A value representing all and any queries. */
   public static final HttpMethod ANY_METHOD = null;
+
   /** A value representing all and any ports. */
   public static final int ANY_PORT = -1;
 

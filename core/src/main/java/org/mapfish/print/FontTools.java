@@ -36,10 +36,13 @@ public final class FontTools {
   public static class FontConfigDescription {
     /** The font families. */
     public String[] family;
+
     /** The font style. */
     public String[] style;
+
     /** The font name. */
     public String name;
+
     /** CSS like font weight. */
     public int weight;
   }

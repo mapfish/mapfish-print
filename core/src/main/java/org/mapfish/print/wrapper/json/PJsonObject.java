@@ -242,6 +242,7 @@ public class PJsonObject extends PAbstractObject {
     }
     return true;
   }
+
   // CHECKSTYLE:ON
 
   /**

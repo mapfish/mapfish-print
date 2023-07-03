@@ -32,21 +32,28 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 public final class Values {
   /** The key that is used to store the task directory in the values map. */
   public static final String TASK_DIRECTORY_KEY = "tempTaskDirectory";
+
   /**
    * The key that is used to store {@link
    * org.mapfish.print.processor.http.MfClientHttpRequestFactoryProvider}.
    */
   public static final String CLIENT_HTTP_REQUEST_FACTORY_KEY = "clientHttpRequestFactoryProvider";
+
   /** The key that is used to store {@link org.mapfish.print.config.Template}. */
   public static final String TEMPLATE_KEY = "template";
+
   /** The key for the values object for the {@link org.mapfish.print.config.PDFConfig} object. */
   public static final String PDF_CONFIG_KEY = "pdfConfig";
+
   /** The key for the output format. */
   public static final String OUTPUT_FORMAT_KEY = "outputFormat";
+
   /** The key for the values object for the subreport directory. */
   public static final String SUBREPORT_DIR_KEY = "SUBREPORT_DIR";
+
   /** The key for the reference ID. */
   public static final String JOB_ID_KEY = "jobId";
+
   /** The key for the values object of it self. */
   public static final String VALUES_KEY = "values";
 

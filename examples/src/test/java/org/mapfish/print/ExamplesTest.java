@@ -63,6 +63,7 @@ public class ExamplesTest {
   private static final Logger LOGGER = LoggerFactory.getLogger(ExamplesTest.class);
   private static final String REQUEST_DATA_FILE = "requestData(-.*)?.json";
   private static final String CONFIG_FILE = "config.yaml";
+
   /**
    * If this system property is set then it will be interpreted as a regular expression and will be
    * used to filter the examples that are run.

@@ -68,6 +68,7 @@ public final class Constants {
 
       /** The name of the grid feature type name. */
       public static final String NAME_LINES = "grid";
+
       /** The geometry attribute name. */
       public static final String ATT_GEOM = "geom";
     }

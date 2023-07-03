@@ -34,14 +34,19 @@ public abstract class GenericMapAttribute
 
   /** The json key for the suggested DPI values in the client config. */
   public static final String JSON_DPI_SUGGESTIONS = "dpiSuggestions";
+
   /** The json key for the max DPI value in the client config. */
   public static final String JSON_MAX_DPI = "maxDPI";
+
   /** The json key for the width of the map in the client config. */
   public static final String JSON_MAP_WIDTH = "width";
+
   /** The json key for the height of the map in the client config. */
   public static final String JSON_MAP_HEIGHT = "height";
+
   /** The json key for the max width of the map in the client config (for mapExport). */
   public static final String JSON_MAX_WIDTH = "maxWidth";
+
   /** The json key for the max height of the map in the client config (for mapExport). */
   public static final String JSON_MAX_HEIGHT = "maxHeight";
 
@@ -323,14 +328,19 @@ public abstract class GenericMapAttribute
 
     private static final String TYPE = "type";
     private final Template template;
+
     /** The width of the map. */
     @HasDefaultValue public Integer width = null;
+
     /** The height of the map. */
     @HasDefaultValue public Integer height = null;
+
     /** The projection of the map. */
     @HasDefaultValue public String projection = null;
+
     /** The rotation of the map. */
     @HasDefaultValue public Double rotation = null;
+
     /**
      * Indicates if the map should adjust its scale/zoom level to be equal to one of those defined
      * in the configuration file.
@@ -338,18 +348,21 @@ public abstract class GenericMapAttribute
      * @see #isUseNearestScale()
      */
     @HasDefaultValue public Boolean useNearestScale = null;
+
     /**
      * Indicates if the map should adjust its bounds.
      *
      * @see #isUseAdjustBounds()
      */
     @HasDefaultValue public Boolean useAdjustBounds = null;
+
     /**
      * By default the normal axis order as specified in EPSG code will be used when parsing
      * projections. However the requestor can override this by explicitly declaring that longitude
      * axis is first.
      */
     @HasDefaultValue public Boolean longitudeFirst = null;
+
     /**
      * Should the vector style definitions be adapted to the target DPI resolution? (Default: true)
      *

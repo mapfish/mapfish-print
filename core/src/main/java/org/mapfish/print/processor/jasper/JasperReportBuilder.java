@@ -37,6 +37,7 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     implements HasConfiguration {
   /** Extension for Jasper XML Report Template files. */
   public static final String JASPER_REPORT_XML_FILE_EXT = ".jrxml";
+
   /** Extension for Compiled Jasper Report Template files. */
   public static final String JASPER_REPORT_COMPILED_FILE_EXT = ".jasper";
 

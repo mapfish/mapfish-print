@@ -12,6 +12,7 @@ public abstract class AbstractVectorLayerParam extends AbstractLayerParams {
    * <p>If no style is defined then the default style for the geometry type will be used.
    */
   @HasDefaultValue public String style;
+
   /**
    * Indicates if the layer is rendered as SVG.
    *

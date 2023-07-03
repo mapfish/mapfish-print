@@ -12,15 +12,19 @@ public class Matrix {
 
   /** The id of the matrix. */
   public String identifier;
+
   /**
    * A 2 dimensional array containing number of tiles in the matrix for the columns (0) and rows
    * (1).
    */
   public long[] matrixSize;
+
   /** The scale denominator of the matrix. */
   public double scaleDenominator;
+
   /** A 2 dimensional array representing the width, height of the tile. */
   public int[] tileSize;
+
   /** A 2 dimensional array representing the top-left corner of the tile. */
   public double[] topLeftCorner;
 

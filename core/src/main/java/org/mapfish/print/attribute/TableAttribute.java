@@ -31,6 +31,7 @@ public final class TableAttribute extends ReflectiveAttribute<TableAttribute.Tab
 
     /** The column configuration names for the table. */
     public String[] columns;
+
     /** An array for each table row. */
     public PArray[] data;
   }

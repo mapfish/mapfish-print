@@ -202,6 +202,7 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
     }
     return result;
   }
+
   // CHECKSTYLE:ON
 
   /** Default implementation of {@link org.mapfish.print.processor.Processor.ExecutionContext}. */

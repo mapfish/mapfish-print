@@ -64,6 +64,7 @@ public final class OverviewMapAttribute extends GenericMapAttribute {
 
     /** The output dpi of the printed map. */
     @HasDefaultValue public Double dpi = null;
+
     /**
      * An array of 4 doubles, minX, minY, maxX, maxY. The bounding box of the overview-map.
      *
@@ -71,6 +72,7 @@ public final class OverviewMapAttribute extends GenericMapAttribute {
      * parameter <code>zoomFactor</code> is ignored in this case.
      */
     @HasDefaultValue public double[] bbox;
+
     /**
      * An array of 2 doubles, (x, y). The center of the overview-map.
      *
@@ -80,6 +82,7 @@ public final class OverviewMapAttribute extends GenericMapAttribute {
     @Requires("scale")
     @HasDefaultValue
     public double[] center;
+
     /**
      * If <code>center</code> is defined then this is the scale of the map centered at <code>center
      * </code>.

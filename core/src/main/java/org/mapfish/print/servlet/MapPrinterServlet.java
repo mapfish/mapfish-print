@@ -75,22 +75,31 @@ public class MapPrinterServlet extends BaseMapServlet {
 
   /** The url path for capabilities requests. */
   public static final String CAPABILITIES_URL = "/capabilities.json";
+
   /** The url path to list all registered configurations. */
   public static final String LIST_APPS_URL = "/apps.json";
+
   /** The url path to get a sample print request. */
   public static final String EXAMPLE_REQUEST_URL = "/exampleRequest.json";
+
   /** The url path to create and get a report. */
   public static final String CREATE_AND_GET_URL = "/buildreport";
+
   /** The url path to get the status for a print task. */
   public static final String STATUS_URL = "/status";
+
   /** The url path to cancel a print task. */
   public static final String CANCEL_URL = "/cancel";
+
   /** The url path to create a print task and to get a finished print. */
   public static final String REPORT_URL = "/report";
+
   /** The url path to get the list of fonts available to geotools. */
   public static final String FONTS_URL = "/fonts";
+
   /** The key containing an error message for failed jobs. */
   public static final String JSON_ERROR = "error";
+
   /** The application ID which indicates the configuration file to load. */
   public static final String JSON_APP = "app";
 
@@ -102,6 +111,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    * javax.servlet.http.HttpServletResponse)} response.
    */
   public static final String JSON_DONE = "done";
+
   /**
    * The status of the job. One of the following values:
    *
@@ -117,6 +127,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    * javax.servlet.http.HttpServletResponse)} response
    */
   public static final String JSON_STATUS = "status";
+
   /**
    * The elapsed time in ms from the point the job started. If the job is finished, this is the
    * duration it took to process the job.
@@ -125,6 +136,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    * javax.servlet.http.HttpServletResponse)} response.
    */
   public static final String JSON_ELAPSED_TIME = "elapsedTime";
+
   /**
    * A rough estimate for the time in ms the job still has to wait in the queue until it starts
    * processing.
@@ -133,25 +145,31 @@ public class MapPrinterServlet extends BaseMapServlet {
    * javax.servlet.http.HttpServletResponse)} response.
    */
   public static final String JSON_WAITING_TIME = "waitingTime";
+
   /** The key containing the print job reference ID in the create report response. */
   public static final String JSON_PRINT_JOB_REF = "ref";
+
   /**
    * The json key in the create report response containing a link to get the status of the print
    * job.
    */
   public static final String JSON_STATUS_LINK = "statusURL";
+
   /**
    * The json key in the create report and status responses containing a link to download the
    * report.
    */
   public static final String JSON_DOWNLOAD_LINK = "downloadURL";
+
   /**
    * The JSON key in the request spec that contains the outputFormat. This value will be put into
    * the spec by the servlet. there is not need for the post to do this.
    */
   public static final String JSON_OUTPUT_FORMAT = "outputFormat";
+
   /** The json tag referring to the attributes. */
   public static final String JSON_ATTRIBUTES = "attributes";
+
   /**
    * The json property to add the request headers from the print request.
    *
@@ -159,20 +177,28 @@ public class MapPrinterServlet extends BaseMapServlet {
    * added to the request JSON data for those processors.
    */
   public static final String JSON_REQUEST_HEADERS = "requestHeaders";
+
   /** The JSON key in the request spec that contains the Jasper report fonts. */
   public static final String JSON_OUTPUT_JASPERREPORT_FONTS = "jasperreportFonts";
+
   /** The JSON key in the request spec that contains the font config fonts. */
   public static final String JSON_OUTPUT_FONTS = "fonts";
+
   /** The JSON key in the request spec that contains the java font family name. */
   public static final String JSON_OUTPUT_FONT_FAMILY = "family";
+
   /** The JSON key in the request spec that contains the font families names. */
   public static final String JSON_OUTPUT_FONTCONFIG = "fontconfig";
+
   /** The JSON key in the request spec that contains the font families names. */
   public static final String JSON_OUTPUT_FONTCONFIG_FAMILIES = "families";
+
   /** The JSON key in the request spec that contains the font name. */
   public static final String JSON_OUTPUT_FONTCONFIG_NAME = "name";
+
   /** The JSON key in the request spec that contains the font styles. */
   public static final String JSON_OUTPUT_FONTCONFIG_STYLES = "styles";
+
   /** The JSON key in the request spec that contains the font weight. */
   public static final String JSON_OUTPUT_FONTCONFIG_WEIGHT = "weight";
 
