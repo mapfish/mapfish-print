@@ -84,7 +84,7 @@ jobs:
           key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
           restore-keys: "pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}\npre-commit-"
       - run: pre-commit run --all-files
-      - run: git diff
+      - run: git diff && false
         if: failure()
       - name: Checks
         run: c2cciutils-checks
