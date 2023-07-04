@@ -31,8 +31,10 @@ public final class FeaturesAttribute
   /** The value of {@link FeaturesAttribute}. */
   public static final class FeaturesAttributeValues {
     private final Template template;
+
     /** The geojson features. */
     public String features;
+
     /**
      * By default the normal axis order as specified in EPSG code will be used when parsing
      * projections. However the requestor can override this by explicitly declaring that longitude

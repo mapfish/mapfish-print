@@ -185,6 +185,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
   public static final class ImageParam extends AbstractLayerParams {
 
     private static final int NUMBER_OF_EXTENT_COORDS = 4;
+
     /** The base URL for the image file. Used for making request. */
     public String baseURL;
 

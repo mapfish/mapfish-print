@@ -49,41 +49,51 @@ public class ThreadPoolJobManager implements JobManager {
   private static final long DEFAULT_ABANDONED_TIMEOUT_IN_SECONDS = 120L;
   private static final boolean DEFAULT_OLD_FILES_CLEAN_UP = true;
   private static final long DEFAULT_CLEAN_UP_INTERVAL_IN_SECONDS = 86400;
+
   /**
    * A collection of jobs that are currently being processed or that are awaiting to be processed.
    */
   private final Map<String, SubmittedPrintJob> runningTasksFutures =
       Collections.synchronizedMap(new HashMap<>());
+
   /**
    * The maximum number of threads that will be used for print jobs, this is not the number of
    * threads used by the system because there can be more used by the {@link
    * org.mapfish.print.processor.ProcessorDependencyGraph} when actually doing the printing.
    */
   private int maxNumberOfRunningPrintJobs = Runtime.getRuntime().availableProcessors();
+
   /**
    * The maximum number of print job requests that are waiting to be executed.
    *
    * <p>This prevents spikes in requests from completely destroying the server.
    */
   private int maxNumberOfWaitingJobs = DEFAULT_MAX_WAITING_JOBS;
+
   /** The amount of time to let a thread wait before being shutdown. */
   private long maxIdleTime = DEFAULT_THREAD_IDLE_TIME;
+
   /** A print job is canceled, if it is not completed after this amount of time (in seconds). */
   private long timeout = DEFAULT_TIMEOUT_IN_SECONDS;
+
   /**
    * A print job is canceled, if this amount of time (in seconds) has passed, without that the user
    * checked the status of the job.
    */
   private long abandonedTimeout = DEFAULT_ABANDONED_TIMEOUT_IN_SECONDS;
+
   /** Delete old report files? */
   private boolean oldFileCleanUp = DEFAULT_OLD_FILES_CLEAN_UP;
+
   /** The interval at which old reports are deleted (in seconds). */
   private long oldFileCleanupInterval = DEFAULT_CLEAN_UP_INTERVAL_IN_SECONDS;
+
   /**
    * When this true, new jobs are not put automatically in the thread pool but only on the queue,
    * which is polled repeatedly for new jobs. This way other instances can take the jobs as well.
    */
   private boolean clustered = false;
+
   /**
    * A comparator for comparing {@link org.mapfish.print.servlet.job.impl.SubmittedPrintJob}s and
    * prioritizing them.

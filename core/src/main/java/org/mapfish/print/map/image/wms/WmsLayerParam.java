@@ -15,6 +15,7 @@ public class WmsLayerParam extends AbstractWMXLayerParams {
 
   /** The base URL for the WMS. Used for making WMS requests. */
   public String baseURL;
+
   /**
    * The wms layer to request in the GetMap request. The order is important. It is the order that
    * they will appear in the request.

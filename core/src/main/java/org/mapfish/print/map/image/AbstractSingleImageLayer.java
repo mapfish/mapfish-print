@@ -48,6 +48,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 
   /** The metrics object. */
   @Nonnull protected final MetricRegistry registry;
+
   /** The configuration. */
   protected final Configuration configuration;
 

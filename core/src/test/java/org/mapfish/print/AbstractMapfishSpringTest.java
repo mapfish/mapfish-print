@@ -66,6 +66,7 @@ public abstract class AbstractMapfishSpringTest {
   public static byte[] getFileBytes(Class<?> testClass, String fileName) throws IOException {
     return Files.readAllBytes(getFile(testClass, fileName).toPath());
   }
+
   /**
    * Parse the json string.
    *

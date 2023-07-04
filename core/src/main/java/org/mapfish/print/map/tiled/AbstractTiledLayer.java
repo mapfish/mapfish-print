@@ -29,6 +29,7 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
   private final StyleSupplier<GridCoverage2D> styleSupplier;
   private final MetricRegistry registry;
   private final Configuration configuration;
+
   /** The scale ratio between the tiles resolution and the target resolution. */
   protected double imageBufferScaling = 1.0;
 

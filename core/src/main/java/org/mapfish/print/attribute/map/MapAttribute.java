@@ -46,6 +46,7 @@ public final class MapAttribute extends GenericMapAttribute {
 
     private static final boolean DEFAULT_ADJUST_BOUNDS = false;
     private static final double DEFAULT_ROTATION = 0.0;
+
     /**
      * An array of 4 doubles, minX, minY, maxX, maxY. The bounding box of the map.
      *
@@ -53,19 +54,24 @@ public final class MapAttribute extends GenericMapAttribute {
      */
     @OneOf("MapBounds")
     public double[] bbox;
+
     /** A GeoJSON geometry that is essentially the area of the area to draw on the map. */
     @CanSatisfyOneOf("MapBounds")
     @HasDefaultValue
     public AreaOfInterest areaOfInterest;
+
     /** An array of 2 doubles, (x, y). The center of the map. */
     @Requires("scale")
     @OneOf("MapBounds")
     public double[] center;
+
     /** If center is defined then this is the scale of the map centered at center. */
     @HasDefaultValue public Double scale;
+
     /** Zoom the map to the features of a specific layer or all features of the map. */
     @OneOf("MapBounds")
     public ZoomToFeatures zoomToFeatures;
+
     /**
      * The json with all the layer information. This will be parsed in postConstruct into a list of
      * layers and therefore this field should not normally be accessed.
@@ -75,6 +81,7 @@ public final class MapAttribute extends GenericMapAttribute {
      * layer (where not transparent).
      */
     @HasDefaultValue public PArray layers = new PJsonArray(null, new JSONArray(), null);
+
     /** The output dpi of the printed map. */
     public double dpi;
 

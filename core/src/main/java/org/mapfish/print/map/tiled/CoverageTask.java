@@ -311,8 +311,10 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
   public static final class Tile {
     /** The tile image. */
     private final BufferedImage image;
+
     /** The x index of the image. the x coordinate to draw this tile is xIndex * tileSizeX */
     private final int xIndex;
+
     /** The y index of the image. the y coordinate to draw this tile is yIndex * tileSizeY */
     private final int yIndex;
 

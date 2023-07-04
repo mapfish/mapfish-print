@@ -104,6 +104,7 @@ public class Configuration implements ConfigurationObject {
 
   /** The color used to draw the WMS tiles error default: transparent pink. */
   private String transparentTileErrorColor = "rgba(255, 78, 78, 125)";
+
   /** The color used to draw the other tiles error default: pink. */
   private String opaqueTileErrorColor = "rgba(255, 155, 155, 0)";
 

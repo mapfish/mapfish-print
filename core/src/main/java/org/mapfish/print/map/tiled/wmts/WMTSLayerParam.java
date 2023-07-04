@@ -45,14 +45,19 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
    * </ul>
    */
   public String baseURL;
+
   /** The layer name. */
   public String layer;
+
   /** The WMTS protocol version to use. */
   @HasDefaultValue public String version = "1.0.0";
+
   /** The way to make the requests. Either <code>KVP</code> or <code>REST</code> (default). */
   @HasDefaultValue public RequestEncoding requestEncoding = RequestEncoding.REST;
+
   /** The style name (for styles on the WMTS server). */
   @HasDefaultValue public String style = "";
+
   /**
    * The "sample" dimensions or image color bands to retrieve.
    *
@@ -68,8 +73,10 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
 
   /** The format of the image. for example image/png, image/jpeg, etc... */
   @HasDefaultValue public String imageFormat = "image/png";
+
   /** Reference/Identifier to a tileMatrixSet and limits. */
   public String matrixSet;
+
   /**
    * Array of matrix ids.
    *

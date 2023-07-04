@@ -29,8 +29,10 @@ public class RegistryJobQueue implements JobQueue {
 
   /** Total time spent printing. */
   private static final String TOTAL_PRINT_TIME = "totalPrintTime";
+
   /** Number of print jobs done. */
   private static final String NB_PRINT_DONE = "nbPrintDone";
+
   /** A registry tracking when the last time a metadata was check to see if it is done. */
   private static final String LAST_POLL = "lastPoll_";
 

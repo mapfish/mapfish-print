@@ -46,6 +46,7 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
         0.5971642833948135
       };
   private final Multimap<String, String> additionalCustomParam = HashMultimap.create();
+
   /**
    * The URL used for the tile requests.
    *
@@ -60,29 +61,36 @@ public final class OsmLayerParam extends AbstractTiledLayerParams {
    * </ul>
    */
   public String baseURL;
+
   /**
    * The maximum extent of the osm layer. Must have 4 coordinates, minX, minY, maxX, maxY
    *
    * <p>Default: [-20037508.34, -20037508.34, 20037508.34, 20037508.34]
    */
   @HasDefaultValue public double[] maxExtent = DEFAULT_MAX_EXTENT;
+
   /**
    * The size of each tile. Must have 2 values: width, height
    *
    * <p>Default: [256, 256]
    */
   @HasDefaultValue public int[] tileSize = DEFAULT_TILE_SIZE;
+
   /** The allowed resolutions for this layer. */
   @HasDefaultValue public Double[] resolutions = DEFAULT_RESOLUTIONS;
+
   /**
    * The amount of difference between a resolution and a target resolution to consider the two
    * equal. The value is a value from 0-1.
    */
   @HasDefaultValue public double resolutionTolerance = DEFAULT_RESOLUTION_TOLERANCE;
+
   /** The DPI of the OSM tiles. */
   @HasDefaultValue public Double dpi = null;
+
   /** The image extension. for example png, jpeg, etc... */
   @HasDefaultValue public String imageExtension = "png";
+
   /**
    * Custom query parameters to use when making http requests. {@link #customParams}.
    *

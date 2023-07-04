@@ -176,6 +176,7 @@ final class GridUtils {
               TOP));
     }
   }
+
   // CSON: ParameterNumber
 
   /**
@@ -223,6 +224,7 @@ final class GridUtils {
               BOTTOM));
     }
   }
+
   // CSON: ParameterNumber
 
   /**
@@ -271,6 +273,7 @@ final class GridUtils {
               RIGHT));
     }
   }
+
   // CSON: ParameterNumber
 
   /**
@@ -318,6 +321,7 @@ final class GridUtils {
               LEFT));
     }
   }
+
   // CSON: ParameterNumber
 
   private static double[] transformToLabelProjection(

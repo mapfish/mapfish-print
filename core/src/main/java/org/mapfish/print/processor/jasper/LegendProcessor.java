@@ -298,13 +298,16 @@ public final class LegendProcessor
   public static final class Input {
     /** The template that contains this processor. */
     public Template template;
+
     /**
      * A factory for making http requests. This is added to the values by the framework and
      * therefore does not need to be set in configuration
      */
     public MfClientHttpRequestFactoryProvider clientHttpRequestFactoryProvider;
+
     /** The path to the temporary directory for the print task. */
     public File tempTaskDirectory;
+
     /** The data required for creating the legend. */
     public LegendAttributeValue legend;
   }
@@ -313,8 +316,10 @@ public final class LegendProcessor
   public static final class Output {
     /** The datasource for the legend object in the report. */
     public final JRTableModelDataSource legendDataSource;
+
     /** The path to the compiled subreport. */
     public final String legendSubReport;
+
     /** The number of rows in the legend. */
     public final int numberOfLegendRows;
 

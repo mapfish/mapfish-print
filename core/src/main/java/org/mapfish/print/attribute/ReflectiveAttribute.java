@@ -46,28 +46,34 @@ public abstract class ReflectiveAttribute<VALUE> implements Attribute {
    * @see #printClientConfig(JSONWriter, Template)
    */
   public static final String JSON_NAME = "name";
+
   /**
    * Name of the required parameters object in the client config json.
    *
    * @see #printClientConfig(JSONWriter, Template)
    */
   public static final String JSON_CLIENT_PARAMS = "clientParams";
+
   /**
    * Name of the value suggestions object in the client config json.
    *
    * @see #printClientConfig(JSONWriter, Template)
    */
   public static final String JSON_CLIENT_INFO = "clientInfo";
+
   /** A string describing the type of the attribute param in the clientConfig. */
   public static final String JSON_ATTRIBUTE_TYPE = "type";
+
   /**
    * If the parameter in the value object is another value object (and not a PObject or PArray) then
    * this will be a json object describing the embedded param in the same way as each object in
    * clientParams.
    */
   public static final String JSON_ATTRIBUTE_EMBEDDED_TYPE = "embeddedType";
+
   /** The default value of the attribute param in the optional params. */
   public static final String JSON_ATTRIBUTE_DEFAULT = "default";
+
   /** Json field that declares if the param is an array. */
   public static final String JSON_ATTRIBUTE_IS_ARRAY = "isArray";
 

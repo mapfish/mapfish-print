@@ -12,8 +12,10 @@ import org.slf4j.LoggerFactory;
 /** Used to validate the access to a map service host. */
 public abstract class HostMatcher extends AbstractMatcher {
   private static final Logger LOGGER = LoggerFactory.getLogger(HostMatcher.class);
+
   /** The request port. -1 is the unset/default number */
   protected int port = -1;
+
   /**
    * A regex that will be ran against the host name. If there is a match then the matcher accepts
    * the uri.

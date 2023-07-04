@@ -21,8 +21,10 @@ public abstract class TileCacheInformation {
 
   /** the map bounds. */
   protected final MapBounds bounds;
+
   /** the area to paint. */
   protected final Rectangle paintArea;
+
   /** the DPI to render at. */
   protected final double dpi;
 
@@ -92,6 +94,7 @@ public abstract class TileCacheInformation {
   public int getTileBufferWidth() {
     return 0;
   }
+
   /** Obtain the buffer height for meta tiling. */
   public int getTileBufferHeight() {
     return 0;

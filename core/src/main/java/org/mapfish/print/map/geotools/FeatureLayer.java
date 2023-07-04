@@ -126,6 +126,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
   public static class FeatureLayerParam extends AbstractLayerParams {
     /** A collection of features. */
     public SimpleFeatureCollection features;
+
     /**
      * The style name of a style to apply to the features during rendering. The style name must map
      * to a style in the template or the configuration objects.
@@ -133,11 +134,13 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
      * <p>If no style is defined then the default style for the geometry type will be used.
      */
     public String style;
+
     /**
      * If no style is defined, a default style with this name will be used. Otherwise a style will
      * be selected depending on the the geometry type.
      */
     public String defaultStyle;
+
     /**
      * Indicates if the layer is rendered as SVG.
      *
