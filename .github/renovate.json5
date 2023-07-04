@@ -115,12 +115,12 @@
     {
       matchPackageNames: ['checkstyle', 'spotbugs'],
       matchUpdateTypes: ['major', 'minor'],
-      enabled: false,
+      dependencyDashboardApproval: true,
     },
     {
       matchPackagePrefixes: ['com.puppycrawl.tools:checkstyle', 'com.github.spotbugs:spotbugs-'],
       matchUpdateTypes: ['major', 'minor'],
-      enabled: false,
+      dependencyDashboardApproval: true,
     },
     /** Accept only the patch on the stabilization branches */
     {
