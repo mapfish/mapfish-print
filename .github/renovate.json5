@@ -111,7 +111,7 @@
       groupName: 'batik',
       automerge: true,
     },
-    /** Disable upgrade of the checkstyle and spotbugs */
+    /** Use dependencyDashboardApproval of the checkstyle and spotbugs */
     {
       matchPackageNames: ['checkstyle', 'spotbugs'],
       matchUpdateTypes: ['major', 'minor'],
@@ -121,6 +121,15 @@
       matchPackagePrefixes: ['com.puppycrawl.tools:checkstyle', 'com.github.spotbugs:spotbugs-'],
       matchUpdateTypes: ['major', 'minor'],
       dependencyDashboardApproval: true,
+    },
+    /** Groupe the checkstyle and spotbugs */
+    {
+      matchPackagePrefixes: ['com.puppycrawl.tools:checkstyle', 'checkstyle'],
+      groupName: 'checkstyle',
+    },
+    {
+      matchPackagePrefixes: ['com.github.spotbugs:spotbugs-', 'spotbugs'],
+      groupName: 'spotbugs',
     },
     /** Accept only the patch on the stabilization branches */
     {
