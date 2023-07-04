@@ -122,7 +122,7 @@
       matchUpdateTypes: ['major', 'minor'],
       dependencyDashboardApproval: true,
     },
-    /** Groupe the checkstyle and spotbugs */
+    /** Group the checkstyle and spotbugs */
     {
       matchPackagePrefixes: ['com.puppycrawl.tools:checkstyle', 'checkstyle'],
       groupName: 'checkstyle',
