@@ -12,7 +12,7 @@ env:
 
 jobs:
   backport:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     name: Backport
     timeout-minutes: 5
 
