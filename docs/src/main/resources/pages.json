@@ -14,6 +14,7 @@
     "api": "Web Protocol",
     "tableimages": "Configuration of tables with HTML images",
     "download": "Download",
-    "docker": "Docker"
+    "docker": "Docker",
+    "scale": "Horizontal scaling"
   }
 }
