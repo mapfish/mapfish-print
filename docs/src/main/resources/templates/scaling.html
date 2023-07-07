@@ -57,20 +57,19 @@
   <a class="headerlink" href="#scaling_kubernetes" title="Permalink to this headline">¶</a>
 </h5>
 <p>In Kubernetes, you can reuse an environment variable with:</p>
-<pre><code>
+<pre>
   env:
     - name: PROPERTY_VALUE
       value: test
     - name: CATALINA_OPTS
       value: -D&lt;property name&gt;==$(PROPERTY_VALUE)
-</code></pre>
+</pre>
 
 <p>The order is important.</p>
 
 <p>Full example where we get the database credentials from a secret:</p>
 
 <pre>
-  <code>
 env:
   - name: PGHOST
     valueFrom:
@@ -111,5 +110,4 @@ env:
       -Ddb.password=$(PGPASSWORD)
       -Ddb.name=$(PGDATABASE)
       -Ddb.schema=$(PGSCHEMA)
-</code>
 </pre>
