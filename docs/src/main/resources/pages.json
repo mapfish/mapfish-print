@@ -15,6 +15,6 @@
     "tableimages": "Configuration of tables with HTML images",
     "download": "Download",
     "docker": "Docker",
-    "scale": "Horizontal scaling"
+    "scaling": "Horizontal scaling"
   }
 }
