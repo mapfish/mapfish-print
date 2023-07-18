@@ -6,7 +6,7 @@ on:
 
 jobs:
   rebuild:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 20
     name: Rebuild 3.23
 

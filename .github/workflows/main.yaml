@@ -1,4 +1,3 @@
----
 name: Continuous integration
 
 on:
@@ -6,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 30
     name: Continuous integration
     if: "!startsWith(github.event.head_commit.message, '[skip ci] ')"
@@ -52,7 +51,9 @@ jobs:
         if: "!startsWith(github.ref, 'refs/tags/')"
       - run: sed --in-place 's/version = .*/version = "${{ steps.last-tag.outputs.tag }}"/g' build.gradle
         if: "!startsWith(github.ref, 'refs/tags/') && steps.no-tag.outputs.nb == 0"
-      - run: sed --in-place 's/version = .*/version = "${{ steps.last-tag.outputs.tag }}+${{ steps.no-tag.outputs.nb }}"/g' build.gradle
+      - run:
+          sed --in-place 's/version = .*/version = "${{ steps.last-tag.outputs.tag }}+${{ steps.no-tag.outputs.nb
+          }}"/g' build.gradle
         if: "!startsWith(github.ref, 'refs/tags/') && steps.no-tag.outputs.nb > 0"
 
       - run: echo "enablePublishing=true" > gradle.properties
@@ -82,8 +83,7 @@ jobs:
 
       - run: make acceptance-tests-down
 
-      - run: mkdir -p core/build/resources/actual examples/build/reports core/build/reports
-          examples/build/resources/test/examples
+      - run: mkdir -p core/build/resources/actual examples/build/reports core/build/reports examples/build/resources/test/examples
         if: always()
       - uses: actions/upload-artifact@v1
         with:
@@ -131,7 +131,9 @@ jobs:
         run: c2cciutils-publish
         if: env.SECRETS == 'TRUE'
       - run: git diff
-      - run: docker run --rm --env=GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} mapfish_print_builder bash -c 'gradle build && gradle publish'
+      - run:
+          docker run --rm --env=GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} mapfish_print_builder bash -c 'gradle
+          build && gradle publish'
         if: ( startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master' ) && env.SECRETS == 'TRUE'
 
       - id: version
