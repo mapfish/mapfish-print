@@ -1,6 +1,6 @@
 FROM mapfish_print_builder AS builder
 
-FROM tomcat:9.0.62-jdk17-openjdk-slim-bullseye AS runner
+FROM tomcat:9.0.78-jdk11-temurin-jammy AS runner
 LABEL maintainer="Camptocamp <info@camptocamp.com>"
 
 RUN --mount=type=cache,target=/var/cache,sharing=locked \
