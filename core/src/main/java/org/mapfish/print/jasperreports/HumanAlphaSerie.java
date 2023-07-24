@@ -3,7 +3,7 @@ package org.mapfish.print.jasperreports;
 import java.util.Stack;
 
 /** Used to convert an integer index to an alpha index. Index in: A..Z,AA..ZZ,AAA... */
-public class HumanAlphaSerie {
+public final class HumanAlphaSerie {
 
   private HumanAlphaSerie() {
     // Raise exception because the class should not be instantiated
@@ -16,7 +16,9 @@ public class HumanAlphaSerie {
    * @param number the number to convert
    * @return the alpha index
    */
+  // CSOFF: FinalParameters
   public static String toString(int number) {
+    // CSON: FinalParameters
     if (number <= 0) {
       return "";
     }

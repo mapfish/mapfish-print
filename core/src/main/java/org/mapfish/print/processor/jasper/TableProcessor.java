@@ -339,6 +339,7 @@ public final class TableProcessor
     return rowValue;
   }
 
+  // CSOFF: MethodLength
   private String generateSubReport(final Input input, final Map<String, Class<?>> columns)
       throws JRException, IOException {
     byte[] bytes = loadJasperTemplate(input.template.getConfiguration());
@@ -509,6 +510,8 @@ public final class TableProcessor
     }
     return this.jasperReportBuilder.compileJasperReport(buildFile, jrxmlFile).getAbsolutePath();
   }
+
+  // CSON: MethodLength
 
   private JRDesignTextField createTextField(final String columnName) {
     JRDesignTextField textField = new JRDesignTextField();

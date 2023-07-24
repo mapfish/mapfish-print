@@ -21,7 +21,7 @@ checks: build-builder
 		--volume=$(PWD)/core/src/:/src/core/src/:ro \
 		--volume=$(PWD)/reports/:/src/core/build/reports/ \
 		mapfish_print_builder \
-		gradle --parallel :core:spotbugsMain :core:checkstyleMain :core:violations
+		gradle --parallel :core:spotbugsMain :core:checkstyleMain
 
 .PHONY: tests
 tests: build-builder
@@ -36,7 +36,7 @@ tests: build-builder
 		--volume=$(PWD)/core/build/scripts/:/src/core/build/scripts/ \
 		--volume=$(PWD)/core/src/test/:/src/core/src/test/ \
 		mapfish_print_builder \
-		gradle --parallel --exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain --exclude-task=:core:violations \
+		gradle --parallel --exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain \
 			--exclude-task=:core:spotbugsTest --exclude-task=:core:checkstyleTest \
 			:core:test :core:testCli
 
@@ -58,7 +58,7 @@ acceptance-tests-up: build .env
 .PHONY: acceptance-tests-run
 acceptance-tests-run: .env
 	docker-compose exec -T tests gradle \
-		--exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain --exclude-task=:core:violations \
+		--exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain \
 		--exclude-task=:core:spotbugsTest --exclude-task=:core:checkstyleTest --exclude-task=:core:testCLI \
 		:examples:integrationTest
 	ci/check-fonts

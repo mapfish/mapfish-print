@@ -28,7 +28,7 @@ public class ProcessorWithConfigurationInjection extends AbstractProcessor<Objec
 
   @Nullable
   @Override
-  public Void execute(Object values, ExecutionContext context) {
+  public Void execute(final Object values, final ExecutionContext context) {
     return null;
   }
 
@@ -39,7 +39,7 @@ public class ProcessorWithConfigurationInjection extends AbstractProcessor<Objec
 
   @Override
   protected void extraValidation(
-      List<Throwable> validationErrors, final Configuration configuration) {
+      final List<Throwable> validationErrors, final Configuration configuration) {
     // no checks
   }
 }

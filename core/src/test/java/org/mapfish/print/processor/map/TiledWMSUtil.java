@@ -17,14 +17,14 @@ public final class TiledWMSUtil {
   }
 
   public static void registerTiledWmsHandler(
-      TestHttpClientFactory requestFactory, final String host) {
+      final TestHttpClientFactory requestFactory, final String host) {
     requestFactory.registerHandler(
         input ->
             (("" + input.getHost()).contains(host + ".wms"))
                 || input.getAuthority().contains(host + ".wms"),
         new TestHttpClientFactory.Handler() {
           @Override
-          public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
+          public MockClientHttpRequest handleRequest(final URI uri, final HttpMethod httpMethod)
               throws Exception {
             final Multimap<String, String> parameters = URIUtils.getParameters(uri);
 
@@ -126,7 +126,11 @@ public final class TiledWMSUtil {
           }
 
           private boolean equalEnv(
-              Envelope envelope, double minx, double miny, double maxx, double maxy) {
+              final Envelope envelope,
+              final double minx,
+              final double miny,
+              final double maxx,
+              final double maxy) {
             double difference = 0.00001;
             return Math.abs(envelope.getMinX() - minx) < difference
                 && Math.abs(envelope.getMinY() - miny) < difference

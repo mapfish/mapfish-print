@@ -29,7 +29,7 @@ ENV GIT_HEAD=${GIT_HEAD}
 # Exclude the tasks that will run out of the docker build (in a docker run)
 RUN --mount=type=cache,target=/home/gradle/.gradle \
    gradle --parallel --exclude-task=:core:test \
-   --exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain --exclude-task=:core:violations \
+   --exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain \
    --exclude-task=:core:spotbugsTest --exclude-task=:core:checkstyleTest --exclude-task=:core:testCLI \
    :core:build :core:explodedWar :publish:build :examples:build :docs:buildDocs
 

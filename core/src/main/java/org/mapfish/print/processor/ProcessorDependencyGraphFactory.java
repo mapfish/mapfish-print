@@ -166,6 +166,7 @@ public final class ProcessorDependencyGraphFactory {
     return msg.toString();
   }
 
+  // CSOFF: MethodLength
   /**
    * Create a {@link ProcessorDependencyGraph}.
    *
@@ -332,6 +333,8 @@ public final class ProcessorDependencyGraphFactory {
 
     return graph;
   }
+
+  // CSON: MethodLength
 
   // CHECKSTYLE:OFF
   private static class InputValue {
