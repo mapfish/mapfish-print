@@ -111,9 +111,9 @@
       groupName: 'batik',
       automerge: true,
     },
-    /** Use dependencyDashboardApproval of the checkstyle and spotbugs */
+    /** Use dependencyDashboardApproval of the Checkstyle, SpotBugs and Gradle */
     {
-      matchPackageNames: ['checkstyle', 'spotbugs'],
+      matchPackageNames: ['checkstyle', 'spotbugs', 'gradle'],
       matchUpdateTypes: ['major', 'minor'],
       dependencyDashboardApproval: true,
     },
