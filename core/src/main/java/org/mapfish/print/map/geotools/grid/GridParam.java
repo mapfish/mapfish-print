@@ -155,7 +155,7 @@ public final class GridParam extends AbstractLayerParams {
 
   /**
    * By default the normal axis order as specified in EPSG code will be used when parsing
-   * projections. However the requestor can override this by explicitly declaring that longitude
+   * projections. However the requester can override this by explicitly declaring that longitude
    * axis is first.
    */
   @HasDefaultValue public Boolean longitudeFirst = null;

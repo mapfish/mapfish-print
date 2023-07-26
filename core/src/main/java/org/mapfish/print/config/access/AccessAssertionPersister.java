@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-/** Class for marshalling and unmarshalling AccessAssertionObjects to and from JSON. */
+/** Class for marshaling and unmarshaling AccessAssertionObjects to and from JSON. */
 public final class AccessAssertionPersister {
   private static final String JSON_CLASS_NAME = "className";
   @Autowired private ApplicationContext applicationContext;
