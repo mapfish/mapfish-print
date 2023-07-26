@@ -64,6 +64,6 @@ public class CreateMapProcessorFixedScaleCenterOsmRotationTest extends AbstractM
     assertEquals(2, layerGraphics.size());
 
     new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-        .assertSimilarity(layerGraphics, 780, 330, 65);
+        .assertSimilarity(layerGraphics, 780, 330, 0);
   }
 }

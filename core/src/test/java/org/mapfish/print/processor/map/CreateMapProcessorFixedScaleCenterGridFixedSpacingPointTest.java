@@ -65,6 +65,6 @@ public class CreateMapProcessorFixedScaleCenterGridFixedSpacingPointTest
 
     assertEquals(2, layerGraphics.size());
     new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-        .assertSimilarity(layerGraphics, 780, 330, 15);
+        .assertSimilarity(layerGraphics, 780, 330, 0);
   }
 }

@@ -85,6 +85,6 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
 
     assertEquals(1, print.getPages().size());
 
-    new ImageSimilarity(getFile(BASE_DIR + "expected-page.png")).assertSimilarity(print, 0, 15);
+    new ImageSimilarity(getFile(BASE_DIR + "expected-page.png")).assertSimilarity(print, 0, 0);
   }
 }

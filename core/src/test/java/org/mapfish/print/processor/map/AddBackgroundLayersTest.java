@@ -62,8 +62,8 @@ public class AddBackgroundLayersTest extends AbstractMapfishSpringTest {
         this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
     taskFuture.get();
 
-    assertImage(values, 1, "layerGraphics", "expectedSimpleImage.png", 630, 294, 40);
-    assertImage(values, 1, "overviewMapLayerGraphics", "expectedOverviewImage.png", 320, 200, 10);
+    assertImage(values, 1, "layerGraphics", "expectedSimpleImage.png", 630, 294, 0);
+    assertImage(values, 1, "overviewMapLayerGraphics", "expectedOverviewImage.png", 320, 200, 0);
   }
 
   private void assertImage(

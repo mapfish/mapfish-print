@@ -106,6 +106,6 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPI_SVG_Test
     assertEquals(2, layerGraphics.size());
 
     new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-        .assertSimilarity(layerGraphics, 2625, 1225, 15);
+        .assertSimilarity(layerGraphics, 2625, 1225, 0);
   }
 }

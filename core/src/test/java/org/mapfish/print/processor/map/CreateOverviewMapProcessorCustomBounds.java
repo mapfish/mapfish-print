@@ -62,6 +62,6 @@ public class CreateOverviewMapProcessorCustomBounds extends AbstractMapfishSprin
     assertEquals(1, layerGraphics.size());
 
     new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-        .assertSimilarity(layerGraphics, 300, 200, 10);
+        .assertSimilarity(layerGraphics, 300, 200, 0);
   }
 }

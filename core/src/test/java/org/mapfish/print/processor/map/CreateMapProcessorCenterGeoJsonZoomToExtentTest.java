@@ -59,6 +59,6 @@ public class CreateMapProcessorCenterGeoJsonZoomToExtentTest extends AbstractMap
     assertEquals(1, layerGraphics.size());
 
     new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-        .assertSimilarity(layerGraphics.get(0), 500, 400, 1);
+        .assertSimilarity(layerGraphics.get(0), 500, 400, 0);
   }
 }

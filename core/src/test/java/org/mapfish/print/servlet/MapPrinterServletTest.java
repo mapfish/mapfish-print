@@ -316,7 +316,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     assertEquals("image/png; name=test-report.png", attachment.getContentType());
     final InputStream content = (InputStream) attachment.getContent();
     new ImageSimilarity(getFile(MapPrinterServletTest.class, "expectedSimpleImage.png"))
-        .assertSimilarity(IOUtils.toByteArray(content), 1);
+        .assertSimilarity(IOUtils.toByteArray(content), 0);
   }
 
   @Test(timeout = 60000)
@@ -1166,7 +1166,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     assertEquals(outputNamePrefix + year + ".png", fileName);
 
     new ImageSimilarity(getFile(MapPrinterServletTest.class, "expectedSimpleImage.png"))
-        .assertSimilarity(report, 1);
+        .assertSimilarity(report, 0);
     return report;
   }
 

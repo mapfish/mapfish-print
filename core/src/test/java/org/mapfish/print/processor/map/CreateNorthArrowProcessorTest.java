@@ -65,7 +65,7 @@ public class CreateNorthArrowProcessorTest extends AbstractMapfishSpringTest {
     String northArrowGraphic = values.getObject("northArrowGraphic", String.class);
 
     new ImageSimilarity(new File(new URI(northArrowGraphic)))
-        .assertSimilarity(getFile(BASE_DIR + "expectedNorthArrow.png"), 1);
+        .assertSimilarity(getFile(BASE_DIR + "expectedNorthArrow.png"), 0);
 
     assertNotNull(values.getObject("northArrowOut", String.class));
 
