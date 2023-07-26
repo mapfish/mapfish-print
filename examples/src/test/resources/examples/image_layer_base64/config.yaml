@@ -1,0 +1,773 @@
+throwErrorOnExtraParameters: true
+defaultToSvg: true
+
+templates:
+# ==========================
+# LANDSCAPE Templates
+# ==========================
+# --------------------------
+  A4 landscape de: !template
+# -------------------------
+    reportTemplate: A4_Landscape.jrxml
+    outputFilename: &outputFilename schweizmobilmap
+    attributes:
+      scale:
+        !string
+        default: "Massstab"
+      title: !string
+        default: "...unterwegs in der Natur"
+      partners: !string
+        default: "Partner\nSchweizMobil:"
+      language: !string
+        default: "de"
+      header: !string
+        default: ""
+      map: !map
+        maxDpi: 400
+        width: 762
+        height: 481
+      scalebar:
+        !scalebar &scalebar
+        width: 35
+        height: 60
+        default:
+          barSize: 5
+          fontSize: 7
+          font: DejaVu Sans
+          fontColor: rgb(77,77,77)
+          color: rgb(77,77,77)
+          lineWidth: 1
+          type: line
+          intervals: 1
+          orientation: verticalLabelsLeft
+          labelRotation: -90
+          subIntervals: false
+          labelDistance: -2
+          verticalAlign: middle
+
+    processors: &baseProcessors
+      - !reportBuilder
+        directory: '.'
+      - !configureHttpRequests &httpConfig
+        httpProcessors:
+          - !mapUri
+            mapping:
+              http://localhost:8080/(.*): "http://ui/$1"
+              http://127.0.0.1:8080/(.*): "http://ui/$1"
+          - !forwardHeaders
+            headers:
+              - Referer
+              - X-Request-ID
+      - !createMap {}
+      - !createScalebar {}
+
+# --------------------------
+  A4 landscape en: !template
+# -------------------------
+    reportTemplate: A4_Landscape.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale:
+        !string
+        default: "Scale"
+      title: !string
+        default: "...getting active outdoors"
+      partners: !string
+        default: "SwitzerlandMobility\npartners:"
+      language: !string
+        default: "en"
+      header: !string
+        default: ""
+      map: !map
+        maxDpi: 400
+        width: 762
+        height: 481
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 landscape fr: !template
+# -------------------------
+    reportTemplate: A4_Landscape.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Echelle"
+      title: !string
+        default: "...en route dans la nature"
+      partners: !string
+        default: "Partenaires\nde SuisseMobile:"
+      language: !string
+        default: "fr"
+      header: !string
+        default: ""
+      map: !map
+        maxDpi: 400
+        width: 762
+        height: 481
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 landscape it: !template
+# -------------------------
+    reportTemplate: A4_Landscape.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Scala"
+      title: !string
+        default: "...escursioni nella natura"
+      partners: !string
+        default: "Partner\ndi SvizzeraMobile:"
+      language: !string
+        default: "it"
+      header: !string
+        default: ""
+      map: !map
+        maxDpi: 400
+        width: 762
+        height: 481
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# ==========================
+# PORTRAIT Templates
+# ==========================
+
+# --------------------------
+  A4 portrait de: !template
+# -------------------------
+    reportTemplate: A4_Portrait.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Massstab"
+      title: !string
+        default: "...unterwegs in der Natur"
+      partners: !string
+        default: "Partner\nSchweizMobil:"
+      language: !string
+        default: "de"
+      header: !string
+        default: ""
+      map: !map
+        maxDpi: 400
+        width: 516
+        height: 728
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 portrait en: !template
+# -------------------------
+    reportTemplate: A4_Portrait.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Scale"
+      title: !string
+        default: "...getting active outdoors"
+      partners: !string
+        default: "SwitzerlandMobility\npartners:"
+      language: !string
+        default: "en"
+      header: !string
+        default: ""
+      map: !map
+        maxDpi: 400
+        width: 516
+        height: 728
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 portrait fr: !template
+# -------------------------
+    reportTemplate: A4_Portrait.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Echelle"
+      title: !string
+        default: "... en route dans la nature"
+      partners: !string
+        default: "Partenaires\nde SuisseMobile:"
+      language: !string
+        default: "fr"
+      header: !string
+        default: ""
+      map: !map
+        maxDpi: 400
+        width: 516
+        height: 728
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 portrait it: !template
+# -------------------------
+    reportTemplate: A4_Portrait.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Scala"
+      title: !string
+        default: "...escursioni nella natura"
+      partners: !string
+        default: "Partner\ndi SvizzeraMobile:"
+      language: !string
+        default: "it"
+      header: !string
+        default: ""
+      map: !map
+        maxDpi: 400
+        width: 516
+        height: 728
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# ==========================
+# LANDSCAPE PLUS Templates
+# ==========================
+# --------------------------
+  A4 landscape plus de: !template
+# -------------------------
+    reportTemplate: A4_Landscape.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Massstab"
+      title: !string
+        default: ""
+      partners: !string
+        default: "Partner\nSchweizMobil:"
+      language: !string
+        default: "de"
+      header: !string
+        default: "_plus"
+      map: !map
+        maxDpi: 400
+        width: 762
+        height: 481
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 landscape plus en: !template
+# -------------------------
+    reportTemplate: A4_Landscape.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Scale"
+      title: !string
+        default: ""
+      partners: !string
+        default: "SwitzerlandMobility\npartners:"
+      language: !string
+        default: "en"
+      header: !string
+        default: "_plus"
+      map: !map
+        maxDpi: 400
+        width: 762
+        height: 481
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 landscape plus fr: !template
+# -------------------------
+    reportTemplate: A4_Landscape.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Echelle"
+      title: !string
+        default: ""
+      partners: !string
+        default: "Partenaires\nde SuisseMobile:"
+      language: !string
+        default: "fr"
+      header: !string
+        default: "_plus"
+      map: !map
+        maxDpi: 400
+        width: 762
+        height: 481
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 landscape plus it: !template
+# -------------------------
+    reportTemplate: A4_Landscape.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Scala"
+      title: !string
+        default: ""
+      partners: !string
+        default: "Partner\ndi SvizzeraMobile:"
+      language: !string
+        default: "it"
+      header: !string
+        default: "_plus"
+      map: !map
+        maxDpi: 400
+        width: 762
+        height: 481
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# ==========================
+# PORTRAIT PLUS Templates
+# ==========================
+
+# --------------------------
+  A4 portrait plus de: !template
+# -------------------------
+    reportTemplate: A4_Portrait.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Massstab"
+      title: !string
+        default: ""
+      partners: !string
+        default: "Partner\nSchweizMobil:"
+      language: !string
+        default: "de"
+      header: !string
+        default: "_plus"
+      map: !map
+        maxDpi: 400
+        width: 516
+        height: 728
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+
+# --------------------------
+  A4 portrait plus en: !template
+# -------------------------
+    reportTemplate: A4_Portrait.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Scale"
+      title: !string
+        default: ""
+      partners: !string
+        default: "SwitzerlandMobility\npartners:"
+      language: !string
+        default: "en"
+      header: !string
+        default: "_plus"
+      map: !map
+        maxDpi: 400
+        width: 516
+        height: 728
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 portrait plus fr: !template
+# -------------------------
+    reportTemplate: A4_Portrait.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Echelle"
+      title: !string
+        default: ""
+      partners: !string
+        default: "Partenaires\nde SuisseMobile:"
+      language: !string
+        default: "fr"
+      header: !string
+        default: "_plus"
+      map: !map
+        maxDpi: 400
+        width: 516
+        height: 728
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 portrait plus it: !template
+# -------------------------
+    reportTemplate: A4_Portrait.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Scala"
+      title: !string
+        default: ""
+      partners: !string
+        default: "Partner\ndi SvizzeraMobile:"
+      language: !string
+        default: "it"
+      header: !string
+        default: "_plus"
+      map: !map
+        maxDpi: 400
+        width: 516
+        height: 728
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# ==========================
+# LANDSCAPE slowUp Templates
+# ==========================
+# --------------------------
+  A4 landscape slowUp de: !template
+# -------------------------
+    reportTemplate: A4_Landscape.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Massstab"
+      title: !string
+        default: "slowUp, der autofreie Erlebnistag von SchweizMobil"
+      partners: !string
+        default: ""
+      language: !string
+        default: "de"
+      header: !string
+        default: "_slowUp"
+      map: !map
+        maxDpi: 400
+        width: 762
+        height: 481
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 landscape slowUp en: !template
+# -------------------------
+    reportTemplate: A4_Landscape.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Scale"
+      title: !string
+        default: "slowUp - the traffic-free experience day from SwitzerlandMobility"
+      partners: !string
+        default: ""
+      language: !string
+        default: "en"
+      header: !string
+        default: "_slowUp"
+      map: !map
+        maxDpi: 400
+        width: 762
+        height: 481
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 landscape slowUp fr: !template
+# -------------------------
+    reportTemplate: A4_Landscape.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Echelle"
+      title: !string
+        default: "slowUp - la journée découverte sans voitures de SuisseMobile"
+      partners: !string
+        default: ""
+      language: !string
+        default: "fr"
+      header: !string
+        default: "_slowUp"
+      map: !map
+        maxDpi: 400
+        width: 762
+        height: 481
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 landscape slowUp it: !template
+# -------------------------
+    reportTemplate: A4_Landscape.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Scala"
+      title: !string
+        default: "slowUp - la giornata senza auto di SvizzeraMobile"
+      partners: !string
+        default: ""
+      language: !string
+        default: "it"
+      header: !string
+        default: "_slowUp"
+      map: !map
+        maxDpi: 400
+        width: 762
+        height: 481
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# ==========================
+# PORTRAIT SLOWUP Templates
+# ==========================
+
+# --------------------------
+  A4 portrait slowUp de: !template
+# -------------------------
+    reportTemplate: A4_Portrait.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Massstab"
+      title: !string
+        default: "slowUp, der autofreie Erlebnistag von SchweizMobil"
+      partners: !string
+        default: ""
+      language: !string
+        default: "de"
+      header: !string
+        default: "_slowUp"
+      map: !map
+        maxDpi: 400
+        width: 516
+        height: 728
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 portrait slowUp en: !template
+# -------------------------
+    reportTemplate: A4_Portrait.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Scale"
+      title: !string
+        default: "slowUp - the traffic-free experience day from SwitzerlandMobility"
+      partners: !string
+        default: ""
+      language: !string
+        default: "en"
+      header: !string
+        default: "_slowUp"
+      map: !map
+        maxDpi: 400
+        width: 516
+        height: 728
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 portrait slowUp fr: !template
+# -------------------------
+    reportTemplate: A4_Portrait.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Echelle"
+      title: !string
+        default: "slowUp, la journée découvertes sans voitures de SuisseMobile"
+      partners: !string
+        default: ""
+      language: !string
+        default: "fr"
+      header: !string
+        default: "_slowUp"
+      map: !map
+        maxDpi: 400
+        width: 516
+        height: 728
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 portrait slowUp it: !template
+# -------------------------
+    reportTemplate: A4_Portrait.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Scala"
+      title: !string
+        default: "slowUp, la giornata senza auto di SvizzeraMobile"
+      partners: !string
+        default: ""
+      language: !string
+        default: "it"
+      header: !string
+        default: "_slowUp"
+      map: !map
+        maxDpi: 400
+        width: 516
+        height: 728
+      scalebar: *scalebar
+
+    processors: *baseProcessors
+
+# --------------------------
+  A4 portrait track de: !template
+# -------------------------
+    reportTemplate: A4_Portrait_Track.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Massstab"
+      title: !string
+        default: ""
+      footer: !string
+        default: "Diese Tour wurde mit SchweizMobil Plus geplant.\nMehr zu diesum Online-Zeichnungswerkzeug unter www.schweizmobil.ch"
+      language: !string
+        default: "de"
+      partners: !string
+        default: "Partner\nSchweizMobil:"
+      header: !string
+        default: "_plus"
+      map: !map
+        maxDpi: 400
+        width: 516
+        height: 728
+      datasource: !datasource
+        attributes:
+          title: !string {}
+          description: !string {}
+          photo: !string {}
+          icon: !string {}
+      scalebar: *scalebar
+
+    processors: &dataProcessors
+      - !reportBuilder
+        directory: '.'
+      - *httpConfig
+      - !createMap {}
+      - !createDataSource
+        processors: []
+      - !createScalebar {}
+    tableData: jrDataSource
+
+# --------------------------
+  A4 portrait track en: !template
+# -------------------------
+    reportTemplate: A4_Portrait_Track.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Scale"
+      title: !string
+        default: ""
+      footer: !string
+        default: "This tour proposal was created through SwitzerlandMobility Plus.\nMore about this online drawing tool at switzerlandmobility.ch"
+      language: !string
+        default: "en"
+      partners: !string
+        default: "SwitzerlandMobility\npartners:"
+      header: !string
+        default: "_plus"
+      map: !map
+        maxDpi: 400
+        width: 516
+        height: 728
+      datasource: !datasource
+        attributes:
+          title: !string {}
+          description: !string {}
+          photo: !string {}
+          icon: !string {}
+      scalebar: *scalebar
+
+    processors: *dataProcessors
+    tableData: jrDataSource
+
+# --------------------------
+  A4 portrait track fr: !template
+# -------------------------
+    reportTemplate: A4_Portrait_Track.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Echelle"
+      title: !string
+        default: ""
+      footer: !string
+        default: "Cette proposition de parcours a été préparée avec SuisseMobile Plus.\nEn savoir plus sur cet outil de dessin en ligne dans www.suissemobile.ch"
+      language: !string
+        default: "fr"
+      partners: !string
+        default: "Partenaires\nde SuisseMobile:"
+      header: !string
+        default: "_plus"
+      map: !map
+        maxDpi: 400
+        width: 516
+        height: 728
+      datasource: !datasource
+        attributes:
+          title: !string {}
+          description: !string {}
+          photo: !string {}
+          icon: !string {}
+      scalebar: *scalebar
+
+    processors: *dataProcessors
+    tableData: jrDataSource
+
+# --------------------------
+  A4 portrait track it: !template
+# -------------------------
+    reportTemplate: A4_Portrait_Track.jrxml
+    outputFilename: *outputFilename
+    attributes:
+      scale: !string
+        default: "Scala"
+      title: !string
+        default: ""
+      footer: !string
+        default: "Questa tour è elaborata da SvizzeraMobile Plus. Maggiori informazioni\nsu questo strumento di disegno online le trovate su www.svizzeramobile.ch"
+      language: !string
+        default: "it"
+      partners: !string
+        default: "Partner\ndi SvizzeraMobile:"
+      header: !string
+        default: "_plus"
+      map: !map
+        maxDpi: 400
+        width: 516
+        height: 728
+      datasource: !datasource
+        attributes:
+          title: !string {}
+          description: !string {}
+          photo: !string {}
+          icon: !string {}
+      scalebar: *scalebar
+
+    processors: *dataProcessors
+    tableData: jrDataSource
