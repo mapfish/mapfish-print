@@ -95,6 +95,7 @@ public final class ImageSimilarity {
    *
    * @param image image to write
    * @param file path and file name (extension will be ignored and changed to tiff.
+   * @throws IOException if the image could not be written.
    */
   private static void writeUncompressedImage(BufferedImage image, String file) throws IOException {
     try {
@@ -278,6 +279,7 @@ public final class ImageSimilarity {
    * distance.
    *
    * @param actual the image to compare to "this" image.
+   * @throws IOException if the image could not be written.
    */
   public void assertSimilarity(final File actual) throws IOException {
     assertSimilarity(actual, 1);
@@ -288,6 +290,7 @@ public final class ImageSimilarity {
    * distance.
    *
    * @param maxDistance the maximum distance between the two images.
+   * @throws IOException if the image could not be written.
    */
   public void assertSimilarity(final byte[] graphicData, final double maxDistance)
       throws IOException {
@@ -302,6 +305,7 @@ public final class ImageSimilarity {
    * @param width the graphic width (required for svg files)
    * @param height the graphic height (required for svg files)
    * @param maxDistance the maximum distance between the two images.
+   * @throws IOException if the image could not be written.
    */
   public void assertSimilarity(
       final List<URI> graphicFiles, final int width, final int height, final double maxDistance)
@@ -314,6 +318,7 @@ public final class ImageSimilarity {
    * distance.
    *
    * @param maxDistance the maximum distance between the two images.
+   * @throws IOException if the image could not be written.
    */
   public void assertSimilarity(
       final URI svgFile, final int width, final int height, final double maxDistance)
@@ -326,6 +331,7 @@ public final class ImageSimilarity {
    * distance.
    *
    * @param maxDistance the maximum distance between the two images.
+   * @throws IOException if the image could not be written.
    */
   public void assertSimilarity(
       final JasperPrint jasperPrint, final Integer page, final double maxDistance)
@@ -339,9 +345,21 @@ public final class ImageSimilarity {
    *
    * @param actualFile the file to compare to "this" image.
    * @param maxDistance the maximum distance between the two images.
+   * @throws IOException if the image could not be written.
    */
   public void assertSimilarity(final File actualFile, final double maxDistance) throws IOException {
     assertSimilarity(ImageIO.read(actualFile), maxDistance);
+  }
+
+  /**
+   * Check that the actual image and the image calculated by this object are within a relay small
+   * distance.
+   *
+   * @param actualImage the image to compare to "this" image.
+   * @throws IOException if the image could not be written.
+   */
+  public void assertSimilarity(final BufferedImage actualImage) throws IOException {
+    assertSimilarity(actualImage, 1);
   }
 
   /**
@@ -350,6 +368,7 @@ public final class ImageSimilarity {
    *
    * @param actualImage the image to compare to "this" image.
    * @param maxDistance the maximum distance between the two images.
+   * @throws IOException if the image could not be written.
    */
   public void assertSimilarity(final BufferedImage actualImage, final double maxDistance)
       throws IOException {
