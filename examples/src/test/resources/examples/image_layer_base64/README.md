@@ -1,1 +1,1 @@
-This folder tests if the image layer type can be printed.
+This folder tests if the image layer stored as base 64 can be printed.
