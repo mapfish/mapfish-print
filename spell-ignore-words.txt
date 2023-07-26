@@ -4,3 +4,4 @@ centre
 cloneable
 nto
 thead
+lite
