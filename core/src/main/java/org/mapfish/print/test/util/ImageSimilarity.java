@@ -257,10 +257,7 @@ public final class ImageSimilarity {
         double squareDist = 0.0;
         for (int i = 0; i < this.expectedImage.getSampleModel().getNumBands(); i++) {
           double colorDist = (expectedPixel[i] - actualPixel[i]) * (maskPixel[0] / 255.0);
-          if (colorDist
-              > 7.0) { // allow a small color change (JPEG compression, anti-aliasing, ...)
-            squareDist += colorDist * colorDist;
-          }
+          squareDist += colorDist * colorDist;
         }
         double pxDiff =
             Math.sqrt(squareDist) / Math.sqrt(this.expectedImage.getSampleModel().getNumBands());
