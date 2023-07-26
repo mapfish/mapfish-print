@@ -223,8 +223,12 @@ public final class HttpRequestFetcher {
         } catch (final IOException e) {
           if (counter.incrementAndGet() < HttpRequestFetcher.this.maxNumberFetchRetry) {
             TimeUnit.MILLISECONDS.sleep(HttpRequestFetcher.this.fetchRetryIntervalMillis);
+            LOGGER.debug("Fetching URI {} failed. Retrying.", this.originalRequest.getURI());
           } else {
-            LOGGER.debug("Fetching failed after {}", this.originalRequest.getURI());
+            LOGGER.debug(
+                "Fetching URI {} failed after {} attempts.",
+                this.originalRequest.getURI(),
+                HttpRequestFetcher.this.maxNumberFetchRetry);
             throw e;
           }
         }
