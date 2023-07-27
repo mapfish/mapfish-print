@@ -65,7 +65,7 @@ public class CreateMapProcessorFlexibleScaleBBoxGeoJsonTest extends AbstractMapf
     List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
     assertEquals(1, layerGraphics.size());
 
-    new ImageSimilarity(new File(layerGraphics.get(0)))
-        .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 0);
+    new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
+        .assertSimilarity(new File(layerGraphics.get(0)), 0);
   }
 }

@@ -34,7 +34,7 @@ tests: build-builder
 		--volume=$(PWD)/core/build/reports/:/src/core/build/reports/ \
 		--volume=$(PWD)/core/build/resources/:/src/core/build/resources/ \
 		--volume=$(PWD)/core/build/scripts/:/src/core/build/scripts/ \
-		--volume=$(PWD)/core/src/test/:/src/core/src/test/:ro \
+		--volume=$(PWD)/core/src/test/:/src/core/src/test/ \
 		mapfish_print_builder \
 		gradle --parallel --exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain --exclude-task=:core:violations \
 			--exclude-task=:core:spotbugsTest --exclude-task=:core:checkstyleTest \

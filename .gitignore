@@ -9,3 +9,6 @@
 /.env
 
 /CI.asc
+
+**/actual*.png
+**/diff*.png

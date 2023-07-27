@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public final class ImageSimilarity {
   private static final Logger LOGGER = LoggerFactory.getLogger(ImageSimilarity.class);
 
-  private static final boolean GENERATE_IN_SOURCE = true;
+  public static final boolean REGENERATE_EXPECTED_IMAGES = false;
 
   private final BufferedImage expectedImage;
   private final BufferedImage maskImage;
@@ -48,13 +48,14 @@ public final class ImageSimilarity {
   /** The constructor, which creates the GUI and start the image processing task. */
   public ImageSimilarity(final File expectedFile) throws IOException {
     this.expectedImage = expectedFile.exists() ? ImageIO.read(expectedFile) : null;
-    if (GENERATE_IN_SOURCE) {
+    if (REGENERATE_EXPECTED_IMAGES) {
       this.expectedPath =
           new File(
               expectedFile
                   .toString()
                   .replace("/out/", "/src/")
-                  .replace("/build/classes/test/", "/src/test/resources/"));
+                  .replace("/build/classes/test/", "/src/test/resources/")
+                  .replace("/src/core/build/resources/test/", "/src/core/src/test/resources/"));
     } else {
       this.expectedPath = expectedFile;
     }
@@ -372,11 +373,15 @@ public final class ImageSimilarity {
    */
   public void assertSimilarity(final BufferedImage actualImage, final double maxDistance)
       throws IOException {
-    if (!this.expectedPath.exists()) {
+    if (REGENERATE_EXPECTED_IMAGES || !this.expectedPath.exists()) {
       ImageIO.write(actualImage, "png", expectedPath);
-      throw new AssertionError(
-          "The expected file was missing and has been generated: "
-              + expectedPath.getAbsolutePath());
+      if (REGENERATE_EXPECTED_IMAGES) {
+        return;
+      } else {
+        throw new AssertionError(
+            "The expected file was missing and has been generated: "
+                + expectedPath.getAbsolutePath());
+      }
     }
     final double distance = calcDistance(actualImage);
     if (distance > maxDistance) {
