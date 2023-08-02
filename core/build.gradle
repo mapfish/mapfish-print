@@ -154,14 +154,14 @@ dependencies {
             "io.dropwizard.metrics:metrics-logback:4.2.19",
     )
     geotools(
-            "org.geotools:gt-epsg-hsql:29.1",
-            "org.geotools:gt-render:29.1",
-            "org.geotools:gt-geojson:29.1",
-            "org.geotools:gt-geotiff:29.1",
-            "org.geotools:gt-wms:29.1",
-            "org.geotools.xsd:gt-xsd-gml3:29.1",
-            "org.geotools:gt-svg:29.1",
-            "org.geotools:gt-cql:29.1"
+            "org.geotools:gt-epsg-hsql:29.2",
+            "org.geotools:gt-render:29.2",
+            "org.geotools:gt-geojson:29.2",
+            "org.geotools:gt-geotiff:29.2",
+            "org.geotools:gt-wms:29.2",
+            "org.geotools.xsd:gt-xsd-gml3:29.2",
+            "org.geotools:gt-svg:29.2",
+            "org.geotools:gt-cql:29.2"
     )
     jasper(
             "net.sf.jasperreports:jasperreports:6.20.5",
@@ -185,7 +185,7 @@ dependencies {
             'com.sun.mail:javax.mail:1.6.2',
             'com.amazonaws:aws-java-sdk-s3:1.12.500',
             'com.adobe.xmp:xmpcore:6.1.11',
-            'io.sentry:sentry-logback:6.24.0',
+            'io.sentry:sentry-logback:6.27.0',
             'net.logstash.logback:logstash-logback-encoder:7.4',
     )
 
