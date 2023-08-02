@@ -11,34 +11,12 @@ templates:
     reportTemplate: A4_Landscape.jrxml
     outputFilename: schweizmobilmap
     attributes:
-      scale:
-        !string
-        default: "Scale"
       map: !map
         maxDpi: 400
         width: 762
         height: 481
-      scalebar:
-        !scalebar
-        width: 35
-        height: 60
-        default:
-          barSize: 5
-          fontSize: 7
-          font: DejaVu Sans
-          fontColor: rgb(77,77,77)
-          color: rgb(77,77,77)
-          lineWidth: 1
-          type: line
-          intervals: 1
-          orientation: verticalLabelsLeft
-          labelRotation: -90
-          subIntervals: false
-          labelDistance: -2
-          verticalAlign: middle
 
     processors:
       - !reportBuilder
         directory: '.'
       - !createMap {}
-      - !createScalebar {}

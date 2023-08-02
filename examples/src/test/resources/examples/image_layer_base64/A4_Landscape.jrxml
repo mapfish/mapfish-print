@@ -15,8 +15,6 @@
     <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
     <parameter name="mapSubReport" class="java.lang.String"/>
     <parameter name="mapContext" class="org.mapfish.print.attribute.map.MapfishMapContext"/>
-    <parameter name="scalebarSubReport" class="java.lang.String"/>
-    <parameter name="scale" class="java.lang.String"/>
     <detail>
         <band height="482">
             <property name="com.jaspersoft.studio.unit.height" value="mm"/>
@@ -28,55 +26,6 @@
                 </reportElement>
                 <subreportExpression><![CDATA[$P{mapSubReport}]]></subreportExpression>
             </subreport>
-            <subreport overflowType="NoStretch">
-                <reportElement mode="Transparent" x="768" y="99" width="35" height="60" uuid="d7192319-6cda-4c4e-a7df-d66e1b56140d">
-                    <property name="com.jaspersoft.studio.unit.y" value="mm"/>
-                    <property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-                    <property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-                    <property name="com.jaspersoft.studio.unit.x" value="mm"/>
-                </reportElement>
-                <subreportExpression><![CDATA[$P{scalebarSubReport}]]></subreportExpression>
-            </subreport>
-            <line>
-                <reportElement x="767" y="88" width="10" height="1" forecolor="#4D4D4D" uuid="eb02ae0b-738d-4fa9-8378-68e9279758bf">
-                    <property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-                    <property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-                    <property name="com.jaspersoft.studio.unit.y" value="mm"/>
-                    <property name="com.jaspersoft.studio.unit.x" value="mm"/>
-                </reportElement>
-                <graphicElement>
-                    <pen lineWidth="0.5"/>
-                </graphicElement>
-            </line>
-            <line>
-                <reportElement x="767" y="164" width="10" height="1" forecolor="#4D4D4D" uuid="73fa381d-9d32-4c9b-ba65-c7226f42f688">
-                    <property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-                    <property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-                    <property name="com.jaspersoft.studio.unit.y" value="mm"/>
-                    <property name="com.jaspersoft.studio.unit.x" value="mm"/>
-                </reportElement>
-                <graphicElement>
-                    <pen lineWidth="0.5"/>
-                </graphicElement>
-            </line>
-            <textField isStretchWithOverflow="true">
-                <reportElement x="768" y="176" width="11" height="150" forecolor="#4D4D4D" backcolor="#FFFFFF" uuid="d8ed3c1c-8e90-44ce-a6d0-7fede1486d28">
-                    <property name="com.jaspersoft.studio.unit.y" value="pixel"/>
-                    <property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-                    <property name="com.jaspersoft.studio.unit.width" value="mm"/>
-                    <property name="com.jaspersoft.studio.unit.x" value="mm"/>
-                </reportElement>
-                <box>
-                    <topPen lineWidth="0.0" lineStyle="Solid"/>
-                    <leftPen lineWidth="0.0" lineStyle="Solid"/>
-                    <bottomPen lineWidth="0.0" lineStyle="Solid"/>
-                    <rightPen lineWidth="0.0" lineStyle="Solid"/>
-                </box>
-                <textElement textAlignment="Right" rotation="Left">
-                    <font fontName="DejaVu Sans" size="7"/>
-                </textElement>
-                <textFieldExpression><![CDATA[String.format("%1$s 1:%2$,.0f", $P{scale}, $P{mapContext}.getRoundedScaleDenominator()).replace(",","\'")]]></textFieldExpression>
-            </textField>
         </band>
     </detail>
 </jasperReport>
