@@ -217,7 +217,7 @@ public final class ImageSimilarity {
    *
    * @return a number between 0 and 10000 or Double.MAX_VALUE on images format error.
    */
-  private double calcDistance(final BufferedImage actual) {
+  double calcDistance(final BufferedImage actual) {
     // There are several ways to calculate distances between two vectors,
     // we will calculate the sum of the distances between the RGB values of
     // pixels in the same positions.

@@ -57,7 +57,8 @@ public abstract class AbstractMapfishSpringTest {
   public static File getFile(Class<?> testClass, String fileName) {
     final URL resource = testClass.getResource(fileName);
     if (resource == null) {
-      throw new AssertionError("Unable to find test resource: " + fileName);
+      throw new AssertionError(
+          "Unable to find test resource: " + fileName + ", on: " + testClass.getName());
     }
 
     return new File(resource.getFile());
