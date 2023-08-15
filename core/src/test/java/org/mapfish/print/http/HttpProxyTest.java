@@ -21,6 +21,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -107,7 +108,8 @@ public class HttpProxyTest {
     }
 
     ConfigFileResolvingHttpRequestFactory clientHttpRequestFactory =
-        new ConfigFileResolvingHttpRequestFactory(requestFactory, config, "test");
+        new ConfigFileResolvingHttpRequestFactory(
+            requestFactory, config, new HashMap<String, String>());
 
     URI uri = new URI(target + path);
     final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);

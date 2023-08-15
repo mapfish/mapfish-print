@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Optional;
 import org.geotools.styling.Style;
 import org.junit.Test;
@@ -129,7 +130,8 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
     configuration.setConfigurationFile(getFile(configFile));
 
     ConfigFileResolvingHttpRequestFactory requestFactory =
-        new ConfigFileResolvingHttpRequestFactory(this.httpClient, configuration, "test");
+        new ConfigFileResolvingHttpRequestFactory(
+            this.httpClient, configuration, new HashMap<String, String>());
 
     return parser.parseStyle(configuration, requestFactory, styleString);
   }

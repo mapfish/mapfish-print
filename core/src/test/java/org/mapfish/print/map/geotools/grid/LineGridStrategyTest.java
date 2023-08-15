@@ -51,7 +51,9 @@ public class LineGridStrategyTest {
     MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, true, true);
     final List<? extends Layer> layers =
         layer.getLayers(
-            new TestHttpClientFactory(), context, new AbstractProcessor.Context("test"));
+            new TestHttpClientFactory(),
+            context,
+            new AbstractProcessor.Context(new HashMap<String, String>()));
     assertEquals(1, layers.size());
 
     FeatureSource<?, ?> fs = layers.get(0).getFeatureSource();
@@ -92,7 +94,9 @@ public class LineGridStrategyTest {
     MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, true, true);
     final List<? extends Layer> layers =
         layer.getLayers(
-            new TestHttpClientFactory(), context, new AbstractProcessor.Context("test"));
+            new TestHttpClientFactory(),
+            context,
+            new AbstractProcessor.Context(new HashMap<String, String>()));
     assertEquals(1, layers.size());
 
     FeatureSource<?, ?> fs = layers.get(0).getFeatureSource();

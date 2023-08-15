@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -43,7 +44,8 @@ public abstract class AbstractMapfishSpringTest {
   public static final String TEST_SPRING_FONT_XML =
       "classpath:test-mapfish-spring-custom-fonts.xml";
   public static final String TMP = System.getProperty("java.io.tmpdir");
-  protected static final Processor.ExecutionContext CONTEXT = new AbstractProcessor.Context("test");
+  protected static final Processor.ExecutionContext CONTEXT =
+      new AbstractProcessor.Context(new HashMap<String, String>());
   static final Pattern IMPORT_PATTERN = Pattern.compile("@@importFile\\((\\S+)\\)@@");
   @Autowired private WorkingDirectories workingDirectories;
 

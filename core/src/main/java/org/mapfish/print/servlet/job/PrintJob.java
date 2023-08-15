@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -127,8 +128,12 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
   public final PrintJobResult call() throws Exception {
     SecurityContextHolder.setContext(this.securityContext);
     final Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".call").time();
+    MDC.put(Processor.MDC_APPLICATION_ID_KEY, this.entry.getAppId());
     MDC.put(Processor.MDC_JOB_ID_KEY, this.entry.getReferenceId());
-    LOGGER.info("Starting print job {}", this.entry.getReferenceId());
+    LOGGER.info(
+        "Starting print application {}, job {}",
+        this.entry.getAppId(),
+        this.entry.getReferenceId());
     final MapPrinter mapPrinter = PrintJob.this.mapPrinterFactory.create(this.entry.getAppId());
     final Accounting.JobTracker jobTracker =
         this.accounting.startJob(this.entry, mapPrinter.getConfiguration());
@@ -137,7 +142,14 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
       final PrintResult report =
           withOpenOutputStream(
               outputStream ->
-                  mapPrinter.print(entry.getReferenceId(), entry.getRequestData(), outputStream));
+                  mapPrinter.print(
+                      Map.of(
+                          Processor.MDC_APPLICATION_ID_KEY,
+                          this.entry.getAppId(),
+                          Processor.MDC_JOB_ID_KEY,
+                          this.entry.getReferenceId()),
+                      entry.getRequestData(),
+                      outputStream));
 
       this.metricRegistry.counter(getClass().getName() + ".success").inc();
       LOGGER.info("Successfully completed print job {}", this.entry.getReferenceId());
@@ -187,6 +199,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
       LOGGER.debug(
           "Print Job {} completed in {}ms", this.entry.getReferenceId(), computationTimeMs);
       MDC.remove(Processor.MDC_JOB_ID_KEY);
+      MDC.remove(Processor.MDC_APPLICATION_ID_KEY);
     }
   }
 

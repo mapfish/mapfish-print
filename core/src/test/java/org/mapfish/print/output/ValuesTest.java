@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -40,7 +41,12 @@ public class ValuesTest extends AbstractMapfishSpringTest {
     Template template = config.getTemplates().values().iterator().next();
     final Values values =
         new Values(
-            "test", requestData, template, new File("tmp"), this.httpRequestFactory, new File("."));
+            new HashMap<String, String>(),
+            requestData,
+            template,
+            new File("tmp"),
+            this.httpRequestFactory,
+            new File("."));
 
     assertTrue(values.containsKey("title"));
     assertEquals("title", values.getString("title"));
@@ -73,7 +79,12 @@ public class ValuesTest extends AbstractMapfishSpringTest {
 
     Template template = config.getTemplates().values().iterator().next();
     new Values(
-        "test", requestData, template, new File("tmp"), this.httpRequestFactory, new File("."));
+        new HashMap<String, String>(),
+        requestData,
+        template,
+        new File("tmp"),
+        this.httpRequestFactory,
+        new File("."));
   }
 
   @Test
@@ -89,7 +100,12 @@ public class ValuesTest extends AbstractMapfishSpringTest {
     Template template = config.getTemplates().values().iterator().next();
     final Values values =
         new Values(
-            "test", requestData, template, new File("tmp"), this.httpRequestFactory, new File("."));
+            new HashMap<String, String>(),
+            requestData,
+            template,
+            new File("tmp"),
+            this.httpRequestFactory,
+            new File("."));
 
     assertTrue(values.containsKey("title"));
     assertEquals("title", values.getString("title"));
@@ -133,6 +149,11 @@ public class ValuesTest extends AbstractMapfishSpringTest {
 
     Template template = config.getTemplates().values().iterator().next();
     new Values(
-        "test", requestData, template, new File("tmp"), this.httpRequestFactory, new File("."));
+        new HashMap<String, String>(),
+        requestData,
+        template,
+        new File("tmp"),
+        this.httpRequestFactory,
+        new File("."));
   }
 }

@@ -5,9 +5,11 @@ import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
+import javax.annotation.Nonnull;
 import org.apache.commons.io.IOUtils;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
@@ -73,7 +75,7 @@ public class MapExportOutputFormat implements OutputFormat {
 
   @Override
   public final Processor.ExecutionContext print(
-      final String jobId,
+      @Nonnull final Map<String, String> mdcContext,
       final PJsonObject spec,
       final Configuration config,
       final File configDir,
@@ -86,7 +88,13 @@ public class MapExportOutputFormat implements OutputFormat {
 
     final Values values =
         new Values(
-            jobId, spec, template, taskDirectory, this.httpRequestFactory, null, this.fileSuffix);
+            mdcContext,
+            spec,
+            template,
+            taskDirectory,
+            this.httpRequestFactory,
+            null,
+            this.fileSuffix);
 
     final ProcessorDependencyGraph.ProcessorGraphForkJoinTask task =
         template.getProcessorGraph().createTask(values);

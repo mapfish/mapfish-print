@@ -6,6 +6,7 @@ import static org.mapfish.print.Constants.PDF_DPI;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
@@ -82,7 +83,12 @@ public class CreateMapProcessorFixedScaleAndCenterWMTSRestTest extends AbstractM
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            "test", requestData, template, getTaskDirectory(), this.requestFactory, new File("."));
+            new HashMap<String, String>(),
+            requestData,
+            template,
+            getTaskDirectory(),
+            this.requestFactory,
+            new File("."));
 
     final ForkJoinTask<Values> taskFuture =
         this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));

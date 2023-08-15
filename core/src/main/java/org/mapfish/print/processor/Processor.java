@@ -1,6 +1,7 @@
 package org.mapfish.print.processor;
 
 import com.google.common.collect.BiMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -19,6 +20,9 @@ import org.mapfish.print.config.ConfigurationObject;
  *     the {@link org.mapfish.print.output.Values} object so other processor can access the values.
  */
 public interface Processor<IN, OUT> extends ConfigurationObject {
+  /** MDC key for the application ID. */
+  String MDC_APPLICATION_ID_KEY = "application_id";
+
   /** MDC key for the job ID. */
   String MDC_JOB_ID_KEY = "job_id";
 
@@ -141,9 +145,9 @@ public interface Processor<IN, OUT> extends ConfigurationObject {
     ExecutionStats getStats();
 
     /**
-     * @return The job ID
+     * @return The MDC context for the current print job.
      */
-    String getJobId();
+    Map<String, String> getMDCContext();
 
     /**
      * Set the MDC context while running the action.

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
+import java.util.HashMap;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +47,8 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
     final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
 
     this.resolvingFactory =
-        new ConfigFileResolvingHttpRequestFactory(this.requestFactory, config, "test");
+        new ConfigFileResolvingHttpRequestFactory(
+            this.requestFactory, config, new HashMap<String, String>());
   }
 
   @Test

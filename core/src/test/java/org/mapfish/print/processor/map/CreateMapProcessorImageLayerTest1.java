@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -47,7 +48,12 @@ public class CreateMapProcessorImageLayerTest1 extends AbstractMapfishSpringTest
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            "test", requestData, template, getTaskDirectory(), this.requestFactory, new File("."));
+            new HashMap<String, String>(),
+            requestData,
+            template,
+            getTaskDirectory(),
+            this.requestFactory,
+            new File("."));
     template.getProcessorGraph().createTask(values).invoke();
 
     @SuppressWarnings("unchecked")

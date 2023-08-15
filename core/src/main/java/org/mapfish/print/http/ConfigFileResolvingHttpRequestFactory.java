@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nonnull;
@@ -35,7 +36,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
   private static final Logger LOGGER =
       LoggerFactory.getLogger(ConfigFileResolvingHttpRequestFactory.class);
   private final Configuration config;
-  private final String jobId;
+  @Nonnull private final Map<String, String> mdcContext;
   private final MfClientHttpRequestFactoryImpl httpRequestFactory;
   private final List<RequestConfigurator> callbacks = new CopyOnWriteArrayList<>();
 
@@ -44,15 +45,15 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
    *
    * @param httpRequestFactory basic request factory
    * @param config the template for the current print job.
-   * @param jobId the job ID
+   * @param mdcContext the mdc context for the current print job.
    */
   public ConfigFileResolvingHttpRequestFactory(
       final MfClientHttpRequestFactoryImpl httpRequestFactory,
       final Configuration config,
-      final String jobId) {
+      @Nonnull final Map<String, String> mdcContext) {
     this.httpRequestFactory = httpRequestFactory;
     this.config = config;
-    this.jobId = jobId;
+    this.mdcContext = mdcContext;
   }
 
   @Override
@@ -91,19 +92,30 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
       httpRequest.setConfiguration(ConfigFileResolvingHttpRequestFactory.this.config);
 
       httpRequest.getHeaders().putAll(headers);
-      httpRequest
-          .getHeaders()
-          .set("X-Request-ID", ConfigFileResolvingHttpRequestFactory.this.jobId);
+      if (ConfigFileResolvingHttpRequestFactory.this.mdcContext.containsKey(
+          Processor.MDC_JOB_ID_KEY)) {
+        String jobId =
+            ConfigFileResolvingHttpRequestFactory.this.mdcContext.get(Processor.MDC_JOB_ID_KEY);
+        httpRequest.getHeaders().set("X-Request-ID", jobId);
+        httpRequest.getHeaders().set("X-Job-ID", jobId);
+      }
+      if (ConfigFileResolvingHttpRequestFactory.this.mdcContext.containsKey(
+          Processor.MDC_APPLICATION_ID_KEY)) {
+        String applicationId =
+            ConfigFileResolvingHttpRequestFactory.this.mdcContext.get(
+                Processor.MDC_APPLICATION_ID_KEY);
+        httpRequest.getHeaders().set("X-Application-ID", applicationId);
+      }
       return httpRequest;
     }
 
     @Override
     protected synchronized ClientHttpResponse executeInternal(final HttpHeaders headers)
         throws IOException {
-      final String prev = MDC.get(Processor.MDC_JOB_ID_KEY);
-      boolean mdcChanged = prev == null || jobId.equals(prev);
+      final Map<String, String> prev = MDC.getCopyOfContextMap();
+      boolean mdcChanged = mdcContext.equals(prev);
       if (mdcChanged) {
-        MDC.put(Processor.MDC_JOB_ID_KEY, ConfigFileResolvingHttpRequestFactory.this.jobId);
+        MDC.setContextMap(ConfigFileResolvingHttpRequestFactory.this.mdcContext);
       }
       try {
         if (this.request != null) {
@@ -144,11 +156,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
         return executeCallbacksAndRequest(createRequestFromWrapped(headers));
       } finally {
         if (mdcChanged) {
-          if (prev != null) {
-            MDC.put(Processor.MDC_JOB_ID_KEY, prev);
-          } else {
-            MDC.remove(Processor.MDC_JOB_ID_KEY);
-          }
+          MDC.setContextMap(prev);
         }
       }
     }

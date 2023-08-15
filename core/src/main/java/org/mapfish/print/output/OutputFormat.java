@@ -2,6 +2,8 @@ package org.mapfish.print.output;
 
 import java.io.File;
 import java.io.OutputStream;
+import java.util.Map;
+import javax.annotation.Nonnull;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -21,7 +23,7 @@ public interface OutputFormat {
   /**
    * Performs the print and writes to the report in the correct format to the outputStream.
    *
-   * @param jobId the job ID
+   * @param mdcContext the MDC context for the current print job.
    * @param spec the data from the client, required for writing.
    * @param config the configuration object representing the server side configuration.
    * @param configDir the directory that contains the configuration, used for resolving resources
@@ -30,7 +32,7 @@ public interface OutputFormat {
    * @param outputStream the stream to write the result to
    */
   Processor.ExecutionContext print(
-      String jobId,
+      @Nonnull Map<String, String> mdcContext,
       PJsonObject spec,
       Configuration config,
       File configDir,

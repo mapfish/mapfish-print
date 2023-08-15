@@ -122,7 +122,7 @@ public final class ProcessorUtils {
         Values.PDF_CONFIG_KEY,
         Values.SUBREPORT_DIR_KEY,
         Values.OUTPUT_FORMAT_KEY,
-        Values.JOB_ID_KEY
+        Values.MDC_CONTEXT_KEY,
       };
       if (inputPrefix == null || Arrays.asList(defaultValues).contains(field)) {
         name = field;

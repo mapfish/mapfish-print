@@ -3,6 +3,7 @@ package org.mapfish.print.attribute;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.HashMap;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -28,7 +29,7 @@ public class StringAttributeTest extends AbstractMapfishSpringTest {
     Template template = config.getTemplate("main");
     Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             requestData,
             template,
             config.getDirectory(),
@@ -46,7 +47,7 @@ public class StringAttributeTest extends AbstractMapfishSpringTest {
 
     Template template = config.getTemplate("main");
     new Values(
-        "test",
+        new HashMap<String, String>(),
         requestData,
         template,
         config.getDirectory(),

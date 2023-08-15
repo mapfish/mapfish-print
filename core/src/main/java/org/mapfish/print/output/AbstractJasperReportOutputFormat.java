@@ -81,14 +81,14 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
 
   @Override
   public final Processor.ExecutionContext print(
-      final String jobId,
+      @Nonnull final Map<String, String> mdcContext,
       final PJsonObject requestData,
       final Configuration config,
       final File configDir,
       final File taskDirectory,
       final OutputStream outputStream)
       throws Exception {
-    final Print print = getJasperPrint(jobId, requestData, config, configDir, taskDirectory);
+    final Print print = getJasperPrint(mdcContext, requestData, config, configDir, taskDirectory);
 
     if (Thread.currentThread().isInterrupted()) {
       throw new CancellationException();
@@ -108,7 +108,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
   /**
    * Renders the jasper report.
    *
-   * @param jobId the job ID
+   * @param mdcContext the MDC context for the current print job.
    * @param requestData the data from the client, required for writing.
    * @param config the configuration object representing the server side configuration.
    * @param configDir the directory that contains the configuration, used for resolving resources
@@ -119,7 +119,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
    */
   @VisibleForTesting
   public final Print getJasperPrint(
-      final String jobId,
+      @Nonnull final Map<String, String> mdcContext,
       final PJsonObject requestData,
       final Configuration config,
       final File configDir,
@@ -138,7 +138,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
 
     final Values values =
         new Values(
-            jobId,
+            mdcContext,
             requestData,
             template,
             taskDirectory,

@@ -36,7 +36,7 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
   /**
    * The name of the default app. This is always required to be one of the apps that are registered.
    */
-  public static final String DEFAULT_CONFIGURATION_FILE_KEY = "default";
+  @Nonnull public static final String DEFAULT_CONFIGURATION_FILE_KEY = "default";
 
   private static final String CONFIG_YAML = "config.yaml";
   private static final Logger LOGGER = LoggerFactory.getLogger(ServletMapPrinterFactory.class);
@@ -59,10 +59,8 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
   @Override
   public final synchronized MapPrinter create(@Nullable final String app)
       throws NoSuchAppException {
-    String finalApp = app;
-    if (app == null) {
-      finalApp = DEFAULT_CONFIGURATION_FILE_KEY;
-    }
+    @Nonnull String finalApp = app == null ? DEFAULT_CONFIGURATION_FILE_KEY : app;
+
     URI configFile = this.configurationFiles.get(finalApp);
 
     if (configFile == null) {

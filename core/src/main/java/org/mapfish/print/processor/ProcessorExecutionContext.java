@@ -1,6 +1,7 @@
 package org.mapfish.print.processor;
 
 import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -22,7 +23,7 @@ public final class ProcessorExecutionContext {
    */
   public ProcessorExecutionContext(final Values values) {
     this.values = values;
-    this.context = new Context(values.getString(Values.JOB_ID_KEY));
+    this.context = new Context(values.getStringMap(Values.MDC_CONTEXT_KEY));
   }
 
   public Values getValues() {
@@ -151,7 +152,7 @@ public final class ProcessorExecutionContext {
     return this.context;
   }
 
-  public String getJobId() {
-    return this.context.getJobId();
+  public Map<String, String> getMDCContext() {
+    return this.context.getMDCContext();
   }
 }

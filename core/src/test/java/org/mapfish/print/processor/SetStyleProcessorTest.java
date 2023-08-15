@@ -3,6 +3,7 @@ package org.mapfish.print.processor;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import org.junit.Rule;
@@ -40,7 +41,7 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
         parseJSONObjectFromFile(SetStyleProcessorTest.class, BASE_DIR + "basic/request.json");
     Values values =
         new Values(
-            "test",
+            new HashMap<String, String>(),
             requestData,
             template,
             this.folder.getRoot(),

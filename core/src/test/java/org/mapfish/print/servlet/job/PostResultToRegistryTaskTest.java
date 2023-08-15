@@ -3,6 +3,7 @@ package org.mapfish.print.servlet.job;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -115,7 +116,7 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
 
     @Override
     protected PrintResult withOpenOutputStream(PrintAction function) throws Exception {
-      return new PrintResult(42, new AbstractProcessor.Context("test"));
+      return new PrintResult(42, new AbstractProcessor.Context(new HashMap()));
     }
 
     @Override

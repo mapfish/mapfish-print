@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -185,7 +186,8 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
   public void testTreatStringAsGeoJson() throws Exception {
     Configuration configuration = configurationFactory.getConfig(getFile("geojson/config.yaml"));
     MfClientHttpRequestFactory configRequestFactory =
-        new ConfigFileResolvingHttpRequestFactory(requestFactory, configuration, "test");
+        new ConfigFileResolvingHttpRequestFactory(
+            requestFactory, configuration, new HashMap<String, String>());
     FeaturesParser featuresParser = new FeaturesParser(configRequestFactory, false);
     for (File geojsonExample : getGeoJsonExamples()) {
       try {
@@ -215,7 +217,8 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
   public void testTreatStringAsGeoJsonEmptyCollection() throws Exception {
     Configuration configuration = configurationFactory.getConfig(getFile("geojson/config.yaml"));
     MfClientHttpRequestFactory configRequestFactory =
-        new ConfigFileResolvingHttpRequestFactory(requestFactory, configuration, "test");
+        new ConfigFileResolvingHttpRequestFactory(
+            requestFactory, configuration, new HashMap<String, String>());
     FeaturesParser featuresParser = new FeaturesParser(configRequestFactory, false);
 
     final String geojson = "{\"type\": \"FeatureCollection\", \"features\": []}";

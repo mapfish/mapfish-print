@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -30,7 +31,8 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
   public void setUp() throws IOException {
     Configuration config = this.configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
     this.requestFactoryWrapper =
-        new ConfigFileResolvingHttpRequestFactory(this.requestFactory, config, "test");
+        new ConfigFileResolvingHttpRequestFactory(
+            this.requestFactory, config, new HashMap<String, String>());
     this.bgColor = ColorParser.toColor("rgba(255, 255, 255, 0)");
   }
 
