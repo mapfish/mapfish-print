@@ -111,22 +111,18 @@
       groupName: 'batik',
       automerge: true,
     },
-    /** Use dependencyDashboardApproval of the Checkstyle, SpotBugs and Gradle */
+    /** Use dependencyDashboardApproval of the SpotBugs and Gradle */
     {
-      matchPackageNames: ['checkstyle', 'spotbugs', 'gradle'],
+      matchPackageNames: ['spotbugs', 'gradle'],
       matchUpdateTypes: ['major', 'minor'],
       dependencyDashboardApproval: true,
     },
     {
-      matchPackagePrefixes: ['com.puppycrawl.tools:checkstyle', 'com.github.spotbugs:spotbugs-'],
+      matchPackagePrefixes: ['com.github.spotbugs:spotbugs-'],
       matchUpdateTypes: ['major', 'minor'],
       dependencyDashboardApproval: true,
     },
-    /** Group the checkstyle and spotbugs */
-    {
-      matchPackagePrefixes: ['com.puppycrawl.tools:checkstyle', 'checkstyle'],
-      groupName: 'checkstyle',
-    },
+    /** Group spotbugs */
     {
       matchPackagePrefixes: ['com.github.spotbugs:spotbugs-', 'spotbugs'],
       groupName: 'spotbugs',

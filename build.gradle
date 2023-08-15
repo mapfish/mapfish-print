@@ -38,7 +38,8 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     jar.dependsOn(checkstyleMain)
 
     checkstyle {
-        toolVersion = "10.12.1" // com.puppycrawl.tools:checkstyle
+        // Use the default version from Gradle
+        // https://github.com/gradle/gradle/blob/v6.7.1/subprojects/code-quality/src/main/groovy/org/gradle/api/plugins/quality/CheckstylePlugin.java#L37
         configFile = file("$rootProject.rootDir/checkstyle_checks.xml")
         configProperties = ['basedir': project.rootDir.path]
         reportsDir = file("$project.buildDir/reports/checkstyleReports")
