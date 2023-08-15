@@ -4,22 +4,67 @@
   "attributes": {
     "map": {
       "longitudeFirst": true,
-      "center": [602602, 4915620],
-      "scale": 200000,
-      "projection": "EPSG:26713",
+      "center": [-8233518, 4980320],
+      "scale": 5000,
+      "projection": "EPSG:3857",
       "dpi": 150,
       "rotation": 0,
       "layers": [
         {
-          "baseURL": "http://geoserver:8080/wms",
+          "type": "WMTS",
+          "baseURL": "http://geoserver:8080/gwc/service/wmts",
           "opacity": 1,
-          "type": "WMS",
-          "serverType": "geoserver",
-          "layers": ["sf:archsites"],
-          "imageFormat": "image/png",
-          "customParams": {
-            "TRANSPARENT": "true"
-          }
+          "layer": "tiger-ny",
+          "version": "1.0.0",
+          "requestEncoding": "KVP",
+          "dimensions": null,
+          "dimensionParams": {},
+          "matrixSet": "EPSG:900913",
+          "matrices": [
+            {
+              "identifier": "EPSG:900913:12",
+              "matrixSize": [4096, 4096],
+              "scaleDenominator": 136494.69334738597,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-20037508.34, 20037508]
+            },
+            {
+              "identifier": "EPSG:900913:13",
+              "matrixSize": [8192, 8192],
+              "scaleDenominator": 68247.34667369298,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-20037508.34, 20037508]
+            },
+            {
+              "identifier": "EPSG:900913:14",
+              "matrixSize": [16384, 16384],
+              "scaleDenominator": 34123.67333684649,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-20037508.34, 20037508]
+            },
+            {
+              "identifier": "EPSG:900913:15",
+              "matrixSize": [32768, 32768],
+              "scaleDenominator": 17061.836668423246,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-20037508.34, 20037508]
+            },
+            {
+              "identifier": "EPSG:900913:16",
+              "matrixSize": [65536, 65536],
+              "scaleDenominator": 8530.918334211623,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-20037508.34, 20037508]
+            },
+            {
+              "identifier": "EPSG:900913:17",
+              "matrixSize": [131072, 131072],
+              "scaleDenominator": 4265.4591671058115,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-20037508.34, 20037508]
+            }
+          ],
+          "imageFormat": "image/png"
         }
       ]
     }

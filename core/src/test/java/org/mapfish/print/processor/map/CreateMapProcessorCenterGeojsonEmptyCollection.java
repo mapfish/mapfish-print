@@ -62,6 +62,6 @@ public class CreateMapProcessorCenterGeojsonEmptyCollection extends AbstractMapf
     assertEquals(1, layerGraphics.size());
 
     new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-        .assertSimilarity(new File(layerGraphics.get(0)), 1);
+        .assertSimilarity(new File(layerGraphics.get(0)), 0);
   }
 }

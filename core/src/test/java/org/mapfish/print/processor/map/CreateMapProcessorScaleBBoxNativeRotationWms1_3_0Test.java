@@ -91,6 +91,6 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test
     assertEquals(1, layerGraphics.size());
 
     new ImageSimilarity(new File(layerGraphics.get(0)))
-        .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 1);
+        .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 0);
   }
 }

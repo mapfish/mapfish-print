@@ -33,6 +33,6 @@ public class MainTest {
     };
     Main.runMain(args);
 
-    new ImageSimilarity(getFile("expectedV3Image.png")).assertSimilarity(this.outputFile, 10);
+    new ImageSimilarity(getFile("expectedV3Image.png")).assertSimilarity(this.outputFile, 0);
   }
 }

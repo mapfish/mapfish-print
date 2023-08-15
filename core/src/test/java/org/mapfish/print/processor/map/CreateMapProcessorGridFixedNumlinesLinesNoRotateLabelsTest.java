@@ -59,7 +59,6 @@ public class CreateMapProcessorGridFixedNumlinesLinesNoRotateLabelsTest
     assertEquals(1, layerGraphics.size());
 
     String imageName = getExpectedImageName("", BASE_DIR);
-    new ImageSimilarity(getFile(BASE_DIR + imageName))
-        .assertSimilarity(layerGraphics, 780, 330, 60);
+    new ImageSimilarity(getFile(BASE_DIR + imageName)).assertSimilarity(layerGraphics, 780, 330, 0);
   }
 }

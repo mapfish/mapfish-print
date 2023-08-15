@@ -68,6 +68,6 @@ public class CreateOverviewMapProcessorRotateTest extends AbstractMapfishSpringT
 
     final BufferedImage actualImage = ImageSimilarity.mergeImages(layerGraphics, 300, 200);
     new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-        .assertSimilarity(actualImage, 110);
+        .assertSimilarity(actualImage, 0);
   }
 }

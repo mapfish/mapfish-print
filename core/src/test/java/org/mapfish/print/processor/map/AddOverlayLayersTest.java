@@ -62,8 +62,8 @@ public class AddOverlayLayersTest extends AbstractMapfishSpringTest {
         this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
     taskFuture.get();
 
-    assertImage(values, 1, "layerGraphics", "expectedSimpleImage.png", 630, 294, 100);
-    assertImage(values, 1, "overviewMapLayerGraphics", "expectedOverviewImage.png", 300, 200, 25);
+    assertImage(values, 1, "layerGraphics", "expectedSimpleImage.png", 630, 294, 0);
+    assertImage(values, 1, "overviewMapLayerGraphics", "expectedOverviewImage.png", 300, 200, 0);
   }
 
   private void assertImage(

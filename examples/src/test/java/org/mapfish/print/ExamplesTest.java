@@ -17,7 +17,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -320,16 +319,7 @@ public class ExamplesTest {
                     new Exception("File not found: " + expectedOutput.toString()));
               }
 
-              int similarity = 0;
-              File file =
-                  new File(expectedOutputDir, "image-similarity-" + requestFile.getName() + ".txt");
-              System.out.println("Use similarity file: " + file.getName());
-              if (file.isFile()) {
-                String similarityString =
-                    new String(Files.readAllBytes(file.toPath()), Constants.DEFAULT_CHARSET);
-                similarity = Integer.parseInt(similarityString.trim());
-              }
-              new ImageSimilarity(expectedOutput).assertSimilarity(image, similarity);
+              new ImageSimilarity(expectedOutput).assertSimilarity(image);
             }
           }
         } catch (Throwable e) {

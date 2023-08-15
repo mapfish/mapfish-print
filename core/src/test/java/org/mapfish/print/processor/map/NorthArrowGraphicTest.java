@@ -192,7 +192,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
             true);
 
     new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow.png"))
-        .assertSimilarity(file, 200, 200, 4);
+        .assertSimilarity(file, 200, 200, 0);
   }
 
   @Test
@@ -208,7 +208,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
             true);
 
     new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow_10.png"))
-        .assertSimilarity(file, 200, 200, 70);
+        .assertSimilarity(file, 200, 200, 0);
   }
 
   @Test
@@ -225,7 +225,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
             true);
 
     new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow-bg.png"))
-        .assertSimilarity(file, 200, 200, 5);
+        .assertSimilarity(file, 200, 200, 0);
   }
 
   @Test
@@ -242,7 +242,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
             true);
 
     new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow_10-bg.png"))
-        .assertSimilarity(file, 200, 200, 70);
+        .assertSimilarity(file, 200, 200, 0);
   }
 
   @Test
@@ -258,6 +258,6 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
             true);
 
     new ImageSimilarity(getFile(BASE_DIR + "expected-north-arrow_10-default.png"))
-        .assertSimilarity(file, 200, 200, 70);
+        .assertSimilarity(file, 200, 200, 0);
   }
 }

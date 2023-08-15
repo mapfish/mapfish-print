@@ -57,47 +57,47 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
 
     final AbstractJasperReportOutputFormat format =
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
-    testPrint(config, requestData, "default-aoi", format, 40);
+    testPrint(config, requestData, "default-aoi", format, 0);
 
     getAreaOfInterest(requestData).put("display", "CLIP");
-    testPrint(config, requestData, "clip-full-aoi", format, 30);
+    testPrint(config, requestData, "clip-full-aoi", format, 0);
     getAreaOfInterest(requestData).remove("display");
 
     requestData = loadJsonRequestData();
 
     getPagingAttributes(requestData).put("aoiDisplay", "clip");
-    testPrint(config, requestData, "clip-page-aoi", format, 40);
+    testPrint(config, requestData, "clip-page-aoi", format, 0);
 
     getPagingAttributes(requestData).put("aoiDisplay", "render");
-    testPrint(config, requestData, "default-aoi", format, 40);
+    testPrint(config, requestData, "default-aoi", format, 0);
 
     getPagingAttributes(requestData).put("aoiDisplay", "none");
-    testPrint(config, requestData, "none-aoi", format, 40);
+    testPrint(config, requestData, "none-aoi", format, 0);
 
     getAreaOfInterest(requestData).put("display", "CLIP");
     getPagingAttributes(requestData).put("aoiDisplay", "RENDER");
-    testPrint(config, requestData, "full-clip-sub-render", format, 40);
+    testPrint(config, requestData, "full-clip-sub-render", format, 0);
 
     getAreaOfInterest(requestData).put("display", "CLIP");
     getPagingAttributes(requestData).put("aoiDisplay", "NONE");
-    testPrint(config, requestData, "full-clip-sub-none", format, 40);
+    testPrint(config, requestData, "full-clip-sub-none", format, 0);
 
     getAreaOfInterest(requestData).put("display", "CLIP");
     getPagingAttributes(requestData).put("aoiDisplay", "NONE");
-    testPrint(config, requestData, "full-clip-sub-none", format, 40);
+    testPrint(config, requestData, "full-clip-sub-none", format, 0);
 
     getAreaOfInterest(requestData).put("display", "NONE");
     getPagingAttributes(requestData).put("aoiDisplay", "NONE");
-    testPrint(config, requestData, "all-none", format, 40);
+    testPrint(config, requestData, "all-none", format, 0);
 
     getAreaOfInterest(requestData).put("display", "NONE");
     getPagingAttributes(requestData).put("aoiDisplay", "NONE");
     getMapAttributes(requestData).put("dpi", 254);
-    testPrint(config, requestData, "higher-dpi", format, 40);
+    testPrint(config, requestData, "higher-dpi", format, 3);
 
     config = configurationFactory.getConfig(getFile(BASE_DIR + "config-scalebar.yaml"));
     requestData = loadJsonRequestData();
-    testPrint(config, requestData, "scalebar", format, 45);
+    testPrint(config, requestData, "scalebar", format, 0);
   }
 
   private JSONObject getAreaOfInterest(PJsonObject requestData) throws JSONException {

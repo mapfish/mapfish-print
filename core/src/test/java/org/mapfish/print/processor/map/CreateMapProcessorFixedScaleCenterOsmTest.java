@@ -67,6 +67,6 @@ public class CreateMapProcessorFixedScaleCenterOsmTest extends AbstractMapfishSp
     assertEquals(2, layerGraphics.size());
 
     new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-        .assertSimilarity(layerGraphics, 780, 330, 50);
+        .assertSimilarity(layerGraphics, 780, 330, 0);
   }
 }

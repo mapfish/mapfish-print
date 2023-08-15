@@ -99,6 +99,6 @@ public class SetWmsCustomParamProcessorTest extends AbstractMapfishSpringTest {
     assertEquals(1, layerGraphics.size());
 
     new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-        .assertSimilarity(layerGraphics, 630, 294, 40);
+        .assertSimilarity(layerGraphics, 630, 294, 0);
   }
 }

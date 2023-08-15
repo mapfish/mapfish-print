@@ -66,7 +66,6 @@ public class CreateMapProcessorFixedScaleCenterGridFixedNumlinesPointTest
     assertEquals(2, layerGraphics.size());
 
     String imageName = getExpectedImageName("", BASE_DIR);
-    new ImageSimilarity(getFile(BASE_DIR + imageName))
-        .assertSimilarity(layerGraphics, 780, 330, 10);
+    new ImageSimilarity(getFile(BASE_DIR + imageName)).assertSimilarity(layerGraphics, 780, 330, 0);
   }
 }

@@ -75,7 +75,7 @@ public class CreateMapProcessorCenterWMSRotationSmallTilesTest extends AbstractM
     assertEquals(1, layerGraphics.size());
 
     new ImageSimilarity(getFile(BASE_DIR + "/expectedSimpleImage.png"))
-        .assertSimilarity(layerGraphics, 625, 625, 1);
+        .assertSimilarity(layerGraphics, 625, 625, 0);
   }
 
   private File getTile(String bbox) {
