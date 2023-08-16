@@ -42,7 +42,8 @@ public abstract class AbstractApiTest {
   protected void setPrintSpec(String printSpec, ClientHttpRequest request) throws IOException {
     request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-    OutputStreamWriter writer = new OutputStreamWriter(request.getBody());
+    OutputStreamWriter writer =
+        new OutputStreamWriter(request.getBody(), Constants.DEFAULT_ENCODING);
     writer.write(URLEncoder.encode(printSpec, Constants.DEFAULT_ENCODING));
     writer.flush();
   }

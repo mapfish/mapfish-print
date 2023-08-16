@@ -107,7 +107,7 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
                     + "AUTHORITY[\"EPSG\",\"4326\"]]";
             MockClientHttpRequest mockClientHttpRequest = new MockClientHttpRequest();
             mockClientHttpRequest.setResponse(
-                new MockClientHttpResponse(wkt.getBytes(), HttpStatus.OK));
+                new MockClientHttpResponse(wkt.getBytes(Constants.DEFAULT_CHARSET), HttpStatus.OK));
             return mockClientHttpRequest;
           }
         });
@@ -143,7 +143,7 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
                     + "0],UNIT[\"Degree\",0.017453292519943295]]";
             MockClientHttpRequest mockClientHttpRequest = new MockClientHttpRequest();
             mockClientHttpRequest.setResponse(
-                new MockClientHttpResponse(wkt.getBytes(), HttpStatus.OK));
+                new MockClientHttpResponse(wkt.getBytes(Constants.DEFAULT_CHARSET), HttpStatus.OK));
             return mockClientHttpRequest;
           }
         });

@@ -17,11 +17,13 @@ build-builder:
 .PHONY: checks
 checks: build-builder
 	mkdir --parent reports
+	mkdir --parent core/build/resources/
 	docker run --rm --user=$(shell id -u):$(shell id -g) \
 		--volume=$(PWD)/core/src/:/src/core/src/:ro \
 		--volume=$(PWD)/reports/:/src/core/build/reports/ \
+		--volume=$(PWD)/core/build/resources/:/src/core/build/resources/ \
 		mapfish_print_builder \
-		gradle --parallel :core:spotbugsMain :core:checkstyleMain
+		gradle --parallel spotbugsMain checkstyleMain spotbugsTest checkstyleTest
 
 .PHONY: tests
 tests: build-builder
