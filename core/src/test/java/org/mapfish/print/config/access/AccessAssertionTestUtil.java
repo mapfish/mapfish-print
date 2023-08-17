@@ -7,8 +7,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public class AccessAssertionTestUtil {
-  public static void setCreds(String... role) {
+public final class AccessAssertionTestUtil {
+  private AccessAssertionTestUtil() {
+    // should not be instantiated
+  }
+
+  public static void setCreds(final String... role) {
     Collection<SimpleGrantedAuthority> authorities = new HashSet<>();
     for (String roleName : role) {
       authorities.add(new SimpleGrantedAuthority(roleName));

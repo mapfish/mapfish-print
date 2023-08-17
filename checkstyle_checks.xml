@@ -7,6 +7,12 @@
     <module name="SuppressWarningsFilter"/>
     <module name="TreeWalker">
         <module name="SuppressWarningsHolder"/>
+        <module name="SuppressionCommentFilter"/>
+        <module name="SuppressionCommentFilter">
+            <property name="offCommentFormat" value="CSOFF\:\s*([\w\|]+)"/>
+            <property name="onCommentFormat" value="CSON\:\s*([\w\|]+)"/>
+            <property name="checkFormat" value="$1"/>
+        </module>
         <module name="JavadocMethod">
             <property name="allowedAnnotations" value="Override, Autowired"/>
             <property name="allowMissingParamTags" value="true"/>
@@ -70,12 +76,6 @@
             <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
         </module>
         <module name="UpperEll"/>
-    </module>
-    <module name="SuppressionCommentFilter"/>
-    <module name="SuppressionCommentFilter">
-        <property name="offCommentFormat" value="CSOFF\:\s*([\w\|]+)"/>
-        <property name="onCommentFormat" value="CSON\:\s*([\w\|]+)"/>
-        <property name="checkFormat" value="$1"/>
     </module>
     <module name="JavadocPackage"/>
     <module name="Translation"/>

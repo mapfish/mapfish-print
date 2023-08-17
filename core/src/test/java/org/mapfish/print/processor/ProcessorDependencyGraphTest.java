@@ -81,7 +81,7 @@ public class ProcessorDependencyGraphTest {
 
     final ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
     //noinspection ConstantConditions
-    graph.addRoot(new ProcessorGraphNode(processor, null));
+    graph.addRoot(new ProcessorGraphNode(processor, new MetricRegistry()));
     graph.createTask(values);
   }
 

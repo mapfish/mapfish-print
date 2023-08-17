@@ -352,12 +352,34 @@ public final class TableProcessor
     final JRDesignSection detailSection = (JRDesignSection) templateDesign.getDetailSection();
     int detailHeight = detailSection.getBands()[0].getHeight();
 
+    populateTemplateDesign(columns, templateDesign, detailSection, headerHeight, detailHeight);
+
+    final File jrxmlFile =
+        File.createTempFile("table-", JASPER_REPORT_XML_FILE_EXT, input.tempTaskDirectory);
+    JRXmlWriter.writeReport(
+        templateDesign, jrxmlFile.getAbsolutePath(), Constants.DEFAULT_ENCODING);
+
+    final File buildFile =
+        File.createTempFile("table-", JASPER_REPORT_COMPILED_FILE_EXT, input.tempTaskDirectory);
+    if (!buildFile.delete()) {
+      throw new PrintException("Unable to delete the build file: " + buildFile);
+    }
+    return this.jasperReportBuilder.compileJasperReport(buildFile, jrxmlFile).getAbsolutePath();
+  }
+
+  private void populateTemplateDesign(
+      final Map<String, Class<?>> columns,
+      final JasperDesign templateDesign,
+      final JRDesignSection detailSection,
+      final int headerHeight,
+      final int detailHeight)
+      throws JRException {
     final JRElement sampleHeaderEl = templateDesign.getColumnHeader().getElements()[0];
     int headerPosX = sampleHeaderEl.getX();
-    int headerPosY = sampleHeaderEl.getY();
+    final int headerPosY = sampleHeaderEl.getY();
     final JRElement sampleDetailEl = detailSection.getBands()[0].getElements()[0];
     int detailPosX = sampleDetailEl.getX();
-    int detailPosY = sampleDetailEl.getY();
+    final int detailPosY = sampleDetailEl.getY();
     clearFields(templateDesign);
     removeDetailBand(templateDesign);
     JRDesignBand headerBand = new JRDesignBand();
@@ -411,27 +433,20 @@ public final class TableProcessor
       templateDesign.addField(field);
 
       // Add a Header Field to the headerBand
-      JRDesignTextField colHeaderField = new JRDesignTextField();
-      colHeaderField.setX(headerPosX);
-      colHeaderField.setY(headerPosY);
-      colHeaderField.setWidth(columnWidth);
-      colHeaderField.setHeight(headerHeight);
-      colHeaderField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-      colHeaderField.setStyle(columnHeaderStyle);
-      colHeaderField.setTextAdjust(TextAdjustEnum.STRETCH_HEIGHT);
-      colHeaderField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
-
-      JRDesignExpression headerExpression = new JRDesignExpression();
-      headerExpression.setText('"' + columnName + '"');
-      colHeaderField.setExpression(headerExpression);
-      headerBand.addElement(colHeaderField);
+      addHeaderFieldToHeaderBand(
+          headerPosX,
+          headerPosY,
+          columnWidth,
+          headerHeight,
+          columnHeaderStyle,
+          columnName,
+          headerBand);
 
       // Add fields to the detailBand
       if (this.converters.isEmpty()) {
         // if no converters are used, create a field depending on the type
-        JRDesignElement designElement;
         if (RenderedImage.class.isAssignableFrom(valueClass)) {
-          designElement = createImageElement(templateDesign, columnName);
+          JRDesignElement designElement = createImageElement(templateDesign, columnName);
           addElement(
               detailBand,
               designElement,
@@ -441,10 +456,9 @@ public final class TableProcessor
               detailHeight,
               columnDetailStyle);
         } else {
-          JRDesignTextField textField = createTextField(columnName);
-          addElement(
+          addTextField(
+              columnName,
               detailBand,
-              textField,
               detailPosX,
               detailPosY,
               columnWidth,
@@ -496,18 +510,49 @@ public final class TableProcessor
       headerPosX = headerPosX + columnWidth + SPACE_BETWEEN_COLS;
       detailPosX = detailPosX + columnWidth + SPACE_BETWEEN_COLS;
     }
+  }
 
-    final File jrxmlFile =
-        File.createTempFile("table-", JASPER_REPORT_XML_FILE_EXT, input.tempTaskDirectory);
-    JRXmlWriter.writeReport(
-        templateDesign, jrxmlFile.getAbsolutePath(), Constants.DEFAULT_ENCODING);
+  private static void addHeaderFieldToHeaderBand(
+      final int headerPosX,
+      final int headerPosY,
+      final int columnWidth,
+      final int headerHeight,
+      final JRStyle columnHeaderStyle,
+      final String columnName,
+      final JRDesignBand headerBand) {
+    JRDesignTextField colHeaderField = new JRDesignTextField();
+    colHeaderField.setX(headerPosX);
+    colHeaderField.setY(headerPosY);
+    colHeaderField.setWidth(columnWidth);
+    colHeaderField.setHeight(headerHeight);
+    colHeaderField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+    colHeaderField.setStyle(columnHeaderStyle);
+    colHeaderField.setTextAdjust(TextAdjustEnum.STRETCH_HEIGHT);
+    colHeaderField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
 
-    final File buildFile =
-        File.createTempFile("table-", JASPER_REPORT_COMPILED_FILE_EXT, input.tempTaskDirectory);
-    if (!buildFile.delete()) {
-      throw new PrintException("Unable to delete the build file: " + buildFile);
-    }
-    return this.jasperReportBuilder.compileJasperReport(buildFile, jrxmlFile).getAbsolutePath();
+    JRDesignExpression headerExpression = new JRDesignExpression();
+    headerExpression.setText('"' + columnName + '"');
+    colHeaderField.setExpression(headerExpression);
+    headerBand.addElement(colHeaderField);
+  }
+
+  private void addTextField(
+      final String columnName,
+      final JRDesignBand detailBand,
+      final int detailPosX,
+      final int detailPosY,
+      final int columnWidth,
+      final int detailHeight,
+      final JRStyle columnDetailStyle) {
+    JRDesignTextField textField = createTextField(columnName);
+    addElement(
+        detailBand,
+        textField,
+        detailPosX,
+        detailPosY,
+        columnWidth,
+        detailHeight,
+        columnDetailStyle);
   }
 
   private JRDesignTextField createTextField(final String columnName) {

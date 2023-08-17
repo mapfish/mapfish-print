@@ -45,7 +45,7 @@ public class CreateMapProcessorCenterGeojsonJsonStyleV1 extends AbstractMapfishS
     doTest(requestData);
   }
 
-  private void doTest(PJsonObject requestData)
+  private void doTest(final PJsonObject requestData)
       throws IOException, JSONException, ExecutionException, InterruptedException {
     final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
     final Template template = config.getTemplate("main");
