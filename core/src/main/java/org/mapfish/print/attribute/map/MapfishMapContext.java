@@ -72,7 +72,6 @@ public final class MapfishMapContext {
    * @param forceLongitudeFirst If true then force longitude coordinates as the first coordinate.
    * @param dpiSensitiveStyle Scale the vector styles?
    */
-  // CSOFF: ParameterNumber
   public MapfishMapContext(
       final MapfishMapContext parent,
       final MapBounds bounds,
@@ -94,7 +93,6 @@ public final class MapfishMapContext {
    * @param forceLongitudeFirst If true then force longitude coordinates as the first coordinate.
    * @param dpiSensitiveStyle Scale the vector styles?
    */
-  // CSOFF: ParameterNumber
   public MapfishMapContext(
       final MapfishMapContext parent,
       final MapBounds bounds,
@@ -103,7 +101,6 @@ public final class MapfishMapContext {
       final double dpi,
       final Boolean forceLongitudeFirst,
       final boolean dpiSensitiveStyle) {
-    // CSON: ParameterNumber
     this.parent = parent;
     this.bounds = bounds;
     this.mapSize = mapSize;

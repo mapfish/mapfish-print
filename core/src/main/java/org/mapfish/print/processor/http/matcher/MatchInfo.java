@@ -47,30 +47,34 @@ public final class MatchInfo {
    * @param scheme the scheme to match.
    * @param host the host to match.
    * @param port the host to match.
-   * @param path the path to match.
-   * @param fragment the fragment to match.
-   * @param query the query to match.
    * @param realm the realm to match.
-   * @param method the method to match.
    */
-  // CSOFF: ParameterNumber
-  public MatchInfo(
-      final String scheme,
-      final String host,
-      final int port,
-      final String path,
-      final String query,
-      final String fragment,
-      final String realm,
-      final HttpMethod method) {
-    // CSON: ParameterNumber
+  private MatchInfo(final String scheme, final String host, final int port, final String realm) {
     this.scheme = scheme;
     this.host = host;
     this.port = port;
-    this.path = path;
-    this.query = query;
-    this.fragment = fragment;
+    this.path = ANY_PATH;
+    this.query = ANY_QUERY;
+    this.fragment = ANY_FRAGMENT;
     this.realm = realm;
+    this.method = ANY_METHOD;
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param uri the uri containing the parameters to match.
+   * @param port the host to match.
+   * @param method the method to match.
+   */
+  private MatchInfo(final URI uri, final int port, final HttpMethod method) {
+    this.scheme = uri.getScheme();
+    this.host = uri.getHost();
+    this.port = port;
+    this.path = uri.getPath();
+    this.query = uri.getQuery();
+    this.fragment = uri.getFragment();
+    this.realm = ANY_REALM;
     this.method = method;
   }
 
@@ -90,15 +94,7 @@ public final class MatchInfo {
       }
     }
 
-    return new MatchInfo(
-        uri.getScheme(),
-        uri.getHost(),
-        newPort,
-        uri.getPath(),
-        uri.getQuery(),
-        uri.getFragment(),
-        ANY_REALM,
-        method);
+    return new MatchInfo(uri, newPort, method);
   }
 
   /**
@@ -122,8 +118,7 @@ public final class MatchInfo {
             ? ANY_REALM
             : authscope.getRealm();
 
-    return new MatchInfo(
-        newScheme, newHost, newPort, ANY_PATH, ANY_QUERY, ANY_FRAGMENT, newRealm, ANY_METHOD);
+    return new MatchInfo(newScheme, newHost, newPort, newRealm);
   }
 
   private static String valOrAny(final String val) {

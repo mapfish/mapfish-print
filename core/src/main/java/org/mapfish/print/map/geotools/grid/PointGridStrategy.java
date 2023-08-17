@@ -9,6 +9,7 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.styling.Style;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
@@ -82,47 +83,47 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
       j = 0;
 
       if (!onRightBorder(bounds, x)) { // don't add the border features twice.
+        Geometry intersectionsBB =
+            GridUtils.computeBottomBorderIntersections(rotatedBounds, geometryFactory, x);
         GridUtils.bottomBorderLabel(
             labels,
-            geometryFactory,
-            rotatedBounds,
             unit,
-            x,
             worldToScreenTransform,
             labelTransform,
-            layerData.getGridLabelFormat());
+            layerData.getGridLabelFormat(),
+            intersectionsBB);
+        Geometry intersectionsTB =
+            GridUtils.computeTopBorderIntersections(rotatedBounds, geometryFactory, x);
         GridUtils.topBorderLabel(
             labels,
-            geometryFactory,
-            rotatedBounds,
             unit,
-            x,
             worldToScreenTransform,
             labelTransform,
-            layerData.getGridLabelFormat());
+            layerData.getGridLabelFormat(),
+            intersectionsTB);
       }
       for (double y = minY; y < bounds.getMaxY(); y += incrementY) {
         j++;
 
         if (addBorderFeatures && !onRightBorder(bounds, x) && !onTopBorder(bounds, y)) {
+          Geometry intersectionsLB =
+              GridUtils.computeLeftBorderIntersections(rotatedBounds, geometryFactory, y);
           GridUtils.leftBorderLabel(
               labels,
-              geometryFactory,
-              rotatedBounds,
               unit,
-              y,
               worldToScreenTransform,
               labelTransform,
-              layerData.getGridLabelFormat());
+              layerData.getGridLabelFormat(),
+              intersectionsLB);
+          Geometry intersectionsRB =
+              GridUtils.computeRightBorderIntersections(rotatedBounds, geometryFactory, y);
           GridUtils.rightBorderLabel(
               labels,
-              geometryFactory,
-              rotatedBounds,
               unit,
-              y,
               worldToScreenTransform,
               labelTransform,
-              layerData.getGridLabelFormat());
+              layerData.getGridLabelFormat(),
+              intersectionsRB);
         }
         if (!onTopBorder(bounds, y)
             && !onBottomBorder(bounds, y)
@@ -186,45 +187,45 @@ class PointGridStrategy implements GridType.GridTypeStrategy {
             && (i != layerData.numberOfLines[0] + 1 || j != 0)) {
 
           if (i == 0) {
+            Geometry intersectionsLB =
+                GridUtils.computeLeftBorderIntersections(rotatedBounds, geometryFactory, y);
             GridUtils.leftBorderLabel(
                 labels,
-                geometryFactory,
-                rotatedBounds,
                 unit,
-                y,
                 worldToScreenTransform,
                 labelTransform,
-                layerData.getGridLabelFormat());
+                layerData.getGridLabelFormat(),
+                intersectionsLB);
           } else if (i == layerData.numberOfLines[0] + 1) {
+            Geometry intersectionsRB =
+                GridUtils.computeRightBorderIntersections(rotatedBounds, geometryFactory, y);
             GridUtils.rightBorderLabel(
                 labels,
-                geometryFactory,
-                rotatedBounds,
                 unit,
-                y,
                 worldToScreenTransform,
                 labelTransform,
-                layerData.getGridLabelFormat());
+                layerData.getGridLabelFormat(),
+                intersectionsRB);
           } else if (j == 0) {
+            Geometry intersectionsBB =
+                GridUtils.computeBottomBorderIntersections(rotatedBounds, geometryFactory, x);
             GridUtils.bottomBorderLabel(
                 labels,
-                geometryFactory,
-                rotatedBounds,
                 unit,
-                x,
                 worldToScreenTransform,
                 labelTransform,
-                layerData.getGridLabelFormat());
+                layerData.getGridLabelFormat(),
+                intersectionsBB);
           } else if (j == layerData.numberOfLines[1] + 1) {
+            Geometry intersectionsTB =
+                GridUtils.computeTopBorderIntersections(rotatedBounds, geometryFactory, x);
             GridUtils.topBorderLabel(
                 labels,
-                geometryFactory,
-                rotatedBounds,
                 unit,
-                x,
                 worldToScreenTransform,
                 labelTransform,
-                layerData.getGridLabelFormat());
+                layerData.getGridLabelFormat(),
+                intersectionsTB);
           } else {
             featureBuilder.reset();
             Point geom = geometryFactory.createPoint(new Coordinate(x, y));

@@ -13,18 +13,16 @@ public final class HumanAlphaSerie {
   /**
    * Convert an integer to an alpha index.
    *
-   * @param number the number to convert
+   * @param nbr the number to convert
    * @return the alpha index
    */
-  // CSOFF: FinalParameters
-  public static String toString(int number) {
-    // CSON: FinalParameters
-    if (number <= 0) {
+  public static String toString(final int nbr) {
+    if (nbr <= 0) {
       return "";
     }
 
     // We want to start with A (1)
-    number += 1;
+    int number = nbr + 1;
 
     Stack<Integer> stack = new Stack<>();
     while (number > 26) {

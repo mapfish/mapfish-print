@@ -136,30 +136,17 @@ final class GridUtils {
    * Calculate the position and label of the top grid label and add it to the label collector.
    *
    * @param labels the label collector
-   * @param geometryFactory the geometry factory for creating JTS geometries
-   * @param rotatedBounds the full bounds of the map taking rotation into account.
    * @param unit the unit of the project, used to create label.
-   * @param x the x coordinate where the grid line is.
    * @param worldToScreenTransform the transform for mapping from world to screen(pixel)
+   * @param intersections
    */
-  // CSOFF: ParameterNumber
   public static void topBorderLabel(
       final LabelPositionCollector labels,
-      final GeometryFactory geometryFactory,
-      final Polygon rotatedBounds,
       final String unit,
-      final double x,
       final AffineTransform worldToScreenTransform,
       final MathTransform toLabelProjection,
-      final GridLabelFormat labelFormat) {
-    Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
-    LineString lineString =
-        geometryFactory.createLineString(
-            new Coordinate[] {
-              new Coordinate(x, envelopeInternal.centre().y),
-              new Coordinate(x, envelopeInternal.getMaxY())
-            });
-    Geometry intersections = lineString.intersection(rotatedBounds.getExteriorRing());
+      final GridLabelFormat labelFormat,
+      final Geometry intersections) {
 
     if (intersections.getNumPoints() > 0) {
       Coordinate borderIntersection = intersections.getGeometryN(0).getCoordinates()[0];
@@ -177,45 +164,26 @@ final class GridUtils {
     }
   }
 
-  // CSON: ParameterNumber
-
   /**
    * Calculate the position and label of the bottom grid label and add it to the label collector.
    *
    * @param labels the label collector
-   * @param geometryFactory the geometry factory for creating JTS geometries
-   * @param rotatedBounds the full bounds of the map taking rotation into account.
    * @param unit the unit of the project, used to create label.
-   * @param x the x coordinate where the grid line is.
    * @param worldToScreenTransform the transform for mapping from world to screen(pixel)
+   * @param intersections
    */
-  // CSOFF: ParameterNumber
   public static void bottomBorderLabel(
       final LabelPositionCollector labels,
-      final GeometryFactory geometryFactory,
-      final Polygon rotatedBounds,
       final String unit,
-      final double x,
       final AffineTransform worldToScreenTransform,
       final MathTransform toLabelProjection,
-      final GridLabelFormat labelFormat) {
-    Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
-    LineString lineString =
-        geometryFactory.createLineString(
-            new Coordinate[] {
-              new Coordinate(x, envelopeInternal.getMinY()),
-              new Coordinate(x, envelopeInternal.centre().y)
-            });
-    Geometry intersections = lineString.intersection(rotatedBounds.getExteriorRing());
+      final GridLabelFormat labelFormat,
+      final Geometry intersections) {
 
     if (intersections.getNumPoints() > 0) {
-      int idx = intersections instanceof LineString ? 1 : 0;
-      Coordinate borderIntersection = intersections.getGeometryN(0).getCoordinates()[idx];
       double[] screenPoints = new double[2];
-      worldToScreenTransform.transform(
-          new double[] {borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
-
-      double[] labelProj = transformToLabelProjection(toLabelProjection, borderIntersection);
+      double[] labelProj =
+          getLabelProj(worldToScreenTransform, toLabelProjection, intersections, screenPoints);
       labels.add(
           new GridLabel(
               createLabel(labelProj[0], unit, labelFormat),
@@ -225,46 +193,27 @@ final class GridUtils {
     }
   }
 
-  // CSON: ParameterNumber
-
   /**
    * Calculate the position and label of the right side grid label and add it to the label
    * collector.
    *
    * @param labels the label collector
-   * @param geometryFactory the geometry factory for creating JTS geometries
-   * @param rotatedBounds the full bounds of the map taking rotation into account.
    * @param unit the unit of the project, used to create label.
-   * @param y the y coordinate where the grid line is.
    * @param worldToScreenTransform the transform for mapping from world to screen(pixel)
+   * @param intersections
    */
-  // CSOFF: ParameterNumber
   public static void rightBorderLabel(
       final LabelPositionCollector labels,
-      final GeometryFactory geometryFactory,
-      final Polygon rotatedBounds,
       final String unit,
-      final double y,
       final AffineTransform worldToScreenTransform,
       final MathTransform toLabelProjection,
-      final GridLabelFormat labelFormat) {
-    Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
-    LineString lineString =
-        geometryFactory.createLineString(
-            new Coordinate[] {
-              new Coordinate(envelopeInternal.centre().x, y),
-              new Coordinate(envelopeInternal.getMaxX(), y)
-            });
-    Geometry intersections = lineString.intersection(rotatedBounds.getExteriorRing());
+      final GridLabelFormat labelFormat,
+      final Geometry intersections) {
 
     if (intersections.getNumPoints() > 0) {
-      int idx = intersections instanceof LineString ? 1 : 0;
-      Coordinate borderIntersection = intersections.getGeometryN(0).getCoordinates()[idx];
       double[] screenPoints = new double[2];
-      worldToScreenTransform.transform(
-          new double[] {borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
-
-      double[] labelProj = transformToLabelProjection(toLabelProjection, borderIntersection);
+      double[] labelProj =
+          getLabelProj(worldToScreenTransform, toLabelProjection, intersections, screenPoints);
       labels.add(
           new GridLabel(
               createLabel(labelProj[1], unit, labelFormat),
@@ -274,36 +223,34 @@ final class GridUtils {
     }
   }
 
-  // CSON: ParameterNumber
+  private static double[] getLabelProj(
+      final AffineTransform worldToScreenTransform,
+      final MathTransform toLabelProjection,
+      final Geometry intersections,
+      final double[] screenPoints) {
+    int idx = intersections instanceof LineString ? 1 : 0;
+    Coordinate borderIntersection = intersections.getGeometryN(0).getCoordinates()[idx];
+    worldToScreenTransform.transform(
+        new double[] {borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
+
+    return transformToLabelProjection(toLabelProjection, borderIntersection);
+  }
 
   /**
    * Calculate the position and label of the left side grid label and add it to the label collector.
    *
    * @param labels the label collector
-   * @param geometryFactory the geometry factory for creating JTS geometries
-   * @param rotatedBounds the full bounds of the map taking rotation into account.
    * @param unit the unit of the project, used to create label.
-   * @param y the y coordinate where the grid line is.
    * @param worldToScreenTransform the transform for mapping from world to screen(pixel)
+   * @param intersections
    */
-  // CSOFF: ParameterNumber
   static void leftBorderLabel(
       final LabelPositionCollector labels,
-      final GeometryFactory geometryFactory,
-      final Polygon rotatedBounds,
       final String unit,
-      final double y,
       final AffineTransform worldToScreenTransform,
       final MathTransform toLabelProjection,
-      final GridLabelFormat labelFormat) {
-    Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
-    LineString lineString =
-        geometryFactory.createLineString(
-            new Coordinate[] {
-              new Coordinate(envelopeInternal.getMinX(), y),
-              new Coordinate(envelopeInternal.centre().x, y)
-            });
-    Geometry intersections = lineString.intersection(rotatedBounds.getExteriorRing());
+      final GridLabelFormat labelFormat,
+      final Geometry intersections) {
 
     if (intersections.getNumPoints() > 0) {
       double[] screenPoints = new double[2];
@@ -322,8 +269,6 @@ final class GridUtils {
     }
   }
 
-  // CSON: ParameterNumber
-
   private static double[] transformToLabelProjection(
       final MathTransform toLabelProjection, final Coordinate borderIntersection) {
     try {
@@ -334,5 +279,53 @@ final class GridUtils {
     } catch (TransformException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  static Geometry computeLeftBorderIntersections(
+      final Polygon rotatedBounds, final GeometryFactory geometryFactory, final double y) {
+    Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
+    LineString lineString =
+        geometryFactory.createLineString(
+            new Coordinate[] {
+              new Coordinate(envelopeInternal.getMinX(), y),
+              new Coordinate(envelopeInternal.centre().x, y)
+            });
+    return lineString.intersection(rotatedBounds.getExteriorRing());
+  }
+
+  static Geometry computeTopBorderIntersections(
+      final Polygon rotatedBounds, final GeometryFactory geometryFactory, final double x) {
+    Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
+    LineString lineString =
+        geometryFactory.createLineString(
+            new Coordinate[] {
+              new Coordinate(x, envelopeInternal.centre().y),
+              new Coordinate(x, envelopeInternal.getMaxY())
+            });
+    return lineString.intersection(rotatedBounds.getExteriorRing());
+  }
+
+  static Geometry computeBottomBorderIntersections(
+      final Polygon rotatedBounds, final GeometryFactory geometryFactory, final double x) {
+    Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
+    LineString lineString =
+        geometryFactory.createLineString(
+            new Coordinate[] {
+              new Coordinate(x, envelopeInternal.getMinY()),
+              new Coordinate(x, envelopeInternal.centre().y)
+            });
+    return lineString.intersection(rotatedBounds.getExteriorRing());
+  }
+
+  static Geometry computeRightBorderIntersections(
+      final Polygon rotatedBounds, final GeometryFactory geometryFactory, final double y) {
+    Envelope envelopeInternal = rotatedBounds.getEnvelopeInternal();
+    final LineString lineString =
+        geometryFactory.createLineString(
+            new Coordinate[] {
+              new Coordinate(envelopeInternal.centre().x, y),
+              new Coordinate(envelopeInternal.getMaxX(), y)
+            });
+    return lineString.intersection(rotatedBounds.getExteriorRing());
   }
 }
