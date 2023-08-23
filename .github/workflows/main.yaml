@@ -94,7 +94,7 @@ jobs:
       - run: make checks
       - uses: actions/upload-artifact@v3
         with:
-          name: Checkstyle and Spotbugs reports
+          name: Checkstyle and SpotBugs reports
           path: reports
           if-no-files-found: ignore
         if: always()
