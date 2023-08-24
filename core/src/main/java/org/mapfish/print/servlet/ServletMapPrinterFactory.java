@@ -242,7 +242,8 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
         if (StringUtils.countMatches(app, ":") > MAX_DEPTH) {
             return null;
         }
-        if (!app.matches("^[a-zA-Z0-9:]+$")) {
+        if (!app.matches("^[a-zA-Z0-9:_-]+$")) {
+            LOGGER.info("The application named {} is not allowed.", app);
             return null;
         }
 
