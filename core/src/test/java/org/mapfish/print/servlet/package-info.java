@@ -1,2 +1,2 @@
-/** The parent package for processors. */
+/** Test the servlet package. */
 package org.mapfish.print.servlet;

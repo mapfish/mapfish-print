@@ -43,12 +43,12 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
         // https://github.com/gradle/gradle/blob/v6.7.1/subprojects/code-quality/src/main/groovy/org/gradle/api/plugins/quality/CheckstylePlugin.java#L37
         configFile = file("$rootProject.rootDir/checkstyle_checks.xml")
         configProperties = ['basedir': project.rootDir.path]
-        reportsDir = file("$project.buildDir/reports/checkstyleReports")
+        reportsDir = file("$project.buildDir/reports/CheckstyleReports")
     }
 
     spotbugs {
         toolVersion = "4.4.2" // com.github.spotbugs:spotbugs-annotations
-        reportsDir = file("$project.buildDir/reports/spotbugsReports")
+        reportsDir = file("$project.buildDir/reports/SpotBugsReports")
         effort = "max"
         reportLevel = "high"
     }
