@@ -22,6 +22,7 @@ COPY core ./core
 COPY publish ./publish
 COPY examples ./examples
 COPY docs ./docs
+COPY m2 ./.m2
 
 ARG GIT_HEAD
 ENV GIT_HEAD=${GIT_HEAD}
