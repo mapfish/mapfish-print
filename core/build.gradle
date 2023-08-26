@@ -20,7 +20,7 @@ repositories {
     maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
     maven { url "https://repo.osgeo.org/repository/release/"
         content {
-            excludeGroupByRegex("^org.geotools.*")
+            excludeGroupByRegex("^org\.geotools.*")
         }
     }
 }
