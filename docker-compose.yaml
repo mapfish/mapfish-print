@@ -21,7 +21,6 @@ services:
 
   tests:
     image: mapfish_print_builder
-    user: ${USER_ID}
     command: tail --follow /dev/null
     volumes:
       - ./examples/src:/src/examples/src:ro
@@ -29,4 +28,3 @@ services:
       - ./examples/build/resources:/src/examples/build/resources
     environment:
       PRINT_YAML_MAX_ALIASES: '200'
-      GRADLE_USER_HOME: /home/gradle/.gradle

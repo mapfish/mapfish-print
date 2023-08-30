@@ -44,7 +44,6 @@ RUN --mount=type=cache,target=/home/gradle/.gradle \
 RUN mv /home/gradle/.gradle-backup /home/gradle/.gradle
 
 # Be able to use the container with a different user
-ENV GRADLE_USER_HOME=/home/gradle/
 RUN chmod -R go+rw /home/gradle/
 
 COPY checkstyle_* ./
