@@ -26,7 +26,7 @@ allprojects {
     version = '1.0.0'
     ext.junitVersion = "4.13.2"
     ext.groovyVersion = "3.0.19"
-    ext.spotbugsVersion = '4.5.0'
+    ext.spotbugsVersion = '4.5.3'
     ext.jasperreportVersion = "6.20.5"
 
     apply plugin: 'org.owasp.dependencycheck'
