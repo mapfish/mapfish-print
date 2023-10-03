@@ -185,7 +185,7 @@ dependencies {
             'com.sun.mail:javax.mail:1.6.2',
             'com.amazonaws:aws-java-sdk-s3:1.12.560',
             'com.adobe.xmp:xmpcore:6.1.11',
-            'io.sentry:sentry-logback:6.28.0',
+            'io.sentry:sentry-logback:6.30.0',
             'net.logstash.logback:logstash-logback-encoder:7.4',
     )
 
