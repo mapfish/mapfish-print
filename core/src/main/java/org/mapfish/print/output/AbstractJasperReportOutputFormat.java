@@ -88,9 +88,9 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
 
     @Override
     public final Processor.ExecutionContext print(
-            final String jobId, final PJsonObject requestData, final Configuration config,
-            final File configDir, final File taskDirectory, final OutputStream outputStream)
-            throws Exception {
+        final String jobId, final PJsonObject requestData, final Configuration config,
+        final File configDir, final File taskDirectory, final OutputStream outputStream)
+        throws Exception {
         final Print print = getJasperPrint(jobId, requestData, config, configDir, taskDirectory);
 
         if (Thread.currentThread().isInterrupted()) {
@@ -181,18 +181,24 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
 
         }
         if (template.getJdbcUrl() != null) {
-            Connection connection;
-            if (template.getJdbcUser() != null) {
-                connection = DriverManager.getConnection(
+            Connection connection = null;
+            try {
+                if (template.getJdbcUser() != null) {
+                    connection = DriverManager.getConnection(
                         template.getJdbcUrl(), template.getJdbcUser(), template.getJdbcPassword());
-            } else {
-                connection = DriverManager.getConnection(template.getJdbcUrl());
-            }
+                } else {
+                    connection = DriverManager.getConnection(template.getJdbcUrl());
+                }
 
-            print = fillManager.fill(
+                print = fillManager.fill(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.asMap(),
                     connection);
+            } finally {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            }
 
         } else {
             JRDataSource dataSource;
