@@ -1,11 +1,7 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/camptocamp/c2cciutils/1.1/c2cciutils/schema.json
+
 checks:
-  required_workflows:
-    audit.yaml:
-      steps: []
-    rebuild.yaml:
-      steps: []
-    rebuild-3-20-3-22.yaml:
-      steps: []
+  required_workflows: false
   codespell:
     ignore_re:
       - ^examples/src/test/resources/examples/.*
