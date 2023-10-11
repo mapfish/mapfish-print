@@ -1,18 +1,9 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/camptocamp/c2cciutils/1.1/c2cciutils/schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/camptocamp/c2cciutils/1.1.28/c2cciutils/schema.json
 
 checks:
-  versions: False
-  prettier: False
-  required_workflows:
-    audit.yaml:
-      steps: []
-    rebuild.yaml:
-      steps: []
-    rebuild-3-23.yaml:
-      steps: []
-    rebuild-3-20-3-22.yaml:
-      steps: []
-    codeql.yaml: False
+  versions: false
+  prettier: false
+  required_workflows: false
   codespell:
     ignore_re:
       - ^examples/src/test/resources/examples/.*
