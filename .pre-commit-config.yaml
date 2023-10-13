@@ -3,6 +3,7 @@ ci:
   skip:
     - pretty-format-java
 
+    - jsonschema-validator
 repos:
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
     rev: v2.10.0
@@ -16,3 +17,8 @@ repos:
       - id: prettier
         additional_dependencies:
           - prettier@2.8.4
+  - repo: https://github.com/sbrunner/jsonschema-validator
+    rev: 0.1.0
+    hooks:
+      - id: jsonschema-validator
+        files: ^ci/config\.yaml$
