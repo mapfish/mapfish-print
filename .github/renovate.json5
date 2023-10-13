@@ -15,7 +15,6 @@
   },
   semanticCommits: 'disabled',
   baseBranches: ['master', '3.27', '3.28', '3.29', '3.30'],
-  // Upgrade the tool versions
   'pre-commit': { enabled: true },
   regexManagers: [
     {
