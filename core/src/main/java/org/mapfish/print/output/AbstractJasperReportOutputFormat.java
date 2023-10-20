@@ -184,18 +184,23 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
 
         }
         if (template.getJdbcUrl() != null) {
-            Connection connection;
-            if (template.getJdbcUser() != null) {
-                connection = DriverManager.getConnection(
+            Connection connection = null;
+            try {
+                if (template.getJdbcUser() != null) {
+                    connection = DriverManager.getConnection(
                         template.getJdbcUrl(), template.getJdbcUser(), template.getJdbcPassword());
-            } else {
-                connection = DriverManager.getConnection(template.getJdbcUrl());
-            }
-
-            print = fillManager.fill(
+                } else {
+                    connection = DriverManager.getConnection(template.getJdbcUrl());
+                }
+                print = fillManager.fill(
                     jasperTemplateBuild.getAbsolutePath(),
                     values.asMap(),
                     connection);
+            } finally {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            }
 
         } else {
             JRDataSource dataSource;
