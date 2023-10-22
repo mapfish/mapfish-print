@@ -22,13 +22,14 @@ COPY core ./core
 COPY publish ./publish
 COPY examples ./examples
 COPY docs ./docs
+COPY m2 /root/.m2/
 
 ARG GIT_HEAD
 ENV GIT_HEAD=${GIT_HEAD}
 
 # Exclude the tasks that will run out of the docker build (in a docker run)
 RUN --mount=type=cache,target=/home/gradle/.gradle \
-   gradle --parallel --exclude-task=:core:test \
+   gradle --parallel \
    --exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain \
    --exclude-task=:core:spotbugsTest --exclude-task=:core:checkstyleTest --exclude-task=:core:testCLI \
    :core:build :core:explodedWar :publish:build :examples:build :docs:buildDocs
@@ -43,7 +44,6 @@ RUN --mount=type=cache,target=/home/gradle/.gradle \
 RUN mv /home/gradle/.gradle-backup /home/gradle/.gradle
 
 # Be able to use the container with a different user
-ENV GRADLE_USER_HOME=/home/gradle/
 RUN chmod -R go+rw /home/gradle/
 
 COPY checkstyle_* ./

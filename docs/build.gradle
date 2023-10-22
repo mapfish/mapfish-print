@@ -5,6 +5,11 @@ apply plugin: 'idea'
 defaultTasks 'build'
 
 repositories {
+    mavenLocal() {
+        content {
+            excludeModule("javax.media", "jai_core")
+        }
+    }
     mavenCentral {
         content {
             excludeModule("javax.media", "jai_core")

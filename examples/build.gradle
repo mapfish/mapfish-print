@@ -1,6 +1,11 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 repositories {
+    mavenLocal() {
+        content {
+            excludeModule("javax.media", "jai_core")
+        }
+    }
     mavenCentral {
         content {
             excludeModule("javax.media", "jai_core")
