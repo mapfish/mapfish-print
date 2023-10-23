@@ -1,0 +1,3 @@
+values:
+  changelogAdditionalArgs:
+    - --tag-skip=3.23.0

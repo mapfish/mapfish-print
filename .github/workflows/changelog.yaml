@@ -47,5 +47,6 @@ jobs:
           --skip-from=dependabot[bot]
           --skip-from=renovate[bot]
           -v
+          --tag-skip=3.23.0
         env:
           AEON_AUTOMATION_GH_TOKEN: ${{ secrets.GOPASS_CI_GITHUB_TOKEN }}
