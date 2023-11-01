@@ -3,9 +3,9 @@ name: Changelog Generator
 on:
   schedule:
     - cron: 0 0 * * 1,4
-  push:
-    tags:
-      - '*.*.*'
+  repository_dispatch:
+    types:
+      - changelog
 
 jobs:
   changelog:
@@ -14,17 +14,6 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v4
-        if: github.event_name == 'push' && github.ref_type == 'tag'
-      - name: Create release
-        run: |-
-          if [[ ${{ github.ref_name }} =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            gh release create ${{ github.ref_name }} --generate-notes || true
-          fi
-        if: github.event_name == 'push' && github.ref_type == 'tag'
-        env:
-          GH_TOKEN: ${{ secrets.GOPASS_CI_GITHUB_TOKEN }}
-
       - name: Get Date
         id: get-date
         run: echo "date=$(/bin/date -u "+%Y%m%d%H%M%S")" >> $GITHUB_OUTPUT

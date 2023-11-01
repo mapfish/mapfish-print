@@ -12,11 +12,14 @@ on:
 permissions:
   packages: write
 
+  actions: write
+  contents: write
+
 env:
   HAS_SECRETS: ${{ secrets.HAS_SECRETS }}
 
 jobs:
-  build:
+  main:
     runs-on: ubuntu-22.04
     timeout-minutes: 30
     name: Continuous integration
@@ -226,3 +229,16 @@ jobs:
           cd ${GITHUB_WORKSPACE}/mapfish-print-doc
           git push origin gh-pages
         if: github.ref == 'refs/heads/master' && env.HAS_SECRETS == 'HAS_SECRETS'
+
+      - name: Trigger changelog workflow
+        uses: actions/github-script@v6
+        with:
+          script: |-
+            if (process.env.GITHUB_REF_TYPE == 'tag') {
+                console.log('Trigger changelog');
+                await github.rest.repos.createDispatchEvent({
+                    owner: 'camptocamp',
+                    repo: 'helm-mutualize',
+                    event_type: 'changelog',
+                });
+            }
