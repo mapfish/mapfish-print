@@ -3,6 +3,10 @@ name: Continuous integration
 on:
   push:
 
+permissions:
+  actions: write
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -218,3 +222,16 @@ jobs:
           git commit -m 'Update docs'
           git push origin gh-pages
         if: github.ref == 'refs/heads/master' && env.SECRETS == 'TRUE'
+
+      - name: Trigger changelog workflow
+        uses: actions/github-script@v6
+        with:
+          script: |-
+            if (process.env.GITHUB_REF_TYPE == 'tag') {
+                console.log('Trigger changelog');
+                await github.rest.repos.createDispatchEvent({
+                    owner: 'camptocamp',
+                    repo: 'helm-mutualize',
+                    event_type: 'changelog',
+                });
+            }
