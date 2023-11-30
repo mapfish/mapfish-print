@@ -120,7 +120,7 @@ dependencies {
     def slf4jVersion = '1.7.36'
     def metricsVersion = '4.2.21'
     def geotoolsVersion = '24.7'
-    def logbackVersion = '1.2.12'
+    def logbackVersion = '1.4.12'
 
     compile(
             "org.springframework:spring-context:$springVersion",
@@ -186,7 +186,7 @@ dependencies {
             'com.sun.mail:javax.mail:1.6.2',
             'com.amazonaws:aws-java-sdk-s3:1.12.578',
             'com.adobe.xmp:xmpcore:6.1.11',
-            'io.sentry:sentry-logback:6.0.0',
+            'io.sentry:sentry-logback:6.25.2',
             'net.logstash.logback:logstash-logback-encoder:7.1.1',
     )
 
