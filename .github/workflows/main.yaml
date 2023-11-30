@@ -248,8 +248,8 @@ jobs:
             if (process.env.GITHUB_REF_TYPE == 'tag') {
                 console.log('Trigger changelog');
                 await github.rest.repos.createDispatchEvent({
-                    owner: 'camptocamp',
-                    repo: 'helm-mutualize',
+                    owner: 'mapfish',
+                    repo: 'mapfish-print',
                     event_type: 'changelog',
                 });
             }
