@@ -230,7 +230,7 @@ jobs:
         if: github.ref == 'refs/heads/master' && env.HAS_SECRETS == 'HAS_SECRETS'
 
       - name: Trigger changelog workflow
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |-
             if (process.env.GITHUB_REF_TYPE == 'tag') {
