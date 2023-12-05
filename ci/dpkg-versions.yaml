@@ -1,6 +1,6 @@
 camptocamp/mapfish_print:latest:
   ubuntu_22_04/adduser: 3.118ubuntu5
-  ubuntu_22_04/apt: 2.4.10
+  ubuntu_22_04/apt: 2.4.11
   ubuntu_22_04/base-passwd: 3.5.52build1
   ubuntu_22_04/bash: 5.1-6ubuntu1
   ubuntu_22_04/util-linux: 2.37.2-4ubuntu3
@@ -40,9 +40,9 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/freetype: 2.11.1+dfsg-1ubuntu0.2
   ubuntu_22_04/libgcrypt20: 1.9.4-3ubuntu3
   ubuntu_22_04/gmp: 2:6.2.1+dfsg-3ubuntu1
-  ubuntu_22_04/gnutls28: 3.7.3-4ubuntu1.2
+  ubuntu_22_04/gnutls28: 3.7.3-4ubuntu1.3
   ubuntu_22_04/libgpg-error: 1.43-3
-  ubuntu_22_04/krb5: 1.19.2-2ubuntu0.2
+  ubuntu_22_04/krb5: 1.19.2-2ubuntu0.3
   ubuntu_22_04/nettle: 3.7.3-1build2
   ubuntu_22_04/libidn2: 2.3.2-2build1
   ubuntu_22_04/keyutils: 1.6.1-2ubuntu3
@@ -50,14 +50,14 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/lz4: 1.9.3-2build2
   ubuntu_22_04/xz-utils: 5.2.5-2ubuntu1
   ubuntu_22_04/ncurses: 6.3-2ubuntu0.1
-  ubuntu_22_04/nghttp2: 1.43.0-1build3
+  ubuntu_22_04/nghttp2: 1.43.0-1ubuntu0.1
   ubuntu_22_04/libnsl: 1.3.0-2build2
   ubuntu_22_04/p11-kit: 0.24.0-6build1
   ubuntu_22_04/pam: 1.4.0-11ubuntu2.3
   ubuntu_22_04/pcre2: 10.39-3ubuntu0.1
   ubuntu_22_04/pcre3: 2:8.39-13ubuntu0.22.04.1
   ubuntu_22_04/libpng1.6: 1.6.37-3build5
-  ubuntu_22_04/procps: 2:3.3.17-6ubuntu2
+  ubuntu_22_04/procps: 2:3.3.17-6ubuntu2.1
   ubuntu_22_04/libpsl: 0.21.0-1.2build2
   ubuntu_22_04/rtmpdump: 2.4+20151223.gitfa8646d.1-2build4
   ubuntu_22_04/cyrus-sasl2: 2.1.27+dfsg2-3ubuntu1.2
@@ -76,7 +76,7 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/shadow: 1:4.8.1-2ubuntu2.1
   ubuntu_22_04/lsb: 11.1.0ubuntu4
   ubuntu_22_04/mawk: 1.3.4.20200120-3
-  ubuntu_22_04/perl: 5.34.0-3ubuntu1.2
+  ubuntu_22_04/perl: 5.34.0-3ubuntu1.3
   ubuntu_22_04/sed: 4.8-1ubuntu2
   ubuntu_22_04/sensible-utils: 0.0.17
   ubuntu_22_04/sysvinit: 3.01-1ubuntu1
