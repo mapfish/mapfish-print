@@ -143,6 +143,8 @@ jobs:
       - id: version
         run: echo "version=$(grep version gradle.properties|sed "s/version=\(.*\)/\1/g")" > $GITHUB_OUTPUT
       - run: echo "${{ steps.version.outputs.version }}"
+      - run: make dist
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1

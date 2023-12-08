@@ -3,15 +3,15 @@ export DOCKER_BUILDKIT = 1
 
 .PHONY: build
 build: build-builder
-	# Required and not necessarily exists
-	touch CI.asc
-
 	docker build $(GIT_HEAD_ARG) --target=runner --tag=camptocamp/mapfish_print core
 	docker build $(GIT_HEAD_ARG) --target=tester --tag=mapfish_print_tester core
 	docker build $(GIT_HEAD_ARG) --target=watcher --tag=mapfish_print_watcher core
 
 .PHONY: build-builder
 build-builder:
+	# Required and not necessarily exists
+	touch CI.asc
+
 	docker build $(GIT_HEAD_ARG) --target=builder --tag=mapfish_print_builder .
 
 .PHONY: checks
@@ -72,6 +72,14 @@ acceptance-tests-down: .env
 	docker run --rm --volume=/tmp/geoserver-data:/mnt/geoserver_datadir camptocamp/geoserver \
 		bash -c 'rm -rf /mnt/geoserver_datadir/*'
 	rmdir /tmp/geoserver-data
+
+.PHONY: dist
+dist: build-builder
+	mkdir --parent core/build
+	rm -rf core/build/libs core/build/distributions
+	docker run --rm --user=$(shell id -u):$(shell id -g) \
+		--volume=$(PWD)/core/build:/src/core/build2/:rw mapfish_print_builder \
+		cp -r /src/core/build/libs /src/core/build/distributions /src/core/build2/
 
 .env:
 	echo "USER_ID=$(shell id -u):$(shell id -g)" > $@

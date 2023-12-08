@@ -31,7 +31,7 @@ RUN --mount=type=cache,target=/home/gradle/.gradle \
    gradle --parallel --exclude-task=:core:test \
    --exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain \
    --exclude-task=:core:spotbugsTest --exclude-task=:core:checkstyleTest --exclude-task=:core:testCLI \
-   :core:build :core:explodedWar :publish:build :examples:build :docs:buildDocs
+   :core:build :core:explodedWar :publish:build :examples:build :docs:buildDocs :core:libSourcesJar :core:libJavadocJar
 
 RUN mkdir -p core/build/resources/test/org/mapfish/print/ \
     && chmod -R go=u /home/gradle /tmp/mapfish-print/ . \
