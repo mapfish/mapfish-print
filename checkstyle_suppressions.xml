@@ -7,4 +7,5 @@
 <suppressions>
     <suppress files=".*/Test.*\.java" checks=".*"/>
     <suppress files=".*Test\.java" checks=".*"/>
+    <suppress files=".*/.*TestUtils\.java" checks=".*"/>
 </suppressions>
