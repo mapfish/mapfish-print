@@ -10,7 +10,7 @@
   xmlns:topp="http://www.openplans.org/topp"
   xmlns:gml="http://www.opengis.net/gml"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://www.openplans.org/topp http://geoserver:8080/wfs/DescribeFeatureType?typename=topp:tasmania_roads">
+  xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://www.openplans.org/topp http://geoserver:8080/geoserver/wfs/DescribeFeatureType?typename=topp:tasmania_roads">
   <wfs:Insert>
     <topp:tasmania_roads>
       <topp:the_geom>

@@ -168,7 +168,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
             / 2;
   }
 
-  private BufferedImage fetchImage(
+  private BufferedImage fetchLayerImage(
       final MapfishMapContext transformer,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
     BufferedImage image;

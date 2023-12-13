@@ -1,6 +1,10 @@
 GIT_HEAD_ARG = --build-arg=GIT_HEAD=$(shell git rev-parse HEAD)
 export DOCKER_BUILDKIT = 1
 
+.PHONY: clean
+clean:
+	rm -rf .env examples/geoserver-data/logs/
+
 .PHONY: build
 build: build-builder
 	docker build $(GIT_HEAD_ARG) --target=runner --tag=camptocamp/mapfish_print core
@@ -44,15 +48,6 @@ tests: build-builder
 
 .PHONY: acceptance-tests-up
 acceptance-tests-up: build .env
-	docker-compose down --remove-orphan
-
-	mkdir /tmp/geoserver-data || true
-	docker run --rm --volume=/tmp/geoserver-data:/mnt/geoserver_datadir camptocamp/geoserver \
-		bash -c 'rm -rf /mnt/geoserver_datadir/*'
-	mkdir /tmp/geoserver-data/www
-	cp -r examples/geoserver-data/* /tmp/geoserver-data/
-	cp -r core/src/test/resources/map-data/* /tmp/geoserver-data/www/
-
 	# Required to avoid root ownership of reports folder
 	mkdir -p examples/build/reports/ || true
 	docker-compose up --detach

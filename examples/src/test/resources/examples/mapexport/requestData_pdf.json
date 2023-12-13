@@ -35,7 +35,7 @@
           }
         },
         {
-          "baseURL": "http://geoserver:8080/wms",
+          "baseURL": "http://geoserver:8080/geoserver/wms",
           "opacity": 1,
           "type": "WMS",
           "layers": ["tiger:tiger_roads"],

@@ -34,7 +34,7 @@ configurations {
 
 tasks.register('geoserver' , Exec) {
     description 'Run and wait for GeoServer with test data'
-    commandLine 'curl', 'http://geoserver:8080/web/', '--output', '/dev/null'
+    commandLine 'curl', 'http://geoserver:8080/geoserver/web/', '--output', '/dev/null'
 }
 
 // prevent that the tests target can be directly called. the integration tests

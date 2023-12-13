@@ -11,7 +11,7 @@
         {
           "type": "geojson",
           "style": "polygon",
-          "geoJson": "http://geoserver:8080/www/test-data/simple-squares-geojson.json"
+          "geoJson": "http://geoserver:8080/geoserver/www/map-data/test-data/simple-squares-geojson.json"
         }
       ]
     }

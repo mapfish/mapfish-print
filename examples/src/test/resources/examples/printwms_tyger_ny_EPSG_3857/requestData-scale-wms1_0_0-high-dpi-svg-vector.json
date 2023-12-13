@@ -6,11 +6,11 @@
       "layers": [
         {
           "type": "geojson",
-          "geojson": "http://geoserver:8080/www/geojson/ny-roads-3857.json",
+          "geojson": "http://geoserver:8080/geoserver/www/map-data/geojson/ny-roads-3857.json",
           "renderAsSvg": true
         },
         {
-          "baseURL": "http://geoserver:8080/wms",
+          "baseURL": "http://geoserver:8080/geoserver/wms",
           "customParams": {
             "TRANSPARENT": "true"
           },

@@ -22,14 +22,14 @@
           "columns": ["icon", "osm_id", "timestamp", "name", "Type"],
           "data": [
             [
-              "http://geoserver:8080/www/icons/men-at-work.jpeg",
+              "http://geoserver:8080/geoserver/www/map-data/icons/men-at-work.jpeg",
               "629119177",
               "2010-02-04T18:42:23Z",
               "Oh! Liban",
               "restaurant"
             ],
             [
-              "http://geoserver:8080/www/icons/men-at-work.jpeg",
+              "http://geoserver:8080/geoserver/www/map-data/icons/men-at-work.jpeg",
               "1423114737",
               "2011-09-04T15:05:13Z",
               "Restaurant Mirabeau",
@@ -163,7 +163,7 @@
             {
               "name": "osm",
               "icons": [
-                "http://geoserver:8080/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states"
+                "http://geoserver:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states"
               ]
             }
           ]
@@ -174,13 +174,13 @@
             {
               "name": "fluel",
               "icons": [
-                "http://geoserver:8080/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:tasmania_cities"
+                "http://geoserver:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:tasmania_cities"
               ]
             },
             {
               "name": "hotel",
               "icons": [
-                "http://geoserver:8080/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=tiger-ny"
+                "http://geoserver:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=tiger-ny"
               ]
             }
           ]

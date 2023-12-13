@@ -19,7 +19,7 @@ The test server includes a client which can be used for testing. To start the se
 
     docker-compose up -d
 
-In the docker-comose context GeoServer can be accessed at <http://geoserver:8080/> and
+In the docker-comose context GeoServer can be accessed at <http://geoserver:8080/geoserver/> and
 MapFish Print can be accessed at <http://print:8080/>
 
 # Writing Tests

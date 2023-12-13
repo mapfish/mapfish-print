@@ -48,14 +48,14 @@ public final class ImageSimilarity {
   /** The constructor, which creates the GUI and start the image processing task. */
   public ImageSimilarity(final File expectedFile) throws IOException {
     this.expectedImage = expectedFile.exists() ? ImageIO.read(expectedFile) : null;
-    if (REGENERATE_EXPECTED_IMAGES) {
+    if (REGENERATE_EXPECTED_IMAGES || !expectedFile.exists()) {
       this.expectedPath =
           new File(
               expectedFile
                   .toString()
                   .replace("/out/", "/src/")
                   .replace("/build/classes/test/", "/src/test/resources/")
-                  .replace("/src/core/build/resources/test/", "/src/core/src/test/resources/"));
+                  .replace("/build/resources/test/", "/src/test/resources/"));
     } else {
       this.expectedPath = expectedFile;
     }
@@ -257,12 +257,23 @@ public final class ImageSimilarity {
         actualIterator.getPixel(x, y, actualPixel);
         maskIterator.getPixel(x, y, maskPixel);
         double squareDist = 0.0;
-        for (int i = 0; i < this.expectedImage.getSampleModel().getNumBands(); i++) {
-          double colorDist = (expectedPixel[i] - actualPixel[i]) * (maskPixel[0] / 255.0);
-          squareDist += colorDist * colorDist;
+        if (maskPixel[0] == 255) {
+          for (int i = 0; i < this.expectedImage.getSampleModel().getNumBands(); i++) {
+            double colorDist = expectedPixel[i] - actualPixel[i];
+            squareDist += colorDist * colorDist;
+          }
+        } else if (maskPixel[0] != 0) {
+          throw new RuntimeException(
+              "Mask image must be only black and white (0 and 255), got "
+                  + maskPixel[0]
+                  + " at "
+                  + x
+                  + ","
+                  + y
+                  + " in "
+                  + this.maskImage);
         }
-        double pxDiff =
-            Math.sqrt(squareDist) / Math.sqrt(this.expectedImage.getSampleModel().getNumBands());
+        double pxDiff = Math.sqrt(squareDist / this.expectedImage.getSampleModel().getNumBands());
         dist += pxDiff / 255;
         diffGraphics.setColor(new Color((int) Math.round(pxDiff), 0, 0));
         diffGraphics.drawRect(x, y, 1, 1);
@@ -360,7 +371,7 @@ public final class ImageSimilarity {
    * @throws IOException if the image could not be written.
    */
   public void assertSimilarity(final BufferedImage actualImage) throws IOException {
-    assertSimilarity(actualImage, 1);
+    assertSimilarity(actualImage, 0);
   }
 
   /**
@@ -374,6 +385,7 @@ public final class ImageSimilarity {
   public void assertSimilarity(final BufferedImage actualImage, final double maxDistance)
       throws IOException {
     if (REGENERATE_EXPECTED_IMAGES || !this.expectedPath.exists()) {
+      System.out.println("The expected file has been generated: " + expectedPath.getAbsolutePath());
       ImageIO.write(actualImage, "png", expectedPath);
       if (REGENERATE_EXPECTED_IMAGES) {
         return;
