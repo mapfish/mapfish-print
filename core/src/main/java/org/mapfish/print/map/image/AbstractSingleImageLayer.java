@@ -110,10 +110,10 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
    * @param transformer object containing map rendering information
    */
   protected abstract BufferedImage loadImage(
-      MfClientHttpRequestFactory requestFactory, MapfishMapContext transformer) throws Throwable;
+      MfClientHttpRequestFactory requestFactory, MapfishMapContext transformer) throws Exception;
 
   @Override
-  public final double getImageBufferScaling() {
+  public double getImageBufferScaling() {
     return 1;
   }
 

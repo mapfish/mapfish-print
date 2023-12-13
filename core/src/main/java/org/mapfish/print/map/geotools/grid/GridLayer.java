@@ -70,7 +70,9 @@ public final class GridLayer implements MapLayer {
   }
 
   @Override
-  public void prepareRender(final MapfishMapContext transformer) {}
+  public void prepareRender(
+      final MapfishMapContext transformer,
+      final MfClientHttpRequestFactory clientHttpRequestFactory) {}
 
   @Override
   public void render(

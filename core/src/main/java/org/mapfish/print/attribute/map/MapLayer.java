@@ -32,8 +32,10 @@ public interface MapLayer {
    * Render the layer to the graphics2D object.
    *
    * @param transformer the map transformer containing the map bounds and size.
+   * @param clientHttpRequestFactory the factory to use for making http requests.
    */
-  void prepareRender(MapfishMapContext transformer);
+  void prepareRender(
+      MapfishMapContext transformer, MfClientHttpRequestFactory clientHttpRequestFactory);
 
   /**
    * Render the layer to the graphics2D object.

@@ -3,6 +3,7 @@ package org.mapfish.print.map.image.wms;
 import com.codahale.metrics.MetricRegistry;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
@@ -48,7 +49,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
   protected BufferedImage loadImage(
       @Nonnull final MfClientHttpRequestFactory requestFactory,
       @Nonnull final MapfishMapContext transformer)
-      throws Throwable {
+      throws IOException {
 
     LOGGER.info("Query the WMS image {}.", this.imageRequest.getURI());
     return fetchImage(imageRequest, transformer);
