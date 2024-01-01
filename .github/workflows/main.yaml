@@ -94,7 +94,7 @@ jobs:
       - run: make build
 
       - run: make checks
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Checkstyle and SpotBugs reports
           path: reports
@@ -105,13 +105,13 @@ jobs:
         # Tntented to fail earlier than the standard 30min for workflow failure
         timeout-minutes: 10
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Unit test results
           path: core/build/resources/test/org/mapfish/print/
           if-no-files-found: ignore
         if: failure()
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Unit test report
           path: core/build/reports/tests/test/
@@ -123,7 +123,7 @@ jobs:
       - run: c2cciutils-docker-logs || true
         if: always()
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Acceptance tests (Examples)
           path: examples/build/resources/test/examples/
