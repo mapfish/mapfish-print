@@ -6,13 +6,13 @@ ci:
     - jsonschema-validator
 repos:
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.11.0
+    rev: v2.12.0
     hooks:
       - id: pretty-format-java
         args:
           - --autofix
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.3
+    rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
         additional_dependencies:
