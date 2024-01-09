@@ -77,7 +77,9 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
   }
 
   @Override
-  public final void prepareRender(final MapfishMapContext mapContext) {
+  public final void prepareRender(
+      final MapfishMapContext mapContext,
+      final MfClientHttpRequestFactory clientHttpRequestFactory) {
     this.tileCacheInformation =
         createTileInformation(
             mapContext.getRotatedBoundsAdjustedForPreciseRotatedMapSize(),

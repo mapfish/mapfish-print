@@ -413,7 +413,7 @@ public final class CreateMapProcessor
 
     // prepare layers for rendering
     for (final MapLayer layer : layers) {
-      layer.prepareRender(mapContext);
+      layer.prepareRender(mapContext, clientHttpRequestFactory);
       final MapfishMapContext transformer =
           getTransformer(mapContext, layer.getImageBufferScaling());
       layer.prefetchResources(cache, clientHttpRequestFactory, transformer, context);

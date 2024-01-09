@@ -7,7 +7,9 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,7 +29,6 @@ import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.Style;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.Constants;
-import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
@@ -51,7 +52,9 @@ public final class ImageLayer extends AbstractSingleImageLayer {
   private final ImageParam params;
   private final StyleSupplier<GridCoverage2D> styleSupplier;
   private final ExecutorService executorService;
-  private RenderType renderType;
+  private final RenderType renderType;
+  private double imageBufferScaling;
+  private BufferedImage image;
 
   /**
    * Constructor.
@@ -77,35 +80,27 @@ public final class ImageLayer extends AbstractSingleImageLayer {
 
   @Override
   protected BufferedImage loadImage(
-      final MfClientHttpRequestFactory requestFactory, final MapfishMapContext transformer)
-      throws Throwable {
-    final ImageParam layerParam = this.params;
-    final URI commonUri = new URI(layerParam.getBaseUrl());
-
-    final Rectangle paintArea = transformer.getPaintArea();
-
+      final MfClientHttpRequestFactory requestFactory, final MapfishMapContext transformer) {
+    final ReferencedEnvelope envelopeOrig =
+        transformer.getBounds().toReferencedEnvelope(transformer.getPaintArea());
+    final Rectangle paintArea = calculateNewBounds(image, envelopeOrig);
     final ReferencedEnvelope envelope = transformer.getBounds().toReferencedEnvelope(paintArea);
-    final CoordinateReferenceSystem mapProjection = envelope.getCoordinateReferenceSystem();
-
     final BufferedImage bufferedImage =
         new BufferedImage(paintArea.width, paintArea.height, TYPE_INT_ARGB_PRE);
     final Graphics2D graphics = bufferedImage.createGraphics();
-    final MapBounds bounds = transformer.getBounds();
     final MapContent content = new MapContent();
-    final ClientHttpRequest request = requestFactory.createRequest(commonUri, HttpMethod.GET);
-    final BufferedImage image = fetchImage(request, transformer);
 
     try {
       GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
+      final CoordinateReferenceSystem mapProjection = envelope.getCoordinateReferenceSystem();
       GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapProjection);
 
-      gridEnvelope.setEnvelope(layerParam.extent);
+      gridEnvelope.setEnvelope(this.params.extent);
       GridCoverage2D coverage =
-          factory.create(layerParam.getBaseUrl(), image, gridEnvelope, null, null, null);
+          factory.create(this.params.getBaseUrl(), image, gridEnvelope, null, null, null);
       Style style = this.styleSupplier.load(requestFactory, coverage);
-      GridCoverageLayer l = new GridCoverageLayer(coverage, style);
 
-      content.addLayers(Collections.singletonList(l));
+      content.addLayers(Collections.singletonList(new GridCoverageLayer(coverage, style)));
 
       StreamingRenderer renderer = new StreamingRenderer();
 
@@ -133,8 +128,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
       renderer.setMapContent(content);
       renderer.setThreadPool(this.executorService);
 
-      final ReferencedEnvelope mapArea = bounds.toReferencedEnvelope(paintArea);
-      renderer.paint(graphics, paintArea, mapArea);
+      renderer.paint(graphics, paintArea, envelope);
       return bufferedImage;
     } finally {
       graphics.dispose();
@@ -142,9 +136,51 @@ public final class ImageLayer extends AbstractSingleImageLayer {
     }
   }
 
+  private Rectangle calculateNewBounds(
+      final BufferedImage image, final ReferencedEnvelope envelope) {
+    double w = (image.getWidth() / (params.extent[2] - params.extent[0])) * envelope.getWidth();
+    double h = (image.getHeight() / (params.extent[3] - params.extent[1])) * envelope.getHeight();
+    return new Rectangle(Math.toIntExact(Math.round(w)), Math.toIntExact(Math.round(h)));
+  }
+
   @Override
   public RenderType getRenderType() {
     return this.renderType;
+  }
+
+  @Override
+  public double getImageBufferScaling() {
+    return imageBufferScaling;
+  }
+
+  @Override
+  public void prepareRender(
+      final MapfishMapContext transformer,
+      final MfClientHttpRequestFactory clientHttpRequestFactory) {
+    image = fetchImage(transformer, clientHttpRequestFactory);
+    final ReferencedEnvelope envelopeOrig =
+        transformer.getBounds().toReferencedEnvelope(transformer.getPaintArea());
+    final Rectangle paintArea = calculateNewBounds(image, envelopeOrig);
+
+    imageBufferScaling =
+        ((paintArea.getWidth() / transformer.getMapSize().getWidth())
+                + (paintArea.getHeight() / transformer.getMapSize().getHeight()))
+            / 2;
+  }
+
+  private BufferedImage fetchImage(
+      final MapfishMapContext transformer,
+      final MfClientHttpRequestFactory clientHttpRequestFactory) {
+    BufferedImage image;
+    try {
+      final URI commonUri = new URI(this.params.getBaseUrl());
+      final ClientHttpRequest request =
+          clientHttpRequestFactory.createRequest(commonUri, HttpMethod.GET);
+      image = fetchImage(request, transformer);
+    } catch (URISyntaxException | IOException e) {
+      throw new RuntimeException(e);
+    }
+    return image;
   }
 
   /**
