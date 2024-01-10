@@ -39,6 +39,8 @@ import org.mapfish.print.map.geotools.AbstractGridCoverageLayerPlugin;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
@@ -50,11 +52,14 @@ import org.springframework.http.client.ClientHttpRequest;
  */
 public final class ImageLayer extends AbstractSingleImageLayer {
   private final ImageParam params;
+  private final boolean failOnError;
   private final StyleSupplier<GridCoverage2D> styleSupplier;
   private final ExecutorService executorService;
   private final RenderType renderType;
   private double imageBufferScaling;
   private BufferedImage image;
+  private boolean imageLoadError = false;
+  private static final Logger LOGGER = LoggerFactory.getLogger(ImageLayer.class);
 
   /**
    * Constructor.
@@ -73,6 +78,8 @@ public final class ImageLayer extends AbstractSingleImageLayer {
       @Nonnull final MetricRegistry registry) {
     super(executorService, styleSupplier, params, registry, configuration);
     this.params = params;
+    this.failOnError = params.failOnError;
+    params.failOnError = true;
     this.styleSupplier = styleSupplier;
     this.executorService = executorService;
     this.renderType = RenderType.fromMimeType(params.imageFormat);
@@ -83,7 +90,12 @@ public final class ImageLayer extends AbstractSingleImageLayer {
       final MfClientHttpRequestFactory requestFactory, final MapfishMapContext transformer) {
     final ReferencedEnvelope envelopeOrig =
         transformer.getBounds().toReferencedEnvelope(transformer.getPaintArea());
-    final Rectangle paintArea = calculateNewBounds(image, envelopeOrig);
+    final Rectangle paintArea;
+    if (imageLoadError) {
+      paintArea = transformer.getPaintArea();
+    } else {
+      paintArea = calculateNewBounds(image, envelopeOrig);
+    }
     final ReferencedEnvelope envelope = transformer.getBounds().toReferencedEnvelope(paintArea);
     final BufferedImage bufferedImage =
         new BufferedImage(paintArea.width, paintArea.height, TYPE_INT_ARGB_PRE);
@@ -157,30 +169,41 @@ public final class ImageLayer extends AbstractSingleImageLayer {
   public void prepareRender(
       final MapfishMapContext transformer,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
-    image = fetchImage(transformer, clientHttpRequestFactory);
+    try {
+      image = fetchLayerImage(transformer, clientHttpRequestFactory);
+    } catch (URISyntaxException | IOException | RuntimeException e) {
+      if (failOnError) {
+        throw new RuntimeException(e);
+      } else {
+        LOGGER.error("Error while fetching image", e);
+        image = createErrorImage(new Rectangle(1, 1));
+        imageLoadError = true;
+        imageBufferScaling = 1;
+        return;
+      }
+    }
+    imageLoadError = false;
+
     final ReferencedEnvelope envelopeOrig =
         transformer.getBounds().toReferencedEnvelope(transformer.getPaintArea());
     final Rectangle paintArea = calculateNewBounds(image, envelopeOrig);
 
+    double widthImageBufferScaling = paintArea.getWidth() / transformer.getMapSize().getWidth();
+    double heightImageBufferScaling = paintArea.getHeight() / transformer.getMapSize().getHeight();
     imageBufferScaling =
-        ((paintArea.getWidth() / transformer.getMapSize().getWidth())
-                + (paintArea.getHeight() / transformer.getMapSize().getHeight()))
-            / 2;
+        Math.sqrt(
+            (Math.pow(widthImageBufferScaling, 2) + Math.pow(heightImageBufferScaling, 2)) / 2);
   }
 
   private BufferedImage fetchLayerImage(
       final MapfishMapContext transformer,
-      final MfClientHttpRequestFactory clientHttpRequestFactory) {
+      final MfClientHttpRequestFactory clientHttpRequestFactory)
+      throws URISyntaxException, IOException {
     BufferedImage image;
-    try {
-      final URI commonUri = new URI(this.params.getBaseUrl());
-      final ClientHttpRequest request =
-          clientHttpRequestFactory.createRequest(commonUri, HttpMethod.GET);
-      image = fetchImage(request, transformer);
-    } catch (URISyntaxException | IOException e) {
-      throw new RuntimeException(e);
-    }
-    return image;
+    final URI commonUri = new URI(this.params.getBaseUrl());
+    final ClientHttpRequest request =
+        clientHttpRequestFactory.createRequest(commonUri, HttpMethod.GET);
+    return fetchImage(request, transformer);
   }
 
   /**
