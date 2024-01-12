@@ -264,14 +264,9 @@ public final class ImageSimilarity {
           }
         } else if (maskPixel[0] != 0) {
           throw new RuntimeException(
-              "Mask image must be only black and white (0 and 255), got "
-                  + maskPixel[0]
-                  + " at "
-                  + x
-                  + ","
-                  + y
-                  + " in "
-                  + this.maskImage);
+              String.format(
+                  "Mask image must be only black and white (0 and 255), got %s at %s,%s in:\n%s",
+                  maskPixel[0], x, y, this.maskImage));
         }
         double pxDiff = Math.sqrt(squareDist / this.expectedImage.getSampleModel().getNumBands());
         dist += pxDiff / 255;
@@ -385,8 +380,8 @@ public final class ImageSimilarity {
   public void assertSimilarity(final BufferedImage actualImage, final double maxDistance)
       throws IOException {
     if (REGENERATE_EXPECTED_IMAGES || !this.expectedPath.exists()) {
-      System.out.println("The expected file has been generated: " + expectedPath.getAbsolutePath());
       ImageIO.write(actualImage, "png", expectedPath);
+      System.out.println("The expected file has been generated: " + expectedPath.getAbsolutePath());
       if (REGENERATE_EXPECTED_IMAGES) {
         return;
       } else {
