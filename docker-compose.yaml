@@ -3,7 +3,7 @@ version: '2.1'
 
 services:
   geoserver:
-    image: camptocamp/geoserver:2.22.2
+    image: camptocamp/geoserver:2.24.1
     volumes:
       - ./examples/geoserver-data/:/mnt/geoserver_datadir
       - ./core/src/test/resources/map-data/:/mnt/geoserver_datadir/www/map-data
