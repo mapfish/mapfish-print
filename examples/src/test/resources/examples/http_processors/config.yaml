@@ -34,7 +34,7 @@ templates:
           # Add a static header to all http requests
           - !addHeaders
             headers:
-              newHeader: 'headerValue'
+              newHeader: headerValue
           # Only allow geoserver requests, any other requests will be rejected
           - !restrictUris
             matchers:

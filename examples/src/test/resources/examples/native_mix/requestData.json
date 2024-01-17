@@ -10,7 +10,7 @@
       "scale": 25000,
       "layers": [
         {
-          "baseURL": "http://geoserver:8080/wms",
+          "baseURL": "http://geoserver:8080/geoserver/wms",
           "serverType": "geoserver",
           "useNativeAngle": "false",
           "opacity": 0.5,
@@ -23,7 +23,7 @@
           }
         },
         {
-          "baseURL": "http://geoserver:8080/wms",
+          "baseURL": "http://geoserver:8080/geoserver/wms",
           "serverType": "geoserver",
           "useNativeAngle": "true",
           "opacity": 0.5,
@@ -36,7 +36,7 @@
           }
         },
         {
-          "baseURL": "http://geoserver:8080/wms",
+          "baseURL": "http://geoserver:8080/geoserver/wms",
           "serverType": "geoserver",
           "useNativeAngle": "false",
           "opacity": 0.5,

@@ -20,7 +20,7 @@
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				</reportElement>
-				<imageExpression><![CDATA["http://lh/www/icons/men-at-work.jpeg"]]></imageExpression>
+				<imageExpression><![CDATA["http://lh/www/map-data/icons/men-at-work.jpeg"]]></imageExpression>
 			</image>
 			<subreport>
 				<reportElement x="0" y="51" width="780" height="330" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d">

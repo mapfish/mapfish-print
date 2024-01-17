@@ -19,7 +19,8 @@
           "imageFormat": "image/png",
           "styles": ["line"],
           "customParams": {
-            "TRANSPARENT": "true"
+            "TRANSPARENT": "true",
+            "EXCEPTIONS": "INIMAGE"
           }
         }
       ]

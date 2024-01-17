@@ -1,7 +1,7 @@
 {
   "attributes": {
     "BaseData": "Daten der amtlichen Vermessung. Stand der amtlichen Vermessung: 18.05.2020.",
-    "CantonalLogoRef": "http://geoserver:8080/www/oereb/logo_canton.png",
+    "CantonalLogoRef": "http://geoserver:8080/geoserver/www/oereb/logo_canton.png",
     "Certification": "Referenz zur kantonsspezifischen Gesetzesgrundlage bezüglich Beglaubigungen.",
     "CertificationAtWeb": "https://oereb.bl.ch/certification/de",
     "ConcernedTheme": [
@@ -36,7 +36,7 @@
       }
     ],
     "ExtractIdentifier": "19451afe-2d5b-4c06-ad13-3b99b3404b73",
-    "FederalLogoRef": "http://geoserver:8080/www/oereb/logo_confederation.png",
+    "FederalLogoRef": "http://geoserver:8080/geoserver/www/oereb/logo_confederation.png",
     "Footer": "18.05.2020   13:05:05   19451afe-2d5b-4c06-ad13-3b99b3404b73",
     "GeneralInformation": "Der Inhalt des Katasters wird als bekannt vorausgesetzt. Der Kanton --HIER MUSS DER KANTONSNAME STEHEN--- ist für die Genauigkeit und Verlässlichkeit der gesetzgebenden Dokumenten in elektronischer Form nicht haftbar. Der Auszug hat rein informativen Charakter und begründet insbesondere keine Rechten und Pflichten. Rechtsverbindlich sind diejenigen Dokumente, welche rechtskräftig verabschiedet oder veröffentlicht worden sind. Mit der Beglaubigung des Auszuges wird die Übereinstimmung des Auszuges mit dem Kataster zum Zeitpunkt des Auszuges bestätigt.",
     "Glossary": [
@@ -113,8 +113,8 @@
         "Title": "WaV"
       }
     ],
-    "LogoPLRCadastreRef": "http://geoserver:8080/www/oereb/de.png",
-    "MunicipalityLogoRef": "http://geoserver:8080/www/oereb/2771.png",
+    "LogoPLRCadastreRef": "http://geoserver:8080/geoserver/www/oereb/de.png",
+    "MunicipalityLogoRef": "http://geoserver:8080/geoserver/www/oereb/2771.png",
     "NotConcernedTheme": [
       {
         "Code": "LandUsePlans",
@@ -301,7 +301,7 @@
             "Geom_Type": "AreaShare",
             "Information": "Belastet, untersuchungsbedürftig",
             "PartInPercent": "32.6%",
-            "SymbolRef": "http://geoserver:8080/www/oereb/StaoTyp2.png",
+            "SymbolRef": "http://geoserver:8080/geoserver/www/oereb/StaoTyp2.png",
             "TypeCode": "StaoTyp2",
             "TypeCodelist": ""
           }
@@ -327,7 +327,7 @@
                 "TRANSPARENT": "true"
               },
               "imageFormat": "image/png",
-              "layers": ["ch.bav.kataster-belasteter-standorte-oev.oereb"],
+              "layers": ["ch.bav.kataster-belasteter-standorte-oev_v2_0.oereb"],
               "opacity": 0.75,
               "styles": "default",
               "type": "wms"
@@ -345,7 +345,7 @@
             }
           ]
         },
-        "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
+        "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev_v2_0.oereb"
       },
       {
         "Geom_Type": "LengthShare",
@@ -409,7 +409,7 @@
             "Geom_Type": "LengthShare",
             "Information": "Belastet, überwachungsbedürftig",
             "LengthShare": "164 m",
-            "SymbolRef": "http://geoserver:8080/www/oereb/StaoTyp3.png",
+            "SymbolRef": "http://geoserver:8080/geoserver/www/oereb/StaoTyp3.png",
             "TypeCode": "StaoTyp3",
             "TypeCodelist": ""
           }
@@ -435,7 +435,7 @@
                 "TRANSPARENT": "true"
               },
               "imageFormat": "image/png",
-              "layers": ["ch.bav.kataster-belasteter-standorte-oev.oereb"],
+              "layers": ["ch.bav.kataster-belasteter-standorte-oev_v2_0.oereb"],
               "opacity": 0.75,
               "styles": "default",
               "type": "wms"
@@ -453,7 +453,7 @@
             }
           ]
         },
-        "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
+        "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev_v2_0.oereb"
       },
       {
         "Geom_Type": "NrOfPoints",
@@ -517,7 +517,7 @@
             "Geom_Type": "NrOfPoints",
             "Information": "Belastet, keine schädlichen oder lästigen Einwirkungen zu erwarten",
             "NrOfPoints": "2",
-            "SymbolRef": "http://geoserver:8080/www/oereb/StaoTyp1.png",
+            "SymbolRef": "http://geoserver:8080/geoserver/www/oereb/StaoTyp1.png",
             "TypeCode": "StaoTyp1",
             "TypeCodelist": ""
           }
@@ -543,7 +543,7 @@
                 "TRANSPARENT": "true"
               },
               "imageFormat": "image/png",
-              "layers": ["ch.bav.kataster-belasteter-standorte-oev.oereb"],
+              "layers": ["ch.bav.kataster-belasteter-standorte-oev_v2_0.oereb"],
               "opacity": 0.75,
               "styles": "default",
               "type": "wms"
@@ -561,7 +561,7 @@
             }
           ]
         },
-        "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
+        "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev_v2_0.oereb"
       },
       {
         "Geom_Type": "AreaShare",
@@ -626,7 +626,7 @@
             "Geom_Type": "AreaShare",
             "Information": "Belastet, keine schädlichen oder lästigen Einwirkungen zu erwarten",
             "PartInPercent": "22.3%",
-            "SymbolRef": "http://geoserver:8080/www/oereb/StaoTyp2.png",
+            "SymbolRef": "http://geoserver:8080/geoserver/www/oereb/StaoTyp2.png",
             "TypeCode": "StaoTyp2",
             "TypeCodelist": ""
           }
@@ -650,7 +650,7 @@
                 "TRANSPARENT": "true"
               },
               "imageFormat": "image/png",
-              "layers": ["ch.bav.kataster-belasteter-standorte-oev.oereb"],
+              "layers": ["ch.bav.kataster-belasteter-standorte-oev_v2_0.oereb"],
               "opacity": 1,
               "styles": "default",
               "type": "wms"
@@ -668,7 +668,7 @@
             }
           ]
         },
-        "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
+        "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev_v2_0.oereb"
       },
       {
         "Geom_Type": "LengthShare",
@@ -839,7 +839,7 @@
             "Geom_Type": "LengthShare",
             "Information": "Belastet, keine schädlichen oder lästigen Einwirkungen zu erwarten",
             "LengthShare": "101 m",
-            "SymbolRef": "http://geoserver:8080/www/oereb/StaoTyp2.png",
+            "SymbolRef": "http://geoserver:8080/geoserver/www/oereb/StaoTyp2.png",
             "TypeCode": "StaoTyp2",
             "TypeCodelist": ""
           },
@@ -847,7 +847,7 @@
             "Geom_Type": "LengthShare",
             "Information": "Belastet, weder überwachungs- noch sanierungsbedürftig",
             "LengthShare": "101 m",
-            "SymbolRef": "http://geoserver:8080/www/oereb/StaoTyp1.png",
+            "SymbolRef": "http://geoserver:8080/geoserver/www/oereb/StaoTyp1.png",
             "TypeCode": "StaoTyp1",
             "TypeCodelist": ""
           }
@@ -871,7 +871,7 @@
                 "TRANSPARENT": "true"
               },
               "imageFormat": "image/png",
-              "layers": ["ch.bav.kataster-belasteter-standorte-oev.oereb"],
+              "layers": ["ch.bav.kataster-belasteter-standorte-oev_v2_0.oereb"],
               "opacity": 1,
               "styles": "default",
               "type": "wms"
@@ -889,7 +889,7 @@
             }
           ]
         },
-        "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev.oereb"
+        "legend": "http://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=ch.bav.kataster-belasteter-standorte-oev_v2_0.oereb"
       }
     ],
     "RealEstate_Type": "RealEstate",

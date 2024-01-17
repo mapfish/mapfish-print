@@ -18,7 +18,7 @@ templates:
           rotation: 0
           layers:
             - type: WMS
-              baseURL: "http://geoserver:8080/wms"
+              baseURL: "http://geoserver:8080/geoserver/wms"
               opacity: 1
               layers: ["tiger:tiger_roads"]
               imageFormat: "image/png"
@@ -26,7 +26,7 @@ templates:
               customParams:
                 TRANSPARENT: "true"
             - type: "OSM"
-              baseURL: "http://geoserver:8080/www/osm/"
+              baseURL: "http://geoserver:8080/geoserver/www/map-data/osm/"
               imageExtension: "png"
     processors: &PROCESSORS
       - !restrictUris

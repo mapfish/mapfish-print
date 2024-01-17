@@ -17,5 +17,5 @@ templates:
         httpProcessors:
           - !mapUri
             mapping:
-              (https?)://lh/(.*): 'http://geoserver:8080/$2'
+              (https?)://lh/(.*): 'http://geoserver:8080/geoserver/$2'
       - !createMap {}

@@ -12,3 +12,10 @@
 
 **/actual*.png
 **/diff*.png
+
+/examples/geoserver-data/logs/
+/examples/geoserver-data/gwc-gs.xml
+/examples/geoserver-data/gwc-layers/
+/examples/geoserver-data/security/geoserver.jceks
+/examples/geoserver-data/security/version.properties
+/examples/geoserver-data/workspaces/default.xml

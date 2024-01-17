@@ -2,6 +2,7 @@
   "layout": "A4 portrait",
   "outputFormat": "pdf",
   "attributes": {
+    "title": "Font Awesome",
     "map": {
       "projection": "EPSG:3857",
       "rotation": 0,

@@ -12,7 +12,7 @@
         {
           "type": "WMS",
           "layers": ["topp:states"],
-          "baseURL": "https://myhost.com:9090/wms",
+          "baseURL": "https://myhost.com:9090/geoserver/wms",
           "imageFormat": "image/png",
           "version": "1.3.0",
           "customParams": {
