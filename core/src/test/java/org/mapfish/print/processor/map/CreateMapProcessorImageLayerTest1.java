@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -38,7 +37,6 @@ public class CreateMapProcessorImageLayerTest1 extends AbstractMapfishSpringTest
 
   @Test
   @DirtiesContext
-  @Ignore
   public void testExecute() throws Exception {
     final String host = "image_layer_test";
     requestFactory.registerHandler(
