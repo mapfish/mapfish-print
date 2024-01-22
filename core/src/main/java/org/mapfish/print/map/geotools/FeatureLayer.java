@@ -2,10 +2,10 @@ package org.mapfish.print.map.geotools;
 
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
-import org.geotools.data.FeatureSource;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.style.Style;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.styling.Style;
 import org.mapfish.print.OptionalUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
@@ -137,7 +137,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
 
     /**
      * If no style is defined, a default style with this name will be used. Otherwise a style will
-     * be selected depending on the the geometry type.
+     * be selected depending on the geometry type.
      */
     public String defaultStyle;
 

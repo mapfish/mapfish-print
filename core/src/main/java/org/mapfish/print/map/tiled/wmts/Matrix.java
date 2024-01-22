@@ -3,9 +3,9 @@ package org.mapfish.print.map.tiled.wmts;
 import static org.mapfish.print.Constants.OGC_DPI;
 
 import java.util.Arrays;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.map.Scale;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /** A class representing a matrix. */
 public class Matrix {

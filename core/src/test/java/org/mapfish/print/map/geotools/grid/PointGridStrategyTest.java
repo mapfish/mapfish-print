@@ -6,8 +6,9 @@ import static org.junit.Assert.assertTrue;
 import java.awt.Dimension;
 import java.util.Arrays;
 import java.util.List;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.referencing.crs.DefaultEngineeringCRS;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -20,7 +21,6 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.geotools.FeatureSourceSupplier;
-import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PointGridStrategyTest extends AbstractMapfishSpringTest {

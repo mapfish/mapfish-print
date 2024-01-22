@@ -1,10 +1,10 @@
 package org.mapfish.print.map.geotools.grid;
 
+import org.geotools.api.referencing.cs.AxisDirection;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Envelope;
 import org.mapfish.print.ExceptionUtils;
-import org.opengis.referencing.cs.AxisDirection;
 
 /** The LinearCoordinateSequence class. */
 public final class LinearCoordinateSequence implements CoordinateSequence, Cloneable {

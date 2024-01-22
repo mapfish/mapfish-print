@@ -1,6 +1,6 @@
 package org.mapfish.print.map.geotools;
 
-import org.geotools.styling.Style;
+import org.geotools.api.style.Style;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 
 /**

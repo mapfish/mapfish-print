@@ -3,7 +3,7 @@ package org.mapfish.print.map.geotools;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
-import org.geotools.data.FeatureSource;
+import org.geotools.api.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.mapfish.print.ExceptionUtils;

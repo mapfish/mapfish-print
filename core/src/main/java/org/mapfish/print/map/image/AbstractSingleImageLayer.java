@@ -16,14 +16,14 @@ import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
+import org.geotools.api.style.Style;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
-import org.geotools.styling.Style;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.StatsUtils;
 import org.mapfish.print.attribute.map.MapBounds;
@@ -91,7 +91,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
     final ReferencedEnvelope mapEnvelope = bounds.toReferencedEnvelope(mapContext.getPaintArea());
 
     GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
-    GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapEnvelope.getCoordinateReferenceSystem());
+    GeneralBounds gridEnvelope = new GeneralBounds(mapEnvelope.getCoordinateReferenceSystem());
     gridEnvelope.setEnvelope(
         mapEnvelope.getMinX(), mapEnvelope.getMinY(),
         mapEnvelope.getMaxX(), mapEnvelope.getMaxY());

@@ -1,7 +1,7 @@
 package org.mapfish.print.processor.map;
 
 import java.util.List;
-import org.geotools.styling.Style;
+import org.geotools.api.style.Style;
 import org.mapfish.print.attribute.StyleAttribute;
 import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
 import org.mapfish.print.attribute.map.MapLayer;

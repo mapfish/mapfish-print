@@ -3,10 +3,10 @@ package org.mapfish.print.map;
 import static org.junit.Assert.assertEquals;
 import static org.mapfish.print.Constants.PDF_DPI;
 
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class ScaleTest {
   public static final CoordinateReferenceSystem SPHERICAL_MERCATOR;

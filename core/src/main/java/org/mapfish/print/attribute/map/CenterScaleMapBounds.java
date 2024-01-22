@@ -3,7 +3,9 @@ package org.mapfish.print.attribute.map;
 import static org.mapfish.print.Constants.PDF_DPI;
 
 import java.awt.Rectangle;
-import org.geotools.geometry.DirectPosition2D;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
 import org.locationtech.jts.geom.Coordinate;
@@ -11,8 +13,6 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
 
 /**
  * Represent Map Bounds with a center location and a scale of the map.
@@ -148,7 +148,7 @@ public final class CenterScaleMapBounds extends MapBounds {
       double geoWidth = DistanceUnit.IN.convertTo(geoWidthInInches, ellipsoidUnit);
       double geoHeight = DistanceUnit.IN.convertTo(geoHeightInInches, ellipsoidUnit);
 
-      DirectPosition2D directPosition2D = new DirectPosition2D(this.center.x, this.center.y);
+      Position2D directPosition2D = new Position2D(this.center.x, this.center.y);
       directPosition2D.setCoordinateReferenceSystem(crs);
       calc.setStartingPosition(directPosition2D);
 

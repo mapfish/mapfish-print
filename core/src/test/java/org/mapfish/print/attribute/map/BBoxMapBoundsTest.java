@@ -5,10 +5,10 @@ import static org.junit.Assert.assertEquals;
 import static org.mapfish.print.attribute.map.CenterScaleMapBoundsTest.CH1903;
 
 import java.awt.Rectangle;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class BBoxMapBoundsTest {
   public static final CoordinateReferenceSystem SPHERICAL_MERCATOR;

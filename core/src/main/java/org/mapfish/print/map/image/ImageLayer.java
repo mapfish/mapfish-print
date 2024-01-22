@@ -18,15 +18,16 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import javax.annotation.Nonnull;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.style.Style;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.MapContent;
 import org.geotools.renderer.lite.StreamingRenderer;
-import org.geotools.styling.Style;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapfishMapContext;
@@ -38,7 +39,6 @@ import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.geotools.AbstractGridCoverageLayerPlugin;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.parser.HasDefaultValue;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +105,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
     try {
       GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
       final CoordinateReferenceSystem mapProjection = envelope.getCoordinateReferenceSystem();
-      GeneralEnvelope gridEnvelope = new GeneralEnvelope(mapProjection);
+      GeneralBounds gridEnvelope = new GeneralBounds(mapProjection);
 
       gridEnvelope.setEnvelope(this.params.extent);
       GridCoverage2D coverage =

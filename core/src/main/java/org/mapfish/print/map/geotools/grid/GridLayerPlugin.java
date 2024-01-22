@@ -2,8 +2,8 @@ package org.mapfish.print.map.geotools.grid;
 
 import java.util.concurrent.ForkJoinPool;
 import javax.annotation.Nonnull;
-import org.geotools.data.FeatureSource;
-import org.geotools.styling.Style;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.style.Style;
 import org.mapfish.print.OptionalUtils;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;

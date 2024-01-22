@@ -1,13 +1,13 @@
 package org.mapfish.print.attribute.map;
 
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.json.JSONArray;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.Requires;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.json.PJsonArray;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * The attributes for an overview map (see <a

@@ -1,6 +1,6 @@
 package org.mapfish.print.map.geotools.grid;
 
-import org.geotools.styling.Style;
+import org.geotools.api.style.Style;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.geotools.FeatureSourceSupplier;
 

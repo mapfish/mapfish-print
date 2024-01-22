@@ -5,7 +5,7 @@ import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.geotools.styling.Style;
+import org.geotools.api.style.Style;
 import org.geotools.styling.StyleBuilder;
 import org.json.JSONObject;
 import org.mapfish.print.Constants;

@@ -3,11 +3,11 @@ package org.mapfish.print.attribute.map;
 import static org.mapfish.print.Constants.PDF_DPI;
 
 import java.awt.Rectangle;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.locationtech.jts.geom.Coordinate;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -7,7 +7,8 @@ import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.geotools.data.FeatureSource;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.map.Layer;
@@ -23,7 +24,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.processor.AbstractProcessor;
-import org.opengis.feature.simple.SimpleFeature;
 
 public class LineGridStrategyTest {
 

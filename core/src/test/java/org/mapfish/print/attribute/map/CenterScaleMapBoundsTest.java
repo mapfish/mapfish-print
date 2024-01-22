@@ -3,11 +3,11 @@ package org.mapfish.print.attribute.map;
 import static org.junit.Assert.assertEquals;
 
 import java.awt.Rectangle;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /** Test bounds implementation. */
 public class CenterScaleMapBoundsTest {

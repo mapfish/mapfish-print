@@ -1,6 +1,7 @@
 package org.mapfish.print.attribute.map;
 
 import java.awt.Rectangle;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
 import org.locationtech.jts.geom.Coordinate;
@@ -8,7 +9,6 @@ import org.locationtech.jts.geom.Envelope;
 import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Represent the map bounds with a bounding box.

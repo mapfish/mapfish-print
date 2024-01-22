@@ -8,7 +8,7 @@ import java.io.File;
 import java.net.URI;
 import java.nio.file.Files;
 import java.util.List;
-import org.geotools.data.Query;
+import org.geotools.api.data.Query;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.junit.Test;

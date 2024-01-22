@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
-import org.geotools.data.FeatureSource;
+import org.geotools.api.data.FeatureSource;
 import org.geotools.map.Layer;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapLayer;
