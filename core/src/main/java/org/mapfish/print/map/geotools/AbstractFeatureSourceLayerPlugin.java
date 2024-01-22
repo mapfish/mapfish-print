@@ -2,8 +2,8 @@ package org.mapfish.print.map.geotools;
 
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import org.geotools.data.FeatureSource;
-import org.geotools.styling.Style;
+import org.geotools.api.data.FeatureSource;
+import org.geotools.api.style.Style;
 import org.locationtech.jts.geom.Geometry;
 import org.mapfish.print.OptionalUtils;
 import org.mapfish.print.SetsUtils;

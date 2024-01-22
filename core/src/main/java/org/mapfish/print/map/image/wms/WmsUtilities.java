@@ -16,13 +16,13 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.wms.request.GetMapRequest;
 import org.geotools.referencing.CRS;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.image.wms.WmsLayerParam.ServerType;
-import org.opengis.referencing.FactoryException;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 

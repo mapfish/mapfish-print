@@ -15,7 +15,7 @@ import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
-import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.GeneralBounds;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.StatsUtils;
 import org.mapfish.print.config.Configuration;
@@ -139,8 +139,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
       }
 
       GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
-      GeneralEnvelope gridEnvelope =
-          new GeneralEnvelope(this.tilePreparationInfo.getMapProjection());
+      GeneralBounds gridEnvelope = new GeneralBounds(this.tilePreparationInfo.getMapProjection());
       gridEnvelope.setEnvelope(
           this.tilePreparationInfo.getGridCoverageOrigin().x,
           this.tilePreparationInfo.getGridCoverageOrigin().y,

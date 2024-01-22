@@ -1,8 +1,8 @@
 package org.mapfish.print.map.geotools.grid;
 
 import java.awt.Color;
-import org.geotools.styling.LineSymbolizer;
-import org.geotools.styling.Style;
+import org.geotools.api.style.LineSymbolizer;
+import org.geotools.api.style.Style;
 import org.geotools.styling.StyleBuilder;
 import org.mapfish.print.map.style.json.ColorParser;
 

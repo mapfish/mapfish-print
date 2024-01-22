@@ -2,9 +2,9 @@ package org.mapfish.print.map.geotools.function;
 
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
+import org.geotools.api.filter.capability.FunctionName;
 import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
-import org.opengis.filter.capability.FunctionName;
 
 /** A Function that multiplies the two values. */
 public final class MultiplicationFunction extends FunctionExpressionImpl {

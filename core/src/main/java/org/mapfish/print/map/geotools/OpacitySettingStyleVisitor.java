@@ -1,15 +1,15 @@
 package org.mapfish.print.map.geotools;
 
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.filter.expression.Function;
+import org.geotools.api.style.Fill;
+import org.geotools.api.style.Graphic;
+import org.geotools.api.style.RasterSymbolizer;
+import org.geotools.api.style.Stroke;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.AbstractStyleVisitor;
-import org.geotools.styling.Fill;
-import org.geotools.styling.Graphic;
-import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.Stroke;
 import org.mapfish.print.map.geotools.function.MultiplicationFunction;
-import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Expression;
-import org.opengis.filter.expression.Function;
 
 /**
  * Visits all elements in the style an multiplies the opacity of each element (where opacity
@@ -17,7 +17,7 @@ import org.opengis.filter.expression.Function;
  */
 public final class OpacitySettingStyleVisitor extends AbstractStyleVisitor {
   private final Expression opacityFactor;
-  private final FilterFactory2 filterFactory;
+  private final FilterFactory filterFactory;
 
   /**
    * Constructor.
@@ -25,7 +25,7 @@ public final class OpacitySettingStyleVisitor extends AbstractStyleVisitor {
    * @param opacityFactor a value between 0 and 1 to multiply against any existing opacity.
    */
   public OpacitySettingStyleVisitor(final double opacityFactor) {
-    this.filterFactory = CommonFactoryFinder.getFilterFactory2();
+    this.filterFactory = CommonFactoryFinder.getFilterFactory();
     this.opacityFactor = this.filterFactory.literal(opacityFactor);
   }
 

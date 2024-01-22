@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.json.JSONArray;
 import org.locationtech.jts.geom.Envelope;
 import org.mapfish.print.attribute.map.OverviewMapAttribute.OverviewMapAttributeValues;
@@ -16,8 +18,6 @@ import org.mapfish.print.parser.Requires;
 import org.mapfish.print.processor.map.CreateMapProcessor;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.json.PJsonArray;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * The attributes for {@link CreateMapProcessor} (see <a

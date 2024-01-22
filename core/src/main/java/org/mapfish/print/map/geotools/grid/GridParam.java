@@ -3,6 +3,9 @@ package org.mapfish.print.map.geotools.grid;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
 import javax.measure.Unit;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.measure.Units;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.IdentityTransform;
@@ -11,9 +14,6 @@ import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.OneOf;
 import org.mapfish.print.parser.Requires;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 
 /** Parameters relevant to creating Grid layers. */
 public final class GridParam extends AbstractLayerParams {

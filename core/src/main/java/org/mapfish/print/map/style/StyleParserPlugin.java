@@ -3,7 +3,7 @@ package org.mapfish.print.map.style;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.geotools.styling.Style;
+import org.geotools.api.style.Style;
 import org.mapfish.print.config.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
 

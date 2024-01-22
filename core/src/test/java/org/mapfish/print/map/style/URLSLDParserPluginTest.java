@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Optional;
-import org.geotools.styling.Style;
+import org.geotools.api.style.Style;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;

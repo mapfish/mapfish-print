@@ -1,8 +1,8 @@
 package org.mapfish.print.map.tiled;
 
 import java.util.List;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.locationtech.jts.geom.Coordinate;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.client.ClientHttpRequest;
 
 /** Tile Preparation Task Result. */
