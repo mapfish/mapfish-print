@@ -32,6 +32,16 @@
             ["347352116", "Mirabeau"]
           ]
         }
+      },
+      {
+        "title": "Table with int, float and null values",
+        "table": {
+          "columns": ["int", "float", "null"],
+          "data": [
+            [337907707, 337907707.5, null],
+            [337907710, 337907710.4, null]
+          ]
+        }
       }
     ]
   }

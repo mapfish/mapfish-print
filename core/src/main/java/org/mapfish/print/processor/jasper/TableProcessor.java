@@ -291,7 +291,7 @@ public final class TableProcessor
     // check if there are columns with mixed int and bigdecimal values
     HashSet<String> toCorrect = new HashSet<>();
     for (Map.Entry<String, Class<?>> entry : columns.entrySet()) {
-      if (entry.getValue().equals(Integer.class)) {
+      if (Integer.class.equals(entry.getValue())) {
         for (Map<String, ?> row : table) {
           if (row.get(entry.getKey()) instanceof BigDecimal) {
             toCorrect.add(entry.getKey());
