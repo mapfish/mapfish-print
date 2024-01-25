@@ -46,7 +46,7 @@ class MapfishPrintRepositoryService implements StreamRepositoryService {
           this.httpRequestFactory.createRequest(uri, HttpMethod.GET).execute();
       return new ResponseClosingStream(response);
     } catch (IOException e) {
-      return null;
+      throw new RuntimeException(String.format("Error on getting resource '%s'", uriString), e);
     }
   }
 
