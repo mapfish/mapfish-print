@@ -88,13 +88,13 @@ jobs:
 
       - run: mkdir -p core/build/resources/actual examples/build/reports core/build/reports examples/build/resources/test/examples
         if: always()
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: Test results
           path: core/build/resources/
           if-no-files-found: ignore
         if: failure()
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: Test generated
           path: core/build/resources/test/org
@@ -106,13 +106,13 @@ jobs:
           path: examples/build/reports
           if-no-files-found: ignore
         if: failure()
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: Reports core
           path: core/build/reports
           if-no-files-found: ignore
         if: failure()
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: Examples
           path: examples/build/resources/test/examples
