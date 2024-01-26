@@ -3,6 +3,8 @@
 ## Version 3.31
 
 - `HumanAlphaSerie` is moved from package `org.mapfish.print` to `org.mapfish.print.jasperreports`.
+- Rather than returning `null` when we fail to get a Resource from the JasperReport, we now throw
+  the exception (wrapped in a `RuntimeException`).
 
 ## Version 3.30
 
