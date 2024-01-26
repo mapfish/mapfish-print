@@ -52,6 +52,9 @@ class MapfishPrintRepositoryService implements StreamRepositoryService {
                     this.httpRequestFactory.createRequest(uri, HttpMethod.GET).execute();
             return new ResponseClosingStream(response);
         } catch (IOException e) {
+            LOGGER.warn(
+              "Error on getting resource '{}', this will no more allowed in version 3.31", uriString, e
+            );
             return null;
         }
     }
