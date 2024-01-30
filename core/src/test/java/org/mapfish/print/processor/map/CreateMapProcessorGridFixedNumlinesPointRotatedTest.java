@@ -61,7 +61,7 @@ public class CreateMapProcessorGridFixedNumlinesPointRotatedTest extends Abstrac
         for (int rotation: rotationsToTest) {
             map.getInternalObj().put("rotation", rotation);
             Values values = new Values("test", requestData, template, getTaskDirectory(), this.requestFactory,
-                                       new File("."));
+                                       new File("."), 2, 1);
 
             final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                     template.getProcessorGraph().createTask(values));

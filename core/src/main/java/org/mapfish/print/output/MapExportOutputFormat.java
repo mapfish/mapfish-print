@@ -10,6 +10,7 @@ import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.processor.map.CreateMapProcessor;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,6 +40,12 @@ public class MapExportOutputFormat implements OutputFormat {
     private String fileSuffix;
 
     private String contentType;
+
+    @Value("${httpRequest.fetchRetry.maxNumber}")
+    private int httpRequestMaxNumberFetchRetry;
+
+    @Value("${httpRequest.fetchRetry.intervalMillis}")
+    private int httpRequestFetchRetryIntervalMillis;
 
     @Override
     public final String getContentType() {
@@ -85,8 +92,10 @@ public class MapExportOutputFormat implements OutputFormat {
 
         final Template template = config.getTemplate(templateName);
 
-        final Values values = new Values(jobId, spec, template, taskDirectory, this.httpRequestFactory, null,
-                                         this.fileSuffix);
+        final Values values = new Values(
+            jobId, spec, template, taskDirectory, this.httpRequestFactory, null,
+            this.fileSuffix, httpRequestMaxNumberFetchRetry, httpRequestFetchRetryIntervalMillis
+        );
 
         final ProcessorDependencyGraph.ProcessorGraphForkJoinTask task =
                 template.getProcessorGraph().createTask(values);

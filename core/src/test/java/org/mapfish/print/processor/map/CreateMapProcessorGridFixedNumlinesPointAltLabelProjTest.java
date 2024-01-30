@@ -50,7 +50,7 @@ public class CreateMapProcessorGridFixedNumlinesPointAltLabelProjTest extends Ab
         final Template template = config.getTemplate("A4 landscape");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(), this.requestFactory,
-                                   new File("."));
+                                   new File("."), 2, 1);
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));

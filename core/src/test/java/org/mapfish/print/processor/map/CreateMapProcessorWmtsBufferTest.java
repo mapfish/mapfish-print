@@ -61,7 +61,7 @@ public class CreateMapProcessorWmtsBufferTest extends AbstractMapfishSpringTest 
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                                   this.httpRequestFactory, new File("."));
+                                   this.httpRequestFactory, new File("."), 2, 1);
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));

@@ -105,7 +105,7 @@ public class HttpProxyTest {
         }
 
         ConfigFileResolvingHttpRequestFactory clientHttpRequestFactory =
-                new ConfigFileResolvingHttpRequestFactory(requestFactory, config, "test");
+                new ConfigFileResolvingHttpRequestFactory(requestFactory, config, "test", 2, 1);
 
         URI uri = new URI(target + path);
         final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);

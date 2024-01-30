@@ -30,7 +30,7 @@ public class StringAttributeTest extends AbstractMapfishSpringTest {
 
         Template template = config.getTemplate("main");
         Values values = new Values("test", requestData, template, config.getDirectory(), httpClientFactory,
-                                   config.getDirectory());
+                                   config.getDirectory(), 2, 1);
 
         assertEquals("a loooooooooooooooooooong text", values.getString("field1"));
         assertEquals("a short text", values.getString("field2"));
@@ -43,7 +43,7 @@ public class StringAttributeTest extends AbstractMapfishSpringTest {
 
         Template template = config.getTemplate("main");
         new Values("test", requestData, template, config.getDirectory(), httpClientFactory,
-                   config.getDirectory());
+                   config.getDirectory(), 2, 1);
     }
 
     private PJsonObject loadJsonRequestData() throws IOException {

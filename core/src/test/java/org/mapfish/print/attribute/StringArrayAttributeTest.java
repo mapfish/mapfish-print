@@ -31,7 +31,7 @@ public class StringArrayAttributeTest extends AbstractMapfishSpringTest {
 
         Template template = config.getTemplate("main");
         Values values = new Values("test", requestData, template, config.getDirectory(), httpClientFactory,
-                                   config.getDirectory());
+                                   config.getDirectory(), 2, 1);
 
         String[] array = (String[]) values.getObject("stringarray", Object.class);
 
@@ -52,7 +52,7 @@ public class StringArrayAttributeTest extends AbstractMapfishSpringTest {
 
         Template template = config.getTemplate("main");
         Values values = new Values("test", requestData, template, config.getDirectory(), httpClientFactory,
-                                   config.getDirectory());
+                                   config.getDirectory(), 2, 1);
 
         String[] array = (String[]) values.getObject("stringarray", Object.class);
 

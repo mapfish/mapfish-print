@@ -167,7 +167,7 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
         }
 
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                                   this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."), 2, 1);
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));

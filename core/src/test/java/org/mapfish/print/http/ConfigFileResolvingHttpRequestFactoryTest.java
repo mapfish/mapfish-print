@@ -50,7 +50,7 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
 
         this.resolvingFactory =
-                new ConfigFileResolvingHttpRequestFactory(this.requestFactory, config, "test");
+                new ConfigFileResolvingHttpRequestFactory(this.requestFactory, config, "test", 2, 1);
     }
 
     @Test
@@ -84,7 +84,7 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
         return new String(Files.readAllBytes(logbackXml.toPath()), Constants.DEFAULT_CHARSET);
     }
 
-    @Test
+    @Test(expected = IllegalFileAccessException.class)
     public void testCreateRequestHttpPost() throws Exception {
         URI uri = new URI("http://" + HOST + ".test/logback.xml");
         ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.POST);
@@ -96,11 +96,9 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
         request = resolvingFactory.createRequest(uri, HttpMethod.POST);
         response = request.execute();
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-
     }
 
-    @Test
+    @Test(expected = IllegalFileAccessException.class)
     public void testCreateRequestHttpWriteToBody() throws Exception {
 
         URI uri = new URI("http://" + HOST + ".test/logback.xml");
@@ -114,8 +112,6 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
         request = resolvingFactory.createRequest(uri, HttpMethod.GET);
         request.getBody().write(new byte[]{1, 2, 3});
         response = request.execute();
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test

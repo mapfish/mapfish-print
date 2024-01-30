@@ -63,6 +63,7 @@ import javax.annotation.Nonnull;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.springframework.beans.factory.annotation.Value;
 
 
 /**
@@ -79,6 +80,12 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
 
     @Autowired
     private MfClientHttpRequestFactoryImpl httpRequestFactory;
+
+    @Value("${httpRequest.fetchRetry.maxNumber}")
+    private int httpRequestMaxNumberFetchRetry;
+
+    @Value("${httpRequest.fetchRetry.intervalMillis}")
+    private int httpRequestFetchRetryIntervalMillis;
 
     /**
      * Export the report to the output stream.
@@ -136,8 +143,11 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
                 config, jasperTemplateFile, JasperReportBuilder.JASPER_REPORT_COMPILED_FILE_EXT,
                 LOGGER);
 
-        final Values values = new Values(jobId, requestData, template, taskDirectory,
-                                         this.httpRequestFactory, jasperTemplateBuild.getParentFile());
+        final Values values = new Values(
+            jobId, requestData, template, taskDirectory,
+            this.httpRequestFactory, jasperTemplateBuild.getParentFile(),
+            httpRequestMaxNumberFetchRetry, httpRequestFetchRetryIntervalMillis
+        );
 
         double maxDpi = maxDpi(values);
 

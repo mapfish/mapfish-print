@@ -46,7 +46,7 @@ public class CreateNorthArrowProcessorSvgTest extends AbstractMapfishSpringTest 
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                                   this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."), 2, 1);
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         String northArrowGraphic = values.getObject("northArrowGraphic", String.class);

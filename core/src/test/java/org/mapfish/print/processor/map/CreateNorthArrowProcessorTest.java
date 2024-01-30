@@ -62,7 +62,7 @@ public class CreateNorthArrowProcessorTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                                   this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."), 2, 1);
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         String northArrowGraphic = values.getObject("northArrowGraphic", String.class);
@@ -77,7 +77,7 @@ public class CreateNorthArrowProcessorTest extends AbstractMapfishSpringTest {
                 getFile(BASE_DIR + "config-no-report.yaml"));
         final Template templateNoReport = configNoReport.getTemplate("main");
         Values valuesNoReport = new Values("test", requestData, templateNoReport, getTaskDirectory(),
-                                           this.requestFactory, new File("."));
+                                           this.requestFactory, new File("."), 2, 1);
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(valuesNoReport));
 
         assertNull(valuesNoReport.getObject("northArrowOut", String.class));

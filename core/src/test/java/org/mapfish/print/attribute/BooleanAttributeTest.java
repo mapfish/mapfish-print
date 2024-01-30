@@ -32,7 +32,7 @@ public class BooleanAttributeTest extends AbstractMapfishSpringTest {
 
         Template template = config.getTemplate("main");
         Values values = new Values("test", requestData, template, config.getDirectory(), httpClientFactory,
-                                   config.getDirectory());
+                                   config.getDirectory(), 2, 1);
 
         assertTrue(values.getBoolean("field1"));
         assertFalse(values.getBoolean("field2"));

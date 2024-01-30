@@ -564,6 +564,13 @@ public class Configuration implements ConfigurationObject {
     }
 
     /**
+     * Get the file related to the configuration file.
+     */
+    public final Optional<File> getFile(final String pathToSubResource) throws IOException {
+        return this.fileLoaderManager.toFile(this.configurationFile.toURI(), pathToSubResource);
+    }
+
+    /**
      * Set file loader manager.
      *
      * @param fileLoaderManager new manager.

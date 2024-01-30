@@ -80,7 +80,7 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test extends Abstr
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                                   this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."), 2, 1);
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         @SuppressWarnings("unchecked")

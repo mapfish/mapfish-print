@@ -50,7 +50,7 @@ public class MapUriBug228ProcessorTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
 
         ConfigFileResolvingHttpRequestFactory requestFactory =
-                new ConfigFileResolvingHttpRequestFactory(this.httpClientFactory, config, "test");
+                new ConfigFileResolvingHttpRequestFactory(this.httpClientFactory, config, "test", 2, 1);
         ProcessorDependencyGraph graph = template.getProcessorGraph();
         List<ProcessorGraphNode<?, ?>> roots = graph.getRoots();
 

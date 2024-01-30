@@ -43,7 +43,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
 
         final Values values =
                 new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
-                           new File("."));
+                           new File("."), 2, 1);
         final MapAttribute.MapAttributeValues mapValue =
                 values.getObject("map", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =
@@ -73,7 +73,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
 
         final Values values =
                 new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
-                           new File("."));
+                           new File("."), 2, 1);
         final MapAttribute.MapAttributeValues mapValue =
                 values.getObject("map", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =
@@ -104,7 +104,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
 
         final Values values =
                 new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
-                           new File("."));
+                           new File("."), 2, 1);
         final MapAttribute.MapAttributeValues mapValue =
                 values.getObject("map", MapAttribute.MapAttributeValues.class);
         final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =

@@ -123,7 +123,7 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
         configuration.setConfigurationFile(getFile(configFile));
 
         ConfigFileResolvingHttpRequestFactory requestFactory =
-                new ConfigFileResolvingHttpRequestFactory(this.httpClient, configuration, "test");
+                new ConfigFileResolvingHttpRequestFactory(this.httpClient, configuration, "test", 2, 1);
 
         return parser.parseStyle(configuration, requestFactory, styleString);
     }

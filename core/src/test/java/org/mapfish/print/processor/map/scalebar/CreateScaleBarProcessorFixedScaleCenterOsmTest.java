@@ -61,7 +61,7 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                                   this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."), 2, 1);
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         @SuppressWarnings("unchecked")
@@ -84,7 +84,7 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
                 getFile(BASE_DIR + "config-no-report.yaml"));
         final Template template_noreport = config_noreport.getTemplate("main");
         Values values_noreport = new Values("test", requestData, template_noreport,
-                                            getTaskDirectory(), this.requestFactory, new File("."));
+                                            getTaskDirectory(), this.requestFactory, new File("."), 2, 1);
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values_noreport));
 
         assertNull(values_noreport.getObject("scalebarSubReport", String.class));

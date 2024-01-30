@@ -62,7 +62,7 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
             jsonLayer.accumulate("url", "http://" + host + ":23432" + "/gml/" + gmlDataName);
 
             Values values = new Values("test", requestData, template, getTaskDirectory(),
-                                       this.requestFactory, new File("."));
+                                       this.requestFactory, new File("."), 2, 1);
 
             final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                     template.getProcessorGraph().createTask(values));

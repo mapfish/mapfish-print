@@ -88,7 +88,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
                 parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
         final Values values =
                 new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
-                           new File("."));
+                           new File("."), 2, 1);
         final MapAttribute.MapAttributeValues value =
                 values.getObject("map", MapAttribute.MapAttributeValues.class);
 
@@ -111,7 +111,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
                 parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-yaml.json");
         final Values values =
                 new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
-                           new File("."));
+                           new File("."), 2, 1);
         final MapAttribute.MapAttributeValues value =
                 values.getObject("map", MapAttribute.MapAttributeValues.class);
 
@@ -134,7 +134,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
                 parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
         final Values values =
                 new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
-                           new File("."));
+                           new File("."), 2, 1);
         final MapAttribute.MapAttributeValues value =
                 values.getObject("map", MapAttribute.MapAttributeValues.class);
 
@@ -157,7 +157,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
                 parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-zoomTo.json");
         final Values values =
                 new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
-                           new File("."));
+                           new File("."), 2, 1);
         final MapAttribute.MapAttributeValues value =
                 values.getObject("map", MapAttribute.MapAttributeValues.class);
 
@@ -174,7 +174,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
                                                                         ".json");
         final Values values =
                 new Values("test", pJsonObject, template, getTaskDirectory(), this.httpRequestFactory,
-                           new File("."));
+                           new File("."), 2, 1);
         final MapAttribute.MapAttributeValues value =
                 values.getObject("map", MapAttribute.MapAttributeValues.class);
 
