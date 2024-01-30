@@ -37,7 +37,11 @@ public class URLSLDParserPluginTest extends AbstractMapfishSpringTest {
 
     ConfigFileResolvingHttpRequestFactory requestFactory =
         new ConfigFileResolvingHttpRequestFactory(
-            this.clientHttpRequestFactory, configuration, new HashMap<String, String>());
+            this.clientHttpRequestFactory,
+            configuration,
+            new HashMap<String, String>(),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
     final Optional<Style> styleOptional =
         parserPlugin.parseStyle(
             configuration,

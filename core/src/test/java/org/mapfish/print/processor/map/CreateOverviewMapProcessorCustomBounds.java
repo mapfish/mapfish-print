@@ -60,7 +60,9 @@ public class CreateOverviewMapProcessorCustomBounds extends AbstractMapfishSprin
             template,
             getTaskDirectory(),
             this.requestFactory,
-            new File("."));
+            new File("."),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
     this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
     @SuppressWarnings("unchecked")

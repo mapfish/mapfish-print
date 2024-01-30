@@ -44,9 +44,14 @@ public abstract class AbstractMapfishSpringTest {
   public static final String TEST_SPRING_FONT_XML =
       "classpath:test-mapfish-spring-custom-fonts.xml";
   public static final String TMP = System.getProperty("java.io.tmpdir");
+  // The maximum number of times to retry fetching a resource used in tests
+  public static final int HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY = 2;
+  // The interval between retries used in tests
+  public static final int HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS = 1;
   protected static final Processor.ExecutionContext CONTEXT =
       new AbstractProcessor.Context(new HashMap<String, String>());
   static final Pattern IMPORT_PATTERN = Pattern.compile("@@importFile\\((\\S+)\\)@@");
+
   @Autowired private WorkingDirectories workingDirectories;
 
   /**

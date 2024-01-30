@@ -22,6 +22,17 @@ public interface ConfigFileLoaderPlugin {
    */
   Optional<File> toFile(URI fileUri);
 
+  /**
+   * Return the file object the uri refers to if it refers to a file. Otherwise Optional.absent().
+   *
+   * @param configFileUri the uri of the configuration file
+   * @param pathToSubResource a string representing a file that is accessible for use in printing
+   *     templates within the configuration file. In the case of a file based URI the path could be
+   *     a relative path (relative to the configuration file) or an absolute path, but it must be an
+   *     allowed file (you can't allow access to any file on the file system).
+   */
+  Optional<File> toFile(URI configFileUri, String pathToSubResource) throws IOException;
+
   /** Returns the URI scheme that this loader supports. */
   String getUriScheme();
 

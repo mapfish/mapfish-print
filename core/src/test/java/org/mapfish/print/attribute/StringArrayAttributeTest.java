@@ -35,7 +35,9 @@ public class StringArrayAttributeTest extends AbstractMapfishSpringTest {
             template,
             config.getDirectory(),
             httpClientFactory,
-            config.getDirectory());
+            config.getDirectory(),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 
     String[] array = (String[]) values.getObject("stringarray", Object.class);
 
@@ -62,7 +64,9 @@ public class StringArrayAttributeTest extends AbstractMapfishSpringTest {
             template,
             config.getDirectory(),
             httpClientFactory,
-            config.getDirectory());
+            config.getDirectory(),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 
     String[] array = (String[]) values.getObject("stringarray", Object.class);
 

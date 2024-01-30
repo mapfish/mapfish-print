@@ -76,6 +76,7 @@ public final class Values {
     // nothing to do
   }
 
+  // CSOFF: ParameterNumber
   /**
    * Construct from the json request body and the associated template.
    *
@@ -85,6 +86,8 @@ public final class Values {
    * @param taskDirectory the temporary directory for this printing task.
    * @param httpRequestFactory a factory for making http requests.
    * @param jasperTemplateBuild the directory where the jasper templates are compiled to
+   * @param httpRequestMaxNumberFetchRetry the maximum number of times to retry fetching a resource
+   * @param httpRequestFetchRetryIntervalMillis the interval between retries
    */
   public Values(
       @Nonnull final Map<String, String> mdcContext,
@@ -92,7 +95,10 @@ public final class Values {
       final Template template,
       final File taskDirectory,
       final MfClientHttpRequestFactoryImpl httpRequestFactory,
-      final File jasperTemplateBuild) {
+      final File jasperTemplateBuild,
+      final int httpRequestMaxNumberFetchRetry,
+      final int httpRequestFetchRetryIntervalMillis) {
+    // CSON: ParameterNumber
     this(
         mdcContext,
         requestData,
@@ -100,7 +106,9 @@ public final class Values {
         taskDirectory,
         httpRequestFactory,
         jasperTemplateBuild,
-        null);
+        null,
+        httpRequestMaxNumberFetchRetry,
+        httpRequestFetchRetryIntervalMillis);
   }
 
   /**
@@ -113,6 +121,8 @@ public final class Values {
    * @param httpRequestFactory a factory for making http requests.
    * @param jasperTemplateBuild the directory where the jasper templates are compiled to
    * @param outputFormat the output format
+   * @param httpRequestMaxNumberFetchRetry the maximum number of times to retry fetching a resource
+   * @param httpRequestFetchRetryIntervalMillis the interval between retries
    */
   // CHECKSTYLE:OFF
   public Values(
@@ -122,7 +132,9 @@ public final class Values {
       final File taskDirectory,
       final MfClientHttpRequestFactoryImpl httpRequestFactory,
       final File jasperTemplateBuild,
-      final String outputFormat) {
+      final String outputFormat,
+      final int httpRequestMaxNumberFetchRetry,
+      final int httpRequestFetchRetryIntervalMillis) {
     // CHECKSTYLE:ON
     Assert.isTrue(!taskDirectory.mkdirs() || taskDirectory.exists());
 
@@ -132,7 +144,11 @@ public final class Values {
         CLIENT_HTTP_REQUEST_FACTORY_KEY,
         new MfClientHttpRequestFactoryProvider(
             new ConfigFileResolvingHttpRequestFactory(
-                httpRequestFactory, template.getConfiguration(), mdcContext)));
+                httpRequestFactory,
+                template.getConfiguration(),
+                mdcContext,
+                httpRequestMaxNumberFetchRetry,
+                httpRequestFetchRetryIntervalMillis)));
     this.values.put(TEMPLATE_KEY, template);
     this.values.put(PDF_CONFIG_KEY, template.getPdfConfig());
     if (jasperTemplateBuild != null) {

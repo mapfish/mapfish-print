@@ -54,6 +54,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -69,6 +70,12 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
   @Autowired private WorkingDirectories workingDirectories;
 
   @Autowired private MfClientHttpRequestFactoryImpl httpRequestFactory;
+
+  @Value("${httpRequest.fetchRetry.maxNumber}")
+  private int httpRequestMaxNumberFetchRetry;
+
+  @Value("${httpRequest.fetchRetry.intervalMillis}")
+  private int httpRequestFetchRetryIntervalMillis;
 
   /**
    * Export the report to the output stream.
@@ -143,7 +150,9 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             template,
             taskDirectory,
             this.httpRequestFactory,
-            jasperTemplateBuild.getParentFile());
+            jasperTemplateBuild.getParentFile(),
+            httpRequestMaxNumberFetchRetry,
+            httpRequestFetchRetryIntervalMillis);
 
     double maxDpi = maxDpi(values);
 

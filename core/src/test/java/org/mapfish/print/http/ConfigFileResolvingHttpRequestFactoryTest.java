@@ -48,7 +48,11 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
 
     this.resolvingFactory =
         new ConfigFileResolvingHttpRequestFactory(
-            this.requestFactory, config, new HashMap<String, String>());
+            this.requestFactory,
+            config,
+            new HashMap<String, String>(),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
   }
 
   @Test

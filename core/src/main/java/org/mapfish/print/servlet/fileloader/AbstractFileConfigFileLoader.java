@@ -99,7 +99,7 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
   public final boolean isAccessible(final URI configFileUri, final String pathToSubResource)
       throws IOException {
     try {
-      final Optional<File> childFile = resolveChildFile(configFileUri, pathToSubResource);
+      final Optional<File> childFile = toFile(configFileUri, pathToSubResource);
       return childFile.isPresent() && childFile.get().exists();
     } catch (NoSuchElementException e) {
       return false;
@@ -109,7 +109,7 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
   @Override
   public final byte[] loadFile(final URI configFileUri, final String pathToSubResource)
       throws IOException {
-    Optional<File> childFile = resolveChildFile(configFileUri, pathToSubResource);
+    Optional<File> childFile = toFile(configFileUri, pathToSubResource);
     if (childFile.isPresent() && childFile.get().exists()) {
       return Files.readAllBytes(childFile.get().toPath());
     }
@@ -126,7 +126,7 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
     return Optional.empty();
   }
 
-  private Optional<File> resolveChildFile(final URI configFileUri, final String pathToSubResource) {
+  public Optional<File> toFile(final URI configFileUri, final String pathToSubResource) {
     final Optional<File> configFileOptional = findFile(resolveFiles(configFileUri));
     if (!configFileOptional.isPresent()) {
       throw new NoSuchElementException("No configuration file found at: " + configFileUri);

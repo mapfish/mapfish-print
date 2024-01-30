@@ -70,7 +70,9 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
             template,
             getTaskDirectory(),
             this.httpRequestFactory,
-            new File("."));
+            new File("."),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
     forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
     final JRTableModelDataSource legend =
@@ -102,7 +104,9 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
             template,
             getTaskDirectory(),
             this.httpRequestFactory,
-            new File("."));
+            new File("."),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
     forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
     final JRTableModelDataSource legend =
@@ -163,7 +167,9 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
             template,
             getTaskDirectory(),
             this.httpRequestFactory,
-            new File("."));
+            new File("."),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
     forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
     final JRTableModelDataSource legend =

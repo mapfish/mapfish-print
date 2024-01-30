@@ -46,7 +46,9 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
             template,
             this.folder.getRoot(),
             this.httpClientFactory,
-            new File("."));
+            new File("."),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
     forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
     final MapAttribute.MapAttributeValues map =

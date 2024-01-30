@@ -138,4 +138,16 @@ public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
     throw new NoSuchElementException(
         "No resource found : " + pathToSubResource + " for configuration file: " + configFileUri);
   }
+
+  public Optional<File> toFile(final URI configFileUri, final String pathToSubResource)
+      throws IOException {
+    for (ConfigFileLoaderPlugin plugin : getLoaderPlugins()) {
+      if (plugin.isAccessible(configFileUri, pathToSubResource)) {
+        return plugin.toFile(configFileUri, pathToSubResource);
+      }
+    }
+
+    throw new NoSuchElementException(
+        "No resource found : " + pathToSubResource + " for configuration file: " + configFileUri);
+  }
 }
