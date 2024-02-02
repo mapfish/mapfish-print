@@ -18,7 +18,7 @@ acceptance-tests-up:
 	docker-compose down --remove-orphan
 
 	mkdir /tmp/geoserver-data || true
-	docker run --rm --volume=/tmp/geoserver-data:/mnt/geoserver_datadir camptocamp/geoserver \
+	docker run --rm --volume=/tmp/geoserver-data:/mnt/geoserver_datadir camptocamp/geoserver:2.17 \
 		bash -c 'rm -rf /mnt/geoserver_datadir/*'
 	mkdir /tmp/geoserver-data/www
 	cp -r examples/geoserver-data/* /tmp/geoserver-data/
