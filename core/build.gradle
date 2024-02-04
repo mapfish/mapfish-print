@@ -134,7 +134,7 @@ dependencies {
             'com.thetransactioncompany:cors-filter:2.10',
             // Hibernate & Postgres
             'org.hibernate:hibernate-core:5.6.15.Final',
-            'org.postgresql:postgresql:42.6.0',
+            'org.postgresql:postgresql:42.7.1',
             'com.vladmihalcea:hibernate-types-52:2.21.1',
             'com.mchange:c3p0:0.9.5.5',
             "org.springframework:spring-aspects:5.3.31",
@@ -154,21 +154,21 @@ dependencies {
             "io.dropwizard.metrics:metrics-logback:4.2.25",
     )
     geotools(
-            "org.geotools:gt-epsg-hsql:30.1",
-            "org.geotools:gt-render:30.1",
-            "org.geotools:gt-geojson:30.1",
-            "org.geotools:gt-geotiff:30.1",
-            "org.geotools:gt-wms:30.1",
-            "org.geotools.xsd:gt-xsd-gml3:30.1",
-            "org.geotools:gt-svg:30.1",
-            "org.geotools:gt-cql:30.1"
+            "org.geotools:gt-epsg-hsql:30.2",
+            "org.geotools:gt-render:30.2",
+            "org.geotools:gt-geojson:30.2",
+            "org.geotools:gt-geotiff:30.2",
+            "org.geotools:gt-wms:30.2",
+            "org.geotools.xsd:gt-xsd-gml3:30.2",
+            "org.geotools:gt-svg:30.2",
+            "org.geotools:gt-cql:30.2"
     )
     jasper(
-            "net.sf.jasperreports:jasperreports:6.20.6",
+            "net.sf.jasperreports:jasperreports:6.21.0",
             "org.codehaus.groovy:groovy-all:3.0.20",
             'ar.com.fdvs:DynamicJasper:5.3.9',
-            "net.sf.jasperreports:jasperreports-fonts:6.20.6",
-            "net.sf.jasperreports:jasperreports-functions:6.20.6",
+            "net.sf.jasperreports:jasperreports-fonts:6.21.0",
+            "net.sf.jasperreports:jasperreports-functions:6.21.0",
             'joda-time:joda-time:2.12.6'
     )
     implementation(
@@ -185,7 +185,7 @@ dependencies {
             'com.sun.mail:javax.mail:1.6.2',
             'com.amazonaws:aws-java-sdk-s3:1.12.649',
             'com.adobe.xmp:xmpcore:6.1.11',
-            'io.sentry:sentry-logback:7.0.0',
+            'io.sentry:sentry-logback:7.3.0',
             'net.logstash.logback:logstash-logback-encoder:7.4',
     )
 

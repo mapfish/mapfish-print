@@ -19,7 +19,7 @@ dependencies {
     implementation ("org.codehaus.groovy:groovy-all:3.0.20",
             "org.springframework:spring-test:5.3.31",
             'org.ccil.cowan.tagsoup:tagsoup:1.2.1',
-            'com.samskivert:jmustache:1.15',
+            'com.samskivert:jmustache:1.16',
             'com.google.guava:guava:33.0.0-jre',
             'commons-io:commons-io:2.15.1',
             "org.springframework:spring-beans:5.3.31",
