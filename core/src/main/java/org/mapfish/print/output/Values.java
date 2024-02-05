@@ -101,6 +101,8 @@ public final class Values {
      * @param taskDirectory the temporary directory for this printing task.
      * @param httpRequestFactory a factory for making http requests.
      * @param jasperTemplateBuild the directory where the jasper templates are compiled to
+     * @param httpRequestMaxNumberFetchRetry the maximum number of times to retry fetching a resource
+     * @param httpRequestFetchRetryIntervalMillis the interval between retries
      */
     public Values(
             final String jobId,

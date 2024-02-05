@@ -44,7 +44,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         Template template = config.getTemplates().values().iterator().next();
         final Values values =
                 new Values("test", requestData, template, new File("tmp"), this.httpRequestFactory,
-                           new File("."), 2, 1);
+                           new File("."), HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY, HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 
         assertTrue(values.containsKey("title"));
         assertEquals("title", values.getString("title"));
@@ -76,7 +76,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
                 configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        new Values("test", requestData, template, new File("tmp"), this.httpRequestFactory, new File("."), 2, 1);
+        new Values("test", requestData, template, new File("tmp"), this.httpRequestFactory, new File("."), HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY, HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         Template template = config.getTemplates().values().iterator().next();
         final Values values =
                 new Values("test", requestData, template, new File("tmp"), this.httpRequestFactory,
-                           new File("."), 2, 1);
+                           new File("."), HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY, HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 
         assertTrue(values.containsKey("title"));
         assertEquals("title", values.getString("title"));
@@ -131,6 +131,6 @@ public class ValuesTest extends AbstractMapfishSpringTest {
                 configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
         Template template = config.getTemplates().values().iterator().next();
-        new Values("test", requestData, template, new File("tmp"), this.httpRequestFactory, new File("."), 2, 1);
+        new Values("test", requestData, template, new File("tmp"), this.httpRequestFactory, new File("."), HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY, HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
     }
 }

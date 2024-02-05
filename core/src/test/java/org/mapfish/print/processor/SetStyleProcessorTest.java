@@ -45,7 +45,7 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
                 parseJSONObjectFromFile(SetStyleProcessorTest.class, BASE_DIR + "basic/request.json");
         Values values =
                 new Values("test", requestData, template, this.folder.getRoot(), this.httpClientFactory,
-                           new File("."), 2, 1);
+                           new File("."), HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY, HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final MapAttribute.MapAttributeValues map =

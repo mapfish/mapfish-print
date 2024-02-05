@@ -50,7 +50,7 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
 
         this.resolvingFactory =
-                new ConfigFileResolvingHttpRequestFactory(this.requestFactory, config, "test", 2, 1);
+                new ConfigFileResolvingHttpRequestFactory(this.requestFactory, config, "test", HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY, HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
     }
 
     @Test

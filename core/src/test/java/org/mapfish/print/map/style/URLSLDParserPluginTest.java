@@ -41,7 +41,7 @@ public class URLSLDParserPluginTest extends AbstractMapfishSpringTest {
 
         ConfigFileResolvingHttpRequestFactory requestFactory =
                 new ConfigFileResolvingHttpRequestFactory(this.clientHttpRequestFactory,
-                                                          configuration, "test", 2, 1);
+                                                          configuration, "test", HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY, HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
         final Optional<Style> styleOptional = parserPlugin.parseStyle(
                 configuration, requestFactory,
                 "http://" + host + "/org/mapfish/print/processor/map/center_wmts_fixedscale/thinline.sld");
