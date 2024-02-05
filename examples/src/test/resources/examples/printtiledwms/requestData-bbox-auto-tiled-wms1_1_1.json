@@ -1,6 +1,6 @@
 {
   "layout": "Auto tiling",
-  "outputFormat": "pdf",
+  "outputFormat": "png",
   "attributes": {
     "map": {
       "projection": "EPSG:4326",

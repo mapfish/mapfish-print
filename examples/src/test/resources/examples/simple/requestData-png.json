@@ -1,7 +1,6 @@
 {
   "layout": "A4 portrait",
   "outputFormat": "png",
-  "lang": "en",
   "attributes": {
     "map": {
       "longitudeFirst": true,

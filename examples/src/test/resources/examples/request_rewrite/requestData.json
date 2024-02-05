@@ -1,6 +1,6 @@
 {
   "layout": "A4 portrait",
-  "outputFormat": "pdf",
+  "outputFormat": "png",
   "attributes": {
     "map": {
       "width": 780,

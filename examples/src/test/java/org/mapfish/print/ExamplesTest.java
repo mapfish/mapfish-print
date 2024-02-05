@@ -58,7 +58,7 @@ public class ExamplesTest {
       "classpath:mapfish-spring-application-context.xml";
   public static final String TEST_SPRING_XML =
       "classpath:test-http-request-factory-application-context.xml";
-  public static final String[] BITMAP_FORMATS = {"png", "jpeg", "tiff"};
+  public static final String[] BITMAP_FORMATS = {"bmp", "png", "jpeg", "tiff", "jpg", "tif"};
   private static final Logger LOGGER = LoggerFactory.getLogger(ExamplesTest.class);
   private static final String REQUEST_DATA_FILE = "requestData(-.*)?.json";
   private static final String CONFIG_FILE = "config.yaml";
@@ -182,7 +182,7 @@ public class ExamplesTest {
 
     for (File example : Objects.requireNonNull(examplesDir.listFiles())) {
       if (example.isDirectory() && exampleFilter.matcher(example.getName()).matches()) {
-        testsRan += runExample(example, errors, true);
+        testsRan += runExample(example, errors);
       }
     }
 
@@ -228,11 +228,11 @@ public class ExamplesTest {
   public void testPDFA() {
     final File examplesDir = getFile(ExamplesTest.class, "/examples");
     Map<String, Throwable> errors = new HashMap<>();
-    runExample(new File(examplesDir, "pdf_a_compliant"), errors, false);
+    runExample(new File(examplesDir, "pdf_a_compliant"), errors);
     reportErrors(errors, 1);
   }
 
-  private int runExample(File example, Map<String, Throwable> errors, boolean forceBitmap) {
+  private int runExample(File example, Map<String, Throwable> errors) {
     int testsRan = 0;
     try {
       final File configFile = new File(example, CONFIG_FILE);
@@ -260,10 +260,6 @@ public class ExamplesTest {
 
             testsRan++;
             String outputFormat = jsonSpec.getInternalObj().getString("outputFormat");
-            if (forceBitmap && !ArrayUtils.contains(BITMAP_FORMATS, outputFormat)) {
-              jsonSpec.getInternalObj().put("outputFormat", "png");
-              outputFormat = "png";
-            }
 
             URL url =
                 new URL(
@@ -300,12 +296,14 @@ public class ExamplesTest {
             }
 
             Map<String, String> content_types = new HashMap<String, String>();
+            content_types.put("pdf", "application/pdf");
             content_types.put("png", "image/png");
             content_types.put("jpg", "image/jpeg");
             content_types.put("jpeg", "image/jpeg");
             content_types.put("tif", "image/tiff");
             content_types.put("tiff", "image/tiff");
-            content_types.put("pdf", "application/pdf");
+            content_types.put("gif", "image/gif");
+            content_types.put("bmp", "image/bmp");
             Assert.equals(content_types.get(outputFormat), http.getHeaderField("Content-Type"));
 
             BufferedImage image = ImageIO.read(connection.getInputStream());
@@ -319,7 +317,10 @@ public class ExamplesTest {
                     new Exception("File not found: " + expectedOutput.toString()));
               }
 
-              new ImageSimilarity(expectedOutput).assertSimilarity(image);
+              if (!"bmp".equals(outputFormat)) {
+                // BMP is not supported by ImageIO
+                new ImageSimilarity(expectedOutput).assertSimilarity(image);
+              }
             }
           }
         } catch (Throwable e) {

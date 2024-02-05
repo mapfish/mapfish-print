@@ -1,5 +1,6 @@
 package org.mapfish.print.output;
 
+import static java.util.Map.entry;
 import static org.mapfish.print.Constants.PDF_DPI;
 
 import java.awt.BasicStroke;
@@ -10,6 +11,7 @@ import java.awt.Stroke;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
@@ -19,7 +21,16 @@ import org.mapfish.print.ImageUtils;
 public final class JasperReportImageOutputFormat extends AbstractJasperReportOutputFormat
     implements OutputFormat {
 
-  private int imageType = BufferedImage.TYPE_INT_ARGB;
+  // Use to get the image type from the output format
+  public static final Map<String, Integer> IMAGE_TYPES =
+      Map.ofEntries(
+          entry("png", BufferedImage.TYPE_4BYTE_ABGR),
+          entry("jpg", BufferedImage.TYPE_3BYTE_BGR),
+          entry("jpeg", BufferedImage.TYPE_3BYTE_BGR),
+          entry("tif", BufferedImage.TYPE_4BYTE_ABGR),
+          entry("tiff", BufferedImage.TYPE_4BYTE_ABGR),
+          entry("gif", BufferedImage.TYPE_4BYTE_ABGR),
+          entry("bmp", BufferedImage.TYPE_3BYTE_BGR));
 
   private String fileSuffix;
 
@@ -49,13 +60,18 @@ public final class JasperReportImageOutputFormat extends AbstractJasperReportOut
     final int separatorHeight = 1;
     final int separatorHeightOnImage = (int) (separatorHeight * dpiRatio);
 
+    final int imageType = IMAGE_TYPES.get(getFileSuffix().toLowerCase());
     BufferedImage reportImage =
         new BufferedImage(
             pageWidthOnImage,
             numPages * pageHeightOnImage + (numPages - 1) * separatorHeightOnImage,
-            this.imageType);
-
+            imageType);
     Graphics2D graphics2D = reportImage.createGraphics();
+    if (imageType != BufferedImage.TYPE_4BYTE_ABGR) {
+      graphics2D.setColor(Color.WHITE);
+      graphics2D.fillRect(0, 0, pageWidthOnImage, pageHeightOnImage);
+    }
+
     try {
       JasperPrintManager printManager = JasperPrintManager.getInstance(print.context);
 
@@ -88,14 +104,5 @@ public final class JasperReportImageOutputFormat extends AbstractJasperReportOut
     }
 
     ImageUtils.writeImage(reportImage, getFileSuffix(), outputStream);
-  }
-
-  /**
-   * One of {@link java.awt.image.BufferedImage} TYPE_ values.
-   *
-   * @param imageType the buffered image type to create.
-   */
-  public void setImageType(final int imageType) {
-    this.imageType = imageType;
   }
 }

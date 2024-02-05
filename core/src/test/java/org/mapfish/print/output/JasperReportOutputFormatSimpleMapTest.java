@@ -53,8 +53,10 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
     final PJsonObject requestData = loadJsonRequestData();
 
     for (OutputFormat format : this.outputFormat.values()) {
-      if (format.getFileSuffix().equals("bmp")) {
-        // BMP does not support transparency
+      if ("bmp".equals(format.getFileSuffix())
+          || "jpeg".equals(format.getFileSuffix())
+          || "jpg".equals(format.getFileSuffix())) {
+        // BMP and JPEG do not support transparency
         continue;
       }
       final OutputStream outputStream = new ByteArrayOutputStream();
