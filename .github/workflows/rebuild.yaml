@@ -91,8 +91,6 @@ jobs:
 
       - name: Publish
         run: c2cciutils-publish --type=rebuild --branch=${{ matrix.branch }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GOPASS_CI_GITHUB_TOKEN }}
       - run: ./gradlew :core:libSourcesJar
         if: startsWith(github.ref, 'refs/tags/')
       - run: ./gradlew :core:libJavadocJar

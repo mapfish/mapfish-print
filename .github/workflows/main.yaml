@@ -131,8 +131,6 @@ jobs:
 
       - name: Publish
         run: c2cciutils-publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GOPASS_CI_GITHUB_TOKEN }}
         if: env.HAS_SECRETS == 'HAS_SECRETS'
       - run: >
           docker run --rm --env=GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} mapfish_print_builder
