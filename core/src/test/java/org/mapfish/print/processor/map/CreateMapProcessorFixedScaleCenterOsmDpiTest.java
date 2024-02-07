@@ -63,7 +63,9 @@ public class CreateMapProcessorFixedScaleCenterOsmDpiTest extends AbstractMapfis
             template,
             getTaskDirectory(),
             this.requestFactory,
-            new File("."));
+            new File("."),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 
     final ForkJoinTask<Values> taskFuture =
         this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));

@@ -34,7 +34,9 @@ public class StringAttributeTest extends AbstractMapfishSpringTest {
             template,
             config.getDirectory(),
             httpClientFactory,
-            config.getDirectory());
+            config.getDirectory(),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 
     assertEquals("a loooooooooooooooooooong text", values.getString("field1"));
     assertEquals("a short text", values.getString("field2"));
@@ -52,7 +54,9 @@ public class StringAttributeTest extends AbstractMapfishSpringTest {
         template,
         config.getDirectory(),
         httpClientFactory,
-        config.getDirectory());
+        config.getDirectory(),
+        HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+        HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
   }
 
   private PJsonObject loadJsonRequestData() throws IOException {

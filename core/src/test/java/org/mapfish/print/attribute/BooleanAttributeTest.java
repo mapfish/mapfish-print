@@ -36,7 +36,9 @@ public class BooleanAttributeTest extends AbstractMapfishSpringTest {
             template,
             config.getDirectory(),
             httpClientFactory,
-            config.getDirectory());
+            config.getDirectory(),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 
     assertTrue(values.getBoolean("field1"));
     assertFalse(values.getBoolean("field2"));

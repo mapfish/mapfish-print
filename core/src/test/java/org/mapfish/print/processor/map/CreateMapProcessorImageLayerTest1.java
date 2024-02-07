@@ -53,7 +53,9 @@ public class CreateMapProcessorImageLayerTest1 extends AbstractMapfishSpringTest
             template,
             getTaskDirectory(),
             this.requestFactory,
-            new File("."));
+            new File("."),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
     template.getProcessorGraph().createTask(values).invoke();
 
     @SuppressWarnings("unchecked")

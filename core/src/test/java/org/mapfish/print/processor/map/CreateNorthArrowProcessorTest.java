@@ -65,7 +65,9 @@ public class CreateNorthArrowProcessorTest extends AbstractMapfishSpringTest {
             template,
             getTaskDirectory(),
             this.requestFactory,
-            new File("."));
+            new File("."),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
     this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
     String northArrowGraphic = values.getObject("northArrowGraphic", String.class);
@@ -86,7 +88,9 @@ public class CreateNorthArrowProcessorTest extends AbstractMapfishSpringTest {
             templateNoReport,
             getTaskDirectory(),
             this.requestFactory,
-            new File("."));
+            new File("."),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
     this.forkJoinPool.invoke(template.getProcessorGraph().createTask(valuesNoReport));
 
     assertNull(valuesNoReport.getObject("northArrowOut", String.class));

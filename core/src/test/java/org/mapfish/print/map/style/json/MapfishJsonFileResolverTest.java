@@ -131,7 +131,11 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
 
     ConfigFileResolvingHttpRequestFactory requestFactory =
         new ConfigFileResolvingHttpRequestFactory(
-            this.httpClient, configuration, new HashMap<String, String>());
+            this.httpClient,
+            configuration,
+            new HashMap<String, String>(),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 
     return parser.parseStyle(configuration, requestFactory, styleString);
   }

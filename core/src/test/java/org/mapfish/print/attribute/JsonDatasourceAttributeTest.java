@@ -49,7 +49,9 @@ public class JsonDatasourceAttributeTest extends AbstractMapfishSpringTest {
             template,
             config.getDirectory(),
             httpClientFactory,
-            config.getDirectory());
+            config.getDirectory(),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 
     assertEquals(
         "s1", getValue(values.getObject("json", JsonDataSource.class), "a.b", String.class));

@@ -79,6 +79,20 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
   }
 
   @Override
+  public Optional<File> toFile(final URI configFileUri, final String pathToSubResource) {
+    final Optional<URL> urlOptional = resolveChild(configFileUri, pathToSubResource);
+    if (urlOptional.isPresent()
+        && urlOptional.get().getProtocol().equalsIgnoreCase(FileConfigFileLoader.PREFIX)) {
+      try {
+        return Optional.of(new File(urlOptional.get().toURI()));
+      } catch (URISyntaxException e) {
+        return Optional.empty();
+      }
+    }
+    return Optional.empty();
+  }
+
+  @Override
   public boolean isAccessible(final URI configFileUri, final String pathToSubResource) {
     try {
       Optional<URL> child = resolveChild(configFileUri, pathToSubResource);

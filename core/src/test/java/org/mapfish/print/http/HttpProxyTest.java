@@ -1,6 +1,8 @@
 package org.mapfish.print.http;
 
 import static org.junit.Assert.assertEquals;
+import static org.mapfish.print.AbstractMapfishSpringTest.HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS;
+import static org.mapfish.print.AbstractMapfishSpringTest.HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -109,7 +111,11 @@ public class HttpProxyTest {
 
     ConfigFileResolvingHttpRequestFactory clientHttpRequestFactory =
         new ConfigFileResolvingHttpRequestFactory(
-            requestFactory, config, new HashMap<String, String>());
+            requestFactory,
+            config,
+            new HashMap<String, String>(),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 
     URI uri = new URI(target + path);
     final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);

@@ -46,7 +46,9 @@ public class ValuesTest extends AbstractMapfishSpringTest {
             template,
             new File("tmp"),
             this.httpRequestFactory,
-            new File("."));
+            new File("."),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 
     assertTrue(values.containsKey("title"));
     assertEquals("title", values.getString("title"));
@@ -84,7 +86,9 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         template,
         new File("tmp"),
         this.httpRequestFactory,
-        new File("."));
+        new File("."),
+        HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+        HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
   }
 
   @Test
@@ -105,7 +109,9 @@ public class ValuesTest extends AbstractMapfishSpringTest {
             template,
             new File("tmp"),
             this.httpRequestFactory,
-            new File("."));
+            new File("."),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 
     assertTrue(values.containsKey("title"));
     assertEquals("title", values.getString("title"));
@@ -154,6 +160,8 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         template,
         new File("tmp"),
         this.httpRequestFactory,
-        new File("."));
+        new File("."),
+        HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+        HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
   }
 }

@@ -19,6 +19,7 @@ import org.mapfish.print.url.data.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,12 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
   private final MfClientHttpRequestFactoryImpl httpRequestFactory;
   private final List<RequestConfigurator> callbacks = new CopyOnWriteArrayList<>();
 
+  @Value("${httpRequest.fetchRetry.maxNumber}")
+  private int httpRequestMaxNumberFetchRetry;
+
+  @Value("${httpRequest.fetchRetry.intervalMillis}")
+  private int httpRequestFetchRetryIntervalMillis;
+
   /**
    * Constructor.
    *
@@ -50,10 +57,14 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
   public ConfigFileResolvingHttpRequestFactory(
       final MfClientHttpRequestFactoryImpl httpRequestFactory,
       final Configuration config,
-      @Nonnull final Map<String, String> mdcContext) {
+      @Nonnull final Map<String, String> mdcContext,
+      final int httpRequestMaxNumberFetchRetry,
+      final int httpRequestFetchRetryIntervalMillis) {
     this.httpRequestFactory = httpRequestFactory;
     this.config = config;
     this.mdcContext = mdcContext;
+    this.httpRequestMaxNumberFetchRetry = httpRequestMaxNumberFetchRetry;
+    this.httpRequestFetchRetryIntervalMillis = httpRequestFetchRetryIntervalMillis;
   }
 
   @Override
