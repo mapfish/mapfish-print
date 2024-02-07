@@ -36,7 +36,7 @@ public class DateFormatProcessorTest extends AbstractMapfishSpringTest {
         final Configuration config = configurationFactory.getConfig(getFile(DIR + "/config.yaml"));
         final Template template = config.getTemplate("main");
         Values values = new Values("test", requestData, template, getTaskDirectory(), this.httpRequestFactory,
-                                   new File("."));
+                                   new File("."), HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY, HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final DateFormat dateFormat = values.getObject("dateFormat", DateFormat.class);

@@ -65,7 +65,7 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(), this.httpRequestFactory,
-                                   new File("."));
+                                   new File("."), HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY, HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final JRTableModelDataSource legend = values.getObject(
@@ -90,7 +90,7 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadDynamicJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(), this.httpRequestFactory,
-                                   new File("."));
+                                   new File("."), HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY, HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final JRTableModelDataSource legend = values.getObject(
@@ -141,7 +141,7 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
                 .put("classes", new JSONArray());
 
         Values values = new Values("test", requestData, template, getTaskDirectory(), this.httpRequestFactory,
-                                   new File("."));
+                                   new File("."), HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY, HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final JRTableModelDataSource legend = values.getObject(

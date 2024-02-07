@@ -52,7 +52,7 @@ public class CreateMapProcessorCenterGeojsonJsonStyleHighDpi extends AbstractMap
         final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
         final Template template = config.getTemplate("main");
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                                   this.httpRequestFactory, new File("."));
+                                   this.httpRequestFactory, new File("."), HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY, HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 
         final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
                 template.getProcessorGraph().createTask(values));

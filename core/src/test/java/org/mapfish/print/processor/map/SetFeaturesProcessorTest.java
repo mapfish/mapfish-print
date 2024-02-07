@@ -45,7 +45,7 @@ public class SetFeaturesProcessorTest extends AbstractMapfishSpringTest {
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                                   this.httpRequestFactory, new File("."));
+                                   this.httpRequestFactory, new File("."), HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY, HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 
         this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 

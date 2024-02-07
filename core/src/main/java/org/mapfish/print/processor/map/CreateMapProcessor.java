@@ -56,7 +56,6 @@ import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -113,12 +112,6 @@ public final class CreateMapProcessor
 
     @Resource(name = "requestForkJoinPool")
     private ForkJoinPool requestForkJoinPool;
-
-    @Value("${httpRequest.fetchRetry.maxNumber}")
-    private int httpRequestMaxNumberFetchRetry;
-
-    @Value("${httpRequest.fetchRetry.intervalMillis}")
-    private int httpRequestFetchRetryIntervalMillis;
 
     /**
      * Constructor.
@@ -396,9 +389,7 @@ public final class CreateMapProcessor
         final List<URI> graphics = new ArrayList<>(layers.size());
 
         HttpRequestFetcher cache = new HttpRequestFetcher(printDirectory, this.metricRegistry,
-                                                          context, this.requestForkJoinPool,
-                                                          this.httpRequestMaxNumberFetchRetry,
-                                                          this.httpRequestFetchRetryIntervalMillis);
+                                                          context, this.requestForkJoinPool);
 
         //prepare layers for rendering
         for (final MapLayer layer: layers) {

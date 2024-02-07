@@ -70,7 +70,7 @@ public class CreateMapProcessorCenterWMSRotationSmallTilesTest extends AbstractM
         final Template template = config.getTemplate("main");
         PJsonObject requestData = loadJsonRequestData();
         Values values = new Values("test", requestData, template, getTaskDirectory(),
-                                   this.requestFactory, new File("."));
+                                   this.requestFactory, new File("."), HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY, HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
         template.getProcessorGraph().createTask(values).invoke();
 
         @SuppressWarnings("unchecked")

@@ -46,6 +46,10 @@ import javax.net.ssl.TrustManagerFactory;
 
 import static org.junit.Assert.assertEquals;
 
+import static org.mapfish.print.AbstractMapfishSpringTest.HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS;
+import static org.mapfish.print.AbstractMapfishSpringTest.HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY;
+
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         AbstractMapfishSpringTest.DEFAULT_SPRING_XML,
@@ -105,7 +109,7 @@ public class HttpProxyTest {
         }
 
         ConfigFileResolvingHttpRequestFactory clientHttpRequestFactory =
-                new ConfigFileResolvingHttpRequestFactory(requestFactory, config, "test");
+                new ConfigFileResolvingHttpRequestFactory(requestFactory, config, "test", HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY, HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 
         URI uri = new URI(target + path);
         final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);

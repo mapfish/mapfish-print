@@ -91,6 +91,7 @@ public final class Values {
         // nothing to do
     }
 
+    // CSOFF: ParameterNumber
     /**
      * Construct from the json request body and the associated template.
      *
@@ -100,6 +101,8 @@ public final class Values {
      * @param taskDirectory the temporary directory for this printing task.
      * @param httpRequestFactory a factory for making http requests.
      * @param jasperTemplateBuild the directory where the jasper templates are compiled to
+     * @param httpRequestMaxNumberFetchRetry the maximum number of times to retry fetching a resource
+     * @param httpRequestFetchRetryIntervalMillis the interval between retries
      */
     public Values(
             final String jobId,
@@ -107,8 +110,14 @@ public final class Values {
             final Template template,
             final File taskDirectory,
             final MfClientHttpRequestFactoryImpl httpRequestFactory,
-            final File jasperTemplateBuild) {
-        this(jobId, requestData, template, taskDirectory, httpRequestFactory, jasperTemplateBuild, null);
+            final File jasperTemplateBuild,
+            final int httpRequestMaxNumberFetchRetry,
+            final int httpRequestFetchRetryIntervalMillis) {
+        // CSON: ParameterNumber
+        this(
+            jobId, requestData, template, taskDirectory, httpRequestFactory, jasperTemplateBuild, null,
+            httpRequestMaxNumberFetchRetry, httpRequestFetchRetryIntervalMillis
+        );
     }
 
     /**
@@ -130,7 +139,9 @@ public final class Values {
             final File taskDirectory,
             final MfClientHttpRequestFactoryImpl httpRequestFactory,
             final File jasperTemplateBuild,
-            final String outputFormat) {
+            final String outputFormat,
+            final int httpRequestMaxNumberFetchRetry,
+            final int httpRequestFetchRetryIntervalMillis) {
         //CHECKSTYLE:ON
         Assert.isTrue(!taskDirectory.mkdirs() || taskDirectory.exists());
 
@@ -138,7 +149,8 @@ public final class Values {
         this.values.put(TASK_DIRECTORY_KEY, taskDirectory);
         this.values.put(CLIENT_HTTP_REQUEST_FACTORY_KEY,
                         new MfClientHttpRequestFactoryProvider(new ConfigFileResolvingHttpRequestFactory(
-                                httpRequestFactory, template.getConfiguration(), jobId)));
+                                httpRequestFactory, template.getConfiguration(), jobId,
+                                httpRequestMaxNumberFetchRetry, httpRequestFetchRetryIntervalMillis)));
         this.values.put(TEMPLATE_KEY, template);
         this.values.put(PDF_CONFIG_KEY, template.getPdfConfig());
         if (jasperTemplateBuild != null) {

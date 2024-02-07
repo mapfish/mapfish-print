@@ -15,16 +15,23 @@ import org.springframework.http.client.AbstractClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
+import java.util.concurrent.TimeUnit;
+import java.util.Arrays;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.nio.file.Files;
 
+import org.springframework.beans.factory.annotation.Value;
 import javax.annotation.Nonnull;
 
 
@@ -41,6 +48,13 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
     private final MfClientHttpRequestFactoryImpl httpRequestFactory;
     private final List<RequestConfigurator> callbacks = new CopyOnWriteArrayList<>();
 
+    @Value("${httpRequest.fetchRetry.maxNumber}")
+    private int httpRequestMaxNumberFetchRetry;
+
+    @Value("${httpRequest.fetchRetry.intervalMillis}")
+    private int httpRequestFetchRetryIntervalMillis;
+
+
     /**
      * Constructor.
      *
@@ -50,10 +64,14 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
      */
     public ConfigFileResolvingHttpRequestFactory(
             final MfClientHttpRequestFactoryImpl httpRequestFactory,
-            final Configuration config, final String jobId) {
+            final Configuration config, final String jobId,
+            final int httpRequestMaxNumberFetchRetry,
+            final int httpRequestFetchRetryIntervalMillis) {
         this.httpRequestFactory = httpRequestFactory;
         this.config = config;
         this.jobId = jobId;
+        this.httpRequestMaxNumberFetchRetry = httpRequestMaxNumberFetchRetry;
+        this.httpRequestFetchRetryIntervalMillis = httpRequestFetchRetryIntervalMillis;
     }
 
     @Override
@@ -110,42 +128,17 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
                 MDC.put(Processor.MDC_JOB_ID_KEY, ConfigFileResolvingHttpRequestFactory.this.jobId);
             }
             try {
-                if (this.request != null) {
-                    LOGGER.debug("Executing http request: {}", this.request.getURI());
-                    return executeCallbacksAndRequest(this.request);
-                }
-                if ("data".equals(this.uri.getScheme())) {
-                    final String urlStr = this.uri.toString();
-                    final URL url = new URL("data", null, 0,
-                        urlStr.substring("data:".length()), new Handler());
-                    final DataUrlConnection duc = new DataUrlConnection(url);
-                    final InputStream is = duc.getInputStream();
-                    final String contentType = duc.getContentType();
-                    final HttpHeaders responseHeaders = new HttpHeaders();
-                    responseHeaders.set("Content-Type", contentType);
-                    final ConfigFileResolverHttpResponse response =
-                      new ConfigFileResolverHttpResponse(is, responseHeaders);
-                    LOGGER.debug("Resolved request using DataUrlConnection: {}", contentType);
-                    return response;
-                }
-                if (this.httpMethod == HttpMethod.GET) {
-                    final String uriString = this.uri.toString();
-                    final Configuration configuration = ConfigFileResolvingHttpRequestFactory.this.config;
-                    try {
-                        final byte[] bytes = configuration.loadFile(uriString);
-                        final InputStream is = new ByteArrayInputStream(bytes);
-                        final ConfigFileResolverHttpResponse response =
-                                new ConfigFileResolverHttpResponse(is, headers);
-                        LOGGER.debug("Resolved request: {} using MapFish print config file loaders.",
-                                     uriString);
-                        return response;
-                    } catch (NoSuchElementException e) {
-                        // cannot be loaded by configuration so try http
-                    }
-                }
 
-                LOGGER.debug("Executing http request: {}", this.getURI());
-                return executeCallbacksAndRequest(createRequestFromWrapped(headers));
+                if ("data".equals(this.uri.getScheme())) {
+                    return doDataUriRequest();
+                }
+                if (
+                    getURI().getScheme() == null
+                    || Arrays.asList("file", "", "servlet", "classpath").contains(getURI().getScheme())
+                ) {
+                    return doFileRequest();
+                }
+                return doHttpRequestWithRetry(headers);
             } finally {
                 if (mdcChanged) {
                     if (prev != null) {
@@ -156,6 +149,89 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
                 }
             }
         }
+
+        private ClientHttpResponse doDataUriRequest() throws IOException {
+            final String urlStr = this.uri.toString();
+            final URL url = new URL("data", null, 0,
+                urlStr.substring("data:".length()), new Handler());
+            final DataUrlConnection duc = new DataUrlConnection(url);
+            final InputStream is = duc.getInputStream();
+            final String contentType = duc.getContentType();
+            final HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.set("Content-Type", contentType);
+            final ConfigFileResolverHttpResponse response =
+            new ConfigFileResolverHttpResponse(is, responseHeaders);
+            LOGGER.debug("Resolved request using DataUrlConnection: {}", contentType);
+            return response;
+        }
+
+        private ClientHttpResponse doFileRequest() throws IOException {
+            final String uriString = this.uri.toString();
+            final Configuration configuration = ConfigFileResolvingHttpRequestFactory.this.config;
+            final byte[] bytes = configuration.loadFile(uriString);
+            final InputStream is = new ByteArrayInputStream(bytes);
+            final HttpHeaders responseHeaders = new HttpHeaders();
+            final Optional<File> file = configuration.getFile(uriString);
+            if (file.isPresent()) {
+                responseHeaders.set(
+                    "Content-Length", String.valueOf(Files.probeContentType(file.get().toPath()))
+                );
+            }
+            final ConfigFileResolverHttpResponse response =
+                    new ConfigFileResolverHttpResponse(is, responseHeaders);
+            LOGGER.debug("Resolved request: {} using MapFish print config file loaders.",
+                            uriString);
+            return response;
+        }
+
+        private ClientHttpResponse doHttpRequestWithRetry(final HttpHeaders headers) throws IOException {
+            AtomicInteger counter = new AtomicInteger();
+            do {
+                try {
+                    // Display headers, one by line <name>: <value>
+                    LOGGER.debug("Fetching URI resource {}, headers:\n{}", this.getURI(),
+                        headers.entrySet().stream()
+                            .map(entry -> entry.getKey() + "=" + String.join(", ", entry.getValue()))
+                            .collect(Collectors.joining("\n"))
+                    );
+                    ClientHttpRequest requestUsed = this.request != null ? this.request :
+                        createRequestFromWrapped(headers);
+                    LOGGER.debug("Executing http request: {}", requestUsed.getURI());
+                    ClientHttpResponse response = executeCallbacksAndRequest(requestUsed);
+                    if (response.getRawStatusCode() < 500) {
+                        LOGGER.debug("Fetching success URI resource {}, error code {}",
+                                    getURI(), response.getRawStatusCode());
+                        return response;
+                    }
+                    LOGGER.debug("Fetching failed URI resource {}, error code {}",
+                                getURI(), response.getRawStatusCode());
+                    if (counter.incrementAndGet() < httpRequestMaxNumberFetchRetry) {
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(httpRequestFetchRetryIntervalMillis);
+                        } catch (InterruptedException e1) {
+                            throw new RuntimeException(e1);
+                        }
+                        LOGGER.debug("Retry fetching URI resource {}", this.getURI());
+                    } else {
+                        throw new RuntimeException(String .format(
+                            "Fetching failed URI resource %s, error code %s",
+                            getURI(), response.getRawStatusCode()
+                        ));
+                    }
+                } catch (final IOException e) {
+                    if (counter.incrementAndGet() < httpRequestMaxNumberFetchRetry) {
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(httpRequestFetchRetryIntervalMillis);
+                        } catch (InterruptedException e1) {
+                            throw new RuntimeException(e1);
+                        }
+                        LOGGER.debug("Retry fetching URI resource {}", this.getURI());
+                    } else {
+                        LOGGER.debug("Fetching failed URI resource {}", getURI());
+                        throw e;
+                    }
+                }
+            } while (true);        }
 
         private ClientHttpResponse executeCallbacksAndRequest(final ClientHttpRequest requestToExecute)
                 throws IOException {
