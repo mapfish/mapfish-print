@@ -9,6 +9,9 @@ import org.springframework.util.StreamUtils;
 public class ErrorResponseClientHttpResponse extends AbstractClientHttpResponse {
   private final Exception exception;
 
+  /** HTTP code use in response for non HTTP errors. */
+  private static final int FAKE_HTTP_ERROR_CODE = 999;
+
   public ErrorResponseClientHttpResponse(final Exception e) {
     assert e != null;
     this.exception = e;
@@ -28,13 +31,14 @@ public class ErrorResponseClientHttpResponse extends AbstractClientHttpResponse 
 
   @Override
   public int getRawStatusCode() {
-    return 500;
+    return FAKE_HTTP_ERROR_CODE;
   }
 
   @Override
   @Nonnull
   public String getStatusText() {
-    return exception.getMessage();
+    return String.format(
+        "%s: %s", this.exception.getClass().getSimpleName(), this.exception.getMessage());
   }
 
   @Override
