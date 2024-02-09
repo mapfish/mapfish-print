@@ -227,13 +227,13 @@ public final class HttpRequestFetcher {
 
                         @Override
                         public int getRawStatusCode() {
-                            return 500;
+                            return 999;
                         }
 
                         @Override
                         @Nonnull
                         public String getStatusText() {
-                            return e.getMessage();
+                            return String.format("IOException: %s", e.getMessage());
                         }
 
                         @Override
