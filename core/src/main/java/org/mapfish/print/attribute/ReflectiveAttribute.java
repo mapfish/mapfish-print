@@ -258,10 +258,11 @@ public abstract class ReflectiveAttribute<VALUE> implements Attribute {
 
       Optional<JSONObject> clientOptions = getClientInfo();
       clientOptions.ifPresent(jsonObject -> json.key(JSON_CLIENT_INFO).value(jsonObject));
-    } catch (Throwable e) {
+    } catch (RuntimeException | IllegalAccessException e) {
       // Note: If this test fails and you just added a new attribute, make
       // sure to set defaults in AbstractMapfishSpringTest.configureAttributeForTesting
-      throw new Error("Error printing the clientConfig of: " + getValueType().getName(), e);
+      throw new RuntimeException(
+          "Error printing the clientConfig of: " + getValueType().getName(), e);
     }
   }
 

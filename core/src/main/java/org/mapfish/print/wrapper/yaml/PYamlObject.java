@@ -6,9 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.wrapper.PAbstractObject;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PElement;
@@ -134,29 +132,21 @@ public class PYamlObject extends PAbstractObject {
 
   @Override
   public final String toString() {
-    try {
-      return "PYaml(" + this.getCurrentPath() + ":" + toJSON().getInternalObj().toString(2) + ")";
-    } catch (JSONException e) {
-      throw ExceptionUtils.getRuntimeException(e);
-    }
+    return "PYaml(" + this.getCurrentPath() + ":" + toJSON().getInternalObj().toString(2) + ")";
   }
 
   /** Convert this object to a json object. */
   public final PJsonObject toJSON() {
-    try {
-      JSONObject json = new JSONObject();
-      for (String key : this.obj.keySet()) {
-        Object opt = opt(key);
-        if (opt instanceof PYamlObject) {
-          opt = ((PYamlObject) opt).toJSON().getInternalObj();
-        } else if (opt instanceof PYamlArray) {
-          opt = ((PYamlArray) opt).toJSON().getInternalArray();
-        }
-        json.put(key, opt);
+    JSONObject json = new JSONObject();
+    for (String key : this.obj.keySet()) {
+      Object opt = opt(key);
+      if (opt instanceof PYamlObject) {
+        opt = ((PYamlObject) opt).toJSON().getInternalObj();
+      } else if (opt instanceof PYamlArray) {
+        opt = ((PYamlArray) opt).toJSON().getInternalArray();
       }
-      return new PJsonObject(json, this.getContextName());
-    } catch (Throwable e) {
-      throw ExceptionUtils.getRuntimeException(e);
+      json.put(key, opt);
     }
+    return new PJsonObject(json, this.getContextName());
   }
 }

@@ -9,7 +9,6 @@ import org.geotools.api.style.Style;
 import org.geotools.styling.StyleBuilder;
 import org.json.JSONObject;
 import org.mapfish.print.Constants;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.style.ParserPluginUtils;
 import org.mapfish.print.map.style.SLDParserPlugin;
@@ -454,14 +453,10 @@ public final class MapfishStyleParserPlugin implements StyleParserPlugin {
         clientHttpRequestFactory,
         styleString,
         (final byte[] input) -> {
-          try {
-            return tryParse(
-                configuration,
-                new String(input, Constants.DEFAULT_CHARSET),
-                clientHttpRequestFactory);
-          } catch (Throwable e) {
-            throw ExceptionUtils.getRuntimeException(e);
-          }
+          return tryParse(
+              configuration,
+              new String(input, Constants.DEFAULT_CHARSET),
+              clientHttpRequestFactory);
         });
   }
 

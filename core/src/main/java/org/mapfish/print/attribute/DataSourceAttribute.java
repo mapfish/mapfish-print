@@ -149,10 +149,10 @@ public final class DataSourceAttribute implements Attribute {
       json.endArray();
       json.endObject();
 
-    } catch (Throwable e) {
+    } catch (RuntimeException e) {
       // Note: If this test fails and you just added a new attribute, make
       // sure to set defaults in AbstractMapfishSpringTest.configureAttributeForTesting
-      throw new Error(
+      throw new RuntimeException(
           "Error printing the clientConfig of: " + DataSourceAttribute.class.getName(), e);
     }
   }

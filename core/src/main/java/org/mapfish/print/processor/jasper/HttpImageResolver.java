@@ -3,6 +3,7 @@ package org.mapfish.print.processor.jasper;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -84,7 +85,7 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
               response.getStatusCode(),
               response.getStatusText());
         }
-      } catch (Throwable e) {
+      } catch (RuntimeException | URISyntaxException | IOException e) {
         LOGGER.warn("Error loading table row image: {}", uriString, e);
       }
     }

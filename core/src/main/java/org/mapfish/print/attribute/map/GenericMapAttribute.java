@@ -1,6 +1,7 @@
 package org.mapfish.print.attribute.map;
 
 import java.awt.Dimension;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,7 @@ import org.geotools.referencing.CRS;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mapfish.print.Constants;
-import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
@@ -82,9 +83,9 @@ public abstract class GenericMapAttribute
         return CRS.decode(projection, longitudeFirst);
       }
     } catch (NoSuchAuthorityCodeException e) {
-      throw new RuntimeException(projection + " was not recognized as a crs code", e);
+      throw new PrintException(projection + " was not recognized as a crs code", e);
     } catch (FactoryException e) {
-      throw new RuntimeException("Error occurred while parsing: " + projection, e);
+      throw new PrintException("Error occurred while parsing: " + projection, e);
     }
   }
 
@@ -437,14 +438,14 @@ public abstract class GenericMapAttribute
       List<MapLayer> layerList = new ArrayList<>();
 
       for (int i = 0; i < this.getRawLayers().size(); i++) {
-        try {
-          PObject layer = this.getRawLayers().getObject(i);
-          // only render if  the opacity is greater than 0
-          if (Math.abs(layer.optDouble("opacity", 1.0)) > Constants.OPACITY_PRECISION) {
+        PObject layer = this.getRawLayers().getObject(i);
+        // only render if  the opacity is greater than 0
+        if (Math.abs(layer.optDouble("opacity", 1.0)) > Constants.OPACITY_PRECISION) {
+          try {
             parseSingleLayer(layerList, layer);
+          } catch (IOException e) {
+            throw new PrintException("Failed to parse layer : " + layer, e);
           }
-        } catch (Throwable throwable) {
-          throw ExceptionUtils.getRuntimeException(throwable);
         }
       }
 
@@ -453,8 +454,7 @@ public abstract class GenericMapAttribute
 
     @SuppressWarnings("unchecked")
     private void parseSingleLayer(final List<MapLayer> layerList, final PObject layer)
-        throws Throwable {
-
+        throws IOException {
       final Map<String, MapLayerFactoryPlugin> layerParsers =
           GenericMapAttribute.this.applicationContext.getBeansOfType(MapLayerFactoryPlugin.class);
       for (MapLayerFactoryPlugin layerParser : layerParsers.values()) {

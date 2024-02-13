@@ -9,6 +9,7 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -323,11 +324,11 @@ public class ExamplesTest {
               }
             }
           }
-        } catch (Throwable e) {
+        } catch (RuntimeException e) {
           errors.put(String.format("%s (%s)", example.getName(), requestFile.getName()), e);
         }
       }
-    } catch (Throwable e) {
+    } catch (IOException | RuntimeException e) {
       errors.put(example.getName(), e);
     }
 

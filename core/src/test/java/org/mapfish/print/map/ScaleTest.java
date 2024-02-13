@@ -3,6 +3,7 @@ package org.mapfish.print.map;
 import static org.junit.Assert.assertEquals;
 import static org.mapfish.print.Constants.PDF_DPI;
 
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
@@ -19,7 +20,7 @@ public class ScaleTest {
     try {
       SPHERICAL_MERCATOR = CRS.decode("EPSG:3857");
       CH1903 = CRS.decode("EPSG:21781");
-    } catch (Throwable e) {
+    } catch (FactoryException e) {
       throw new RuntimeException(e);
     }
   }

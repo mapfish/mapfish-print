@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.referencing.CRS;
 import org.junit.runner.RunWith;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
@@ -106,8 +107,8 @@ public abstract class AbstractMapfishSpringTest {
       final CenterScaleMapBounds bounds =
           new CenterScaleMapBounds(CRS.decode("CRS:84"), 0, 0, 30000);
       return new MapfishMapContext(bounds, new Dimension(500, 500), 0, 72, true, true);
-    } catch (Throwable e) {
-      throw new Error(e);
+    } catch (FactoryException e) {
+      throw new RuntimeException(e);
     }
   }
 

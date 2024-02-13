@@ -3,6 +3,7 @@ package org.mapfish.print.attribute.map;
 import static org.junit.Assert.assertEquals;
 
 import java.awt.Rectangle;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -21,7 +22,7 @@ public class CenterScaleMapBoundsTest {
       SPHERICAL_MERCATOR = CRS.decode("EPSG:3857");
       CH1903 = CRS.decode("EPSG:21781");
       LAMBERT = CRS.decode("EPSG:2154");
-    } catch (Throwable e) {
+    } catch (FactoryException e) {
       throw new RuntimeException(e);
     }
   }
