@@ -1209,7 +1209,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     if (allowedReferers == null) {
       return true;
     }
-    String referrer = request.getHeader("referrer");
+    String referrer = request.getHeader("referer");
     if (referrer == null) {
       referrer = "http://localhost/";
     }
