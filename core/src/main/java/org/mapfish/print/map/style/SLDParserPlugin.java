@@ -11,6 +11,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.geotools.api.style.Style;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.DefaultResourceLocator;
@@ -125,7 +126,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
       sldParser.setInput(new ByteArrayInputStream(bytes));
       styles = sldParser.readXML();
 
-    } catch (Throwable e) {
+    } catch (ParserConfigurationException | SAXException | IOException e) {
       return Optional.empty();
     }
 

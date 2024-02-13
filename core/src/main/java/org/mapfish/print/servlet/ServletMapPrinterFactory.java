@@ -130,7 +130,7 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
         printer.setConfiguration(configFile, bytes);
 
         this.printers.put(finalApp, printer);
-      } catch (Throwable e) {
+      } catch (RuntimeException | IOException e) {
         LOGGER.error(
             "Error occurred while reading configuration file '{}', '{}'",
             configFile,

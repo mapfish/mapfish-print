@@ -197,22 +197,14 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
       try {
         int numFeatures = getNumExpectedFeatures(geojsonExample);
         final String geojson =
-            new String(
-                java.nio.file.Files.readAllBytes(geojsonExample.toPath()),
-                Constants.DEFAULT_CHARSET);
-
+            java.nio.file.Files.readString(geojsonExample.toPath(), Constants.DEFAULT_CHARSET);
         final SimpleFeatureCollection simpleFeatureCollection =
             featuresParser.treatStringAsGeoJson(geojson);
         assertEquals(geojsonExample.getName(), numFeatures, simpleFeatureCollection.size());
-      } catch (AssertionError e) {
-        throw e;
-      } catch (Throwable t) {
-        t.printStackTrace();
-        throw new AssertionError(
-            "Exception raised when processing: "
-                + geojsonExample.getName()
-                + "\n"
-                + t.getMessage());
+      } catch (RuntimeException t) {
+        throw new RuntimeException(
+            "Exception raised when processing: " + geojsonExample.getName() + "\n" + t.getMessage(),
+            t);
       }
     }
   }

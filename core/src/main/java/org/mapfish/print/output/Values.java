@@ -215,7 +215,7 @@ public final class Values {
             attribute.getValue().getValue(template, attribute.getKey(), requestJsonAttributes));
       } catch (ObjectMissingException | IllegalArgumentException e) {
         throw e;
-      } catch (Throwable e) {
+      } catch (RuntimeException e) {
         String templateName = "unknown";
         for (Map.Entry<String, Template> entry :
             template.getConfiguration().getTemplates().entrySet()) {

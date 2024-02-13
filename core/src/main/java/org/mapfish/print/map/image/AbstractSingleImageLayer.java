@@ -24,7 +24,7 @@ import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
-import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.StatsUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
@@ -83,8 +83,10 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
     BufferedImage image;
     try {
       image = loadImage(httpRequestFactory, mapContext);
-    } catch (Throwable t) {
-      throw ExceptionUtils.getRuntimeException(t);
+    } catch (RuntimeException t) {
+      throw t;
+    } catch (Exception t) {
+      throw new PrintException("Failed to LoadImage", t);
     }
 
     final MapBounds bounds = mapContext.getBounds();
@@ -215,7 +217,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
       }
       timerDownload.stop();
       return image;
-    } catch (Throwable e) {
+    } catch (RuntimeException e) {
       this.registry.counter(baseMetricName + ".error").inc();
       throw e;
     }

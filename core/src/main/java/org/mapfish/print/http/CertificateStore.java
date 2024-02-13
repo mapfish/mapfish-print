@@ -1,13 +1,19 @@
 package org.mapfish.print.http;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URI;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.List;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
-import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.config.HasConfiguration;
@@ -89,8 +95,13 @@ public final class CertificateStore implements ConfigurationObject, HasConfigura
       newSslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 
       return newSslContext;
-    } catch (Throwable t) {
-      throw ExceptionUtils.getRuntimeException(t);
+    } catch (NoSuchAlgorithmException
+        | KeyStoreException
+        | UnrecoverableKeyException
+        | CertificateException
+        | IOException
+        | KeyManagementException t) {
+      throw new PrintException("Failed to create SSL Context", t);
     }
   }
 

@@ -40,7 +40,7 @@ import net.sf.jasperreports.renderers.Renderable;
 import net.sf.jasperreports.repo.RepositoryService;
 import org.locationtech.jts.util.AssertionFailedException;
 import org.mapfish.print.Constants;
-import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
@@ -295,8 +295,12 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
           }
         }
         source.moveFirst();
-      } catch (Throwable e) {
-        throw ExceptionUtils.getRuntimeException(e);
+      } catch (JRException
+          | ParserConfigurationException
+          | IOException
+          | ClassNotFoundException
+          | SAXException e) {
+        throw new PrintException("Checking required fields failed", e);
       }
 
       StringBuilder finalError = new StringBuilder();
@@ -329,8 +333,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
           }
         }
       }
-    } catch (Throwable e) {
-      throw ExceptionUtils.getRuntimeException(e);
+    } catch (ParserConfigurationException | IOException | SAXException | ClassNotFoundException e) {
+      throw new PrintException("Checking required values failed", e);
     }
 
     StringBuilder finalError = new StringBuilder();
