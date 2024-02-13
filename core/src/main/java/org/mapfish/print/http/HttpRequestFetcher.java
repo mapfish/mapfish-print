@@ -128,6 +128,7 @@ public final class HttpRequestFetcher {
             if (this.body != null) {
                 try {
                     this.body.close();
+                    this.body = null;
                 } catch (IOException e) {
                     // ignored
                 }

@@ -241,6 +241,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
                 getBody();
                 if (inputStream != null) {
                     inputStream.close();
+                    inputStream = null;
                 }
             } catch (IOException e) {
                 LOGGER.error("Error occurred while trying to retrieve Http Response {} in order to close it.",
