@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mapfish.print.attribute.map.CenterScaleMapBoundsTest.CH1903;
 
 import java.awt.Rectangle;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -16,7 +17,7 @@ public class BBoxMapBoundsTest {
   static {
     try {
       SPHERICAL_MERCATOR = CRS.decode("EPSG:3857");
-    } catch (Throwable e) {
+    } catch (FactoryException e) {
       throw new RuntimeException(e);
     }
   }

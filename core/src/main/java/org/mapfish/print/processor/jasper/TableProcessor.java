@@ -703,7 +703,7 @@ public final class TableProcessor
         checkStyleExists(validationErrors, stylesMap, this.firstHeaderStyle);
         checkStyleExists(validationErrors, stylesMap, this.headerStyle);
         checkStyleExists(validationErrors, stylesMap, this.lastHeaderStyle);
-      } catch (Throwable e) {
+      } catch (RuntimeException | IOException | JRException e) {
         validationErrors.add(e);
       }
     }

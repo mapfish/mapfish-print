@@ -2,6 +2,7 @@ package org.mapfish.print.processor;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -154,16 +155,7 @@ public final class PdfConfigurationProcessor
           value = convertKeywords(value);
         }
         writeMethodParameter.getMethod().invoke(in.pdfConfig, value);
-      } catch (Throwable e) {
-        if (writeMethodParameter == null) {
-          throw new RuntimeException(
-              "An error occurred while executing !updatePdfConfig.  Unable to set "
-                  + "configuration property '"
-                  + entry.getKey()
-                  + " with value "
-                  + value
-                  + ". ");
-        }
+      } catch (IllegalAccessException | InvocationTargetException | RuntimeException e) {
         throw new RuntimeException(
             "An error occurred while executing !updatePdfConfig.  Unable to set configuration "
                 + "property '"
@@ -173,7 +165,8 @@ public final class PdfConfigurationProcessor
                 + ". The expected type is "
                 + writeMethodParameter.getParameterType()
                 + " but the type of the value being set was: "
-                + (value != null ? value.getClass() : "null"));
+                + (value != null ? value.getClass() : "null"),
+            e);
       }
     }
 

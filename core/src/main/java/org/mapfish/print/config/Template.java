@@ -302,7 +302,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
     try {
       getProcessorGraph();
-    } catch (Throwable t) {
+    } catch (RuntimeException t) {
       validationErrors.add(t);
     }
 

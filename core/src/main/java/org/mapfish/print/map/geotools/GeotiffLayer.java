@@ -3,6 +3,7 @@ package org.mapfish.print.map.geotools;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Set;
@@ -13,8 +14,8 @@ import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.mapfish.print.Constants;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FileUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
@@ -106,8 +107,8 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
           }
 
           return new GeoTiffFormat().getReader(geotiffFile);
-        } catch (Throwable t) {
-          throw ExceptionUtils.getRuntimeException(t);
+        } catch (IOException | URISyntaxException e) {
+          throw new PrintException("Failed to get GeotiffReader", e);
         }
       };
     }
