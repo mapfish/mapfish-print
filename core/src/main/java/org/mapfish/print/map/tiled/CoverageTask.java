@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 import java.util.concurrent.RecursiveTask;
@@ -16,7 +18,7 @@ import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.geometry.GeneralBounds;
-import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.StatsUtils;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.style.json.ColorParser;
@@ -147,8 +149,8 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
           this.tilePreparationInfo.getGridCoverageMaxY());
       return factory.create(
           this.tiledLayer.createCommonUrl(), coverageImage, gridEnvelope, null, null, null);
-    } catch (Exception e) {
-      throw ExceptionUtils.getRuntimeException(e);
+    } catch (URISyntaxException | UnsupportedEncodingException e) {
+      throw new PrintException("Failed to call the coverage task", e);
     }
   }
 
@@ -276,7 +278,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
               return new Tile(image, getTileIndexX(), getTileIndexY());
             } catch (IOException e) {
               this.registry.counter(baseMetricName + ".error").inc();
-              throw ExceptionUtils.getRuntimeException(e);
+              throw new PrintException("Failed to compute Coverage Task", e);
             }
           });
     }

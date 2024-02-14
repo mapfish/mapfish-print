@@ -40,10 +40,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.mapfish.print.Constants;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FontTools;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.Processor;
@@ -295,7 +295,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         try {
           requestData = URLDecoder.decode(requestData, Constants.DEFAULT_ENCODING);
         } catch (UnsupportedEncodingException e) {
-          throw ExceptionUtils.getRuntimeException(e);
+          throw createPrintException(e, requestData);
         }
       }
       if (requestData.startsWith("spec=")) {
@@ -308,13 +308,20 @@ public class MapPrinterServlet extends BaseMapServlet {
         try {
           return MapPrinter.parseSpec(URLDecoder.decode(requestData, Constants.DEFAULT_ENCODING));
         } catch (UnsupportedEncodingException uee) {
-          throw ExceptionUtils.getRuntimeException(e);
+          throw createPrintException(uee, requestData);
         }
       }
     } catch (RuntimeException e) {
       LOGGER.warn("Error parsing request data: {}", requestDataRaw);
       throw e;
     }
+  }
+
+  private static PrintException createPrintException(
+      final UnsupportedEncodingException e, final String requestData) {
+    String message =
+        String.format("Failed to decode %s using %s", requestData, Constants.DEFAULT_ENCODING);
+    return new PrintException(message, e);
   }
 
   /**
@@ -411,8 +418,8 @@ public class MapPrinterServlet extends BaseMapServlet {
         }
         json.endObject();
       }
-    } catch (JSONException | IOException e) {
-      throw ExceptionUtils.getRuntimeException(e);
+    } catch (IOException e) {
+      throw new PrintException("Failed to get writer from " + statusResponse, e);
     } catch (NoSuchReferenceException e) {
       error(statusResponse, e.getMessage(), HttpStatus.NOT_FOUND);
     }
@@ -1059,8 +1066,8 @@ public class MapPrinterServlet extends BaseMapServlet {
       }
       json.endArray();
       json.endObject();
-    } catch (JSONException | IOException e) {
-      throw ExceptionUtils.getRuntimeException(e);
+    } catch (IOException e) {
+      throw new PrintException("Failed to get writer from " + response, e);
     }
   }
 

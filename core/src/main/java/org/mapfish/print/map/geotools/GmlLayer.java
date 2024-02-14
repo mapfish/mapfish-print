@@ -16,8 +16,8 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.gml2.GMLConfiguration;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FileUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
@@ -98,7 +98,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
           try {
             featureCollection = createFeatureSource(template, requestFactory, url);
           } catch (IOException e) {
-            throw ExceptionUtils.getRuntimeException(e);
+            throw new PrintException("Failed to create feature source for " + url, e);
           }
           if (featureCollection == null) {
             throw new IllegalArgumentException(url + " does not reference a GML file");
@@ -126,7 +126,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
             return parseGml3(gmlData);
           }
         } catch (URISyntaxException e) {
-          throw ExceptionUtils.getRuntimeException(e);
+          throw new PrintException("Failed to create URI for " + url, e);
         }
       } catch (MalformedURLException e) {
         return null;
@@ -177,7 +177,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         }
 
       } catch (SAXException | ParserConfigurationException e) {
-        throw ExceptionUtils.getRuntimeException(e);
+        throw new PrintException("Failed to parse Gml32 " + gmlData, e);
       }
     }
 

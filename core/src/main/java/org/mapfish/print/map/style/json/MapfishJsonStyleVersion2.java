@@ -17,9 +17,7 @@ import org.geotools.api.style.Symbolizer;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.styling.StyleBuilder;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
@@ -162,11 +160,7 @@ public final class MapfishJsonStyleVersion2 {
       final PJsonObject ruleJson, final PJsonObject symbolizerJson) {
     Map<String, String> values = buildValuesMap(ruleJson, symbolizerJson);
     for (Map.Entry<String, String> entry : values.entrySet()) {
-      try {
-        symbolizerJson.getInternalObj().put(entry.getKey(), entry.getValue());
-      } catch (JSONException e) {
-        throw ExceptionUtils.getRuntimeException(e);
-      }
+      symbolizerJson.getInternalObj().put(entry.getKey(), entry.getValue());
     }
   }
 

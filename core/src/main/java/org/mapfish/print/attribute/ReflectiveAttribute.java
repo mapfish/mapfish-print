@@ -19,7 +19,7 @@ import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.AssertionFailedException;
-import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.MapfishParser;
@@ -343,7 +343,7 @@ public abstract class ReflectiveAttribute<VALUE> implements Attribute {
             try {
               value = typeOrComponentType.getDeclaredConstructor().newInstance();
             } catch (InvocationTargetException | NoSuchMethodException | InstantiationException e) {
-              throw ExceptionUtils.getRuntimeException(e);
+              throw new PrintException("Failed to encode Attribute for " + typeOrComponentType, e);
             }
           }
         }

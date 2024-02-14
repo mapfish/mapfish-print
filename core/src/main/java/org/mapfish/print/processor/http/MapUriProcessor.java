@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
@@ -73,7 +73,7 @@ public final class MapUriProcessor extends AbstractClientHttpRequestFactoryProce
             try {
               return requestFactory.createRequest(new URI(finalUri), httpMethod);
             } catch (URISyntaxException e) {
-              throw ExceptionUtils.getRuntimeException(e);
+              throw new PrintException("Failed to create URI for " + finalUri, e);
             }
           } else {
             LOGGER.debug("URI {} did not match {}", uriString, entry.getKey());

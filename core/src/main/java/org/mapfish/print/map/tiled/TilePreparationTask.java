@@ -17,8 +17,8 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FloatingPointUtil;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.HttpRequestFetcher;
@@ -197,8 +197,10 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
                 gridCoverageMaxX,
                 gridCoverageMaxY,
                 mapProjection);
+          } catch (RuntimeException e) {
+            throw e;
           } catch (Exception e) {
-            throw ExceptionUtils.getRuntimeException(e);
+            throw new PrintException("Failed to call Tile preparation task", e);
           }
         });
   }

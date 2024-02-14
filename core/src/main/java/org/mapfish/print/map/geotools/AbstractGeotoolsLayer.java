@@ -19,8 +19,8 @@ import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.locationtech.jts.util.Assert;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FloatingPointUtil;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.HttpRequestFetcher;
@@ -133,8 +133,10 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
           layerTransformer.getBounds().toReferencedEnvelope(paintArea);
       renderer.paint(graphics2D, paintArea, mapArea);
       graphics2D.setTransform(originalTransform);
+    } catch (RuntimeException e) {
+      throw e;
     } catch (Exception e) {
-      throw ExceptionUtils.getRuntimeException(e);
+      throw new PrintException("Failed to render.", e);
     } finally {
       content.dispose();
     }

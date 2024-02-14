@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,7 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
         try {
           return Optional.of(new File(url.toURI()).lastModified());
         } catch (URISyntaxException e) {
-          throw ExceptionUtils.getRuntimeException(e);
+          throw new PrintException("Failed to create URI for " + url, e);
         }
       } else {
         return Optional.empty();
@@ -183,7 +183,7 @@ public final class ClasspathConfigFileLoader implements ConfigFileLoaderPlugin {
         try {
           return Optional.of(file.toURI().toURL());
         } catch (MalformedURLException e) {
-          throw ExceptionUtils.getRuntimeException(e);
+          throw new PrintException("Failed to create URL from " + file.toURI(), e);
         }
       } else {
         return Optional.empty();

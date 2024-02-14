@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.RegexpUtil;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.AbstractMfClientHttpRequestFactoryWrapper;
@@ -90,7 +90,7 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
             }
             return requestFactory.createRequest(httpUri, httpMethod);
           } catch (URISyntaxException e) {
-            throw ExceptionUtils.getRuntimeException(e);
+            throw new PrintException("Failed to update Port and Scheme for " + uri, e);
           }
         }
         return requestFactory.createRequest(uri, httpMethod);

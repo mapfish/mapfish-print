@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
@@ -87,7 +87,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
             featureCollection = parser.autoTreat(template, geoJsonString);
             return new CollectionFeatureSource(featureCollection);
           } catch (IOException e) {
-            throw ExceptionUtils.getRuntimeException(e);
+            throw new PrintException("Failed to load " + mapContext, e);
           }
         }
       };

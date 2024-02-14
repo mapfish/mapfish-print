@@ -5,9 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.mapfish.print.ExceptionUtils;
 
 /**
  * A simple implementation of {@link org.mapfish.print.servlet.registry.Registry} based on a {@link
@@ -112,10 +110,6 @@ public class BasicRegistry implements Registry {
     synchronized (this) {
       source = (String) this.registry.getIfPresent(key);
     }
-    try {
-      return new JSONObject(source);
-    } catch (JSONException e) {
-      throw ExceptionUtils.getRuntimeException(e);
-    }
+    return new JSONObject(source);
   }
 }

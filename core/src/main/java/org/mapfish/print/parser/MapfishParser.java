@@ -16,9 +16,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.MissingPropertyException;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.attribute.PrimitiveAttribute;
 import org.mapfish.print.url.data.Handler;
 import org.mapfish.print.wrapper.ObjectMissingException;
@@ -116,7 +116,7 @@ public final class MapfishParser {
           requiresTracker.markAsVisited(property);
           property.set(objectToPopulate, value);
         } catch (IllegalAccessException e) {
-          throw ExceptionUtils.getRuntimeException(e);
+          throw new PrintException("Failed to set the property of " + objectToPopulate, e);
         }
       } catch (ObjectMissingException e) {
         final HasDefaultValue hasDefaultValue = property.getAnnotation(HasDefaultValue.class);
@@ -228,7 +228,7 @@ public final class MapfishParser {
       try {
         value = new URL(null, layer.getString(name), new Handler());
       } catch (MalformedURLException e) {
-        throw ExceptionUtils.getRuntimeException(e);
+        throw new PrintException("Failed to create URL for " + name, e);
       }
     } else if (type.isArray()) {
       final PArray array = layer.getArray(name);
@@ -257,7 +257,7 @@ public final class MapfishParser {
       } catch (InvocationTargetException | NoSuchMethodException | InstantiationException e) {
         throw new UnsupportedTypeException(type, e);
       } catch (IllegalAccessException e) {
-        throw ExceptionUtils.getRuntimeException(e);
+        throw new PrintException("Failed to create instance of type" + type, e);
       }
     }
     return value;
@@ -326,7 +326,7 @@ public final class MapfishParser {
       try {
         value = new URL(null, array.getString(i), new Handler());
       } catch (MalformedURLException e) {
-        throw ExceptionUtils.getRuntimeException(e);
+        throw new PrintException("Failed to create URL for index" + i, e);
       }
     } else if (type.isEnum()) {
       value = parseEnum(type, array.getPath("" + i), array.getString(i));
@@ -338,7 +338,7 @@ public final class MapfishParser {
       } catch (InvocationTargetException | NoSuchMethodException | InstantiationException e) {
         throw new UnsupportedTypeException(type, e);
       } catch (IllegalAccessException e) {
-        throw ExceptionUtils.getRuntimeException(e);
+        throw new PrintException("Failed to create instance for " + type, e);
       }
     }
 

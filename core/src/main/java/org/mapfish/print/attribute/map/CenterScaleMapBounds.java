@@ -9,8 +9,8 @@ import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
 import org.locationtech.jts.geom.Coordinate;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FloatingPointUtil;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
 
@@ -175,7 +175,7 @@ public final class CenterScaleMapBounds extends MapBounds {
           rollLatitude(maxGeoY),
           crs);
     } catch (TransformException e) {
-      throw ExceptionUtils.getRuntimeException(e);
+      throw new PrintException("Failed to compute geodetic bbox", e);
     }
   }
 

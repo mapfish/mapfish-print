@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.servlet.job.JobManager;
 import org.mapfish.print.servlet.job.JobQueue;
@@ -406,7 +407,7 @@ public class ThreadPoolJobManager implements JobManager {
       try {
         cancelJobIfRunning(stat.getReferenceId());
       } catch (NoSuchReferenceException e) {
-        throw ExceptionUtils.getRuntimeException(e);
+        throw new PrintException("Failed to cancel job with id " + stat.getReferenceId(), e);
       }
     }
     // get new jobs to execute
@@ -466,8 +467,8 @@ public class ThreadPoolJobManager implements JobManager {
                 printJob.getEntry().getReferenceId(), "task canceled (timeout)", true);
           }
           notifyIfStopped();
-        } catch (NoSuchReferenceException e) { // shouldn't really happen
-          throw ExceptionUtils.getRuntimeException(e);
+        } catch (NoSuchReferenceException e) {
+          throw new PrintException("Failed to update registry for " + printJob, e);
         }
       }
     }

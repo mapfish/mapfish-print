@@ -57,8 +57,8 @@ import org.locationtech.jts.awt.ShapeWriter;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Polygon;
 import org.mapfish.print.Constants;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.ImageUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.SvgUtil;
 import org.mapfish.print.attribute.map.AreaOfInterest;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
@@ -628,7 +628,7 @@ public final class CreateMapProcessor
         try {
           features = featureSource.getFeatures();
         } catch (IOException e) {
-          throw ExceptionUtils.getRuntimeException(e);
+          throw new PrintException("Failed to get features from " + featureSource, e);
         }
 
         if (!features.isEmpty()) {

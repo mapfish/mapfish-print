@@ -12,7 +12,7 @@ import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import org.locationtech.jts.util.Assert;
-import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.output.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,12 +194,15 @@ public final class ProcessorGraphNode<IN, OUT> {
                     LOGGER.debug("Executing process: {}", process);
                     output = process.execute(inputParameter, this.execContext.getContext());
                     LOGGER.debug("Succeeded in executing process: {}", process);
+                  } catch (RuntimeException e) {
+                    throw e;
                   } catch (Exception e) {
+                    throw new PrintException("Failed to execute process:" + process, e);
+                  } finally {
                     // the processor is already canceled, so we don't care if something fails
                     this.execContext.getContext().stopIfCanceled();
                     LOGGER.info("Error while executing process: {}", process);
                     registry.counter(name + ".error").inc();
-                    throw ExceptionUtils.getRuntimeException(e);
                   }
 
                   if (output != null) {
