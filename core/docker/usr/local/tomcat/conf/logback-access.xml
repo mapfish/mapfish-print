@@ -21,7 +21,7 @@
                         "bytes":"#asLong{%bytesSent}",
                         "total_service_time":"#asLong{%elapsedTime}",
                         "request":"http://%header{Host}%requestURI",
-                        "referrer":"%header{Referrer}",
+                        "referrer":"%header{Referer}",
                         "agent":"%header{User-agent}",
 
                         "request.host":"%header{Host}",
@@ -56,7 +56,7 @@
                         "bytes":"#asLong{%bytesSent}",
                         "total_service_time":"#asLong{%elapsedTime}",
                         "request":"http://%header{Host}%requestURI",
-                        "referrer":"%header{Referrer}",
+                        "referrer":"%header{Referer}",
                         "agent":"%header{User-agent}",
 
                         "request.host":"%header{Host}",

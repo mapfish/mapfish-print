@@ -99,22 +99,22 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
   }
 
   @Test
-  public void testExampleRequest_refererOK() throws Exception {
+  public void testExampleRequest_referrerOK() throws Exception {
     setUpConfigFiles();
 
     final MockHttpServletRequest request = new MockHttpServletRequest();
-    request.addHeader("referrer", "http://www.example.com/toto");
+    request.addHeader("referer", "http://www.example.com/toto");
     final MockHttpServletResponse getExampleResponseImplicit = new MockHttpServletResponse();
     this.servlet.getExampleRequest("referrer", request, getExampleResponseImplicit);
     assertEquals(HttpStatus.OK.value(), getExampleResponseImplicit.getStatus());
   }
 
   @Test
-  public void testExampleRequest_refererNOK() throws Exception {
+  public void testExampleRequest_referrerNOK() throws Exception {
     setUpConfigFiles();
 
     final MockHttpServletRequest request = new MockHttpServletRequest();
-    request.addHeader("referrer", "http://www.google.com/");
+    request.addHeader("referer", "http://www.google.com/");
     final MockHttpServletResponse getExampleResponseImplicit = new MockHttpServletResponse();
     this.servlet.getExampleRequest("referrer", request, getExampleResponseImplicit);
     assertEquals(HttpStatus.FORBIDDEN.value(), getExampleResponseImplicit.getStatus());
@@ -1180,7 +1180,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     configFiles.put(
         "timeout", getFile(MapPrinterServletTest.class, "config-timeout.yaml").getAbsolutePath());
     configFiles.put(
-        "referrer", getFile(MapPrinterServletTest.class, "config-referer.yaml").getAbsolutePath());
+        "referrer", getFile(MapPrinterServletTest.class, "config-referrer.yaml").getAbsolutePath());
     configFiles.put(
         "email-s3", getFile(MapPrinterServletTest.class, "config-email-s3.yaml").getAbsolutePath());
     printerFactory.setConfigurationFiles(configFiles);
