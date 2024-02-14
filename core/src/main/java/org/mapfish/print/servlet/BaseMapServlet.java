@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -69,7 +69,7 @@ public abstract class BaseMapServlet {
 
       LOGGER.warn("Error while processing request: {}", message);
     } catch (IOException ex) {
-      throw ExceptionUtils.getRuntimeException(ex);
+      throw new PrintException("Failed to send an error", ex);
     }
   }
 
@@ -95,7 +95,7 @@ public abstract class BaseMapServlet {
       out.println("Error while processing request:");
       LOGGER.warn("Error while processing request", e);
     } catch (IOException ex) {
-      throw ExceptionUtils.getRuntimeException(ex);
+      throw new PrintException("", e);
     }
   }
 

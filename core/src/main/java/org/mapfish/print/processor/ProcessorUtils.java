@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
-import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.HasDefaultValue;
 
@@ -48,7 +48,7 @@ public final class ProcessorUtils {
           try {
             field.set(inputObject, value);
           } catch (IllegalAccessException e) {
-            throw ExceptionUtils.getRuntimeException(e);
+            throw new PrintException("Failed to set field of " + inputObject, e);
           }
         } else {
           if (field.getAnnotation(HasDefaultValue.class) == null) {
@@ -94,7 +94,7 @@ public final class ProcessorUtils {
           values.remove(name);
         }
       } catch (IllegalAccessException e) {
-        throw ExceptionUtils.getRuntimeException(e);
+        throw new PrintException("Failed to get field of " + output, e);
       }
     }
   }

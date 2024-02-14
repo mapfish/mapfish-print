@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.wrapper.ObjectMissingException;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PElement;
@@ -108,11 +106,7 @@ public class PYamlArray extends PElement implements PArray {
 
   @Override
   public final String toString() {
-    try {
-      return "PYaml(" + getCurrentPath() + ":" + toJSON().getInternalArray().toString(2) + ")";
-    } catch (JSONException e) {
-      throw ExceptionUtils.getRuntimeException(e);
-    }
+    return "PYaml(" + getCurrentPath() + ":" + toJSON().getInternalArray().toString(2) + ")";
   }
 
   /** Convert this object to a json array. */

@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Type;
-import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.servlet.job.PrintJobResult;
 import org.mapfish.print.servlet.job.PrintJobStatus;
 
@@ -82,7 +82,7 @@ public class PrintJobResultImpl implements PrintJobResult {
     try {
       return this.reportURI == null ? null : new URI(this.reportURI);
     } catch (URISyntaxException e) {
-      throw ExceptionUtils.getRuntimeException(e);
+      throw new PrintException("Failed to create URI", e);
     }
   }
 

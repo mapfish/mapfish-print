@@ -48,8 +48,8 @@ import org.geotools.api.style.TextSymbolizer;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.styling.StyleBuilder;
-import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FontTools;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.SetsUtils;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.DistanceUnit;
@@ -286,8 +286,7 @@ public final class JsonStyleParserHelper {
         final URL fileURL = new URL("file://" + externalGraphicUrl);
         return testForLegalFileUrl(this.configuration, fileURL).toExternalForm();
       } catch (MalformedURLException e1) {
-        // unable to convert to file url so give up and throw exception;
-        throw ExceptionUtils.getRuntimeException(e);
+        throw new PrintException("Unable to convert to file URL " + externalGraphicUrl, e);
       }
     }
     return externalGraphicUrl;
@@ -868,7 +867,8 @@ public final class JsonStyleParserHelper {
     try {
       return ECQL.toExpression(property, this.styleBuilder.getFilterFactory());
     } catch (CQLException e) {
-      throw ExceptionUtils.getRuntimeException(e);
+      throw new PrintException(
+          "Failed to convert from CQL to expression, the property " + property, e);
     }
   }
 

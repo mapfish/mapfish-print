@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.config.access.AccessAssertion;
 import org.mapfish.print.config.access.AccessAssertionPersister;
 import org.mapfish.print.servlet.job.JobQueue;
@@ -65,96 +65,76 @@ public class RegistryJobQueue implements JobQueue {
   @Override
   public final synchronized void add(final PrintJobEntry jobEntry) {
     this.registry.incrementInt(NEW_PRINT_COUNT, 1);
-    try {
-      store(new PrintJobStatusImpl(jobEntry, getNumberOfRequestsMade()));
-    } catch (JSONException e) {
-      throw ExceptionUtils.getRuntimeException(e);
-    }
+    store(new PrintJobStatusImpl(jobEntry, getNumberOfRequestsMade()));
     this.registry.put(LAST_POLL + jobEntry.getReferenceId(), System.currentTimeMillis());
   }
 
   @Override
   public final synchronized void start(final String referenceId) throws NoSuchReferenceException {
-    try {
-      PrintJobStatusImpl jobStatus = load(referenceId);
-      if (jobStatus.getStatus() == PrintJobStatus.Status.WAITING) {
-        jobStatus.setStatus(PrintJobStatus.Status.RUNNING);
-        jobStatus.setWaitingTime(0);
-        store(jobStatus);
-      }
-    } catch (JSONException e) {
-      throw ExceptionUtils.getRuntimeException(e);
+    PrintJobStatusImpl jobStatus = load(referenceId);
+    if (jobStatus.getStatus() == PrintJobStatus.Status.WAITING) {
+      jobStatus.setStatus(PrintJobStatus.Status.RUNNING);
+      jobStatus.setWaitingTime(0);
+      store(jobStatus);
     }
   }
 
   @Override
   public final synchronized void done(final String referenceId, final PrintJobResult result)
       throws NoSuchReferenceException {
-    try {
-      PrintJobStatusImpl status = load(referenceId);
-      if (!status.isDone()) {
-        this.registry.incrementInt(NB_PRINT_DONE, 1);
-        this.registry.incrementLong(TOTAL_PRINT_TIME, status.getElapsedTime());
-        this.registry.incrementInt(LAST_PRINT_COUNT, 1);
-      }
-
-      status.setCompletionTime(System.currentTimeMillis());
-      status.setStatus(PrintJobStatus.Status.FINISHED);
-      status.setResult(result);
-      store(status);
-    } catch (JSONException e) {
-      throw ExceptionUtils.getRuntimeException(e);
+    PrintJobStatusImpl status = load(referenceId);
+    if (!status.isDone()) {
+      this.registry.incrementInt(NB_PRINT_DONE, 1);
+      this.registry.incrementLong(TOTAL_PRINT_TIME, status.getElapsedTime());
+      this.registry.incrementInt(LAST_PRINT_COUNT, 1);
     }
+
+    status.setCompletionTime(System.currentTimeMillis());
+    status.setStatus(PrintJobStatus.Status.FINISHED);
+    status.setResult(result);
+    store(status);
   }
 
   @Override
   public final synchronized void cancel(
       final String referenceId, final String message, final boolean forceFinal)
       throws NoSuchReferenceException {
-    try {
-      PrintJobStatusImpl status = load(referenceId);
+    PrintJobStatusImpl status = load(referenceId);
 
-      if (!forceFinal && status.getStatus() == PrintJobStatus.Status.RUNNING) {
-        status.setStatus(PrintJobStatus.Status.CANCELING);
-      } else {
-        if (!status.isDone()) {
-          this.registry.incrementInt(NB_PRINT_DONE, 1);
-          this.registry.incrementLong(TOTAL_PRINT_TIME, status.getElapsedTime());
-          this.registry.incrementInt(LAST_PRINT_COUNT, 1);
-        }
-        // even if the job is already finished, we store it as "canceled" in the registry,
-        // so that all subsequent status requests return "canceled"
-        status.setCompletionTime(System.currentTimeMillis());
-        status.setStatus(PrintJobStatus.Status.CANCELED);
-      }
-
-      status.setError(message);
-      store(status);
-    } catch (JSONException e) {
-      throw ExceptionUtils.getRuntimeException(e);
-    }
-  }
-
-  @Override
-  public final synchronized void fail(final String referenceId, final String message)
-      throws NoSuchReferenceException {
-    try {
-      PrintJobStatusImpl status = load(referenceId);
+    if (!forceFinal && status.getStatus() == PrintJobStatus.Status.RUNNING) {
+      status.setStatus(PrintJobStatus.Status.CANCELING);
+    } else {
       if (!status.isDone()) {
         this.registry.incrementInt(NB_PRINT_DONE, 1);
         this.registry.incrementLong(TOTAL_PRINT_TIME, status.getElapsedTime());
         this.registry.incrementInt(LAST_PRINT_COUNT, 1);
       }
-
       // even if the job is already finished, we store it as "canceled" in the registry,
       // so that all subsequent status requests return "canceled"
       status.setCompletionTime(System.currentTimeMillis());
-      status.setStatus(PrintJobStatus.Status.ERROR);
-      status.setError(message);
-      store(status);
-    } catch (JSONException e) {
-      throw ExceptionUtils.getRuntimeException(e);
+      status.setStatus(PrintJobStatus.Status.CANCELED);
     }
+
+    status.setError(message);
+    store(status);
+  }
+
+  @Override
+  public final synchronized void fail(final String referenceId, final String message)
+      throws NoSuchReferenceException {
+    PrintJobStatusImpl status = load(referenceId);
+    if (!status.isDone()) {
+      this.registry.incrementInt(NB_PRINT_DONE, 1);
+      this.registry.incrementLong(TOTAL_PRINT_TIME, status.getElapsedTime());
+      this.registry.incrementInt(LAST_PRINT_COUNT, 1);
+    }
+
+    // even if the job is already finished, we store it as "canceled" in the registry,
+    // so that all subsequent status requests return "canceled"
+    status.setCompletionTime(System.currentTimeMillis());
+    status.setStatus(PrintJobStatus.Status.ERROR);
+    status.setError(message);
+    store(status);
   }
 
   @Override
@@ -190,19 +170,15 @@ public class RegistryJobQueue implements JobQueue {
   @Override
   public final PrintJobStatusImpl get(final String referenceId, final boolean external)
       throws NoSuchReferenceException {
-    try {
-      PrintJobStatusImpl status = load(referenceId);
-      status.setStatusTime(System.currentTimeMillis());
+    PrintJobStatusImpl status = load(referenceId);
+    status.setStatusTime(System.currentTimeMillis());
 
-      if (!status.isDone() && external) {
-        // remember when the status was polled for the last time
-        this.registry.put(LAST_POLL + referenceId, System.currentTimeMillis());
-      }
-
-      return status;
-    } catch (JSONException e) {
-      throw ExceptionUtils.getRuntimeException(e);
+    if (!status.isDone() && external) {
+      // remember when the status was polled for the last time
+      this.registry.put(LAST_POLL + referenceId, System.currentTimeMillis());
     }
+
+    return status;
   }
 
   /**
@@ -266,7 +242,7 @@ public class RegistryJobQueue implements JobQueue {
         try {
           reportURI = new URI(metadata.getString(JSON_REPORT_URI));
         } catch (URISyntaxException e) {
-          throw ExceptionUtils.getRuntimeException(e);
+          throw new PrintException("Failed to create URI for " + JSON_REPORT_URI, e);
         }
         String fileName = metadata.getString(JSON_FILENAME);
         String fileExt = metadata.getString(JSON_FILE_EXT);

@@ -4,7 +4,7 @@ import org.geotools.api.referencing.cs.AxisDirection;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Envelope;
-import org.mapfish.print.ExceptionUtils;
+import org.mapfish.print.PrintException;
 
 /** The LinearCoordinateSequence class. */
 public final class LinearCoordinateSequence implements CoordinateSequence, Cloneable {
@@ -210,7 +210,7 @@ public final class LinearCoordinateSequence implements CoordinateSequence, Clone
       clone.spacing = this.spacing;
       return clone;
     } catch (CloneNotSupportedException e) {
-      throw ExceptionUtils.getRuntimeException(e);
+      throw new PrintException("Failed to create a copy", e);
     }
   }
 }

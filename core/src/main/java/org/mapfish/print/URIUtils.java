@@ -59,7 +59,7 @@ public final class URIUtils {
           key = URLDecoder.decode(pair.substring(0, pos), "UTF-8");
           value = URLDecoder.decode(pair.substring(pos + 1), "UTF-8");
         } catch (UnsupportedEncodingException e) {
-          throw ExceptionUtils.getRuntimeException(e);
+          throw new PrintException("Failed to get parameters for query " + rawQuery, e);
         }
       }
 
@@ -135,7 +135,7 @@ public final class URIUtils {
     try {
       return new URI(result.toString());
     } catch (URISyntaxException e) {
-      throw ExceptionUtils.getRuntimeException(e);
+      throw new PrintException("Failed to create URI for " + result, e);
     }
   }
 
@@ -154,13 +154,24 @@ public final class URIUtils {
       }
       try {
         result.append(URLEncoder.encode(key, Constants.DEFAULT_ENCODING));
-        result.append("=");
+      } catch (UnsupportedEncodingException e) {
+        throw createPrintException(key, e);
+      }
+      result.append("=");
+      try {
         result.append(URLEncoder.encode(val, Constants.DEFAULT_ENCODING));
       } catch (UnsupportedEncodingException e) {
-        throw ExceptionUtils.getRuntimeException(e);
+        throw createPrintException(val, e);
       }
     }
     return first;
+  }
+
+  private static PrintException createPrintException(
+      final String toEncode, final UnsupportedEncodingException e) {
+    String message =
+        String.format("Failed to encode %s using %s", toEncode, Constants.DEFAULT_ENCODING);
+    return new PrintException(message, e);
   }
 
   /**
@@ -227,7 +238,7 @@ public final class URIUtils {
             initialUri.getFragment());
       }
     } catch (URISyntaxException e) {
-      throw ExceptionUtils.getRuntimeException(e);
+      throw new PrintException("Failed to set query parameters", e);
     }
   }
 
@@ -258,7 +269,7 @@ public final class URIUtils {
     try {
       return toString(requestFactory, url.toURI());
     } catch (URISyntaxException e) {
-      throw ExceptionUtils.getRuntimeException(e);
+      throw new PrintException("Incorrect syntax for " + url, e);
     }
   }
 
@@ -292,7 +303,7 @@ public final class URIUtils {
             initialUri.getFragment());
       }
     } catch (URISyntaxException e) {
-      throw ExceptionUtils.getRuntimeException(e);
+      throw new PrintException("Failed to set path " + path, e);
     }
   }
 }

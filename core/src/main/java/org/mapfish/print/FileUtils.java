@@ -55,7 +55,7 @@ public final class FileUtils {
           }
         }
       } catch (MalformedURLException e) {
-        throw ExceptionUtils.getRuntimeException(e);
+        throw new PrintException("Malformed URL", e);
       }
     }
     return url;
