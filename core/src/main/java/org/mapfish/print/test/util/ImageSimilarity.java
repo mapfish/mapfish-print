@@ -30,11 +30,7 @@ import org.mapfish.print.SvgUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Class for comparing an expected image to an actual image.
- *
- * <p>CHECKSTYLE:OFF
- */
+/** Class for comparing an expected image to an actual image. */
 public final class ImageSimilarity {
   private static final Logger LOGGER = LoggerFactory.getLogger(ImageSimilarity.class);
 
@@ -97,7 +93,7 @@ public final class ImageSimilarity {
    * @param image image to write
    * @param file path and file name (extension will be ignored and changed to tiff.
    */
-  private static void writeUncompressedImage(BufferedImage image, String file) {
+  private static void writeUncompressedImage(final BufferedImage image, final String file) {
     try {
       final File parentFile = new File(file).getParentFile();
       Iterator<ImageWriter> writers = ImageIO.getImageWritersBySuffix("png");
@@ -126,7 +122,8 @@ public final class ImageSimilarity {
    * @param height the graphic height (required for svg files)
    * @return a single graphic
    */
-  public static BufferedImage mergeImages(List<URI> graphicFiles, int width, int height)
+  public static BufferedImage mergeImages(
+      final List<URI> graphicFiles, final int width, final int height)
       throws IOException, TranscoderException {
     if (graphicFiles.isEmpty()) {
       throw new IllegalArgumentException("no graphics given");

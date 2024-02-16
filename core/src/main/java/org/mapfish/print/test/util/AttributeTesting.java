@@ -8,10 +8,8 @@ import org.mapfish.print.attribute.map.GenericMapAttribute;
 /**
  * Support for testing attributes. This is in main jar because it might be needed across module
  * boundaries and that can be difficult if it is in testing jar.
- *
- * <p>CHECKSTYLE:OFF
  */
-public class AttributeTesting {
+public final class AttributeTesting {
 
   private AttributeTesting() {
     throw new IllegalStateException("Utility class");
@@ -22,7 +20,7 @@ public class AttributeTesting {
    * attribute needs testing but the test is generic and does not necessarily want or need to know
    * the specific type of attribute and its properties.
    */
-  public static void configureAttributeForTesting(Attribute att) {
+  public static void configureAttributeForTesting(final Attribute att) {
     if (att instanceof GenericMapAttribute) {
       GenericMapAttribute genericMapAttribute = (GenericMapAttribute) att;
       genericMapAttribute.setWidth(500);

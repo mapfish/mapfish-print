@@ -20,7 +20,6 @@ import javax.servlet.descriptor.JspConfigDescriptor;
  * An essentially non-functional servlet context that is used by the CLI application to satisfy the
  * spring dependencies.
  */
-// CHECKSTYLE:OFF
 public final class CliServletContext implements ServletContext {
   @Override
   public String getContextPath() {
@@ -28,7 +27,7 @@ public final class CliServletContext implements ServletContext {
   }
 
   @Override
-  public ServletContext getContext(String uripath) {
+  public ServletContext getContext(final String uripath) {
     return null;
   }
 
@@ -53,38 +52,38 @@ public final class CliServletContext implements ServletContext {
   }
 
   @Override
-  public String getMimeType(String file) {
+  public String getMimeType(final String file) {
     return null;
   }
 
   @Override
-  public Set<String> getResourcePaths(String path) {
+  public Set<String> getResourcePaths(final String path) {
     return null;
   }
 
   @Override
-  public URL getResource(String path) {
+  public URL getResource(final String path) {
     return null;
   }
 
   @Override
-  public InputStream getResourceAsStream(String path) {
+  public InputStream getResourceAsStream(final String path) {
     return null;
   }
 
   @Override
-  public RequestDispatcher getRequestDispatcher(String path) {
+  public RequestDispatcher getRequestDispatcher(final String path) {
     return null;
   }
 
   @Override
-  public RequestDispatcher getNamedDispatcher(String name) {
+  public RequestDispatcher getNamedDispatcher(final String name) {
     return null;
   }
 
   @Override
   @Deprecated
-  public Servlet getServlet(String name) {
+  public Servlet getServlet(final String name) {
     return null;
   }
 
@@ -101,17 +100,17 @@ public final class CliServletContext implements ServletContext {
   }
 
   @Override
-  public void log(String msg) {}
+  public void log(final String msg) {}
 
   @Override
   @Deprecated
-  public void log(Exception exception, String msg) {}
+  public void log(final Exception exception, final String msg) {}
 
   @Override
-  public void log(String message, Throwable throwable) {}
+  public void log(final String message, final Throwable throwable) {}
 
   @Override
-  public String getRealPath(String path) {
+  public String getRealPath(final String path) {
     return null;
   }
 
@@ -121,7 +120,7 @@ public final class CliServletContext implements ServletContext {
   }
 
   @Override
-  public String getInitParameter(String name) {
+  public String getInitParameter(final String name) {
     return null;
   }
 
@@ -136,7 +135,7 @@ public final class CliServletContext implements ServletContext {
   }
 
   @Override
-  public Object getAttribute(String name) {
+  public Object getAttribute(final String name) {
     return null;
   }
 
@@ -146,10 +145,10 @@ public final class CliServletContext implements ServletContext {
   }
 
   @Override
-  public void setAttribute(String name, Object object) {}
+  public void setAttribute(final String name, final Object object) {}
 
   @Override
-  public void removeAttribute(String name) {}
+  public void removeAttribute(final String name) {}
 
   @Override
   public String getServletContextName() {
@@ -293,7 +292,7 @@ public final class CliServletContext implements ServletContext {
   }
 
   @Override
-  public javax.servlet.ServletRegistration.Dynamic addJspFile(String p1, String p2) {
+  public javax.servlet.ServletRegistration.Dynamic addJspFile(final String p1, final String p2) {
     return null;
   }
 }
