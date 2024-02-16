@@ -244,9 +244,8 @@ public final class BBoxMapBounds extends MapBounds {
     return new BBoxMapBounds(getProjection(), minGeoX, minGeoY, maxGeoX, maxGeoY);
   }
 
-  // CHECKSTYLE:OFF
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(final Object o) {
     if (this == o) {
       return true;
     }
@@ -273,5 +272,4 @@ public final class BBoxMapBounds extends MapBounds {
   public String toString() {
     return "BBoxMapBounds{" + "bbox=" + bbox + '}';
   }
-  // CHECKSTYLE:ON
 }

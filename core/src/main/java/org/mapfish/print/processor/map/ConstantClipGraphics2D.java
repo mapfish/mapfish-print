@@ -29,7 +29,6 @@ import java.util.Map;
  * A graphics 2d implementation that delegates all calls to the wrapped graphics2d except for the
  * methods related to setting the clip. These calls are ignored.
  */
-// CHECKSTYLE:OFF
 final class ConstantClipGraphics2D extends Graphics2D {
   private final Graphics2D wrapped;
 
@@ -39,87 +38,90 @@ final class ConstantClipGraphics2D extends Graphics2D {
   }
 
   @Override
-  public void clip(Shape s) {
+  public void clip(final Shape s) {
     // do nothing clip methods are ignored.
   }
 
   @Override
-  public void clipRect(int x, int y, int width, int height) {
+  public void clipRect(final int x, final int y, final int width, final int height) {
     // do nothing clip methods are ignored.
   }
 
   @Override
-  public void setClip(int x, int y, int width, int height) {
+  public void setClip(final int x, final int y, final int width, final int height) {
     // do nothing clip methods are ignored.
   }
 
   @Override
-  public void draw3DRect(int x, int y, int width, int height, boolean raised) {
+  public void draw3DRect(
+      final int x, final int y, final int width, final int height, final boolean raised) {
     wrapped.draw3DRect(x, y, width, height, raised);
   }
 
   @Override
-  public void fill3DRect(int x, int y, int width, int height, boolean raised) {
+  public void fill3DRect(
+      final int x, final int y, final int width, final int height, final boolean raised) {
     wrapped.fill3DRect(x, y, width, height, raised);
   }
 
   @Override
-  public void draw(Shape s) {
+  public void draw(final Shape s) {
     wrapped.draw(s);
   }
 
   @Override
-  public boolean drawImage(Image img, AffineTransform xform, ImageObserver obs) {
+  public boolean drawImage(final Image img, final AffineTransform xform, final ImageObserver obs) {
     return wrapped.drawImage(img, xform, obs);
   }
 
   @Override
-  public void drawImage(BufferedImage img, BufferedImageOp op, int x, int y) {
+  public void drawImage(
+      final BufferedImage img, final BufferedImageOp op, final int x, final int y) {
     wrapped.drawImage(img, op, x, y);
   }
 
   @Override
-  public void drawRenderedImage(RenderedImage img, AffineTransform xform) {
+  public void drawRenderedImage(final RenderedImage img, final AffineTransform xform) {
     wrapped.drawRenderedImage(img, xform);
   }
 
   @Override
-  public void drawRenderableImage(RenderableImage img, AffineTransform xform) {
+  public void drawRenderableImage(final RenderableImage img, final AffineTransform xform) {
     wrapped.drawRenderableImage(img, xform);
   }
 
   @Override
-  public void drawString(String str, int x, int y) {
+  public void drawString(final String str, final int x, final int y) {
     wrapped.drawString(str, x, y);
   }
 
   @Override
-  public void drawString(String str, float x, float y) {
+  public void drawString(final String str, final float x, final float y) {
     wrapped.drawString(str, x, y);
   }
 
   @Override
-  public void drawString(AttributedCharacterIterator iterator, int x, int y) {
+  public void drawString(final AttributedCharacterIterator iterator, final int x, final int y) {
     wrapped.drawString(iterator, x, y);
   }
 
   @Override
-  public void drawString(AttributedCharacterIterator iterator, float x, float y) {
+  public void drawString(final AttributedCharacterIterator iterator, final float x, final float y) {
     wrapped.drawString(iterator, x, y);
   }
 
   @Override
-  public void drawGlyphVector(GlyphVector g, float x, float y) {
+  public void drawGlyphVector(final GlyphVector g, final float x, final float y) {
     wrapped.drawGlyphVector(g, x, y);
   }
 
   @Override
-  public void fill(Shape s) {
+  public void fill(final Shape s) {
     wrapped.fill(s);
   }
 
   @Override
-  public boolean hit(Rectangle rect, Shape s, boolean onStroke) {
+  public boolean hit(final Rectangle rect, final Shape s, final boolean onStroke) {
     return wrapped.hit(rect, s, onStroke);
   }
 
@@ -129,17 +131,17 @@ final class ConstantClipGraphics2D extends Graphics2D {
   }
 
   @Override
-  public void setRenderingHint(RenderingHints.Key hintKey, Object hintValue) {
+  public void setRenderingHint(final RenderingHints.Key hintKey, final Object hintValue) {
     wrapped.setRenderingHint(hintKey, hintValue);
   }
 
   @Override
-  public Object getRenderingHint(RenderingHints.Key hintKey) {
+  public Object getRenderingHint(final RenderingHints.Key hintKey) {
     return wrapped.getRenderingHint(hintKey);
   }
 
   @Override
-  public void addRenderingHints(Map<?, ?> hints) {
+  public void addRenderingHints(final Map<?, ?> hints) {
     wrapped.addRenderingHints(hints);
   }
 
@@ -149,42 +151,42 @@ final class ConstantClipGraphics2D extends Graphics2D {
   }
 
   @Override
-  public void setRenderingHints(Map<?, ?> hints) {
+  public void setRenderingHints(final Map<?, ?> hints) {
     wrapped.setRenderingHints(hints);
   }
 
   @Override
-  public void translate(int x, int y) {
+  public void translate(final int x, final int y) {
     wrapped.translate(x, y);
   }
 
   @Override
-  public void translate(double tx, double ty) {
+  public void translate(final double tx, final double ty) {
     wrapped.translate(tx, ty);
   }
 
   @Override
-  public void rotate(double theta) {
+  public void rotate(final double theta) {
     wrapped.rotate(theta);
   }
 
   @Override
-  public void rotate(double theta, double x, double y) {
+  public void rotate(final double theta, final double x, final double y) {
     wrapped.rotate(theta, x, y);
   }
 
   @Override
-  public void scale(double sx, double sy) {
+  public void scale(final double sx, final double sy) {
     wrapped.scale(sx, sy);
   }
 
   @Override
-  public void shear(double shx, double shy) {
+  public void shear(final double shx, final double shy) {
     wrapped.shear(shx, shy);
   }
 
   @Override
-  public void transform(AffineTransform tx) {
+  public void transform(final AffineTransform tx) {
     wrapped.transform(tx);
   }
 
@@ -194,7 +196,7 @@ final class ConstantClipGraphics2D extends Graphics2D {
   }
 
   @Override
-  public void setTransform(AffineTransform tx) {
+  public void setTransform(final AffineTransform tx) {
     wrapped.setTransform(tx);
   }
 
@@ -204,7 +206,7 @@ final class ConstantClipGraphics2D extends Graphics2D {
   }
 
   @Override
-  public void setPaint(Paint paint) {
+  public void setPaint(final Paint paint) {
     wrapped.setPaint(paint);
   }
 
@@ -214,7 +216,7 @@ final class ConstantClipGraphics2D extends Graphics2D {
   }
 
   @Override
-  public void setComposite(Composite comp) {
+  public void setComposite(final Composite comp) {
     wrapped.setComposite(comp);
   }
 
@@ -224,7 +226,7 @@ final class ConstantClipGraphics2D extends Graphics2D {
   }
 
   @Override
-  public void setBackground(Color color) {
+  public void setBackground(final Color color) {
     wrapped.setBackground(color);
   }
 
@@ -234,7 +236,7 @@ final class ConstantClipGraphics2D extends Graphics2D {
   }
 
   @Override
-  public void setStroke(Stroke s) {
+  public void setStroke(final Stroke s) {
     wrapped.setStroke(s);
   }
 
@@ -249,7 +251,7 @@ final class ConstantClipGraphics2D extends Graphics2D {
   }
 
   @Override
-  public Graphics create(int x, int y, int width, int height) {
+  public Graphics create(final int x, final int y, final int width, final int height) {
     return wrapped.create(x, y, width, height);
   }
 
@@ -259,7 +261,7 @@ final class ConstantClipGraphics2D extends Graphics2D {
   }
 
   @Override
-  public void setColor(Color c) {
+  public void setColor(final Color c) {
     wrapped.setColor(c);
   }
 
@@ -269,7 +271,7 @@ final class ConstantClipGraphics2D extends Graphics2D {
   }
 
   @Override
-  public void setXORMode(Color c1) {
+  public void setXORMode(final Color c1) {
     wrapped.setXORMode(c1);
   }
 
@@ -279,7 +281,7 @@ final class ConstantClipGraphics2D extends Graphics2D {
   }
 
   @Override
-  public void setFont(Font font) {
+  public void setFont(final Font font) {
     wrapped.setFont(font);
   }
 
@@ -289,7 +291,7 @@ final class ConstantClipGraphics2D extends Graphics2D {
   }
 
   @Override
-  public FontMetrics getFontMetrics(Font f) {
+  public FontMetrics getFontMetrics(final Font f) {
     return wrapped.getFontMetrics(f);
   }
 
@@ -304,149 +306,200 @@ final class ConstantClipGraphics2D extends Graphics2D {
   }
 
   @Override
-  public void setClip(Shape clip) {
+  public void setClip(final Shape clip) {
     // do nothing clip methods are ignored.
   }
 
   @Override
-  public void copyArea(int x, int y, int width, int height, int dx, int dy) {
+  public void copyArea(
+      final int x, final int y, final int width, final int height, final int dx, final int dy) {
     wrapped.copyArea(x, y, width, height, dx, dy);
   }
 
   @Override
-  public void drawLine(int x1, int y1, int x2, int y2) {
+  public void drawLine(final int x1, final int y1, final int x2, final int y2) {
     wrapped.drawLine(x1, y1, x2, y2);
   }
 
   @Override
-  public void fillRect(int x, int y, int width, int height) {
+  public void fillRect(final int x, final int y, final int width, final int height) {
     wrapped.fillRect(x, y, width, height);
   }
 
   @Override
-  public void drawRect(int x, int y, int width, int height) {
+  public void drawRect(final int x, final int y, final int width, final int height) {
     wrapped.drawRect(x, y, width, height);
   }
 
   @Override
-  public void clearRect(int x, int y, int width, int height) {
+  public void clearRect(final int x, final int y, final int width, final int height) {
     wrapped.clearRect(x, y, width, height);
   }
 
   @Override
-  public void drawRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
+  public void drawRoundRect(
+      final int x,
+      final int y,
+      final int width,
+      final int height,
+      final int arcWidth,
+      final int arcHeight) {
     wrapped.drawRoundRect(x, y, width, height, arcWidth, arcHeight);
   }
 
   @Override
-  public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
+  public void fillRoundRect(
+      final int x,
+      final int y,
+      final int width,
+      final int height,
+      final int arcWidth,
+      final int arcHeight) {
     wrapped.fillRoundRect(x, y, width, height, arcWidth, arcHeight);
   }
 
   @Override
-  public void drawOval(int x, int y, int width, int height) {
+  public void drawOval(final int x, final int y, final int width, final int height) {
     wrapped.drawOval(x, y, width, height);
   }
 
   @Override
-  public void fillOval(int x, int y, int width, int height) {
+  public void fillOval(final int x, final int y, final int width, final int height) {
     wrapped.fillOval(x, y, width, height);
   }
 
   @Override
-  public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+  public void drawArc(
+      final int x,
+      final int y,
+      final int width,
+      final int height,
+      final int startAngle,
+      final int arcAngle) {
     wrapped.drawArc(x, y, width, height, startAngle, arcAngle);
   }
 
   @Override
-  public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+  public void fillArc(
+      final int x,
+      final int y,
+      final int width,
+      final int height,
+      final int startAngle,
+      final int arcAngle) {
     wrapped.fillArc(x, y, width, height, startAngle, arcAngle);
   }
 
   @Override
-  public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints) {
+  public void drawPolyline(final int[] xPoints, final int[] yPoints, final int nPoints) {
     wrapped.drawPolyline(xPoints, yPoints, nPoints);
   }
 
   @Override
-  public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
+  public void drawPolygon(final int[] xPoints, final int[] yPoints, final int nPoints) {
     wrapped.drawPolygon(xPoints, yPoints, nPoints);
   }
 
   @Override
-  public void drawPolygon(Polygon p) {
+  public void drawPolygon(final Polygon p) {
     wrapped.drawPolygon(p);
   }
 
   @Override
-  public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints) {
+  public void fillPolygon(final int[] xPoints, final int[] yPoints, final int nPoints) {
     wrapped.fillPolygon(xPoints, yPoints, nPoints);
   }
 
   @Override
-  public void fillPolygon(Polygon p) {
+  public void fillPolygon(final Polygon p) {
     wrapped.fillPolygon(p);
   }
 
   @Override
-  public void drawChars(char[] data, int offset, int length, int x, int y) {
+  public void drawChars(
+      final char[] data, final int offset, final int length, final int x, final int y) {
     wrapped.drawChars(data, offset, length, x, y);
   }
 
   @Override
-  public void drawBytes(byte[] data, int offset, int length, int x, int y) {
+  public void drawBytes(
+      final byte[] data, final int offset, final int length, final int x, final int y) {
     wrapped.drawBytes(data, offset, length, x, y);
   }
 
   @Override
-  public boolean drawImage(Image img, int x, int y, ImageObserver observer) {
+  public boolean drawImage(
+      final Image img, final int x, final int y, final ImageObserver observer) {
     return wrapped.drawImage(img, x, y, observer);
   }
 
   @Override
-  public boolean drawImage(Image img, int x, int y, int width, int height, ImageObserver observer) {
+  public boolean drawImage(
+      final Image img,
+      final int x,
+      final int y,
+      final int width,
+      final int height,
+      final ImageObserver observer) {
     return wrapped.drawImage(img, x, y, width, height, observer);
   }
 
   @Override
-  public boolean drawImage(Image img, int x, int y, Color bgcolor, ImageObserver observer) {
+  public boolean drawImage(
+      final Image img,
+      final int x,
+      final int y,
+      final Color bgcolor,
+      final ImageObserver observer) {
     return wrapped.drawImage(img, x, y, bgcolor, observer);
   }
 
   @Override
   public boolean drawImage(
-      Image img, int x, int y, int width, int height, Color bgcolor, ImageObserver observer) {
+      final Image img,
+      final int x,
+      final int y,
+      final int width,
+      final int height,
+      final Color bgcolor,
+      final ImageObserver observer) {
     return wrapped.drawImage(img, x, y, width, height, bgcolor, observer);
   }
 
-  @Override
-  public boolean drawImage(
-      Image img,
-      int dx1,
-      int dy1,
-      int dx2,
-      int dy2,
-      int sx1,
-      int sy1,
-      int sx2,
-      int sy2,
-      ImageObserver observer) {
-    return wrapped.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer);
-  }
+  // CSOFF: ParameterNumber
 
   @Override
   public boolean drawImage(
-      Image img,
-      int dx1,
-      int dy1,
-      int dx2,
-      int dy2,
-      int sx1,
-      int sy1,
-      int sx2,
-      int sy2,
-      Color bgcolor,
-      ImageObserver observer) {
+      final Image img,
+      final int dx1,
+      final int dy1,
+      final int dx2,
+      final int dy2,
+      final int sx1,
+      final int sy1,
+      final int sx2,
+      final int sy2,
+      final ImageObserver observer) {
+    // CSON: ParameterNumber
+
+    return wrapped.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer);
+  }
+
+  // CSOFF: ParameterNumber
+  @Override
+  public boolean drawImage(
+      final Image img,
+      final int dx1,
+      final int dy1,
+      final int dx2,
+      final int dy2,
+      final int sx1,
+      final int sy1,
+      final int sx2,
+      final int sy2,
+      final Color bgcolor,
+      final ImageObserver observer) {
+    // CSON: ParameterNumber
     return wrapped.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, bgcolor, observer);
   }
 
@@ -465,12 +518,12 @@ final class ConstantClipGraphics2D extends Graphics2D {
   }
 
   @Override
-  public boolean hitClip(int x, int y, int width, int height) {
+  public boolean hitClip(final int x, final int y, final int width, final int height) {
     return wrapped.hitClip(x, y, width, height);
   }
 
   @Override
-  public Rectangle getClipBounds(Rectangle r) {
+  public Rectangle getClipBounds(final Rectangle r) {
     return wrapped.getClipBounds(r);
   }
 }

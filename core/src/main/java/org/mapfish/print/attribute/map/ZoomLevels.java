@@ -80,9 +80,8 @@ public final class ZoomLevels implements ConfigurationObject {
     return Arrays.toString(this.scaleDenominators);
   }
 
-  // CHECKSTYLE:OFF
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(final Object o) {
     if (this == o) {
       return true;
     }
@@ -114,6 +113,4 @@ public final class ZoomLevels implements ConfigurationObject {
     System.arraycopy(this.scaleDenominators, 0, dest, 0, this.scaleDenominators.length);
     return dest;
   }
-
-  // CHECKSTYLE:ON
 }
