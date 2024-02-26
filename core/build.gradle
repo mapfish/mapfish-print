@@ -114,7 +114,7 @@ configurations {
 }
 
 ext {
-    springVersion = '5.3.31'
+    springVersion = '5.3.32'
 }
 
 dependencies {
@@ -127,12 +127,12 @@ dependencies {
             "org.springframework:spring-context:$springVersion",
             "org.springframework:spring-web:$springVersion",
             "org.springframework:spring-webmvc:$springVersion",
-            "org.springframework.security:spring-security-config:5.5.8",
-            "org.springframework.security:spring-security-web:5.5.8",
+            "org.springframework.security:spring-security-config:5.8.10",
+            "org.springframework.security:spring-security-web:5.8.10",
             'com.thetransactioncompany:cors-filter:2.10',
             // Hibernate & Postgres
             'org.hibernate:hibernate-core:5.6.15.Final',
-            'org.postgresql:postgresql:42.4.3',
+            'org.postgresql:postgresql:42.4.4',
             'com.vladmihalcea:hibernate-types-52:2.17.3',
             'com.mchange:c3p0:0.9.5.5',
             "org.springframework:spring-orm:$springVersion",
