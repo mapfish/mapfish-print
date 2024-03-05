@@ -21,7 +21,8 @@ dependencies {
         "org.locationtech.jts:jts-core:1.18.2",
         "org.slf4j:slf4j-api:2.0.7",
         "org.springframework:spring-test:5.3.27",
-        "ch.qos.logback:logback-classic:1.4.7"
+        "ch.qos.logback:logback-classic:1.4.7",
+        "org.verapdf:validation-model:1.24.1"
     )
 }
 
