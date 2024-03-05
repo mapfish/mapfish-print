@@ -42,6 +42,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.verapdf.core.EncryptedPdfException;
+import org.verapdf.core.ModelParsingException;
+import org.verapdf.core.ValidationException;
+import org.verapdf.gf.model.GFModelParser;
+import org.verapdf.pdfa.PDFAValidator;
+import org.verapdf.pdfa.flavours.PDFAFlavour;
+import org.verapdf.pdfa.results.ValidationResult;
+import org.verapdf.pdfa.validation.validators.ValidatorFactory;
 
 /**
  * To run this test make sure that the test GeoServer is running:
@@ -229,11 +237,15 @@ public class ExamplesTest {
   public void testPDFA() {
     final File examplesDir = getFile(ExamplesTest.class, "/examples");
     Map<String, Throwable> errors = new HashMap<>();
-    runExample(new File(examplesDir, "pdf_a_compliant"), errors);
+    runExample(new File(examplesDir, "pdf_a_compliant"), errors, true);
     reportErrors(errors, 1);
   }
 
   private int runExample(File example, Map<String, Throwable> errors) {
+    return runExample(example, errors, false);
+  }
+
+  private int runExample(File example, Map<String, Throwable> errors, boolean pdfaValidation) {
     int testsRan = 0;
     try {
       final File configFile = new File(example, CONFIG_FILE);
@@ -307,20 +319,34 @@ public class ExamplesTest {
             content_types.put("bmp", "image/bmp");
             Assert.equals(content_types.get(outputFormat), http.getHeaderField("Content-Type"));
 
-            BufferedImage image = ImageIO.read(connection.getInputStream());
-
-            if (ArrayUtils.contains(BITMAP_FORMATS, outputFormat)) {
-              File expectedOutputDir = new File(example, "expected_output");
-              File expectedOutput = getExpectedOutput(outputFormat, requestFile, expectedOutputDir);
-              if (!expectedOutput.exists()) {
-                errors.put(
-                    example.getName() + " (" + requestFile.getName() + ")",
-                    new Exception("File not found: " + expectedOutput.toString()));
+            if (pdfaValidation) {
+              PDFAFlavour flavour = PDFAFlavour.PDFA_1_A;
+              PDFAValidator validator = ValidatorFactory.createValidator(flavour, false);
+              try {
+                GFModelParser parser =
+                    GFModelParser.createModelWithFlavour(connection.getInputStream(), flavour);
+                ValidationResult result = validator.validate(parser);
+                LOGGER.warn("Example is PDF/A conform: {}", result.isCompliant());
+              } catch (EncryptedPdfException | ModelParsingException | ValidationException e) {
+                errors.put(String.format("%s (%s)", example.getName(), requestFile.getName()), e);
               }
+            } else {
+              BufferedImage image = ImageIO.read(connection.getInputStream());
 
-              if (!"bmp".equals(outputFormat)) {
-                // BMP is not supported by ImageIO
-                new ImageSimilarity(expectedOutput).assertSimilarity(image);
+              if (ArrayUtils.contains(BITMAP_FORMATS, outputFormat)) {
+                File expectedOutputDir = new File(example, "expected_output");
+                File expectedOutput =
+                    getExpectedOutput(outputFormat, requestFile, expectedOutputDir);
+                if (!expectedOutput.exists()) {
+                  errors.put(
+                      example.getName() + " (" + requestFile.getName() + ")",
+                      new Exception("File not found: " + expectedOutput.toString()));
+                }
+
+                if (!"bmp".equals(outputFormat)) {
+                  // BMP is not supported by ImageIO
+                  new ImageSimilarity(expectedOutput).assertSimilarity(image);
+                }
               }
             }
           }
