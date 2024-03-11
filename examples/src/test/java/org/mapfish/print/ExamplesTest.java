@@ -33,6 +33,7 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.RunListener;
 import org.locationtech.jts.util.Assert;
+import org.locationtech.jts.util.AssertionFailedException;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.url.data.Handler;
@@ -327,7 +328,11 @@ public class ExamplesTest {
                     GFModelParser.createModelWithFlavour(connection.getInputStream(), flavour);
                 ValidationResult result = validator.validate(parser);
                 LOGGER.warn("Example is PDF/A conform: {}", result.isCompliant());
-              } catch (EncryptedPdfException | ModelParsingException | ValidationException e) {
+                Assert.isTrue(result.isCompliant());
+              } catch (EncryptedPdfException
+                  | ModelParsingException
+                  | ValidationException
+                  | AssertionFailedException e) {
                 errors.put(String.format("%s (%s)", example.getName(), requestFile.getName()), e);
               }
             } else {
