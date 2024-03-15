@@ -33,6 +33,7 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.RunListener;
 import org.locationtech.jts.util.Assert;
+import org.locationtech.jts.util.AssertionFailedException;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.test.util.ImageSimilarity;
 import org.mapfish.print.url.data.Handler;
@@ -42,6 +43,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.verapdf.core.EncryptedPdfException;
+import org.verapdf.core.ModelParsingException;
+import org.verapdf.core.ValidationException;
+import org.verapdf.gf.model.GFModelParser;
+import org.verapdf.pdfa.PDFAValidator;
+import org.verapdf.pdfa.flavours.PDFAFlavour;
+import org.verapdf.pdfa.results.ValidationResult;
+import org.verapdf.pdfa.validation.validators.ValidatorFactory;
 
 /**
  * To run this test make sure that the test GeoServer is running:
@@ -60,6 +69,16 @@ public class ExamplesTest {
   public static final String TEST_SPRING_XML =
       "classpath:test-http-request-factory-application-context.xml";
   public static final String[] BITMAP_FORMATS = {"bmp", "png", "jpeg", "tiff", "jpg", "tif"};
+  private static final Map<String, String> FORMAT_TO_CONTENT_TYPE =
+      Map.of(
+          "pdf", "application/pdf",
+          "png", "image/png",
+          "jpg", "image/jpeg",
+          "jpeg", "image/jpeg",
+          "tif", "image/tiff",
+          "tiff", "image/tiff",
+          "gif", "image/gif",
+          "bmp", "image/bmp");
   private static final Logger LOGGER = LoggerFactory.getLogger(ExamplesTest.class);
   private static final String REQUEST_DATA_FILE = "requestData(-.*)?.json";
   private static final String CONFIG_FILE = "config.yaml";
@@ -190,6 +209,14 @@ public class ExamplesTest {
     reportErrors(errors, testsRan);
   }
 
+  @Test
+  public void testPDFA() {
+    final File examplesDir = getFile(ExamplesTest.class, "/examples");
+    Map<String, Throwable> errors = new HashMap<>();
+    runExample(new File(examplesDir, "pdf_a_compliant"), errors, true);
+    reportErrors(errors, 1);
+  }
+
   private void reportErrors(final Map<String, Throwable> errors, final int testsRan) {
     if (!errors.isEmpty()) {
       for (Map.Entry<String, Throwable> error : errors.entrySet()) {
@@ -225,15 +252,11 @@ public class ExamplesTest {
     }
   }
 
-  @Test
-  public void testPDFA() {
-    final File examplesDir = getFile(ExamplesTest.class, "/examples");
-    Map<String, Throwable> errors = new HashMap<>();
-    runExample(new File(examplesDir, "pdf_a_compliant"), errors);
-    reportErrors(errors, 1);
+  private int runExample(File example, Map<String, Throwable> errors) {
+    return runExample(example, errors, false);
   }
 
-  private int runExample(File example, Map<String, Throwable> errors) {
+  private int runExample(File example, Map<String, Throwable> errors, boolean pdfaValidation) {
     int testsRan = 0;
     try {
       final File configFile = new File(example, CONFIG_FILE);
@@ -261,67 +284,31 @@ public class ExamplesTest {
 
             testsRan++;
             String outputFormat = jsonSpec.getInternalObj().getString("outputFormat");
-
-            URL url =
-                new URL(
-                    AbstractApiTest.PRINT_SERVER
-                        + "print/"
-                        + example.getName()
-                        + MapPrinterServlet.CREATE_AND_GET_URL
-                        + "."
-                        + outputFormat);
-            URLConnection connection = url.openConnection();
-            HttpURLConnection http = (HttpURLConnection) connection;
-            http.setRequestMethod("POST");
-            http.setDoInput(true);
-            http.setDoOutput(true);
             byte[] data = requestData.getBytes(StandardCharsets.UTF_8);
-            http.setFixedLengthStreamingMode(data.length);
-            http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            connection.setRequestProperty("Referer", "http://print:8080");
-            connection.setRequestProperty("Cache-Control", "max-age=0");
+
+            HttpURLConnection http =
+                createHttpUrlConnection(example.getName(), outputFormat, data.length);
             http.connect();
             try (OutputStream os = http.getOutputStream()) {
               os.write(data);
             }
             int responseCode = http.getResponseCode();
 
-            InputStream inputStr = connection.getInputStream();
+            InputStream inputStr = http.getInputStream();
             if (responseCode != 200) {
               String encoding =
-                  connection.getContentEncoding() == null
-                      ? "UTF-8"
-                      : connection.getContentEncoding();
+                  http.getContentEncoding() == null ? "UTF-8" : http.getContentEncoding();
               String response = IOUtils.toString(inputStr, encoding);
               Assert.isTrue(false, response);
             }
 
-            Map<String, String> content_types = new HashMap<String, String>();
-            content_types.put("pdf", "application/pdf");
-            content_types.put("png", "image/png");
-            content_types.put("jpg", "image/jpeg");
-            content_types.put("jpeg", "image/jpeg");
-            content_types.put("tif", "image/tiff");
-            content_types.put("tiff", "image/tiff");
-            content_types.put("gif", "image/gif");
-            content_types.put("bmp", "image/bmp");
-            Assert.equals(content_types.get(outputFormat), http.getHeaderField("Content-Type"));
+            Assert.equals(
+                FORMAT_TO_CONTENT_TYPE.get(outputFormat), http.getHeaderField("Content-Type"));
 
-            BufferedImage image = ImageIO.read(connection.getInputStream());
-
-            if (ArrayUtils.contains(BITMAP_FORMATS, outputFormat)) {
-              File expectedOutputDir = new File(example, "expected_output");
-              File expectedOutput = getExpectedOutput(outputFormat, requestFile, expectedOutputDir);
-              if (!expectedOutput.exists()) {
-                errors.put(
-                    example.getName() + " (" + requestFile.getName() + ")",
-                    new Exception("File not found: " + expectedOutput.toString()));
-              }
-
-              if (!"bmp".equals(outputFormat)) {
-                // BMP is not supported by ImageIO
-                new ImageSimilarity(expectedOutput).assertSimilarity(image);
-              }
+            if (pdfaValidation) {
+              pdfaValidate(errors, http, example.getName(), requestFile.getName());
+            } else {
+              compareImages(errors, http.getInputStream(), example, requestFile, outputFormat);
             }
           }
         } catch (RuntimeException e) {
@@ -333,6 +320,53 @@ public class ExamplesTest {
     }
 
     return testsRan;
+  }
+
+  private Map<String, Throwable> compareImages(
+      Map<String, Throwable> errors,
+      InputStream stream,
+      File example,
+      File requestFile,
+      String outputFormat)
+      throws IOException {
+    BufferedImage image = ImageIO.read(stream);
+    if (ArrayUtils.contains(BITMAP_FORMATS, outputFormat)) {
+      File expectedOutputDir = new File(example, "expected_output");
+      File expectedOutput = getExpectedOutput(outputFormat, requestFile, expectedOutputDir);
+      if (!expectedOutput.exists()) {
+        errors.put(
+            example.getName() + " (" + requestFile.getName() + ")",
+            new Exception("File not found: " + expectedOutput.toString()));
+      }
+
+      if (!"bmp".equals(outputFormat)) {
+        // BMP is not supported by ImageIO
+        new ImageSimilarity(expectedOutput).assertSimilarity(image);
+      }
+    }
+    return errors;
+  }
+
+  private Map<String, Throwable> pdfaValidate(
+      Map<String, Throwable> errors,
+      HttpURLConnection http,
+      String exampleName,
+      String requestFileName) {
+    PDFAFlavour flavour = PDFAFlavour.PDFA_1_A;
+    PDFAValidator validator = ValidatorFactory.createValidator(flavour, false);
+    try {
+      GFModelParser parser = GFModelParser.createModelWithFlavour(http.getInputStream(), flavour);
+      ValidationResult result = validator.validate(parser);
+      LOGGER.warn("Example is PDF/A conform: {}", result.isCompliant());
+      Assert.isTrue(result.isCompliant());
+    } catch (EncryptedPdfException
+        | ModelParsingException
+        | ValidationException
+        | IOException
+        | AssertionFailedException e) {
+      errors.put(String.format("%s (%s)", exampleName, requestFileName), e);
+    }
+    return errors;
   }
 
   private File getExpectedOutput(String outputFormat, File requestFile, File expectedOutputDir) {
@@ -351,5 +385,32 @@ public class ExamplesTest {
 
   private boolean isRequestDataFile(File requestFile) {
     return requestFile.getName().matches(REQUEST_DATA_FILE);
+  }
+
+  private HttpURLConnection createHttpUrlConnection(
+      String exampleName, String outputFormat, int contentLength) throws IOException {
+    HttpURLConnection http = (HttpURLConnection) createUrlConnection(exampleName, outputFormat);
+    http.setRequestMethod("POST");
+    http.setDoInput(true);
+    http.setDoOutput(true);
+    http.setFixedLengthStreamingMode(contentLength);
+    http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+    return http;
+  }
+
+  private URLConnection createUrlConnection(String exampleName, String outputFormat)
+      throws IOException {
+    URL url =
+        new URL(
+            AbstractApiTest.PRINT_SERVER
+                + "print/"
+                + exampleName
+                + MapPrinterServlet.CREATE_AND_GET_URL
+                + "."
+                + outputFormat);
+    URLConnection connection = url.openConnection();
+    connection.setRequestProperty("Referer", AbstractApiTest.PRINT_SERVER);
+    connection.setRequestProperty("Cache-Control", "max-age=0");
+    return connection;
   }
 }
