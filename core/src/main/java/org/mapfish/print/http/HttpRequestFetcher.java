@@ -92,8 +92,13 @@ public final class HttpRequestFetcher {
             this.statusText = originalResponse.getStatusText();
             this.cachedFile =
                     File.createTempFile("cacheduri", null, HttpRequestFetcher.this.temporaryDirectory);
+            LOGGER.debug("Caching URI resource to {}", this.cachedFile);
             try (OutputStream os = Files.newOutputStream(this.cachedFile.toPath())) {
-                IOUtils.copy(originalResponse.getBody(), os);
+                InputStream body = originalResponse.getBody();
+                LOGGER.debug("Get from input stream {}, for response {}",
+                    body.getClass(), originalResponse.getClass());
+                LOGGER.debug("Body available: {}", body.available());
+                IOUtils.copy(body, os);
             }
         }
 
@@ -101,6 +106,7 @@ public final class HttpRequestFetcher {
         @Nonnull
         public InputStream getBody() throws IOException {
             if (this.body == null) {
+                LOGGER.debug("Loading cached URI resource from {}",  this.cachedFile);
                 this.body = new FileInputStream(this.cachedFile);
             }
             return this.body;
@@ -128,6 +134,7 @@ public final class HttpRequestFetcher {
             if (this.body != null) {
                 try {
                     this.body.close();
+                    this.body = null;
                 } catch (IOException e) {
                     // ignored
                 }
@@ -227,13 +234,13 @@ public final class HttpRequestFetcher {
 
                         @Override
                         public int getRawStatusCode() {
-                            return 500;
+                            return 999;
                         }
 
                         @Override
                         @Nonnull
                         public String getStatusText() {
-                            return e.getMessage();
+                            return String.format("IOException: %s", e.getMessage());
                         }
 
                         @Override

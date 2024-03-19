@@ -231,7 +231,8 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
                         throw e;
                     }
                 }
-            } while (true);        }
+            } while (true);
+        }
 
         private ClientHttpResponse executeCallbacksAndRequest(final ClientHttpRequest requestToExecute)
                 throws IOException {
