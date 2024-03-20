@@ -1,6 +1,7 @@
 package org.mapfish.print.http;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -94,10 +95,12 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
     assertEquals(getExpected(), actual);
 
     uri = logbackXml.toURI();
-    request = resolvingFactory.createRequest(uri, HttpMethod.POST);
-    response = request.execute();
-
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    final ClientHttpRequest request2 = resolvingFactory.createRequest(uri, HttpMethod.POST);
+    assertThrows(
+        IllegalFileAccessException.class,
+        () -> {
+          request2.execute();
+        });
   }
 
   @Test
@@ -111,11 +114,13 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
     assertEquals(getExpected(), actual);
 
     uri = logbackXml.toURI();
-    request = resolvingFactory.createRequest(uri, HttpMethod.GET);
-    request.getBody().write(new byte[] {1, 2, 3});
-    response = request.execute();
-
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    ClientHttpRequest request2 = resolvingFactory.createRequest(uri, HttpMethod.GET);
+    request2.getBody().write(new byte[] {1, 2, 3});
+    assertThrows(
+        IllegalFileAccessException.class,
+        () -> {
+          request2.execute();
+        });
   }
 
   @Test

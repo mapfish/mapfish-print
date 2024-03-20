@@ -124,7 +124,7 @@ public final class Values {
    * @param httpRequestMaxNumberFetchRetry the maximum number of times to retry fetching a resource
    * @param httpRequestFetchRetryIntervalMillis the interval between retries
    */
-  // CHECKSTYLE:OFF
+  // CSOFF: ParameterNumber
   public Values(
       @Nonnull final Map<String, String> mdcContext,
       final PJsonObject requestData,
@@ -135,7 +135,7 @@ public final class Values {
       final String outputFormat,
       final int httpRequestMaxNumberFetchRetry,
       final int httpRequestFetchRetryIntervalMillis) {
-    // CHECKSTYLE:ON
+    // CSON: ParameterNumber
     Assert.isTrue(!taskDirectory.mkdirs() || taskDirectory.exists());
 
     // add task dir. to values so that all processors can access it
