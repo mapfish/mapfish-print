@@ -241,7 +241,7 @@ public final class Values {
                 + requestJsonAttributes
                 + defaults
                 + "\n"
-                + e.toString();
+                + e;
 
         throw new AttributeParsingException(errorMsg, e);
       }
@@ -296,7 +296,7 @@ public final class Values {
    * @param value the value.
    */
   public void put(final String key, final Object value) {
-    if (TASK_DIRECTORY_KEY.equals(key) && this.values.keySet().contains(TASK_DIRECTORY_KEY)) {
+    if (TASK_DIRECTORY_KEY.equals(key) && this.values.containsKey(TASK_DIRECTORY_KEY)) {
       // ensure that no one overwrites the task directory
       throw new IllegalArgumentException("Invalid key: " + key);
     }
