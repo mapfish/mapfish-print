@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.locationtech.jts.util.Assert;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.url.data.DataUrlConnection;
@@ -103,9 +104,9 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
 
     private synchronized ClientHttpRequest createRequestFromWrapped(final HttpHeaders headers)
         throws IOException {
-      final MfClientHttpRequestFactoryImpl requestFactory =
-          ConfigFileResolvingHttpRequestFactory.this.httpRequestFactory;
-      ConfigurableRequest httpRequest = requestFactory.createRequest(this.uri, this.httpMethod);
+      final ConfigurableRequest httpRequest =
+          ConfigFileResolvingHttpRequestFactory.this.httpRequestFactory.createRequest(
+              this.uri, this.httpMethod);
       httpRequest.setConfiguration(ConfigFileResolvingHttpRequestFactory.this.config);
 
       httpRequest.getHeaders().putAll(headers);
@@ -185,55 +186,70 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
         throws IOException {
       AtomicInteger counter = new AtomicInteger();
       do {
+        // Display headers, one by line <name>: <value>
+        LOGGER.debug(
+            "Fetching URI resource {}, headers:\n{}",
+            this.getURI(),
+            headers.entrySet().stream()
+                .map(entry -> entry.getKey() + "=" + String.join(", ", entry.getValue()))
+                .collect(Collectors.joining("\n")));
         try {
-          // Display headers, one by line <name>: <value>
-          LOGGER.debug(
-              "Fetching URI resource {}, headers:\n{}",
-              this.getURI(),
-              headers.entrySet().stream()
-                  .map(entry -> entry.getKey() + "=" + String.join(", ", entry.getValue()))
-                  .collect(Collectors.joining("\n")));
-          ClientHttpRequest requestUsed =
-              this.request != null ? this.request : createRequestFromWrapped(headers);
-          LOGGER.debug("Executing http request: {}", requestUsed.getURI());
-          ClientHttpResponse response = executeCallbacksAndRequest(requestUsed);
-          if (response.getRawStatusCode() < 500) {
-            LOGGER.debug(
-                "Fetching success URI resource {}, error code {}",
-                getURI(),
-                response.getRawStatusCode());
+          ClientHttpResponse response = attemptToFetchResponse(headers, counter);
+          if (response != null) {
             return response;
           }
-          LOGGER.debug(
-              "Fetching failed URI resource {}, error code {}",
-              getURI(),
-              response.getRawStatusCode());
-          if (counter.incrementAndGet() < httpRequestMaxNumberFetchRetry) {
-            try {
-              TimeUnit.MILLISECONDS.sleep(httpRequestFetchRetryIntervalMillis);
-            } catch (InterruptedException e1) {
-              throw new RuntimeException(e1);
-            }
-            LOGGER.debug("Retry fetching URI resource {}", this.getURI());
-            throw new RuntimeException(
-                String.format(
-                    "Fetching failed URI resource %s, error code %s",
-                    getURI(), response.getRawStatusCode()));
-          }
         } catch (final IOException e) {
-          if (counter.incrementAndGet() < httpRequestMaxNumberFetchRetry) {
-            try {
-              TimeUnit.MILLISECONDS.sleep(httpRequestFetchRetryIntervalMillis);
-            } catch (InterruptedException e1) {
-              throw new RuntimeException(e1);
-            }
-            LOGGER.debug("Retry fetching URI resource {}", this.getURI());
-          } else {
-            LOGGER.debug("Fetching failed URI resource {}", getURI());
-            throw e;
-          }
+          handleIOException(e, counter);
         }
       } while (true);
+    }
+
+    private ClientHttpResponse attemptToFetchResponse(
+        final HttpHeaders headers, final AtomicInteger counter) throws IOException {
+      ClientHttpRequest requestUsed =
+          this.request != null ? this.request : createRequestFromWrapped(headers);
+      LOGGER.debug("Executing http request: {}", requestUsed.getURI());
+      ClientHttpResponse response = executeCallbacksAndRequest(requestUsed);
+      if (response.getRawStatusCode() < 500) {
+        LOGGER.debug(
+            "Fetching success URI resource {}, error code {}",
+            getURI(),
+            response.getRawStatusCode());
+        return response;
+      }
+      LOGGER.debug(
+          "Fetching failed URI resource {}, error code {}", getURI(), response.getRawStatusCode());
+      if (counter.incrementAndGet() < httpRequestMaxNumberFetchRetry) {
+        try {
+          TimeUnit.MILLISECONDS.sleep(httpRequestFetchRetryIntervalMillis);
+        } catch (InterruptedException e1) {
+          Thread.currentThread().interrupt();
+          throw new PrintException("Interrupted while sleeping", e1);
+        }
+        LOGGER.debug("Retry fetching URI resource {}", this.getURI());
+      } else {
+        throw new PrintException(
+            String.format(
+                "Fetching failed URI resource %s, error code %s",
+                getURI(), response.getRawStatusCode()));
+      }
+      return null;
+    }
+
+    private void handleIOException(final IOException e, final AtomicInteger counter)
+        throws IOException {
+      if (counter.incrementAndGet() < httpRequestMaxNumberFetchRetry) {
+        try {
+          TimeUnit.MILLISECONDS.sleep(httpRequestFetchRetryIntervalMillis);
+        } catch (InterruptedException e1) {
+          Thread.currentThread().interrupt();
+          throw new PrintException("Interrupted while sleeping", e1);
+        }
+        LOGGER.debug("Retry fetching URI resource {}", this.getURI());
+      } else {
+        LOGGER.debug("Fetching failed URI resource {}", getURI());
+        throw e;
+      }
     }
 
     private ClientHttpResponse executeCallbacksAndRequest(final ClientHttpRequest requestToExecute)
