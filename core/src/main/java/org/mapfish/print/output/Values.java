@@ -124,7 +124,7 @@ public final class Values {
    * @param httpRequestMaxNumberFetchRetry the maximum number of times to retry fetching a resource
    * @param httpRequestFetchRetryIntervalMillis the interval between retries
    */
-  // CHECKSTYLE:OFF
+  // CSOFF: ParameterNumber
   public Values(
       @Nonnull final Map<String, String> mdcContext,
       final PJsonObject requestData,
@@ -135,7 +135,7 @@ public final class Values {
       final String outputFormat,
       final int httpRequestMaxNumberFetchRetry,
       final int httpRequestFetchRetryIntervalMillis) {
-    // CHECKSTYLE:ON
+    // CSON: ParameterNumber
     Assert.isTrue(!taskDirectory.mkdirs() || taskDirectory.exists());
 
     // add task dir. to values so that all processors can access it
@@ -241,7 +241,7 @@ public final class Values {
                 + requestJsonAttributes
                 + defaults
                 + "\n"
-                + e.toString();
+                + e;
 
         throw new AttributeParsingException(errorMsg, e);
       }
@@ -296,7 +296,7 @@ public final class Values {
    * @param value the value.
    */
   public void put(final String key, final Object value) {
-    if (TASK_DIRECTORY_KEY.equals(key) && this.values.keySet().contains(TASK_DIRECTORY_KEY)) {
+    if (TASK_DIRECTORY_KEY.equals(key) && this.values.containsKey(TASK_DIRECTORY_KEY)) {
       // ensure that no one overwrites the task directory
       throw new IllegalArgumentException("Invalid key: " + key);
     }
