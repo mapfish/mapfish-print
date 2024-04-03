@@ -95,7 +95,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
   // allow extension only for testing
   @Override
   public ConfigurableRequest createRequest(
-      @Nonnull final URI uri, @Nonnull final HttpMethod httpMethod) throws IOException {
+      @Nonnull final URI uri, @Nonnull final HttpMethod httpMethod) {
     HttpRequestBase httpRequest = (HttpRequestBase) createHttpUriRequest(httpMethod, uri);
     return new Request(getHttpClient(), httpRequest, createHttpContext(httpMethod, uri));
   }

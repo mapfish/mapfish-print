@@ -31,7 +31,7 @@ import org.springframework.http.client.AbstractClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
-class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
+final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigFileResolvingRequest.class);
   private final ConfigFileResolvingHttpRequestFactory configFileResolvingHttpRequestFactory;
   private final URI uri;
@@ -48,49 +48,46 @@ class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
   }
 
   @Override
-  protected synchronized OutputStream getBodyInternal(final HttpHeaders headers)
+  @Nonnull
+  protected synchronized OutputStream getBodyInternal(final @Nonnull HttpHeaders headers)
       throws IOException {
     Assert.isTrue(this.request == null, "getBodyInternal() can only be called once.");
     this.request = createRequestFromWrapped(headers);
     return this.request.getBody();
   }
 
-  private synchronized ClientHttpRequest createRequestFromWrapped(final HttpHeaders headers)
-      throws IOException {
-    final ConfigurableRequest httpRequest =
-        configFileResolvingHttpRequestFactory
-            .getHttpRequestFactory()
-            .createRequest(this.uri, this.httpMethod);
+  private synchronized ClientHttpRequest createRequestFromWrapped(final HttpHeaders headers) {
+    final ConfigurableRequest httpRequest = createHttpRequest();
     httpRequest.setConfiguration(configFileResolvingHttpRequestFactory.getConfig());
-
     httpRequest.getHeaders().putAll(headers);
-    if (configFileResolvingHttpRequestFactory
-        .getMdcContext()
-        .containsKey(Processor.MDC_JOB_ID_KEY)) {
-      String jobId =
-          configFileResolvingHttpRequestFactory.getMdcContext().get(Processor.MDC_JOB_ID_KEY);
-      httpRequest.getHeaders().set("X-Request-ID", jobId);
-      httpRequest.getHeaders().set("X-Job-ID", jobId);
-    }
-    if (configFileResolvingHttpRequestFactory
-        .getMdcContext()
-        .containsKey(Processor.MDC_APPLICATION_ID_KEY)) {
-      String applicationId =
-          configFileResolvingHttpRequestFactory
-              .getMdcContext()
-              .get(Processor.MDC_APPLICATION_ID_KEY);
-      httpRequest.getHeaders().set("X-Application-ID", applicationId);
-    }
+    setHeadersFromMDCContext(httpRequest, Processor.MDC_JOB_ID_KEY, "X-Request-ID", "X-Job-ID");
+    setHeadersFromMDCContext(httpRequest, Processor.MDC_APPLICATION_ID_KEY, "X-Application-ID");
     return httpRequest;
   }
 
+  private ConfigurableRequest createHttpRequest() {
+    return configFileResolvingHttpRequestFactory
+        .getHttpRequestFactory()
+        .createRequest(this.uri, this.httpMethod);
+  }
+
+  private void setHeadersFromMDCContext(
+      final ConfigurableRequest request, final String mdcContextKey, final String... headersKeys) {
+    Map<String, String> mdcContext = getMdcContext();
+    if (mdcContext.containsKey(mdcContextKey)) {
+      String value = mdcContext.get(mdcContextKey);
+      Arrays.stream(headersKeys).forEach(headerKey -> request.getHeaders().set(headerKey, value));
+    }
+  }
+
   @Override
-  protected synchronized ClientHttpResponse executeInternal(final HttpHeaders headers)
+  @Nonnull
+  protected synchronized ClientHttpResponse executeInternal(final @Nonnull HttpHeaders headers)
       throws IOException {
     final Map<String, String> prev = MDC.getCopyOfContextMap();
-    boolean mdcChanged = configFileResolvingHttpRequestFactory.getMdcContext().equals(prev);
+    boolean mdcChanged = getMdcContext().equals(prev);
     if (mdcChanged) {
-      MDC.setContextMap(configFileResolvingHttpRequestFactory.getMdcContext());
+      MDC.setContextMap(getMdcContext());
     }
     try {
       if ("data".equals(this.uri.getScheme())) {
@@ -106,6 +103,10 @@ class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
         MDC.setContextMap(prev);
       }
     }
+  }
+
+  private Map<String, String> getMdcContext() {
+    return configFileResolvingHttpRequestFactory.getMdcContext();
   }
 
   private ClientHttpResponse doDataUriRequest() throws IOException {
@@ -142,13 +143,7 @@ class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
   private ClientHttpResponse doHttpRequestWithRetry(final HttpHeaders headers) throws IOException {
     AtomicInteger counter = new AtomicInteger();
     do {
-      // Display headers, one by line <name>: <value>
-      LOGGER.debug(
-          "Fetching URI resource {}, headers:\n{}",
-          this.getURI(),
-          headers.entrySet().stream()
-              .map(entry -> entry.getKey() + "=" + String.join(", ", entry.getValue()))
-              .collect(Collectors.joining("\n")));
+      logFetchingURIResource(headers);
       try {
         ClientHttpResponse response = attemptToFetchResponse(headers, counter);
         if (response != null) {
@@ -158,6 +153,16 @@ class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
         handleIOException(e, counter);
       }
     } while (true);
+  }
+
+  private void logFetchingURIResource(final HttpHeaders headers) {
+    // Display headers, one by line <name>: <value>
+    LOGGER.debug(
+        "Fetching URI resource {}, headers:\n{}",
+        this.getURI(),
+        headers.entrySet().stream()
+            .map(entry -> entry.getKey() + "=" + String.join(", ", entry.getValue()))
+            .collect(Collectors.joining("\n")));
   }
 
   private ClientHttpResponse attemptToFetchResponse(
@@ -173,15 +178,8 @@ class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
     }
     LOGGER.debug(
         "Fetching failed URI resource {}, error code {}", getURI(), response.getRawStatusCode());
-    if (counter.incrementAndGet()
-        < configFileResolvingHttpRequestFactory.getHttpRequestMaxNumberFetchRetry()) {
-      try {
-        TimeUnit.MILLISECONDS.sleep(
-            configFileResolvingHttpRequestFactory.getHttpRequestFetchRetryIntervalMillis());
-      } catch (InterruptedException e1) {
-        Thread.currentThread().interrupt();
-        throw new PrintException("Interrupted while sleeping", e1);
-      }
+    if (canRetry(counter)) {
+      sleepWithExceptionHandling();
       LOGGER.debug("Retry fetching URI resource {}", this.getURI());
     } else {
       throw new PrintException(
@@ -194,20 +192,32 @@ class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
 
   private void handleIOException(final IOException e, final AtomicInteger counter)
       throws IOException {
-    if (counter.incrementAndGet()
-        < configFileResolvingHttpRequestFactory.getHttpRequestMaxNumberFetchRetry()) {
-      try {
-        TimeUnit.MILLISECONDS.sleep(
-            configFileResolvingHttpRequestFactory.getHttpRequestFetchRetryIntervalMillis());
-      } catch (InterruptedException e1) {
-        Thread.currentThread().interrupt();
-        throw new PrintException("Interrupted while sleeping", e1);
-      }
+
+    if (canRetry(counter)) {
+      sleepWithExceptionHandling();
       LOGGER.debug("Retry fetching URI resource {}", this.getURI());
     } else {
       LOGGER.debug("Fetching failed URI resource {}", getURI());
       throw e;
     }
+  }
+
+  private void sleepWithExceptionHandling() {
+    try {
+      TimeUnit.MILLISECONDS.sleep(
+          configFileResolvingHttpRequestFactory.getHttpRequestFetchRetryIntervalMillis());
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new PrintException("Interrupted while sleeping", e);
+    }
+  }
+
+  private boolean canRetry(final AtomicInteger counter) {
+    return counter.incrementAndGet() < getHttpRequestMaxNumberFetchRetry();
+  }
+
+  private int getHttpRequestMaxNumberFetchRetry() {
+    return configFileResolvingHttpRequestFactory.getHttpRequestMaxNumberFetchRetry();
   }
 
   private ClientHttpResponse executeCallbacksAndRequest(final ClientHttpRequest requestToExecute)
@@ -226,11 +236,13 @@ class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
   }
 
   @Override
+  @Nonnull
   public String getMethodValue() {
     return this.httpMethod.name();
   }
 
   @Override
+  @Nonnull
   public URI getURI() {
     return this.uri;
   }
@@ -245,6 +257,7 @@ class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
     }
 
     @Override
+    @Nonnull
     public HttpStatus getStatusCode() {
       return HttpStatus.OK;
     }
@@ -255,6 +268,7 @@ class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
     }
 
     @Override
+    @Nonnull
     public String getStatusText() {
       return "OK";
     }
@@ -265,11 +279,13 @@ class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
     }
 
     @Override
+    @Nonnull
     public InputStream getBody() {
       return this.is;
     }
 
     @Override
+    @Nonnull
     public HttpHeaders getHeaders() {
       return this.headers;
     }
