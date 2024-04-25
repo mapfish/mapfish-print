@@ -228,7 +228,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                 TilePreparationTask.class.getName()
                     + ".read."
                     + StatsUtils.quotePart(this.tileRequest.getURI().getHost());
-            LOGGER.debug("\n\t{} -- {}", this.tileRequest.getMethod(), this.tileRequest.getURI());
+            LOGGER.debug("{} -- {}", this.tileRequest.getMethod(), this.tileRequest.getURI());
             final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
             try (ClientHttpResponse response = this.tileRequest.execute()) {
               final HttpStatus statusCode = response.getStatusCode();

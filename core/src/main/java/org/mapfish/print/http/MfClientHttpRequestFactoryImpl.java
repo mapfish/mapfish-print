@@ -230,12 +230,6 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     }
 
     @Override
-    protected void finalize() throws Throwable {
-      super.finalize();
-      close();
-    }
-
-    @Override
     public void close() {
       try {
         getBody();
