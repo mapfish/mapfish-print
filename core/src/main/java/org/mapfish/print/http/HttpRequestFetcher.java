@@ -127,7 +127,9 @@ public final class HttpRequestFetcher {
         try {
           this.body.close();
         } catch (IOException e) {
-          // ignored
+          LOGGER.warn("Failed to close body", e);
+        } finally {
+          this.body = null;
         }
       }
     }
