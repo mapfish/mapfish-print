@@ -126,22 +126,22 @@ configurations {
 
 dependencies {
     implementation(
-            "org.springframework:spring-context:5.3.33",
-            "org.springframework:spring-web:5.3.33",
-            "org.springframework:spring-webmvc:5.3.33",
-            "org.springframework.security:spring-security-config:5.8.11",
-            "org.springframework.security:spring-security-web:5.8.11",
+            "org.springframework:spring-context:5.3.34",
+            "org.springframework:spring-web:5.3.34",
+            "org.springframework:spring-webmvc:5.3.34",
+            "org.springframework.security:spring-security-config:5.8.12",
+            "org.springframework.security:spring-security-web:5.8.12",
             'com.thetransactioncompany:cors-filter:2.10',
             // Hibernate & Postgres
             'org.hibernate:hibernate-core:5.6.15.Final',
             'org.postgresql:postgresql:42.7.3',
             'com.vladmihalcea:hibernate-types-52:2.21.1',
             'com.mchange:c3p0:0.10.0',
-            "org.springframework:spring-aspects:5.3.33",
-            "org.springframework:spring-orm:5.3.33",
-            "org.springframework:spring-jdbc:5.3.33",
-            "org.springframework:spring-tx:5.3.33",
-            "org.springframework:spring-test:5.3.33",
+            "org.springframework:spring-aspects:5.3.34",
+            "org.springframework:spring-orm:5.3.34",
+            "org.springframework:spring-jdbc:5.3.34",
+            "org.springframework:spring-tx:5.3.34",
+            "org.springframework:spring-test:5.3.34",
             "javax.media:jai-core:1.1.3"
     )
     metrics(
@@ -164,26 +164,26 @@ dependencies {
             "org.geotools:gt-cql:30.2"
     )
     jasper(
-            "net.sf.jasperreports:jasperreports:6.21.2",
+            "net.sf.jasperreports:jasperreports:6.21.3",
             "org.codehaus.groovy:groovy-all:3.0.21",
             'ar.com.fdvs:DynamicJasper:5.3.9',
-            "net.sf.jasperreports:jasperreports-fonts:6.21.2",
-            "net.sf.jasperreports:jasperreports-functions:6.21.2",
+            "net.sf.jasperreports:jasperreports-fonts:6.21.3",
+            "net.sf.jasperreports:jasperreports-functions:6.21.3",
             'joda-time:joda-time:2.12.7'
     )
     implementation(
             'com.google.guava:guava:33.0.0-jre',
-            "org.slf4j:slf4j-api:2.0.12",
-            "org.slf4j:jcl-over-slf4j:2.0.12",
-            "org.slf4j:jul-to-slf4j:2.0.12",
-            "ch.qos.logback:logback-classic:1.5.3",
+            "org.slf4j:slf4j-api:2.0.13",
+            "org.slf4j:jcl-over-slf4j:2.0.13",
+            "org.slf4j:jul-to-slf4j:2.0.13",
+            "ch.qos.logback:logback-classic:1.5.6",
             "ch.qos.logback:logback-access:1.4.14",
             'org.json:json:20240303',
             'org.yaml:snakeyaml:2.2',
             'com.github.spullara.cli-parser:cli-parser:1.1.6',
             'org.apache.httpcomponents:httpclient:4.5.14',
             'com.sun.mail:javax.mail:1.6.2',
-            'com.amazonaws:aws-java-sdk-s3:1.12.691',
+            'com.amazonaws:aws-java-sdk-s3:1.12.712',
             'com.adobe.xmp:xmpcore:6.1.11',
             'io.sentry:sentry-logback:7.5.0',
             'net.logstash.logback:logstash-logback-encoder:7.4',
