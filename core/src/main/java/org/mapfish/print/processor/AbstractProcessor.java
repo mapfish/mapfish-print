@@ -206,7 +206,7 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
   public static final class Context implements ExecutionContext {
     @Nonnull private final Map<String, String> mdcContext;
     private volatile boolean canceled = false;
-    private ExecutionStats stats = new ExecutionStats();
+    private final ExecutionStats stats = new ExecutionStats();
 
     /**
      * @param mdcContext The MDC context.
