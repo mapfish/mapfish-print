@@ -190,19 +190,25 @@ public final class ProcessorGraphNode<IN, OUT> {
                   final In inputParameter = ProcessorUtils.populateInputParameter(process, values);
 
                   Out output;
+                  boolean isThrowingException = false;
                   try {
                     LOGGER.debug("Executing process: {}", process);
                     output = process.execute(inputParameter, this.execContext.getContext());
                     LOGGER.debug("Succeeded in executing process: {}", process);
                   } catch (RuntimeException e) {
+                    isThrowingException = true;
+                    LOGGER.info("Error while executing process: {}", process, e);
                     throw e;
                   } catch (Exception e) {
+                    isThrowingException = true;
+                    LOGGER.info("Error while executing process: {}", process, e);
                     throw new PrintException("Failed to execute process:" + process, e);
                   } finally {
-                    // the processor is already canceled, so we don't care if something fails
-                    this.execContext.getContext().stopIfCanceled();
-                    LOGGER.info("Error while executing process: {}", process);
-                    registry.counter(name + ".error").inc();
+                    if (isThrowingException) {
+                      // the processor is already canceled, so we don't care if something fails
+                      this.execContext.getContext().stopIfCanceled();
+                      registry.counter(name + ".error").inc();
+                    }
                   }
 
                   if (output != null) {
