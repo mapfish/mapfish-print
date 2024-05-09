@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -250,18 +251,17 @@ public class MapPrinterServlet extends BaseMapServlet {
                   LOGGER.info(
                       "Sentry event, logger: {}, message: {}",
                       event.getLogger(),
-                      event.getMessage().getMessage());
-                  if (event.getLogger().equals("org.hibernate.engine.jdbc.spi.SqlExceptionHelper")
-                      && (event
-                              .getMessage()
-                              .getMessage()
-                              .equals(
+                      event.getMessage() != null ? event.getMessage().getMessage() : null);
+                  if (Objects.equals(
+                          event.getLogger(), "org.hibernate.engine.jdbc.spi.SqlExceptionHelper")
+                      && ((event.getMessage() != null)
+                          && (Objects.equals(
+                                  event.getMessage().getMessage(),
                                   "ERROR: could not obtain lock on row in relation"
                                       + " \"print_job_statuses\"")
-                          || event
-                              .getMessage()
-                              .getMessage()
-                              .equals("SQL Error: 0, SQLState: 55P03"))) {
+                              || Objects.equals(
+                                  event.getMessage().getMessage(),
+                                  "SQL Error: 0, SQLState: 55P03")))) {
                     return null;
                   }
                   return event;
@@ -696,7 +696,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     }
 
     final HandleReportLoadResult<Boolean> handler =
-        new HandleReportLoadResult<Boolean>() {
+        new HandleReportLoadResult<>() {
 
           @Override
           public Boolean unknownReference(
@@ -891,7 +891,7 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     if (pretty) {
       final JSONObject jsonObject =
-          new JSONObject(new String(prettyPrintBuffer.toByteArray(), Constants.DEFAULT_CHARSET));
+          new JSONObject(prettyPrintBuffer.toString(Constants.DEFAULT_CHARSET));
       capabilitiesResponse.getOutputStream().print(jsonObject.toString(JSON_INDENT_FACTOR));
     }
   }
@@ -948,8 +948,7 @@ public class MapPrinterServlet extends BaseMapServlet {
 
       for (File child : children) {
         if (child.isFile()) {
-          String requestData =
-              new String(Files.readAllBytes(child.toPath()), Constants.DEFAULT_CHARSET);
+          String requestData = Files.readString(child.toPath(), Constants.DEFAULT_CHARSET);
           try {
             final JSONObject jsonObject = new JSONObject(requestData);
             jsonObject.remove(JSON_OUTPUT_FORMAT);
@@ -1168,20 +1167,19 @@ public class MapPrinterServlet extends BaseMapServlet {
     if (specJson == null) {
       return null;
     }
-    String ref =
+    final String ref =
         maybeAddRequestId(
-            UUID.randomUUID().toString() + "@" + this.servletInfo.getServletId(),
-            httpServletRequest);
+            UUID.randomUUID() + "@" + this.servletInfo.getServletId(), httpServletRequest);
     MDC.put(Processor.MDC_APPLICATION_ID_KEY, appId);
     MDC.put(Processor.MDC_JOB_ID_KEY, ref);
-    LOGGER.debug("{}", specJson);
+    LOGGER.debug("Created Ref:{} for {}", ref, specJson);
 
     specJson.getInternalObj().remove(JSON_OUTPUT_FORMAT);
     specJson.getInternalObj().put(JSON_OUTPUT_FORMAT, format);
     specJson.getInternalObj().remove(JSON_APP);
     specJson.getInternalObj().put(JSON_APP, appId);
     final JSONObject requestHeaders = getHeaders(httpServletRequest);
-    if (requestHeaders.length() > 0) {
+    if (!requestHeaders.isEmpty()) {
       specJson
           .getInternalObj()
           .getJSONObject(JSON_ATTRIBUTES)
@@ -1205,7 +1203,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       this.jobManager.submit(jobEntry);
     } catch (RuntimeException exc) {
       LOGGER.error("Error when creating job on {}: {}", appId, specJson, exc);
-      ref = null;
+      return null;
     }
     return ref;
   }
