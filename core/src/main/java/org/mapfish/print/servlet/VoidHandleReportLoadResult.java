@@ -11,7 +11,7 @@ class VoidHandleReportLoadResult extends HandleReportLoadResult<Void> {
 
   private final boolean isInlining;
 
-  public VoidHandleReportLoadResult(boolean inline) {
+  VoidHandleReportLoadResult(final boolean inline) {
     this.isInlining = inline;
   }
 

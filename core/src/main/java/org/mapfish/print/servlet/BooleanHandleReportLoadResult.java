@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 class BooleanHandleReportLoadResult extends HandleReportLoadResult<Boolean> {
   private final boolean isInlining;
 
-  public BooleanHandleReportLoadResult(final boolean inline) {
+  BooleanHandleReportLoadResult(final boolean inline) {
     isInlining = inline;
   }
 
