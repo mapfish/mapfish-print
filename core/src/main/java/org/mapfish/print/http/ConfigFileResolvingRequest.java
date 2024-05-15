@@ -173,7 +173,9 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
     ClientHttpResponse response = executeCallbacksAndRequest(requestUsed);
     if (response.getRawStatusCode() < 500) {
       LOGGER.debug(
-          "Fetching success URI resource {}, error code {}", getURI(), response.getRawStatusCode());
+          "Fetching success URI resource {}, status code {}",
+          getURI(),
+          response.getRawStatusCode());
       return response;
     }
     LOGGER.debug(
