@@ -146,6 +146,6 @@ abstract class HandleReportLoadResult<R> {
    * @param original the starting string.
    */
   private String cleanUpName(final String original) {
-    return original.replace(",", "").replaceAll("\\s+", "_");
+    return original.replace(",", "").replaceAll("\\s+", "_").replaceAll("[^a-zA-Z0-9-_.:+]", "_");
   }
 }
