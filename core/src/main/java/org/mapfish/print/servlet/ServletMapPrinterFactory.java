@@ -1,11 +1,12 @@
 package org.mapfish.print.servlet;
 
+import static java.nio.file.Files.walk;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -13,10 +14,11 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
-import org.apache.commons.io.DirectoryWalker;
 import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.MapPrinter;
@@ -199,8 +201,7 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
       }
     }
 
-    final AppWalker walker = new AppWalker();
-    for (File child : walker.getAppDirs(realRoot)) {
+    for (File child : getAppDirs(realRoot)) {
       final File configFile = new File(child, CONFIG_YAML);
       String appName = realRoot.toURI().relativize(child.toURI()).getPath().replace('/', ':');
       if (appName.endsWith(":")) {
@@ -215,6 +216,14 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
     // ensure there is a "default" app
     if (!this.configurationFiles.containsKey(DEFAULT_CONFIGURATION_FILE_KEY)) {
       pickDefaultApp();
+    }
+  }
+
+  private List<File> getAppDirs(final File base) throws IOException {
+    try (Stream<Path> walk = walk(base.toPath())) {
+      return walk.map(Path::toFile)
+          .filter(file -> file.isDirectory() && new File(file, CONFIG_YAML).exists())
+          .collect(Collectors.toList());
     }
   }
 
@@ -261,23 +270,5 @@ public class ServletMapPrinterFactory implements MapPrinterFactory {
       }
     }
     return null;
-  }
-
-  private static class AppWalker extends DirectoryWalker<File> {
-    public List<File> getAppDirs(final File base) throws IOException {
-      List<File> results = new ArrayList<>();
-      walk(base, results);
-      return results;
-    }
-
-    @Override
-    protected boolean handleDirectory(
-        final File directory, final int depth, final Collection<File> results) {
-      final File configFile = new File(directory, CONFIG_YAML);
-      if (configFile.exists()) {
-        results.add(directory);
-      }
-      return depth < MAX_DEPTH;
-    }
   }
 }

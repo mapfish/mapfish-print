@@ -13,7 +13,7 @@
                                   location="classpath:mapfish-spring.properties"/>
 
     <bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory">
-        <property name="appsRootDirectory" value="${path_to_examples}"/>
+<!--        <property name="appsRootDirectory" value="${path_to_examples}"/>-->
     </bean>
 
     <bean name="bcryptEncoder"
