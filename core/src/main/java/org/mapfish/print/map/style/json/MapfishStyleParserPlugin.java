@@ -279,9 +279,9 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  *       </ul>
  *   <li><strong>labelRotation</strong> (ECQL) - (Point Placement) the rotation of the label
  *   <li><strong>labelXOffset</strong> (ECQL) - (Point Placement) the amount to offset the label
- *       along the x axis. negative number offset to the left
+ *       along the x axis. positve number offset to the right
  *   <li><strong>labelYOffset</strong> (ECQL) - (Point Placement) the amount to offset the label
- *       along the y axis. negative number offset to the top of the printing
+ *       along the y axis. positve number offset to the top of the printing
  *   <li><strong>labelAnchorPointX</strong> (ECQL) - (Point Placement) The point along the x axis
  *       that the label is started at anchored). Offset and rotation is relative to this point. Only
  *       one of labelAnchorPointX/Y or labelAlign will be respected, since they are both ways of
