@@ -21,7 +21,9 @@ import org.slf4j.LoggerFactory;
  * @param <R> The return value
  */
 abstract class HandleReportLoadResult<R> {
-  private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\$\\{(\\S+)}");
+  private static final int FILENAME_MAX_LENGTH = 1000;
+  private static final Pattern VARIABLE_PATTERN =
+      Pattern.compile("\\$\\{(\\S{1," + FILENAME_MAX_LENGTH + "})}");
   private static final Logger LOGGER = LoggerFactory.getLogger(HandleReportLoadResult.class);
 
   /**
@@ -92,12 +94,12 @@ abstract class HandleReportLoadResult<R> {
       httpServletResponse.setContentType(metadata.getResult().getMimeType());
       if (!inline) {
         String fileName = metadata.getResult().getFileName();
-        Matcher matcher = VARIABLE_PATTERN.matcher(fileName);
+        Matcher matcher = getFileNameMatcher(fileName);
         while (matcher.find()) {
           final String variable = matcher.group(1);
           String replacement = findReplacement(variable, metadata.getCompletionDate());
           fileName = fileName.replace("${" + variable + "}", replacement);
-          matcher = VARIABLE_PATTERN.matcher(fileName);
+          matcher = getFileNameMatcher(fileName);
         }
 
         fileName += "." + metadata.getResult().getFileExtension();
@@ -106,6 +108,13 @@ abstract class HandleReportLoadResult<R> {
       }
       reportLoader.loadReport(reportURI, response);
     }
+  }
+
+  private static Matcher getFileNameMatcher(final String fileName) {
+    if (fileName.length() > FILENAME_MAX_LENGTH) {
+      throw new IllegalArgumentException("File name is too long");
+    }
+    return VARIABLE_PATTERN.matcher(fileName);
   }
 
   /**
