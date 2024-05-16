@@ -63,7 +63,6 @@ tasks.register('buildDocs', JavaExec) {
     def appContext2 = project(':core').webAppDir.toURI().toString() + '/WEB-INF/mapfish-print-servlet.xml'
     def overrideAppContext = 'classpath*:mapfish-spring-application-context-override.xml'
     args site, javadocs, basicAppContext, appContext, appContext2, overrideAppContext
-    systemProperty 'path_to_examples', "${project(':examples').projectDir}/src/test/resources/examples"
 }
 
 build {

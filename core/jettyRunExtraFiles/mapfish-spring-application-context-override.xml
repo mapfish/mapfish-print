@@ -12,9 +12,7 @@
     <context:property-placeholder system-properties-mode="FALLBACK" file-encoding="UTF-8"
                                   location="classpath:mapfish-spring.properties"/>
 
-    <bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory">
-<!--        <property name="appsRootDirectory" value="${path_to_examples}"/>-->
-    </bean>
+    <bean id="mapPrinterFactory" class="org.mapfish.print.servlet.ServletMapPrinterFactory"/>
 
     <bean name="bcryptEncoder"
           class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
