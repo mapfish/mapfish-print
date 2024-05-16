@@ -50,7 +50,7 @@ CMD ["/usr/local/tomcat/bin/docker-start-print"]
 
 FROM runner AS tester
 
-COPY jettyRunExtraFiles/mapfish-spring-application-context-override-acceptancetests.xml \
+COPY extraConfigFor/acceptanceTests/mapfish-spring-application-context-override-acceptancetests.xml \
   /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/mapfish-spring-application-context-override.xml
 
 FROM runner AS watcher
