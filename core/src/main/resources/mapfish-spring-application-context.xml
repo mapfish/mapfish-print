@@ -42,7 +42,7 @@
         <property name="timeToKeepAfterAccessInMinutes" value="30" />
     </bean>
 
-    <bean id="jobQueue" class="org.mapfish.print.servlet.job.impl.RegistryJobQueue"></bean>
+    <bean id="jobQueue" class="org.mapfish.print.servlet.job.impl.RegistryJobQueue" />
     <bean id="jobManager" class="org.mapfish.print.servlet.job.impl.ThreadPoolJobManager">
         <property name="maxNumberOfRunningPrintJobs" value="${maxNumberOfRunningPrintJobs}" />
         <property name="maxNumberOfWaitingJobs" value="5000" />

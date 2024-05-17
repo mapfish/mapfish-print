@@ -54,7 +54,7 @@
         $.ajax({
           type: 'GET',
           url: 'print/' + appId + '/exampleRequest.json',
-          dataType: 'json',
+          dataType: 'Json',
           success: function (data) {
             var setExample = true;
             requestExamples = data;
@@ -111,13 +111,13 @@
           url: 'print/' + appId + '/report.' + format,
           data: data,
           success: function (data) {
-            downloadWhenReady(startTime, $.parseJSON(data));
+            downloadWhenReady(startTime, data);
           },
           error: function (data) {
             $('#messages').text('Error creating report: ' + data.statusText);
             disableUI(false);
           },
-          dataType: 'application/json',
+          dataType: 'Json',
         });
       }
 
@@ -142,7 +142,7 @@
             $('#messages').text('Error creating report: ' + data.statusText);
             disableUI(false);
           },
-          dataType: 'application/json',
+          dataType: 'Json',
         });
       }
 

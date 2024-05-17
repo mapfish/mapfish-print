@@ -29,7 +29,7 @@ dependencies {
     )
 }
 
-def site = new File(buildDir, "site").path
+def site = new File(getLayout().getBuildDirectory().getAsFile().get(), "site").path
 
 tasks.register('copyJavadocs', Copy) {
     dependsOn ':core:javadoc'
@@ -59,11 +59,10 @@ tasks.register('buildDocs', JavaExec) {
 
     def javadocs = project(':core').tasks.javadoc.destinationDir
     def basicAppContext = 'classpath*:mapfish-spring-application-context.xml'
-    def appContext = project(':core').projectDir.toURI().toString() + '/jettyRunExtraFiles/*.xml'
+    def appContext = project(':core').projectDir.toURI().toString() + '/extraConfigFor/docs/*.xml'
     def appContext2 = project(':core').webAppDir.toURI().toString() + '/WEB-INF/mapfish-print-servlet.xml'
     def overrideAppContext = 'classpath*:mapfish-spring-application-context-override.xml'
     args site, javadocs, basicAppContext, appContext, appContext2, overrideAppContext
-    systemProperty 'path_to_examples', "${project(':examples').projectDir}/src/test/resources/examples"
 }
 
 build {

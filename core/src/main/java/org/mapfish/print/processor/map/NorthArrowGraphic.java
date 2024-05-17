@@ -8,21 +8,22 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import javax.imageio.ImageIO;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.dom.util.DOMUtilities;
 import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
-import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.ImageUtils;
@@ -341,10 +342,8 @@ public final class NorthArrowGraphic {
   private static File writeSvgToFile(final Document document, final File workingDir)
       throws IOException {
     final File path = File.createTempFile("north-arrow-", ".svg", workingDir);
-    try (FileWriterWithEncoding fw =
-        new FileWriterWithEncoding(path, Charset.forName("UTF-8").newEncoder())) {
+    try (BufferedWriter fw = new BufferedWriter(new FileWriter(path, StandardCharsets.UTF_8))) {
       DOMUtilities.writeDocument(document, fw);
-      fw.flush();
     }
     return path;
   }

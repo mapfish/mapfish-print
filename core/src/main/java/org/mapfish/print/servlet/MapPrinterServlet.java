@@ -6,7 +6,6 @@ import io.sentry.Sentry;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -21,12 +20,11 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -204,7 +202,6 @@ public class MapPrinterServlet extends BaseMapServlet {
   public static final String JSON_OUTPUT_FONTCONFIG_WEIGHT = "weight";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MapPrinterServlet.class);
-  private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\$\\{(\\S+)}");
   private static final int JSON_INDENT_FACTOR = 4;
   private static final List<String> REQUEST_ID_HEADERS =
       Arrays.asList(
@@ -250,18 +247,17 @@ public class MapPrinterServlet extends BaseMapServlet {
                   LOGGER.info(
                       "Sentry event, logger: {}, message: {}",
                       event.getLogger(),
-                      event.getMessage().getMessage());
-                  if (event.getLogger().equals("org.hibernate.engine.jdbc.spi.SqlExceptionHelper")
-                      && (event
-                              .getMessage()
-                              .getMessage()
-                              .equals(
+                      event.getMessage() != null ? event.getMessage().getMessage() : null);
+                  if (Objects.equals(
+                          event.getLogger(), "org.hibernate.engine.jdbc.spi.SqlExceptionHelper")
+                      && ((event.getMessage() != null)
+                          && (Objects.equals(
+                                  event.getMessage().getMessage(),
                                   "ERROR: could not obtain lock on row in relation"
                                       + " \"print_job_statuses\"")
-                          || event
-                              .getMessage()
-                              .getMessage()
-                              .equals("SQL Error: 0, SQLState: 55P03"))) {
+                              || Objects.equals(
+                                  event.getMessage().getMessage(),
+                                  "SQL Error: 0, SQLState: 55P03")))) {
                     return null;
                   }
                   return event;
@@ -532,7 +528,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    *
    * @param appId the app ID
    * @param referenceId the path to the file.
-   * @param inline whether or not to inline the
+   * @param inline whether to inline the
    * @param getReportResponse the response object
    */
   @RequestMapping(
@@ -551,7 +547,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    * To get the PDF created previously.
    *
    * @param referenceId the job reference
-   * @param inline whether or not to inline the
+   * @param inline whether to inline the
    * @param getReportResponse the response object
    */
   @RequestMapping(value = REPORT_URL + "/{referenceId:\\S+}", method = RequestMethod.GET)
@@ -568,7 +564,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    *
    * @param applicationId the application ID
    * @param referenceId the job reference
-   * @param inline whether or not to inline the
+   * @param inline whether to inline the
    * @param getReportResponse the response object
    */
   public final void getReport(
@@ -580,59 +576,7 @@ public class MapPrinterServlet extends BaseMapServlet {
     MDC.put(Processor.MDC_APPLICATION_ID_KEY, applicationId);
     MDC.put(Processor.MDC_JOB_ID_KEY, referenceId);
     setNoCache(getReportResponse);
-    loadReport(
-        referenceId,
-        getReportResponse,
-        new HandleReportLoadResult<Void>() {
-
-          @Override
-          public Void unknownReference(
-              final HttpServletResponse httpServletResponse, final String referenceId) {
-            error(
-                httpServletResponse,
-                "Error getting print with ref=" + referenceId + ": unknown reference",
-                HttpStatus.NOT_FOUND);
-            return null;
-          }
-
-          @Override
-          public Void unsupportedLoader(
-              final HttpServletResponse httpServletResponse, final String referenceId) {
-            error(
-                httpServletResponse,
-                "Error getting print with ref=" + referenceId + " can not be loaded",
-                HttpStatus.NOT_FOUND);
-            return null;
-          }
-
-          @Override
-          public Void successfulPrint(
-              final PrintJobStatus successfulPrintResult,
-              final HttpServletResponse httpServletResponse,
-              final URI reportURI,
-              final ReportLoader loader)
-              throws IOException {
-            sendReportFile(successfulPrintResult, httpServletResponse, loader, reportURI, inline);
-            return null;
-          }
-
-          @Override
-          public Void failedPrint(
-              final PrintJobStatus failedPrintJob, final HttpServletResponse httpServletResponse) {
-            error(httpServletResponse, failedPrintJob.getError(), HttpStatus.INTERNAL_SERVER_ERROR);
-            return null;
-          }
-
-          @Override
-          public Void printJobPending(
-              final HttpServletResponse httpServletResponse, final String referenceId) {
-            error(
-                httpServletResponse,
-                "Report has not yet completed processing",
-                HttpStatus.ACCEPTED);
-            return null;
-          }
-        });
+    loadReport(referenceId, getReportResponse, new VoidHandleReportLoadResult(inline));
   }
 
   /**
@@ -670,7 +614,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    * @param format the format of the returned report
    * @param requestData a json formatted string with the request data required to perform the report
    *     generation.
-   * @param inline whether or not to inline the content
+   * @param inline whether to inline the content
    * @param createReportRequest the request object
    * @param createReportResponse the response object
    */
@@ -695,58 +639,11 @@ public class MapPrinterServlet extends BaseMapServlet {
       return;
     }
 
-    final HandleReportLoadResult<Boolean> handler =
-        new HandleReportLoadResult<Boolean>() {
-
-          @Override
-          public Boolean unknownReference(
-              final HttpServletResponse httpServletResponse, final String referenceId) {
-            error(
-                httpServletResponse,
-                "Print with ref=" + referenceId + " unknown",
-                HttpStatus.NOT_FOUND);
-            return true;
-          }
-
-          @Override
-          public Boolean unsupportedLoader(
-              final HttpServletResponse httpServletResponse, final String referenceId) {
-            error(
-                httpServletResponse,
-                "Print with ref=" + referenceId + " can not be loaded",
-                HttpStatus.NOT_FOUND);
-            return true;
-          }
-
-          @Override
-          public Boolean successfulPrint(
-              final PrintJobStatus successfulPrintResult,
-              final HttpServletResponse httpServletResponse,
-              final URI reportURI,
-              final ReportLoader loader)
-              throws IOException {
-            sendReportFile(successfulPrintResult, httpServletResponse, loader, reportURI, inline);
-            return true;
-          }
-
-          @Override
-          public Boolean failedPrint(
-              final PrintJobStatus failedPrintJob, final HttpServletResponse httpServletResponse) {
-            error(httpServletResponse, failedPrintJob.getError(), HttpStatus.INTERNAL_SERVER_ERROR);
-            return true;
-          }
-
-          @Override
-          public Boolean printJobPending(
-              final HttpServletResponse httpServletResponse, final String referenceId) {
-            return false;
-          }
-        };
-
+    final BooleanHandleReportLoadResult handler = new BooleanHandleReportLoadResult(inline);
     boolean isDone = false;
-    long startWaitTime = System.currentTimeMillis();
     final long maxWaitTimeInMillis =
         TimeUnit.SECONDS.toMillis(this.maxCreateAndGetWaitTimeInSeconds);
+    long startWaitTime = System.currentTimeMillis();
     while (!isDone && System.currentTimeMillis() - startWaitTime < maxWaitTimeInMillis) {
       Thread.sleep(TimeUnit.SECONDS.toMillis(1));
       isDone = loadReport(ref, createReportResponse, handler);
@@ -759,7 +656,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    * @param format the format of the returned report
    * @param requestData a json formatted string with the request data required to perform the report
    *     generation.
-   * @param inline whether or not to inline the content
+   * @param inline whether to inline the content
    * @param createReportRequest the request object
    * @param createReportResponse the response object
    */
@@ -891,7 +788,7 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     if (pretty) {
       final JSONObject jsonObject =
-          new JSONObject(new String(prettyPrintBuffer.toByteArray(), Constants.DEFAULT_CHARSET));
+          new JSONObject(prettyPrintBuffer.toString(Constants.DEFAULT_CHARSET));
       capabilitiesResponse.getOutputStream().print(jsonObject.toString(JSON_INDENT_FACTOR));
     }
   }
@@ -948,8 +845,7 @@ public class MapPrinterServlet extends BaseMapServlet {
 
       for (File child : children) {
         if (child.isFile()) {
-          String requestData =
-              new String(Files.readAllBytes(child.toPath()), Constants.DEFAULT_CHARSET);
+          String requestData = Files.readString(child.toPath(), Constants.DEFAULT_CHARSET);
           try {
             final JSONObject jsonObject = new JSONObject(requestData);
             jsonObject.remove(JSON_OUTPUT_FORMAT);
@@ -1082,43 +978,6 @@ public class MapPrinterServlet extends BaseMapServlet {
     this.maxCreateAndGetWaitTimeInSeconds = maxCreateAndGetWaitTimeInSeconds;
   }
 
-  /**
-   * Copy the PDF into the output stream.
-   *
-   * @param metadata the client request data
-   * @param httpServletResponse the response object
-   * @param reportLoader the object used for loading the report
-   * @param reportURI the uri of the report
-   * @param inline whether or not to inline the content
-   */
-  private void sendReportFile(
-      final PrintJobStatus metadata,
-      final HttpServletResponse httpServletResponse,
-      final ReportLoader reportLoader,
-      final URI reportURI,
-      final boolean inline)
-      throws IOException {
-
-    try (OutputStream response = httpServletResponse.getOutputStream()) {
-      httpServletResponse.setContentType(metadata.getResult().getMimeType());
-      if (!inline) {
-        String fileName = metadata.getResult().getFileName();
-        Matcher matcher = VARIABLE_PATTERN.matcher(fileName);
-        while (matcher.find()) {
-          final String variable = matcher.group(1);
-          String replacement = findReplacement(variable, metadata.getCompletionDate());
-          fileName = fileName.replace("${" + variable + "}", replacement);
-          matcher = VARIABLE_PATTERN.matcher(fileName);
-        }
-
-        fileName += "." + metadata.getResult().getFileExtension();
-        httpServletResponse.setHeader(
-            "Content-disposition", "attachment; filename=" + cleanUpName(fileName));
-      }
-      reportLoader.loadReport(reportURI, response);
-    }
-  }
-
   private void addDownloadLinkToJson(
       final HttpServletRequest httpServletRequest, final String ref, final JSONWriter json) {
     String downloadURL = getBaseUrl(httpServletRequest) + REPORT_URL + "/" + ref;
@@ -1168,27 +1027,27 @@ public class MapPrinterServlet extends BaseMapServlet {
     if (specJson == null) {
       return null;
     }
-    String ref =
+    final String ref =
         maybeAddRequestId(
-            UUID.randomUUID().toString() + "@" + this.servletInfo.getServletId(),
-            httpServletRequest);
+            UUID.randomUUID() + "@" + this.servletInfo.getServletId(), httpServletRequest);
     MDC.put(Processor.MDC_APPLICATION_ID_KEY, appId);
     MDC.put(Processor.MDC_JOB_ID_KEY, ref);
-    LOGGER.debug("{}", specJson);
+    LOGGER.debug("Created Ref:{} for {}", ref, specJson);
 
     specJson.getInternalObj().remove(JSON_OUTPUT_FORMAT);
     specJson.getInternalObj().put(JSON_OUTPUT_FORMAT, format);
     specJson.getInternalObj().remove(JSON_APP);
     specJson.getInternalObj().put(JSON_APP, appId);
     final JSONObject requestHeaders = getHeaders(httpServletRequest);
-    if (requestHeaders.length() > 0) {
+    if (!requestHeaders.isEmpty()) {
       specJson
           .getInternalObj()
           .getJSONObject(JSON_ATTRIBUTES)
           .put(JSON_REQUEST_HEADERS, requestHeaders);
     }
 
-    // check that we have authorization and configure the job so it can only be access by users with
+    // check that we have authorization and configure the job, so it can only be accessed by users
+    // with
     // sufficient authorization
     final String templateName = specJson.getString(Constants.JSON_LAYOUT_KEY);
     final MapPrinter mapPrinter = this.mapPrinterFactory.create(appId);
@@ -1205,7 +1064,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       this.jobManager.submit(jobEntry);
     } catch (RuntimeException exc) {
       LOGGER.error("Error when creating job on {}: {}", appId, specJson, exc);
-      ref = null;
+      return null;
     }
     return ref;
   }

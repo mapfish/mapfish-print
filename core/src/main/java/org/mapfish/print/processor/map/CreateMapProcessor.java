@@ -741,7 +741,7 @@ public final class CreateMapProcessor
               && imageBufferScaling == layers.get(i).getImageBufferScaling()) {
             // will always go there the first time
             l = layers.get(i);
-            LOGGER.debug("Adding layer {} to the group", l.getName());
+            LOGGER.debug("Adding layer: {} named: {} to the group", i, l.getName());
             group.layers.add(l);
             group.opaque = group.opaque || (renderType == RenderType.JPEG && l.getOpacity() == 1.0);
             ++i;

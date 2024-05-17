@@ -24,7 +24,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.AbstractClientHttpResponse;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.util.StreamUtils;
 
 /**
  * Schedule tasks for caching Http Requests that can be run simultaneously.
@@ -139,7 +138,7 @@ public final class HttpRequestFetcher {
     private final ClientHttpRequest originalRequest;
     private final Processor.ExecutionContext context;
     @Nullable private ClientHttpResponse response;
-    @Nullable private ForkJoinTask<Void> future;
+    private ForkJoinTask<Void> future;
 
     private CachedClientHttpRequest(
         final ClientHttpRequest request, final Processor.ExecutionContext context) {
@@ -155,7 +154,7 @@ public final class HttpRequestFetcher {
     @Override
     @Nonnull
     public String getMethodValue() {
-      final HttpMethod method = this.originalRequest.getMethod();
+      final HttpMethod method = getMethod();
       return method != null ? method.name() : "";
     }
 
@@ -182,13 +181,10 @@ public final class HttpRequestFetcher {
     @Nonnull
     public ClientHttpResponse execute() {
       assert this.future != null;
-      final Timer.Context timerWait =
-          HttpRequestFetcher.this
-              .registry
-              .timer(HttpRequestFetcher.class.getName() + ".waitDownloader")
-              .time();
-      this.future.join();
-      timerWait.stop();
+      Timer timerWait = HttpRequestFetcher.this.registry.timer(buildMetricName(".waitDownloader"));
+      try (Timer.Context ignored = timerWait.time()) {
+        this.future.join();
+      }
       assert this.response != null;
       LOGGER.debug("Loading cached URI resource {}", this.originalRequest.getURI());
 
@@ -200,58 +196,32 @@ public final class HttpRequestFetcher {
       return result;
     }
 
+    private String buildMetricName(final String suffix) {
+      return HttpRequestFetcher.class.getName() + suffix;
+    }
+
     @Override
     public Void call() throws Exception {
       return context.mdcContextEx(
           () -> {
             final String baseMetricName =
-                HttpRequestFetcher.class.getName()
-                    + ".read."
-                    + StatsUtils.quotePart(getURI().getHost());
-            final Timer.Context timerDownload =
-                HttpRequestFetcher.this.registry.timer(baseMetricName).time();
-            try {
-              context.stopIfCanceled();
-              this.response = new CachedClientHttpResponse(this.originalRequest.execute());
-            } catch (IOException e) {
-              LOGGER.error("Request failed {}", this.originalRequest.getURI(), e);
-              this.response =
-                  new AbstractClientHttpResponse() {
-                    @Override
-                    @Nonnull
-                    public HttpHeaders getHeaders() {
-                      return new HttpHeaders();
-                    }
-
-                    @Override
-                    @Nonnull
-                    public InputStream getBody() {
-                      return StreamUtils.emptyInput();
-                    }
-
-                    @Override
-                    public int getRawStatusCode() {
-                      return 500;
-                    }
-
-                    @Override
-                    @Nonnull
-                    public String getStatusText() {
-                      return e.getMessage();
-                    }
-
-                    @Override
-                    public void close() {}
-                  };
-              HttpRequestFetcher.this.registry.counter(baseMetricName + ".error").inc();
-            } finally {
-              timerDownload.stop();
+                buildMetricName(".read." + StatsUtils.quotePart(getURI().getHost()));
+            Timer timerDownload = HttpRequestFetcher.this.registry.timer(baseMetricName);
+            try (Timer.Context ignored = timerDownload.time()) {
+              try {
+                context.stopIfCanceled();
+                this.response = new CachedClientHttpResponse(this.originalRequest.execute());
+              } catch (IOException | RuntimeException e) {
+                LOGGER.error("Request failed {}", this.originalRequest.getURI(), e);
+                this.response = new ErrorResponseClientHttpResponse(e);
+                HttpRequestFetcher.this.registry.counter(baseMetricName + ".error").inc();
+              }
             }
             return null;
           });
     }
 
-    public void setFuture(final ForkJoinTask<Void> future) {
+    public void setFuture(final @Nonnull ForkJoinTask<Void> future) {
       this.future = future;
     }
   }
