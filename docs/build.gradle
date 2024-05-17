@@ -29,7 +29,7 @@ dependencies {
     )
 }
 
-def site = new File(buildDir, "site").path
+def site = new File(getLayout().getBuildDirectory().getAsFile().get(), "site").path
 
 tasks.register('copyJavadocs', Copy) {
     dependsOn ':core:javadoc'

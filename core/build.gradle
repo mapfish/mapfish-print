@@ -45,7 +45,7 @@ distributions {
 }
 
 
-def appDir = new File(project.buildDir, 'install')
+def appDir = new File(getLayout().getBuildDirectory().getAsFile().get(), 'install')
 installDist.doFirst {
     appDir.deleteDir()
 }
