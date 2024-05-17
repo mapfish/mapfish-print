@@ -19,6 +19,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -97,6 +98,7 @@ public class ExamplesTest {
   private static final Pattern EXAMPLE_MATCH_ALL = Pattern.compile(".*");
   private static Pattern exampleFilter;
   private static Pattern requestFilter;
+  private static final List<String> requiringPdfAValidationTests = List.of("pdf_a_compliant");
 
   static {
     Handler.configureProtocolHandler();
@@ -106,19 +108,7 @@ public class ExamplesTest {
 
   @BeforeClass
   public static void setUp() {
-    final ClassLoader classLoader = AbstractApiTest.class.getClassLoader();
-    final URL logfile = classLoader.getResource("logback.xml");
-    final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-    try {
-      final JoranConfigurator configurator = new JoranConfigurator();
-      configurator.setContext(loggerContext);
-      // Call context.reset() to clear any previous configuration, e.g. default
-      // configuration. For multi-step configuration, omit calling context.reset().
-      loggerContext.reset();
-      configurator.doConfigure(Objects.requireNonNull(logfile));
-    } catch (JoranException je) {
-      // StatusPrinter will handle this
-    }
+    final LoggerContext loggerContext = getLoggerContext();
     StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
 
     String filterProperty = System.getProperty(FILTER_PROPERTY);
@@ -137,6 +127,23 @@ public class ExamplesTest {
       requestFilter = REQUEST_MATCH_ALL;
       exampleFilter = EXAMPLE_MATCH_ALL;
     }
+  }
+
+  private static LoggerContext getLoggerContext() {
+    final ClassLoader classLoader = AbstractApiTest.class.getClassLoader();
+    final URL logfile = classLoader.getResource("logback.xml");
+    final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+    try {
+      final JoranConfigurator configurator = new JoranConfigurator();
+      configurator.setContext(loggerContext);
+      // Call context.reset() to clear any previous configuration, e.g. default
+      // configuration. For multi-step configuration, omit calling context.reset().
+      loggerContext.reset();
+      configurator.doConfigure(Objects.requireNonNull(logfile));
+    } catch (JoranException je) {
+      // StatusPrinter will handle this
+    }
+    return loggerContext;
   }
 
   private static File getFile(Class<?> testClass, String fileName) {
@@ -209,14 +216,6 @@ public class ExamplesTest {
     reportErrors(errors, testsRan);
   }
 
-  @Test
-  public void testPDFA() {
-    final File examplesDir = getFile(ExamplesTest.class, "/examples");
-    Map<String, Throwable> errors = new HashMap<>();
-    runExample(new File(examplesDir, "pdf_a_compliant"), errors, true);
-    reportErrors(errors, 1);
-  }
-
   private void reportErrors(final Map<String, Throwable> errors, final int testsRan) {
     if (!errors.isEmpty()) {
       for (Map.Entry<String, Throwable> error : errors.entrySet()) {
@@ -244,7 +243,7 @@ public class ExamplesTest {
         errorReport.append("Failed with the error:\n");
         final StringWriter sw = new StringWriter();
         error.getValue().printStackTrace(new PrintWriter(sw));
-        errorReport.append(sw.toString());
+        errorReport.append(sw);
         errorReport.append('\n');
       }
       errorReport.append("\n\n");
@@ -253,10 +252,6 @@ public class ExamplesTest {
   }
 
   private int runExample(File example, Map<String, Throwable> errors) {
-    return runExample(example, errors, false);
-  }
-
-  private int runExample(File example, Map<String, Throwable> errors, boolean pdfaValidation) {
     int testsRan = 0;
     try {
       final File configFile = new File(example, CONFIG_FILE);
@@ -276,9 +271,7 @@ public class ExamplesTest {
             // WARN to be displayed in the Travis logs
             LOGGER.warn("Run example '{}' ({})", example.getName(), requestFile.getName());
             String requestData =
-                new String(
-                    java.nio.file.Files.readAllBytes(requestFile.toPath()),
-                    Constants.DEFAULT_CHARSET);
+                java.nio.file.Files.readString(requestFile.toPath(), Constants.DEFAULT_CHARSET);
 
             final PJsonObject jsonSpec = MapPrinter.parseSpec(requestData);
 
@@ -305,7 +298,7 @@ public class ExamplesTest {
             Assert.equals(
                 FORMAT_TO_CONTENT_TYPE.get(outputFormat), http.getHeaderField("Content-Type"));
 
-            if (pdfaValidation) {
+            if (requiringPdfAValidationTests.contains(example.getName())) {
               pdfaValidate(errors, http, example.getName(), requestFile.getName());
             } else {
               compareImages(errors, http.getInputStream(), example, requestFile, outputFormat);
@@ -322,7 +315,7 @@ public class ExamplesTest {
     return testsRan;
   }
 
-  private Map<String, Throwable> compareImages(
+  private void compareImages(
       Map<String, Throwable> errors,
       InputStream stream,
       File example,
@@ -344,10 +337,9 @@ public class ExamplesTest {
         new ImageSimilarity(expectedOutput).assertSimilarity(image);
       }
     }
-    return errors;
   }
 
-  private Map<String, Throwable> pdfaValidate(
+  private void pdfaValidate(
       Map<String, Throwable> errors,
       HttpURLConnection http,
       String exampleName,
@@ -357,7 +349,7 @@ public class ExamplesTest {
     try {
       GFModelParser parser = GFModelParser.createModelWithFlavour(http.getInputStream(), flavour);
       ValidationResult result = validator.validate(parser);
-      LOGGER.warn("Example is PDF/A conform: {}", result.isCompliant());
+      LOGGER.warn("Example {} is PDF/A conform: {}", exampleName, result.isCompliant());
       Assert.isTrue(result.isCompliant());
     } catch (EncryptedPdfException
         | ModelParsingException
@@ -366,7 +358,6 @@ public class ExamplesTest {
         | AssertionFailedException e) {
       errors.put(String.format("%s (%s)", exampleName, requestFileName), e);
     }
-    return errors;
   }
 
   private File getExpectedOutput(String outputFormat, File requestFile, File expectedOutputDir) {
