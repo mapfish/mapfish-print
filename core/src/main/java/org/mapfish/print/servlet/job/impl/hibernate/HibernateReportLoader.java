@@ -19,7 +19,7 @@ public class HibernateReportLoader implements ReportLoader {
 
   @Override
   @Transactional
-  public final void loadReport(final URI reportURI, final OutputStream out) throws IOException {
+  public void loadReport(final URI reportURI, final OutputStream out) throws IOException {
     out.write(this.dao.getResult(reportURI).getData());
   }
 }
