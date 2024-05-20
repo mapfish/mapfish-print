@@ -69,7 +69,7 @@ public class NorthArrowAttribute
   }
 
   /** The value of {@link NorthArrowAttribute}. */
-  public class NorthArrowAttributeValues {
+  public static class NorthArrowAttributeValues {
 
     private static final String DEFAULT_BACKGROUND_COLOR = "rgba(255, 255, 255, 0)";
 

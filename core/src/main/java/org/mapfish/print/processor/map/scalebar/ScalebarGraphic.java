@@ -450,7 +450,7 @@ public class ScalebarGraphic {
     settings.setPadding(getPadding(settings));
 
     // start the rendering
-    File path = null;
+    File path;
     if (template.getConfiguration().renderAsSvg(scalebarParams.renderAsSvg)) {
       // render scalebar as SVG
       final SVGGraphics2D graphics2D =

@@ -26,7 +26,7 @@ public class AccessAssertionUserType implements UserType {
   @Override
   public final Object deepCopy(final Object value) {
     if (value == null) {
-      return value;
+      return null;
     }
     return ((AccessAssertion) value).copy();
   }

@@ -32,7 +32,7 @@ public abstract class GridLabelFormat {
 
   /** Label format where value and unit are formatted at once. */
   public static class Simple extends GridLabelFormat {
-    private String labelFormat = null;
+    private final String labelFormat;
 
     /**
      * Constructor.
@@ -77,7 +77,7 @@ public abstract class GridLabelFormat {
 
     @Override
     public final String format(final double value, final String unit) {
-      DecimalFormat decimalFormat = null;
+      DecimalFormat decimalFormat;
 
       if (this.formatDecimalSeparator != null || this.formatGroupingSeparator != null) {
         // if custom separator characters are given, use them to create the format
