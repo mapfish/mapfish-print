@@ -217,7 +217,7 @@ public class RegistryJobQueue implements JobQueue {
       PrintJobStatus.Status status = PrintJobStatus.Status.valueOf(metadata.getString(JSON_STATUS));
 
       PJsonObject requestData = new PJsonObject(metadata.getJSONObject(JSON_REQUEST_DATA), "spec");
-      Long startTime = metadata.getLong(JSON_START_DATE);
+      long startTime = metadata.getLong(JSON_START_DATE);
       long requestCount = metadata.getLong(JSON_REQUEST_COUNT);
 
       JSONObject accessJSON = metadata.getJSONObject(JSON_ACCESS_ASSERTION);

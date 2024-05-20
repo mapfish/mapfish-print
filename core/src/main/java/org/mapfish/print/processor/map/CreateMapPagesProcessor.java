@@ -199,7 +199,7 @@ public class CreateMapPagesProcessor
     }
     LOGGER.info("Paging generate {} maps definitions.", mapList.size());
     DataSourceAttributeValue datasourceAttributes = new DataSourceAttributeValue();
-    datasourceAttributes.attributesValues = mapList.toArray(new Map[mapList.size()]);
+    datasourceAttributes.attributesValues = mapList.toArray(new Map[0]);
     return new Output(datasourceAttributes);
   }
 

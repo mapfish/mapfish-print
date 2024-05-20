@@ -113,7 +113,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     public InetAddress[] resolve(final String host) throws UnknownHostException {
       final List<InetAddress> list = Arrays.asList(super.resolve(host));
       Collections.shuffle(list);
-      return list.toArray(new InetAddress[list.size()]);
+      return list.toArray(new InetAddress[0]);
     }
   }
 
