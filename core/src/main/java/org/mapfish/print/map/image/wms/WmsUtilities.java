@@ -4,10 +4,10 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import java.awt.Dimension;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,21 +52,7 @@ public final class WmsUtilities {
       final double angle,
       final ReferencedEnvelope bounds)
       throws FactoryException, URISyntaxException, IOException {
-    if (commonURI == null || commonURI.getAuthority() == null) {
-      throw new RuntimeException("Invalid WMS URI: " + commonURI);
-    }
-    String[] authority = commonURI.getAuthority().split(":");
-    URL url;
-    if (authority.length == 2) {
-      url =
-          new URL(
-              commonURI.getScheme(),
-              authority[0],
-              Integer.parseInt(authority[1]),
-              commonURI.getPath());
-    } else {
-      url = new URL(commonURI.getScheme(), authority[0], commonURI.getPath());
-    }
+    URL url = getUrl(commonURI);
     final GetMapRequest getMapRequest =
         WmsVersion.lookup(wmsLayerParam.version).getGetMapRequest(url);
     getMapRequest.setBBox(bounds);
@@ -86,7 +72,7 @@ public final class WmsUtilities {
 
     Multimap<String, String> extraParams = HashMultimap.create();
     if (commonURI.getQuery() != null) {
-      for (NameValuePair pair : URLEncodedUtils.parse(commonURI, Charset.forName("UTF-8"))) {
+      for (NameValuePair pair : URLEncodedUtils.parse(commonURI, StandardCharsets.UTF_8)) {
         extraParams.put(pair.getName(), pair.getValue());
       }
     }
@@ -100,6 +86,25 @@ public final class WmsUtilities {
       }
     }
     return URIUtils.addParams(getMapUri, extraParams, Collections.emptySet());
+  }
+
+  private static URL getUrl(final URI commonURI) throws MalformedURLException {
+    if (commonURI == null || commonURI.getAuthority() == null) {
+      throw new RuntimeException("Invalid WMS URI: " + commonURI);
+    }
+    String[] authority = commonURI.getAuthority().split(":");
+    URL url;
+    if (authority.length == 2) {
+      url =
+          new URL(
+              commonURI.getScheme(),
+              authority[0],
+              Integer.parseInt(authority[1]),
+              commonURI.getPath());
+    } else {
+      url = new URL(commonURI.getScheme(), authority[0], commonURI.getPath());
+    }
+    return url;
   }
 
   private static void addDpiParam(
@@ -117,7 +122,7 @@ public final class WmsUtilities {
         break;
       case GEOSERVER:
         if (!contains(extraParams, FORMAT_OPTIONS)) {
-          extraParams.put(FORMAT_OPTIONS, "dpi:" + Integer.toString(dpi));
+          extraParams.put(FORMAT_OPTIONS, "dpi:" + dpi);
         } else if (!isDpiSet(extraParams)) {
           setDpiValue(extraParams, dpi);
         }
@@ -131,12 +136,6 @@ public final class WmsUtilities {
       final Multimap<String, String> extraParams, final double angle, final ServerType type) {
     switch (type) {
       case MAPSERVER:
-        if (!contains(extraParams, "ANGLE")) {
-          extraParams.put("ANGLE", Double.toString(Math.toDegrees(angle)));
-        }
-        break;
-      case QGISSERVER:
-        break;
       case GEOSERVER:
         if (!contains(extraParams, "ANGLE")) {
           extraParams.put("ANGLE", Double.toString(Math.toDegrees(angle)));
@@ -179,7 +178,7 @@ public final class WmsUtilities {
         List<String> newValues = new ArrayList<>();
         for (String value : values) {
           if (!StringUtils.isEmpty(value)) {
-            value += ";dpi:" + Integer.toString(dpi);
+            value += ";dpi:" + dpi;
             newValues.add(value);
           }
         }

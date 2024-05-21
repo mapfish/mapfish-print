@@ -96,7 +96,7 @@ public class ScalebarAttribute
   }
 
   /** The value of {@link ScalebarAttribute}. */
-  public class ScalebarAttributeValues {
+  public static class ScalebarAttributeValues {
 
     private static final int DEFAULT_INTERVALS = 3;
     private static final String DEFAULT_FONT = "Helvetica";

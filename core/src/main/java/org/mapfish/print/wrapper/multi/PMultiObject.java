@@ -135,7 +135,7 @@ public class PMultiObject extends PAbstractObject {
     if (results.size() == 1) {
       return results.get(0);
     }
-    return new PMultiObject(results.toArray(new PObject[results.size()]));
+    return new PMultiObject(results.toArray(new PObject[0]));
   }
 
   @Override

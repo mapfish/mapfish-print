@@ -27,7 +27,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 public final class MapfishJsonStyleVersion2 {
   static final String JSON_SYMB = "symbolizers";
   private static final String JSON_TYPE = "type";
-  private static final Pattern VALUE_EXPR_PATTERN = Pattern.compile("\\$\\{([\\w\\d_-]+)\\}");
+  private static final Pattern VALUE_EXPR_PATTERN = Pattern.compile("\\$\\{([\\w_-]+)\\}");
   private static final String JSON_MIN_SCALE = "minScale";
   private static final String JSON_MAX_SCALE = "maxScale";
   private static final String JSON_FILTER_INCLUDE = "*";

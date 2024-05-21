@@ -166,24 +166,18 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
                   }
                 } else {
                   if (LOGGER.isDebugEnabled()) {
-                    if (tileBounds != null && tileCacheBounds != null) {
-                      LOGGER.debug(
-                          "Tile '{}' bounds [{}, {}, {}, {}]  out of tile cache bounds [{}, {}, {},"
-                              + " {}]",
-                          tileRequest == null ? "-" : tileRequest.getURI(),
-                          tileBounds.getMinX(),
-                          tileBounds.getMinY(),
-                          tileBounds.getMaxX(),
-                          tileBounds.getMaxY(),
-                          tileCacheBounds.getMinX(),
-                          tileCacheBounds.getMinY(),
-                          tileCacheBounds.getMaxX(),
-                          tileCacheBounds.getMaxY());
-                    } else {
-                      LOGGER.debug(
-                          "Tile '{}' with missing bounds.",
-                          tileRequest == null ? "-" : tileRequest.getURI());
-                    }
+                    LOGGER.debug(
+                        "Tile '{}' bounds [{}, {}, {}, {}]  out of tile cache bounds [{}, {}, {},"
+                            + " {}]",
+                        tileRequest.getURI(),
+                        tileBounds.getMinX(),
+                        tileBounds.getMinY(),
+                        tileBounds.getMaxX(),
+                        tileBounds.getMaxY(),
+                        tileCacheBounds.getMinX(),
+                        tileCacheBounds.getMinY(),
+                        tileCacheBounds.getMaxX(),
+                        tileCacheBounds.getMaxY());
                   }
                 }
               }

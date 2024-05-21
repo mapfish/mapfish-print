@@ -131,14 +131,13 @@ public class Template implements ConfigurationObject, HasConfiguration {
    */
   public final void setAttributes(final Map<String, Attribute> attributes) {
     for (Map.Entry<String, Attribute> entry : attributes.entrySet()) {
-      Object attribute = entry.getValue();
-      if (!(attribute instanceof Attribute)) {
-        final String msg =
-            "Attribute: '" + entry.getKey() + "' is not an attribute. It is a: " + attribute;
+      Attribute attribute = entry.getValue();
+      if (attribute == null) {
+        final String msg = "Attribute: '" + entry.getKey() + "' is not a defined attribute";
         LOGGER.error("Error setting the Attributes: {}", msg);
         throw new IllegalArgumentException(msg);
       } else {
-        ((Attribute) attribute).setConfigName(entry.getKey());
+        attribute.setConfigName(entry.getKey());
       }
     }
     this.attributes = attributes;
@@ -168,9 +167,9 @@ public class Template implements ConfigurationObject, HasConfiguration {
 
   private void assertProcessors(final List<Processor> processorsToCheck) {
     for (Processor entry : processorsToCheck) {
-      if (!(entry instanceof Processor)) {
-        final String msg = "Processor: " + entry + " is not a processor.";
-        LOGGER.error("Error setting the Attributes: {}", msg);
+      if (entry == null) {
+        final String msg = "Processor is missing.";
+        LOGGER.error("Error in the processors to check while setting the Attributes: {}", msg);
         throw new IllegalArgumentException(msg);
       }
     }

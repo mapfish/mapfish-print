@@ -64,7 +64,7 @@ public final class FontTools {
 
         inputStreamReader = new InputStreamReader(process.getInputStream(), "utf-8");
         stdInput = new BufferedReader(inputStreamReader);
-        String inputLine = null;
+        String inputLine;
         FontConfigDescription description = null;
         while ((inputLine = stdInput.readLine()) != null) {
           if (inputLine.startsWith("Pattern ")) {

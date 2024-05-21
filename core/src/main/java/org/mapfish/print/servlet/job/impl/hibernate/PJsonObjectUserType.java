@@ -26,7 +26,7 @@ public class PJsonObjectUserType implements UserType {
   @Override
   public final Object deepCopy(final Object value) {
     if (value == null) {
-      return value;
+      return null;
     } else {
       try {
         return new PJsonObject(

@@ -113,14 +113,13 @@ public final class DataSourceAttribute implements Attribute {
    */
   public void setAttributes(final Map<String, Attribute> attributes) {
     for (Map.Entry<String, Attribute> entry : attributes.entrySet()) {
-      Object attribute = entry.getValue();
-      if (!(attribute instanceof Attribute)) {
-        final String msg =
-            "Attribute: '" + entry.getKey() + "' is not an attribute. It is a: " + attribute;
+      Attribute attribute = entry.getValue();
+      if (attribute == null) {
+        final String msg = "Attribute: '" + entry.getKey() + "' is not a defined attribute.";
         LOGGER.error("Error setting the Attributes: {}", msg);
         throw new IllegalArgumentException(msg);
       } else {
-        ((Attribute) attribute).setConfigName(entry.getKey());
+        attribute.setConfigName(entry.getKey());
       }
     }
     this.attributes = attributes;
