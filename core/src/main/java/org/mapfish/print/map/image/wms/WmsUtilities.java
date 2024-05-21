@@ -88,7 +88,7 @@ public final class WmsUtilities {
     return URIUtils.addParams(getMapUri, extraParams, Collections.emptySet());
   }
 
-  private static URL getUrl(URI commonURI) throws MalformedURLException {
+  private static URL getUrl(final URI commonURI) throws MalformedURLException {
     if (commonURI == null || commonURI.getAuthority() == null) {
       throw new RuntimeException("Invalid WMS URI: " + commonURI);
     }
