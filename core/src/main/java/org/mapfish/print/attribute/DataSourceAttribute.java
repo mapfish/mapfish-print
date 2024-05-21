@@ -115,8 +115,7 @@ public final class DataSourceAttribute implements Attribute {
     for (Map.Entry<String, Attribute> entry : attributes.entrySet()) {
       Attribute attribute = entry.getValue();
       if (attribute == null) {
-        final String msg =
-            "Attribute: '" + entry.getKey() + "' is not an attribute. It is a: " + null;
+        final String msg = "Attribute: '" + entry.getKey() + "' is not a defined attribute.";
         LOGGER.error("Error setting the Attributes: {}", msg);
         throw new IllegalArgumentException(msg);
       } else {
