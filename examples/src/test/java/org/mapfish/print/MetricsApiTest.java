@@ -19,8 +19,8 @@ import org.springframework.http.client.ClientHttpResponse;
  *
  *  Should be run inside docker composition:
  *
- *      docker-compose up -d
- *      docker-compose exec tests gradle :examples:test
+ *      docker compose up -d
+ *      docker compose exec tests gradle :examples:test
  */
 public class MetricsApiTest extends AbstractApiTest {
 

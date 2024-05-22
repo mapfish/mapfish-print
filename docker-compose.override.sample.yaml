@@ -1,6 +1,3 @@
----
-version: '2.1'
-
 services:
   builder:
     image: mapfish_print_builder
