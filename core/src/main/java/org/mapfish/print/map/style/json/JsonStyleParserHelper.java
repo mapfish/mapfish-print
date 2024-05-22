@@ -697,7 +697,7 @@ public final class JsonStyleParserHelper {
             (final String input) -> Double.parseDouble(styleJson.getString(JSON_STROKE_OPACITY)));
     Expression widthExpression =
         parseExpression(
-            1,
+            1.0,
             styleJson,
             JSON_STROKE_WIDTH,
             (final String input) -> Double.parseDouble(styleJson.getString(JSON_STROKE_WIDTH)));
@@ -770,47 +770,72 @@ public final class JsonStyleParserHelper {
 
   @VisibleForTesting
   String getGraphicFormat(final String externalGraphicFile, final PJsonObject styleJson) {
-    String mimeType = null;
-    if (!StringUtils.isEmpty(styleJson.optString(JSON_GRAPHIC_FORMAT))) {
-      mimeType = styleJson.getString(JSON_GRAPHIC_FORMAT);
-    } else {
-      Matcher matcher = DATA_FORMAT_PATTERN.matcher(externalGraphicFile);
-      if (matcher.find()) {
-        mimeType = matcher.group(1);
-      }
+    String mimeType = getMimeTypeFromStyleJson(styleJson);
 
-      if (mimeType == null) {
-        int separatorPos = externalGraphicFile.lastIndexOf(".");
-        if (separatorPos >= 0) {
-          mimeType = "image/" + externalGraphicFile.substring(separatorPos + 1).toLowerCase();
-        }
-      }
-
-      if (mimeType == null) {
-        try {
-          URI uri;
-          try {
-            uri = new URI(externalGraphicFile);
-          } catch (URISyntaxException e) {
-            uri = new File(externalGraphicFile).toURI();
-          }
-
-          ClientHttpResponse httpResponse = this.requestFactory.createRequest(uri, HEAD).execute();
-          List<String> contentTypes = httpResponse.getHeaders().get("Content-Type");
-          if (contentTypes != null && contentTypes.size() == 1) {
-            String contentType = contentTypes.get(0);
-            int index = contentType.lastIndexOf(";");
-            mimeType = index >= 0 ? contentType.substring(0, index) : contentType;
-          } else {
-            LOGGER.info("No content type found for: {}", externalGraphicFile);
-          }
-        } catch (IOException e) {
-          throw new RuntimeException("Unable to get a mime type for the external graphic", e);
-        }
-      }
+    if (mimeType == null) {
+      mimeType = getMimeTypeFromExternalFile(externalGraphicFile);
     }
+
+    if (mimeType == null) {
+      mimeType = getMimeTypeFromFileExtension(externalGraphicFile);
+    }
+
+    if (mimeType == null) {
+      mimeType = getMimeTypeFromHttpResponse(externalGraphicFile);
+    }
+
     mimeType = toSupportedMimeType(mimeType);
     return mimeType;
+  }
+
+  private String getMimeTypeFromStyleJson(final PJsonObject styleJson) {
+    return !StringUtils.isEmpty(styleJson.optString(JSON_GRAPHIC_FORMAT))
+        ? styleJson.getString(JSON_GRAPHIC_FORMAT)
+        : null;
+  }
+
+  private String getMimeTypeFromExternalFile(final String externalGraphicFile) {
+    Matcher matcher = DATA_FORMAT_PATTERN.matcher(externalGraphicFile);
+    return matcher.find() ? matcher.group(1) : null;
+  }
+
+  private String getMimeTypeFromFileExtension(final String externalGraphicFile) {
+    int separatorPos = externalGraphicFile.lastIndexOf(".");
+    return separatorPos >= 0
+        ? "image/" + externalGraphicFile.substring(separatorPos + 1).toLowerCase()
+        : null;
+  }
+
+  private String getMimeTypeFromHttpResponse(final String externalGraphicFile) {
+    try {
+      URI uri = getUri(externalGraphicFile);
+      final ClientHttpRequest request = this.requestFactory.createRequest(uri, HEAD);
+      List<String> contentTypes;
+      try (ClientHttpResponse httpResponse = request.execute()) {
+        contentTypes = httpResponse.getHeaders().get("Content-Type");
+      }
+
+      if (contentTypes != null && contentTypes.size() == 1) {
+        String contentType = contentTypes.get(0);
+        int index = contentType.lastIndexOf(";");
+        return index >= 0 ? contentType.substring(0, index) : contentType;
+      }
+
+      LOGGER.info("No content type found for: {}", externalGraphicFile);
+    } catch (IOException e) {
+      throw new RuntimeException(
+          "Unable to get a mime type for the external graphic " + externalGraphicFile, e);
+    }
+
+    return null;
+  }
+
+  private URI getUri(final String externalGraphicFile) {
+    try {
+      return new URI(externalGraphicFile);
+    } catch (URISyntaxException e) {
+      return new File(externalGraphicFile).toURI();
+    }
   }
 
   private String toSupportedMimeType(final String mimeType) {
