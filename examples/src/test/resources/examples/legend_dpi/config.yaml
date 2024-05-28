@@ -17,3 +17,19 @@ templates:
         maxWidth: 148
         dpi: 100
         template: legend.jrxml
+
+  A4 portrait noMaxWidth: !template
+    reportTemplate: simpleReport.jrxml
+    attributes:
+      map: !map
+        maxDpi: 400
+        width: 780
+        height: 330
+      legend: !legend {}
+    processors:
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createMap {}
+      - !prepareLegend # create a datasource for the report with the 'legend' attribute
+        dpi: 100
+        template: legend.jrxml
