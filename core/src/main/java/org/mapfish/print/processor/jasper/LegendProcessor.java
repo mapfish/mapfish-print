@@ -195,15 +195,12 @@ public final class LegendProcessor
       final File tempTaskDirectory)
       throws IOException, JRException {
     BufferedImage image = originalImage;
-    double scaleFactor = 1;
-    if (this.maxWidth != null) {
-      scaleFactor = Constants.PDF_DPI / originalImageDPI;
-      if (image.getWidth() * scaleFactor > this.maxWidth) {
-        if (this.scaled) {
-          image = scaleToMaxWidth(image, scaleFactor);
-        } else {
-          image = cropToMaxWidth(image, scaleFactor);
-        }
+    double scaleFactor = Constants.PDF_DPI / originalImageDPI;
+    if (this.maxWidth != null && image.getWidth() * scaleFactor > this.maxWidth) {
+      if (this.scaled) {
+        image = scaleToMaxWidth(image, scaleFactor);
+      } else {
+        image = cropToMaxWidth(image, scaleFactor);
       }
     }
 
