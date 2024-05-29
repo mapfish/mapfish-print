@@ -1,0 +1,38 @@
+{
+  "layout": "A4 portrait noMaxWidth",
+  "outputFormat": "png",
+  "attributes": {
+    "map": {
+      "bbox": [100, -1, 106, 1.538],
+      "projection": "CRS:84",
+      "dpi": 144,
+      "rotation": 0,
+      "layers": [
+        {
+          "type": "geojson",
+          "style": "polygon",
+          "geoJson": "http://geoserver:8080/www/test-data/simple-squares-geojson.json"
+        }
+      ]
+    },
+    "legend": {
+      "name": "",
+      "classes": [
+        {
+          "name": "Test legend no DPI",
+          "icons": ["http://geoserver:8080/www/legends/legend1.png"]
+        },
+        {
+          "name": "Test legend 200 DPI",
+          "dpi": "200",
+          "icons": ["http://geoserver:8080/www/legends/legend1.png"]
+        },
+        {
+          "name": "Test legend 400 DPI",
+          "dpi": "400",
+          "icons": ["http://geoserver:8080/www/legends/legend1.png"]
+        }
+      ]
+    }
+  }
+}
