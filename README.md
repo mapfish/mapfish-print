@@ -17,10 +17,10 @@ Execute the following command():
 This will build three artifacts: `print-servlet-xxx.war`, `print-lib.jar`, `print-standalone.jar`.
 
 The build also builds the documentation in the docs/build/site folder. To deploy the documentation it should
-simply be copied to the `gh-pages` branch and then committed GitHub will automatically build the updated site
+simply be copied to the `gh-pages` branch and then committed. GitHub will automatically build the updated site
 at: <https://mapfish.github.io/mapfish-print/>
 
-If you only want to build the docs simply run:
+If you only want to build the docs, simply run:
 
 ```{.sourceCode .}
 > ./gradlew docs:build

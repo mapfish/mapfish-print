@@ -4,7 +4,7 @@ This example demonstrates aliasing and attribute defaults.
 
 Yaml has a feature called "Aliases" which allows the same object to be used in multiple places by
 \_[tagging]() the object of interest with an alias and then \_[dereferencing]() the alias later when one
-wishes to reuse the objct.
+wishes to reuse the object.
 
 The purpose of YAML aliasing in a YAML file is to reduce duplication in the files.
 
