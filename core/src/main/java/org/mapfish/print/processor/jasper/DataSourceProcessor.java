@@ -44,7 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * <p>The {@link org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue} has an
  * array of maps, each map in the array equates to a row in the Jasper DataSource.
  *
- * <p>The DataSourceProcessor can be configured with processors which will be used to transform each
+ * <p>The DataSourceProcessor can be configured with processors that will be used to transform each
  * map in the input array before constructing the final DataSource row.
  *
  * <p>For example, each map in the array could be {@link
