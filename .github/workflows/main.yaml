@@ -130,6 +130,8 @@ jobs:
           path: /tmp/test_results
         if: failure()
 
+      - run: git stash
+        if: always()
       - name: Publish
         run: c2cciutils-publish
         if: env.HAS_SECRETS == 'HAS_SECRETS'
@@ -141,6 +143,8 @@ jobs:
           path: /tmp/dpkg-versions.patch
           retention-days: 1
         if: failure()
+      - run: git stash pop
+
       - run:
           docker run --rm --env=GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} mapfish_print_builder bash -c 'gradle
           build && gradle publish'
