@@ -29,7 +29,7 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
   private static final int IMAGE_SIZE = 48;
   private Pattern urlExtractor = Pattern.compile("(.*)");
   private int urlGroup = 1;
-  private BufferedImage defaultImage;
+  private final BufferedImage defaultImage;
 
   /** Constructor. */
   public HttpImageResolver() {
@@ -37,7 +37,7 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
   }
 
   /**
-   * Sets the RegExp pattern to use for extracting the url from the text. By default the whole
+   * Sets the RegExp pattern to use for extracting the url from the text. By default, the whole
    * string is used.
    *
    * <p>For example: <code>.*&amp;img src="([^"]+)".*</code>
@@ -62,34 +62,44 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
     Matcher urlMatcher = this.urlExtractor.matcher(text);
 
     if (urlMatcher.matches() && urlMatcher.group(this.urlGroup) != null) {
-      final String uriString = urlMatcher.group(this.urlGroup);
+      final String uriText = urlMatcher.group(this.urlGroup);
       try {
-        URI url = new URI(uriString);
+        URI url = new URI(uriText);
         final ClientHttpRequest request = requestFactory.createRequest(url, HttpMethod.GET);
-        final ClientHttpResponse response = request.execute();
-        if (response.getStatusCode() == HttpStatus.OK) {
-          try {
-            final BufferedImage image = ImageIO.read(response.getBody());
-            if (image == null) {
-              LOGGER.warn("The URL: {} is NOT an image format that can be decoded", url);
-              return this.defaultImage;
-            }
-            return image;
-          } catch (IOException e) {
-            LOGGER.warn("Image loaded from '{}'is not valid", url, e);
-          }
-        } else {
-          LOGGER.warn(
-              "Error loading the table row image: {}.\nStatus Code: {}\nStatus Text: {}",
-              url,
-              response.getStatusCode(),
-              response.getStatusText());
+        try (ClientHttpResponse response = request.execute()) {
+          return getImageFromResponse(response, url);
         }
       } catch (RuntimeException | URISyntaxException | IOException e) {
-        LOGGER.warn("Error loading table row image: {}", uriString, e);
+        LOGGER.warn(
+            "Ignored following exception while loading table row image: {} and fallback to default"
+                + " image",
+            uriText,
+            e);
       }
     }
+    return this.defaultImage;
+  }
 
+  private BufferedImage getImageFromResponse(final ClientHttpResponse response, final URI url)
+      throws IOException {
+    if (response.getStatusCode() == HttpStatus.OK) {
+      try {
+        final BufferedImage image = ImageIO.read(response.getBody());
+        if (image == null) {
+          LOGGER.warn("The URL: {} is NOT an image format that can be decoded", url);
+          return this.defaultImage;
+        }
+        return image;
+      } catch (IOException e) {
+        LOGGER.warn("Image loaded from '{}'is not valid", url, e);
+      }
+    } else {
+      LOGGER.warn(
+          "Error loading the table row image: {}.\nStatus Code: {}\nStatus Text: {}",
+          url,
+          response.getStatusCode(),
+          response.getStatusText());
+    }
     return this.defaultImage;
   }
 

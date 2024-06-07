@@ -6,6 +6,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.RecursiveTask;
@@ -67,20 +68,12 @@ public final class ProcessorGraphNode<IN, OUT> {
     this.requirements.add(node);
   }
 
-  protected Set<ProcessorGraphNode> getRequirements() {
+  Set<ProcessorGraphNode> getRequirements() {
     return this.requirements;
   }
 
-  protected Set<ProcessorGraphNode<?, ?>> getDependencies() {
+  Set<ProcessorGraphNode<?, ?>> getDependencies() {
     return this.dependencies;
-  }
-
-  /**
-   * Returns true if the node has requirements, that is there are other nodes that should be run
-   * first.
-   */
-  public boolean hasRequirements() {
-    return !this.requirements.isEmpty();
   }
 
   /**
@@ -180,49 +173,11 @@ public final class ProcessorGraphNode<IN, OUT> {
                 final Values values = this.execContext.getValues();
 
                 final Processor<In, Out> process = this.node.processor;
-                final MetricRegistry registry = this.node.metricRegistry;
-                final String name =
+                final String timerName =
                     String.format(
                         "%s.compute.%s",
                         ProcessorGraphNode.class.getName(), process.getClass().getName());
-                Timer.Context timerContext = registry.timer(name).time();
-                try {
-                  final In inputParameter = ProcessorUtils.populateInputParameter(process, values);
-
-                  Out output;
-                  boolean isThrowingException = false;
-                  try {
-                    LOGGER.debug("Executing process: {}", process);
-                    output = process.execute(inputParameter, this.execContext.getContext());
-                    LOGGER.debug("Succeeded in executing process: {}", process);
-                  } catch (RuntimeException e) {
-                    isThrowingException = true;
-                    LOGGER.info("Error while executing process: {}", process, e);
-                    throw e;
-                  } catch (Exception e) {
-                    isThrowingException = true;
-                    LOGGER.info("Error while executing process: {}", process, e);
-                    throw new PrintException("Failed to execute process:" + process, e);
-                  } finally {
-                    if (isThrowingException) {
-                      // the processor is already canceled, so we don't care if something fails
-                      this.execContext.getContext().stopIfCanceled();
-                      registry.counter(name + ".error").inc();
-                    }
-                  }
-
-                  if (output != null) {
-                    ProcessorUtils.writeProcessorOutputToValues(output, process, values);
-                  }
-                } finally {
-                  this.execContext.finished(this.node);
-                  final long processorTime =
-                      TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS);
-                  LOGGER.info(
-                      "Time taken to run processor: '{}' was {} ms",
-                      process.getClass(),
-                      processorTime);
-                }
+                executeProcess(process, values, timerName);
 
                 this.execContext.getContext().stopIfCanceled();
                 ProcessorDependencyGraph.tryExecuteNodes(
@@ -230,6 +185,48 @@ public final class ProcessorGraphNode<IN, OUT> {
 
                 return values;
               });
+    }
+
+    private void executeProcess(
+        final Processor<In, Out> process, final Values values, final String timerName) {
+      final Timer.Context timerContext = this.node.metricRegistry.timer(timerName).time();
+      try {
+        final In inputParameter = ProcessorUtils.populateInputParameter(process, values);
+
+        Out output;
+        try {
+          LOGGER.debug("Executing process: {}", process);
+          output = process.execute(inputParameter, this.execContext.getContext());
+          LOGGER.debug("Succeeded in executing process: {}", process);
+        } catch (RuntimeException e) {
+          throw handleException(e, e, process, timerName);
+        } catch (Exception e) {
+          throw handleException(e, null, process, timerName);
+        }
+
+        if (output != null) {
+          ProcessorUtils.writeProcessorOutputToValues(output, process, values);
+        }
+      } finally {
+        this.execContext.finished(this.node);
+        final long processorTime =
+            TimeUnit.MILLISECONDS.convert(timerContext.stop(), TimeUnit.NANOSECONDS);
+        LOGGER.info(
+            "Time taken to run processor: '{}' was {} ms", process.getClass(), processorTime);
+      }
+    }
+
+    private RuntimeException handleException(
+        final Exception cause,
+        final RuntimeException runtimeCause,
+        final Processor<In, Out> process,
+        final String timerName) {
+      LOGGER.info("Error while executing process: {}", process, cause);
+      // the processor is already canceled, so we don't care if something fails
+      this.execContext.getContext().stopIfCanceled();
+      this.node.metricRegistry.counter(timerName + ".error").inc();
+      return Objects.requireNonNullElseGet(
+          runtimeCause, () -> new PrintException("Failed to execute process:" + process, cause));
     }
   }
 }
