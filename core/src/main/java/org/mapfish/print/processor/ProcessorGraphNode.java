@@ -171,14 +171,7 @@ public final class ProcessorGraphNode<IN, OUT> {
           .mdcContext(
               () -> {
                 final Values values = this.execContext.getValues();
-
-                final Processor<In, Out> process = this.node.processor;
-                final String timerName =
-                    String.format(
-                        "%s.compute.%s",
-                        ProcessorGraphNode.class.getName(), process.getClass().getName());
-                executeProcess(process, values, timerName);
-
+                executeProcess(this.node.processor, values);
                 this.execContext.getContext().stopIfCanceled();
                 ProcessorDependencyGraph.tryExecuteNodes(
                     this.node.dependencies, this.execContext, true);
@@ -187,8 +180,10 @@ public final class ProcessorGraphNode<IN, OUT> {
               });
     }
 
-    private void executeProcess(
-        final Processor<In, Out> process, final Values values, final String timerName) {
+    private void executeProcess(final Processor<In, Out> process, final Values values) {
+      final String timerName =
+          String.format(
+              "%s.compute.%s", ProcessorGraphNode.class.getName(), process.getClass().getName());
       final Timer.Context timerContext = this.node.metricRegistry.timer(timerName).time();
       try {
         final In inputParameter = ProcessorUtils.populateInputParameter(process, values);

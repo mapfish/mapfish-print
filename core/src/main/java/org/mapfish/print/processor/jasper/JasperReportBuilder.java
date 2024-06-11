@@ -81,10 +81,7 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
         // of once.
         LOGGER.info("Building Jasper report: {}", jasperFile.getAbsolutePath());
         LOGGER.debug("To: {}", buildFile.getAbsolutePath());
-        final String timerName = getClass().getName() + ".compile." + jasperFile;
-        try (Timer.Context compileJasperReport = this.metricRegistry.timer(timerName).time()) {
-          doCompileAndMoveReport(buildFile, jasperFile, compileJasperReport);
-        }
+        doCompileAndMoveReport(buildFile, jasperFile);
       } catch (IOException e) {
         throw new JRException(e);
       }
@@ -94,11 +91,12 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     return buildFile;
   }
 
-  private static void doCompileAndMoveReport(
-      final File buildFile, final File jasperFile, final Timer.Context compileTimerContext)
+  private void doCompileAndMoveReport(final File buildFile, final File jasperFile)
       throws JRException, IOException {
     final File tmpBuildFile =
         File.createTempFile("temp_", JASPER_REPORT_COMPILED_FILE_EXT, buildFile.getParentFile());
+    final String timerName = getClass().getName() + ".compile." + jasperFile;
+    Timer.Context compileTimerContext = this.metricRegistry.timer(timerName).time();
     try {
       JasperCompileManager.compileReportToFile(
           jasperFile.getAbsolutePath(), tmpBuildFile.getAbsolutePath());
