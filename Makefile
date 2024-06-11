@@ -50,11 +50,11 @@ tests: build-builder
 acceptance-tests-up: build .env
 	# Required to avoid root ownership of reports folder
 	mkdir -p examples/build/reports/ || true
-	docker-compose up --detach
+	docker compose up --detach
 
 .PHONY: acceptance-tests-run
 acceptance-tests-run: .env
-	docker-compose exec -T tests gradle \
+	docker compose exec -T tests gradle \
 		--exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain \
 		--exclude-task=:core:spotbugsTest --exclude-task=:core:checkstyleTest --exclude-task=:core:testCLI \
 		:examples:integrationTest
@@ -63,7 +63,7 @@ acceptance-tests-run: .env
 
 .PHONY: acceptance-tests-down
 acceptance-tests-down: .env
-	docker-compose down || true
+	docker compose down || true
 	docker run --rm --volume=/tmp/geoserver-data:/mnt/geoserver_datadir camptocamp/geoserver \
 		bash -c 'rm -rf /mnt/geoserver_datadir/*'
 	rmdir /tmp/geoserver-data

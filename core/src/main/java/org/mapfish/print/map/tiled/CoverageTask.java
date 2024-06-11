@@ -53,7 +53,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
    * @param tileCacheInfo the object used to create the tile requests.
    * @param configuration the configuration.
    */
-  protected CoverageTask(
+  CoverageTask(
       @Nonnull final TilePreparationInfo tilePreparationInfo,
       final boolean failOnError,
       @Nonnull final MetricRegistry registry,
@@ -87,25 +87,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
       Graphics2D graphics = coverageImage.createGraphics();
       try {
         for (SingleTilePreparationInfo tileInfo : this.tilePreparationInfo.getSingleTiles()) {
-          final TileTask task;
-          if (tileInfo.getTileRequest() != null) {
-            task =
-                new SingleTileLoaderTask(
-                    tileInfo.getTileRequest(),
-                    this.errorImage,
-                    tileInfo.getTileIndexX(),
-                    tileInfo.getTileIndexY(),
-                    this.failOnError,
-                    this.registry,
-                    this.context);
-          } else {
-            task =
-                new PlaceHolderImageTask(
-                    this.tiledLayer.getMissingTileImage(),
-                    tileInfo.getTileIndexX(),
-                    tileInfo.getTileIndexY());
-          }
-          Tile tile = task.call();
+          final Tile tile = getTile(tileInfo);
           if (tile.getImage() != null) {
             // crop the image here
             BufferedImage noBufferTileImage;
@@ -152,6 +134,28 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
     } catch (URISyntaxException | UnsupportedEncodingException e) {
       throw new PrintException("Failed to call the coverage task", e);
     }
+  }
+
+  private Tile getTile(final SingleTilePreparationInfo tileInfo) {
+    final TileTask task;
+    if (tileInfo.getTileRequest() != null) {
+      task =
+          new SingleTileLoaderTask(
+              tileInfo.getTileRequest(),
+              this.errorImage,
+              tileInfo.getTileIndexX(),
+              tileInfo.getTileIndexY(),
+              this.failOnError,
+              this.registry,
+              this.context);
+    } else {
+      task =
+          new PlaceHolderImageTask(
+              this.tiledLayer.getMissingTileImage(),
+              tileInfo.getTileIndexX(),
+              tileInfo.getTileIndexY());
+    }
+    return task.call();
   }
 
   /** Tile Task. */
@@ -229,58 +233,77 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
                     + ".read."
                     + StatsUtils.quotePart(this.tileRequest.getURI().getHost());
             LOGGER.debug("{} -- {}", this.tileRequest.getMethod(), this.tileRequest.getURI());
-            final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
-            try (ClientHttpResponse response = this.tileRequest.execute()) {
-              final HttpStatus statusCode = response.getStatusCode();
-              if (statusCode == HttpStatus.NO_CONTENT || statusCode == HttpStatus.NOT_FOUND) {
-                if (statusCode == HttpStatus.NOT_FOUND) {
-                  LOGGER.info(
-                      "The request {} returns a not found status code, we consider it as an "
-                          + "empty tile.",
-                      this.tileRequest.getURI());
+            try (Timer.Context timerDownload = this.registry.timer(baseMetricName).time()) {
+              try (ClientHttpResponse response = this.tileRequest.execute()) {
+                final Tile x = handleSpecialStatuses(response, baseMetricName);
+                if (x != null) {
+                  return x;
                 }
-                // Empty response, nothing special to do
-                return new Tile(null, getTileIndexX(), getTileIndexY());
-              } else if (statusCode != HttpStatus.OK) {
-                String errorMessage =
-                    String.format(
-                        "Error making tile request: %s\n\tStatus: %s\n\tStatus message: %s",
-                        this.tileRequest.getURI(), statusCode, response.getStatusText());
-                LOGGER.debug(
-                    String.format(
-                        "Error making tile request: %s\nStatus: %s\n"
-                            + "Status message: %s\nServer:%s\nBody:\n%s",
-                        this.tileRequest.getURI(),
-                        statusCode,
-                        response.getStatusText(),
-                        response.getHeaders().getFirst(HttpHeaders.SERVER),
-                        IOUtils.toString(response.getBody(), StandardCharsets.UTF_8)));
-                this.registry.counter(baseMetricName + ".error").inc();
-                if (this.failOnError) {
-                  throw new RuntimeException(errorMessage);
-                } else {
-                  LOGGER.info(errorMessage);
-                  return new Tile(this.errorImage, getTileIndexX(), getTileIndexY());
-                }
-              }
 
-              BufferedImage image = ImageIO.read(response.getBody());
-              if (image == null) {
-                LOGGER.warn(
-                    "The URL: {} is an image format that cannot be decoded",
-                    this.tileRequest.getURI());
-                image = this.errorImage;
-                this.registry.counter(baseMetricName + ".error").inc();
-              } else {
+                BufferedImage image = getImageFromResponse(response, baseMetricName);
                 timerDownload.stop();
-              }
 
-              return new Tile(image, getTileIndexX(), getTileIndexY());
-            } catch (IOException e) {
-              this.registry.counter(baseMetricName + ".error").inc();
-              throw new PrintException("Failed to compute Coverage Task", e);
+                return new Tile(image, getTileIndexX(), getTileIndexY());
+              } catch (IOException | RuntimeException e) {
+                this.registry.counter(baseMetricName + ".error").inc();
+                throw new PrintException("Failed to compute Coverage Task", e);
+              }
             }
           });
+    }
+
+    private Tile handleSpecialStatuses(
+        final ClientHttpResponse response, final String baseMetricName) throws IOException {
+      final HttpStatus statusCode = response.getStatusCode();
+      if (statusCode == HttpStatus.NO_CONTENT || statusCode == HttpStatus.NOT_FOUND) {
+        if (statusCode == HttpStatus.NOT_FOUND) {
+          LOGGER.info(
+              "The request {} returns a not found status code, we consider it as an empty tile.",
+              this.tileRequest.getURI());
+        }
+        // Empty response, nothing special to do
+        return new Tile(null, getTileIndexX(), getTileIndexY());
+      } else if (statusCode != HttpStatus.OK) {
+        return handleNonOkStatus(statusCode, response, baseMetricName);
+      }
+      return null;
+    }
+
+    private BufferedImage getImageFromResponse(
+        final ClientHttpResponse response, final String baseMetricName) throws IOException {
+      BufferedImage image = ImageIO.read(response.getBody());
+      if (image == null) {
+        LOGGER.warn(
+            "The URL: {} is an image format that cannot be decoded", this.tileRequest.getURI());
+        image = this.errorImage;
+        this.registry.counter(baseMetricName + ".error").inc();
+      }
+      return image;
+    }
+
+    private Tile handleNonOkStatus(
+        final HttpStatus statusCode, final ClientHttpResponse response, final String baseMetricName)
+        throws IOException {
+      String errorMessage =
+          String.format(
+              "Error making tile request: %s\n\tStatus: %s\n\tStatus message: %s",
+              this.tileRequest.getURI(), statusCode, response.getStatusText());
+      LOGGER.debug(
+          String.format(
+              "Error making tile request: %s\nStatus: %s\n"
+                  + "Status message: %s\nServer:%s\nBody:\n%s",
+              this.tileRequest.getURI(),
+              statusCode,
+              response.getStatusText(),
+              response.getHeaders().getFirst(HttpHeaders.SERVER),
+              IOUtils.toString(response.getBody(), StandardCharsets.UTF_8)));
+      this.registry.counter(baseMetricName + ".error").inc();
+      if (this.failOnError) {
+        throw new RuntimeException(errorMessage);
+      } else {
+        LOGGER.info(errorMessage);
+        return new Tile(this.errorImage, getTileIndexX(), getTileIndexY());
+      }
     }
   }
 
@@ -319,13 +342,6 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
     /** The y index of the image. the y coordinate to draw this tile is yIndex * tileSizeY */
     private final int yIndex;
 
-    /**
-     * Constructor.
-     *
-     * @param image
-     * @param xIndex
-     * @param yIndex
-     */
     private Tile(final BufferedImage image, final int xIndex, final int yIndex) {
       this.image = image;
       this.xIndex = xIndex;

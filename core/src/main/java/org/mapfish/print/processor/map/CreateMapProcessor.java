@@ -187,7 +187,7 @@ public final class CreateMapProcessor
   }
 
   /**
-   * Create a SVG graphic with the give dimensions.
+   * Create an SVG graphic with the give dimensions.
    *
    * @param size The size of the SVG graphic.
    */
@@ -208,7 +208,7 @@ public final class CreateMapProcessor
   }
 
   /**
-   * Save a SVG graphic to the given path.
+   * Save an SVG graphic to the given path.
    *
    * @param graphics2d The SVG graphic to save.
    * @param path The file.
@@ -281,9 +281,8 @@ public final class CreateMapProcessor
     int height = mapContext.getMapSize().height;
 
     if ("pdf".equalsIgnoreCase(outputFormat)) {
-      final com.lowagie.text.Document document =
-          new com.lowagie.text.Document(new com.lowagie.text.Rectangle(width, height));
-      try {
+      try (com.lowagie.text.Document document =
+          new com.lowagie.text.Document(new com.lowagie.text.Rectangle(width, height))) {
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(mergedGraphic));
         document.open();
         PdfContentByte pdfCB = writer.getDirectContent();
@@ -295,8 +294,6 @@ public final class CreateMapProcessor
         }
       } catch (DocumentException e) {
         throw new IOException(e);
-      } finally {
-        document.close();
       }
     } else {
 
@@ -386,14 +383,102 @@ public final class CreateMapProcessor
       final ExecutionContext context,
       final MapfishMapContext mapContext)
       throws IOException, ParserConfigurationException {
+    final List<MapLayer> layers =
+        prepareLayers(printDirectory, clientHttpRequestFactory, mapValues, context, mapContext);
+
+    final AreaOfInterest areaOfInterest = addAreaOfInterestLayer(mapValues, layers);
+    final String mapKey = UUID.randomUUID().toString();
+    final List<URI> graphics = new ArrayList<>(layers.size());
+    String timerName = getClass().getName() + ".buildLayers";
+    try (Timer.Context ignored = this.metricRegistry.timer(timerName).time()) {
+      int fileNumber = 0;
+      for (LayerGroup layerGroup : LayerGroup.buildGroups(layers, pdfA)) {
+        if (layerGroup.renderType == RenderType.SVG) {
+          SvgFileGenerator svgFileGenerator =
+              new SvgFileGenerator(printDirectory, mapKey, fileNumber);
+          renderLayersAsSvg(
+              svgFileGenerator,
+              clientHttpRequestFactory,
+              context,
+              mapContext,
+              layerGroup,
+              areaOfInterest,
+              graphics);
+          fileNumber = svgFileGenerator.getCurrentFileNumber();
+        } else {
+          final BufferedImage bufferedImage = createBufferedImage(layerGroup, pdfA, mapContext);
+          ImageWriter imageWriter =
+              new ImageWriter(
+                  printDirectory,
+                  mapKey,
+                  layerGroup.opaque,
+                  layerGroup.renderType,
+                  fileNumber,
+                  bufferedImage,
+                  graphics);
+          Graphics2D graphics2D =
+              createGraphics2D(layerGroup, pdfA, mapContext, areaOfInterest, bufferedImage);
+          try {
+            renderLayerAsRasterGraphic(
+                imageWriter,
+                clientHttpRequestFactory,
+                pdfA,
+                context,
+                mapContext,
+                layerGroup,
+                graphics2D);
+          } finally {
+            graphics2D.dispose();
+          }
+          fileNumber = imageWriter.getCurrentFileNumber();
+        }
+      }
+    }
+
+    return graphics;
+  }
+
+  private Graphics2D createGraphics2D(
+      final LayerGroup layerGroup,
+      final boolean pdfA,
+      final MapfishMapContext mapContext,
+      final AreaOfInterest areaOfInterest,
+      final BufferedImage bufferedImage) {
+    final Graphics2D graphics2D =
+        createClippedGraphics(mapContext, areaOfInterest, bufferedImage.createGraphics());
+    try {
+      if (layerGroup.opaque || pdfA) {
+        // the image is opaque and therefore needs a white background
+        final Color prevColor = graphics2D.getColor();
+        graphics2D.setColor(Color.WHITE);
+        graphics2D.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
+        graphics2D.setColor(prevColor);
+      }
+    } catch (RuntimeException e) {
+      graphics2D.dispose();
+      throw e;
+    }
+    return graphics2D;
+  }
+
+  private static BufferedImage createBufferedImage(
+      final LayerGroup layerGroup, final boolean pdfA, final MapfishMapContext mapContext) {
+    final boolean needTransparency = !layerGroup.opaque && !pdfA;
+    return new BufferedImage(
+        (int) Math.round(mapContext.getMapSize().width * layerGroup.imageBufferScaling),
+        (int) Math.round(mapContext.getMapSize().height * layerGroup.imageBufferScaling),
+        needTransparency ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
+  }
+
+  private List<MapLayer> prepareLayers(
+      final File printDirectory,
+      final MfClientHttpRequestFactory clientHttpRequestFactory,
+      final MapAttributeValues mapValues,
+      final ExecutionContext context,
+      final MapfishMapContext mapContext) {
     // reverse layer list to draw from bottom to top.  normally position 0 is top-most layer.
     final List<MapLayer> layers = new ArrayList<>(mapValues.getLayers());
     Collections.reverse(layers);
-
-    final AreaOfInterest areaOfInterest = addAreaOfInterestLayer(mapValues, layers);
-
-    final String mapKey = UUID.randomUUID().toString();
-    final List<URI> graphics = new ArrayList<>(layers.size());
 
     HttpRequestFetcher cache =
         new HttpRequestFetcher(
@@ -406,74 +491,52 @@ public final class CreateMapProcessor
           getTransformer(mapContext, layer.getImageBufferScaling());
       layer.prefetchResources(cache, clientHttpRequestFactory, transformer, context);
     }
+    return layers;
+  }
 
-    final Timer.Context timer =
-        this.metricRegistry.timer(getClass().getName() + ".buildLayers").time();
-    int fileNumber = 0;
-    for (LayerGroup layerGroup : LayerGroup.buildGroups(layers, pdfA)) {
-      if (layerGroup.renderType == RenderType.SVG) {
-        // render layers as SVG
-        for (MapLayer layer : layerGroup.layers) {
-          context.stopIfCanceled();
-          final SVGGraphics2D graphics2D = createSvgGraphics(mapContext.getMapSize());
+  private void renderLayersAsSvg(
+      final SvgFileGenerator svgFileGenerator,
+      final MfClientHttpRequestFactory clientHttpRequestFactory,
+      final ExecutionContext context,
+      final MapfishMapContext mapContext,
+      final LayerGroup layerGroup,
+      final AreaOfInterest areaOfInterest,
+      final List<URI> graphics)
+      throws ParserConfigurationException, IOException {
+    for (MapLayer layer : layerGroup.layers) {
+      context.stopIfCanceled();
+      final SVGGraphics2D graphics2D = createSvgGraphics(mapContext.getMapSize());
 
-          try {
-            final Graphics2D clippedGraphics2D =
-                createClippedGraphics(mapContext, areaOfInterest, graphics2D);
-            layer.render(clippedGraphics2D, clientHttpRequestFactory, mapContext, context);
+      try {
+        final Graphics2D clippedGraphics2D =
+            createClippedGraphics(mapContext, areaOfInterest, graphics2D);
+        layer.render(clippedGraphics2D, clientHttpRequestFactory, mapContext, context);
 
-            final File path = new File(printDirectory, mapKey + "_layer_" + fileNumber++ + ".svg");
-            saveSvgFile(graphics2D, path);
-            graphics.add(path.toURI());
-          } finally {
-            graphics2D.dispose();
-          }
-        }
-      } else {
-        // render layers as raster graphic
-        final boolean needTransparency = !layerGroup.opaque && !pdfA;
-        final BufferedImage bufferedImage =
-            new BufferedImage(
-                (int) Math.round(mapContext.getMapSize().width * layerGroup.imageBufferScaling),
-                (int) Math.round(mapContext.getMapSize().height * layerGroup.imageBufferScaling),
-                needTransparency ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
-        final Graphics2D graphics2D =
-            createClippedGraphics(mapContext, areaOfInterest, bufferedImage.createGraphics());
-        try {
-          if (layerGroup.opaque || pdfA) {
-            // the image is opaque and therefore needs a white background
-            final Color prevColor = graphics2D.getColor();
-            graphics2D.setColor(Color.WHITE);
-            graphics2D.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
-            graphics2D.setColor(prevColor);
-          }
-
-          final MapfishMapContext transformer =
-              getTransformer(mapContext, layerGroup.imageBufferScaling);
-          for (MapLayer cur : layerGroup.layers) {
-            context.stopIfCanceled();
-            warnIfDifferentRenderType(layerGroup.renderType, cur, !pdfA);
-            cur.render(graphics2D, clientHttpRequestFactory, transformer, context);
-          }
-
-          // Try to respect the original format of the layer. But if it needs to be transparent,
-          // no choice, we need PNG.
-          final String formatName =
-              layerGroup.opaque && layerGroup.renderType == RenderType.JPEG ? "JPEG" : "PNG";
-          final File path =
-              new File(
-                  printDirectory,
-                  String.format("%s_layer_%d.%s", mapKey, fileNumber++, formatName.toLowerCase()));
-          ImageUtils.writeImage(bufferedImage, formatName, path);
-          graphics.add(path.toURI());
-        } finally {
-          graphics2D.dispose();
-        }
+        final File path = svgFileGenerator.generate();
+        saveSvgFile(graphics2D, path);
+        graphics.add(path.toURI());
+      } finally {
+        graphics2D.dispose();
       }
     }
-    timer.stop();
+  }
 
-    return graphics;
+  private void renderLayerAsRasterGraphic(
+      final ImageWriter imageWriter,
+      final MfClientHttpRequestFactory clientHttpRequestFactory,
+      final boolean pdfA,
+      final ExecutionContext context,
+      final MapfishMapContext mapContext,
+      final LayerGroup layerGroup,
+      final Graphics2D graphics2D)
+      throws IOException {
+    final MapfishMapContext transformer = getTransformer(mapContext, layerGroup.imageBufferScaling);
+    for (MapLayer cur : layerGroup.layers) {
+      context.stopIfCanceled();
+      warnIfDifferentRenderType(layerGroup.renderType, cur, !pdfA);
+      cur.render(graphics2D, clientHttpRequestFactory, transformer, context);
+    }
+    imageWriter.writeImage();
   }
 
   private AreaOfInterest addAreaOfInterestLayer(
@@ -538,7 +601,7 @@ public final class CreateMapProcessor
 
     if (!bounds.isNull()) {
       if (mapValues.zoomToFeatures.zoomType == ZoomType.CENTER) {
-        // center the map on the center of the feature bounds
+        // center the map in the center of the feature bounds
         Coordinate center = bounds.centre();
         mapValues.center = new double[] {center.x, center.y};
         if (mapValues.zoomToFeatures.minScale != null) {
@@ -693,7 +756,7 @@ public final class CreateMapProcessor
       String tagName = element.getTagName();
       for (final Object o : styleMap.keySet()) {
         String styleName = (String) o;
-        if (element.getAttributeNS(null, styleName).length() == 0) {
+        if (element.getAttributeNS(null, styleName).isEmpty()) {
           if (styleName.equals("opacity")) {
             if (appliesTo(styleName, tagName)) {
               element.setAttributeNS(null, "fill-opacity", (String) styleMap.get(styleName));

@@ -1,6 +1,3 @@
----
-version: '2.1'
-
 services:
   geoserver:
     image: camptocamp/geoserver:2.24.1

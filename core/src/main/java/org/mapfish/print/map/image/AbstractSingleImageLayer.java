@@ -152,74 +152,116 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
   protected BufferedImage fetchImage(
       @Nonnull final ClientHttpRequest request, @Nonnull final MapfishMapContext transformer)
       throws IOException {
-    final String baseMetricName =
-        getClass().getName() + ".read." + StatsUtils.quotePart(request.getURI().getHost());
-    final Timer.Context timerDownload = this.registry.timer(baseMetricName).time();
-    try (ClientHttpResponse httpResponse = request.execute()) {
-      final List<String> contentType = httpResponse.getHeaders().get("Content-Type");
-      String stringBody = null;
-      if (contentType == null || contentType.size() != 1) {
-        LOGGER.debug("The image {} didn't return a valid content type header.", request.getURI());
-      } else if (!contentType.get(0).startsWith("image/")) {
-        final byte[] data;
-        try (InputStream body = httpResponse.getBody()) {
-          data = IOUtils.toByteArray(body);
-        }
-        stringBody = new String(data, StandardCharsets.UTF_8);
-      }
+    final String baseMetricName = getBaseMetricName(request);
+    try (Timer.Context ignored = this.registry.timer(baseMetricName).time()) {
+      try (ClientHttpResponse httpResponse = request.execute()) {
+        final List<String> contentType = httpResponse.getHeaders().get("Content-Type");
+        final String invalidRespBody = getInvalidResponseBody(request, contentType, httpResponse);
 
-      if (httpResponse.getStatusCode() != HttpStatus.OK) {
-        String message =
-            String.format(
-                "Invalid status code for %s (%d!=%d).With request headers:\n%s\n"
-                    + "The response was: '%s'\nWith response headers:\n%s",
-                request.getURI(),
-                httpResponse.getStatusCode().value(),
-                HttpStatus.OK.value(),
-                String.join("\n", Utils.getPrintableHeadersList(request.getHeaders())),
-                httpResponse.getStatusText(),
-                String.join("\n", Utils.getPrintableHeadersList(httpResponse.getHeaders())));
-        if (stringBody != null) {
-          message += "\nContent:\n" + stringBody;
-        }
-        this.registry.counter(baseMetricName + ".error").inc();
-        if (getFailOnError()) {
-          throw new RuntimeException(message);
-        } else {
-          LOGGER.warn(message);
+        if (!isResponseStatusCodeValid(request, httpResponse, invalidRespBody, baseMetricName)) {
           return createErrorImage(transformer.getPaintArea());
         }
-      }
 
-      if (stringBody != null) {
-        LOGGER.debug(
-            "We get a wrong image for {}, content type: {}\nresult:\n{}",
-            request.getURI(),
-            contentType.get(0),
-            stringBody);
-        this.registry.counter(baseMetricName + ".error").inc();
-        if (getFailOnError()) {
-          throw new RuntimeException("Wrong content-type : " + contentType.get(0));
-        } else {
+        if (!isResponseBodyValid(invalidRespBody, request, contentType, baseMetricName)) {
           return createErrorImage(transformer.getPaintArea());
         }
-      }
 
-      final BufferedImage image = ImageIO.read(httpResponse.getBody());
-      if (image == null) {
-        LOGGER.warn("Cannot read image from {}", request.getURI());
+        return fetchImageFromHttpResponse(request, httpResponse, transformer, baseMetricName);
+      } catch (RuntimeException e) {
         this.registry.counter(baseMetricName + ".error").inc();
-        if (getFailOnError()) {
-          throw new RuntimeException("Cannot read image from " + request.getURI());
-        } else {
-          return createErrorImage(transformer.getPaintArea());
-        }
+        throw e;
       }
-      timerDownload.stop();
-      return image;
-    } catch (RuntimeException e) {
-      this.registry.counter(baseMetricName + ".error").inc();
-      throw e;
     }
+  }
+
+  private String getBaseMetricName(@Nonnull final ClientHttpRequest request) {
+    return getClass().getName() + ".read." + StatsUtils.quotePart(request.getURI().getHost());
+  }
+
+  private static String getInvalidResponseBody(
+      final ClientHttpRequest request,
+      final List<String> contentType,
+      final ClientHttpResponse httpResponse)
+      throws IOException {
+    if (contentType == null || contentType.size() != 1) {
+      LOGGER.debug("The image {} didn't return a valid content type header.", request.getURI());
+    } else if (!contentType.get(0).startsWith("image/")) {
+      final byte[] data;
+      try (InputStream body = httpResponse.getBody()) {
+        data = IOUtils.toByteArray(body);
+      }
+      return new String(data, StandardCharsets.UTF_8);
+    }
+    return null;
+  }
+
+  private boolean isResponseStatusCodeValid(
+      final ClientHttpRequest request,
+      final ClientHttpResponse httpResponse,
+      final String stringBody,
+      final String baseMetricName)
+      throws IOException {
+    if (httpResponse.getStatusCode() != HttpStatus.OK) {
+      String message =
+          String.format(
+              "Invalid status code for %s (%d!=%d).With request headers:\n%s\n"
+                  + "The response was: '%s'\nWith response headers:\n%s",
+              request.getURI(),
+              httpResponse.getStatusCode().value(),
+              HttpStatus.OK.value(),
+              String.join("\n", Utils.getPrintableHeadersList(request.getHeaders())),
+              httpResponse.getStatusText(),
+              String.join("\n", Utils.getPrintableHeadersList(httpResponse.getHeaders())));
+      if (stringBody != null) {
+        message += "\nContent:\n" + stringBody;
+      }
+      this.registry.counter(baseMetricName + ".error").inc();
+      if (getFailOnError()) {
+        throw new RuntimeException(message);
+      } else {
+        LOGGER.warn(message);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private boolean isResponseBodyValid(
+      final String responseBody,
+      final ClientHttpRequest request,
+      final List<String> contentType,
+      final String baseMetricName) {
+    if (responseBody != null) {
+      LOGGER.debug(
+          "We get a wrong image for {}, content type: {}\nresult:\n{}",
+          request.getURI(),
+          contentType.get(0),
+          responseBody);
+      this.registry.counter(baseMetricName + ".error").inc();
+      if (getFailOnError()) {
+        throw new RuntimeException("Wrong content-type : " + contentType.get(0));
+      } else {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private BufferedImage fetchImageFromHttpResponse(
+      final ClientHttpRequest request,
+      final ClientHttpResponse httpResponse,
+      final MapfishMapContext transformer,
+      final String baseMetricName)
+      throws IOException {
+    final BufferedImage image = ImageIO.read(httpResponse.getBody());
+    if (image == null) {
+      LOGGER.warn("Cannot read image from {}", request.getURI());
+      this.registry.counter(baseMetricName + ".error").inc();
+      if (getFailOnError()) {
+        throw new RuntimeException("Cannot read image from " + request.getURI());
+      }
+      return createErrorImage(transformer.getPaintArea());
+    }
+    return image;
   }
 }

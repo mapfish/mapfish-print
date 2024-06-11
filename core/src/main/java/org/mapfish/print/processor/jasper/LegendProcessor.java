@@ -61,16 +61,16 @@ public final class LegendProcessor
   @Resource(name = "requestForkJoinPool")
   private ForkJoinPool requestForkJoinPool;
 
-  private Dimension missingImageSize = new Dimension(24, 24);
+  private final Dimension missingImageSize = new Dimension(24, 24);
   private BufferedImage missingImage;
-  private Color missingImageColor = Color.PINK;
+  private final Color missingImageColor = Color.PINK;
   private String template;
   private Integer maxWidth = null;
   private Double dpi = Constants.PDF_DPI;
   private boolean scaled = false;
 
   /** Constructor. */
-  protected LegendProcessor() {
+  LegendProcessor() {
     super(Output.class);
   }
 
@@ -235,10 +235,7 @@ public final class LegendProcessor
     final BufferedImage inter =
         (image.getType() == BufferedImage.TYPE_BYTE_INDEXED
                 || image.getType() == BufferedImage.TYPE_BYTE_BINARY)
-            ? new BufferedImage(
-                (int) Math.round(image.getWidth()),
-                (int) Math.round(image.getHeight()),
-                BufferedImage.TYPE_4BYTE_ABGR)
+            ? new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_4BYTE_ABGR)
             : image;
     if (image.getType() == BufferedImage.TYPE_BYTE_INDEXED
         || image.getType() == BufferedImage.TYPE_BYTE_BINARY) {
@@ -332,8 +329,8 @@ public final class LegendProcessor
 
   private static final class NameTask implements Callable<Object[]> {
 
-    private String name;
-    private int level;
+    private final String name;
+    private final int level;
 
     private NameTask(final String name, final int level) {
       this.name = name;
@@ -348,12 +345,12 @@ public final class LegendProcessor
 
   private final class IconTask implements Callable<Object[]> {
 
-    private URL icon;
-    private double iconDPI;
-    private ExecutionContext context;
-    private MfClientHttpRequestFactory clientHttpRequestFactory;
-    private int level;
-    private File tempTaskDirectory;
+    private final URL icon;
+    private final double iconDPI;
+    private final ExecutionContext context;
+    private final MfClientHttpRequestFactory clientHttpRequestFactory;
+    private final int level;
+    private final File tempTaskDirectory;
 
     private IconTask(
         final URL icon,
@@ -374,54 +371,60 @@ public final class LegendProcessor
     public Object[] call() throws Exception {
       return context.mdcContextEx(
           () -> {
-            BufferedImage image = null;
             final URI uri = this.icon.toURI();
-            final String metricName =
-                LegendProcessor.class.getName() + ".read." + StatsUtils.quotePart(uri.getHost());
-            try {
-              if (this.icon.getProtocol().equals("data")) {
-                image = ImageIO.read(this.icon);
-              } else {
-                this.context.stopIfCanceled();
-                final ClientHttpRequest request =
-                    this.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
-                final Timer.Context timer =
-                    LegendProcessor.this.metricRegistry.timer(metricName).time();
-                try (ClientHttpResponse httpResponse = request.execute()) {
-                  if (httpResponse.getStatusCode() == HttpStatus.OK) {
-                    image = ImageIO.read(httpResponse.getBody());
-                    if (image == null) {
-                      LOGGER.warn(
-                          "The URL: {} is NOT an image format that can be decoded", this.icon);
-                    } else {
-                      timer.stop();
-                    }
-                  } else {
-                    LOGGER.warn(
-                        "Failed to load image from: {} due to server side error.\n"
-                            + "\tResponse Code: {}\n"
-                            + "\tResponse Text: {}\n"
-                            + "\tWith Headers:\n\t{}",
-                        this.icon,
-                        httpResponse.getStatusCode(),
-                        httpResponse.getStatusText(),
-                        String.join(
-                            "\n\t", Utils.getPrintableHeadersList(httpResponse.getHeaders())));
-                  }
-                }
-              }
-            } catch (Exception e) {
-              LOGGER.warn("Failed to load image from: {}", this.icon, e);
-            }
-
-            if (image == null) {
-              image = getMissingImage();
-              LegendProcessor.this.metricRegistry.counter(metricName + ".error").inc();
-            }
-
-            String report = createSubReport(image, this.iconDPI, this.tempTaskDirectory).toString();
-            return new Object[] {null, image, report, this.level};
+            final BufferedImage image = loadImage(uri);
+            final URI report = createSubReport(image, this.iconDPI, this.tempTaskDirectory);
+            return new Object[] {null, image, report.toString(), this.level};
           });
+    }
+
+    private BufferedImage loadImage(final URI uri) {
+      final String metricName =
+          LegendProcessor.class.getName() + ".read." + StatsUtils.quotePart(uri.getHost());
+      BufferedImage image = null;
+      try {
+        if (this.icon.getProtocol().equals("data")) {
+          image = ImageIO.read(this.icon);
+        } else {
+          this.context.stopIfCanceled();
+          final ClientHttpRequest request =
+              this.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
+          try (Timer.Context ignored =
+              LegendProcessor.this.metricRegistry.timer(metricName).time()) {
+            try (ClientHttpResponse httpResponse = request.execute()) {
+              if (httpResponse.getStatusCode() == HttpStatus.OK) {
+                image = ImageIO.read(httpResponse.getBody());
+                if (image == null) {
+                  LOGGER.warn("There is no image in this response body {}", httpResponse.getBody());
+                }
+              } else {
+                logNotOkResponseStatus(httpResponse);
+              }
+            }
+          }
+        }
+      } catch (Exception e) {
+        LOGGER.warn("Failed to load image from: {}", this.icon, e);
+      }
+
+      if (image == null) {
+        image = getMissingImage();
+        LegendProcessor.this.metricRegistry.counter(metricName + ".error").inc();
+      }
+
+      return image;
+    }
+
+    private void logNotOkResponseStatus(final ClientHttpResponse httpResponse) throws IOException {
+      LOGGER.warn(
+          "Failed to load image from: {} due to server side error.\n"
+              + "\tResponse Code: {}\n"
+              + "\tResponse Text: {}\n"
+              + "\tWith Headers:\n\t{}",
+          this.icon,
+          httpResponse.getStatusCode(),
+          httpResponse.getStatusText(),
+          String.join("\n\t", Utils.getPrintableHeadersList(httpResponse.getHeaders())));
     }
   }
 }

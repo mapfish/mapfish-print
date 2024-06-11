@@ -1,13 +1,14 @@
 package org.mapfish.print.output;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/** This is use to load the utf-8 ResourceBundle files. */
+/** This is used to load the utf-8 ResourceBundle files. */
 public class ResourceBundleClassLoader extends ClassLoader {
   private final File configDir;
 
@@ -31,13 +32,23 @@ public class ResourceBundleClassLoader extends ClassLoader {
 
   @Override
   public InputStream getResourceAsStream(final String resource) {
-    try {
-      final InputStream is = super.getResourceAsStream(resource);
-      byte[] bytes = new byte[is.available()];
-      is.read(bytes);
-      return new ByteArrayInputStream(new String(bytes, "utf-8").getBytes("iso-8859-1"));
+    ByteArrayOutputStream buffer;
+    try (InputStream is = super.getResourceAsStream(resource)) {
+      if (is == null) {
+        throw new IllegalArgumentException("Resource not found: " + resource);
+      }
+      buffer = new ByteArrayOutputStream();
+      int nRead;
+      byte[] data = new byte[1024];
+
+      while ((nRead = is.read(data, 0, data.length)) != -1) {
+        buffer.write(data, 0, nRead);
+      }
+
+      buffer.flush();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+    return new ByteArrayInputStream(buffer.toByteArray());
   }
 }

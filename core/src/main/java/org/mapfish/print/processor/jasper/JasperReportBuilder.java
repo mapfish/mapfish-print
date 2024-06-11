@@ -1,5 +1,7 @@
 package org.mapfish.print.processor.jasper;
 
+import static java.nio.file.Files.move;
+
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import java.io.File;
@@ -77,28 +79,9 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
         // another thread is reading it, use a temporary file as a target instead and
         // move it (atomic operation) when done. Worst case: we compile a file twice instead
         // of once.
-        File tmpBuildFile =
-            File.createTempFile(
-                "temp_", JASPER_REPORT_COMPILED_FILE_EXT, buildFile.getParentFile());
-
         LOGGER.info("Building Jasper report: {}", jasperFile.getAbsolutePath());
         LOGGER.debug("To: {}", buildFile.getAbsolutePath());
-        final Timer.Context compileJasperReport =
-            this.metricRegistry.timer(getClass().getName() + ".compile." + jasperFile).time();
-        try {
-          JasperCompileManager.compileReportToFile(
-              jasperFile.getAbsolutePath(), tmpBuildFile.getAbsolutePath());
-        } catch (JRValidationException e) {
-          LOGGER.error("The report '{}' isn't valid.", jasperFile.getAbsolutePath());
-          throw e;
-        } finally {
-          final long compileTime =
-              TimeUnit.MILLISECONDS.convert(compileJasperReport.stop(), TimeUnit.NANOSECONDS);
-          LOGGER.info("Report '{}' built in {}ms.", jasperFile.getAbsolutePath(), compileTime);
-        }
-
-        java.nio.file.Files.move(
-            tmpBuildFile.toPath(), buildFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
+        doCompileAndMoveReport(buildFile, jasperFile);
       } catch (IOException e) {
         throw new JRException(e);
       }
@@ -108,19 +91,28 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     return buildFile;
   }
 
+  private void doCompileAndMoveReport(final File buildFile, final File jasperFile)
+      throws JRException, IOException {
+    final File tmpBuildFile =
+        File.createTempFile("temp_", JASPER_REPORT_COMPILED_FILE_EXT, buildFile.getParentFile());
+    final String timerName = getClass().getName() + ".compile." + jasperFile;
+    Timer.Context compileTimerContext = this.metricRegistry.timer(timerName).time();
+    try {
+      JasperCompileManager.compileReportToFile(
+          jasperFile.getAbsolutePath(), tmpBuildFile.getAbsolutePath());
+    } catch (JRValidationException e) {
+      LOGGER.error("The report '{}' isn't valid.", jasperFile.getAbsolutePath());
+      throw e;
+    } finally {
+      final long compileTime =
+          TimeUnit.MILLISECONDS.convert(compileTimerContext.stop(), TimeUnit.NANOSECONDS);
+      LOGGER.info("Report '{}' built in {}ms.", jasperFile.getAbsolutePath(), compileTime);
+    }
+    move(tmpBuildFile.toPath(), buildFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
+  }
+
   private Iterable<File> jasperXmlFiles() {
-    File directoryToSearch = this.directory;
-    if (directoryToSearch == null) {
-      directoryToSearch = this.configuration.getDirectory();
-    }
-    final String configurationAbsolutePath = this.configuration.getDirectory().getAbsolutePath();
-    if (!directoryToSearch.getAbsolutePath().startsWith(configurationAbsolutePath)) {
-      throw new IllegalArgumentException(
-          String.format(
-              "All directories and files referenced in the configuration must be in the "
-                  + "configuration directory: %s is not in %s.",
-              directoryToSearch, this.configuration.getDirectory()));
-    }
+    File directoryToSearch = getDirectoryToSearch();
     final File[] children = directoryToSearch.listFiles();
     if (children != null) {
       return StreamSupport.stream(Arrays.spliterator(children), false)
@@ -129,6 +121,25 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
     } else {
       throw new IllegalArgumentException(String.format("%s is not a directory", directoryToSearch));
     }
+  }
+
+  private File getDirectoryToSearch() {
+    File directoryToSearch;
+    if (this.directory == null) {
+      directoryToSearch = this.configuration.getDirectory();
+    } else {
+      directoryToSearch = this.directory;
+    }
+
+    final String configurationAbsolutePath = this.configuration.getDirectory().getAbsolutePath();
+    if (!directoryToSearch.getAbsolutePath().startsWith(configurationAbsolutePath)) {
+      throw new IllegalArgumentException(
+          String.format(
+              "All directories and files referenced in the configuration must be in the "
+                  + "configuration directory: %s is not in %s.",
+              directoryToSearch, this.configuration.getDirectory()));
+    }
+    return directoryToSearch;
   }
 
   @Override
