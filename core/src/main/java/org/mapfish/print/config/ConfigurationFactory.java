@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -63,7 +64,8 @@ public class ConfigurationFactory {
     configuration.setConfigurationFile(configFile);
     MapfishPrintConstructor.setConfigurationUnderConstruction(configuration);
 
-    final Configuration config = this.yaml.load(new InputStreamReader(configData, "UTF-8"));
+    final Configuration config =
+        this.yaml.load(new InputStreamReader(configData, StandardCharsets.UTF_8));
     if (this.doValidation) {
       final List<Throwable> validate = config.validate();
       if (!validate.isEmpty()) {
