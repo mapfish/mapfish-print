@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
@@ -38,6 +39,8 @@ public class SLDParserPlugin implements StyleParserPlugin {
    * style is referred to. That is the purpose of the style index.
    */
   public static final String STYLE_INDEX_REF_SEPARATOR = "##";
+
+  public static final String RASTER = "raster";
 
   @Override
   public final Optional<Style> parseStyle(
@@ -85,6 +88,9 @@ public class SLDParserPlugin implements StyleParserPlugin {
     Assert.isTrue(
         styleIndex == null || styleIndex > -1, "styleIndex must be > -1 but was: " + styleIndex);
 
+    if (RASTER.equals(new String(bytes, Charset.defaultCharset()))) {
+      return Optional.empty();
+    }
     final Style[] styles;
     try {
 
@@ -163,27 +169,19 @@ public class SLDParserPlugin implements StyleParserPlugin {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorHandler.class);
 
-    /**
-     * @param e Exception
-     */
     public final void error(final SAXParseException e) throws SAXException {
-      LOGGER.debug("XML error: {}", e.getLocalizedMessage());
+      LOGGER.warn("XML error: {}", e.getLocalizedMessage(), e);
       super.error(e);
     }
 
-    /**
-     * @param e Exception
-     */
     public final void fatalError(final SAXParseException e) throws SAXException {
-      LOGGER.debug("XML fatal error: {}", e.getLocalizedMessage());
+      LOGGER.warn("XML fatal error: {}", e.getLocalizedMessage(), e);
       super.fatalError(e);
     }
 
-    /**
-     * @param e Exception
-     */
-    public final void warning(final SAXParseException e) {
-      // ignore
+    public final void warning(final SAXParseException e) throws SAXException {
+      LOGGER.warn("XML warning: {}", e.getLocalizedMessage(), e);
+      super.warning(e);
     }
   }
 }

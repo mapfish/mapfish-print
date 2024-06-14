@@ -291,6 +291,18 @@ public class ThreadPoolJobManager implements JobManager {
   }
 
   private void executeJob(final PrintJob job) {
+    LOGGER.debug(
+        "executeJob {}, PoolSize {}, CorePoolSize {}, Active {}, Completed {}, Task {}, isShutdown"
+            + " {}, isTerminated {}",
+        job,
+        this.executor.getPoolSize(),
+        this.executor.getCorePoolSize(),
+        this.executor.getActiveCount(),
+        this.executor.getCompletedTaskCount(),
+        this.executor.getTaskCount(),
+        this.executor.isShutdown(),
+        this.executor.isTerminated());
+
     final Future<PrintJobResult> future = this.executor.submit(job);
     this.runningTasksFutures.put(
         job.getEntry().getReferenceId(), new SubmittedPrintJob(future, job.getEntry()));
@@ -482,7 +494,6 @@ public class ThreadPoolJobManager implements JobManager {
    * If the status of a print job is not checked for a while, we assume that the user is no longer
    * interested in the report, and we cancel the job.
    *
-   * @param printJob
    * @return is the abandoned timeout exceeded?
    */
   private boolean isAbandoned(final SubmittedPrintJob printJob) {
