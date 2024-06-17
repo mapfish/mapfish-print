@@ -24,7 +24,7 @@ import org.springframework.test.annotation.DirtiesContext;
  *
  * <p>Created by MaxComse on 11/09/16.
  */
-public class CreateMapProcessorImageLayerTest1 extends AbstractMapfishSpringTest {
+public class CreateMapProcessorImageLayerTest extends AbstractMapfishSpringTest {
   public static final String BASE_DIR = "image_layer_test/";
 
   @Autowired private ConfigurationFactory configurationFactory;
@@ -32,7 +32,7 @@ public class CreateMapProcessorImageLayerTest1 extends AbstractMapfishSpringTest
 
   private static PJsonObject loadJsonRequestData() throws IOException {
     return parseJSONObjectFromFile(
-        CreateMapProcessorImageLayerTest1.class, BASE_DIR + "requestData.json");
+        CreateMapProcessorImageLayerTest.class, BASE_DIR + "requestData.json");
   }
 
   @Test
@@ -52,7 +52,7 @@ public class CreateMapProcessorImageLayerTest1 extends AbstractMapfishSpringTest
             requestData,
             template,
             getTaskDirectory(),
-            this.requestFactory,
+            requestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
             HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
