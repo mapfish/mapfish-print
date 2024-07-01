@@ -12,8 +12,8 @@ repositories {
 
 dependencies {
     compile project(':core')
-    compile "org.codehaus.groovy:groovy-all:3.0.21",
-            "org.springframework:spring-test:5.3.36",
+    compile "org.codehaus.groovy:groovy-all:3.0.22",
+            "org.springframework:spring-test:5.3.37",
             'org.ccil.cowan.tagsoup:tagsoup:1.2.1',
             'com.samskivert:jmustache:1.15'
 }
