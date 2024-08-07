@@ -17,6 +17,31 @@ services:
       LOG_LEVEL: DEBUG
       JASPER_LOG_LEVEL: DEBUG
 
+  db:
+    image: camptocamp/postgres:14-postgis-3
+    environment:
+      - POSTGRES_PASSWORD=pgpass
+      - POSTGRES_DB=print
+      - POSTGRES_USER=print
+
+  printclusternode1: &printclusternode
+    image: mapfish_print_tester
+    volumes:
+      - ./examples/src/test/resources/examples:/usr/local/tomcat/webapps/ROOT/print-apps
+    ports:
+      - 8081:8080
+    environment:
+      PRINT_YAML_MAX_ALIASES: 200
+      LOG_LEVEL: DEBUG
+      JASPER_LOG_LEVEL: DEBUG
+      CATALINA_OUT: /dev/stdout
+      CATALINA_OPTS: -Ddb.host=db -Ddb.port=5432 -Ddb.username=print -Ddb.password=pgpass -Ddb.name=print -Ddb.schema=public
+
+  printclusternode2:
+    <<: *printclusternode
+    ports:
+      - 8082:8080
+
   tests:
     image: mapfish_print_builder
     user: ${USER_ID}
