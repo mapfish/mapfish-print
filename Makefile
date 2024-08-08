@@ -64,17 +64,12 @@ acceptance-tests-run: .env
 .PHONY: acceptance-tests-down
 acceptance-tests-down: .env
 	docker compose down || true
+acceptance-tests-down:
+	docker compose down || true
 	docker run --rm --volume=/tmp/geoserver-data:/mnt/geoserver_datadir camptocamp/geoserver \
 		bash -c 'rm -rf /mnt/geoserver_datadir/*'
 	rmdir /tmp/geoserver-data
 
 .PHONY: dist
-dist: build-builder
-	mkdir --parent core/build
-	rm -rf core/build/libs core/build/distributions
-	docker run --rm --user=$(shell id -u):$(shell id -g) \
-		--volume=$(PWD)/core/build:/src/core/build2/:rw mapfish_print_builder \
-		cp -r /src/core/build/libs /src/core/build/distributions /src/core/build2/
-
 .env:
 	echo "USER_ID=$(shell id -u):$(shell id -g)" > $@
