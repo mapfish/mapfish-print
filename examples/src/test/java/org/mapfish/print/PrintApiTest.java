@@ -89,6 +89,45 @@ public class PrintApiTest extends AbstractApiTest {
     }
   }
 
+  private void capabilitiesTest(ClientHttpResponse response) throws Exception {
+    final JSONObject json = new JSONObject(getBodyAsText(response));
+    boolean found = false;
+    JSONArray layouts = json.getJSONArray("layouts");
+    JSONObject firstLayout = layouts.getJSONObject(0);
+    JSONArray attributes = firstLayout.getJSONArray("attributes");
+    for (int i = 0; i < attributes.length(); i++) {
+      Object v = attributes.get(i);
+      assertTrue(v instanceof JSONObject);
+      JSONObject o = (JSONObject) v;
+      if ("copyright".equals(o.getString("name"))) {
+        found = true;
+        assertEquals("© me", o.getString("default"));
+      }
+    }
+    assertTrue(found);
+  }
+
+  @Test
+  public void testGetCapabilitiesEncoding() throws Exception {
+    ClientHttpRequest request =
+        getPrintRequest("simple/" + MapPrinterServlet.CAPABILITIES_URL, HttpMethod.GET);
+    try (ClientHttpResponse response = request.execute()) {
+      assertEquals(HttpStatus.OK, response.getStatusCode());
+      capabilitiesTest(response);
+    }
+  }
+
+  @Test
+  public void testGetCapabilitiesEncodingPretty() throws Exception {
+    ClientHttpRequest request =
+        getPrintRequest(
+            "simple/" + MapPrinterServlet.CAPABILITIES_URL + "?pretty=true", HttpMethod.GET);
+    try (ClientHttpResponse response = request.execute()) {
+      assertEquals(HttpStatus.OK, response.getStatusCode());
+      capabilitiesTest(response);
+    }
+  }
+
   @Test
   public void testExampleRequest_NoApp() throws Exception {
     ClientHttpRequest request =
