@@ -1,7 +1,7 @@
 throwErrorOnExtraParameters: true
 templates:
   main: !template
-    reportTemplate: dummy.jxml
+    reportTemplate: dummy.jxrml
     attributes:
       map: !map
         width: 500

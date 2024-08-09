@@ -1,6 +1,6 @@
 templates:
   main: !template
-    reportTemplate: 'dummy.jxml'
+    reportTemplate: 'dummy.jrxml'
     attributes:
       customP1: !string {}
       customP2: !string {}

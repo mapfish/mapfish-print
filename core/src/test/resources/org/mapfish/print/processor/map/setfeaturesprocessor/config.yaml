@@ -2,7 +2,7 @@ throwErrorOnExtraParameters: true
 
 templates:
   main: !template
-    reportTemplate: 'dummy.jxml'
+    reportTemplate: 'dummy.jrxml'
     attributes:
       features: !features {}
       map1: !map
