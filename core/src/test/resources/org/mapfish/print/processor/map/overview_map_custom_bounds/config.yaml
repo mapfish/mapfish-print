@@ -1,6 +1,6 @@
 templates:
   main: !template
-    reportTemplate: 'dummy.jxml'
+    reportTemplate: 'dummy.jrxml'
     attributes:
       style: !style {}
       map: !map
