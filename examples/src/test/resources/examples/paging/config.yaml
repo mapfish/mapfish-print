@@ -23,10 +23,8 @@ templates:
       directory: '.'
     - !createMapPages {}
     - !createMap {}
-    - !createScalebar
-      outputMapper: {}
+    - !createScalebar {}
     - !createDataSource
-      inputMapper: {}
       attributes:
         scalebar: !scalebar
           width: 240
