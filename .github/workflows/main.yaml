@@ -80,10 +80,10 @@ jobs:
       - run: docker cp builder:/src/core/build/ core/build/ || true
         if: always()
 
-      - run: docker cp mapfish-print_tests_1:/src/examples/build/ examples/build/ || true
+      - run: docker cp mapfish-print-tests-1:/src/examples/build/ examples/build/ || true
         if: always()
 
-      - run: docker-compose logs || true
+      - run: docker compose logs || true
         if: failure()
 
       - run: mkdir -p core/build/resources/actual examples/build/reports core/build/reports examples/build/resources/test/examples
