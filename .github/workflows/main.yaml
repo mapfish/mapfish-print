@@ -92,7 +92,7 @@ jobs:
       - run: docker cp builder:/src/core/build/ core/build/ || true
         if: always()
 
-      - run: docker cp mapfish-print_tests_1:/src/examples/build/ examples/build/ || true
+      - run: docker cp mapfish-print-tests-1:/src/examples/build/ examples/build/ || true
         if: always()
 
       - run: c2cciutils-docker-logs || true
