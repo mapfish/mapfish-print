@@ -150,8 +150,7 @@ dependencies {
             "io.dropwizard.metrics:metrics-servlets:$metricsVersion",
             "io.dropwizard.metrics:metrics-jvm:$metricsVersion",
             "io.dropwizard.metrics:metrics-jmx:$metricsVersion",
-            "io.dropwizard.metrics:metrics-logback:$metricsVersion",
-            'com.readytalk:metrics3-statsd:4.2.0'
+            "io.dropwizard.metrics:metrics-logback:$metricsVersion"
     )
     geotools(
             "org.geotools:gt-epsg-hsql:$geotoolsVersion",
