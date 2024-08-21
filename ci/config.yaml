@@ -4,6 +4,7 @@ checks:
   required_workflows: False
   versions: false
   codespell: false
+  print_versions: false
 
 publish:
   pypi:
