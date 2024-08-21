@@ -2,6 +2,7 @@ package org.mapfish.print;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class MetricsApiTest extends AbstractApiTest {
 
   @Test
   public void testMetrics() throws Exception {
-    ClientHttpRequest request = getMetricsRequest("metrics", HttpMethod.GET);
+    ClientHttpRequest request = getMetricsRequest("metrics");
     try (ClientHttpResponse response = request.execute()) {
       assertEquals(HttpStatus.OK, response.getStatusCode());
       assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
@@ -37,7 +38,7 @@ public class MetricsApiTest extends AbstractApiTest {
 
   @Test
   public void testPing() throws Exception {
-    ClientHttpRequest request = getMetricsRequest("ping", HttpMethod.GET);
+    ClientHttpRequest request = getMetricsRequest("ping");
     try (ClientHttpResponse response = request.execute()) {
       assertEquals(HttpStatus.OK, response.getStatusCode());
       assertEquals("pong", getBodyAsText(response).trim());
@@ -46,7 +47,7 @@ public class MetricsApiTest extends AbstractApiTest {
 
   @Test
   public void testThreads() throws Exception {
-    ClientHttpRequest request = getMetricsRequest("threads", HttpMethod.GET);
+    ClientHttpRequest request = getMetricsRequest("threads");
     try (ClientHttpResponse response = request.execute()) {
       assertEquals(HttpStatus.OK, response.getStatusCode());
       assertEquals(MediaType.TEXT_PLAIN, response.getHeaders().getContentType());
@@ -56,18 +57,19 @@ public class MetricsApiTest extends AbstractApiTest {
 
   @Test
   public void testHealthcheck() throws Exception {
-    ClientHttpRequest request = getMetricsRequest("healthcheck", HttpMethod.GET);
+    ClientHttpRequest request = getMetricsRequest("healthcheck");
     try (ClientHttpResponse response = request.execute()) {
-      // TODO not implemented?
-      assertEquals(HttpStatus.NOT_IMPLEMENTED, response.getStatusCode());
-      //        assertEquals(HttpStatus.OK, response.getStatusCode());
-      //        assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
-      //        assertNotNull(new JSONObject(getBodyAsText(response)));
+      assertEquals(HttpStatus.OK, response.getStatusCode());
+      assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
+      String bodyAsText = getBodyAsText(response);
+      assertNotNull(bodyAsText);
+      JSONObject healthcheck = new JSONObject(bodyAsText);
+      JSONObject application = healthcheck.getJSONObject("application");
+      assertTrue(application.getBoolean("healthy"));
     }
   }
 
-  private ClientHttpRequest getMetricsRequest(String path, HttpMethod method)
-      throws IOException, URISyntaxException {
-    return getRequest("metrics/" + path, method);
+  private ClientHttpRequest getMetricsRequest(String path) throws IOException, URISyntaxException {
+    return getRequest("metrics/" + path, HttpMethod.GET);
   }
 }
