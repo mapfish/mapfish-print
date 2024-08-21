@@ -14,7 +14,7 @@ build:
 
 .PHONY: acceptance-tests-up
 acceptance-tests-up:
-	docker-compose down --remove-orphan
+	docker compose down
 
 	mkdir /tmp/geoserver-data || true
 	docker run --rm --volume=/tmp/geoserver-data:/mnt/geoserver_datadir camptocamp/geoserver \
@@ -23,17 +23,17 @@ acceptance-tests-up:
 	cp -r examples/geoserver-data/* /tmp/geoserver-data/
 	cp -r core/src/test/resources/map-data/* /tmp/geoserver-data/www/
 
-	docker-compose up -d
+	docker compose up -d
 
 .PHONY: acceptance-tests-run
 acceptance-tests-run:
-	docker-compose exec -T tests gradle :examples:integrationTest
+	docker compose exec -T tests gradle :examples:integrationTest
 	ci/check-fonts
 	ci/validate-container
 
 .PHONY: acceptance-tests-down
 acceptance-tests-down:
-	docker-compose down || true
+	docker compose down || true
 	docker run --rm --volume=/tmp/geoserver-data:/mnt/geoserver_datadir camptocamp/geoserver \
 		bash -c 'rm -rf /mnt/geoserver_datadir/*'
 	rmdir /tmp/geoserver-data
