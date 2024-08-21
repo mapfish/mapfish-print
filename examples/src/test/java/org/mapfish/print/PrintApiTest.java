@@ -44,7 +44,7 @@ public class PrintApiTest extends AbstractApiTest {
       assertEquals(HttpStatus.OK, response.getStatusCode());
       assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
       final JSONArray appIdsJson = new JSONArray(getBodyAsText(response));
-      assertTrue(appIdsJson.length() > 0);
+      assertFalse(appIdsJson.isEmpty());
     }
   }
 
