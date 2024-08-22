@@ -23,7 +23,7 @@ fi
 docker run --detach --rm --name $container_name camptocamp/mapfish_print:latest
 sleep 15
 http_code=$(docker exec $container_name curl -sL -w "%{http_code}" -I localhost:8080/metrics/healthcheck -o /dev/null)
-if [[ $http_code = 501 ]]; then
+if [[ $http_code = 200 ]]; then
     echo "container healthy"
     cleanup
     exit 0
