@@ -1,4 +1,6 @@
 #!/bin/bash -e
+
+# By default 1 day
 TIMEOUT="${1:-86400}"
 echo "Notify the print to stop and wait ${TIMEOUT}s"
 cd /usr/local/tomcat/temp/mapfish-print/ROOT
