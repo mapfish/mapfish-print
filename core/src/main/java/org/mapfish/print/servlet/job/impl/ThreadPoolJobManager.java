@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -118,6 +119,7 @@ public class ThreadPoolJobManager implements JobManager {
   @Autowired private MetricRegistry metricRegistry;
 
   private boolean requestedToStop = false;
+  private Date lastExecutedJobTimestamp;
 
   public final void setMaxNumberOfRunningPrintJobs(final int maxNumberOfRunningPrintJobs) {
     this.maxNumberOfRunningPrintJobs = maxNumberOfRunningPrintJobs;
@@ -290,7 +292,12 @@ public class ThreadPoolJobManager implements JobManager {
     }
   }
 
+  public Date getLastExecutedJobTimestamp() {
+    return lastExecutedJobTimestamp;
+  }
+
   private void executeJob(final PrintJob job) {
+    lastExecutedJobTimestamp = new Date();
     LOGGER.debug(
         "executeJob {}, PoolSize {}, CorePoolSize {}, Active {}, Completed {}, Task {}, isShutdown"
             + " {}, isTerminated {}",
