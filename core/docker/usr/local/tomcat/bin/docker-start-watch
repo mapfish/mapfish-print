@@ -3,6 +3,7 @@
 import os
 import subprocess
 from threading import Lock, Timer
+import argparse
 
 import inotify.adapters
 
@@ -27,6 +28,9 @@ def start():
 
 
 def main():
+    parser = argparse.ArgumentParser("This script is used in debug mode to restart the print after a compilation")
+    parser.parse_args()
+
     global timer, process
     process = subprocess.Popen(["catalina.sh", "run"])
 

@@ -104,3 +104,25 @@
   Other parameters are documented here:
   <a href="https://docs.sentry.io/clients/java/config/">https://docs.sentry.io/clients/java/config/</a>
 </p>
+
+<h4 id="stop">
+  Graceful stop
+  <a class="headerlink" href="#stop" title="Permalink to this headline">¶</a>
+</h4>
+
+<p>
+  The container can be stopped gracefully by calling the <code>docker-pre-stop-print</code> script. This
+  script will trigger a graceful stop, by stopping starting new jobs and waiting for the current jobs to
+  finish.
+</p>
+
+<p>In Kubernetes you can set it as a preStop hook</p>
+
+<pre><code>
+  lifecycle:
+    preStop:
+      exec:
+        command:
+          - /usr/local/tomcat/bin/docker-pre-stop-print
+          - $(PRINT_TERMINATION_GRACE_PERIOD_SECONDS)
+</code></pre>
