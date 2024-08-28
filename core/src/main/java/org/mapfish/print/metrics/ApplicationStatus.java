@@ -1,8 +1,8 @@
 package org.mapfish.print.metrics;
 
 import com.codahale.metrics.health.HealthCheck;
+import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.TemporalAmount;
 import java.util.Date;
 import org.mapfish.print.servlet.job.JobQueue;
 import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
@@ -13,8 +13,6 @@ class ApplicationStatus extends HealthCheck {
   @Value("${expectedMaxTime.sinceLastPrint.InSeconds}")
   private int secondsInFloatingWindow;
 
-  private final TemporalAmount timeWindowSize =
-      java.time.Duration.ofSeconds(secondsInFloatingWindow);
   @Autowired private JobQueue jobQueue;
   @Autowired private ThreadPoolJobManager jobManager;
 
@@ -32,10 +30,7 @@ class ApplicationStatus extends HealthCheck {
 
     if (jobManager.getLastExecutedJobTimestamp() == null) {
       return Result.unhealthy("No print job was ever processed by this server. " + health);
-    } else if (jobManager
-        .getLastExecutedJobTimestamp()
-        .toInstant()
-        .isAfter(getBeginningOfTimeWindow())) {
+    } else if (hasJobExecutedRecently()) {
       if (waitingJobsCount > previousNumberOfWaitingJobs) {
         previousNumberOfWaitingJobs = waitingJobsCount;
         return Result.unhealthy(
@@ -54,7 +49,13 @@ class ApplicationStatus extends HealthCheck {
     }
   }
 
+  private boolean hasJobExecutedRecently() {
+    final Instant lastExecutedJobTime = jobManager.getLastExecutedJobTimestamp().toInstant();
+    final Instant beginningOfTimeWindow = getBeginningOfTimeWindow();
+    return lastExecutedJobTime.isAfter(beginningOfTimeWindow);
+  }
+
   private Instant getBeginningOfTimeWindow() {
-    return new Date().toInstant().minus(timeWindowSize);
+    return new Date().toInstant().minus(Duration.ofSeconds(secondsInFloatingWindow));
   }
 }
