@@ -10,46 +10,50 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 class ApplicationStatus extends HealthCheck {
-  @Value("${expectedMaxTime.sinceLastPrint.InSeconds}")
+  @Value("${healthStatus.expectedMaxTime.sinceLastPrint.InSeconds}")
   private int secondsInFloatingWindow;
+
+  @Value("${healthStatus.unhealthyThreshold.maxNbrPrintJobQueued}")
+  private int maxNbrPrintJobQueued;
 
   @Autowired private JobQueue jobQueue;
   @Autowired private ThreadPoolJobManager jobManager;
 
-  private long previousNumberOfWaitingJobs = 0L;
-
+  /**
+   * When a Result is returned it can be healthy or unhealthy. In both cases it is associated to a
+   * Http 200 status. When an exception is thrown it means the server is no longer working at all,
+   * it is associated to a Http 500 status.
+   */
   @Override
   protected Result check() throws Exception {
     long waitingJobsCount = jobQueue.getWaitingJobsCount();
     if (waitingJobsCount == 0) {
-      previousNumberOfWaitingJobs = waitingJobsCount;
       return Result.healthy("No print job is waiting in the queue.");
     }
 
-    String health = "Number of print jobs waiting is " + waitingJobsCount;
+    String health = ". Number of print jobs waiting is " + waitingJobsCount;
 
     if (jobManager.getLastExecutedJobTimestamp() == null) {
-      return Result.unhealthy("No print job was ever processed by this server. " + health);
-    } else if (hasJobExecutedRecently()) {
-      if (waitingJobsCount > previousNumberOfWaitingJobs) {
-        previousNumberOfWaitingJobs = waitingJobsCount;
+      return Result.unhealthy("No print job was ever processed by this server" + health);
+    } else if (hasThisServerPrintedRecently()) {
+      if (waitingJobsCount > maxNbrPrintJobQueued) {
         return Result.unhealthy(
-            "Number of print jobs queued is increasing. But this server is processing them. "
-                + health);
+            "Number of print jobs queued is above threshold: " + maxNbrPrintJobQueued + health);
       } else {
-        previousNumberOfWaitingJobs = waitingJobsCount;
-        return Result.healthy(
-            "Print jobs are being dequeued. Number of print jobs waiting is " + waitingJobsCount);
+        return Result.healthy("This server instance is printing" + health);
       }
     } else {
-      previousNumberOfWaitingJobs = waitingJobsCount;
-      throw new RuntimeException(
-          "No print job was processed by this server, in the last (seconds): "
-              + secondsInFloatingWindow);
+      throw notificationForBrokenServer();
     }
   }
 
-  private boolean hasJobExecutedRecently() {
+  private RuntimeException notificationForBrokenServer() {
+    return new RuntimeException(
+        "None of the print job queued was processed by this server, in the last (seconds): "
+            + secondsInFloatingWindow);
+  }
+
+  private boolean hasThisServerPrintedRecently() {
     final Instant lastExecutedJobTime = jobManager.getLastExecutedJobTimestamp().toInstant();
     final Instant beginningOfTimeWindow = getBeginningOfTimeWindow();
     return lastExecutedJobTime.isAfter(beginningOfTimeWindow);

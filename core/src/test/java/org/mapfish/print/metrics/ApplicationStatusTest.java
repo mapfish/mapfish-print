@@ -2,8 +2,8 @@ package org.mapfish.print.metrics;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 import com.codahale.metrics.health.HealthCheck;
@@ -47,38 +47,40 @@ public class ApplicationStatusTest extends AbstractMapfishSpringTest {
     when(jobQueue.getWaitingJobsCount()).thenReturn(1L);
     when(jobManager.getLastExecutedJobTimestamp()).thenReturn(new Date(0L));
 
-    try {
-      applicationStatus.check();
-      fail("Expected exception not thrown");
-    } catch (RuntimeException e) {
-      assertEquals(
-          "No print job was processed by this server, in the last (seconds): 300", e.getMessage());
-    } catch (Exception e) {
-      fail("Incorrect Exception thrown: " + e);
-    }
+    RuntimeException rte =
+        assertThrowsExactly(
+            RuntimeException.class,
+            () -> {
+              // WHEN
+              applicationStatus.check();
+            });
+
+    assertEquals(
+        "None of the print job queued was processed by this server, in the last (seconds): 300",
+        rte.getMessage());
   }
 
   @Test
   public void testCheck_Success_PrintJobs() throws Exception {
-    when(jobQueue.getWaitingJobsCount()).thenReturn(10L, 9L);
+    when(jobQueue.getWaitingJobsCount()).thenReturn(5L, 4L);
     when(jobManager.getLastExecutedJobTimestamp()).thenReturn(new Date());
 
     applicationStatus.check();
     HealthCheck.Result result = applicationStatus.check();
 
     assertTrue(result.isHealthy());
-    assertTrue(result.getMessage().contains("Print jobs are being dequeued"));
+    assertTrue(result.getMessage().contains("This server instance is printing."));
   }
 
   @Test
-  public void testCheck_Fail_PrintJobsButIncreasing() throws Exception {
-    when(jobQueue.getWaitingJobsCount()).thenReturn(0L, 1L);
+  public void testCheck_Fail_TooManyJobsAreQueued() throws Exception {
+    when(jobQueue.getWaitingJobsCount()).thenReturn(4L, 5L);
     when(jobManager.getLastExecutedJobTimestamp()).thenReturn(new Date());
 
     applicationStatus.check();
     HealthCheck.Result result = applicationStatus.check();
 
     assertFalse(result.isHealthy());
-    assertTrue(result.getMessage().contains("Number of print jobs queued is increasing."));
+    assertTrue(result.getMessage().contains("Number of print jobs queued is above threshold: "));
   }
 }
