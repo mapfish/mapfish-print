@@ -115,9 +115,9 @@ configurations {
 
 dependencies {
     compile(
-            "org.springframework:spring-context:5.3.37",
-            "org.springframework:spring-web:5.3.37",
-            "org.springframework:spring-webmvc:5.3.37",
+            "org.springframework:spring-context:5.3.39",
+            "org.springframework:spring-web:5.3.39",
+            "org.springframework:spring-webmvc:5.3.39",
             "org.springframework.security:spring-security-config:5.8.13",
             "org.springframework.security:spring-security-web:5.8.13",
             'com.thetransactioncompany:cors-filter:2.10',
@@ -126,11 +126,11 @@ dependencies {
             'org.postgresql:postgresql:42.5.6',
             'com.vladmihalcea:hibernate-types-52:2.21.1',
             'com.mchange:c3p0:0.9.5.5',
-            "org.springframework:spring-aspects:5.3.37",
-            "org.springframework:spring-orm:5.3.37",
-            "org.springframework:spring-jdbc:5.3.37",
-            "org.springframework:spring-tx:5.3.37",
-            "org.springframework:spring-test:5.3.37",
+            "org.springframework:spring-aspects:5.3.39",
+            "org.springframework:spring-orm:5.3.39",
+            "org.springframework:spring-jdbc:5.3.39",
+            "org.springframework:spring-tx:5.3.39",
+            "org.springframework:spring-test:5.3.39",
             'net.logstash.logback:logstash-logback-encoder:7.3',
     )
     metrics(
@@ -143,14 +143,14 @@ dependencies {
             "io.dropwizard.metrics:metrics-logback:4.2.26",
     )
     geotools(
-            "org.geotools:gt-epsg-hsql:28.2",
-            "org.geotools:gt-render:28.2",
-            "org.geotools:gt-geojson:28.2",
-            "org.geotools:gt-geotiff:28.2",
-            "org.geotools:gt-wms:28.2",
-            "org.geotools.xsd:gt-xsd-gml3:28.2",
-            "org.geotools:gt-svg:28.2",
-            "org.geotools:gt-cql:28.2"
+            "org.geotools:gt-epsg-hsql:28.3",
+            "org.geotools:gt-render:28.3",
+            "org.geotools:gt-geojson:28.3",
+            "org.geotools:gt-geotiff:28.3",
+            "org.geotools:gt-wms:28.3",
+            "org.geotools.xsd:gt-xsd-gml3:28.3",
+            "org.geotools:gt-svg:28.3",
+            "org.geotools:gt-cql:28.3"
     )
     jasper(
             "net.sf.jasperreports:jasperreports:6.20.6",
@@ -162,7 +162,7 @@ dependencies {
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile(
-            'com.google.guava:guava:31.1-jre',
+            'com.google.guava:guava:32.0.0-jre',
             "org.slf4j:slf4j-api:2.0.13",
             "org.slf4j:jcl-over-slf4j:2.0.13",
             "org.slf4j:jul-to-slf4j:2.0.13",
@@ -177,6 +177,8 @@ dependencies {
             'com.adobe.xmp:xmpcore:6.1.11',
             'io.sentry:sentry-logback:6.25.2',
             'net.logstash.logback:logstash-logback-encoder:7.2',
+            'io.airlift:aircompressor:0.27',
+            'org.testng:testng:7.5.1',
     )
 
     compile(configurations.metrics) {
