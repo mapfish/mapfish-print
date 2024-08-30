@@ -1,5 +1,6 @@
 package org.mapfish.print.map.geotools.grid;
 
+import org.geotools.measure.Units;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.IdentityTransform;
 import org.locationtech.jts.util.Assert;
@@ -13,6 +14,8 @@ import org.opengis.referencing.operation.MathTransform;
 
 import java.util.Arrays;
 import java.util.IllegalFormatException;
+
+import javax.measure.Unit;
 
 /**
  * Parameters relevant to creating Grid layers.
@@ -244,14 +247,14 @@ public final class GridParam extends AbstractLayerParams {
      * @param mapCrs the crs of the map, used if the {@link #labelProjection} is not defined.
      */
     public String calculateLabelUnit(final CoordinateReferenceSystem mapCrs) {
-        String unit;
+        Unit unit;
         if (this.labelProjection != null) {
-            unit = this.labelCRS.getCoordinateSystem().getAxis(0).getUnit().toString();
+            unit = this.labelCRS.getCoordinateSystem().getAxis(0).getUnit();
         } else {
-            unit = mapCrs.getCoordinateSystem().getAxis(0).getUnit().toString();
+            unit = mapCrs.getCoordinateSystem().getAxis(0).getUnit();
         }
 
-        return unit;
+        return Units.toSymbol(unit);
     }
 
     /**
