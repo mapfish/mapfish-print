@@ -118,7 +118,7 @@ ext {
 
 dependencies {
     def slf4jVersion = '1.7.36'
-    def metricsVersion = '4.2.26'
+    def metricsVersion = '4.2.27'
     def geotoolsVersion = '27.5'
     def logbackVersion = '1.4.14'
 
@@ -173,7 +173,7 @@ dependencies {
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile(
-            'com.google.guava:guava:32.0.0-jre',
+            'com.google.guava:guava:32.0.1-jre',
             "org.slf4j:slf4j-api:${slf4jVersion}",
             "org.slf4j:jcl-over-slf4j:${slf4jVersion}",
             "org.slf4j:jul-to-slf4j:${slf4jVersion}",
@@ -184,7 +184,7 @@ dependencies {
             'com.github.spullara.cli-parser:cli-parser:1.1.6',
             'org.apache.httpcomponents:httpclient:4.5.14',
             'com.sun.mail:javax.mail:1.6.2',
-            'com.amazonaws:aws-java-sdk-s3:1.12.767',
+            'com.amazonaws:aws-java-sdk-s3:1.12.770',
             'com.adobe.xmp:xmpcore:6.1.11',
             'io.sentry:sentry-logback:6.25.2',
             'net.logstash.logback:logstash-logback-encoder:7.1.1',
