@@ -7,6 +7,7 @@
     <li><a href="#status">Get the status for a print job</a></li>
     <li><a href="#download">Download the report for a print job</a></li>
     <li><a href="#cancel">Cancel a print job</a></li>
+    <li><a href="#buildreport">Create a print job and download its report</a></li>
     <li>
       <a href="#listFonts">List available fonts</a>
       <!-- <li>Create and get report -->
@@ -30,8 +31,7 @@
 "simple",
 "default"
 ]
-  </pre
-    >
+    </pre>
   </div>
 
   <h3 id="capabilities">
@@ -45,8 +45,10 @@
   </p>
   <p><code>:appId</code> should be the identifier of one of the available print configurations.</p>
 
-  <h4>Response Sample</h4>
+  <h4>Request Sample</h4>
   <p>Request URI: <code>GET /simple/capabilities.json</code></p>
+
+  <h4>Response Sample</h4>
   <div class="highlight">
     <pre>
 {
@@ -71,8 +73,7 @@
       "enabled": false
     }
 }
-  </pre
-    >
+    </pre>
   </div>
   <p>
     The smtp section shows <code>"enabled": true</code> if the reports can be sent by email. To enable this
@@ -118,8 +119,7 @@
     "body": "Some &lt;b&gt;html&lt;/b&gt; body"
   }
 }
-  </pre
-    >
+    </pre>
   </div>
 
   <h4>Response</h4>
@@ -165,8 +165,7 @@
         "title": "Sample Print"
     }
 }
-  </pre
-    >
+    </pre>
   </div>
 
   <h4>Response Sample</h4>
@@ -177,8 +176,7 @@
     "statusURL": "/print/status/15179fee-618d-4356-8114-cfd8f146e273.json",
     "downloadURL": "/print/report/15179fee-618d-4356-8114-cfd8f146e273"
 }
-  </pre
-    >
+    </pre>
   </div>
 
   <h3 id="status">
@@ -234,9 +232,11 @@
     </li>
   </ul>
 
-  <h4>Response Sample</h4>
+  <h4>Request Sample</h4>
   <p>Request URI: <code>GET /status/15179fee-618d-4356-8114-cfd8f146e273.json</code></p>
   <p>You should not call this API if you requested the report to be sent by email.</p>
+
+  <h4>Response Sample</h4>
   <div class="highlight">
     <pre>
 {
@@ -246,8 +246,7 @@
     "waitingTime": 0,
     "downloadURL": "/print/report/15179fee-618d-4356-8114-cfd8f146e273"
 }
-  </pre
-    >
+    </pre>
   </div>
 
   <h3 id="download">
@@ -288,6 +287,33 @@
 
   <h4>Request Sample</h4>
   <p>Request URI: <code>DELETE /cancel/15179fee-618d-4356-8114-cfd8f146e273</code></p>
+
+  <h3 id="buildreport">
+    Create a print job and download its report
+    <a class="headerlink" href="#buildreport" title="Permalink to this headline">¶</a>
+  </h3>
+  <p>
+    Triggers the creation of a print job, then download the report. Although it seems synchronous from the
+    client perspective, the print job might be run by a different server in cluster mode. Despite this, it is
+    not the recommended manner to use the print server (as too many requests in parallel will grab all the
+    server resources).
+  </p>
+  <h4>URI</h4>
+  <p>
+    <code>POST /:appId/buildreport.:format</code>
+  </p>
+  <p><code>:appId</code> should be the identifier of one of the available print configurations.</p>
+  <p>
+    <code>:format</code> should be one of the formats supported by the specified print configuration (e.g.
+    <code>pdf</code> or <code>png</code>).
+  </p>
+
+  <h4>Response</h4>
+  <p>Status: <code>200 OK</code></p>
+
+  <h4>Request Sample</h4>
+  <p>Request URI: <code>POST /simple/buildreport.pdf</code></p>
+  <p>See <a href="#create">Create a print job</a> request sample for the request body.</p>
 
   <h3 id="listFonts">
     List Available Fonts <a class="headerlink" href="#listFonts" title="Permalink to this headline">¶</a>
