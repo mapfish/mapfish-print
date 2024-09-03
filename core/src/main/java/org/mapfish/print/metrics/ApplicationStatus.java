@@ -36,9 +36,12 @@ class ApplicationStatus extends HealthCheck {
     if (jobManager.getLastExecutedJobTimestamp() == null) {
       return Result.unhealthy("No print job was ever processed by this server" + health);
     } else if (hasThisServerPrintedRecently()) {
+      // WIP (See issue https://github.com/mapfish/mapfish-print/issues/3393)
       if (waitingJobsCount > maxNbrPrintJobQueued) {
         return Result.unhealthy(
-            "Number of print jobs queued is above threshold: " + maxNbrPrintJobQueued + health);
+            "WIP: Number of print jobs queued is above threshold: "
+                + maxNbrPrintJobQueued
+                + health);
       } else {
         return Result.healthy("This server instance is printing" + health);
       }
