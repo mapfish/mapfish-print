@@ -57,7 +57,8 @@
     <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.loader.FileReportLoader"/>
 
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
-    <bean id="healthCheckRegistry" class="com.codahale.metrics.health.HealthCheckRegistry"/>
+    <bean id="applicationStatus" class="org.mapfish.print.metrics.ApplicationStatus"/>
+    <bean id="healthCheckRegistry" class="org.mapfish.print.metrics.HealthCheckingRegistry"/>
     <bean id="httpClientFactory" class="org.mapfish.print.http.MfClientHttpRequestFactoryImpl">
         <constructor-arg index="0" value="${maxConnectionsTotal}" />
         <constructor-arg index="1" value="${maxConnectionsPerRoute}" />
