@@ -22,4 +22,8 @@ ignore:
     - '*':
         reason: Used in check style
         created: 2022-10-18T05:49:44.892Z
+  SNYK-JAVA-COMGOOGLEGUAVA-5710356:
+    - '*':
+        reason: Indirect dependance to CheckStyle and low severity
+        created: 2024-09-06T07:05:16.154Z
 patch: {}
