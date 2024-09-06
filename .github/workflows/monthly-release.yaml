@@ -1,0 +1,21 @@
+name: Monthly release
+
+on:
+  schedule:
+    # The 10th at every month
+    - cron: '0 0 10 * *'
+
+jobs:
+  audit:
+    name: Monthly release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v2
+      - run: pip install --requirement=ci/requirements.txt
+
+      - run: .github/monthly-release

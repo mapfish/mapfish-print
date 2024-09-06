@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+import argparse
+import security_md
+import subprocess
+import re
+import sys
+
+_TAG_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
+
+def _main():
+    parser = argparse.ArgumentParser("Create new tags on every stabilisation branches")
+    parser.add_argument("--dry-run", action="store_true", help="Do not create tags")
+    args = parser.parse_args()
+
+    with open("SECURITY.md", encoding='utf-8') as security_file:
+        security = security_md.Security(security_file.read())
+
+    for branch in security.branches():
+        subprocess.run(["git", "checkout", branch], check=True)
+
+        last_tag = subprocess.run(['git', 'describe', '--tags', '--abbrev=0'], stdout=subprocess.PIPE, encoding='utf-8').stdout.strip()
+        last_tag_match = _TAG_RE.match(last_tag)
+        if last_tag_match is None:
+            print(f"Cannot parse tag {last_tag}")
+            sys.exit(1)
+
+        major, minor, patch = map(int, last_tag_match.groups())
+        new_tag = f"{major}.{minor}.{int(patch) + 1}"
+
+        if args.dry_run:
+            print(f"On franch {branch} creating tag {new_tag}")
+        else:
+            print(f"Creating tag {branch}")
+            subprocess.run(["git", "tag", new_tag])
+            subprocess.run(["git", "push", "origin", new_tag])
+
+
+if __name__ == "__main__":
+    _main()
