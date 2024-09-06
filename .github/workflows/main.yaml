@@ -124,7 +124,7 @@ jobs:
           mkdir -p /tmp/test_results/junit
           find . -name '*TEST-*.xml' -exec cp -v {} /tmp/test_results/junit/ \;
         if: failure()
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: Test results
           path: /tmp/test_results
