@@ -83,7 +83,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
     String example = createResponseJson.getString("requestData");
     JSONObject obj = new JSONObject(example);
-    assertTrue(obj.length() > 0);
+    assertFalse(obj.isEmpty());
 
     final MockHttpServletResponse getExampleResponseExplicit = new MockHttpServletResponse();
     this.servlet.getExampleRequest(
@@ -768,7 +768,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         Thread.sleep(500);
       } else if (status == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
         String error = servletGetReportResponse.getContentAsString();
-        assertTrue(error.contains("canceled"));
+        assertTrue(error + "did not contain canceled", error.contains("canceled"));
         return;
       } else {
         fail(status + " was not one of the expected response codes.  Expected: 500 or 202");
