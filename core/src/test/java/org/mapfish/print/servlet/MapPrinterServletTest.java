@@ -768,7 +768,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         Thread.sleep(500);
       } else if (status == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
         String error = servletGetReportResponse.getContentAsString();
-        assertTrue(error + "did not contain canceled", error.contains("canceled"));
+        assertTrue(error + " did not contain canceled", error.contains("canceled"));
         return;
       } else {
         fail(status + " was not one of the expected response codes.  Expected: 500 or 202");
