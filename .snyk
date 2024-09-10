@@ -1,9 +1,0 @@
-# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.25.0
-# ignores vulnerabilities until expiry date; change duration by modifying expiry date
-ignore:
-  SNYK-JAVA-COMGOOGLEGUAVA-5710356:
-    - '*':
-        reason: Indirect dependance to CheckStyle and low severity
-        created: 2024-09-06T07:05:16.154Z
-patch: {}

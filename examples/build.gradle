@@ -11,6 +11,9 @@ dependencies {
     testCompile(
         project(':core'),
     )
+    compile (
+        'com.google.guava:guava:32.0.1-jre',
+    )
 }
 
 configurations {

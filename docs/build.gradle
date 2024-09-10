@@ -12,10 +12,13 @@ repositories {
 
 dependencies {
     compile project(':core')
-    compile "org.codehaus.groovy:groovy-all:3.0.22",
-            "org.springframework:spring-test:5.3.39",
-            'org.ccil.cowan.tagsoup:tagsoup:1.2.1',
-            'com.samskivert:jmustache:1.15'
+    compile (
+        "org.codehaus.groovy:groovy-all:3.0.22",
+        "org.springframework:spring-test:5.3.39",
+        'org.ccil.cowan.tagsoup:tagsoup:1.2.1',
+        'com.samskivert:jmustache:1.15',
+        'com.google.guava:guava:32.0.1-jre'
+    )
 }
 
 def site = new File(buildDir, "site").path
