@@ -167,66 +167,80 @@ jobs:
       - id: version
         run: echo "version=$(grep version gradle.properties|sed "s/version=\(.*\)/\1/g")" > $GITHUB_OUTPUT
       - run: echo "${{ steps.version.outputs.version }}"
+
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+        uses: actions/github-script@v7
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ steps.tag.outputs.tag }}
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1.0.2
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./core/build/libs/print-servlet-${{ steps.version.outputs.version }}.war
-          asset_name: print-servlet-${{ steps.version.outputs.version }}.war
-          asset_content_type: application/java-archive
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1.0.2
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./core/build/distributions/core-${{ steps.version.outputs.version }}.zip
-          asset_name: print-cli-${{ steps.version.outputs.version }}.zip
-          asset_content_type: application/zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1.0.2
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./core/build/libs/print-lib-${{ steps.version.outputs.version }}.jar
-          asset_name: print-lib-${{ steps.version.outputs.version }}.jar
-          asset_content_type: application/java-archive
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1.0.2
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./core/build/libs/print-lib-${{ steps.version.outputs.version }}-sources.jar
-          asset_name: print-lib-${{ steps.version.outputs.version }}-sources.jar
-          asset_content_type: application/java-archive
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1.0.2
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./core/build/libs/print-lib-${{ steps.version.outputs.version }}-javadoc.jar
-          asset_name: print-lib-${{ steps.version.outputs.version }}-javadoc.jar
-          asset_content_type: application/java-archive
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          script: |-
+            const fs = require('fs');
+
+            const release = await github.request('POST /repos/{owner}/{repo}/releases', {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: context.ref,
+              name: '${{ steps.tag.outputs.tag }}',
+              draft: false,
+              prerelease: false,
+              generate_release_notes: false,
+              headers: {
+                'X-GitHub-Api-Version': '2022-11-28'
+              }
+            });
+            await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              url: release.data.upload_url,
+              name: "print-servlet-${{ steps.version.outputs.version }}.war",
+              file: fs.readFileSync("./core/build/libs/print-servlet-${{ steps.version.outputs.version }}.war"),
+              headers: {
+                'X-GitHub-Api-Version': '2022-11-28',
+                'content-type': 'application/java-archive'
+              },
+            });
+            await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              url: release.data.upload_url,
+              name: "print-cli-${{ steps.version.outputs.version }}.zip",
+              file: fs.readFileSync("./core/build/distributions/core-${{ steps.version.outputs.version }}.zip"),
+              headers: {
+                'X-GitHub-Api-Version': '2022-11-28',
+                'content-type': 'application/zip'
+              },
+            });
+            await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              url: release.data.upload_url,
+              name: "print-lib-${{ steps.version.outputs.version }}.jar",
+              file: fs.readFileSync("./core/build/libs/print-lib-${{ steps.version.outputs.version }}.jar"),
+              headers: {
+                'X-GitHub-Api-Version': '2022-11-28',
+                'content-type': 'application/java-archive'
+              },
+            });
+            await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              url: release.data.upload_url,
+              name: "print-lib-${{ steps.version.outputs.version }}-sources.jar,
+              file: fs.readFileSync("./core/build/libs/print-lib-${{ steps.version.outputs.version }}-sources.jar"),
+              headers: {
+                'X-GitHub-Api-Version': '2022-11-28',
+                'content-type': 'application/java-archive'
+              },
+            });
+            await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              url: release.data.upload_url,
+              name: "print-lib-${{ steps.version.outputs.version }}-javadoc.jar,
+              file: fs.readFileSync("./core/build/libs/print-lib-${{ steps.version.outputs.version }}-javadoc.jar"),
+              headers: {
+                'X-GitHub-Api-Version': '2022-11-28',
+                'content-type': 'application/java-archive'
+              },
+            });
         if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
 
         # Update the documentation
