@@ -17,6 +17,7 @@ jobs:
 
     env:
       SECRETS: ${{ secrets.SECRETS }}
+      HAS_SECRETS: ${{ secrets.HAS_SECRETS }}
 
     steps:
       - uses: actions/checkout@v2
