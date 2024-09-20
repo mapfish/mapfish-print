@@ -645,7 +645,7 @@ public class MapPrinterServlet extends BaseMapServlet {
         TimeUnit.SECONDS.toMillis(this.maxCreateAndGetWaitTimeInSeconds);
     long startWaitTime = System.currentTimeMillis();
     while (!isDone && System.currentTimeMillis() - startWaitTime < maxWaitTimeInMillis) {
-      Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+      TimeUnit.SECONDS.sleep(1);
       isDone = loadReport(ref, createReportResponse, handler);
     }
   }
@@ -1032,7 +1032,7 @@ public class MapPrinterServlet extends BaseMapServlet {
             UUID.randomUUID() + "@" + this.servletInfo.getServletId(), httpServletRequest);
     MDC.put(Processor.MDC_APPLICATION_ID_KEY, appId);
     MDC.put(Processor.MDC_JOB_ID_KEY, ref);
-    LOGGER.debug("Created Ref:{} for {}", ref, specJson);
+    LOGGER.debug("{} created Ref:{} for {}", httpServletRequest.getRequestURI(), ref, specJson);
 
     specJson.getInternalObj().remove(JSON_OUTPUT_FORMAT);
     specJson.getInternalObj().put(JSON_OUTPUT_FORMAT, format);
