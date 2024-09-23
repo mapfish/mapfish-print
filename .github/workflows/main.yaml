@@ -35,6 +35,7 @@ jobs:
           script: |-
             const fs = require('fs');
 
+            console.log('Creating release');
             const release = await github.request('POST /repos/{owner}/{repo}/releases', {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -54,6 +55,7 @@ jobs:
               {prefix: 'print-lib-', suffix: '-sources.jar', 'mime-type': 'application/java-archive'},
               {prefix: 'print-lib-', suffix: '-javadoc.jar', 'mime-type': 'application/java-archive'}
             ]) {
+              console.log('Uploading new-' + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix);
               await github.request('POST /repos/{owner}/{repo}/releases/{release_id}/assets', {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -66,6 +68,7 @@ jobs:
                   'content-type': archive['mime-type']
                 }
               });
+              console.log('Uploading old-' + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix);
               await github.rest.repos.uploadReleaseAsset({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
