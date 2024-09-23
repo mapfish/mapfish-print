@@ -25,3 +25,5 @@ Makefile text whitespace=indent-with-non-tab,tabwidth=2
 *.jpg binary
 *.gif binary
 *.ico binary
+*.zip binary
+*.war binary
