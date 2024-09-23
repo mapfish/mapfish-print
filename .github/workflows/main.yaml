@@ -25,145 +25,10 @@ jobs:
     if: "!startsWith(github.event.head_commit.message, '[skip ci] ')"
 
     steps:
-      - run: docker system prune --all --force
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - run: echo "${HOME}/.local/bin" >> ${GITHUB_PATH}
-      - run: python3 -m pip install --user --requirement=ci/requirements.txt
-
-      - uses: actions/cache@v4
-        with:
-          path: ~/.cache/pre-commit
-          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
-          restore-keys: "pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}\npre-commit-"
-      - run: pre-commit run --all-files
-      - run: git diff --exit-code --patch > /tmp/pre-commit.patch || true
-        if: failure()
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Apply pre-commit fix.patch
-          path: /tmp/pre-commit.patch
-          retention-days: 1
-        if: failure()
-
-      - name: Print environment information
-        run: c2cciutils-env
-
-      - name: Get tag
-        id: tag2
-        uses: frabert/replace-string-action@v2.5
-        with:
-          pattern: refs/tags/(.*)
-          string: '{{ github.ref }}'
-          replace-with: $1
-        if: startsWith(github.ref, 'refs/tags/')
-      - run: echo --${{ steps.tag2.outputs.replaced }}--
-
-      - uses: camptocamp/initialise-gopass-summon-action@v2
-        with:
-          ci-gpg-private-key: ${{secrets.CI_GPG_PRIVATE_KEY}}
-          github-gopass-ci-token: ${{secrets.GOPASS_CI_GITHUB_TOKEN}}
-          patterns: docker
-        if: env.HAS_SECRETS == 'HAS_SECRETS'
-
-      - run: gpg --export-secret-keys --armor D121AF2DFA8E140688BD968930C9B913FD42EF13 > CI.asc
-        if: env.HAS_SECRETS == 'HAS_SECRETS'
-
-      - id: tag
-        run: echo "tag=$(echo ${{ github.ref }}|sed 's%refs/tags/%%g')" >> $GITHUB_OUTPUT
-        if: startsWith(github.ref, 'refs/tags/')
-      - run: sed --in-place 's/version=.*/version=${{ steps.tag.outputs.tag }}/g' gradle.properties
-        if: startsWith(github.ref, 'refs/tags/')
-
-      - id: last-tag
-        run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
-        if: "!startsWith(github.ref, 'refs/tags/')"
-      - id: no-tag
-        run: echo "nb=$(git log --oneline ${{ steps.last-tag.outputs.tag }}..HEAD|wc -l)" >> $GITHUB_OUTPUT
-        if: "!startsWith(github.ref, 'refs/tags/')"
-      - run: sed --in-place 's/version=.*/version=${{ steps.last-tag.outputs.tag }}/g' gradle.properties
-        if: "!startsWith(github.ref, 'refs/tags/') && steps.no-tag.outputs.nb == 0"
-      - run:
-          sed --in-place 's/version=.*/version=${{ steps.last-tag.outputs.tag }}+${{ steps.no-tag.outputs.nb
-          }}/g' gradle.properties
-        if: "!startsWith(github.ref, 'refs/tags/') && steps.no-tag.outputs.nb > 0"
-      - id: date
-        run: echo "date=$(date +%Y%m%d.%H%M%S)" >> $GITHUB_OUTPUT
-        if: github.ref == 'refs/heads/master'
-      - run: sed --in-place 's/version=.*/version=0.${{ steps.date.outputs.date }}.SNAPSHOT/g' gradle.properties
-        if: github.ref == 'refs/heads/master'
-
-      - run: sed --in-place 's/enablePublishing=false/enablePublishing=true/g' gradle.properties
-        if: env.HAS_SECRETS == 'HAS_SECRETS'
-      - run: git diff
-
-      - run: make build
-
-      - run: make checks
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Checkstyle and SpotBugs reports
-          path: reports
-          if-no-files-found: ignore
-        if: always()
-
-      - timeout-minutes: 10
-        run: make tests
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Unit test results
-          path: core/build/resources/test/org/mapfish/print/
-          if-no-files-found: ignore
-        if: failure()
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Unit test report
-          path: core/build/reports/tests/test/
-          if-no-files-found: ignore
-        if: always()
-
-      - run: make acceptance-tests-up
-      - run: make acceptance-tests-run
-      - run: c2cciutils-docker-logs || true
-        if: always()
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Acceptance tests (Examples)
-          path: examples/build/resources/test/examples/
-          if-no-files-found: ignore
-        if: failure()
-
-      - run: git stash
-        if: always()
-      - name: Publish
-        run: c2cciutils-publish
-        if: env.HAS_SECRETS == 'HAS_SECRETS'
-      - run: git diff --exit-code --patch > /tmp/dpkg-versions.patch || true
-        if: failure()
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Update dpkg versions list.patch
-          path: /tmp/dpkg-versions.patch
-          retention-days: 1
-        if: failure()
-      - run: git stash pop
-
-      - run: >
-          docker run --rm --env=GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} mapfish_print_builder
-          bash -c 'gradle publish'
-        if:
-          ( startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master' ) && env.HAS_SECRETS ==
-          'HAS_SECRETS'
 
       - id: version
-        run: echo "version=$(grep version gradle.properties|sed "s/version=\(.*\)/\1/g")" > $GITHUB_OUTPUT
-      - run: echo "${{ steps.version.outputs.version }}"
-      - run: make dist
-
+        run: echo "version=3.30.5" > $GITHUB_OUTPUT
       - name: Create Release
         uses: actions/github-script@v7
         with:
@@ -174,104 +39,43 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               tag_name: context.ref,
-              name: '${{ steps.tag.outputs.tag }}',
-              draft: false,
-              prerelease: false,
+              name: 'test',
+              draft: true,
+              prerelease: true,
               generate_release_notes: false,
               headers: {
                 'X-GitHub-Api-Version': '2022-11-28'
               }
             });
-            await github.rest.repos.uploadReleaseAsset({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              url: release.data.upload_url,
-              name: "print-servlet-${{ steps.version.outputs.version }}.war",
-              file: fs.readFileSync("./core/build/libs/print-servlet-${{ steps.version.outputs.version }}.war"),
-              headers: {
-                'X-GitHub-Api-Version': '2022-11-28',
-                'content-type': 'application/java-archive'
-              },
-            });
-            await github.rest.repos.uploadReleaseAsset({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              url: release.data.upload_url,
-              name: "print-cli-${{ steps.version.outputs.version }}.zip",
-              file: fs.readFileSync("./core/build/distributions/core-${{ steps.version.outputs.version }}.zip"),
-              headers: {
-                'X-GitHub-Api-Version': '2022-11-28',
-                'content-type': 'application/zip'
-              },
-            });
-            await github.rest.repos.uploadReleaseAsset({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              url: release.data.upload_url,
-              name: "print-lib-${{ steps.version.outputs.version }}.jar",
-              file: fs.readFileSync("./core/build/libs/print-lib-${{ steps.version.outputs.version }}.jar"),
-              headers: {
-                'X-GitHub-Api-Version': '2022-11-28',
-                'content-type': 'application/java-archive'
-              },
-            });
-            await github.rest.repos.uploadReleaseAsset({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              url: release.data.upload_url,
-              name: "print-lib-${{ steps.version.outputs.version }}-sources.jar",
-              file: fs.readFileSync("./core/build/libs/print-lib-${{ steps.version.outputs.version }}-sources.jar"),
-              headers: {
-                'X-GitHub-Api-Version': '2022-11-28',
-                'content-type': 'application/java-archive'
-              },
-            });
-            await github.rest.repos.uploadReleaseAsset({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              url: release.data.upload_url,
-              name: "print-lib-${{ steps.version.outputs.version }}-javadoc.jar",
-              file: fs.readFileSync("./core/build/libs/print-lib-${{ steps.version.outputs.version }}-javadoc.jar"),
-              headers: {
-                'X-GitHub-Api-Version': '2022-11-28',
-                'content-type': 'application/java-archive'
-              },
-            });
-        if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
-
-        # Update the documentation
-      - uses: actions/checkout@v4
-        with:
-          repository: mapfish/mapfish-print-doc
-          token: ${{ secrets.GOPASS_CI_GITHUB_TOKEN }}
-          path: mapfish-print-doc
-        if: github.ref == 'refs/heads/master' && env.HAS_SECRETS == 'HAS_SECRETS'
-      - name: Extract the documentation
-        run: |
-          docker run --rm --detach --name=doc mapfish_print_builder
-          cd ${GITHUB_WORKSPACE}/mapfish-print-doc
-          git config user.email "ci@camptocamp.com"
-          git config user.name "CI"
-          git rm --ignore-unmatch -rqf .
-          docker cp doc:/src/docs/build/site/. .
-          git add -A .
-          git commit -m 'Update docs'
-        if: github.ref == 'refs/heads/master' && env.HAS_SECRETS == 'HAS_SECRETS'
-      - name: Publish the documentation
-        run: |
-          cd ${GITHUB_WORKSPACE}/mapfish-print-doc
-          git push origin gh-pages
-        if: github.ref == 'refs/heads/master' && env.HAS_SECRETS == 'HAS_SECRETS'
-
-      - name: Trigger changelog workflow
-        uses: actions/github-script@v7
-        with:
-          script: |-
-            if (process.env.GITHUB_REF_TYPE == 'tag') {
-                console.log('Trigger changelog');
-                await github.rest.repos.createDispatchEvent({
-                    owner: 'mapfish',
-                    repo: 'mapfish-print',
-                    event_type: 'changelog',
-                });
+            for (const archive of [
+              //{prefix: 'print-servlet-', suffix: '.war', 'mime-type': 'application/java-archive'},
+              //{prefix: 'print-cli-', suffix: '.zip', 'mime-type': 'application/zip'},
+              {prefix: 'print-lib-', suffix: '.jar', 'mime-type': 'application/java-archive'},
+              {prefix: 'print-lib-', suffix: '-sources.jar', 'mime-type': 'application/java-archive'},
+              {prefix: 'print-lib-', suffix: '-javadoc.jar', 'mime-type': 'application/java-archive'}
+            ]) {
+              await github.request('POST /repos/{owner}/{repo}/releases/{release_id}/assets', {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: release.data.id,
+                name: 'new-' + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix,
+                # data: fs.readFileSync('./core/build/libs/new-' + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix),
+                data: fs.readFileSync(archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix),
+                headers: {
+                  'X-GitHub-Api-Version': '2022-11-28',
+                  'content-type': archive['mime-type']
+                }
+              });
+              await github.rest.repos.uploadReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                url: release.data.upload_url,
+                name: 'old-' + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix,
+                #file: fs.readFileSync("./core/build/libs/old-" + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix),
+                file: fs.readFileSync(archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix),
+                headers: {
+                  'X-GitHub-Api-Version': '2022-11-28',
+                    'content-type': archive['mime-type']
+                },
+              });
             }
