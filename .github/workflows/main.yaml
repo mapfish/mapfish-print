@@ -173,61 +173,25 @@ jobs:
                 'X-GitHub-Api-Version': '2022-11-28'
               }
             });
-            await github.rest.repos.uploadReleaseAsset({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              url: release.data.upload_url,
-              name: "print-servlet-${{ steps.version.outputs.version }}.war",
-              file: fs.readFileSync("./core/build/libs/print-servlet-${{ steps.version.outputs.version }}.war"),
-              headers: {
-                'X-GitHub-Api-Version': '2022-11-28',
-                'content-type': 'application/java-archive'
-              },
-            });
-            await github.rest.repos.uploadReleaseAsset({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              url: release.data.upload_url,
-              name: "print-cli-${{ steps.version.outputs.version }}.zip",
-              file: fs.readFileSync("./core/build/distributions/core-${{ steps.version.outputs.version }}.zip"),
-              headers: {
-                'X-GitHub-Api-Version': '2022-11-28',
-                'content-type': 'application/zip'
-              },
-            });
-            await github.rest.repos.uploadReleaseAsset({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              url: release.data.upload_url,
-              name: "print-lib-${{ steps.version.outputs.version }}.jar",
-              file: fs.readFileSync("./core/build/libs/print-lib-${{ steps.version.outputs.version }}.jar"),
-              headers: {
-                'X-GitHub-Api-Version': '2022-11-28',
-                'content-type': 'application/java-archive'
-              },
-            });
-            await github.rest.repos.uploadReleaseAsset({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              url: release.data.upload_url,
-              name: "print-lib-${{ steps.version.outputs.version }}-sources.jar",
-              file: fs.readFileSync("./core/build/libs/print-lib-${{ steps.version.outputs.version }}-sources.jar"),
-              headers: {
-                'X-GitHub-Api-Version': '2022-11-28',
-                'content-type': 'application/java-archive'
-              },
-            });
-            await github.rest.repos.uploadReleaseAsset({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              url: release.data.upload_url,
-              name: "print-lib-${{ steps.version.outputs.version }}-javadoc.jar",
-              file: fs.readFileSync("./core/build/libs/print-lib-${{ steps.version.outputs.version }}-javadoc.jar"),
-              headers: {
-                'X-GitHub-Api-Version': '2022-11-28',
-                'content-type': 'application/java-archive'
-              },
-            });
+            for (const archive of [
+              {prefix: 'print-servlet-', suffix: '.war', filePrefix: './core/build/libs/print-servlet-', 'mime-type': 'application/java-archive'},
+              {prefix: 'print-cli-', suffix: '.zip', filePrefix: './core/build/distributions/core-', 'mime-type': 'application/zip'},
+              {prefix: 'print-lib-', suffix: '.jar', filePrefix: './core/build/libs/print-lib-', 'mime-type': 'application/java-archive'},
+              {prefix: 'print-lib-', suffix: '-sources.jar', filePrefix: './core/build/libs/print-lib-', 'mime-type': 'application/java-archive'},
+              {prefix: 'print-lib-', suffix: '-javadoc.jar', filePrefix: './core/build/libs/print-lib-', 'mime-type': 'application/java-archive'},
+            ]) {
+              await github.rest.repos.uploadReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: release.data.id,
+                name: archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix,
+                data: fs.readFileSync(archive.filePrefix + '${{ steps.version.outputs.version }}' + archive.suffix),
+                headers: {
+                  'X-GitHub-Api-Version': '2022-11-28',
+                  'content-type': archive['mime-type']
+                },
+              });
+            }
         if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
 
       # Update the documentation
