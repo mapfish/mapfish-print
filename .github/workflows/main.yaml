@@ -40,7 +40,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               tag_name: context.ref,
-              name: 'test',
+              name: 'test123',
               draft: true,
               prerelease: true,
               generate_release_notes: false,
@@ -61,7 +61,7 @@ jobs:
                 repo: context.repo.repo,
                 release_id: release.data.id,
                 name: 'new-' + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix,
-                # data: fs.readFileSync('./core/build/libs/new-' + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix),
+                # data: fs.readFileSync('./core/build/libs/' + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix),
                 data: fs.readFileSync(archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix),
                 headers: {
                   'X-GitHub-Api-Version': '2022-11-28',
@@ -74,7 +74,7 @@ jobs:
                 repo: context.repo.repo,
                 url: release.data.upload_url,
                 name: 'old-' + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix,
-                #file: fs.readFileSync("./core/build/libs/old-" + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix),
+                #file: fs.readFileSync("./core/build/libs/" + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix),
                 file: fs.readFileSync(archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix),
                 headers: {
                   'X-GitHub-Api-Version': '2022-11-28',
