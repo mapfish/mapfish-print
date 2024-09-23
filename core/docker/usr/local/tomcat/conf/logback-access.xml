@@ -1,4 +1,5 @@
-<configuration>
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
     <appender name="classic" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%h %l %u %user %date "%r" %s %b</pattern>
@@ -77,4 +78,4 @@
 
 
     <appender-ref ref="${TOMCAT_LOG_TYPE}" />
-</configuration>
+</included>

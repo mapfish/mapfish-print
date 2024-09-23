@@ -43,7 +43,10 @@ ENV LOG_LEVEL=INFO \
   TOMCAT_LOG_TYPE=classic \
   EXTRA_JARS= \
   PRINT_YAML_MAX_ALIASES=50 \
-  SENTRY_DSN=
+  JAVA_OPTS=-Dsun.net.inetaddr.ttl=30 \
+  SENTRY_DSN= \
+  UMASK=0022 \
+  CATALINA_OPTS=${CATALINA_OPTS} -Dlogback.configurationFile=${CATALINA_HOME}/conf/logback.xml
 
 CMD ["/usr/local/tomcat/bin/docker-start-print"]
 
