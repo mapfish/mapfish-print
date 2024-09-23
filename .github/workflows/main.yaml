@@ -174,18 +174,18 @@ jobs:
               }
             });
             for (const archive of [
-              {prefix: 'print-servlet-', suffix: '.war', filePrefix: 'print-servlet-', 'mime-type': 'application/java-archive'},
-              {prefix: 'print-cli-', suffix: '.zip', filePrefix: 'core-', 'mime-type': 'application/zip'},
-              {prefix: 'print-lib-', suffix: '.jar', filePrefix: 'print-lib-', 'mime-type': 'application/java-archive'},
-              {prefix: 'print-lib-', suffix: '-sources.jar', filePrefix: 'print-lib-', 'mime-type': 'application/java-archive'},
-              {prefix: 'print-lib-', suffix: '-javadoc.jar', filePrefix: 'print-lib-', 'mime-type': 'application/java-archive'},
+              {prefix: 'print-servlet-', suffix: '.war', filePrefix: './core/build/libs/print-servlet-', 'mime-type': 'application/java-archive'},
+              {prefix: 'print-cli-', suffix: '.zip', filePrefix: './core/build/distributions/core-', 'mime-type': 'application/zip'},
+              {prefix: 'print-lib-', suffix: '.jar', filePrefix: './core/build/libs/print-lib-', 'mime-type': 'application/java-archive'},
+              {prefix: 'print-lib-', suffix: '-sources.jar', filePrefix: './core/build/libs/print-lib-', 'mime-type': 'application/java-archive'},
+              {prefix: 'print-lib-', suffix: '-javadoc.jar', filePrefix: './core/build/libs/print-lib-', 'mime-type': 'application/java-archive'},
             ]) {
               await github.rest.repos.uploadReleaseAsset({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 release_id: release.data.id,
                 name: archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix,
-                data: fs.readFileSync("./core/build/libs/" + archive.filePrefix + '${{ steps.version.outputs.version }}' + archive.suffix),
+                data: fs.readFileSync(archive.filePrefix + '${{ steps.version.outputs.version }}' + archive.suffix),
                 headers: {
                   'X-GitHub-Api-Version': '2022-11-28',
                   'content-type': archive['mime-type']
