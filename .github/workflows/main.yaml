@@ -55,19 +55,19 @@ jobs:
               {prefix: 'print-lib-', suffix: '-sources.jar', 'mime-type': 'application/java-archive'},
               {prefix: 'print-lib-', suffix: '-javadoc.jar', 'mime-type': 'application/java-archive'}
             ]) {
-              console.log('Uploading new-' + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix);
-              await github.request('POST /repos/{owner}/{repo}/releases/{release_id}/assets', {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                release_id: release.data.id,
-                name: 'new-' + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix,
-                // data: fs.readFileSync('./core/build/libs/' + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix),
-                data: fs.readFileSync(archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix),
-                headers: {
-                  'X-GitHub-Api-Version': '2022-11-28',
-                  'content-type': archive['mime-type']
-                }
-              });
+              // console.log('Uploading new-' + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix);
+              // await github.request('POST /repos/{owner}/{repo}/releases/{release_id}/assets', {
+              //   owner: context.repo.owner,
+              //   repo: context.repo.repo,
+              //   release_id: release.data.id,
+              //   name: 'new-' + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix,
+              //   // data: fs.readFileSync('./core/build/libs/' + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix),
+              //   data: fs.readFileSync(archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix),
+              //   headers: {
+              //     'X-GitHub-Api-Version': '2022-11-28',
+              //     'content-type': archive['mime-type']
+              //   }
+              // });
               console.log('Uploading old-' + archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix);
               await github.rest.repos.uploadReleaseAsset({
                 owner: context.repo.owner,
