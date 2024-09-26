@@ -142,7 +142,7 @@ dependencies {
             "org.springframework:spring-jdbc:5.3.39",
             "org.springframework:spring-tx:5.3.39",
             "org.springframework:spring-test:5.3.39",
-            "javax.media:jai-core:1.1.3"
+            "javax.media:jai-core:1.1.3",
     )
     metrics(
             "io.dropwizard.metrics:metrics-core:4.2.27",
@@ -172,12 +172,16 @@ dependencies {
             'joda-time:joda-time:2.12.7'
     )
     implementation(
+            "ch.qos.logback:logback-classic:1.5.7",
+            "ch.qos.logback.access:common:2.0.1",
+            "ch.qos.logback.access:tomcat:2.0.1",
+            'net.logstash.logback:logstash-logback-encoder:8.0',
+    )
+    implementation(
             'com.google.guava:guava:33.0.0-jre',
             "org.slf4j:slf4j-api:2.0.16",
             "org.slf4j:jcl-over-slf4j:2.0.16",
             "org.slf4j:jul-to-slf4j:2.0.16",
-            "ch.qos.logback:logback-classic:1.5.7",
-            "ch.qos.logback:logback-access:1.4.14",
             'org.json:json:20240303',
             'org.yaml:snakeyaml:2.2',
             'com.github.spullara.cli-parser:cli-parser:1.1.6',
@@ -186,7 +190,6 @@ dependencies {
             'com.amazonaws:aws-java-sdk-s3:1.12.770',
             'com.adobe.xmp:xmpcore:6.1.11',
             'io.sentry:sentry-logback:7.5.0',
-            'net.logstash.logback:logstash-logback-encoder:8.0',
     )
 
     implementation(
