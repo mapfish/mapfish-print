@@ -173,8 +173,7 @@ dependencies {
     )
     implementation(
             "ch.qos.logback:logback-classic:1.5.7",
-            "ch.qos.logback.access:common:2.0.1",
-            "ch.qos.logback.access:tomcat:2.0.1",
+            "ch.qos.logback:logback-access:1.4.14",
             'net.logstash.logback:logstash-logback-encoder:8.0',
     )
     implementation(
