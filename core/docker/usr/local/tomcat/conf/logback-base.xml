@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <appender name="classic" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <target>System.err</target>
+    </appender>
+
+    <appender name="json" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <fieldNames>
+                <timestamp>timegenerated</timestamp>
+                <level>level_name</level>
+                <message>msg</message>
+            </fieldNames>
+        </encoder>
+        <target>System.err</target>
+    </appender>
+
+    <appender name="Sentry" class="io.sentry.logback.SentryAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${SENTRY_REPORTING_LOG_LEVEL}</level>
+        </filter>
+    </appender>
+
+    <logger name="org.apache.catalina" level="${TOMCAT_LOG_LEVEL}"/>
+    <logger name="org.apache.coyote" level="${TOMCAT_LOG_LEVEL}"/>
+    <logger name="io.sentry" level="${SENTRY_LOG_LEVEL}"/>
+</included>

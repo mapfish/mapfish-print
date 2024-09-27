@@ -1,80 +1,11 @@
-<configuration>
-    <appender name="classic" class="ch.qos.logback.core.ConsoleAppender">
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+  <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+
+    <appender name="log-classic" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%h %l %u %user %date "%r" %s %b</pattern>
         </encoder>
     </appender>
+</included>
 
-    <appender name="json" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.AccessEventCompositeJsonEncoder">
-            <providers>
-                <pattern>
-                    <pattern>
-                        {
-                        "timestamp":"%date{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}",
-                        "clientip":"%remoteIP",
-                        "auth":"%user",
-                        "verb":"%requestMethod",
-                        "requestprotocol":"%protocol",
-                        "rawrequest":"%requestURL",
-                        "response":"#asLong{%statusCode}",
-                        "bytes":"#asLong{%bytesSent}",
-                        "total_service_time":"#asLong{%elapsedTime}",
-                        "request":"http://%header{Host}%requestURI",
-                        "referrer":"%header{Referer}",
-                        "agent":"%header{User-agent}",
-
-                        "request.host":"%header{Host}",
-                        "request.accept":"%header{Accept}",
-                        "request.accept-encoding":"%header{Accept-Encoding}",
-                        "request.connection":"%header{Connection}",
-
-                        "response.content-type":"%responseHeader{Content-Type}",
-                        "response.content-length":"%responseHeader{Content-Length}",
-                        "response.server":"%responseHeader{Server}",
-                        "response.connection":"%responseHeader{Connection}"
-                        }
-                    </pattern>
-                </pattern>
-            </providers>
-        </encoder>
-    </appender>
-
-    <appender name="logstash" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.AccessEventCompositeJsonEncoder">
-            <providers>
-                <pattern>
-                    <pattern>
-                        {
-                        "timestamp":"%date{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}",
-                        "clientip":"%remoteIP",
-                        "auth":"%user",
-                        "verb":"%requestMethod",
-                        "requestprotocol":"%protocol",
-                        "rawrequest":"%requestURL",
-                        "response":"#asLong{%statusCode}",
-                        "bytes":"#asLong{%bytesSent}",
-                        "total_service_time":"#asLong{%elapsedTime}",
-                        "request":"http://%header{Host}%requestURI",
-                        "referrer":"%header{Referer}",
-                        "agent":"%header{User-agent}",
-
-                        "request.host":"%header{Host}",
-                        "request.accept":"%header{Accept}",
-                        "request.accept-encoding":"%header{Accept-Encoding}",
-                        "request.connection":"%header{Connection}",
-
-                        "response.content-type":"%responseHeader{Content-Type}",
-                        "response.content-length":"%responseHeader{Content-Length}",
-                        "response.server":"%responseHeader{Server}",
-                        "response.connection":"%responseHeader{Connection}"
-                        }
-                    </pattern>
-                </pattern>
-            </providers>
-        </encoder>
-    </appender>
-
-
-    <appender-ref ref="${TOMCAT_LOG_TYPE}" />
-</configuration>

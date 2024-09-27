@@ -121,6 +121,11 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
+  <servlet>
+    <servlet-name>AccessViewStatusMessages</servlet-name>
+    <servlet-class>ch.qos.logback.access.ViewStatusMessagesServlet</servlet-class>
+  </servlet>
+
     <servlet-mapping>
         <servlet-name>mapfish-print</servlet-name>
         <url-pattern>/print/*</url-pattern>
@@ -130,5 +135,10 @@
         <servlet-name>mapfish-print</servlet-name>
         <url-pattern>/sec/print/*</url-pattern>
     </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>AccessViewStatusMessages</servlet-name>
+    <url-pattern>/metrics/lbAccessStatus</url-pattern>
+  </servlet-mapping>
 
 </web-app>
