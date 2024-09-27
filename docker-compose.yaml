@@ -8,7 +8,6 @@ services:
   print:
     image: mapfish_print_tester
     user: ${USER_ID}
-    hostname: print
     volumes:
       - ./examples/src/test/resources/examples:/usr/local/tomcat/webapps/ROOT/print-apps:ro
     ports:
