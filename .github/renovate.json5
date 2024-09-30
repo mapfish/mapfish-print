@@ -153,5 +153,10 @@
       groupName: 'CI dependencies',
       automerge: true,
     },
+    /** Packages published very recently are not pushed to stabilization branches for security reasons */
+    {
+      matchBaseBranches: ['/^[0-9]+\\.[0-9]+$/'],
+      minimumReleaseAge: '7 days',
+    },
   ],
 }
