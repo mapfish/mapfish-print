@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Objects;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Test;
@@ -104,7 +105,7 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
     while (!done) {
       MockHttpServletRequest servletStatusRequest = new MockHttpServletRequest("GET", statusURL);
       MockHttpServletResponse servletStatusResponse = new MockHttpServletResponse();
-      servlet.getStatus("test", ref, servletStatusRequest, servletStatusResponse);
+      servlet.getStatusSpecificAppId("test", ref, servletStatusRequest, servletStatusResponse);
 
       String contentAsString = servletStatusResponse.getContentAsString();
 
@@ -120,7 +121,7 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
     try {
       AccessAssertionTestUtil.setCreds("ROLE_USER");
       final MockHttpServletResponse getResponse1 = new MockHttpServletResponse();
-      this.servlet.getReport("test", ref, false, getResponse1);
+      this.servlet.getReportSpecificAppId("test", ref, false, getResponse1);
       fail("Expected an AccessDeniedException");
     } catch (AccessDeniedException e) {
       // good
@@ -129,7 +130,7 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
 
     try {
       final MockHttpServletResponse getResponse2 = new MockHttpServletResponse();
-      this.servlet.getReport("test", ref, false, getResponse2);
+      this.servlet.getReportSpecificAppId("test", ref, false, getResponse2);
       assertEquals(HttpStatus.UNAUTHORIZED.value(), servletCreateResponse.getStatus());
       fail("Expected an AuthenticationCredentialsNotFoundException");
     } catch (AuthenticationCredentialsNotFoundException e) {
@@ -137,7 +138,7 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
     }
   }
 
-  private byte[] assertCorrectResponse(MockHttpServletResponse servletGetReportResponse)
+  private void assertCorrectResponse(MockHttpServletResponse servletGetReportResponse)
       throws IOException {
     byte[] report;
     report = servletGetReportResponse.getContentAsByteArray();
@@ -146,12 +147,13 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
     assertEquals("image/png", contentType);
     final Calendar instance = Calendar.getInstance();
     int year = instance.get(Calendar.YEAR);
-    String fileName = servletGetReportResponse.getHeader("Content-disposition").split("=")[1];
+    String fileName =
+        Objects.requireNonNull(servletGetReportResponse.getHeader("Content-disposition"))
+            .split("=")[1];
     assertEquals("test_report-" + year + ".png", fileName);
 
     new ImageSimilarity(getFile(MapPrinterServletSecurityTest.class, "expectedSimpleImage.png"))
         .assertSimilarity(report, 0);
-    return report;
   }
 
   private void setUpConfigFiles() throws URISyntaxException {

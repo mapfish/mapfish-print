@@ -1,7 +1,10 @@
 package org.mapfish.print.servlet;
 
+import static com.codahale.metrics.MetricRegistry.name;
 import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import io.sentry.Sentry;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -81,17 +84,25 @@ public class MapPrinterServlet extends BaseMapServlet {
   /** The url path to get a sample print request. */
   public static final String EXAMPLE_REQUEST_URL = "/exampleRequest.json";
 
+  private static final String BUILDREPORT = "buildreport";
+
   /** The url path to create and get a report. */
-  public static final String CREATE_AND_GET_URL = "/buildreport";
+  public static final String CREATE_AND_GET_URL = "/" + BUILDREPORT;
+
+  private static final String STATUS = "status";
 
   /** The url path to get the status for a print task. */
-  public static final String STATUS_URL = "/status";
+  public static final String STATUS_URL = "/" + STATUS;
+
+  private static final String CANCEL = "cancel";
 
   /** The url path to cancel a print task. */
-  public static final String CANCEL_URL = "/cancel";
+  public static final String CANCEL_URL = "/" + CANCEL;
+
+  private static final String REPORT = "report";
 
   /** The url path to create a print task and to get a finished print. */
-  public static final String REPORT_URL = "/report";
+  public static final String REPORT_URL = "/" + REPORT;
 
   /** The url path to get the list of fonts available to geotools. */
   public static final String FONTS_URL = "/fonts";
@@ -125,7 +136,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest,
    * javax.servlet.http.HttpServletResponse)} response
    */
-  public static final String JSON_STATUS = "status";
+  public static final String JSON_STATUS = STATUS;
 
   /**
    * The elapsed time in ms from the point the job started. If the job is finished, this is the
@@ -218,6 +229,16 @@ public class MapPrinterServlet extends BaseMapServlet {
   private final ServletInfo servletInfo;
   private final MapPrinterFactory mapPrinterFactory;
 
+  private final Timer buildReportTimer;
+  private final Timer buildReportTimerNoAppId;
+  private final Timer reportTimer;
+  private final Timer reportTimerNoAppId;
+  private final Timer statusTimer;
+  private final Timer statusTimerNoAppId;
+  private final Timer cancelTimer;
+  private final Timer cancelTimerNoAppId;
+  private final Timer getReportTimer;
+  private final Timer getReportTimerNoAppId;
   private long maxCreateAndGetWaitTimeInSeconds = ThreadPoolJobManager.DEFAULT_TIMEOUT_IN_SECONDS;
 
   @Autowired
@@ -227,13 +248,30 @@ public class MapPrinterServlet extends BaseMapServlet {
       final MapPrinterFactory printerFactory,
       final ApplicationContext context,
       final ServletInfo servletInfo,
-      final MapPrinterFactory mapPrinterFactory) {
+      final MapPrinterFactory mapPrinterFactory,
+      final MetricRegistry metricRegistry) {
     this.jobManager = jobManager;
     this.reportLoaders = reportLoaders;
     this.printerFactory = printerFactory;
     this.context = context;
     this.servletInfo = servletInfo;
     this.mapPrinterFactory = mapPrinterFactory;
+
+    buildReportTimer = metricRegistry.timer(name(MapPrinterServlet.class, BUILDREPORT));
+    buildReportTimerNoAppId =
+        metricRegistry.timer(name(MapPrinterServlet.class, BUILDREPORT, "NoAppId"));
+    reportTimer = metricRegistry.timer(name(MapPrinterServlet.class, "generate", REPORT));
+    reportTimerNoAppId =
+        metricRegistry.timer(name(MapPrinterServlet.class, "generate", REPORT, "NoAppId"));
+    statusTimer = metricRegistry.timer(name(MapPrinterServlet.class, STATUS, "report"));
+    statusTimerNoAppId =
+        metricRegistry.timer(name(MapPrinterServlet.class, STATUS, "report", "NoAppId"));
+    cancelTimer = metricRegistry.timer(name(MapPrinterServlet.class, CANCEL, "report"));
+    cancelTimerNoAppId =
+        metricRegistry.timer(name(MapPrinterServlet.class, CANCEL, "report", "NoAppId"));
+    getReportTimer = metricRegistry.timer(name(MapPrinterServlet.class, "download", REPORT));
+    getReportTimerNoAppId =
+        metricRegistry.timer(name(MapPrinterServlet.class, "download", REPORT, "NoAppId"));
 
     boolean enableSentry = System.getProperties().contains("sentry.dsn");
     enableSentry |= System.getenv().containsKey("SENTRY_URL");
@@ -352,7 +390,9 @@ public class MapPrinterServlet extends BaseMapServlet {
       @Nonnull @PathVariable final String referenceId,
       final HttpServletRequest statusRequest,
       final HttpServletResponse statusResponse) {
-    getStatus(appId, referenceId, statusRequest, statusResponse);
+    try (Timer.Context ignored = statusTimer.time()) {
+      getStatus(appId, referenceId, statusRequest, statusResponse);
+    }
   }
 
   /**
@@ -371,7 +411,9 @@ public class MapPrinterServlet extends BaseMapServlet {
       @Nonnull @PathVariable final String referenceId,
       final HttpServletRequest statusRequest,
       final HttpServletResponse statusResponse) {
-    getStatus("default", referenceId, statusRequest, statusResponse);
+    try (Timer.Context ignored = statusTimerNoAppId.time()) {
+      getStatus("default", referenceId, statusRequest, statusResponse);
+    }
   }
 
   /**
@@ -386,7 +428,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    * @param statusRequest the request object
    * @param statusResponse the response object
    */
-  public final void getStatus(
+  private void getStatus(
       @Nonnull final String applicationId,
       @Nonnull final String referenceId,
       final HttpServletRequest statusRequest,
@@ -438,7 +480,9 @@ public class MapPrinterServlet extends BaseMapServlet {
       @Nonnull @PathVariable final String appId,
       @Nonnull @PathVariable final String referenceId,
       final HttpServletResponse statusResponse) {
-    cancel(appId, referenceId, statusResponse);
+    try (Timer.Context ignored = cancelTimer.time()) {
+      cancel(appId, referenceId, statusResponse);
+    }
   }
 
   /**
@@ -453,7 +497,9 @@ public class MapPrinterServlet extends BaseMapServlet {
   @RequestMapping(value = CANCEL_URL + "/{referenceId:\\S+}", method = RequestMethod.DELETE)
   public final void cancelPath(
       @Nonnull @PathVariable final String referenceId, final HttpServletResponse statusResponse) {
-    cancel("default", referenceId, statusResponse);
+    try (Timer.Context ignored = cancelTimerNoAppId.time()) {
+      cancel("default", referenceId, statusResponse);
+    }
   }
 
   /**
@@ -466,7 +512,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    * @param referenceId the job reference
    * @param statusResponse the response object
    */
-  public final void cancel(
+  private void cancel(
       @Nonnull final String applicationId,
       @Nonnull final String referenceId,
       final HttpServletResponse statusResponse) {
@@ -498,7 +544,19 @@ public class MapPrinterServlet extends BaseMapServlet {
       final HttpServletRequest createReportRequest,
       final HttpServletResponse createReportResponse)
       throws NoSuchAppException {
-    setNoCache(createReportResponse);
+    try (Timer.Context ignored = reportTimer.time()) {
+      setNoCache(createReportResponse);
+      doCreateReport(appId, format, requestData, createReportRequest, createReportResponse);
+    }
+  }
+
+  private void doCreateReport(
+      final String appId,
+      final String format,
+      final String requestData,
+      final HttpServletRequest createReportRequest,
+      final HttpServletResponse createReportResponse)
+      throws NoSuchAppException {
     String ref =
         createAndSubmitPrintJob(
             appId, format, requestData, createReportRequest, createReportResponse);
@@ -540,7 +598,9 @@ public class MapPrinterServlet extends BaseMapServlet {
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
       final HttpServletResponse getReportResponse)
       throws IOException, ServletException {
-    getReport(appId, referenceId, inline, getReportResponse);
+    try (Timer.Context ignored = getReportTimer.time()) {
+      getReport(appId, referenceId, inline, getReportResponse);
+    }
   }
 
   /**
@@ -556,7 +616,9 @@ public class MapPrinterServlet extends BaseMapServlet {
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
       final HttpServletResponse getReportResponse)
       throws IOException, ServletException {
-    getReport("default", referenceId, inline, getReportResponse);
+    try (Timer.Context ignored = getReportTimerNoAppId.time()) {
+      getReport("default", referenceId, inline, getReportResponse);
+    }
   }
 
   /**
@@ -567,7 +629,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    * @param inline whether to inline the
    * @param getReportResponse the response object
    */
-  public final void getReport(
+  private void getReport(
       @Nonnull final String applicationId,
       @Nonnull final String referenceId,
       final boolean inline,
@@ -595,16 +657,28 @@ public class MapPrinterServlet extends BaseMapServlet {
       final HttpServletRequest createReportRequest,
       final HttpServletResponse createReportResponse)
       throws NoSuchAppException {
-    setNoCache(createReportResponse);
+    try (Timer.Context ignored = reportTimerNoAppId.time()) {
+      setNoCache(createReportResponse);
+      final String appId = getAppId(requestData, createReportResponse);
+      if (appId == null) {
+        return;
+      }
+      doCreateReport(appId, format, requestData, createReportRequest, createReportResponse);
+    }
+  }
+
+  private static String getAppId(
+      final String requestData, final HttpServletResponse createReportResponse)
+      throws NoSuchAppException {
     PJsonObject spec = parseJson(requestData, createReportResponse);
     if (spec == null) {
-      return;
+      return null;
     }
     final String appId = spec.optString(JSON_APP, DEFAULT_CONFIGURATION_FILE_KEY);
     if (appId == null) {
       throw new NoSuchAppException("No app specified");
     }
-    createReport(appId, format, requestData, createReportRequest, createReportResponse);
+    return appId;
   }
 
   /**
@@ -629,8 +703,22 @@ public class MapPrinterServlet extends BaseMapServlet {
       final HttpServletRequest createReportRequest,
       final HttpServletResponse createReportResponse)
       throws IOException, ServletException, InterruptedException, NoSuchAppException {
-    setNoCache(createReportResponse);
 
+    try (Timer.Context ignored = buildReportTimer.time()) {
+      setNoCache(createReportResponse);
+      doCreateReportAndGet(
+          appId, format, requestData, inline, createReportRequest, createReportResponse);
+    }
+  }
+
+  private void doCreateReportAndGet(
+      final String appId,
+      final String format,
+      final String requestData,
+      final boolean inline,
+      final HttpServletRequest createReportRequest,
+      final HttpServletResponse createReportResponse)
+      throws NoSuchAppException, InterruptedException, IOException, ServletException {
     String ref =
         createAndSubmitPrintJob(
             appId, format, requestData, createReportRequest, createReportResponse);
@@ -668,17 +756,15 @@ public class MapPrinterServlet extends BaseMapServlet {
       final HttpServletRequest createReportRequest,
       final HttpServletResponse createReportResponse)
       throws IOException, ServletException, InterruptedException, NoSuchAppException {
-    setNoCache(createReportResponse);
-    PJsonObject spec = parseJson(requestData, createReportResponse);
-    if (spec == null) {
-      return;
+    try (Timer.Context ignored = buildReportTimerNoAppId.time()) {
+      setNoCache(createReportResponse);
+      final String appId = getAppId(requestData, createReportResponse);
+      if (appId == null) {
+        return;
+      }
+      doCreateReportAndGet(
+          appId, format, requestData, inline, createReportRequest, createReportResponse);
     }
-    String appId = spec.optString(JSON_APP, DEFAULT_CONFIGURATION_FILE_KEY);
-    if (appId == null) {
-      throw new NoSuchAppException("No app specified");
-    }
-    createReportAndGet(
-        appId, format, requestData, inline, createReportRequest, createReportResponse);
   }
 
   /**
