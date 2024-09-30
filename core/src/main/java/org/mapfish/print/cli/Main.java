@@ -3,7 +3,7 @@ package org.mapfish.print.cli;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.core.util.StatusPrinter;
+import ch.qos.logback.core.util.StatusPrinter2;
 import com.google.common.annotations.VisibleForTesting;
 import com.sampullara.cli.Args;
 import java.io.File;
@@ -58,7 +58,6 @@ public final class Main {
    * Main method.
    *
    * @param args the cli arguments
-   * @throws Exception
    */
   public static void main(final String[] args) throws Exception {
     runMain(args);
@@ -69,7 +68,6 @@ public final class Main {
    * Runs the print.
    *
    * @param args the cli arguments
-   * @throws Exception
    */
   @VisibleForTesting
   public static void runMain(final String[] args) throws Exception {
@@ -133,17 +131,20 @@ public final class Main {
       case LOGLEVEL_INFO:
         logfile = classLoader.getResource("shell-info-log.xml");
         break;
-      case LOGLEVEL_DEFAULT:
-        logfile = classLoader.getResource("shell-default-log.xml");
-        break;
       case LOGLEVEL_VERBOSE:
         logfile = classLoader.getResource("shell-verbose-log.xml");
         break;
+      case LOGLEVEL_DEFAULT:
       default:
         logfile = classLoader.getResource("shell-default-log.xml");
         break;
     }
 
+    LoggerContext loggerContext = getLoggerContext(logfile);
+    new StatusPrinter2().printInCaseOfErrorsOrWarnings(loggerContext);
+  }
+
+  private static LoggerContext getLoggerContext(final URL logfile) {
     LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 
     try {
@@ -156,15 +157,15 @@ public final class Main {
     } catch (JoranException je) {
       // StatusPrinter will handle this
     }
-    StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
+    return loggerContext;
   }
 
   /**
-   * Instead of calling system.exit an exception will be thrown. This is useful for testing so a
-   * test won't shutdown jvm.
+   * Instead of calling System.exit() an exception will be thrown. This is useful for testing so a
+   * test won't shut down the jvm.
    *
-   * @param exceptionOnFailure if true then an exception will be thrown instead of system.exit being
-   *     called.
+   * @param exceptionOnFailure if true then an exception will be thrown instead of System.exit()
+   *     being called.
    */
   @VisibleForTesting
   static void setExceptionOnFailure(final boolean exceptionOnFailure) {
@@ -197,7 +198,7 @@ public final class Main {
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug("Request Data: \n{}", jsonSpec.getInternalObj().toString(2));
         }
-        this.mapPrinter.print(new HashMap<String, String>(), jsonSpec, outFile);
+        this.mapPrinter.print(new HashMap<>(), jsonSpec, outFile);
       }
     }
   }
