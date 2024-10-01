@@ -9,11 +9,11 @@ defaultTasks 'build'
 repositories {
     mavenCentral {
         content {
-            excludeModule("javax.media", "jai_core")
+            excludeModule('javax.media', 'jai_core')
         }
     }
-    maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
-    maven { url "https://repo.osgeo.org/repository/release/" }
+    maven { url 'https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts' }
+    maven { url 'https://repo.osgeo.org/repository/release/' }
 }
 
 // the task `run` of the gretty plugin conflicts with the task with the same
@@ -87,7 +87,7 @@ tasks.register('testCLI', Exec) {
 }
 
 test {
-    maxHeapSize = "500M"
+    maxHeapSize = '500M'
     reports {
         junitXml.getRequired().set(true)
         html.getRequired().set(true)
@@ -126,86 +126,82 @@ configurations {
 
 dependencies {
     implementation(
-            "org.springframework:spring-context:5.3.39",
-            "org.springframework:spring-web:5.3.39",
-            "org.springframework:spring-webmvc:5.3.39",
-            "org.springframework.security:spring-security-config:5.8.14",
-            "org.springframework.security:spring-security-web:5.8.14",
+            'org.springframework:spring-context:5.3.39',
+            'org.springframework:spring-web:5.3.39',
+            'org.springframework:spring-webmvc:5.3.39',
+            'org.springframework:spring-aspects:5.3.39',
+            'org.springframework:spring-orm:5.3.39',
+            'org.springframework:spring-jdbc:5.3.39',
+            'org.springframework:spring-tx:5.3.39',
+            'org.springframework:spring-test:5.3.39',
+            'org.springframework.security:spring-security-config:5.8.14',
+            'org.springframework.security:spring-security-web:5.8.14',
             'com.thetransactioncompany:cors-filter:2.10',
-            // Hibernate & Postgres
             'org.hibernate:hibernate-core:5.6.15.Final',
             'org.postgresql:postgresql:42.7.4',
             'com.vladmihalcea:hibernate-types-52:2.21.1',
             'com.mchange:c3p0:0.10.1',
-            "org.springframework:spring-aspects:5.3.39",
-            "org.springframework:spring-orm:5.3.39",
-            "org.springframework:spring-jdbc:5.3.39",
-            "org.springframework:spring-tx:5.3.39",
-            "org.springframework:spring-test:5.3.39",
-            "javax.media:jai-core:1.1.3"
+            'javax.media:jai-core:1.1.3',
     )
     metrics(
-            "io.dropwizard.metrics:metrics-core:4.2.27",
-            "io.dropwizard.metrics:metrics-servlet:4.2.27",
-            "io.dropwizard.metrics:metrics-httpclient:4.2.27",
-            "io.dropwizard.metrics:metrics-servlets:4.2.27",
-            "io.dropwizard.metrics:metrics-jvm:4.2.27",
-            "io.dropwizard.metrics:metrics-jmx:4.2.27",
-            "io.dropwizard.metrics:metrics-logback:4.2.27",
+            'io.dropwizard.metrics:metrics-core:4.2.27',
+            'io.dropwizard.metrics:metrics-servlet:4.2.27',
+            'io.dropwizard.metrics:metrics-httpclient:4.2.27',
+            'io.dropwizard.metrics:metrics-servlets:4.2.27',
+            'io.dropwizard.metrics:metrics-jvm:4.2.27',
+            'io.dropwizard.metrics:metrics-jmx:4.2.27',
+            'io.dropwizard.metrics:metrics-logback:4.2.27',
     )
     geotools(
-            "org.geotools:gt-epsg-hsql:30.2",
-            "org.geotools:gt-render:30.2",
-            "org.geotools:gt-geojson:30.2",
-            "org.geotools:gt-geotiff:30.2",
-            "org.geotools:gt-wms:30.2",
-            "org.geotools.xsd:gt-xsd-gml3:30.2",
-            "org.geotools:gt-svg:30.2",
-            "org.geotools:gt-cql:30.2"
+            'org.geotools:gt-epsg-hsql:30.2',
+            'org.geotools:gt-render:30.2',
+            'org.geotools:gt-geojson:30.2',
+            'org.geotools:gt-geotiff:30.2',
+            'org.geotools:gt-wms:30.2',
+            'org.geotools.xsd:gt-xsd-gml3:30.2',
+            'org.geotools:gt-svg:30.2',
+            'org.geotools:gt-cql:30.2',
     )
     jasper(
-            "net.sf.jasperreports:jasperreports:6.21.3",
-            "org.codehaus.groovy:groovy-all:3.0.22",
+            'net.sf.jasperreports:jasperreports:6.21.3',
+            'net.sf.jasperreports:jasperreports-fonts:6.21.3',
+            'net.sf.jasperreports:jasperreports-functions:6.21.3',
+            'org.codehaus.groovy:groovy-all:3.0.22',
             'ar.com.fdvs:DynamicJasper:5.3.9',
-            "net.sf.jasperreports:jasperreports-fonts:6.21.3",
-            "net.sf.jasperreports:jasperreports-functions:6.21.3",
-            'joda-time:joda-time:2.12.7'
+            'joda-time:joda-time:2.12.7',
     )
     implementation(
-            'com.google.guava:guava:33.0.0-jre',
-            "org.slf4j:slf4j-api:2.0.16",
-            "org.slf4j:jcl-over-slf4j:2.0.16",
-            "org.slf4j:jul-to-slf4j:2.0.16",
-            "ch.qos.logback:logback-classic:1.5.7",
-            "ch.qos.logback:logback-access:1.4.14",
+            'org.slf4j:slf4j-api:2.0.16',
+            'org.slf4j:jcl-over-slf4j:2.0.16',
+            'org.slf4j:jul-to-slf4j:2.0.16',
+            'ch.qos.logback:logback-classic:1.5.7',
+            'ch.qos.logback:logback-access:1.4.14',
             'org.json:json:20240303',
             'org.yaml:snakeyaml:2.2',
             'com.github.spullara.cli-parser:cli-parser:1.1.6',
-            'org.apache.httpcomponents:httpclient:4.5.14',
             'com.sun.mail:javax.mail:1.6.2',
             'com.amazonaws:aws-java-sdk-s3:1.12.770',
-            'com.adobe.xmp:xmpcore:6.1.11',
             'io.sentry:sentry-logback:7.5.0',
+            // For JSON logs
             'net.logstash.logback:logstash-logback-encoder:8.0',
+            // For PDF/A
+            'com.adobe.xmp:xmpcore:6.1.11',
     )
 
     implementation(
-            'org.apache.xmlgraphics:xmlgraphics-commons:2.9',
-            "org.apache.xmlgraphics:batik-transcoder:1.17",
-            "org.apache.xmlgraphics:batik-bridge:1.17",
-            "org.apache.xmlgraphics:batik-codec:1.17",
-            "org.apache.xmlgraphics:batik-svg-dom:1.17"
+            'org.apache.xmlgraphics:batik-codec:1.17',
+            'org.apache.xmlgraphics:batik-svg-dom:1.17'
     )
 
     providedCompile('javax.servlet:javax.servlet-api:4.0.1')
-    compileOnly "com.github.spotbugs:spotbugs-annotations:4.7.3"
+    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.7.3'
 
     testImplementation group: 'de.saly', name: 'javamail-mock2-fullmock', version: '0.5-beta4'
 }
 
 static def gitRevision() {
     def gitRev = System.getenv('GIT_HEAD')
-    return gitRev != null ? gitRev : "git rev-parse HEAD".execute().text.trim()
+    return gitRev != null ? gitRev : 'git rev-parse HEAD'.execute().text.trim()
 }
 
 compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
@@ -214,7 +210,7 @@ compileTestJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked'
 // Add version to resources, used for User-Agent string:
 processResources {
     filter ReplaceTokens, tokens: [
-        "application.version": version
+        'application.version': version
     ]
 }
 
@@ -223,11 +219,11 @@ def addManifestAttribute(manifest) {
             'Mapfish-Print-Version': version,
             'Git-Revision': gitRevision(),
             'Build-Time': new Date().getDateTimeString(),
-            'Build-By': System.getProperty('user.name', "unknown"),
-            'Build-Java-Runtime-Name': System.getProperty('java.runtime.name', "unknown"),
-            'Build-Java-Version': System.getProperty('java.version', "unknown"),
-            'Build-OS-Arch': System.getProperty('os.arch', "unknown"),
-            'Build-OS-Name': System.getProperty('os.name', "unknown")
+            'Build-By': System.getProperty('user.name', 'unknown'),
+            'Build-Java-Runtime-Name': System.getProperty('java.runtime.name', 'unknown'),
+            'Build-Java-Version': System.getProperty('java.version', 'unknown'),
+            'Build-OS-Arch': System.getProperty('os.arch', 'unknown'),
+            'Build-OS-Name': System.getProperty('os.name', 'unknown')
     )
 }
 
