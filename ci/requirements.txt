@@ -1,4 +1,4 @@
-c2cciutils[checks,publish]==1.4.20
+c2cciutils[checks,publish]==1.4.21
 attrs>=22.2.0 # because c2cciutils 1.4.12 does not work with 19.3
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
 certifi>=2022.12.7 # not directly required, pinned by Snyk to avoid a vulnerability
