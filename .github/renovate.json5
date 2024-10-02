@@ -158,5 +158,11 @@
       matchBaseBranches: ['/^[0-9]+\\.[0-9]+$/'],
       minimumReleaseAge: '7 days',
     },
+    /** Don't update checkstyle on old branches */
+    {
+      matchBaseBranches: ['/^3.2[2-9]$/', '/^3.30$/'],
+      matchPackageNames: ['checkstyle'],
+      enabled: false,
+    },
   ],
 }
