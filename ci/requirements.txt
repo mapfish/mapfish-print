@@ -7,3 +7,4 @@ cryptography>=42.0.8 # not directly required, pinned by Snyk to avoid a vulnerab
 requests>=2.32.2 # not directly required, pinned by Snyk to avoid a vulnerability
 pygments>=2.15.0 # not directly required, pinned by Snyk to avoid a vulnerability
 zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
+virtualenv>=20.26.6 # not directly required, pinned by Snyk to avoid a vulnerability
