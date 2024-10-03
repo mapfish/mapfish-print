@@ -164,5 +164,12 @@
       matchPackageNames: ['com.puppycrawl.tools:checkstyle', 'checkstyle'],
       enabled: false,
     },
+    /** Ungoup geotools minor and multiple */
+    {
+      matchPackagePrefixes: ['org.geotools.', 'org.geotools:'],
+      automerge: true,
+      groupName: 'geotools',
+      separateMultipleMinor: true,
+    },
   ],
 }
