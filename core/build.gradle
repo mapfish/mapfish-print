@@ -168,20 +168,20 @@ dependencies {
             'net.sf.jasperreports:jasperreports-functions:6.21.3',
             'org.codehaus.groovy:groovy-all:3.0.22',
             'ar.com.fdvs:DynamicJasper:5.3.9',
-            'joda-time:joda-time:2.12.7',
+            'joda-time:joda-time:2.13.0',
     )
     implementation(
             'org.slf4j:slf4j-api:2.0.16',
             'org.slf4j:jcl-over-slf4j:2.0.16',
             'org.slf4j:jul-to-slf4j:2.0.16',
             'ch.qos.logback:logback-classic:1.5.8',
-            'ch.qos.logback:logback-access:1.4.14',
+            'ch.qos.logback:logback-access:1.5.8',
             'org.json:json:20240303',
-            'org.yaml:snakeyaml:2.2',
+            'org.yaml:snakeyaml:2.3',
             'com.github.spullara.cli-parser:cli-parser:1.1.6',
             'com.sun.mail:javax.mail:1.6.2',
             'com.amazonaws:aws-java-sdk-s3:1.12.772',
-            'io.sentry:sentry-logback:7.5.0',
+            'io.sentry:sentry-logback:7.14.0',
             // For JSON logs
             'net.logstash.logback:logstash-logback-encoder:8.0',
             // For PDF/A

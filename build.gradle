@@ -12,7 +12,7 @@ buildscript {
 defaultTasks 'build'
 
 wrapper {
-    gradleVersion = '8.6'
+    gradleVersion = '8.10.2'
     distributionType = Wrapper.DistributionType.ALL
 }
 
