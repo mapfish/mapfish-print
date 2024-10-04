@@ -144,6 +144,7 @@ dependencies {
             'com.fasterxml.jackson.core:jackson-databind:2.13.5',
             'org.testng:testng:7.5.1',
             'com.google.guava:guava:32.0.1-jre',
+            'commons-io:commons-io:2.14.0',
     )
     metrics(
             "io.dropwizard.metrics:metrics-core:$metricsVersion",
