@@ -107,7 +107,7 @@ public final class CreateMapProcessor
   private ForkJoinPool requestForkJoinPool;
 
   /** Constructor. */
-  protected CreateMapProcessor() {
+  private CreateMapProcessor() {
     super(Output.class);
   }
 
@@ -389,7 +389,7 @@ public final class CreateMapProcessor
     final AreaOfInterest areaOfInterest = addAreaOfInterestLayer(mapValues, layers);
     final String mapKey = UUID.randomUUID().toString();
     final List<URI> graphics = new ArrayList<>(layers.size());
-    String timerName = getClass().getName() + ".buildLayers";
+    final String timerName = MetricRegistry.name(getClass().getSimpleName(), "buildLayers");
     try (Timer.Context ignored = this.metricRegistry.timer(timerName).time()) {
       int fileNumber = 0;
       for (LayerGroup layerGroup : LayerGroup.buildGroups(layers, pdfA)) {

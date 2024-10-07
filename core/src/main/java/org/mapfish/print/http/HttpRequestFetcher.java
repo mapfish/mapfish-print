@@ -223,8 +223,9 @@ public final class HttpRequestFetcher {
                 this.response = new CachedClientHttpResponse(this.originalRequest.execute());
               } catch (IOException | RuntimeException e) {
                 LOGGER.error("Request failed {}", this.originalRequest.getURI(), e);
+                String errorCounter = MetricRegistry.name(baseMetricName, "error");
+                HttpRequestFetcher.this.registry.counter(errorCounter).inc();
                 this.response = new ErrorResponseClientHttpResponse(e);
-                HttpRequestFetcher.this.registry.counter(baseMetricName + ".error").inc();
               }
             }
             return null;

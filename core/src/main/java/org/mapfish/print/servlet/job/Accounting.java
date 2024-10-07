@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /** Do some accounting for jobs. */
 public class Accounting {
-  @Autowired private MetricRegistry metricRegistry;
+  @Autowired protected MetricRegistry metricRegistry;
 
   /**
    * Start accounting for a job.
@@ -65,7 +65,8 @@ public class Accounting {
     }
 
     private String getMetricName(final String kind) {
-      return getClass().getName() + "." + StatsUtils.quotePart(this.entry.getAppId()) + "." + kind;
+      return MetricRegistry.name(
+          getClass().getSimpleName(), StatsUtils.quotePart(this.entry.getAppId()), kind);
     }
   }
 }

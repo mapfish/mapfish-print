@@ -1,5 +1,7 @@
 package org.mapfish.print.servlet.job;
 
+import com.codahale.metrics.MetricRegistry;
+import javax.annotation.Nonnull;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -39,16 +41,15 @@ public class HibernateAccounting extends Accounting {
 
     @Override
     public long onJobSuccess(final PrintJob.PrintResult printResult) {
-      final long duractionUSec = super.onJobSuccess(printResult);
-      final HibernateAccountingEntry accountingEntry1 =
+      final long jobDurationInNanoSec = super.onJobSuccess(printResult);
+      final HibernateAccountingEntry accountingEntry =
           new HibernateAccountingEntry(
               this.entry, PrintJobStatus.Status.FINISHED, this.configuration);
-      final HibernateAccountingEntry accountingEntry = accountingEntry1;
-      accountingEntry.setProcessingTimeMS(duractionUSec / 1000000L);
+      accountingEntry.setProcessingTimeMS(jobDurationInNanoSec / 1000000L);
       accountingEntry.setFileSize(printResult.fileSize);
       accountingEntry.setStats(printResult.executionContext.getStats());
       insertRecord(accountingEntry);
-      return duractionUSec;
+      return jobDurationInNanoSec;
     }
 
     @Override
@@ -75,7 +76,7 @@ public class HibernateAccounting extends Accounting {
         tmpl.execute(
             new TransactionCallbackWithoutResult() {
               @Override
-              protected void doInTransactionWithoutResult(final TransactionStatus status) {
+              protected void doInTransactionWithoutResult(@Nonnull final TransactionStatus status) {
                 final Session currentSession = HibernateAccounting.this.sf.getCurrentSession();
                 currentSession.merge(tuple);
                 currentSession.flush();
@@ -83,6 +84,10 @@ public class HibernateAccounting extends Accounting {
               }
             });
       } catch (HibernateException ex) {
+        String name =
+            MetricRegistry.name(
+                getClass().getSimpleName(), "insertRecordFailedWithHiddenHibernateException");
+        metricRegistry.counter(name).inc();
         LOGGER.warn("Cannot save accounting information", ex);
       }
     }

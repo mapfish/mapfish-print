@@ -31,10 +31,7 @@ import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
-import org.mapfish.print.config.Configuration;
-import org.mapfish.print.config.SmtpConfig;
-import org.mapfish.print.config.Template;
-import org.mapfish.print.config.WorkingDirectories;
+import org.mapfish.print.config.*;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.processor.ExecutionStats;
 import org.mapfish.print.processor.Processor;
@@ -181,7 +178,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         this.metricRegistry
             .counter(
                 MetricRegistry.name(
-                    getClass().getSimpleName(), ".ExceptionCanceledReportGeneration"))
+                    getClass().getSimpleName(), "ExceptionCanceledReportGeneration"))
             .inc();
         jobTracker.onJobCancel();
       } else {
@@ -190,7 +187,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
             this.entry.getRequestData(),
             this.entry.getReferenceId(),
             e);
-        this.metricRegistry.counter(getClass().getName() + ".error").inc();
+        this.metricRegistry.counter(MetricRegistry.name(getClass().getSimpleName(), "error")).inc();
         jobTracker.onJobError();
       }
       deleteReport();
@@ -245,7 +242,9 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
 
     LOGGER.info("Emailing error to {}", to);
     try (Timer.Context ignored =
-        this.metricRegistry.timer(getClass().getSimpleName() + ".SendingErrorEmail").time()) {
+        this.metricRegistry
+            .timer(MetricRegistry.name(getClass().getSimpleName(), "SendingErrorEmail"))
+            .time()) {
       Transport.send(message);
     }
   }
@@ -291,15 +290,15 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     message.setSubject(request.optString("subject", config.getSubject()));
 
     String msg = request.optString("body", config.getBody());
-    if (config.getStorage() != null) {
-      final Timer.Context saveTimer =
-          this.metricRegistry.timer(config.getStorage().getClass().getName()).time();
-      final URL url =
-          config
-              .getStorage()
-              .save(
-                  this.entry.getReferenceId(), fileName, fileExtension, mimeType, getReportFile());
-      saveTimer.stop();
+    final ReportStorage storage = config.getStorage();
+    if (storage != null) {
+      URL url;
+      String timerName = storage.getClass().getSimpleName();
+      try (Timer.Context ignored = this.metricRegistry.timer(timerName).time()) {
+        url =
+            storage.save(
+                this.entry.getReferenceId(), fileName, fileExtension, mimeType, getReportFile());
+      }
       msg = msg.replace("{url}", url.toString());
     }
     final MimeBodyPart html = new MimeBodyPart();
@@ -308,7 +307,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     Multipart multipart = new MimeMultipart();
     multipart.addBodyPart(html);
 
-    if (config.getStorage() == null) {
+    if (storage == null) {
       final MimeBodyPart attachment = new MimeBodyPart();
       attachment.attachFile(getReportFile(), mimeType, null);
       attachment.setFileName(fileName + "." + fileExtension);
@@ -318,11 +317,11 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     message.setContent(multipart);
 
     LOGGER.info("Emailing result to {}", to);
-    try (Timer.Context ignored =
-        this.metricRegistry.timer(getClass().getSimpleName() + ".SendingResultEmail").time()) {
+    String timerName = MetricRegistry.name(getClass().getSimpleName(), "SendingResultEmail");
+    try (Timer.Context ignored = this.metricRegistry.timer(timerName).time()) {
       Transport.send(message);
     }
-    stats.addEmailStats(recipients, config.getStorage() != null);
+    stats.addEmailStats(recipients, storage != null);
   }
 
   /** Delete the report (used if the report is sent by email). */
