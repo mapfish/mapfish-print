@@ -127,7 +127,11 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
   @Override
   public final PrintJobResult call() throws Exception {
     SecurityContextHolder.setContext(this.securityContext);
-    final Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".call").time();
+    final Timer.Context timer =
+        this.metricRegistry
+            .timer(
+                MetricRegistry.name(getClass().getSimpleName(), "ActualReportGenerationDuration"))
+            .time();
     MDC.put(Processor.MDC_APPLICATION_ID_KEY, this.entry.getAppId());
     MDC.put(Processor.MDC_JOB_ID_KEY, this.entry.getReferenceId());
     LOGGER.info(
@@ -151,7 +155,9 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
                       entry.getRequestData(),
                       outputStream));
 
-      this.metricRegistry.counter(getClass().getName() + ".success").inc();
+      this.metricRegistry
+          .counter(MetricRegistry.name(getClass().getSimpleName(), "SuccessfullyGeneratedReport"))
+          .inc();
       LOGGER.info("Successfully completed print job {}", this.entry.getReferenceId());
       LOGGER.debug("Job {}\n{}", this.entry.getReferenceId(), this.entry.getRequestData());
       final String fileName = getFileName(mapPrinter, spec);
@@ -172,7 +178,11 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
       if (Thread.currentThread().isInterrupted()) {
         LOGGER.info(
             "Print job canceled {}\n{}", this.entry.getRequestData(), this.entry.getReferenceId());
-        this.metricRegistry.counter(getClass().getName() + ".canceled").inc();
+        this.metricRegistry
+            .counter(
+                MetricRegistry.name(
+                    getClass().getSimpleName(), ".ExceptionCanceledReportGeneration"))
+            .inc();
         jobTracker.onJobCancel();
       } else {
         LOGGER.warn(
@@ -191,10 +201,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
       final long computationTimeMs =
           TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
       this.metricRegistry
-          .timer(getClass().getName() + ".total")
-          .update(totalTimeMS, TimeUnit.MILLISECONDS);
-      this.metricRegistry
-          .timer(getClass().getName() + ".wait")
+          .timer(MetricRegistry.name(getClass().getSimpleName(), "DelayBeforeReportGeneration"))
           .update(totalTimeMS - computationTimeMs, TimeUnit.MILLISECONDS);
       LOGGER.debug(
           "Print Job {} completed in {}ms", this.entry.getReferenceId(), computationTimeMs);
@@ -237,9 +244,10 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     message.setContent(multipart);
 
     LOGGER.info("Emailing error to {}", to);
-    Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".email.success").time();
-    Transport.send(message);
-    timer.stop();
+    try (Timer.Context ignored =
+        this.metricRegistry.timer(getClass().getSimpleName() + ".SendingErrorEmail").time()) {
+      Transport.send(message);
+    }
   }
 
   private Message createMessage(final SmtpConfig config, final InternetAddress[] recipients)
@@ -310,9 +318,10 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     message.setContent(multipart);
 
     LOGGER.info("Emailing result to {}", to);
-    Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".email.error").time();
-    Transport.send(message);
-    timer.stop();
+    try (Timer.Context ignored =
+        this.metricRegistry.timer(getClass().getSimpleName() + ".SendingResultEmail").time()) {
+      Transport.send(message);
+    }
     stats.addEmailStats(recipients, config.getStorage() != null);
   }
 

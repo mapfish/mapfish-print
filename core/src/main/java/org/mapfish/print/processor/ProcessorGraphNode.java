@@ -120,7 +120,7 @@ public final class ProcessorGraphNode<IN, OUT> {
    */
   public void toString(final StringBuilder builder, final int indent, final String parent) {
     this.processor.toString(builder, indent, parent);
-    for (ProcessorGraphNode dependency : this.dependencies) {
+    for (ProcessorGraphNode<?, ?> dependency : this.dependencies) {
       dependency.toString(builder, indent + 1, this.processor.toString());
     }
   }
@@ -182,8 +182,10 @@ public final class ProcessorGraphNode<IN, OUT> {
 
     private void executeProcess(final Processor<In, Out> process, final Values values) {
       final String timerName =
-          String.format(
-              "%s.compute.%s", ProcessorGraphNode.class.getName(), process.getClass().getName());
+          MetricRegistry.name(
+              ProcessorGraphNode.class.getSimpleName(),
+              "compute",
+              process.getClass().getSimpleName());
       final Timer.Context timerContext = this.node.metricRegistry.timer(timerName).time();
       try {
         final In inputParameter = ProcessorUtils.populateInputParameter(process, values);
@@ -219,7 +221,7 @@ public final class ProcessorGraphNode<IN, OUT> {
       LOGGER.info("Error while executing process: {}", process, cause);
       // the processor is already canceled, so we don't care if something fails
       this.execContext.getContext().stopIfCanceled();
-      this.node.metricRegistry.counter(timerName + ".error").inc();
+      this.node.metricRegistry.counter(MetricRegistry.name(timerName, "error")).inc();
       return Objects.requireNonNullElseGet(
           runtimeCause, () -> new PrintException("Failed to execute process:" + process, cause));
     }

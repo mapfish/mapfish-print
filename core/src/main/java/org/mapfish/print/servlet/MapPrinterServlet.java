@@ -258,21 +258,30 @@ public class MapPrinterServlet extends BaseMapServlet {
     this.servletInfo = servletInfo;
     this.mapPrinterFactory = mapPrinterFactory;
 
-    buildReportTimer = metricRegistry.timer(name(MapPrinterServlet.class, BUILDREPORT));
+    buildReportTimer =
+        metricRegistry.timer(name(MapPrinterServlet.class.getSimpleName(), BUILDREPORT));
     buildReportTimerNoAppId =
-        metricRegistry.timer(name(MapPrinterServlet.class, BUILDREPORT, NO_APP_ID));
-    reportTimer = metricRegistry.timer(name(MapPrinterServlet.class, "generate", REPORT));
+        metricRegistry.timer(name(MapPrinterServlet.class.getSimpleName(), BUILDREPORT, NO_APP_ID));
+    reportTimer =
+        metricRegistry.timer(name(MapPrinterServlet.class.getSimpleName(), "generate", REPORT));
     reportTimerNoAppId =
-        metricRegistry.timer(name(MapPrinterServlet.class, "generate", REPORT, NO_APP_ID));
-    statusTimer = metricRegistry.timer(name(MapPrinterServlet.class, STATUS, REPORT));
+        metricRegistry.timer(
+            name(MapPrinterServlet.class.getSimpleName(), "generate", REPORT, NO_APP_ID));
+    statusTimer =
+        metricRegistry.timer(name(MapPrinterServlet.class.getSimpleName(), STATUS, REPORT));
     statusTimerNoAppId =
-        metricRegistry.timer(name(MapPrinterServlet.class, STATUS, REPORT, NO_APP_ID));
-    cancelTimer = metricRegistry.timer(name(MapPrinterServlet.class, CANCEL, REPORT));
+        metricRegistry.timer(
+            name(MapPrinterServlet.class.getSimpleName(), STATUS, REPORT, NO_APP_ID));
+    cancelTimer =
+        metricRegistry.timer(name(MapPrinterServlet.class.getSimpleName(), CANCEL, REPORT));
     cancelTimerNoAppId =
-        metricRegistry.timer(name(MapPrinterServlet.class, CANCEL, REPORT, NO_APP_ID));
-    getReportTimer = metricRegistry.timer(name(MapPrinterServlet.class, "download", REPORT));
+        metricRegistry.timer(
+            name(MapPrinterServlet.class.getSimpleName(), CANCEL, REPORT, NO_APP_ID));
+    getReportTimer =
+        metricRegistry.timer(name(MapPrinterServlet.class.getSimpleName(), "download", REPORT));
     getReportTimerNoAppId =
-        metricRegistry.timer(name(MapPrinterServlet.class, "download", REPORT, NO_APP_ID));
+        metricRegistry.timer(
+            name(MapPrinterServlet.class.getSimpleName(), "download", REPORT, NO_APP_ID));
 
     boolean enableSentry = System.getProperties().contains("sentry.dsn");
     enableSentry |= System.getenv().containsKey("SENTRY_URL");

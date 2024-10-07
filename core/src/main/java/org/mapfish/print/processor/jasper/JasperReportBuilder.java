@@ -95,7 +95,8 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
       throws JRException, IOException {
     final File tmpBuildFile =
         File.createTempFile("temp_", JASPER_REPORT_COMPILED_FILE_EXT, buildFile.getParentFile());
-    final String timerName = getClass().getName() + ".compile." + jasperFile;
+    final String timerName =
+        MetricRegistry.name(getClass().getSimpleName(), "compile", String.valueOf(jasperFile));
     try (Timer.Context compileTimerContext = this.metricRegistry.timer(timerName).time()) {
       try {
         JasperCompileManager.compileReportToFile(
