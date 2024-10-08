@@ -20,8 +20,8 @@ public class HibernateAccounting extends Accounting {
   private static final Logger LOGGER = LoggerFactory.getLogger(HibernateAccounting.class);
 
   @Autowired private SessionFactory sf;
-
   @Autowired private PlatformTransactionManager txManager;
+  @Autowired private ApplicationStatus applicationStatus;
 
   @Override
   public JobTracker startJob(final PrintJobEntry entry, final Configuration configuration) {
@@ -87,10 +87,9 @@ public class HibernateAccounting extends Accounting {
       } catch (HibernateException ex) {
         String name =
             MetricRegistry.name(
-                getClass().getSimpleName(),
-                "insertRecordInHibernate",
-                ApplicationStatus.UNHEALTHY_SUFFIX);
+                getClass().getSimpleName(), "insertRecordInHibernatrFailedWithException");
         metricRegistry.counter(name).inc();
+        applicationStatus.recordUnhealthyCounter(name);
         LOGGER.error("Cannot save accounting information", ex);
       }
     }
