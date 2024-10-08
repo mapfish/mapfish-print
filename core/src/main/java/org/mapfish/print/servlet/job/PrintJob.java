@@ -31,7 +31,11 @@ import org.mapfish.print.Constants;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
-import org.mapfish.print.config.*;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ReportStorage;
+import org.mapfish.print.config.SmtpConfig;
+import org.mapfish.print.config.Template;
+import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.processor.ExecutionStats;
 import org.mapfish.print.processor.Processor;
@@ -241,10 +245,8 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     message.setContent(multipart);
 
     LOGGER.info("Emailing error to {}", to);
-    try (Timer.Context ignored =
-        this.metricRegistry
-            .timer(MetricRegistry.name(getClass().getSimpleName(), "SendingErrorEmail"))
-            .time()) {
+    String timerName = MetricRegistry.name(getClass().getSimpleName(), "SendingErrorEmail");
+    try (Timer.Context ignored = this.metricRegistry.timer(timerName).time()) {
       Transport.send(message);
     }
   }

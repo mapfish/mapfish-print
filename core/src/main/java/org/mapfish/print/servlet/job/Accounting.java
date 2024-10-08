@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /** Do some accounting for jobs. */
 public class Accounting {
+  /** The registry for all the metrics. */
   @Autowired protected MetricRegistry metricRegistry;
 
   /**

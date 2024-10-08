@@ -6,6 +6,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.metrics.ApplicationStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,9 +87,11 @@ public class HibernateAccounting extends Accounting {
       } catch (HibernateException ex) {
         String name =
             MetricRegistry.name(
-                getClass().getSimpleName(), "insertRecordFailedWithHiddenHibernateException");
+                getClass().getSimpleName(),
+                "insertRecordInHibernate",
+                ApplicationStatus.UNHEALTHY_SUFFIX);
         metricRegistry.counter(name).inc();
-        LOGGER.warn("Cannot save accounting information", ex);
+        LOGGER.error("Cannot save accounting information", ex);
       }
     }
   }

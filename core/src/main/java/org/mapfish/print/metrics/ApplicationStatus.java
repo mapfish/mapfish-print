@@ -1,5 +1,7 @@
 package org.mapfish.print.metrics;
 
+import com.codahale.metrics.MetricFilter;
+import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheck;
 import java.time.Duration;
 import java.time.Instant;
@@ -9,7 +11,9 @@ import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-class ApplicationStatus extends HealthCheck {
+public class ApplicationStatus extends HealthCheck {
+  public static final String UNHEALTHY_SUFFIX = "FailedWithException";
+
   @Value("${healthStatus.expectedMaxTime.sinceLastPrint.InSeconds}")
   private int secondsInFloatingWindow;
 
@@ -18,6 +22,7 @@ class ApplicationStatus extends HealthCheck {
 
   @Autowired private JobQueue jobQueue;
   @Autowired private ThreadPoolJobManager jobManager;
+  @Autowired private MetricRegistry metricRegistry;
 
   /**
    * When a Result is returned it can be healthy or unhealthy. In both cases it is associated to a
@@ -26,6 +31,10 @@ class ApplicationStatus extends HealthCheck {
    */
   @Override
   protected Result check() throws Exception {
+    if (!metricRegistry.getCounters(MetricFilter.endsWith(UNHEALTHY_SUFFIX)).isEmpty()) {
+      return Result.unhealthy("Server failed to run properly. See logs for more details.");
+    }
+
     long waitingJobsCount = jobQueue.getWaitingJobsCount();
     if (waitingJobsCount == 0) {
       return Result.healthy("No print job is waiting in the queue.");
