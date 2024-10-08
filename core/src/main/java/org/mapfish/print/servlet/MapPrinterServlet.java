@@ -3,6 +3,7 @@ package org.mapfish.print.servlet;
 import static com.codahale.metrics.MetricRegistry.name;
 import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY;
 
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import io.sentry.Sentry;
@@ -231,15 +232,12 @@ public class MapPrinterServlet extends BaseMapServlet {
   private final MapPrinterFactory mapPrinterFactory;
 
   private final Timer buildReportTimer;
-  private final Timer buildReportTimerNoAppId;
   private final Timer reportTimer;
-  private final Timer reportTimerNoAppId;
   private final Timer statusTimer;
-  private final Timer statusTimerNoAppId;
   private final Timer cancelTimer;
-  private final Timer cancelTimerNoAppId;
   private final Timer getReportTimer;
-  private final Timer getReportTimerNoAppId;
+  private final Counter noAppIdCounter;
+  private final Counter withAppIdCounter;
   private long maxCreateAndGetWaitTimeInSeconds = ThreadPoolJobManager.DEFAULT_TIMEOUT_IN_SECONDS;
 
   @Autowired
@@ -260,28 +258,18 @@ public class MapPrinterServlet extends BaseMapServlet {
 
     buildReportTimer =
         metricRegistry.timer(name(MapPrinterServlet.class.getSimpleName(), BUILDREPORT));
-    buildReportTimerNoAppId =
-        metricRegistry.timer(name(MapPrinterServlet.class.getSimpleName(), BUILDREPORT, NO_APP_ID));
     reportTimer =
         metricRegistry.timer(name(MapPrinterServlet.class.getSimpleName(), "generate", REPORT));
-    reportTimerNoAppId =
-        metricRegistry.timer(
-            name(MapPrinterServlet.class.getSimpleName(), "generate", REPORT, NO_APP_ID));
     statusTimer =
         metricRegistry.timer(name(MapPrinterServlet.class.getSimpleName(), STATUS, REPORT));
-    statusTimerNoAppId =
-        metricRegistry.timer(
-            name(MapPrinterServlet.class.getSimpleName(), STATUS, REPORT, NO_APP_ID));
     cancelTimer =
         metricRegistry.timer(name(MapPrinterServlet.class.getSimpleName(), CANCEL, REPORT));
-    cancelTimerNoAppId =
-        metricRegistry.timer(
-            name(MapPrinterServlet.class.getSimpleName(), CANCEL, REPORT, NO_APP_ID));
     getReportTimer =
         metricRegistry.timer(name(MapPrinterServlet.class.getSimpleName(), "download", REPORT));
-    getReportTimerNoAppId =
-        metricRegistry.timer(
-            name(MapPrinterServlet.class.getSimpleName(), "download", REPORT, NO_APP_ID));
+    noAppIdCounter =
+        metricRegistry.counter(name(MapPrinterServlet.class.getSimpleName(), NO_APP_ID));
+    withAppIdCounter =
+        metricRegistry.counter(name(MapPrinterServlet.class.getSimpleName(), "withAppId"));
 
     boolean enableSentry = System.getProperties().contains("sentry.dsn");
     enableSentry |= System.getenv().containsKey("SENTRY_URL");
@@ -400,6 +388,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       @Nonnull @PathVariable final String referenceId,
       final HttpServletRequest statusRequest,
       final HttpServletResponse statusResponse) {
+    withAppIdCounter.inc();
     try (Timer.Context ignored = statusTimer.time()) {
       getStatus(appId, referenceId, statusRequest, statusResponse);
     }
@@ -421,7 +410,8 @@ public class MapPrinterServlet extends BaseMapServlet {
       @Nonnull @PathVariable final String referenceId,
       final HttpServletRequest statusRequest,
       final HttpServletResponse statusResponse) {
-    try (Timer.Context ignored = statusTimerNoAppId.time()) {
+    noAppIdCounter.inc();
+    try (Timer.Context ignored = statusTimer.time()) {
       getStatus("default", referenceId, statusRequest, statusResponse);
     }
   }
@@ -490,6 +480,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       @Nonnull @PathVariable final String appId,
       @Nonnull @PathVariable final String referenceId,
       final HttpServletResponse statusResponse) {
+    withAppIdCounter.inc();
     try (Timer.Context ignored = cancelTimer.time()) {
       cancel(appId, referenceId, statusResponse);
     }
@@ -507,7 +498,8 @@ public class MapPrinterServlet extends BaseMapServlet {
   @RequestMapping(value = CANCEL_URL + "/{referenceId:\\S+}", method = RequestMethod.DELETE)
   public final void cancelPath(
       @Nonnull @PathVariable final String referenceId, final HttpServletResponse statusResponse) {
-    try (Timer.Context ignored = cancelTimerNoAppId.time()) {
+    noAppIdCounter.inc();
+    try (Timer.Context ignored = cancelTimer.time()) {
       cancel("default", referenceId, statusResponse);
     }
   }
@@ -554,6 +546,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       final HttpServletRequest createReportRequest,
       final HttpServletResponse createReportResponse)
       throws NoSuchAppException {
+    withAppIdCounter.inc();
     try (Timer.Context ignored = reportTimer.time()) {
       setNoCache(createReportResponse);
       doCreateReport(appId, format, requestData, createReportRequest, createReportResponse);
@@ -608,6 +601,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
       final HttpServletResponse getReportResponse)
       throws IOException, ServletException {
+    withAppIdCounter.inc();
     try (Timer.Context ignored = getReportTimer.time()) {
       getReport(appId, referenceId, inline, getReportResponse);
     }
@@ -626,7 +620,8 @@ public class MapPrinterServlet extends BaseMapServlet {
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
       final HttpServletResponse getReportResponse)
       throws IOException, ServletException {
-    try (Timer.Context ignored = getReportTimerNoAppId.time()) {
+    noAppIdCounter.inc();
+    try (Timer.Context ignored = getReportTimer.time()) {
       getReport("default", referenceId, inline, getReportResponse);
     }
   }
@@ -667,7 +662,8 @@ public class MapPrinterServlet extends BaseMapServlet {
       final HttpServletRequest createReportRequest,
       final HttpServletResponse createReportResponse)
       throws NoSuchAppException {
-    try (Timer.Context ignored = reportTimerNoAppId.time()) {
+    noAppIdCounter.inc();
+    try (Timer.Context ignored = reportTimer.time()) {
       setNoCache(createReportResponse);
       final String appId = getAppId(requestData, createReportResponse);
       if (appId == null) {
@@ -713,7 +709,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       final HttpServletRequest createReportRequest,
       final HttpServletResponse createReportResponse)
       throws IOException, ServletException, InterruptedException, NoSuchAppException {
-
+    withAppIdCounter.inc();
     try (Timer.Context ignored = buildReportTimer.time()) {
       setNoCache(createReportResponse);
       doCreateReportAndGet(
@@ -766,7 +762,8 @@ public class MapPrinterServlet extends BaseMapServlet {
       final HttpServletRequest createReportRequest,
       final HttpServletResponse createReportResponse)
       throws IOException, ServletException, InterruptedException, NoSuchAppException {
-    try (Timer.Context ignored = buildReportTimerNoAppId.time()) {
+    noAppIdCounter.inc();
+    try (Timer.Context ignored = buildReportTimer.time()) {
       setNoCache(createReportResponse);
       final String appId = getAppId(requestData, createReportResponse);
       if (appId == null) {
