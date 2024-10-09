@@ -18,13 +18,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class ApplicationStatusTest extends AbstractMapfishSpringTest {
+public class JobQueueHealthCheckTest extends AbstractMapfishSpringTest {
 
   @Mock private JobQueue jobQueue;
 
   @Mock private ThreadPoolJobManager jobManager;
 
-  @Autowired @InjectMocks private ApplicationStatus applicationStatus;
+  @Autowired @InjectMocks private JobQueueHealthCheck jobQueueHealthCheck;
 
   @Before
   public void setUp() throws Exception {
@@ -36,7 +36,7 @@ public class ApplicationStatusTest extends AbstractMapfishSpringTest {
   public void testCheck_Success_NoPrintJobs() throws Exception {
     when(jobQueue.getWaitingJobsCount()).thenReturn(0L);
 
-    HealthCheck.Result result = applicationStatus.check();
+    HealthCheck.Result result = jobQueueHealthCheck.check();
 
     assertTrue(result.isHealthy());
     assertEquals("No print job is waiting in the queue.", result.getMessage());
@@ -52,7 +52,7 @@ public class ApplicationStatusTest extends AbstractMapfishSpringTest {
             RuntimeException.class,
             () -> {
               // WHEN
-              applicationStatus.check();
+              jobQueueHealthCheck.check();
             });
 
     assertEquals(
@@ -65,8 +65,8 @@ public class ApplicationStatusTest extends AbstractMapfishSpringTest {
     when(jobQueue.getWaitingJobsCount()).thenReturn(5L, 4L);
     when(jobManager.getLastExecutedJobTimestamp()).thenReturn(new Date());
 
-    applicationStatus.check();
-    HealthCheck.Result result = applicationStatus.check();
+    jobQueueHealthCheck.check();
+    HealthCheck.Result result = jobQueueHealthCheck.check();
 
     assertTrue(result.isHealthy());
     assertTrue(result.getMessage().contains("This server instance is printing."));
@@ -77,8 +77,8 @@ public class ApplicationStatusTest extends AbstractMapfishSpringTest {
     when(jobQueue.getWaitingJobsCount()).thenReturn(4L, 5L);
     when(jobManager.getLastExecutedJobTimestamp()).thenReturn(new Date());
 
-    applicationStatus.check();
-    HealthCheck.Result result = applicationStatus.check();
+    jobQueueHealthCheck.check();
+    HealthCheck.Result result = jobQueueHealthCheck.check();
 
     assertFalse(result.isHealthy());
     assertTrue(result.getMessage().contains("Number of print jobs queued is above threshold: "));

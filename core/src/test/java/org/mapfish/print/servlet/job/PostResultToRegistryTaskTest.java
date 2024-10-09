@@ -109,14 +109,13 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
         entry.configureAccess(template, context);
         setSecurityContext(SecurityContextHolder.createEmptyContext());
       } catch (JSONException e) {
-        e.printStackTrace();
         throw new RuntimeException(e);
       }
     }
 
     @Override
     protected PrintResult withOpenOutputStream(PrintAction function) throws Exception {
-      return new PrintResult(42, new AbstractProcessor.Context(new HashMap()));
+      return new PrintResult(42, new AbstractProcessor.Context(new HashMap<>()));
     }
 
     @Override

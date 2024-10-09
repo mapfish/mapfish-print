@@ -64,8 +64,10 @@ public class MetricsApiTest extends AbstractApiTest {
       String bodyAsText = getBodyAsText(response);
       assertNotNull(bodyAsText);
       JSONObject healthcheck = new JSONObject(bodyAsText);
-      JSONObject application = healthcheck.getJSONObject("application");
-      assertTrue(application.getBoolean("healthy"));
+      JSONObject jobQueueStatus = healthcheck.getJSONObject("jobQueueStatus");
+      assertTrue(jobQueueStatus.getBoolean("healthy"));
+      JSONObject unhealthyCountersStatus = healthcheck.getJSONObject("unhealthyCountersStatus");
+      assertTrue(unhealthyCountersStatus.getBoolean("healthy"));
     }
   }
 

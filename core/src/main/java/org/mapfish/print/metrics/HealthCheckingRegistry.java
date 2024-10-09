@@ -4,10 +4,12 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class HealthCheckingRegistry extends com.codahale.metrics.health.HealthCheckRegistry {
-  @Autowired private ApplicationStatus applicationStatus;
+  @Autowired private JobQueueHealthCheck jobQueueHealthCheck;
+  @Autowired private UnhealthyCountersHealthCheck unhealthyCountersHealthCheck;
 
   @PostConstruct
   public void registerHealthCheck() {
-    register("application", applicationStatus);
+    register("jobQueueStatus", jobQueueHealthCheck);
+    register("unhealthyCountersStatus", unhealthyCountersHealthCheck);
   }
 }

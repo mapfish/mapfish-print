@@ -35,7 +35,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
    * @param registry the metrics registry.
    * @param configuration the configuration.
    */
-  protected WmsLayer(
+  WmsLayer(
       @Nonnull final ExecutorService executorService,
       @Nonnull final StyleSupplier<GridCoverage2D> styleSupplier,
       @Nonnull final WmsLayerParam params,

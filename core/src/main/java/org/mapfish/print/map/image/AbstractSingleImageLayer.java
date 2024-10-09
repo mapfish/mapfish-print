@@ -67,7 +67,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
       final ExecutorService executorService,
       final StyleSupplier<GridCoverage2D> styleSupplier,
       final AbstractLayerParams params,
-      final MetricRegistry registry,
+      @Nonnull final MetricRegistry registry,
       final Configuration configuration) {
     super(executorService, params);
     this.styleSupplier = styleSupplier;
@@ -168,14 +168,15 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
 
         return fetchImageFromHttpResponse(request, httpResponse, transformer, baseMetricName);
       } catch (RuntimeException e) {
-        this.registry.counter(baseMetricName + ".error").inc();
+        this.registry.counter(MetricRegistry.name(baseMetricName, "error")).inc();
         throw e;
       }
     }
   }
 
   private String getBaseMetricName(@Nonnull final ClientHttpRequest request) {
-    return getClass().getName() + ".read." + StatsUtils.quotePart(request.getURI().getHost());
+    return MetricRegistry.name(
+        getClass().getSimpleName(), "read", StatsUtils.quotePart(request.getURI().getHost()));
   }
 
   private static String getInvalidResponseBody(
@@ -215,7 +216,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
       if (stringBody != null) {
         message += "\nContent:\n" + stringBody;
       }
-      this.registry.counter(baseMetricName + ".error").inc();
+      this.registry.counter(MetricRegistry.name(baseMetricName, "error")).inc();
       if (getFailOnError()) {
         throw new RuntimeException(message);
       } else {
@@ -237,7 +238,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
           request.getURI(),
           contentType.get(0),
           responseBody);
-      this.registry.counter(baseMetricName + ".error").inc();
+      this.registry.counter(MetricRegistry.name(baseMetricName, "error")).inc();
       if (getFailOnError()) {
         throw new RuntimeException("Wrong content-type : " + contentType.get(0));
       } else {
@@ -256,7 +257,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
     final BufferedImage image = ImageIO.read(httpResponse.getBody());
     if (image == null) {
       LOGGER.warn("Cannot read image from {}", request.getURI());
-      this.registry.counter(baseMetricName + ".error").inc();
+      this.registry.counter(MetricRegistry.name(baseMetricName, "error")).inc();
       if (getFailOnError()) {
         throw new RuntimeException("Cannot read image from " + request.getURI());
       }

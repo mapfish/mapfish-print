@@ -189,7 +189,10 @@ public final class HttpRequestFetcher {
     @Nonnull
     public ClientHttpResponse execute() {
       assert this.future != null;
-      Timer timerWait = HttpRequestFetcher.this.registry.timer(buildMetricName(".waitDownloader"));
+      Timer timerWait =
+          HttpRequestFetcher.this.registry.timer(
+              MetricRegistry.name(
+                  HttpRequestFetcher.class.getSimpleName(), "TimeWaitingDownloader"));
       try (Timer.Context ignored = timerWait.time()) {
         this.future.join();
       }
@@ -204,16 +207,15 @@ public final class HttpRequestFetcher {
       return result;
     }
 
-    private String buildMetricName(final String suffix) {
-      return HttpRequestFetcher.class.getName() + suffix;
-    }
-
     @Override
     public Void call() throws Exception {
       return context.mdcContextEx(
           () -> {
             final String baseMetricName =
-                buildMetricName(".read." + StatsUtils.quotePart(getURI().getHost()));
+                MetricRegistry.name(
+                    HttpRequestFetcher.class.getSimpleName(),
+                    "read",
+                    StatsUtils.quotePart(getURI().getHost()));
             Timer timerDownload = HttpRequestFetcher.this.registry.timer(baseMetricName);
             try (Timer.Context ignored = timerDownload.time()) {
               try {
@@ -221,8 +223,9 @@ public final class HttpRequestFetcher {
                 this.response = new CachedClientHttpResponse(this.originalRequest.execute());
               } catch (IOException | RuntimeException e) {
                 LOGGER.error("Request failed {}", this.originalRequest.getURI(), e);
+                String errorCounter = MetricRegistry.name(baseMetricName, "error");
+                HttpRequestFetcher.this.registry.counter(errorCounter).inc();
                 this.response = new ErrorResponseClientHttpResponse(e);
-                HttpRequestFetcher.this.registry.counter(baseMetricName + ".error").inc();
               }
             }
             return null;

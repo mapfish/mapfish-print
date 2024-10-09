@@ -32,6 +32,7 @@ import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.MapPrinterFactory;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.ReportStorage;
 import org.mapfish.print.config.SmtpConfig;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.config.WorkingDirectories;
@@ -127,7 +128,10 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
   @Override
   public final PrintJobResult call() throws Exception {
     SecurityContextHolder.setContext(this.securityContext);
-    final Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".call").time();
+    final Timer.Context timer =
+        this.metricRegistry
+            .timer(MetricRegistry.name(getClass().getSimpleName(), "RealReportGenerationDuration"))
+            .time();
     MDC.put(Processor.MDC_APPLICATION_ID_KEY, this.entry.getAppId());
     MDC.put(Processor.MDC_JOB_ID_KEY, this.entry.getReferenceId());
     LOGGER.info(
@@ -151,7 +155,9 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
                       entry.getRequestData(),
                       outputStream));
 
-      this.metricRegistry.counter(getClass().getName() + ".success").inc();
+      this.metricRegistry
+          .counter(MetricRegistry.name(getClass().getSimpleName(), "SuccessfullyGeneratedReport"))
+          .inc();
       LOGGER.info("Successfully completed print job {}", this.entry.getReferenceId());
       LOGGER.debug("Job {}\n{}", this.entry.getReferenceId(), this.entry.getRequestData());
       final String fileName = getFileName(mapPrinter, spec);
@@ -172,7 +178,9 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
       if (Thread.currentThread().isInterrupted()) {
         LOGGER.info(
             "Print job canceled {}\n{}", this.entry.getRequestData(), this.entry.getReferenceId());
-        this.metricRegistry.counter(getClass().getName() + ".canceled").inc();
+        this.metricRegistry
+            .counter(MetricRegistry.name(getClass().getSimpleName(), "ReportGenerationInterrupted"))
+            .inc();
         jobTracker.onJobCancel();
       } else {
         LOGGER.warn(
@@ -180,7 +188,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
             this.entry.getRequestData(),
             this.entry.getReferenceId(),
             e);
-        this.metricRegistry.counter(getClass().getName() + ".error").inc();
+        this.metricRegistry.counter(MetricRegistry.name(getClass().getSimpleName(), "error")).inc();
         jobTracker.onJobError();
       }
       deleteReport();
@@ -191,10 +199,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
       final long computationTimeMs =
           TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
       this.metricRegistry
-          .timer(getClass().getName() + ".total")
-          .update(totalTimeMS, TimeUnit.MILLISECONDS);
-      this.metricRegistry
-          .timer(getClass().getName() + ".wait")
+          .timer(MetricRegistry.name(getClass().getSimpleName(), "DelayBeforeReportGeneration"))
           .update(totalTimeMS - computationTimeMs, TimeUnit.MILLISECONDS);
       LOGGER.debug(
           "Print Job {} completed in {}ms", this.entry.getReferenceId(), computationTimeMs);
@@ -237,9 +242,10 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     message.setContent(multipart);
 
     LOGGER.info("Emailing error to {}", to);
-    Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".email.success").time();
-    Transport.send(message);
-    timer.stop();
+    String timerName = MetricRegistry.name(getClass().getSimpleName(), "SendingErrorEmail");
+    try (Timer.Context ignored = this.metricRegistry.timer(timerName).time()) {
+      Transport.send(message);
+    }
   }
 
   private Message createMessage(final SmtpConfig config, final InternetAddress[] recipients)
@@ -283,15 +289,15 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     message.setSubject(request.optString("subject", config.getSubject()));
 
     String msg = request.optString("body", config.getBody());
-    if (config.getStorage() != null) {
-      final Timer.Context saveTimer =
-          this.metricRegistry.timer(config.getStorage().getClass().getName()).time();
-      final URL url =
-          config
-              .getStorage()
-              .save(
-                  this.entry.getReferenceId(), fileName, fileExtension, mimeType, getReportFile());
-      saveTimer.stop();
+    final ReportStorage storage = config.getStorage();
+    if (storage != null) {
+      URL url;
+      String timerName = storage.getClass().getSimpleName();
+      try (Timer.Context ignored = this.metricRegistry.timer(timerName).time()) {
+        url =
+            storage.save(
+                this.entry.getReferenceId(), fileName, fileExtension, mimeType, getReportFile());
+      }
       msg = msg.replace("{url}", url.toString());
     }
     final MimeBodyPart html = new MimeBodyPart();
@@ -300,7 +306,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     Multipart multipart = new MimeMultipart();
     multipart.addBodyPart(html);
 
-    if (config.getStorage() == null) {
+    if (storage == null) {
       final MimeBodyPart attachment = new MimeBodyPart();
       attachment.attachFile(getReportFile(), mimeType, null);
       attachment.setFileName(fileName + "." + fileExtension);
@@ -310,10 +316,11 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     message.setContent(multipart);
 
     LOGGER.info("Emailing result to {}", to);
-    Timer.Context timer = this.metricRegistry.timer(getClass().getName() + ".email.error").time();
-    Transport.send(message);
-    timer.stop();
-    stats.addEmailStats(recipients, config.getStorage() != null);
+    String timerName = MetricRegistry.name(getClass().getSimpleName(), "SendingResultEmail");
+    try (Timer.Context ignored = this.metricRegistry.timer(timerName).time()) {
+      Transport.send(message);
+    }
+    stats.addEmailStats(recipients, storage != null);
   }
 
   /** Delete the report (used if the report is sent by email). */

@@ -1,9 +1,12 @@
 package org.mapfish.print.servlet.job;
 
+import com.codahale.metrics.MetricRegistry;
+import javax.annotation.Nonnull;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.metrics.UnhealthyCountersHealthCheck;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +20,8 @@ public class HibernateAccounting extends Accounting {
   private static final Logger LOGGER = LoggerFactory.getLogger(HibernateAccounting.class);
 
   @Autowired private SessionFactory sf;
-
   @Autowired private PlatformTransactionManager txManager;
+  @Autowired private UnhealthyCountersHealthCheck unhealthyCountersHealthCheck;
 
   @Override
   public JobTracker startJob(final PrintJobEntry entry, final Configuration configuration) {
@@ -39,16 +42,15 @@ public class HibernateAccounting extends Accounting {
 
     @Override
     public long onJobSuccess(final PrintJob.PrintResult printResult) {
-      final long duractionUSec = super.onJobSuccess(printResult);
-      final HibernateAccountingEntry accountingEntry1 =
+      final long jobDurationInNanoSec = super.onJobSuccess(printResult);
+      final HibernateAccountingEntry accountingEntry =
           new HibernateAccountingEntry(
               this.entry, PrintJobStatus.Status.FINISHED, this.configuration);
-      final HibernateAccountingEntry accountingEntry = accountingEntry1;
-      accountingEntry.setProcessingTimeMS(duractionUSec / 1000000L);
+      accountingEntry.setProcessingTimeMS(jobDurationInNanoSec / 1000000L);
       accountingEntry.setFileSize(printResult.fileSize);
       accountingEntry.setStats(printResult.executionContext.getStats());
       insertRecord(accountingEntry);
-      return duractionUSec;
+      return jobDurationInNanoSec;
     }
 
     @Override
@@ -75,7 +77,7 @@ public class HibernateAccounting extends Accounting {
         tmpl.execute(
             new TransactionCallbackWithoutResult() {
               @Override
-              protected void doInTransactionWithoutResult(final TransactionStatus status) {
+              protected void doInTransactionWithoutResult(@Nonnull final TransactionStatus status) {
                 final Session currentSession = HibernateAccounting.this.sf.getCurrentSession();
                 currentSession.merge(tuple);
                 currentSession.flush();
@@ -83,7 +85,12 @@ public class HibernateAccounting extends Accounting {
               }
             });
       } catch (HibernateException ex) {
-        LOGGER.warn("Cannot save accounting information", ex);
+        String name =
+            MetricRegistry.name(
+                getClass().getSimpleName(), "insertRecordInHibernateFailedThenSkiped");
+        metricRegistry.counter(name).inc();
+        unhealthyCountersHealthCheck.recordUnhealthyCounter(name);
+        LOGGER.error("Cannot save accounting information", ex);
       }
     }
   }

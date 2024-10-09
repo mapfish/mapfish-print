@@ -50,7 +50,7 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
   @Autowired private WorkingDirectories workingDirectories;
 
   /** Constructor. */
-  protected JasperReportBuilder() {
+  private JasperReportBuilder() {
     super(Void.class);
   }
 
@@ -95,18 +95,20 @@ public final class JasperReportBuilder extends AbstractProcessor<JasperReportBui
       throws JRException, IOException {
     final File tmpBuildFile =
         File.createTempFile("temp_", JASPER_REPORT_COMPILED_FILE_EXT, buildFile.getParentFile());
-    final String timerName = getClass().getName() + ".compile." + jasperFile;
-    Timer.Context compileTimerContext = this.metricRegistry.timer(timerName).time();
-    try {
-      JasperCompileManager.compileReportToFile(
-          jasperFile.getAbsolutePath(), tmpBuildFile.getAbsolutePath());
-    } catch (JRValidationException e) {
-      LOGGER.error("The report '{}' isn't valid.", jasperFile.getAbsolutePath());
-      throw e;
-    } finally {
-      final long compileTime =
-          TimeUnit.MILLISECONDS.convert(compileTimerContext.stop(), TimeUnit.NANOSECONDS);
-      LOGGER.info("Report '{}' built in {}ms.", jasperFile.getAbsolutePath(), compileTime);
+    final String timerName =
+        MetricRegistry.name(getClass().getSimpleName(), "compile", String.valueOf(jasperFile));
+    try (Timer.Context compileTimerContext = this.metricRegistry.timer(timerName).time()) {
+      try {
+        JasperCompileManager.compileReportToFile(
+            jasperFile.getAbsolutePath(), tmpBuildFile.getAbsolutePath());
+      } catch (JRValidationException e) {
+        LOGGER.error("The report '{}' isn't valid.", jasperFile.getAbsolutePath());
+        throw e;
+      } finally {
+        final long compileTime =
+            TimeUnit.MILLISECONDS.convert(compileTimerContext.stop(), TimeUnit.NANOSECONDS);
+        LOGGER.info("Report '{}' built in {}ms.", jasperFile.getAbsolutePath(), compileTime);
+      }
     }
     move(tmpBuildFile.toPath(), buildFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
   }

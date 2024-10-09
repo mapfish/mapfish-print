@@ -9,7 +9,7 @@ import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-class ApplicationStatus extends HealthCheck {
+public class JobQueueHealthCheck extends HealthCheck {
   @Value("${healthStatus.expectedMaxTime.sinceLastPrint.InSeconds}")
   private int secondsInFloatingWindow;
 
@@ -34,7 +34,7 @@ class ApplicationStatus extends HealthCheck {
     String health = ". Number of print jobs waiting is " + waitingJobsCount;
 
     if (jobManager.getLastExecutedJobTimestamp() == null) {
-      return Result.unhealthy("No print job was ever processed by this server" + health);
+      return Result.unhealthy("This server never processed a print job" + health);
     } else if (hasThisServerPrintedRecently()) {
       // WIP (See issue https://github.com/mapfish/mapfish-print/issues/3393)
       if (waitingJobsCount > maxNbrPrintJobQueued) {

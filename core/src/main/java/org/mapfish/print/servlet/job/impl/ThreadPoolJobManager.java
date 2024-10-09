@@ -331,9 +331,11 @@ public class ThreadPoolJobManager implements JobManager {
   private void submitInternal(final PrintJobEntry jobEntry) {
     final long numberOfWaitingRequests = this.jobQueue.getWaitingJobsCount();
     if (numberOfWaitingRequests >= this.maxNumberOfWaitingJobs) {
-      metricRegistry.counter(getClass().getName() + ".queue_overflow").inc();
+      metricRegistry
+          .counter(MetricRegistry.name(getClass().getSimpleName(), "queueOverflow"))
+          .inc();
       throw new RuntimeException(
-          "Max. number of waiting print job requests exceeded.  Number of waiting requests are: "
+          "Max. number of waiting print job requests exceeded. Number of waiting requests are: "
               + numberOfWaitingRequests);
     }
     jobEntry.assertAccess();
