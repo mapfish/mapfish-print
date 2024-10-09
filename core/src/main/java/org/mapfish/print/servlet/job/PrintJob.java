@@ -130,8 +130,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     SecurityContextHolder.setContext(this.securityContext);
     final Timer.Context timer =
         this.metricRegistry
-            .timer(
-                MetricRegistry.name(getClass().getSimpleName(), "ActualReportGenerationDuration"))
+            .timer(MetricRegistry.name(getClass().getSimpleName(), "RealReportGenerationDuration"))
             .time();
     MDC.put(Processor.MDC_APPLICATION_ID_KEY, this.entry.getAppId());
     MDC.put(Processor.MDC_JOB_ID_KEY, this.entry.getReferenceId());
@@ -180,9 +179,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
         LOGGER.info(
             "Print job canceled {}\n{}", this.entry.getRequestData(), this.entry.getReferenceId());
         this.metricRegistry
-            .counter(
-                MetricRegistry.name(
-                    getClass().getSimpleName(), "ExceptionCanceledReportGeneration"))
+            .counter(MetricRegistry.name(getClass().getSimpleName(), "ReportGenerationInterrupted"))
             .inc();
         jobTracker.onJobCancel();
       } else {

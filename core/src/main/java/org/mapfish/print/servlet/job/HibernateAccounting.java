@@ -6,7 +6,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.metrics.ApplicationStatus;
+import org.mapfish.print.metrics.UnhealthyCountersHealthCheck;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class HibernateAccounting extends Accounting {
 
   @Autowired private SessionFactory sf;
   @Autowired private PlatformTransactionManager txManager;
-  @Autowired private ApplicationStatus applicationStatus;
+  @Autowired private UnhealthyCountersHealthCheck unhealthyCountersHealthCheck;
 
   @Override
   public JobTracker startJob(final PrintJobEntry entry, final Configuration configuration) {
@@ -87,9 +87,9 @@ public class HibernateAccounting extends Accounting {
       } catch (HibernateException ex) {
         String name =
             MetricRegistry.name(
-                getClass().getSimpleName(), "insertRecordInHibernatrFailedWithException");
+                getClass().getSimpleName(), "insertRecordInHibernateFailedThenSkiped");
         metricRegistry.counter(name).inc();
-        applicationStatus.recordUnhealthyCounter(name);
+        unhealthyCountersHealthCheck.recordUnhealthyCounter(name);
         LOGGER.error("Cannot save accounting information", ex);
       }
     }
