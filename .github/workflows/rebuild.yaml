@@ -56,8 +56,10 @@ jobs:
       - run: echo "enablePublishing=true" > gradle.properties
       - run: git diff
 
-      - run: echo "${HOME}/.local/bin" >> ${GITHUB_PATH}
-      - run: python3 -m pip install --user --requirement=ci/requirements.txt
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python3 -m pip install --requirement=ci/requirements.txt
 
       - run: make build
 
