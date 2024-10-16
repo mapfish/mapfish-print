@@ -26,6 +26,7 @@ import javax.annotation.PreDestroy;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.PrintException;
 import org.mapfish.print.config.WorkingDirectories;
+import org.mapfish.print.metrics.UnhealthyCountersHealthCheck;
 import org.mapfish.print.servlet.job.JobManager;
 import org.mapfish.print.servlet.job.JobQueue;
 import org.mapfish.print.servlet.job.NoSuchReferenceException;
@@ -73,7 +74,7 @@ public class ThreadPoolJobManager implements JobManager {
   private int maxNumberOfWaitingJobs = DEFAULT_MAX_WAITING_JOBS;
 
   /** The amount of time to let a thread wait before being shutdown. */
-  private long maxIdleTime = DEFAULT_THREAD_IDLE_TIME;
+  private final long maxIdleTime = DEFAULT_THREAD_IDLE_TIME;
 
   /** A print job is canceled, if it is not completed after this amount of time (in seconds). */
   private long timeout = DEFAULT_TIMEOUT_IN_SECONDS;
@@ -117,6 +118,8 @@ public class ThreadPoolJobManager implements JobManager {
   @Autowired private JobQueue jobQueue;
 
   @Autowired private MetricRegistry metricRegistry;
+
+  @Autowired private UnhealthyCountersHealthCheck unhealthyCountersHealthCheck;
 
   private boolean requestedToStop = false;
   private Date lastExecutedJobTimestamp;
@@ -211,7 +214,7 @@ public class ThreadPoolJobManager implements JobManager {
               }
               return 0;
             });
-    /* The ThreadPoolExecutor uses a unbounded queue (though we are enforcing a limit in `submit()`).
+    /* The ThreadPoolExecutor uses an unbounded queue (though we are enforcing a limit in `submit()`).
      * Because of that, the executor creates only `corePoolSize` threads. But to use all threads,
      * we set both `corePoolSize` and `maximumPoolSize` to `maxNumberOfRunningPrintJobs`. As a
      * consequence, the `maxIdleTime` will be ignored, idle threads will not be terminated.
@@ -239,11 +242,15 @@ public class ThreadPoolJobManager implements JobManager {
                   ThreadPoolJobManager.this.jobQueue.start(printJob.getEntry().getReferenceId());
                 } catch (RuntimeException e) {
                   LOGGER.error("failed to mark job as running", e);
+                  unhealthyCountersHealthCheck.recordUnhealthyProblem(
+                      ThreadPoolJobManager.class.getSimpleName(), "failedToMarkJobAsRunning");
                 } catch (NoSuchReferenceException e) {
                   LOGGER.error(
                       "tried to mark non-existing job as 'running': {}",
                       printJob.getEntry().getReferenceId(),
                       e);
+                  unhealthyCountersHealthCheck.recordUnhealthyProblem(
+                      ThreadPoolJobManager.class.getSimpleName(), "couldNotMarkNonExistingJob");
                 }
               }
             }
@@ -573,7 +580,7 @@ public class ThreadPoolJobManager implements JobManager {
   }
 
   /**
-   * This timer task changes the status of finished jobs in the registry. Also it stops jobs that
+   * This timer task changes the status of finished jobs in the registry. Also, it stops jobs that
    * have been running for too long (timeout).
    */
   @VisibleForTesting
@@ -628,8 +635,12 @@ public class ThreadPoolJobManager implements JobManager {
         }
       } catch (javax.persistence.PessimisticLockException e) {
         // Ignore error on pessimistic locking
+        unhealthyCountersHealthCheck.recordUnhealthyProblem(
+            getClass().getSimpleName(), "ignorePessimisticLockException");
       } catch (RuntimeException t) {
         LOGGER.error("Error while polling/updating registry", t);
+        unhealthyCountersHealthCheck.recordUnhealthyProblem(
+            getClass().getSimpleName(), "exceptionWhilePollingRegistry");
       }
     }
   }

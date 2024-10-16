@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.mapfish.print.metrics.UnhealthyCountersHealthCheck;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ public class WorkingDirectories {
 
   @Autowired private ServletContext servletContext;
 
+  @Autowired private UnhealthyCountersHealthCheck unhealthyCountersHealthCheck;
+
   public final File getWorking() {
     return this.working;
   }
@@ -34,7 +37,8 @@ public class WorkingDirectories {
   /**
    * Defines what is the root directory used to store every temporary files.
    *
-   * <p>The given path can contain the pattern "{WEBAPP}" and it will replaced by the webapp name.
+   * <p>The given path can contain the pattern "{WEBAPP}" and it will be replaced by the webapp
+   * name.
    *
    * @param working The path
    */
@@ -110,7 +114,7 @@ public class WorkingDirectories {
 
   private void createIfMissing(final File directory, final String name) {
     if (!directory.exists() && !directory.mkdirs()) {
-      if (!directory.exists()) { // Maybe somebody else created it in the mean time
+      if (!directory.exists()) { // Maybe somebody else created it in the meantime
         throw new AssertionError(
             "Unable to create working directory: '"
                 + directory
@@ -135,18 +139,8 @@ public class WorkingDirectories {
       final String extension,
       final Logger logger) {
     final String configurationAbsolutePath = configuration.getDirectory().getPath();
-    final int prefixToConfiguration = configurationAbsolutePath.length() + 1;
-    final String parentDir = jasperFileXml.getAbsoluteFile().getParent();
-    final String relativePathToFile;
-    if (configurationAbsolutePath.equals(parentDir)) {
-      relativePathToFile = FilenameUtils.getBaseName(jasperFileXml.getName());
-    } else {
-      final String relativePathToContainingDirectory = parentDir.substring(prefixToConfiguration);
-      relativePathToFile =
-          relativePathToContainingDirectory
-              + File.separator
-              + FilenameUtils.getBaseName(jasperFileXml.getName());
-    }
+    final String relativePathToFile =
+        determineRelativePath(jasperFileXml, configurationAbsolutePath);
 
     final File buildFile =
         new File(getJasperCompilation(configuration), relativePathToFile + extension);
@@ -157,6 +151,22 @@ public class WorkingDirectories {
           buildFile.getParentFile());
     }
     return buildFile;
+  }
+
+  private String determineRelativePath(final File jasperXmlFile, final String configAbsolutePath) {
+    final int prefixToConfiguration = configAbsolutePath.length() + 1;
+    final String parentDir = jasperXmlFile.getAbsoluteFile().getParent();
+    final String relativePathToFile;
+    if (configAbsolutePath.equals(parentDir)) {
+      relativePathToFile = FilenameUtils.getBaseName(jasperXmlFile.getName());
+    } else {
+      final String relativePathToContainingDirectory = parentDir.substring(prefixToConfiguration);
+      relativePathToFile =
+          relativePathToContainingDirectory
+              + File.separator
+              + FilenameUtils.getBaseName(jasperXmlFile.getName());
+    }
+    return relativePathToFile;
   }
 
   /**
@@ -203,6 +213,8 @@ public class WorkingDirectories {
         removeOldFiles(new File(System.getProperty("java.io.tmpdir")), "+~JF", this.maxAgeTaskDir);
       } catch (Exception e) {
         LOGGER.error("error running file clean-up task", e);
+        unhealthyCountersHealthCheck.recordUnhealthyProblem(
+            getClass().getSimpleName(), "errorRunningFileCleanUpTask");
       }
     }
 

@@ -46,4 +46,17 @@ public class UnhealthyCountersHealthCheck extends HealthCheck {
   public void recordUnhealthyCounter(final String counterName) {
     unhealthyCounters.add(counterName);
   }
+
+  /**
+   * Records an unhealthy problem by incrementing a counter for the given class and description.
+   * This method helps in tracking issues which might lead to the server being marked unhealthy.
+   *
+   * @param className the name of the class where the problem occurred
+   * @param description a brief description of the problem
+   */
+  public void recordUnhealthyProblem(final String className, final String description) {
+    String counterName = MetricRegistry.name(className, description);
+    metricRegistry.counter(counterName).inc();
+    recordUnhealthyCounter(counterName);
+  }
 }
