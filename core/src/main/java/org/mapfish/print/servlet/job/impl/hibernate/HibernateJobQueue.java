@@ -223,16 +223,13 @@ public class HibernateJobQueue implements JobQueue {
                   return HibernateJobQueue.this.dao.deleteOld(
                       System.currentTimeMillis() - getTimeToKeepAfterAccessInMillis());
                 } catch (Exception e) {
-                  String deleteFailed = MetricRegistry.name(name, "failedToDeleteOldJobs");
-                  metricRegistry.counter(deleteFailed).inc();
-                  unhealthyCountersHealthCheck.recordUnhealthyCounter(deleteFailed);
+                  unhealthyCountersHealthCheck.recordUnhealthyProblem(
+                      name, "failedToDeleteOldJobs");
                   return null;
                 }
               });
       if (deletion.stop() > CLEAN_UP_INTERVAL_TIME_UNIT.toNanos(cleanupInterval)) {
-        String serverOverloaded = MetricRegistry.name(name, "tooManyJobsToDeleteInInterval");
-        metricRegistry.counter(serverOverloaded).inc();
-        unhealthyCountersHealthCheck.recordUnhealthyCounter(serverOverloaded);
+        unhealthyCountersHealthCheck.recordUnhealthyProblem(name, "tooManyJobsToDeleteInInterval");
       }
       if (nbDeleted != null && nbDeleted > 0) {
         metricRegistry.counter(name + ".totalDeleted").inc(nbDeleted);
