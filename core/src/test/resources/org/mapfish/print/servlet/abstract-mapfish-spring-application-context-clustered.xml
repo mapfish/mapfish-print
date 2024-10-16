@@ -2,18 +2,11 @@
 
 <beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-    <!--
-        This file is intentionally left empty.  Other plugins/configurations can add a file with the same name and the beans
-        in that file will override the beans defined in the other default spring configuration files
-    -->
 
-    <!-- Uncomment this to use hibernate instead of the registry to store the job queue.
-    configure the data source as well  -->
+    <!-- At this point, there can be two flavours of this conf. the one with postgres datasource and the one with h2 datasource. Both import this file so to shared beans to be instantiated. -->
+
     <bean id="jobQueue" class="org.mapfish.print.servlet.job.impl.hibernate.HibernateJobQueue" />
 
-   <!-- Uncomment this to force the job manager the support clustering, by not taking submitted jobs automatically as its own.
-        This mode requires the hibernate job queue, the registry job queue is unsupported.
-        oldFileCleanUp should be turned off if hibernate is used for print job results (see below)  -->
     <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer" >
         <property name="ignoreResourceNotFound" value="true"/>
         <property name="properties">
@@ -24,7 +17,6 @@
         </property>
     </bean>
 
-    <!-- Uncomment this to use hibernate to read and write print job results  -->
     <bean id="printJobPrototype" class="org.mapfish.print.servlet.job.impl.hibernate.HibernatePrintJob" scope="prototype"/>
     <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.impl.hibernate.HibernateReportLoader"/>
 
