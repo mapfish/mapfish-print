@@ -197,6 +197,7 @@ dependencies {
     compileOnly 'com.github.spotbugs:spotbugs-annotations:4.7.3'
 
     testImplementation group: 'de.saly', name: 'javamail-mock2-fullmock', version: '0.5-beta4'
+    testImplementation group: 'com.h2database', name: 'h2', version: '2.3.232'
 }
 
 static def gitRevision() {

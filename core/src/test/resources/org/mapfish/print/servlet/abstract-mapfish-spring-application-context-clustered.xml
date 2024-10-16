@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!-- At this point, there can be two flavours of this conf. the one with postgres datasource and the one with h2 datasource. Both import this file so to shared beans to be instantiated. -->
+
+    <bean id="jobQueue" class="org.mapfish.print.servlet.job.impl.hibernate.HibernateJobQueue" />
+
+    <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer" >
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="properties">
+            <props>
+                <prop key="jobManager.clustered">true</prop>
+                <prop key="jobManager.oldFileCleanUp">false</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="printJobPrototype" class="org.mapfish.print.servlet.job.impl.hibernate.HibernatePrintJob" scope="prototype"/>
+    <bean id="fileReportLoader" class="org.mapfish.print.servlet.job.impl.hibernate.HibernateReportLoader"/>
+
+</beans>

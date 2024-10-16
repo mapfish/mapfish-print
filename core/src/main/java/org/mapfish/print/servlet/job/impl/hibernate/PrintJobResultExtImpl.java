@@ -3,13 +3,14 @@ package org.mapfish.print.servlet.job.impl.hibernate;
 import java.net.URI;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import org.mapfish.print.servlet.job.impl.PrintJobResultImpl;
 
 /** Extension of Print Job Result that holds data as BLOB. */
 @Entity
 public class PrintJobResultExtImpl extends PrintJobResultImpl {
 
-  @Column private byte[] data;
+  @Column @Lob private byte[] data;
 
   /** Default Constructor. */
   public PrintJobResultExtImpl() {
