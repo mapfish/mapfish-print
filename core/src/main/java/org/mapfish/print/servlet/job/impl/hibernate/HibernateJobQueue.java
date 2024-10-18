@@ -14,6 +14,8 @@ import org.mapfish.print.servlet.job.NoSuchReferenceException;
 import org.mapfish.print.servlet.job.PrintJobEntry;
 import org.mapfish.print.servlet.job.PrintJobResult;
 import org.mapfish.print.servlet.job.PrintJobStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,8 @@ public class HibernateJobQueue implements JobQueue {
 
   private static final long DEFAULT_CLEAN_UP_INTERVAL = 300; /* seconds */
   private static final TimeUnit CLEAN_UP_INTERVAL_TIME_UNIT = TimeUnit.SECONDS;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(HibernateJobQueue.class);
 
   @Autowired private PrintJobDao dao;
 
@@ -223,16 +227,18 @@ public class HibernateJobQueue implements JobQueue {
                   return HibernateJobQueue.this.dao.deleteOld(
                       System.currentTimeMillis() - getTimeToKeepAfterAccessInMillis());
                 } catch (Exception e) {
-                  unhealthyCountersHealthCheck.recordUnhealthyProblem(
-                      name, "failedToDeleteOldJobs");
+                  unhealthyCountersHealthCheck.recordUnhealthyProblem(name, "issue");
                   return null;
                 }
               });
       if (deletion.stop() > CLEAN_UP_INTERVAL_TIME_UNIT.toNanos(cleanupInterval)) {
         unhealthyCountersHealthCheck.recordUnhealthyProblem(name, "tooManyJobsToDeleteInInterval");
+        LOGGER.warn("Deleting Old Print Jobs took longer than the scheduled interval.");
       }
       if (nbDeleted != null && nbDeleted > 0) {
-        metricRegistry.counter(name + ".totalDeleted").inc(nbDeleted);
+        metricRegistry
+            .counter(MetricRegistry.name(name, "totalCountByThisServerInstance"))
+            .inc(nbDeleted);
       }
     }
   }

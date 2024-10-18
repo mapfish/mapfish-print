@@ -636,11 +636,12 @@ public class ThreadPoolJobManager implements JobManager {
       } catch (javax.persistence.PessimisticLockException e) {
         // Ignore error on pessimistic locking
         unhealthyCountersHealthCheck.recordUnhealthyProblem(
-            getClass().getSimpleName(), "ignorePessimisticLockException");
+            getClass().getSimpleName(), "ignoredPessimisticLockIssue");
+        LOGGER.warn("Ignored Pessimistic Lock Issue", e);
       } catch (RuntimeException t) {
         LOGGER.error("Error while polling/updating registry", t);
         unhealthyCountersHealthCheck.recordUnhealthyProblem(
-            getClass().getSimpleName(), "exceptionWhilePollingRegistry");
+            getClass().getSimpleName(), "pollingRegistryIssue");
       }
     }
   }
