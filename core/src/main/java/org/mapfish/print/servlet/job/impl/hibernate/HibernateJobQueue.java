@@ -236,9 +236,9 @@ public class HibernateJobQueue implements JobQueue {
         LOGGER.warn("Deleting Old Print Jobs took longer than the scheduled interval.");
       }
       if (nbDeleted != null && nbDeleted > 0) {
-        metricRegistry
-            .counter(MetricRegistry.name(name, "totalCountByThisServerInstance"))
-            .inc(nbDeleted);
+        // This counter counts the number of deleted old job prints by this server instance.
+        // But it is not the grand total of deleted jobs in the database.
+        metricRegistry.counter(MetricRegistry.name(name, "totalCount")).inc(nbDeleted);
       }
     }
   }
