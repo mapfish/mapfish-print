@@ -1,28 +1,35 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import org.mapfish.print.metrics.UnhealthyCountersHealthCheck;
 import org.mapfish.print.servlet.job.JobQueue;
 import org.mapfish.print.servlet.job.NoSuchReferenceException;
 import org.mapfish.print.servlet.job.PrintJobEntry;
 import org.mapfish.print.servlet.job.PrintJobResult;
 import org.mapfish.print.servlet.job.PrintJobStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/** Db Job Manager. */
+/** Transfers request to the Job dao. */
 @Transactional
 public class HibernateJobQueue implements JobQueue {
   private static final int DEFAULT_TIME_TO_KEEP_AFTER_ACCESS = 30; /* minutes */
 
   private static final long DEFAULT_CLEAN_UP_INTERVAL = 300; /* seconds */
+  private static final TimeUnit CLEAN_UP_INTERVAL_TIME_UNIT = TimeUnit.SECONDS;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(HibernateJobQueue.class);
 
   @Autowired private PrintJobDao dao;
 
@@ -30,10 +37,12 @@ public class HibernateJobQueue implements JobQueue {
 
   @Autowired private MetricRegistry metricRegistry;
 
+  @Autowired private UnhealthyCountersHealthCheck unhealthyCountersHealthCheck;
+
   private ScheduledExecutorService cleanUpTimer;
 
   /** The interval at which old records are deleted (in seconds). */
-  private long cleanupInterval = DEFAULT_CLEAN_UP_INTERVAL;
+  private final long cleanupInterval = DEFAULT_CLEAN_UP_INTERVAL;
 
   /** The minimum time to keep records after last access. */
   private int timeToKeepAfterAccessInMinutes = DEFAULT_TIME_TO_KEEP_AFTER_ACCESS;
@@ -198,7 +207,7 @@ public class HibernateJobQueue implements JobQueue {
               return thread;
             });
     this.cleanUpTimer.scheduleAtFixedRate(
-        this::cleanup, this.cleanupInterval, this.cleanupInterval, TimeUnit.SECONDS);
+        this::cleanup, cleanupInterval, cleanupInterval, CLEAN_UP_INTERVAL_TIME_UNIT);
   }
 
   /** Called by spring when application context is being destroyed. */
@@ -209,11 +218,28 @@ public class HibernateJobQueue implements JobQueue {
 
   private void cleanup() {
     TransactionTemplate tmpl = new TransactionTemplate(this.txManager);
-    final int nbDeleted =
-        tmpl.execute(
-            status ->
-                HibernateJobQueue.this.dao.deleteOld(
-                    System.currentTimeMillis() - getTimeToKeepAfterAccessInMillis()));
-    metricRegistry.counter(getClass().getName() + ".deleted_old").inc(nbDeleted);
+    String name = MetricRegistry.name(getClass().getSimpleName(), "deletedOldPrintJobs");
+    try (Timer.Context deletion = metricRegistry.timer(name).time()) {
+      final Integer nbDeleted =
+          tmpl.execute(
+              status -> {
+                try {
+                  return HibernateJobQueue.this.dao.deleteOld(
+                      System.currentTimeMillis() - getTimeToKeepAfterAccessInMillis());
+                } catch (Exception e) {
+                  unhealthyCountersHealthCheck.recordUnhealthyProblem(name, "issue");
+                  return null;
+                }
+              });
+      if (deletion.stop() > CLEAN_UP_INTERVAL_TIME_UNIT.toNanos(cleanupInterval)) {
+        unhealthyCountersHealthCheck.recordUnhealthyProblem(name, "tooManyJobsToDeleteInInterval");
+        LOGGER.warn("Deleting Old Print Jobs took longer than the scheduled interval.");
+      }
+      if (nbDeleted != null && nbDeleted > 0) {
+        // This counter counts the number of deleted old job prints by this server instance.
+        // But it is not the grand total of deleted jobs in the database.
+        metricRegistry.counter(MetricRegistry.name(name, "totalCount")).inc(nbDeleted);
+      }
+    }
   }
 }

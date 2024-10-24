@@ -1,6 +1,5 @@
 package org.mapfish.print.servlet.job;
 
-import com.codahale.metrics.MetricRegistry;
 import javax.annotation.Nonnull;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -85,11 +84,8 @@ public class HibernateAccounting extends Accounting {
               }
             });
       } catch (HibernateException ex) {
-        String name =
-            MetricRegistry.name(
-                getClass().getSimpleName(), "insertRecordInHibernateFailedThenSkiped");
-        metricRegistry.counter(name).inc();
-        unhealthyCountersHealthCheck.recordUnhealthyCounter(name);
+        unhealthyCountersHealthCheck.recordUnhealthyProblem(
+            getClass().getSimpleName(), "insertRecordInHibernateFailedThenSkipped");
         LOGGER.error("Cannot save accounting information", ex);
       }
     }
