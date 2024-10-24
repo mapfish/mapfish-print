@@ -145,6 +145,7 @@ dependencies {
             'org.testng:testng:7.5.1',
             'com.google.guava:guava:32.0.1-jre',
             'commons-io:commons-io:2.14.0',
+            'io.airlift:aircompressor:0.27',
     )
     metrics(
             "io.dropwizard.metrics:metrics-core:$metricsVersion",
