@@ -18,6 +18,7 @@ import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import javax.annotation.Nullable;
@@ -83,7 +84,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
     String example = createResponseJson.getString("requestData");
     JSONObject obj = new JSONObject(example);
-    assertTrue(obj.length() > 0);
+    assertFalse(obj.isEmpty());
 
     final MockHttpServletResponse getExampleResponseExplicit = new MockHttpServletResponse();
     this.servlet.getExampleRequest(
@@ -246,6 +247,9 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
             (@Nullable MockHttpServletRequest servletCreateRequest) -> {
               try {
                 final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+                if (servletCreateRequest == null) {
+                  throw new AssertionError("servletCreateRequest is null");
+                }
                 servletCreateRequest.addHeader("Cookies", "CookieValue");
                 servletCreateRequest.addHeader("Cookies", "CookieValue2");
                 servletCreateRequest.addHeader("Header2", "h2");
@@ -270,11 +274,15 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     assertEquals(4, request.getHeaders().size());
     assertArrayEquals(
         new Object[] {"CookieValue", "CookieValue2"},
-        request.getHeaders().get("Cookies").toArray());
-    assertArrayEquals(new Object[] {ref}, request.getHeaders().get("X-Request-ID").toArray());
-    assertArrayEquals(new Object[] {ref}, request.getHeaders().get("X-Job-ID").toArray());
+        Objects.requireNonNull(request.getHeaders().get("Cookies")).toArray());
     assertArrayEquals(
-        new Object[] {"default"}, request.getHeaders().get("X-Application-ID").toArray());
+        new Object[] {ref},
+        Objects.requireNonNull(request.getHeaders().get("X-Request-ID")).toArray());
+    assertArrayEquals(
+        new Object[] {ref}, Objects.requireNonNull(request.getHeaders().get("X-Job-ID")).toArray());
+    assertArrayEquals(
+        new Object[] {"default"},
+        Objects.requireNonNull(request.getHeaders().get("X-Application-ID")).toArray());
   }
 
   @Test(timeout = 60000)
@@ -722,8 +730,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
   }
 
   /**
-   * Check that a job is not canceled, when status requests are made. Test case for:
-   * https://github.com/mapfish/mapfish-print/issues/404
+   * Check that a job is not canceled, when status requests are made. Test case for: <a
+   * href="https://github.com/mapfish/mapfish-print/issues/404">Issue 404</a>
    */
   @Test(timeout = 60000)
   @DirtiesContext
@@ -768,7 +776,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         Thread.sleep(500);
       } else if (status == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
         String error = servletGetReportResponse.getContentAsString();
-        assertTrue(error.contains("canceled"));
+        assertTrue(error + " did not contain canceled", error.contains("canceled"));
         return;
       } else {
         fail(status + " was not one of the expected response codes.  Expected: 500 or 202");
@@ -1155,14 +1163,15 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     assertCorrectResponse(servletGetReportResponse, "test_report-");
   }
 
-  private byte[] assertCorrectResponse(
+  private void assertCorrectResponse(
       MockHttpServletResponse servletGetReportResponse, String outputNamePrefix)
       throws IOException {
     byte[] report = servletGetReportResponse.getContentAsByteArray();
 
     final String contentType = servletGetReportResponse.getHeader("Content-Type");
     assertEquals("image/png", contentType);
-    String fileName = servletGetReportResponse.getHeader("Content-disposition").split("=")[1];
+    String header = servletGetReportResponse.getHeader("Content-disposition");
+    String fileName = Objects.requireNonNull(header).split("=")[1];
     final Calendar instance = Calendar.getInstance();
     int year = instance.get(Calendar.YEAR);
 
@@ -1170,7 +1179,6 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
     new ImageSimilarity(getFile(MapPrinterServletTest.class, "expectedSimpleImage.png"))
         .assertSimilarity(report, 0);
-    return report;
   }
 
   private void setUpConfigFiles() throws URISyntaxException {
