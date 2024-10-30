@@ -1,10 +1,8 @@
 package org.mapfish.print.servlet;
 
-import org.junit.Ignore;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(locations = {ClusteredMapPrinterServletTest.CLUSTERED_CONTEXT})
-@Ignore
 public class ClusteredMapPrinterServletTest extends MapPrinterServletTest {
 
   public static final String CLUSTERED_CONTEXT =
