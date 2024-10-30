@@ -126,7 +126,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
       throws URISyntaxException, IOException;
 
   @Override
-  public final PrintJobResult call() throws Exception {
+  public PrintJobResult call() throws Exception {
     SecurityContextHolder.setContext(this.securityContext);
     final Timer.Context timer =
         this.metricRegistry
