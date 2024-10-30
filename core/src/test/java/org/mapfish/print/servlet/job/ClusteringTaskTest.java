@@ -3,14 +3,11 @@ package org.mapfish.print.servlet.job;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
 import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.access.AlwaysAllowAssertion;
-import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.servlet.ClusteredMapPrinterServletTest;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
@@ -22,7 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(locations = {ClusteredMapPrinterServletTest.CLUSTERED_CONTEXT})
-@Ignore // db must be set up to run this test
 public class ClusteringTaskTest extends AbstractMapfishSpringTest {
 
   TestJobManager jobMan1;
@@ -79,8 +75,7 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
   }
 
   private class TestJobManager extends ThreadPoolJobManager {
-    private String name;
-
+    private final String name;
     private int jobsRun;
 
     public TestJobManager(String name) {
@@ -94,18 +89,16 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
       PrintJob job =
           new PrintJob() {
             @Override
-            protected PrintResult withOpenOutputStream(PrintAction function) throws Exception {
-              System.out.println(getEntry().getReferenceId() + " is being run by jobman " + name);
-              TestJobManager.this.jobsRun++;
-              Thread.sleep(1000);
-              return new PrintResult(
-                  42, new AbstractProcessor.Context(new HashMap<String, String>()));
+            protected PrintJobResult createResult(
+                String fileName, String fileExtension, String mimeType) {
+              return null;
             }
 
             @Override
-            protected PrintJobResult createResult(
-                final String fileName, final String fileExtension, final String mimeType) {
-              return null;
+            public PrintJobResult call() throws Exception {
+              System.out.println(getEntry().getReferenceId() + " is being run by jobman " + name);
+              jobsRun++;
+              return super.call();
             }
           };
       job.initForTesting(ClusteringTaskTest.this.context);
