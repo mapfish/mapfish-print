@@ -14,7 +14,7 @@
     schedule: 'after 5pm on the first day of the month',
   },
   semanticCommits: 'disabled',
-  baseBranches: ['master', '3.28', '3.29', '3.30'],
+  baseBranches: ['3.28', '3.29', '3.30', '3.31', 'master'],
   'pre-commit': { enabled: true },
   regexManagers: [
     /** Do updates on pre-commit additional dependencies */
