@@ -42,9 +42,9 @@ tests: build-builder
 		--volume=$(PWD)/core/build/scripts/:/src/core/build/scripts/ \
 		--volume=$(PWD)/core/src/test/:/src/core/src/test/ \
 		mapfish_print_builder \
-		gradle --parallel --exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain \
+		gradle --no-parallel --exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain \
 			--exclude-task=:core:spotbugsTest --exclude-task=:core:checkstyleTest \
-			:core:test :core:testCli
+			--info :core:test :core:testCli
 
 .PHONY: acceptance-tests-up
 acceptance-tests-up: build .env
