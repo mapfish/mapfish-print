@@ -82,7 +82,7 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
 
   private BufferedImage getImageFromResponse(final ClientHttpResponse response, final URI url)
       throws IOException {
-    if (response.getStatusCode() == HttpStatus.OK) {
+    if (response.getRawStatusCode() == HttpStatus.OK.value()) {
       try {
         final BufferedImage image = ImageIO.read(response.getBody());
         if (image == null) {
@@ -97,7 +97,7 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
       LOGGER.warn(
           "Error loading the table row image: {}.\nStatus Code: {}\nStatus Text: {}",
           url,
-          response.getStatusCode(),
+          response.getRawStatusCode(),
           response.getStatusText());
     }
     return this.defaultImage;

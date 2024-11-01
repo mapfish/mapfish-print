@@ -254,17 +254,18 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
     private Tile handleSpecialStatuses(
         final ClientHttpResponse response, final String baseMetricName) throws IOException {
-      final HttpStatus statusCode = response.getStatusCode();
-      if (statusCode == HttpStatus.NO_CONTENT || statusCode == HttpStatus.NOT_FOUND) {
-        if (statusCode == HttpStatus.NOT_FOUND) {
+      final int httpStatusCode = response.getRawStatusCode();
+      if (httpStatusCode == HttpStatus.NO_CONTENT.value()
+          || httpStatusCode == HttpStatus.NOT_FOUND.value()) {
+        if (httpStatusCode == HttpStatus.NOT_FOUND.value()) {
           LOGGER.info(
               "The request {} returns a not found status code, we consider it as an empty tile.",
               this.tileRequest.getURI());
         }
         // Empty response, nothing special to do
         return new Tile(null, getTileIndexX(), getTileIndexY());
-      } else if (statusCode != HttpStatus.OK) {
-        return handleNonOkStatus(statusCode, response, baseMetricName);
+      } else if (httpStatusCode != HttpStatus.OK.value()) {
+        return handleNonOkStatus(response, baseMetricName);
       }
       return null;
     }
@@ -281,19 +282,19 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
       return image;
     }
 
-    private Tile handleNonOkStatus(
-        final HttpStatus statusCode, final ClientHttpResponse response, final String baseMetricName)
+    private Tile handleNonOkStatus(final ClientHttpResponse response, final String baseMetricName)
         throws IOException {
+      final int httpStatusCode = response.getRawStatusCode();
       String errorMessage =
           String.format(
-              "Error making tile request: %s\n\tStatus: %s\n\tStatus message: %s",
-              this.tileRequest.getURI(), statusCode, response.getStatusText());
+              "Error making tile request: %s\n\tStatus: %d\n\tStatus message: %s",
+              this.tileRequest.getURI(), httpStatusCode, response.getStatusText());
       LOGGER.debug(
           String.format(
-              "Error making tile request: %s\nStatus: %s\n"
+              "Error making tile request: %s\nStatus: %d\n"
                   + "Status message: %s\nServer:%s\nBody:\n%s",
               this.tileRequest.getURI(),
-              statusCode,
+              httpStatusCode,
               response.getStatusText(),
               response.getHeaders().getFirst(HttpHeaders.SERVER),
               IOUtils.toString(response.getBody(), StandardCharsets.UTF_8)));
