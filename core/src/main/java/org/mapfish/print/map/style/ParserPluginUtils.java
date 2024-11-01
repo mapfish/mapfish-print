@@ -34,7 +34,7 @@ public final class ParserPluginUtils {
       final ClientHttpRequestFactory clientHttpRequestFactory,
       final String styleRef,
       final Function<byte[], @Nullable Optional<Style>> loadFunction) {
-    int statusCode;
+    int httpStatusCode;
     final byte[] input;
 
     URI uri;
@@ -47,13 +47,13 @@ public final class ParserPluginUtils {
     try {
       final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
       try (ClientHttpResponse response = request.execute()) {
-        statusCode = response.getRawStatusCode();
+        httpStatusCode = response.getRawStatusCode();
         input = IOUtils.toByteArray(response.getBody());
       }
     } catch (Exception e) {
       return Optional.empty();
     }
-    if (statusCode == HttpStatus.OK.value()) {
+    if (httpStatusCode == HttpStatus.OK.value()) {
       return loadFunction.apply(input);
     } else {
       return Optional.empty();

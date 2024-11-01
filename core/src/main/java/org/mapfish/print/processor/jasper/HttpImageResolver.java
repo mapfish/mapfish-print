@@ -1,5 +1,6 @@
 package org.mapfish.print.processor.jasper;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
@@ -29,7 +30,7 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
   private static final int IMAGE_SIZE = 48;
   private Pattern urlExtractor = Pattern.compile("(.*)");
   private int urlGroup = 1;
-  private final BufferedImage defaultImage;
+  @VisibleForTesting final BufferedImage defaultImage;
 
   /** Constructor. */
   public HttpImageResolver() {

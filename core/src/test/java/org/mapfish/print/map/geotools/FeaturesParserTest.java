@@ -3,6 +3,7 @@ package org.mapfish.print.map.geotools;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -36,6 +37,10 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
 
   private static final String EXAMPLE_GEOJSONFILE =
       "geojson/geojson-inconsistent-attributes-2.json";
+  private static final String WKT =
+      "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\""
+          + ",SPHEROID[\"WGS_1984\",6378137,298.257223563]]"
+          + ",PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]";
   @Autowired private TestHttpClientFactory requestFactory;
   @Autowired private ConfigurationFactory configurationFactory;
 
@@ -131,19 +136,32 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
   @Test
   @DirtiesContext
   public void testParseCRSLinkEsriWkt() {
+    final MockClientHttpResponse clientHttpResponse =
+        new MockClientHttpResponse(WKT.getBytes(Constants.DEFAULT_CHARSET), HttpStatus.OK);
+
+    CoordinateReferenceSystem crs = parseCoordinateReferenceSystemFromResponse(clientHttpResponse);
+    assertNotSame(DefaultEngineeringCRS.GENERIC_2D, crs);
+  }
+
+  @Test
+  @DirtiesContext
+  public void testParseCRSLinkEsriWktWithUnsupportedErrorCode() {
+    final MockClientHttpResponse clientHttpResponse =
+        new MockClientHttpResponse(WKT.getBytes(Constants.DEFAULT_CHARSET), 999);
+
+    CoordinateReferenceSystem crs = parseCoordinateReferenceSystemFromResponse(clientHttpResponse);
+    assertSame(DefaultEngineeringCRS.GENERIC_2D, crs);
+  }
+
+  private CoordinateReferenceSystem parseCoordinateReferenceSystemFromResponse(
+      final MockClientHttpResponse clientHttpResponse) {
     requestFactory.registerHandler(
         input -> input != null && input.getHost().equals("spatialreference.org"),
         new TestHttpClientFactory.Handler() {
           @Override
           public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) {
-            String wkt =
-                "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298"
-                    + ".257223563]],"
-                    + "PRIMEM[\"Greenwich\","
-                    + "0],UNIT[\"Degree\",0.017453292519943295]]";
             MockClientHttpRequest mockClientHttpRequest = new MockClientHttpRequest();
-            mockClientHttpRequest.setResponse(
-                new MockClientHttpResponse(wkt.getBytes(Constants.DEFAULT_CHARSET), HttpStatus.OK));
+            mockClientHttpRequest.setResponse(clientHttpResponse);
             return mockClientHttpRequest;
           }
         });
@@ -161,10 +179,11 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
     CoordinateReferenceSystem crs =
         FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
     assertNotNull(crs);
-    assertNotSame(DefaultEngineeringCRS.GENERIC_2D, crs);
+    return crs;
   }
 
-  public void testParseCRSLinkProj4() {
+  @Test
+  public void testUnsupportedLinkTypeProj4() {
     JSONObject crsJSON =
         new JSONObject(
             "{\"crs\":{\n"
@@ -179,7 +198,7 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
     CoordinateReferenceSystem crs =
         FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
     assertNotNull(crs);
-    assertNotSame(DefaultEngineeringCRS.GENERIC_2D, crs);
+    assertSame(DefaultEngineeringCRS.GENERIC_2D, crs);
   }
 
   @Test
