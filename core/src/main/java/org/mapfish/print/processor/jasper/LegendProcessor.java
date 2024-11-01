@@ -2,6 +2,7 @@ package org.mapfish.print.processor.jasper;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.annotations.VisibleForTesting;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -161,7 +162,14 @@ public final class LegendProcessor
     if (icons != null && icons.length > 0) {
       for (URL icon : icons) {
         tasks.add(
-            new IconTask(icon, dpi, context, level, tempTaskDirectory, clientHttpRequestFactory));
+            new IconTask(
+                icon,
+                dpi,
+                context,
+                level,
+                tempTaskDirectory,
+                clientHttpRequestFactory,
+                metricRegistry));
       }
     }
     if (legendAttributes.classes != null) {
@@ -269,7 +277,8 @@ public final class LegendProcessor
     // no checks needed
   }
 
-  private synchronized BufferedImage getMissingImage() {
+  @VisibleForTesting
+  synchronized BufferedImage getMissingImage() {
     if (this.missingImage == null) {
       this.missingImage =
           new BufferedImage(
@@ -311,7 +320,7 @@ public final class LegendProcessor
     /** The datasource for the legend object in the report. */
     public final JRTableModelDataSource legendDataSource;
 
-    /** The path to the compiled subreport. */
+    /** The path to the compiled sub-report. */
     public final String legendSubReport;
 
     /** The number of rows in the legend. */
@@ -343,7 +352,8 @@ public final class LegendProcessor
     }
   }
 
-  private final class IconTask implements Callable<Object[]> {
+  @VisibleForTesting
+  final class IconTask implements Callable<Object[]> {
 
     private final URL icon;
     private final double iconDPI;
@@ -351,20 +361,24 @@ public final class LegendProcessor
     private final MfClientHttpRequestFactory clientHttpRequestFactory;
     private final int level;
     private final File tempTaskDirectory;
+    private final MetricRegistry metricRegistry;
 
-    private IconTask(
+    @VisibleForTesting
+    IconTask(
         final URL icon,
         final double iconDPI,
         final ExecutionContext context,
         final int level,
         final File tempTaskDirectory,
-        final MfClientHttpRequestFactory clientHttpRequestFactory) {
+        final MfClientHttpRequestFactory clientHttpRequestFactory,
+        final MetricRegistry metricRegistry) {
       this.icon = icon;
       this.iconDPI = iconDPI;
       this.context = context;
       this.level = level;
       this.clientHttpRequestFactory = clientHttpRequestFactory;
       this.tempTaskDirectory = tempTaskDirectory;
+      this.metricRegistry = metricRegistry;
     }
 
     @Override
@@ -389,8 +403,7 @@ public final class LegendProcessor
           this.context.stopIfCanceled();
           final ClientHttpRequest request =
               this.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
-          try (Timer.Context ignored =
-              LegendProcessor.this.metricRegistry.timer(metricName).time()) {
+          try (Timer.Context ignored = metricRegistry.timer(metricName).time()) {
             try (ClientHttpResponse httpResponse = request.execute()) {
               if (httpResponse.getRawStatusCode() == HttpStatus.OK.value()) {
                 image = ImageIO.read(httpResponse.getBody());
@@ -409,7 +422,7 @@ public final class LegendProcessor
 
       if (image == null) {
         image = getMissingImage();
-        LegendProcessor.this.metricRegistry.counter(metricName + ".error").inc();
+        metricRegistry.counter(metricName + ".error").inc();
       }
 
       return image;
