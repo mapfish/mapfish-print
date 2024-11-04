@@ -202,14 +202,15 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
       final String stringBody,
       final String baseMetricName)
       throws IOException {
-    if (httpResponse.getStatusCode() != HttpStatus.OK) {
+    if (httpResponse.getRawStatusCode() != HttpStatus.OK.value()) {
       String message =
           String.format(
-              "Invalid status code for %s (%d!=%d).With request headers:\n%s\n"
+              "Invalid status code for %s (%d!=%d), status: %s. With request headers:\n%s\n"
                   + "The response was: '%s'\nWith response headers:\n%s",
               request.getURI(),
-              httpResponse.getStatusCode().value(),
+              httpResponse.getRawStatusCode(),
               HttpStatus.OK.value(),
+              httpResponse.getStatusText(),
               String.join("\n", Utils.getPrintableHeadersList(request.getHeaders())),
               httpResponse.getStatusText(),
               String.join("\n", Utils.getPrintableHeadersList(httpResponse.getHeaders())));
