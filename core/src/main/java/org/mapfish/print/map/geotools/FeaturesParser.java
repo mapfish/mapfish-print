@@ -61,7 +61,7 @@ public class FeaturesParser {
   }
 
   @VisibleForTesting
-  static final CoordinateReferenceSystem parseCoordinateReferenceSystem(
+  static CoordinateReferenceSystem parseCoordinateReferenceSystem(
       final MfClientHttpRequestFactory requestFactory,
       final JSONObject geojson,
       final boolean forceLongitudeFirst) {
@@ -93,7 +93,7 @@ public class FeaturesParser {
                   requestFactory.createRequest(new URI(uri), HttpMethod.GET);
               try (ClientHttpResponse response = request.execute()) {
 
-                if (response.getStatusCode() == HttpStatus.OK) {
+                if (response.getRawStatusCode() == HttpStatus.OK.value()) {
                   final String wkt =
                       IOUtils.toString(response.getBody(), Constants.DEFAULT_ENCODING);
                   try {
@@ -108,7 +108,8 @@ public class FeaturesParser {
               }
             }
           } else {
-            LOGGER.warn("Unable to load linked CRS from geojson: \n{}", crsJson);
+            LOGGER.warn(
+                "Unsupported link type {} in linked CRS from geojson: \n{}", linkType, crsJson);
           }
         } else {
           code.append(getProperty(crsJson, "code"));
@@ -147,7 +148,6 @@ public class FeaturesParser {
    * @param template the template
    * @param features what to parse
    * @return the feature collection
-   * @throws IOException
    */
   public final SimpleFeatureCollection autoTreat(final Template template, final String features)
       throws IOException {
@@ -189,7 +189,6 @@ public class FeaturesParser {
    *
    * @param geoJsonString what to parse
    * @return the feature collection
-   * @throws IOException
    */
   public final SimpleFeatureCollection treatStringAsGeoJson(final String geoJsonString)
       throws IOException {
@@ -231,7 +230,7 @@ public class FeaturesParser {
         builder.setName("GeosjonFeatureType");
         final JSONArray features = geojson.getJSONArray("features");
 
-        if (features.length() == 0) {
+        if (features.isEmpty()) {
           // do not try to build the feature type if there are no features
           return null;
         }

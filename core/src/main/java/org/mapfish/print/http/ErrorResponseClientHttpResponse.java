@@ -9,8 +9,8 @@ import org.springframework.util.StreamUtils;
 public class ErrorResponseClientHttpResponse extends AbstractClientHttpResponse {
   private final Exception exception;
 
-  /** HTTP code use in response for non HTTP errors. */
-  private static final int FAKE_HTTP_ERROR_CODE = 999;
+  /** HTTP code use in response for non HTTP errors, (Not Acceptable). */
+  private static final int FAKE_HTTP_ERROR_CODE = 406;
 
   public ErrorResponseClientHttpResponse(final Exception e) {
     assert e != null;
@@ -38,7 +38,8 @@ public class ErrorResponseClientHttpResponse extends AbstractClientHttpResponse 
   @Nonnull
   public String getStatusText() {
     return String.format(
-        "%s: %s", this.exception.getClass().getSimpleName(), this.exception.getMessage());
+        "Not true HTTP code, %s: %s, see above error",
+        this.exception.getClass().getSimpleName(), this.exception.getMessage());
   }
 
   @Override
