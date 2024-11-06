@@ -3,27 +3,28 @@ package org.mapfish.print.servlet.job;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
 import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.Constants;
 import org.mapfish.print.config.access.AlwaysAllowAssertion;
-import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.servlet.ClusteredMapPrinterServletTest;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
 import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.mapfish.print.wrapper.json.PJsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(locations = {ClusteredMapPrinterServletTest.CLUSTERED_CONTEXT})
-@Ignore // db must be set up to run this test
 public class ClusteringTaskTest extends AbstractMapfishSpringTest {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringTaskTest.class);
 
   TestJobManager jobMan1;
   TestJobManager jobMan2;
@@ -38,9 +39,26 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
 
   @Test(timeout = 60000)
   public void testRun() throws Exception {
+    LOGGER.error("Starting jobs");
+
     PJsonObject requestData =
         new PJsonObject(
-            new JSONObject("{\"" + MapPrinterServlet.JSON_APP + "\":\"default\"}"), "job");
+            new JSONObject(
+                "{"
+                    // App
+                    + "\""
+                    + MapPrinterServlet.JSON_APP
+                    + "\": \"default\", "
+                    // Output format
+                    + "\""
+                    + MapPrinterServlet.JSON_OUTPUT_FORMAT
+                    + "\": \"pdf\", "
+                    // Layout
+                    + "\""
+                    + Constants.JSON_LAYOUT_KEY
+                    + "\": \"A4 Landscape\""
+                    + "}"),
+            "job");
     jobMan1.submit(
         new PrintJobEntryImpl(
             "first job", requestData, System.currentTimeMillis(), new AlwaysAllowAssertion()));
@@ -70,6 +88,8 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
       }
     }
 
+    LOGGER.error("All jobs are done");
+
     // verify each job was run only once
     assertEquals(4, jobMan1.getJobsRun() + jobMan2.getJobsRun());
 
@@ -79,8 +99,7 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
   }
 
   private class TestJobManager extends ThreadPoolJobManager {
-    private String name;
-
+    private final String name;
     private int jobsRun;
 
     public TestJobManager(String name) {
@@ -91,21 +110,20 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
     }
 
     protected PrintJob createJob(final PrintJobEntry entry) {
+      LOGGER.error("createJob on " + name);
       PrintJob job =
           new PrintJob() {
             @Override
-            protected PrintResult withOpenOutputStream(PrintAction function) throws Exception {
-              System.out.println(getEntry().getReferenceId() + " is being run by jobman " + name);
-              TestJobManager.this.jobsRun++;
-              Thread.sleep(1000);
-              return new PrintResult(
-                  42, new AbstractProcessor.Context(new HashMap<String, String>()));
+            protected PrintJobResult createResult(
+                String fileName, String fileExtension, String mimeType) {
+              return null;
             }
 
             @Override
-            protected PrintJobResult createResult(
-                final String fileName, final String fileExtension, final String mimeType) {
-              return null;
+            public PrintJobResult call() throws Exception {
+              LOGGER.error(getEntry().getReferenceId() + " is being run by jobman " + name);
+              jobsRun++;
+              return super.call();
             }
           };
       job.initForTesting(ClusteringTaskTest.this.context);

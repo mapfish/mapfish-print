@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
+import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.AbstractProcessor;
@@ -101,7 +102,22 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
         PrintJobEntryImpl entry = (PrintJobEntryImpl) getEntry();
         entry.setRequestData(
             new PJsonObject(
-                new JSONObject("{\"" + MapPrinterServlet.JSON_APP + "\":\"default\"}"), "job"));
+                new JSONObject(
+                    "{"
+                        // App
+                        + "\""
+                        + MapPrinterServlet.JSON_APP
+                        + "\": \"default\", "
+                        // Output format
+                        + "\""
+                        + MapPrinterServlet.JSON_OUTPUT_FORMAT
+                        + "\": \"pdf\", "
+                        // Layout
+                        + "\""
+                        + Constants.JSON_LAYOUT_KEY
+                        + "\": \"A4 Landscape\""
+                        + "}"),
+                "job"));
         entry.setReferenceId("abc");
         Template template = new Template();
         Configuration configuration = new Configuration();
