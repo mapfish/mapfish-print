@@ -65,8 +65,9 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     }
 
     test {
+        jvmArgs '--add-opens=java.desktop/sun.awt.image=ALL-UNNAMED'
         minHeapSize = "128m"
-        maxHeapSize = "512m"
+        maxHeapSize = "768m"
         testLogging {
             exceptionFormat = 'full'
         }
