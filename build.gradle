@@ -52,8 +52,8 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
         reportLevel = "high"
     }
 
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 
     compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 
@@ -65,7 +65,6 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     }
 
     test {
-        jvmArgs '-XX:+CMSClassUnloadingEnabled'
         minHeapSize = "128m"
         maxHeapSize = "512m"
         testLogging {
