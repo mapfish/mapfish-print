@@ -141,7 +141,7 @@ dependencies {
             "org.springframework:spring-test:$springVersion",
             // Indirect dependencies
             'org.apache.commons:commons-text:1.10.0',
-            'org.hsqldb:hsqldb:2.7.3',
+            'org.hsqldb:hsqldb:2.7.4',
             'com.fasterxml.jackson.core:jackson-databind:2.13.5',
             'io.airlift:aircompressor:0.27',
             'org.testng:testng:7.5.1',
