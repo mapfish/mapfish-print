@@ -129,6 +129,7 @@ jobs:
 
       - run: make acceptance-tests-up
       - run: make acceptance-tests-run
+      - run: make acceptance-tests-down
       - run: c2cciutils-docker-logs || true
         if: always()
 
