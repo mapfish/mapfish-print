@@ -44,7 +44,7 @@ tests: build-builder
 		mapfish_print_builder \
 		gradle --parallel --exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain \
 			--exclude-task=:core:spotbugsTest --exclude-task=:core:checkstyleTest \
-			:core:test :core:testCli
+			--info :core:test :core:testCli
 
 .PHONY: acceptance-tests-up
 acceptance-tests-up: build .env
