@@ -156,7 +156,7 @@ dependencies {
     )
     jasper(
             "net.sf.jasperreports:jasperreports:6.20.6",
-            "org.codehaus.groovy:groovy-all:3.0.22",
+            "org.codehaus.groovy:groovy-all:3.0.23",
             'ar.com.fdvs:DynamicJasper:5.3.9',
             "net.sf.jasperreports:jasperreports-fonts:6.20.6",
             "net.sf.jasperreports:jasperreports-functions:6.20.6",
