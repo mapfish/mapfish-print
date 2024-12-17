@@ -87,18 +87,22 @@ public final class HttpRequestFetcher {
       this.headers = originalResponse.getHeaders();
       this.status = originalResponse.getRawStatusCode();
       this.statusText = originalResponse.getStatusText();
-      this.cachedFile =
+      this.cachedFile = createCachedFile(originalResponse.getBody());
+    }
+
+    private File createCachedFile(final InputStream originalBody) throws IOException {
+      File tempFile =
           File.createTempFile("cacheduri", null, HttpRequestFetcher.this.temporaryDirectory);
-      LOGGER.debug("Caching URI resource to {}", this.cachedFile);
-      try (OutputStream os = Files.newOutputStream(this.cachedFile.toPath())) {
-        InputStream body = originalResponse.getBody();
+      LOGGER.debug("Caching URI resource to {}", tempFile);
+      try (OutputStream os = Files.newOutputStream(tempFile.toPath())) {
         LOGGER.debug(
-            "Get from input stream {}, for response {}, body available: {}",
-            body.getClass(),
-            originalResponse.getClass(),
-            body.available());
-        IOUtils.copy(body, os);
+            "Get from input stream {}, body available: {}",
+            originalBody.getClass(),
+            originalBody.available());
+        IOUtils.copy(originalBody, os);
+        originalBody.close();
       }
+      return tempFile;
     }
 
     @Override

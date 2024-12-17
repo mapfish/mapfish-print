@@ -141,16 +141,28 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
   }
 
   private ClientHttpResponse doHttpRequestWithRetry(final HttpHeaders headers) throws IOException {
-    AtomicInteger counter = new AtomicInteger();
+    final AtomicInteger counter = new AtomicInteger();
     do {
       logFetchingURIResource(headers);
       try {
-        ClientHttpResponse response = attemptToFetchResponse(headers, counter);
+        ClientHttpResponse response = attemptToFetchResponse(headers);
         if (response != null) {
           return response;
+        } else {
+          if (canRetry(counter)) {
+            sleepWithExceptionHandling();
+            LOGGER.debug("Retry fetching {}", this.getURI());
+          } else {
+            PrintException printException = new PrintException("Failed fetching " + getURI());
+            LOGGER.debug("Throwing exception since it cannot retry.", printException);
+            throw printException;
+          }
         }
       } catch (final IOException e) {
         handleIOException(e, counter);
+      } catch (final RuntimeException e) {
+        // handle other exceptions
+        handleIOException(new IOException(e), counter);
       }
     } while (true);
   }
@@ -158,38 +170,33 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
   private void logFetchingURIResource(final HttpHeaders headers) {
     // Display headers, one by line <name>: <value>
     LOGGER.debug(
-        "Fetching URI resource {}, headers:\n{}",
+        "Fetching {}, using headers:\n{}",
         this.getURI(),
         headers.entrySet().stream()
             .map(entry -> entry.getKey() + "=" + String.join(", ", entry.getValue()))
             .collect(Collectors.joining("\n")));
   }
 
-  private ClientHttpResponse attemptToFetchResponse(
-      final HttpHeaders headers, final AtomicInteger counter) throws IOException {
+  private ClientHttpResponse attemptToFetchResponse(final HttpHeaders headers) throws IOException {
     ClientHttpRequest requestUsed =
         this.request != null ? this.request : createRequestFromWrapped(headers);
     LOGGER.debug("Executing http request: {}", requestUsed.getURI());
     ClientHttpResponse response = executeCallbacksAndRequest(requestUsed);
-    if (response.getRawStatusCode() < 500) {
-      LOGGER.debug(
-          "Fetching success URI resource {}, status code {}",
-          getURI(),
-          response.getRawStatusCode());
-      return response;
+    final int minStatusCodeError = HttpStatus.INTERNAL_SERVER_ERROR.value();
+    int rawStatusCode = minStatusCodeError;
+    try {
+      rawStatusCode = response.getRawStatusCode();
+      if (rawStatusCode < minStatusCodeError) {
+        LOGGER.debug("Successfully fetched {}, with status code {}", getURI(), rawStatusCode);
+        return response;
+      }
+      LOGGER.debug("Failed fetching {}, with error code {}", getURI(), rawStatusCode);
+      return null;
+    } finally {
+      if (rawStatusCode >= minStatusCodeError) {
+        response.close();
+      }
     }
-    LOGGER.debug(
-        "Fetching failed URI resource {}, error code {}", getURI(), response.getRawStatusCode());
-    if (canRetry(counter)) {
-      sleepWithExceptionHandling();
-      LOGGER.debug("Retry fetching URI resource {}", this.getURI());
-    } else {
-      throw new PrintException(
-          String.format(
-              "Fetching failed URI resource %s, error code %s",
-              getURI(), response.getRawStatusCode()));
-    }
-    return null;
   }
 
   private void handleIOException(final IOException e, final AtomicInteger counter)
@@ -197,17 +204,18 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
 
     if (canRetry(counter)) {
       sleepWithExceptionHandling();
-      LOGGER.debug("Retry fetching URI resource {}", this.getURI());
+      LOGGER.debug("Retry fetching {} following exception", this.getURI(), e);
     } else {
-      LOGGER.debug("Fetching failed URI resource {}", getURI());
+      LOGGER.debug("Failed fetching {}", getURI());
       throw e;
     }
   }
 
   private void sleepWithExceptionHandling() {
+    int sleepMs = configFileResolvingHttpRequestFactory.getHttpRequestFetchRetryIntervalMillis();
+    LOGGER.debug("Sleeping {} ms before retrying.", sleepMs);
     try {
-      TimeUnit.MILLISECONDS.sleep(
-          configFileResolvingHttpRequestFactory.getHttpRequestFetchRetryIntervalMillis());
+      TimeUnit.MILLISECONDS.sleep(sleepMs);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       throw new PrintException("Interrupted while sleeping", e);
@@ -215,7 +223,7 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
   }
 
   private boolean canRetry(final AtomicInteger counter) {
-    return counter.incrementAndGet() < getHttpRequestMaxNumberFetchRetry();
+    return counter.incrementAndGet() <= getHttpRequestMaxNumberFetchRetry();
   }
 
   private int getHttpRequestMaxNumberFetchRetry() {
