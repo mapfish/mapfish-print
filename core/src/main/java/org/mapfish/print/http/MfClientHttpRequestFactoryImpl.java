@@ -89,7 +89,14 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             .setMaxConnTotal(maxConnTotal)
             .setMaxConnPerRoute(maxConnPerRoute)
             .setUserAgent(UserAgentCreator.getUserAgent());
-    return httpClientBuilder.build();
+    CloseableHttpClient closeableHttpClient = httpClientBuilder.build();
+    LOGGER.debug(
+        "Created CloseableHttpClient using connectionRequestTimeout: {} connectTimeout: {}"
+            + " socketTimeout: {}",
+        getIntProperty("http.connectionRequestTimeout"),
+        getIntProperty("http.connectTimeout"),
+        getIntProperty("http.socketTimeout"));
+    return closeableHttpClient;
   }
 
   // allow extension only for testing
