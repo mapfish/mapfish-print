@@ -115,7 +115,6 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
     @Override
     public String getMethodValue() {
       final HttpMethod method = httpRequest.getMethod();
-      assert method != null;
       return method.name();
     }
 
