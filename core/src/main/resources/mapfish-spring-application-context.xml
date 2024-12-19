@@ -62,7 +62,8 @@
     <bean id="healthCheckRegistry" class="org.mapfish.print.metrics.HealthCheckingRegistry"/>
     <bean id="httpClientFactory" class="org.mapfish.print.http.MfClientHttpRequestFactoryImpl">
         <constructor-arg index="0" value="${maxConnectionsTotal}" />
-        <constructor-arg index="1" value="${maxConnectionsPerRoute}" />
+        <constructor-arg index="1" value="${maxConnectionsPerRoute}"/>
+        <constructor-arg index="2" ref="jobManager"/>
     </bean>
     <bean id="metricNameStrategy" class="org.mapfish.print.metrics.MetricsNameStrategyFactory" factory-method="hostAndMethod" />
     <bean id="loggingMetricsConfigurator" class="org.mapfish.print.metrics.LoggingMetricsConfigurator" lazy-init="false"/>

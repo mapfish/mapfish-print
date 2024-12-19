@@ -14,7 +14,7 @@ import org.springframework.http.client.ClientHttpRequest;
  * This request factory will attempt to load resources using {@link
  * org.mapfish.print.config.Configuration#loadFile(String)} and {@link
  * org.mapfish.print.config.Configuration#isAccessible(String)} to load the resources if the http
- * method is GET and will fallback to the normal/wrapped factory to make http requests.
+ * method is GET and will fall back to the normal/wrapped factory to make http requests.
  */
 public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttpRequestFactory {
   private final Configuration config;
@@ -22,6 +22,7 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
   private final MfClientHttpRequestFactoryImpl httpRequestFactory;
   private final List<RequestConfigurator> callbacks = new CopyOnWriteArrayList<>();
 
+  /** Maximum number of attempts to try to fetch the same http request in case it is failing. */
   @Value("${httpRequest.fetchRetry.maxNumber}")
   private int httpRequestMaxNumberFetchRetry;
 
