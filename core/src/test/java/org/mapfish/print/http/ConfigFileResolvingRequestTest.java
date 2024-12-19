@@ -29,6 +29,7 @@ public class ConfigFileResolvingRequestTest {
 
     // Then
     assertEquals("OK", resp.getStatusText());
+    resp.close();
   }
 
   @Test
@@ -46,6 +47,7 @@ public class ConfigFileResolvingRequestTest {
 
     // Then
     assertEquals(200, resp.getRawStatusCode());
+    resp.close();
   }
 
   @Test
@@ -66,6 +68,7 @@ public class ConfigFileResolvingRequestTest {
 
     // Then
     assertEquals(200, resp.getRawStatusCode());
+    resp.close();
   }
 
   @Test
@@ -81,9 +84,10 @@ public class ConfigFileResolvingRequestTest {
     try {
       ClientHttpResponse resp = req.executeInternal(new HttpHeaders());
       fail("Should not have return the response " + resp);
+      resp.close();
     } catch (PrintException e) {
       // Then
-      assertEquals("Fetching failed URI resource http://ex.com, error code 500", e.getMessage());
+      assertEquals("Failed fetching http://ex.com", e.getMessage());
     }
   }
 

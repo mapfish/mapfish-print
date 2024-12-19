@@ -54,7 +54,9 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
   }
 
   @Override
-  public ClientHttpRequest createRequest(final URI uri, final HttpMethod httpMethod) {
+  @Nonnull
+  public ClientHttpRequest createRequest(
+      @Nonnull final URI uri, @Nonnull final HttpMethod httpMethod) {
     return new ConfigFileResolvingRequest(this, uri, httpMethod);
   }
 
