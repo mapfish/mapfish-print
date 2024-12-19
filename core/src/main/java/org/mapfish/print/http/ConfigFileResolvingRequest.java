@@ -205,7 +205,10 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
       LOGGER.debug("Retry fetching {} following exception", this.getURI(), e);
       return true;
     } else {
-      LOGGER.debug("Has reached maximum number of retry for {}", getURI());
+      LOGGER.debug(
+          "Reached maximum number of {} allowed requests attempts for {}",
+          getHttpRequestMaxNumberFetchRetry(),
+          getURI());
       return false;
     }
   }
@@ -222,7 +225,7 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
   }
 
   private boolean canRetry(final AtomicInteger counter) {
-    return counter.incrementAndGet() <= getHttpRequestMaxNumberFetchRetry();
+    return counter.incrementAndGet() < getHttpRequestMaxNumberFetchRetry();
   }
 
   private int getHttpRequestMaxNumberFetchRetry() {

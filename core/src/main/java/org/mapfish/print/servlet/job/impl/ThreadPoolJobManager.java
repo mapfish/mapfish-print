@@ -136,6 +136,10 @@ public class ThreadPoolJobManager implements JobManager {
     this.timeout = timeout;
   }
 
+  public final long getTimeout() {
+    return this.timeout;
+  }
+
   public final void setAbandonedTimeout(final long abandonedTimeout) {
     this.abandonedTimeout = abandonedTimeout;
   }
