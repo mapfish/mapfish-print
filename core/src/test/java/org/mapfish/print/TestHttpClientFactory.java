@@ -1,18 +1,18 @@
 package org.mapfish.print;
 
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
+import javax.annotation.Nonnull;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.ConfigurableRequest;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
+import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -27,7 +27,7 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
   private final Map<Predicate<URI>, Handler> handlers = new ConcurrentHashMap<>();
 
   public TestHttpClientFactory() {
-    super(20, 10);
+    super(20, 10, new ThreadPoolJobManager());
   }
 
   public void registerHandler(Predicate<URI> matcher, Handler handler) {
@@ -37,8 +37,9 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
     handlers.put(matcher, handler);
   }
 
+  @Nonnull
   @Override
-  public ConfigurableRequest createRequest(URI uri, final HttpMethod httpMethod) {
+  public ConfigurableRequest createRequest(@Nonnull URI uri, @Nonnull final HttpMethod httpMethod) {
     for (Map.Entry<Predicate<URI>, Handler> entry : handlers.entrySet()) {
       if (entry.getKey().test(uri)) {
         try {
@@ -75,18 +76,6 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
       request.setResponse(response);
       return request;
     }
-
-    public MockClientHttpRequest failOnExecute(final URI uri, final HttpMethod httpMethod) {
-      MockClientHttpRequest request =
-          new MockClientHttpRequest(httpMethod, uri) {
-            @Override
-            protected ClientHttpResponse executeInternal() throws IOException {
-              fail("request should not be executed " + uri.toString());
-              throw new IOException();
-            }
-          };
-      return request;
-    }
   }
 
   private static class TestConfigurableRequest implements ConfigurableRequest {
@@ -106,11 +95,13 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
       // ignore
     }
 
+    @Nonnull
     @Override
     public ClientHttpResponse execute() throws IOException {
       return httpRequest.execute();
     }
 
+    @Nonnull
     @Override
     public OutputStream getBody() throws IOException {
       return httpRequest.getBody();
@@ -121,18 +112,20 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
       return httpRequest.getMethod();
     }
 
+    @Nonnull
     @Override
     public String getMethodValue() {
       final HttpMethod method = httpRequest.getMethod();
-      assert method != null;
       return method.name();
     }
 
+    @Nonnull
     @Override
     public URI getURI() {
       return httpRequest.getURI();
     }
 
+    @Nonnull
     @Override
     public HttpHeaders getHeaders() {
       return httpRequest.getHeaders();
