@@ -158,11 +158,11 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
             throw printException;
           }
         }
-      } catch (final IOException e) {
-        handleIOException(e, counter);
-      } catch (final RuntimeException e) {
-        // handle other exceptions
-        handleIOException(new IOException(e), counter);
+      } catch (final IOException | RuntimeException e) {
+        boolean hasSlept = sleepIfPossible(e, counter);
+        if (!hasSlept) {
+          throw e;
+        }
       }
     } while (true);
   }
@@ -199,15 +199,14 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
     }
   }
 
-  private void handleIOException(final IOException e, final AtomicInteger counter)
-      throws IOException {
-
+  private boolean sleepIfPossible(final Exception e, final AtomicInteger counter) {
     if (canRetry(counter)) {
       sleepWithExceptionHandling();
       LOGGER.debug("Retry fetching {} following exception", this.getURI(), e);
+      return true;
     } else {
-      LOGGER.debug("Failed fetching {}", getURI());
-      throw e;
+      LOGGER.debug("Has reached maximum number of retry for {}", getURI());
+      return false;
     }
   }
 
