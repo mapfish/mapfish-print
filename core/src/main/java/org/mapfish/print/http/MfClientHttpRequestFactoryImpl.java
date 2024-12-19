@@ -89,11 +89,19 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             .setMaxConnTotal(maxConnTotal)
             .setMaxConnPerRoute(maxConnPerRoute)
             .setUserAgent(UserAgentCreator.getUserAgent());
-    return httpClientBuilder.build();
+    CloseableHttpClient closeableHttpClient = httpClientBuilder.build();
+    LOGGER.debug(
+        "Created CloseableHttpClient using connectionRequestTimeout: {} connectTimeout: {}"
+            + " socketTimeout: {}",
+        getIntProperty("http.connectionRequestTimeout"),
+        getIntProperty("http.connectTimeout"),
+        getIntProperty("http.socketTimeout"));
+    return closeableHttpClient;
   }
 
   // allow extension only for testing
   @Override
+  @Nonnull
   public ConfigurableRequest createRequest(
       @Nonnull final URI uri, @Nonnull final HttpMethod httpMethod) {
     HttpRequestBase httpRequest = (HttpRequestBase) createHttpUriRequest(httpMethod, uri);
@@ -161,20 +169,24 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
       return HttpMethod.valueOf(this.request.getMethod());
     }
 
+    @Nonnull
     @Override
     public String getMethodValue() {
       return this.request.getMethod();
     }
 
+    @Nonnull
     public URI getURI() {
       return this.request.getURI();
     }
 
+    @Nonnull
     @Override
     protected OutputStream getBodyInternal(@Nonnull final HttpHeaders headers) {
       return this.outputStream;
     }
 
+    @Nonnull
     @Override
     protected Response executeInternal(@Nonnull final HttpHeaders headers) throws IOException {
       CURRENT_CONFIGURATION.set(this.configuration);
@@ -207,7 +219,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     }
   }
 
-  static class Response extends AbstractClientHttpResponse {
+  public static class Response extends AbstractClientHttpResponse {
     private static final Logger LOGGER = LoggerFactory.getLogger(Response.class);
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();
     private final HttpResponse response;
@@ -224,6 +236,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
       return this.response.getStatusLine().getStatusCode();
     }
 
+    @Nonnull
     @Override
     public String getStatusText() {
       return this.response.getStatusLine().getReasonPhrase();
@@ -247,6 +260,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
       LOGGER.trace("Closed Http Response object: {}", this.id);
     }
 
+    @Nonnull
     @Override
     public synchronized InputStream getBody() throws IOException {
       if (this.inputStream == null) {
@@ -262,6 +276,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
       return this.inputStream;
     }
 
+    @Nonnull
     @Override
     public HttpHeaders getHeaders() {
       final HttpHeaders translatedHeaders = new HttpHeaders();
