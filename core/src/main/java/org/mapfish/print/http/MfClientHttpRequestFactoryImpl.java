@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,6 +32,7 @@ import org.apache.http.impl.conn.SystemDefaultDnsResolver;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -52,8 +54,11 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
    * @param maxConnTotal Maximum total connections.
    * @param maxConnPerRoute Maximum connections per route.
    */
-  public MfClientHttpRequestFactoryImpl(final int maxConnTotal, final int maxConnPerRoute) {
-    super(createHttpClient(maxConnTotal, maxConnPerRoute));
+  public MfClientHttpRequestFactoryImpl(
+      final int maxConnTotal,
+      final int maxConnPerRoute,
+      final ThreadPoolJobManager threadPoolJobManager) {
+    super(createHttpClient(maxConnTotal, maxConnPerRoute, threadPoolJobManager));
   }
 
   @Nullable
@@ -61,21 +66,41 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     return CURRENT_CONFIGURATION.get();
   }
 
-  private static int getIntProperty(final String name) {
+  /**
+   * Return the number of milliseconds until the timeout Use the Automatic cancellation timeout if
+   * not defined.
+   *
+   * @param name timeout idemtifier
+   * @return the number of milliseconds until the timeout
+   */
+  private static int getTimeoutValue(
+      final String name, final ThreadPoolJobManager threadPoolJobManager) {
     final String value = System.getProperty(name);
     if (value == null) {
-      return -1;
+      long millis = TimeUnit.SECONDS.toMillis(threadPoolJobManager.getTimeout());
+      if (millis > Integer.MAX_VALUE) {
+        LOGGER.warn(
+            "The value of {} is too large.  The timeout will be set to the maximum value of {}",
+            name,
+            Integer.MAX_VALUE);
+        return Integer.MAX_VALUE;
+      } else {
+        return Integer.parseInt(Long.toString(millis));
+      }
     }
     return Integer.parseInt(value);
   }
 
   private static CloseableHttpClient createHttpClient(
-      final int maxConnTotal, final int maxConnPerRoute) {
+      final int maxConnTotal,
+      final int maxConnPerRoute,
+      final ThreadPoolJobManager threadPoolJobManager) {
     final RequestConfig requestConfig =
         RequestConfig.custom()
-            .setConnectionRequestTimeout(getIntProperty("http.connectionRequestTimeout"))
-            .setConnectTimeout(getIntProperty("http.connectTimeout"))
-            .setSocketTimeout(getIntProperty("http.socketTimeout"))
+            .setConnectionRequestTimeout(
+                getTimeoutValue("http.connectionRequestTimeout", threadPoolJobManager))
+            .setConnectTimeout(getTimeoutValue("http.connectTimeout", threadPoolJobManager))
+            .setSocketTimeout(getTimeoutValue("http.socketTimeout", threadPoolJobManager))
             .build();
 
     final HttpClientBuilder httpClientBuilder =
@@ -89,11 +114,19 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             .setMaxConnTotal(maxConnTotal)
             .setMaxConnPerRoute(maxConnPerRoute)
             .setUserAgent(UserAgentCreator.getUserAgent());
-    return httpClientBuilder.build();
+    CloseableHttpClient closeableHttpClient = httpClientBuilder.build();
+    LOGGER.debug(
+        "Created CloseableHttpClient using connectionRequestTimeout: {} connectTimeout: {}"
+            + " socketTimeout: {}",
+        getTimeoutValue("http.connectionRequestTimeout", threadPoolJobManager),
+        getTimeoutValue("http.connectTimeout", threadPoolJobManager),
+        getTimeoutValue("http.socketTimeout", threadPoolJobManager));
+    return closeableHttpClient;
   }
 
   // allow extension only for testing
   @Override
+  @Nonnull
   public ConfigurableRequest createRequest(
       @Nonnull final URI uri, @Nonnull final HttpMethod httpMethod) {
     HttpRequestBase httpRequest = (HttpRequestBase) createHttpUriRequest(httpMethod, uri);
@@ -161,20 +194,24 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
       return HttpMethod.valueOf(this.request.getMethod());
     }
 
+    @Nonnull
     @Override
     public String getMethodValue() {
       return this.request.getMethod();
     }
 
+    @Nonnull
     public URI getURI() {
       return this.request.getURI();
     }
 
+    @Nonnull
     @Override
     protected OutputStream getBodyInternal(@Nonnull final HttpHeaders headers) {
       return this.outputStream;
     }
 
+    @Nonnull
     @Override
     protected Response executeInternal(@Nonnull final HttpHeaders headers) throws IOException {
       CURRENT_CONFIGURATION.set(this.configuration);
@@ -207,7 +244,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     }
   }
 
-  static class Response extends AbstractClientHttpResponse {
+  public static class Response extends AbstractClientHttpResponse {
     private static final Logger LOGGER = LoggerFactory.getLogger(Response.class);
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();
     private final HttpResponse response;
@@ -224,6 +261,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
       return this.response.getStatusLine().getStatusCode();
     }
 
+    @Nonnull
     @Override
     public String getStatusText() {
       return this.response.getStatusLine().getReasonPhrase();
@@ -247,6 +285,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
       LOGGER.trace("Closed Http Response object: {}", this.id);
     }
 
+    @Nonnull
     @Override
     public synchronized InputStream getBody() throws IOException {
       if (this.inputStream == null) {
@@ -262,6 +301,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
       return this.inputStream;
     }
 
+    @Nonnull
     @Override
     public HttpHeaders getHeaders() {
       final HttpHeaders translatedHeaders = new HttpHeaders();

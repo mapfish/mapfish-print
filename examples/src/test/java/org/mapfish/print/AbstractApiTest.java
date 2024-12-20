@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
+import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
@@ -21,7 +22,7 @@ public abstract class AbstractApiTest {
   protected static final String PRINT_SERVER = "http://print:8080/";
 
   protected ClientHttpRequestFactory httpRequestFactory =
-      new MfClientHttpRequestFactoryImpl(10, 10);
+      new MfClientHttpRequestFactoryImpl(10, 10, new ThreadPoolJobManager());
 
   protected ClientHttpRequest getRequest(String path, HttpMethod method)
       throws IOException, URISyntaxException {

@@ -136,6 +136,10 @@ public class ThreadPoolJobManager implements JobManager {
     this.timeout = timeout;
   }
 
+  public final long getTimeout() {
+    return this.timeout;
+  }
+
   public final void setAbandonedTimeout(final long abandonedTimeout) {
     this.abandonedTimeout = abandonedTimeout;
   }
@@ -452,10 +456,13 @@ public class ThreadPoolJobManager implements JobManager {
       final SubmittedPrintJob printJob = submittedJobs.next();
       if (!printJob.getReportFuture().isDone()
           && (isTimeoutExceeded(printJob) || isAbandoned(printJob))) {
-        LOGGER.info("Canceling job after timeout {}", printJob.getEntry().getReferenceId());
+        LOGGER.info(
+            "About to attempt timeout based automatic cancellation of job {}",
+            printJob.getEntry().getReferenceId());
         if (!printJob.getReportFuture().cancel(true)) {
           LOGGER.info(
-              "Could not cancel job after timeout {}", printJob.getEntry().getReferenceId());
+              "Automatic cancellation after timeout failed for job {}",
+              printJob.getEntry().getReferenceId());
         }
         // remove all canceled tasks from the work queue (otherwise the queue comparator
         // might stumble on non-PrintJob entries)
