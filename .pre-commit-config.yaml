@@ -12,7 +12,7 @@ repos:
         additional_dependencies:
           - prettier@2.8.4
   - repo: https://github.com/sbrunner/jsonschema-validator
-    rev: 0.3.2
+    rev: 1.0.0
     hooks:
       - id: jsonschema-validator
         files: ^ci/config\.yaml$
