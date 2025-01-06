@@ -43,13 +43,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 /** A JobManager backed by a {@link java.util.concurrent.ThreadPoolExecutor}. */
 public class ThreadPoolJobManager implements JobManager {
-  /** Default timeout for the duration of a print job. */
-  public static final long DEFAULT_TIMEOUT_IN_SECONDS = 600L;
+  /** Default timeout in seconds for the duration of a print job. */
+  public static final int DEFAULT_TIMEOUT_IN_SECONDS = 600;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ThreadPoolJobManager.class);
   private static final int DEFAULT_MAX_WAITING_JOBS = 5000;
   private static final long DEFAULT_THREAD_IDLE_TIME = 60L;
-  private static final long DEFAULT_ABANDONED_TIMEOUT_IN_SECONDS = 120L;
+  private static final int DEFAULT_ABANDONED_TIMEOUT_IN_SECONDS = 120;
   private static final boolean DEFAULT_OLD_FILES_CLEAN_UP = true;
   private static final long DEFAULT_CLEAN_UP_INTERVAL_IN_SECONDS = 86400;
 
@@ -73,17 +73,17 @@ public class ThreadPoolJobManager implements JobManager {
    */
   private int maxNumberOfWaitingJobs = DEFAULT_MAX_WAITING_JOBS;
 
-  /** The amount of time to let a thread wait before being shutdown. */
+  /** The number of seconds to let a thread wait before being shutdown. */
   private final long maxIdleTime = DEFAULT_THREAD_IDLE_TIME;
 
   /** A print job is canceled, if it is not completed after this amount of time (in seconds). */
-  private long timeout = DEFAULT_TIMEOUT_IN_SECONDS;
+  private int timeout = DEFAULT_TIMEOUT_IN_SECONDS;
 
   /**
    * A print job is canceled, if this amount of time (in seconds) has passed, without that the user
    * checked the status of the job.
    */
-  private long abandonedTimeout = DEFAULT_ABANDONED_TIMEOUT_IN_SECONDS;
+  private int abandonedTimeout = DEFAULT_ABANDONED_TIMEOUT_IN_SECONDS;
 
   /** Delete old report files? */
   private boolean oldFileCleanUp = DEFAULT_OLD_FILES_CLEAN_UP;
@@ -101,7 +101,7 @@ public class ThreadPoolJobManager implements JobManager {
    * A comparator for comparing {@link org.mapfish.print.servlet.job.impl.SubmittedPrintJob}s and
    * prioritizing them.
    *
-   * <p>For example it could be that requests from certain users (like executive officers) are
+   * <p>For example, it could be that requests from certain users (like executive officers) are
    * prioritized over requests from other users.
    */
   private Comparator<PrintJob> jobPriorityComparator =
@@ -132,15 +132,15 @@ public class ThreadPoolJobManager implements JobManager {
     this.maxNumberOfWaitingJobs = maxNumberOfWaitingJobs;
   }
 
-  public final void setTimeout(final long timeout) {
+  public final void setTimeout(final int timeout) {
     this.timeout = timeout;
   }
 
-  public final long getTimeout() {
+  public final int getTimeout() {
     return this.timeout;
   }
 
-  public final void setAbandonedTimeout(final long abandonedTimeout) {
+  public final void setAbandonedTimeout(final int abandonedTimeout) {
     this.abandonedTimeout = abandonedTimeout;
   }
 
@@ -426,8 +426,8 @@ public class ThreadPoolJobManager implements JobManager {
   private void cancelOld() {
     // cancel old tasks
     this.jobQueue.cancelOld(
-        TimeUnit.MILLISECONDS.convert(this.timeout, TimeUnit.SECONDS),
-        TimeUnit.MILLISECONDS.convert(this.abandonedTimeout, TimeUnit.SECONDS),
+        TimeUnit.SECONDS.toMillis(this.timeout),
+        TimeUnit.SECONDS.toMillis(this.abandonedTimeout),
         "task canceled (timeout)");
   }
 

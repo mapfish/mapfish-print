@@ -664,7 +664,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
   @Test(timeout = 60000)
   @DirtiesContext
   public void testCreateReport_Timeout() throws Exception {
-    jobManager.setTimeout(1L);
+    jobManager.setTimeout(1);
     setUpConfigFiles();
 
     final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
@@ -687,14 +687,14 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
     // now after canceling a task, check that the system is left in a state in which
     // it still can process jobs
-    jobManager.setTimeout(600L);
+    jobManager.setTimeout(600);
     testCreateReport_Success_explicitAppId();
   }
 
   @Test(timeout = 60000)
   @DirtiesContext
   public void testCreateReport_AbandonedTimeout() throws Exception {
-    jobManager.setAbandonedTimeout(1L);
+    jobManager.setAbandonedTimeout(1);
     setUpConfigFiles();
 
     final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
@@ -731,7 +731,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
   @Test(timeout = 60000)
   @DirtiesContext
   public void testCreateReport_NotAbandonedTimeout() throws Exception {
-    jobManager.setAbandonedTimeout(1L);
+    jobManager.setAbandonedTimeout(1);
     setUpConfigFiles();
 
     final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
@@ -878,7 +878,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
   @Test(timeout = 60000)
   @DirtiesContext
   public void testCreateReportAndGet_Timeout() throws Exception {
-    jobManager.setTimeout(1L);
+    jobManager.setTimeout(1);
     setUpConfigFiles();
 
     final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
