@@ -45,8 +45,11 @@ class Javadoc7Parser {
                 }
             }
 
-            def firstDescriptionDiv = descDiv.div[0]
-            return DocsXmlSupport.toXmlString(firstDescriptionDiv)
+            def description = descDiv.breadthFirst().find {
+                return  it.name() == 'div' && it.@class == 'block'
+            }
+
+            return DocsXmlSupport.toXmlString(description)
         } catch (Exception e) {
             if (cls.getSuperclass() != null) {
                 try {
@@ -55,7 +58,7 @@ class Javadoc7Parser {
                     throw new IllegalArgumentException(errorHandler(obj, objectName))
                 }
             } else {
-                throw new IllegalArgumentException(errorHandler(obj, objectName))
+                return ""
             }
         }
     }
