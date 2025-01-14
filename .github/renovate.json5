@@ -183,5 +183,10 @@
       matchDepNames: ['python'],
       groupName: 'Python',
     },
+    /** No update on rebuild workflow */
+    {
+      matchFileNames: ['.github/workflows/rebuild.yaml'],
+      enabled: false,
+    },
   ],
 }

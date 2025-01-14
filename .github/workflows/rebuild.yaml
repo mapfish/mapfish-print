@@ -15,11 +15,11 @@ jobs:
       matrix:
         include:
           - branch: '3.28'
-            python-version: '3.13'
+            python-version: '3.11'
           - branch: '3.29'
-            python-version: '3.13'
+            python-version: '3.11'
           - branch: '3.30'
-            python-version: '3.13'
+            python-version: '3.11'
 
     steps:
       - run: docker system prune --all --force
