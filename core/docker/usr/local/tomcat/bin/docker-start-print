@@ -1,4 +1,6 @@
 #!/bin/bash -e
+export JAVA_OPTS="--add-opens=java.desktop/sun.awt.image=ALL-UNNAMED -Dsun.net.inetaddr.ttl=30"
+
 cd /usr/local/tomcat/webapps/ROOT
 PG_LIB=$(find WEB-INF/lib -name "postgresql-*")
 
