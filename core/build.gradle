@@ -205,7 +205,6 @@ static def gitRevision() {
     return gitRev != null ? gitRev : 'git rev-parse HEAD'.execute().text.trim()
 }
 
-compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 compileTestJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 
 // Add version to resources, used for User-Agent string:
