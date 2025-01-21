@@ -192,6 +192,7 @@ public final class LinearCoordinateSequence implements CoordinateSequence, Clone
    *
    * @deprecated Recommend {@link #copy()}
    */
+  @Deprecated
   @Override
   public Object clone() {
     return copy();
