@@ -64,9 +64,6 @@ acceptance-tests-run: .env
 .PHONY: acceptance-tests-down
 acceptance-tests-down: .env
 	docker compose down || true
-	docker run --rm --volume=/tmp/geoserver-data:/mnt/geoserver_datadir camptocamp/geoserver \
-		bash -c 'rm -rf /mnt/geoserver_datadir/*'
-	rmdir /tmp/geoserver-data
 
 .PHONY: dist
 dist: build-builder

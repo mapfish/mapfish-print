@@ -416,7 +416,10 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
       timeElapsed = statusJson.getInt(MapPrinterServlet.JSON_ELAPSED_TIME);
       assertTrue(
-          "lastTimeElapsed: " + lastTimeElapsed + ", timeElapsed: " + timeElapsed,
+          "lastTimeElapsed: "
+              + lastTimeElapsed
+              + " is not less or equal to timeElapsed: "
+              + timeElapsed,
           lastTimeElapsed <= timeElapsed);
       lastTimeElapsed = timeElapsed;
 

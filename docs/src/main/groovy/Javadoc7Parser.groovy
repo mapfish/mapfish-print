@@ -29,27 +29,27 @@ class Javadoc7Parser {
     String findJavadocDescription(String objectName, Class cls, String obj, Closure errorHandler) {
         try {
             def html = loadJavadocFile(cls)
-
             def contentContainer = html.depthFirst().find {
-                it.name() == 'div' && it.@class == 'contentContainer'
+                it.name() == 'main' && it.@role == 'main'
             }
             def detailsEl = contentContainer.depthFirst().find {
-                it.name() == 'div' && it.@class == 'details'
+                it.name() == 'section' && it.@class == 'details'
             }
-
             def descDiv = detailsEl.depthFirst().find {
 
                 if (it.name() == "li") {
-                    def h4 = it.h4
-                    return h4.size() > 0 && !h4.text().isEmpty() && obj == h4.text()
+                    def h3 = it.section.h3
+                    return h3.size() > 0 && !h3.text().isEmpty() && obj == h3.text()
                 } else {
                     return false
                 }
             }
 
+            def description = descDiv.breadthFirst().find {
+                return  it.name() == 'div' && it.@class == 'block'
+            }
 
-            def firstDescriptionDiv = descDiv.div[0]
-            return DocsXmlSupport.toXmlString(firstDescriptionDiv)
+            return DocsXmlSupport.toXmlString(description)
         } catch (Exception e) {
             if (cls.getSuperclass() != null) {
                 try {
@@ -58,7 +58,7 @@ class Javadoc7Parser {
                     throw new IllegalArgumentException(errorHandler(obj, objectName))
                 }
             } else {
-                throw new IllegalArgumentException(errorHandler(obj, objectName))
+                return ""
             }
         }
     }
@@ -67,17 +67,19 @@ class Javadoc7Parser {
         return "Unable to find javadoc for method '$method' in '$objectName'"
     }
 
-
     String findClassDescription(Class cls) {
         def html = loadJavadocFile(cls)
 
         def contentContainer = html.depthFirst().find {
-            it.name() == 'div' && it.@class == 'contentContainer'
+            it.name() == 'main' && it.@role == 'main'
         }
         def descriptionEl = contentContainer.depthFirst().find {
-            it.name() == 'div' && it.@class == 'description'
+            it.name() == 'section' && it.@class == 'class-description'
         }
-        return DocsXmlSupport.toXmlString(descriptionEl.ul.li.div[0])
+        def result = contentContainer.depthFirst().find {
+            it.name() == 'div' && it.@class == 'block'
+        }
+        return DocsXmlSupport.toXmlString(result)
     }
     def xmlCache = [:]
 

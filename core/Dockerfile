@@ -1,6 +1,6 @@
 FROM mapfish_print_builder AS builder
 
-FROM tomcat:9.0.98-jdk11-temurin-jammy AS runner
+FROM tomcat:9.0.96-jdk17-temurin-jammy AS runner
 LABEL maintainer="Camptocamp <info@camptocamp.com>"
 
 RUN --mount=type=cache,target=/var/cache,sharing=locked \
@@ -43,7 +43,6 @@ ENV LOG_LEVEL=INFO \
   TOMCAT_LOG_TYPE=classic \
   EXTRA_JARS= \
   PRINT_YAML_MAX_ALIASES=50 \
-  JAVA_OPTS=-Dsun.net.inetaddr.ttl=30 \
   SENTRY_DSN=
 
 CMD ["/usr/local/tomcat/bin/docker-start-print"]
