@@ -14,14 +14,14 @@ repositories {
 dependencies {
     testImplementation(
         project(':core'),
-        'commons-io:commons-io:2.11.0',
-        "org.springframework:spring-web:5.3.27",
-        'org.json:json:20230227',
+        'commons-io:commons-io:2.17.0',
+        "org.springframework:spring-web:5.3.39",
+        'org.json:json:20240303',
         'org.apache.commons:commons-lang3:3.5',
         "org.locationtech.jts:jts-core:1.18.2",
-        "org.slf4j:slf4j-api:2.0.7",
-        "org.springframework:spring-test:5.3.27",
-        "ch.qos.logback:logback-classic:1.4.7",
+        "org.slf4j:slf4j-api:2.0.16",
+        "org.springframework:spring-test:5.3.39",
+        "ch.qos.logback:logback-classic:1.5.15",
         "org.verapdf:validation-model:1.24.1"
     )
 }
