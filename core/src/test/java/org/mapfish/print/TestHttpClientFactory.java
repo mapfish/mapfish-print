@@ -12,7 +12,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.ConfigurableRequest;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
-import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -27,7 +26,7 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
   private final Map<Predicate<URI>, Handler> handlers = new ConcurrentHashMap<>();
 
   public TestHttpClientFactory() {
-    super(20, 10, new ThreadPoolJobManager());
+    super(20, 10, 1000, 1000, 1000);
   }
 
   public void registerHandler(Predicate<URI> matcher, Handler handler) {

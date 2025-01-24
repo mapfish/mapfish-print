@@ -9,7 +9,6 @@ import java.net.URI;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 
@@ -41,7 +40,7 @@ public class MfClientHttpRequestFactoryImplTest {
         });
 
     MfClientHttpRequestFactoryImpl factory =
-        new MfClientHttpRequestFactoryImpl(20, 10, new ThreadPoolJobManager());
+        new MfClientHttpRequestFactoryImpl(20, 10, 1000, 1000, 1000);
     final ConfigurableRequest request =
         factory.createRequest(
             new URI("http://" + HttpProxyTest.LOCALHOST + ":" + TARGET_PORT + "/request"),
