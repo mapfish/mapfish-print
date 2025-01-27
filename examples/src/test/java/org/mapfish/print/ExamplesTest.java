@@ -18,10 +18,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
@@ -202,7 +202,7 @@ public class ExamplesTest {
 
   @Test
   public void testAllExamples() {
-    Map<String, Throwable> errors = new HashMap<>();
+    Map<String, Throwable> errors = new TreeMap<>();
 
     int testsRan = 0;
     final File examplesDir = getFile(ExamplesTest.class, "/examples");
@@ -304,7 +304,7 @@ public class ExamplesTest {
               compareImages(errors, http.getInputStream(), example, requestFile, outputFormat);
             }
           }
-        } catch (RuntimeException e) {
+        } catch (IOException | AssertionError | RuntimeException e) {
           errors.put(String.format("%s (%s)", example.getName(), requestFile.getName()), e);
         }
       }
@@ -329,7 +329,7 @@ public class ExamplesTest {
       if (!expectedOutput.exists()) {
         errors.put(
             example.getName() + " (" + requestFile.getName() + ")",
-            new Exception("File not found: " + expectedOutput.toString()));
+            new Exception("File not found: " + expectedOutput));
       }
 
       if (!"bmp".equals(outputFormat)) {
@@ -345,8 +345,7 @@ public class ExamplesTest {
       String exampleName,
       String requestFileName) {
     PDFAFlavour flavour = PDFAFlavour.PDFA_1_A;
-    PDFAValidator validator = ValidatorFactory.createValidator(flavour, false);
-    try {
+    try (PDFAValidator validator = ValidatorFactory.createValidator(flavour, false)) {
       GFModelParser parser = GFModelParser.createModelWithFlavour(http.getInputStream(), flavour);
       ValidationResult result = validator.validate(parser);
       LOGGER.warn("Example {} is PDF/A conform: {}", exampleName, result.isCompliant());
