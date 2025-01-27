@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,7 +31,6 @@ import org.apache.http.impl.conn.SystemDefaultDnsResolver;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.mapfish.print.config.Configuration;
-import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -53,12 +51,25 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
    *
    * @param maxConnTotal Maximum total connections.
    * @param maxConnPerRoute Maximum connections per route.
+   * @param connectionRequestTimeout Number of milliseconds used when requesting a connection from
+   *     the connection manager.
+   * @param connectTimeout Number of milliseconds until a connection is established.
+   * @param socketTimeout Maximum number of milliseconds during which a socket remains inactive
+   *     between two consecutive data packets.
    */
   public MfClientHttpRequestFactoryImpl(
       final int maxConnTotal,
       final int maxConnPerRoute,
-      final ThreadPoolJobManager threadPoolJobManager) {
-    super(createHttpClient(maxConnTotal, maxConnPerRoute, threadPoolJobManager));
+      final int connectionRequestTimeout,
+      final int connectTimeout,
+      final int socketTimeout) {
+    super(
+        createHttpClient(
+            maxConnTotal,
+            maxConnPerRoute,
+            connectionRequestTimeout,
+            connectTimeout,
+            socketTimeout));
   }
 
   @Nullable
@@ -66,41 +77,17 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     return CURRENT_CONFIGURATION.get();
   }
 
-  /**
-   * Return the number of milliseconds until the timeout Use the Automatic cancellation timeout if
-   * not defined.
-   *
-   * @param name timeout idemtifier
-   * @return the number of milliseconds until the timeout
-   */
-  private static int getTimeoutValue(
-      final String name, final ThreadPoolJobManager threadPoolJobManager) {
-    final String value = System.getProperty(name);
-    if (value == null) {
-      long millis = TimeUnit.SECONDS.toMillis(threadPoolJobManager.getTimeout());
-      if (millis > Integer.MAX_VALUE) {
-        LOGGER.warn(
-            "The value of {} is too large.  The timeout will be set to the maximum value of {}",
-            name,
-            Integer.MAX_VALUE);
-        return Integer.MAX_VALUE;
-      } else {
-        return Integer.parseInt(Long.toString(millis));
-      }
-    }
-    return Integer.parseInt(value);
-  }
-
   private static CloseableHttpClient createHttpClient(
       final int maxConnTotal,
       final int maxConnPerRoute,
-      final ThreadPoolJobManager threadPoolJobManager) {
+      final int connectionRequestTimeout,
+      final int connectTimeout,
+      final int socketTimeout) {
     final RequestConfig requestConfig =
         RequestConfig.custom()
-            .setConnectionRequestTimeout(
-                getTimeoutValue("http.connectionRequestTimeout", threadPoolJobManager))
-            .setConnectTimeout(getTimeoutValue("http.connectTimeout", threadPoolJobManager))
-            .setSocketTimeout(getTimeoutValue("http.socketTimeout", threadPoolJobManager))
+            .setConnectionRequestTimeout(connectionRequestTimeout)
+            .setConnectTimeout(connectTimeout)
+            .setSocketTimeout(socketTimeout)
             .build();
 
     final HttpClientBuilder httpClientBuilder =
@@ -118,9 +105,9 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     LOGGER.debug(
         "Created CloseableHttpClient using connectionRequestTimeout: {} connectTimeout: {}"
             + " socketTimeout: {}",
-        getTimeoutValue("http.connectionRequestTimeout", threadPoolJobManager),
-        getTimeoutValue("http.connectTimeout", threadPoolJobManager),
-        getTimeoutValue("http.socketTimeout", threadPoolJobManager));
+        connectionRequestTimeout,
+        connectTimeout,
+        socketTimeout);
     return closeableHttpClient;
   }
 

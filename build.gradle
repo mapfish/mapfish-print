@@ -52,10 +52,16 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
         reportLevel = "high"
     }
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 
-    compileJava.options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
+    compileJava {
+        options.encoding = 'utf-8'
+        options.deprecation = true
+        options.compilerArgs += ['-Xlint:unchecked']
+    }
 
     dependencies {
         testImplementation(
@@ -73,9 +79,6 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
         }
     }
 
-    tasks.withType(JavaCompile).configureEach {
-        options.encoding = 'utf-8'
-    }
     tasks.withType(Javadoc).tap {
         configureEach {
             options.encoding = 'utf-8'
