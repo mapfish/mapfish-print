@@ -53,6 +53,7 @@ public abstract class HostMatcher extends AbstractMatcher {
   protected abstract Optional<Boolean> tryOverrideValidation(MatchInfo matchInfo)
       throws UnknownHostException, SocketException, MalformedURLException;
 
+  /** Port of this host matcher. */
   public final void setPort(final int port) {
     this.port = port;
   }

@@ -147,6 +147,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     return this.reportTemplate;
   }
 
+  /** Sets the report template. */
   public final void setReportTemplate(final String reportTemplate) {
     this.reportTemplate = reportTemplate;
   }
@@ -184,38 +185,47 @@ public class Template implements ConfigurationObject, HasConfiguration {
     this.tableDataKey = tableData;
   }
 
+  /** Returns table data key. */
   public final String getTableDataKey() {
     return this.tableDataKey;
   }
 
+  /** Returns JDBC url. */
   public final String getJdbcUrl() {
     return this.jdbcUrl;
   }
 
+  /** Sets the JDBC url. */
   public final void setJdbcUrl(final String jdbcUrl) {
     this.jdbcUrl = jdbcUrl;
   }
 
+  /** Returns the JDBC drivers. */
   public final Set<String> getJdbcDrivers() {
     return this.jdbcDrivers;
   }
 
+  /** Sets the JDBC drivers. */
   public final void setJdbcDrivers(final Set<String> jdbcDrivers) {
     this.jdbcDrivers = jdbcDrivers;
   }
 
+  /** Returns the JDBC driver. */
   public final String getJdbcUser() {
     return this.jdbcUser;
   }
 
+  /** Sets the JDBC user. */
   public final void setJdbcUser(final String jdbcUser) {
     this.jdbcUser = jdbcUser;
   }
 
+  /** Gets the JDBC password. */
   public final String getJdbcPassword() {
     return this.jdbcPassword;
   }
 
+  /** Sets the JDBC password. */
   public final void setJdbcPassword(final String jdbcPassword) {
     this.jdbcPassword = jdbcPassword;
   }
@@ -387,6 +397,7 @@ public class Template implements ConfigurationObject, HasConfiguration {
     return this.mapExport;
   }
 
+  /** Sets the map export. */
   public final void setMapExport(final boolean mapExport) {
     this.mapExport = mapExport;
   }

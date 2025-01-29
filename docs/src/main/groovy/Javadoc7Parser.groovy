@@ -58,7 +58,9 @@ class Javadoc7Parser {
                     throw new IllegalArgumentException(errorHandler(obj, objectName))
                 }
             } else {
+                System.out.printf("HERE-MISS: %s\n", errorHandler(obj, objectName))
                 return ""
+                //throw new IllegalArgumentException(errorHandler(obj, objectName))
             }
         }
     }
