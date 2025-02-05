@@ -168,7 +168,7 @@ dependencies {
             'net.sf.jasperreports:jasperreports-functions:6.21.4',
             'org.codehaus.groovy:groovy-all:3.0.23',
             'ar.com.fdvs:DynamicJasper:5.3.9',
-            'joda-time:joda-time:2.13.0',
+            'joda-time:joda-time:2.13.1',
     )
     implementation(
             'org.slf4j:slf4j-api:2.0.16',
