@@ -65,13 +65,13 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/libgmp10: 2:6.2.1+dfsg-3ubuntu1
   ubuntu_22_04/libgnutls30: 3.7.3-4ubuntu1.5
   ubuntu_22_04/libgpg-error0: 1.43-3
-  ubuntu_22_04/libgssapi-krb5-2: 1.19.2-2ubuntu0.4
+  ubuntu_22_04/libgssapi-krb5-2: 1.19.2-2ubuntu0.5
   ubuntu_22_04/libhogweed6: 3.7.3-1build2
   ubuntu_22_04/libidn2-0: 2.3.2-2build1
-  ubuntu_22_04/libk5crypto3: 1.19.2-2ubuntu0.4
+  ubuntu_22_04/libk5crypto3: 1.19.2-2ubuntu0.5
   ubuntu_22_04/libkeyutils1: 1.6.1-2ubuntu3
-  ubuntu_22_04/libkrb5-3: 1.19.2-2ubuntu0.4
-  ubuntu_22_04/libkrb5support0: 1.19.2-2ubuntu0.4
+  ubuntu_22_04/libkrb5-3: 1.19.2-2ubuntu0.5
+  ubuntu_22_04/libkrb5support0: 1.19.2-2ubuntu0.5
   ubuntu_22_04/libksba8: 1.6.0-2ubuntu0.2
   ubuntu_22_04/libldap-2.5-0: 2.5.18+dfsg-0ubuntu0.22.04.2
   ubuntu_22_04/liblz4-1: 1.9.3-2build2
@@ -97,7 +97,7 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/librtmp1: 2.4+20151223.gitfa8646d.1-2build4
   ubuntu_22_04/libsasl2-2: 2.1.27+dfsg2-3ubuntu1.2
   ubuntu_22_04/libsasl2-modules-db: 2.1.27+dfsg2-3ubuntu1.2
-  ubuntu_22_04/libseccomp2: 2.5.3-2ubuntu2
+  ubuntu_22_04/libseccomp2: 2.5.3-2ubuntu3~22.04.1
   ubuntu_22_04/libselinux1: 3.3-1build2
   ubuntu_22_04/libsemanage-common: 3.3-1build2
   ubuntu_22_04/libsemanage2: 3.3-1build2
