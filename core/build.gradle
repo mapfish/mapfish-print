@@ -181,7 +181,7 @@ dependencies {
             'com.github.spullara.cli-parser:cli-parser:1.1.6',
             'com.sun.mail:javax.mail:1.6.2',
             'com.amazonaws:aws-java-sdk-s3:1.12.780',
-            'io.sentry:sentry-logback:7.14.0',
+            'io.sentry:sentry-logback:8.1.0',
             // For JSON logs
             'net.logstash.logback:logstash-logback-encoder:8.0',
             // For PDF/A
