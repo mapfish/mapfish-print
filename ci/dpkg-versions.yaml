@@ -46,8 +46,8 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/libblkid1: 2.37.2-4ubuntu3.4
   ubuntu_22_04/libbrotli1: 1.0.9-2build6
   ubuntu_22_04/libbz2-1.0: 1.0.8-5build1
-  ubuntu_22_04/libc-bin: 2.35-0ubuntu3.8
-  ubuntu_22_04/libc6: 2.35-0ubuntu3.8
+  ubuntu_22_04/libc-bin: 2.35-0ubuntu3.9
+  ubuntu_22_04/libc6: 2.35-0ubuntu3.9
   ubuntu_22_04/libcap-ng0: 0.7.9-2.2build3
   ubuntu_22_04/libcap2: 1:2.44-1ubuntu0.22.04.1
   ubuntu_22_04/libcom-err2: 1.46.5-2ubuntu1.2
@@ -118,7 +118,7 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/libuuid1: 2.37.2-4ubuntu3.4
   ubuntu_22_04/libxxhash0: 0.8.1-1
   ubuntu_22_04/libzstd1: 1.4.8+dfsg-3build1
-  ubuntu_22_04/locales: 2.35-0ubuntu3.8
+  ubuntu_22_04/locales: 2.35-0ubuntu3.9
   ubuntu_22_04/login: 1:4.8.1-2ubuntu2.2
   ubuntu_22_04/logsave: 1.46.5-2ubuntu1.2
   ubuntu_22_04/lsb-base: 11.1.0ubuntu4
