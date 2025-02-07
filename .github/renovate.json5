@@ -1,7 +1,7 @@
 {
   extends: [
     'github>camptocamp/gs-renovate-config-preset:base.json5#0.7.1',
-    'github>camptocamp/gs-renovate-config-preset:group.json5#0.7.0',
+    'github>camptocamp/gs-renovate-config-preset:group.json5#0.8.0',
     'github>camptocamp/gs-renovate-config-preset:stabilization-branches.json5#0.7.0',
     'github>camptocamp/gs-renovate-config-preset:preset.json5#0.7.0',
     'github>camptocamp/gs-renovate-config-preset:ci.json5#0.7.0',
