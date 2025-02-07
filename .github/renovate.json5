@@ -1,31 +1,25 @@
 {
-  extends: ['config:base'],
-  timezone: 'Europe/Zurich',
-  schedule: 'after 5pm on the first day of the month',
-  labels: ['dependencies'],
-  separateMajorMinor: true,
+  extends: [
+    'github>camptocamp/gs-renovate-config-preset:base.json5#0.7.0',
+    'github>camptocamp/gs-renovate-config-preset:group.json5#0.7.0',
+    'github>camptocamp/gs-renovate-config-preset:stabilization-branches.json5#0.7.0',
+    'config:base',
+    'github>camptocamp/gs-renovate-config-preset:preset.json5#0.7.0',
+    'github>camptocamp/gs-renovate-config-preset:ci.json5#0.7.0',
+    'github>camptocamp/gs-renovate-config-preset:pre-commit.json5#0.7.0',
+    'github>camptocamp/gs-renovate-config-preset:own.json5#0.7.0',
+    'github>camptocamp/gs-renovate-config-preset:json-schema.json5#0.7.0',
+    'github>camptocamp/gs-renovate-config-preset:shellcheck.json5#0.7.0',
+  ],
   separateMultipleMajor: true,
-  separateMinorPatch: true,
-  prHourlyLimit: 0,
-  prConcurrentLimit: 0,
-  lockFileMaintenance: {
-    enabled: true,
-    automerge: true,
-    schedule: 'after 5pm on the first day of the month',
-  },
   semanticCommits: 'disabled',
   baseBranches: ['3.28', '3.29', '3.30', '3.31', 'master'],
-  'pre-commit': { enabled: true },
-  regexManagers: [
-    /** Do updates on pre-commit additional dependencies */
-    {
-      fileMatch: ['^\\.pre\\-commit\\-config\\.yaml$'],
-      matchStrings: [" +- '?(?<depName>[^' @=]+)(@|==)(?<currentValue>[^' @=]+)'? # (?<datasource>.+)"],
-    },
+  customManagers: [
     {
       fileMatch: ['^build.gradle$', '.*/build.gradle$'],
       matchStrings: ['toolVersion = "(?<currentValue>.*)" // (?<depName>.*)'],
       datasourceTemplate: 'maven',
+      customType: 'regex',
     },
     /** Do update on the schema present in the ci/config.yaml */
     {
@@ -34,13 +28,7 @@
         '.*https://raw\\.githubusercontent\\.com/(?<depName>[^\\s]+)/(?<currentValue>[0-9\\.]+)/.*',
       ],
       datasourceTemplate: 'github-tags',
-    },
-    /** Python version in actions/setup-python action */
-    {
-      fileMatch: ['^\\.github/workflows/.*\\.yaml$'],
-      matchStrings: [' python-version: [\'"](?<currentValue>[0-9\\.]+)[\'"]'],
-      datasourceTemplate: 'python-version',
-      depNameTemplate: 'python',
+      customType: 'regex',
     },
   ],
   packageRules: [
@@ -53,23 +41,6 @@
       matchDatasources: ['docker'],
       versioning: 'regex:^(?<major>\\d+)\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?(-(?<compatibility>.*))$',
       matchDepNames: ['gradle', 'tomcat'],
-    },
-    /** Auto merge the dev dependency update */
-    {
-      matchDepTypes: ['devDependencies'],
-      automerge: true,
-    },
-    /** Group and auto merge the patch updates */
-    {
-      matchUpdateTypes: ['patch'],
-      groupName: 'all patch versions',
-      automerge: true,
-    },
-    /** Group and auto merge the minor updates */
-    {
-      matchUpdateTypes: ['minor'],
-      groupName: 'all minor versions',
-      automerge: true,
     },
     /** Define the groups */
     {
@@ -86,46 +57,46 @@
       matchDepNames: ['camptocamp/geoserver'],
     },
     {
-      matchPackagePrefixes: ['org.springframework:', 'org.springframework.security:'],
       matchUpdateTypes: ['major'],
       groupName: 'spring',
       automerge: true,
+      matchPackageNames: ['/^org\\.springframework:.*/', '/^org\\.springframework\\.security:.*/'],
     },
     {
-      matchPackagePrefixes: ['net.sf.jasperreports:'],
       matchUpdateTypes: ['major'],
       groupName: 'jasperreports',
       automerge: true,
+      matchPackageNames: ['/^net\\.sf\\.jasperreports:.*/'],
     },
     {
-      matchPackagePrefixes: ['org.slf4j:'],
       matchUpdateTypes: ['major'],
       groupName: 'slf4j',
       automerge: true,
+      matchPackageNames: ['/^org\\.slf4j:.*/'],
     },
     {
-      matchPackagePrefixes: ['io.dropwizard.metrics:'],
       matchUpdateTypes: ['major'],
       groupName: 'metrics',
       automerge: true,
+      matchPackageNames: ['/^io\\.dropwizard\\.metrics:.*/'],
     },
     {
-      matchPackagePrefixes: ['org.geotools.', 'org.geotools:'],
       matchUpdateTypes: ['major'],
       groupName: 'geotools',
       automerge: true,
+      matchPackageNames: ['/^org\\.geotools\\..*/', '/^org\\.geotools:.*/'],
     },
     {
-      matchPackagePrefixes: ['ch.qos.logback:'],
       matchUpdateTypes: ['major'],
       groupName: 'logback',
       automerge: true,
+      matchPackageNames: ['/^ch\\.qos\\.logback:.*/'],
     },
     {
-      matchPackagePrefixes: ['org.apache.xmlgraphics:batik-'],
       matchUpdateTypes: ['major'],
       groupName: 'batik',
       automerge: true,
+      matchPackageNames: ['/^org\\.apache\\.xmlgraphics:batik\\-.*/'],
     },
     /** Use dependencyDashboardApproval of the SpotBugs and Gradle */
     {
@@ -134,31 +105,20 @@
       matchDepNames: ['spotbugs', 'gradle'],
     },
     {
-      matchPackagePrefixes: ['com.github.spotbugs:spotbugs-'],
       matchUpdateTypes: ['major', 'minor'],
       dependencyDashboardApproval: true,
+      matchPackageNames: ['/^com\\.github\\.spotbugs:spotbugs\\-.*/'],
     },
     /** Group spotbugs */
     {
-      matchPackagePrefixes: ['com.github.spotbugs:spotbugs-', 'spotbugs'],
       groupName: 'spotbugs',
+      matchPackageNames: ['/^com\\.github\\.spotbugs:spotbugs\\-.*/', '/^spotbugs.*/'],
     },
     /** Accept only the patch on stabilization branches */
     {
       matchBaseBranches: ['/^[0-9]+\\.[0-9]+$/'],
       matchUpdateTypes: ['major', 'minor', 'pin', 'digest', 'lockFileMaintenance', 'rollback', 'bump'],
       enabled: false,
-    },
-    /** Support the 4 parts of shellcheck-py version with a v prefix */
-    {
-      versioning: 'regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$',
-      matchDepNames: ['shellcheck-py/shellcheck-py'],
-    },
-    /** Group and auto merge the CI dependencies */
-    {
-      matchFileNames: ['.github/**', '.pre-commit-config.yaml', 'ci/**'],
-      groupName: 'CI dependencies',
-      automerge: true,
     },
     /** Packages published very recently are not pushed to stabilization branches for security reasons */
     {
@@ -173,15 +133,10 @@
     },
     /** Ungoup geotools minor and multiple */
     {
-      matchPackagePrefixes: ['org.geotools.', 'org.geotools:'],
       automerge: true,
       groupName: 'geotools',
       separateMultipleMinor: true,
-    },
-    /** Ungroup Python dependencies */
-    {
-      matchDepNames: ['python'],
-      groupName: 'Python',
+      matchPackageNames: ['/^org\\.geotools\\..*/', '/^org\\.geotools:.*/'],
     },
     /** No update on rebuild workflow */
     {

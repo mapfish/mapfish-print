@@ -1,3 +1,4 @@
 c2cciutils[checks,publish]==1.7.3
 security.md==1.0.0
 pre-commit==4.1.0
+tag-publish==0.13.3

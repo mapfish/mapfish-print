@@ -1,9 +1,0 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/camptocamp/c2cciutils/1.7.3/c2cciutils/schema.json
-
-publish:
-  pypi:
-    packages: []
-  docker:
-    dispatch: {}
-    images:
-      - name: camptocamp/mapfish_print
