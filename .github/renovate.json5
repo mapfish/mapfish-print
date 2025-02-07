@@ -1,18 +1,16 @@
 {
   extends: [
-    'github>camptocamp/gs-renovate-config-preset:base.json5#0.7.0',
+    'github>camptocamp/gs-renovate-config-preset:base.json5#0.7.1',
     'github>camptocamp/gs-renovate-config-preset:group.json5#0.7.0',
     'github>camptocamp/gs-renovate-config-preset:stabilization-branches.json5#0.7.0',
-    'config:base',
     'github>camptocamp/gs-renovate-config-preset:preset.json5#0.7.0',
     'github>camptocamp/gs-renovate-config-preset:ci.json5#0.7.0',
     'github>camptocamp/gs-renovate-config-preset:pre-commit.json5#0.7.0',
+    'github>camptocamp/gs-renovate-config-preset:docker.json5#0.8.0',
     'github>camptocamp/gs-renovate-config-preset:own.json5#0.7.0',
     'github>camptocamp/gs-renovate-config-preset:json-schema.json5#0.7.0',
     'github>camptocamp/gs-renovate-config-preset:shellcheck.json5#0.7.0',
   ],
-  separateMultipleMajor: true,
-  semanticCommits: 'disabled',
   baseBranches: ['3.28', '3.29', '3.30', '3.31', 'master'],
   customManagers: [
     {
@@ -21,22 +19,9 @@
       datasourceTemplate: 'maven',
       customType: 'regex',
     },
-    /** Do update on the schema present in the ci/config.yaml */
-    {
-      fileMatch: ['^ci/config\\.yaml$'],
-      matchStrings: [
-        '.*https://raw\\.githubusercontent\\.com/(?<depName>[^\\s]+)/(?<currentValue>[0-9\\.]+)/.*',
-      ],
-      datasourceTemplate: 'github-tags',
-      customType: 'regex',
-    },
   ],
   packageRules: [
     /** Docker images versioning */
-    {
-      matchDatasources: ['docker'],
-      versioning: 'loose',
-    },
     {
       matchDatasources: ['docker'],
       versioning: 'regex:^(?<major>\\d+)\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?(-(?<compatibility>.*))$',
