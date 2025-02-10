@@ -315,6 +315,7 @@ public class Configuration implements ConfigurationObject {
     return this.configurationFile.getAbsoluteFile().getParentFile();
   }
 
+  /** Sets the configuration file. */
   public final void setConfigurationFile(final File configurationFile) {
     this.configurationFile = configurationFile;
   }
@@ -692,6 +693,7 @@ public class Configuration implements ConfigurationObject {
     return smtp;
   }
 
+  /** Sets the smtp config. */
   public void setSmtp(final SmtpConfig smtp) {
     this.smtp = smtp;
   }

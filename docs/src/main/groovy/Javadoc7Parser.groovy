@@ -58,7 +58,7 @@ class Javadoc7Parser {
                     throw new IllegalArgumentException(errorHandler(obj, objectName))
                 }
             } else {
-                return ""
+                throw new IllegalArgumentException(errorHandler(obj, objectName))
             }
         }
     }
