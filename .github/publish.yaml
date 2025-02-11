@@ -1,7 +1,22 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/camptocamp/tag-publish/0.13.3/tag_publish/schema.json
 
 docker:
+  github_oidc_login: false
   images:
     - name: camptocamp/mapfish_print
+  repository:
+    github:
+      host: ghcr.io
+      versions_type:
+        - tag
+        - default_branch
+        - stabilization_branch
+        - pull_request
+    dockerhub:
+      host: docker.io
+      versions_type:
+        - tag
+        - default_branch
+        - stabilization_branch
 dispatch:
   - {}
