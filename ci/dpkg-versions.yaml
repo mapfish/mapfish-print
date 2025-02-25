@@ -49,7 +49,7 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/libc-bin: 2.35-0ubuntu3.9
   ubuntu_22_04/libc6: 2.35-0ubuntu3.9
   ubuntu_22_04/libcap-ng0: 0.7.9-2.2build3
-  ubuntu_22_04/libcap2: 1:2.44-1ubuntu0.22.04.1
+  ubuntu_22_04/libcap2: 1:2.44-1ubuntu0.22.04.2
   ubuntu_22_04/libcom-err2: 1.46.5-2ubuntu1.2
   ubuntu_22_04/libcrypt1: 1:4.4.27-1
   ubuntu_22_04/libcurl4: 7.81.0-1ubuntu1.20
