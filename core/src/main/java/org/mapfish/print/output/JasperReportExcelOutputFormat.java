@@ -2,7 +2,7 @@ package org.mapfish.print.output;
 
 import java.io.OutputStream;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.export.JRXlsExporter;
+import net.sf.jasperreports.poi.export.JRXlsExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 
