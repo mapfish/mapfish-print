@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.util.HashMap;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.data.JsonDataSource;
+import net.sf.jasperreports.json.data.JsonDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
