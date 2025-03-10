@@ -16,8 +16,10 @@ import org.springframework.http.client.ClientHttpRequest;
 /**
  * Encapsulates the information needed to create tile requests for a particular map bounds and
  * display.
+ *
+ * @param <T> Type of the params associated to this Tile cache.
  */
-public abstract class TileCacheInformation {
+public abstract class TileCacheInformation<T extends AbstractTiledLayerParams> {
 
   /** the map bounds. */
   protected final MapBounds bounds;
@@ -28,7 +30,7 @@ public abstract class TileCacheInformation {
   /** the DPI to render at. */
   protected final double dpi;
 
-  private final AbstractTiledLayerParams params;
+  private final T params;
 
   /**
    * Constructor.
@@ -39,10 +41,7 @@ public abstract class TileCacheInformation {
    * @param params the params with the data for creating the layer.
    */
   protected TileCacheInformation(
-      final MapBounds bounds,
-      final Rectangle paintArea,
-      final double dpi,
-      final AbstractTiledLayerParams params) {
+      final MapBounds bounds, final Rectangle paintArea, final double dpi, final T params) {
     this.bounds = bounds;
     this.paintArea = paintArea;
     this.dpi = dpi;
@@ -159,7 +158,7 @@ public abstract class TileCacheInformation {
     return null;
   }
 
-  protected AbstractTiledLayerParams getParams() {
+  protected final T getParams() {
     return params;
   }
 }

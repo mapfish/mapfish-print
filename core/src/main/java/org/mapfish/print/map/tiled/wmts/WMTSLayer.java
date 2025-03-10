@@ -26,7 +26,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 
 /** Class for loading data from a WMTS. */
-public class WMTSLayer extends AbstractTiledLayer {
+public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
   private static final Logger LOGGER = LoggerFactory.getLogger(WMTSLayer.class);
   private final WMTSLayerParam param;
 
@@ -50,7 +50,7 @@ public class WMTSLayer extends AbstractTiledLayer {
   }
 
   @Override
-  protected final TileCacheInformation createTileInformation(
+  protected final TileCacheInformation<WMTSLayerParam> createTileInformation(
       final MapBounds bounds, final Rectangle paintArea, final double dpi) {
     return new WMTSTileCacheInfo(bounds, paintArea, dpi, this);
   }
@@ -61,7 +61,7 @@ public class WMTSLayer extends AbstractTiledLayer {
   }
 
   @VisibleForTesting
-  static final class WMTSTileCacheInfo extends TileCacheInformation {
+  static final class WMTSTileCacheInfo extends TileCacheInformation<WMTSLayerParam> {
     private Matrix matrix;
 
     private WMTSTileCacheInfo(
@@ -77,7 +77,7 @@ public class WMTSLayer extends AbstractTiledLayer {
           layer.getName(),
           targetResolution);
 
-      for (Matrix m : getWMTSParam().matrices) {
+      for (Matrix m : getParams().matrices) {
         final double resolution = m.getResolution(this.bounds.getProjection());
         LOGGER.debug(
             "Checking tile resolution {} ({} scaling)", resolution, targetResolution / resolution);
@@ -85,6 +85,7 @@ public class WMTSLayer extends AbstractTiledLayer {
         if (delta < diff) {
           diff = delta;
           this.matrix = m;
+          // TODO SR resolve cache conflicts
           layer.imageBufferScaling = targetResolution / resolution;
         }
       }
@@ -94,10 +95,6 @@ public class WMTSLayer extends AbstractTiledLayer {
         throw new IllegalArgumentException(
             "Unable to find a matrix for the resolution: " + targetResolution);
       }
-    }
-
-    private WMTSLayerParam getWMTSParam() {
-      return (WMTSLayerParam) getParams();
     }
 
     @Override
@@ -134,11 +131,11 @@ public class WMTSLayer extends AbstractTiledLayer {
         final int row)
         throws URISyntaxException, IOException {
       URI uri;
-      if (RequestEncoding.REST == getWMTSParam().requestEncoding) {
-        uri = getWMTSParam().createRestURI(this.matrix.identifier, row, column);
+      if (RequestEncoding.REST == getParams().requestEncoding) {
+        uri = getParams().createRestURI(this.matrix.identifier, row, column);
       } else {
         URI commonUri = new URI(commonUrl);
-        uri = getWMTSParam().createKVPUri(commonUri, row, column, this.matrix.identifier);
+        uri = getParams().createKVPUri(commonUri, row, column, this.matrix.identifier);
       }
       return httpRequestFactory.createRequest(uri, HttpMethod.GET);
     }

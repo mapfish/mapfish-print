@@ -15,7 +15,6 @@ import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.HttpRequestFetcher;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
-import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.map.geotools.AbstractGeotoolsLayer;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.processor.Processor;
@@ -23,8 +22,11 @@ import org.mapfish.print.processor.Processor;
 /**
  * An abstract class to support implementing layers that consist of Raster tiles which are combined
  * to compose a single raster to be drawn on the map.
+ *
+ * @param <T> Type of the params supported by this layer.
  */
-public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
+public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
+    extends AbstractGeotoolsLayer {
 
   private final StyleSupplier<GridCoverage2D> styleSupplier;
   private final MetricRegistry registry;
@@ -33,7 +35,7 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
   /** The scale ratio between the tiles resolution and the target resolution. */
   protected double imageBufferScaling = 1.0;
 
-  private TileCacheInformation tileCacheInformation;
+  private TileCacheInformation<T> tileCacheInformation;
   private TilePreparationInfo tilePreparationInfo;
 
   /**
@@ -48,7 +50,7 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
   protected AbstractTiledLayer(
       @Nullable final ForkJoinPool forkJoinPool,
       @Nullable final StyleSupplier<GridCoverage2D> styleSupplier,
-      @Nonnull final AbstractLayerParams params,
+      @Nonnull final T params,
       @Nullable final MetricRegistry registry,
       @Nonnull final Configuration configuration) {
     super(forkJoinPool, params);
@@ -116,7 +118,7 @@ public abstract class AbstractTiledLayer extends AbstractGeotoolsLayer {
    * @param paintArea the area to paint
    * @param dpi the DPI to render at
    */
-  protected abstract TileCacheInformation createTileInformation(
+  protected abstract TileCacheInformation<T> createTileInformation(
       MapBounds bounds, Rectangle paintArea, double dpi);
 
   @Override

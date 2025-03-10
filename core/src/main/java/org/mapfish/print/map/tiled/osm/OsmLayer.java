@@ -21,7 +21,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 
 /** Strategy object for rendering Osm based layers. */
-public final class OsmLayer extends AbstractTiledLayer {
+public final class OsmLayer extends AbstractTiledLayer<OsmLayerParam> {
   private final OsmLayerParam param;
 
   /**
@@ -44,7 +44,7 @@ public final class OsmLayer extends AbstractTiledLayer {
   }
 
   @Override
-  protected TileCacheInformation createTileInformation(
+  protected TileCacheInformation<OsmLayerParam> createTileInformation(
       final MapBounds bounds, final Rectangle paintArea, final double dpi) {
     return new OsmTileCacheInformation(bounds, paintArea, dpi, this);
   }
@@ -54,7 +54,7 @@ public final class OsmLayer extends AbstractTiledLayer {
     return RenderType.fromFileExtension(this.param.imageExtension);
   }
 
-  private static final class OsmTileCacheInformation extends TileCacheInformation {
+  private static final class OsmTileCacheInformation extends TileCacheInformation<OsmLayerParam> {
     private final double resolution;
     private final int resolutionIndex;
 
@@ -64,12 +64,12 @@ public final class OsmLayer extends AbstractTiledLayer {
 
       final double targetResolution = bounds.getScale(paintArea, dpi).getResolution();
 
-      Double[] resolutions = getOsmParam().resolutions;
+      Double[] resolutions = getParams().resolutions;
       int pos = resolutions.length - 1;
       double result = resolutions[pos];
       for (int i = resolutions.length - 1; i >= 0; --i) {
         double cur = resolutions[i];
-        if (cur <= targetResolution * getOsmParam().resolutionTolerance) {
+        if (cur <= targetResolution * getParams().resolutionTolerance) {
           result = cur;
           pos = i;
           // TODO SR resolve cache conflicts
@@ -79,10 +79,6 @@ public final class OsmLayer extends AbstractTiledLayer {
 
       this.resolution = result;
       this.resolutionIndex = pos;
-    }
-
-    private OsmLayerParam getOsmParam() {
-      return (OsmLayerParam) getParams();
     }
 
     @Nonnull
@@ -121,7 +117,7 @@ public final class OsmLayer extends AbstractTiledLayer {
         path.append(this.resolutionIndex);
         path.append('/').append(column);
         path.append('/').append(row);
-        path.append('.').append(getOsmParam().imageExtension);
+        path.append('.').append(getParams().imageExtension);
 
         uri = new URI(commonUrl + path);
       }
@@ -129,7 +125,7 @@ public final class OsmLayer extends AbstractTiledLayer {
       return httpRequestFactory.createRequest(
           URIUtils.addParams(
               uri,
-              OsmLayerParam.convertToMultiMap(getOsmParam().customParams),
+              OsmLayerParam.convertToMultiMap(getParams().customParams),
               URIUtils.getParameters(uri).keySet()),
           HttpMethod.GET);
     }
@@ -141,18 +137,18 @@ public final class OsmLayer extends AbstractTiledLayer {
 
     @Override
     public Double getLayerDpi() {
-      return getOsmParam().dpi;
+      return getParams().dpi;
     }
 
     @Override
     public Dimension getTileSize() {
-      return getOsmParam().getTileSize();
+      return getParams().getTileSize();
     }
 
     @Nonnull
     @Override
     protected ReferencedEnvelope getTileCacheBounds() {
-      return new ReferencedEnvelope(getOsmParam().getMaxExtent(), this.bounds.getProjection());
+      return new ReferencedEnvelope(getParams().getMaxExtent(), this.bounds.getProjection());
     }
   }
 }
