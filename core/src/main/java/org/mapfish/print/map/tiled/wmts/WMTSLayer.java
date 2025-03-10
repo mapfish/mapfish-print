@@ -4,7 +4,6 @@ import static org.mapfish.print.Constants.OGC_DPI;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Multimap;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.IOException;
@@ -15,7 +14,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
@@ -140,37 +138,9 @@ public class WMTSLayer extends AbstractTiledLayer {
         uri = getWMTSParam().createRestURI(this.matrix.identifier, row, column);
       } else {
         URI commonUri = new URI(commonUrl);
-        uri = createKVPUri(commonUri, row, column, getWMTSParam());
+        uri = getWMTSParam().createKVPUri(commonUri, row, column, this.matrix.identifier);
       }
       return httpRequestFactory.createRequest(uri, HttpMethod.GET);
-    }
-
-    private URI createKVPUri(
-        final URI commonURI, final int row, final int col, final WMTSLayerParam layerParam) {
-      URI uri;
-      final Multimap<String, String> queryParams = URIUtils.getParameters(commonURI);
-      queryParams.put("SERVICE", "WMTS");
-      queryParams.put("REQUEST", "GetTile");
-      queryParams.put("VERSION", layerParam.version);
-      queryParams.put("LAYER", layerParam.layer);
-      queryParams.put("STYLE", layerParam.style);
-      queryParams.put("TILEMATRIXSET", layerParam.matrixSet);
-      queryParams.put("TILEMATRIX", this.matrix.identifier);
-      queryParams.put("TILEROW", String.valueOf(row));
-      queryParams.put("TILECOL", String.valueOf(col));
-      queryParams.put("FORMAT", layerParam.imageFormat);
-      if (layerParam.dimensions != null) {
-        for (int i = 0; i < layerParam.dimensions.length; i++) {
-          String d = layerParam.dimensions[i];
-          String dimensionValue = layerParam.dimensionParams.optString(d);
-          if (dimensionValue == null) {
-            dimensionValue = layerParam.dimensionParams.getString(d.toUpperCase());
-          }
-          queryParams.put(d, dimensionValue);
-        }
-      }
-      uri = URIUtils.setQueryParams(commonURI, queryParams);
-      return uri;
     }
 
     @Override

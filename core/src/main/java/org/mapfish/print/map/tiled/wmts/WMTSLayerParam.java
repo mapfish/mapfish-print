@@ -156,8 +156,7 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
    * @param row row
    * @param col cold
    */
-  public URI createRestURI(final String matrixId, final int row, final int col)
-      throws URISyntaxException {
+  URI createRestURI(final String matrixId, final int row, final int col) throws URISyntaxException {
     String path = baseURL;
     if (dimensions != null) {
       for (String dimension : dimensions) {
@@ -176,5 +175,30 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
     path = path.replaceAll("(?i)" + Pattern.quote("{Layer}"), layer);
 
     return new URI(path);
+  }
+
+  URI createKVPUri(
+      final URI commonURI, final int row, final int col, final String matrixIdentifier) {
+    final Multimap<String, String> queryParams = URIUtils.getParameters(commonURI);
+    queryParams.put("SERVICE", "WMTS");
+    queryParams.put("REQUEST", "GetTile");
+    queryParams.put("VERSION", version);
+    queryParams.put("LAYER", layer);
+    queryParams.put("STYLE", style);
+    queryParams.put("TILEMATRIXSET", matrixSet);
+    queryParams.put("TILEMATRIX", matrixIdentifier);
+    queryParams.put("TILEROW", String.valueOf(row));
+    queryParams.put("TILECOL", String.valueOf(col));
+    queryParams.put("FORMAT", imageFormat);
+    if (dimensions != null) {
+      for (String d : dimensions) {
+        String dimensionValue = dimensionParams.optString(d);
+        if (dimensionValue == null) {
+          dimensionValue = dimensionParams.getString(d.toUpperCase());
+        }
+        queryParams.put(d, dimensionValue);
+      }
+    }
+    return URIUtils.setQueryParams(commonURI, queryParams);
   }
 }
