@@ -33,7 +33,7 @@ public class WMTSLayerTest {
 
     ReferencedEnvelope tileCacheBounds = tileInformation.getTileCacheBounds();
 
-    assertEquals(tileCacheBounds.getMinX(), 420000, 0.00001);
+    assertEquals(420000, tileCacheBounds.getMinX(), 0.00001);
     assertFalse("" + tileCacheBounds.getMinX(), Double.isInfinite(tileCacheBounds.getMinX()));
     assertFalse("" + tileCacheBounds.getMinX(), Double.isNaN(tileCacheBounds.getMinX()));
     assertTrue("" + tileCacheBounds.getMinY(), tileCacheBounds.getMinY() < 350000);
@@ -42,7 +42,7 @@ public class WMTSLayerTest {
     assertTrue("" + tileCacheBounds.getMaxX(), tileCacheBounds.getMaxX() > 420000);
     assertFalse("" + tileCacheBounds.getMaxX(), Double.isInfinite(tileCacheBounds.getMaxX()));
     assertFalse("" + tileCacheBounds.getMaxX(), Double.isNaN(tileCacheBounds.getMaxX()));
-    assertEquals(tileCacheBounds.getMaxY(), 350000, 0.00001);
+    assertEquals(350000, tileCacheBounds.getMaxY(), 0.00001);
     assertFalse("" + tileCacheBounds.getMaxY(), Double.isInfinite(tileCacheBounds.getMaxY()));
     assertFalse("" + tileCacheBounds.getMaxY(), Double.isNaN(tileCacheBounds.getMaxY()));
   }
@@ -55,7 +55,7 @@ public class WMTSLayerTest {
     param.baseURL =
         "http://test_server/mapproxy_4_v3/wmts/{Layer}/{TileMatrixSet}/{TileMatrix}/{TileCol"
             + "}/{TileRow}.png";
-    String restURI = WMTSLayer.createRestURI("the_matrix_id", 4, 5, param).toString();
+    String restURI = param.createRestURI("the_matrix_id", 4, 5).toString();
 
     assertEquals(
         "http://test_server/mapproxy_4_v3/wmts/wmts_layer/matrix_set/the_matrix_id/5/4.png",
@@ -72,7 +72,7 @@ public class WMTSLayerTest {
         "http://test_server/literal/style/tilematrixset/mapproxy_4_v3/wmts/"
             + "{LaYer}/{style}/{tilematrixset}/{TILEMATRIX}/{TileCol}/"
             + "{TileRow}.png";
-    String restURI = WMTSLayer.createRestURI("the_matrix_id", 4, 5, param).toString();
+    String restURI = param.createRestURI("the_matrix_id", 4, 5).toString();
 
     assertEquals(
         "http://test_server/literal/style/tilematrixset/mapproxy_4_v3/wmts/wmts_layer/default/matrix_set/the_matrix_id/5/4.png",

@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ForkJoinPool;
-import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -52,42 +51,10 @@ public class WMTSLayer extends AbstractTiledLayer {
     this.param = param;
   }
 
-  /**
-   * Prepare the baseURL to make a request.
-   *
-   * @param matrixId matrixId
-   * @param row row
-   * @param col cold
-   * @param layerParam layerParam
-   */
-  public static URI createRestURI(
-      final String matrixId, final int row, final int col, final WMTSLayerParam layerParam)
-      throws URISyntaxException {
-    String path = layerParam.baseURL;
-    if (layerParam.dimensions != null) {
-      for (int i = 0; i < layerParam.dimensions.length; i++) {
-        String dimension = layerParam.dimensions[i];
-        String value = layerParam.dimensionParams.optString(dimension);
-        if (value == null) {
-          value = layerParam.dimensionParams.getString(dimension.toUpperCase());
-        }
-        path = path.replace("{" + dimension + "}", value);
-      }
-    }
-    path = path.replaceAll("(?i)" + Pattern.quote("{TileMatrixSet}"), layerParam.matrixSet);
-    path = path.replaceAll("(?i)" + Pattern.quote("{TileMatrix}"), matrixId);
-    path = path.replaceAll("(?i)" + Pattern.quote("{TileRow}"), String.valueOf(row));
-    path = path.replaceAll("(?i)" + Pattern.quote("{TileCol}"), String.valueOf(col));
-    path = path.replaceAll("(?i)" + Pattern.quote("{style}"), layerParam.style);
-    path = path.replaceAll("(?i)" + Pattern.quote("{Layer}"), layerParam.layer);
-
-    return new URI(path);
-  }
-
   @Override
   protected final TileCacheInformation createTileInformation(
       final MapBounds bounds, final Rectangle paintArea, final double dpi) {
-    return new WMTSTileCacheInfo(bounds, paintArea, dpi);
+    return new WMTSTileCacheInfo(bounds, paintArea, dpi, this);
   }
 
   @Override
@@ -96,19 +63,23 @@ public class WMTSLayer extends AbstractTiledLayer {
   }
 
   @VisibleForTesting
-  final class WMTSTileCacheInfo extends TileCacheInformation {
+  static final class WMTSTileCacheInfo extends TileCacheInformation {
     private Matrix matrix;
 
-    private WMTSTileCacheInfo(final MapBounds bounds, final Rectangle paintArea, final double dpi) {
-      super(bounds, paintArea, dpi, WMTSLayer.this.param);
+    private WMTSTileCacheInfo(
+        final MapBounds bounds,
+        final Rectangle paintArea,
+        final double dpi,
+        final WMTSLayer layer) {
+      super(bounds, paintArea, dpi, layer.param);
       double diff = Double.POSITIVE_INFINITY;
       final double targetResolution = bounds.getScale(paintArea, dpi).getResolution();
       LOGGER.debug(
           "Computing imageBufferScaling of layer {} at target resolution {}",
-          WMTSLayer.this.getName(),
+          layer.getName(),
           targetResolution);
 
-      for (Matrix m : WMTSLayer.this.param.matrices) {
+      for (Matrix m : getWMTSParam().matrices) {
         final double resolution = m.getResolution(this.bounds.getProjection());
         LOGGER.debug(
             "Checking tile resolution {} ({} scaling)", resolution, targetResolution / resolution);
@@ -116,15 +87,19 @@ public class WMTSLayer extends AbstractTiledLayer {
         if (delta < diff) {
           diff = delta;
           this.matrix = m;
-          WMTSLayer.this.imageBufferScaling = targetResolution / resolution;
+          layer.imageBufferScaling = targetResolution / resolution;
         }
       }
-      LOGGER.debug("The best imageBufferScaling is {}", WMTSLayer.this.imageBufferScaling);
+      LOGGER.debug("The best imageBufferScaling is {}", layer.imageBufferScaling);
 
       if (this.matrix == null) {
         throw new IllegalArgumentException(
             "Unable to find a matrix for the resolution: " + targetResolution);
       }
+    }
+
+    private WMTSLayerParam getWMTSParam() {
+      return (WMTSLayerParam) getParams();
     }
 
     @Override
@@ -161,12 +136,11 @@ public class WMTSLayer extends AbstractTiledLayer {
         final int row)
         throws URISyntaxException, IOException {
       URI uri;
-      final WMTSLayerParam layerParam = WMTSLayer.this.param;
-      if (RequestEncoding.REST == layerParam.requestEncoding) {
-        uri = createRestURI(this.matrix.identifier, row, column, layerParam);
+      if (RequestEncoding.REST == getWMTSParam().requestEncoding) {
+        uri = getWMTSParam().createRestURI(this.matrix.identifier, row, column);
       } else {
         URI commonUri = new URI(commonUrl);
-        uri = createKVPUri(commonUri, row, column, layerParam);
+        uri = createKVPUri(commonUri, row, column, getWMTSParam());
       }
       return httpRequestFactory.createRequest(uri, HttpMethod.GET);
     }

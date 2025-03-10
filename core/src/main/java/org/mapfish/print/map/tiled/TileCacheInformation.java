@@ -158,4 +158,8 @@ public abstract class TileCacheInformation {
   public BufferedImage getMissingTileImage() {
     return null;
   }
+
+  protected AbstractTiledLayerParams getParams() {
+    return params;
+  }
 }
