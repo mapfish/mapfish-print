@@ -87,6 +87,7 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
   }
 
   private final class WmsTileCacheInformation extends TileCacheInformation {
+    private record CroppedStuff(ReferencedEnvelope tileBounds, Dimension sizeOnScreen) {}
 
     private WmsTileCacheInformation(
         final MapBounds bounds, final Rectangle paintArea, final double dpi) {
@@ -191,17 +192,6 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
     protected ReferencedEnvelope getTileCacheBounds() {
       return new ReferencedEnvelope(
           this.bounds.toReferencedEnvelope(paintArea), this.bounds.getProjection());
-    }
-
-    /** Just to work around language limitation (cannot return 2 values). */
-    private final class CroppedStuff {
-      final ReferencedEnvelope tileBounds;
-      final Dimension sizeOnScreen;
-
-      private CroppedStuff(final ReferencedEnvelope tileBounds, final Dimension sizeOnScreen) {
-        this.tileBounds = tileBounds;
-        this.sizeOnScreen = sizeOnScreen;
-      }
     }
   }
 }
