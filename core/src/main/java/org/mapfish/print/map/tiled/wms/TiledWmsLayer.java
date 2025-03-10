@@ -78,7 +78,7 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
   @Override
   protected TileCacheInformation createTileInformation(
       final MapBounds bounds, final Rectangle paintArea, final double dpi) {
-    return new WmsTileCacheInformation(bounds, paintArea, dpi);
+    return new WmsTileCacheInformation(bounds, paintArea, dpi, getParams());
   }
 
   @Override
@@ -86,12 +86,19 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
     return RenderType.fromMimeType(this.param.imageFormat);
   }
 
-  private final class WmsTileCacheInformation extends TileCacheInformation {
+  private static final class WmsTileCacheInformation extends TileCacheInformation {
     private record CroppedStuff(ReferencedEnvelope tileBounds, Dimension sizeOnScreen) {}
 
     private WmsTileCacheInformation(
-        final MapBounds bounds, final Rectangle paintArea, final double dpi) {
-      super(bounds, paintArea, dpi, TiledWmsLayer.this.param);
+        final MapBounds bounds,
+        final Rectangle paintArea,
+        final double dpi,
+        final TiledWmsLayerParam param) {
+      super(bounds, paintArea, dpi, param);
+    }
+
+    private TiledWmsLayerParam getTwlParam() {
+      return (TiledWmsLayerParam) getParams();
     }
 
     @Nonnull
@@ -109,15 +116,14 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
 
       final URI uri =
           WmsUtilities.makeWmsGetLayerRequest(
-              TiledWmsLayer.this.param,
+              getTwlParam(),
               new URI(commonUrl),
               croppedStuff.sizeOnScreen,
               this.dpi,
               0.0,
               croppedStuff.tileBounds);
       LOGGER.info("Tiled WMS query: {}", uri);
-      return WmsUtilities.createWmsRequest(
-          httpRequestFactory, uri, TiledWmsLayer.this.param.method);
+      return WmsUtilities.createWmsRequest(httpRequestFactory, uri, getTwlParam().method);
     }
 
     private CroppedStuff cropOutOfBoundTiles(
@@ -174,17 +180,17 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
 
     @Override
     public Dimension getTileSize() {
-      return TiledWmsLayer.this.param.getTileSize();
+      return getTwlParam().getTileSize();
     }
 
     @Override
     public int getTileBufferHeight() {
-      return TiledWmsLayer.this.param.getTileBufferHeight();
+      return getTwlParam().getTileBufferHeight();
     }
 
     @Override
     public int getTileBufferWidth() {
-      return TiledWmsLayer.this.param.getTileBufferWidth();
+      return getTwlParam().getTileBufferWidth();
     }
 
     @Nonnull
