@@ -161,4 +161,11 @@ public abstract class TileCacheInformation<T extends AbstractTiledLayerParams> {
   protected final T getParams() {
     return params;
   }
+
+  /**
+   * Return the scaling for this tileInformation.
+   *
+   * @return the aspect ratio
+   */
+  protected abstract double getImageBufferScaling();
 }

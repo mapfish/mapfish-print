@@ -40,6 +40,17 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
     super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params);
   }
 
+  @Override
+  public double prepareRender(
+      final MapfishMapContext transformer,
+      final MfClientHttpRequestFactory clientHttpRequestFactory) {
+    return getImageBufferScaling();
+  }
+
+  public double getImageBufferScaling() {
+    return DEFAULT_SCALING;
+  }
+
   /**
    * Parser for creating {@link org.mapfish.print.map.geotools.FeatureLayer} layers from request
    * data.

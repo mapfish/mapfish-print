@@ -16,6 +16,7 @@ import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.mapfish.print.Constants;
 import org.mapfish.print.FileUtils;
 import org.mapfish.print.PrintException;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
@@ -48,6 +49,13 @@ public final class GeotiffLayer extends AbstractGridCoverage2DReaderLayer {
   @Override
   public RenderType getRenderType() {
     return RenderType.TIFF;
+  }
+
+  @Override
+  public double prepareRender(
+      final MapfishMapContext transformer,
+      final MfClientHttpRequestFactory clientHttpRequestFactory) {
+    return DEFAULT_SCALING;
   }
 
   /**

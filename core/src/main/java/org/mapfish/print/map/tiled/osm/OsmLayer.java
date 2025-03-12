@@ -46,7 +46,7 @@ public final class OsmLayer extends AbstractTiledLayer<OsmLayerParam> {
   @Override
   protected TileCacheInformation<OsmLayerParam> createTileInformation(
       final MapBounds bounds, final Rectangle paintArea, final double dpi) {
-    return new OsmTileCacheInformation(bounds, paintArea, dpi, this);
+    return new OsmTileCacheInformation(bounds, paintArea, dpi, this.param);
   }
 
   @Override
@@ -57,13 +57,17 @@ public final class OsmLayer extends AbstractTiledLayer<OsmLayerParam> {
   private static final class OsmTileCacheInformation extends TileCacheInformation<OsmLayerParam> {
     private final double resolution;
     private final int resolutionIndex;
+    private final double imageBufferScaling;
 
     private OsmTileCacheInformation(
-        final MapBounds bounds, final Rectangle paintArea, final double dpi, final OsmLayer layer) {
-      super(bounds, paintArea, dpi, layer.param);
+        final MapBounds bounds,
+        final Rectangle paintArea,
+        final double dpi,
+        final OsmLayerParam layerParameter) {
+      super(bounds, paintArea, dpi, layerParameter);
 
       final double targetResolution = bounds.getScale(paintArea, dpi).getResolution();
-
+      double ibf = DEFAULT_SCALING;
       Double[] resolutions = getParams().resolutions;
       int pos = resolutions.length - 1;
       double result = resolutions[pos];
@@ -72,13 +76,17 @@ public final class OsmLayer extends AbstractTiledLayer<OsmLayerParam> {
         if (cur <= targetResolution * getParams().resolutionTolerance) {
           result = cur;
           pos = i;
-          // TODO SR resolve cache conflicts
-          layer.imageBufferScaling = cur / targetResolution;
+          ibf = cur / targetResolution;
         }
       }
-
+      imageBufferScaling = ibf;
       this.resolution = result;
       this.resolutionIndex = pos;
+    }
+
+    @Override
+    public double getImageBufferScaling() {
+      return imageBufferScaling;
     }
 
     @Nonnull

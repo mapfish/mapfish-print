@@ -62,11 +62,6 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
   }
 
   @Override
-  public void prepareRender(
-      final MapfishMapContext transformer,
-      final MfClientHttpRequestFactory clientHttpRequestFactory) {}
-
-  @Override
   public final void render(
       final Graphics2D graphics2D,
       final MfClientHttpRequestFactory clientHttpRequestFactory,

@@ -56,7 +56,6 @@ public final class ImageLayer extends AbstractSingleImageLayer {
   private final StyleSupplier<GridCoverage2D> styleSupplier;
   private final ExecutorService executorService;
   private final RenderType renderType;
-  private double imageBufferScaling;
   private BufferedImage image;
   private boolean imageLoadError = false;
   private static final Logger LOGGER = LoggerFactory.getLogger(ImageLayer.class);
@@ -162,12 +161,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
   }
 
   @Override
-  public double getImageBufferScaling() {
-    return imageBufferScaling;
-  }
-
-  @Override
-  public void prepareRender(
+  public double prepareRender(
       final MapfishMapContext transformer,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
     try {
@@ -179,8 +173,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         LOGGER.error("Error while fetching image", e);
         image = createErrorImage(new Rectangle(1, 1));
         imageLoadError = true;
-        imageBufferScaling = 1;
-        return;
+        return DEFAULT_SCALING;
       }
     }
     imageLoadError = false;
@@ -191,9 +184,8 @@ public final class ImageLayer extends AbstractSingleImageLayer {
 
     double widthImageBufferScaling = paintArea.getWidth() / transformer.getMapSize().getWidth();
     double heightImageBufferScaling = paintArea.getHeight() / transformer.getMapSize().getHeight();
-    imageBufferScaling =
-        Math.sqrt(
-            (Math.pow(widthImageBufferScaling, 2) + Math.pow(heightImageBufferScaling, 2)) / 2);
+    return Math.sqrt(
+        (Math.pow(widthImageBufferScaling, 2) + Math.pow(heightImageBufferScaling, 2)) / 2);
   }
 
   private BufferedImage fetchLayerImage(

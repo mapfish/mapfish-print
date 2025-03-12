@@ -63,6 +63,7 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
   @VisibleForTesting
   static final class WMTSTileCacheInfo extends TileCacheInformation<WMTSLayerParam> {
     private Matrix matrix;
+    private final double imageBufferScaling;
 
     private WMTSTileCacheInfo(
         final MapBounds bounds,
@@ -72,6 +73,7 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
       super(bounds, paintArea, dpi, layer.param);
       double diff = Double.POSITIVE_INFINITY;
       final double targetResolution = bounds.getScale(paintArea, dpi).getResolution();
+      double ibf = DEFAULT_SCALING;
       LOGGER.debug(
           "Computing imageBufferScaling of layer {} at target resolution {}",
           layer.getName(),
@@ -85,16 +87,21 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
         if (delta < diff) {
           diff = delta;
           this.matrix = m;
-          // TODO SR resolve cache conflicts
-          layer.imageBufferScaling = targetResolution / resolution;
+          ibf = targetResolution / resolution;
         }
       }
-      LOGGER.debug("The best imageBufferScaling is {}", layer.imageBufferScaling);
+      imageBufferScaling = ibf;
+      LOGGER.debug("The best imageBufferScaling is {}", ibf);
 
       if (this.matrix == null) {
         throw new IllegalArgumentException(
             "Unable to find a matrix for the resolution: " + targetResolution);
       }
+    }
+
+    @Override
+    public double getImageBufferScaling() {
+      return imageBufferScaling;
     }
 
     @Override

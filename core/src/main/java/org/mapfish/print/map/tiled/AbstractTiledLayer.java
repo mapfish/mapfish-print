@@ -32,9 +32,6 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
   private final MetricRegistry registry;
   private final Configuration configuration;
 
-  /** The scale ratio between the tiles resolution and the target resolution. */
-  protected double imageBufferScaling = 1.0;
-
   private TileCacheInformation<T> tileCacheInformation;
   private TilePreparationInfo tilePreparationInfo;
 
@@ -78,8 +75,15 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
     this.configuration = configuration;
   }
 
+  /**
+   * Create the tile information and return its ImageBufferingScaling.
+   *
+   * @param mapContext the map transformer containing the map bounds and size.
+   * @param clientHttpRequestFactory the factory to use for making http requests.
+   * @return The scale ratio between the tiles resolution and the target resolution.
+   */
   @Override
-  public final void prepareRender(
+  public final double prepareRender(
       final MapfishMapContext mapContext,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
     this.tileCacheInformation =
@@ -87,6 +91,8 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
             mapContext.getRotatedBoundsAdjustedForPreciseRotatedMapSize(),
             new Rectangle(mapContext.getRotatedMapSize()),
             mapContext.getDPI());
+
+    return tileCacheInformation.getImageBufferScaling();
   }
 
   @Override
@@ -120,11 +126,6 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
    */
   protected abstract TileCacheInformation<T> createTileInformation(
       MapBounds bounds, Rectangle paintArea, double dpi);
-
-  @Override
-  public final double getImageBufferScaling() {
-    return this.imageBufferScaling;
-  }
 
   @Override
   public final void prefetchResources(

@@ -10,6 +10,16 @@ import org.mapfish.print.processor.Processor;
 public interface MapLayer {
 
   /**
+   * Represents the default scaling factor applied to a map layer.
+   *
+   * <p>By default, this value is set to 1.0, signifying no scaling. This variable can be used to
+   * adjust the scale ratio between map elements, ensuring that rendered layers maintain consistency
+   * in appearance and resolution. It is generally used in map rendering operations and calculations
+   * involving layer scaling.
+   */
+  double DEFAULT_SCALING = 1.0;
+
+  /**
    * Attempt to add the layer this layer so that both can be rendered as a single layer.
    *
    * <p>For example: 2 WMS layers from the same WMS server can be combined into a single WMS layer
@@ -23,18 +33,14 @@ public interface MapLayer {
   Optional<MapLayer> tryAddLayer(MapLayer newLayer);
 
   /**
-   * Get the scale ratio between the tiles resolution and the target resolution. Used to don't scale
-   * the tiles on tiled layer.
-   */
-  double getImageBufferScaling();
-
-  /**
    * Render the layer to the graphics2D object.
    *
    * @param transformer the map transformer containing the map bounds and size.
    * @param clientHttpRequestFactory the factory to use for making http requests.
+   * @return scale ratio between the tiles resolution and the target resolution. (Used to not scale
+   *     the tiles on tiled layer).
    */
-  void prepareRender(
+  double prepareRender(
       MapfishMapContext transformer, MfClientHttpRequestFactory clientHttpRequestFactory);
 
   /**

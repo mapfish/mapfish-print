@@ -106,6 +106,8 @@ public final class CreateMapProcessor
   @Resource(name = "requestForkJoinPool")
   private ForkJoinPool requestForkJoinPool;
 
+  private record MapLayerScaled(MapLayer layer, double imageBufferScaling) {}
+
   /** Constructor. */
   private CreateMapProcessor() {
     super(Output.class);
@@ -383,7 +385,7 @@ public final class CreateMapProcessor
       final ExecutionContext context,
       final MapfishMapContext mapContext)
       throws IOException, ParserConfigurationException {
-    final List<MapLayer> layers =
+    final List<MapLayerScaled> layers =
         prepareLayers(printDirectory, clientHttpRequestFactory, mapValues, context, mapContext);
 
     final AreaOfInterest areaOfInterest = addAreaOfInterestLayer(mapValues, layers);
@@ -470,7 +472,7 @@ public final class CreateMapProcessor
         needTransparency ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
   }
 
-  private List<MapLayer> prepareLayers(
+  private List<MapLayerScaled> prepareLayers(
       final File printDirectory,
       final MfClientHttpRequestFactory clientHttpRequestFactory,
       final MapAttributeValues mapValues,
@@ -485,13 +487,14 @@ public final class CreateMapProcessor
             printDirectory, this.metricRegistry, context, this.requestForkJoinPool);
 
     // prepare layers for rendering
+    List<MapLayerScaled> layersScaled = new ArrayList<>(layers.size());
     for (final MapLayer layer : layers) {
-      layer.prepareRender(mapContext, clientHttpRequestFactory);
-      final MapfishMapContext transformer =
-          getTransformer(mapContext, layer.getImageBufferScaling());
+      final double scale = layer.prepareRender(mapContext, clientHttpRequestFactory);
+      layersScaled.add(new MapLayerScaled(layer, scale));
+      final MapfishMapContext transformer = getTransformer(mapContext, scale);
       layer.prefetchResources(cache, clientHttpRequestFactory, transformer, context);
     }
-    return layers;
+    return layersScaled;
   }
 
   private void renderLayersAsSvg(
@@ -540,7 +543,7 @@ public final class CreateMapProcessor
   }
 
   private AreaOfInterest addAreaOfInterestLayer(
-      @Nonnull final MapAttributeValues mapValues, @Nonnull final List<MapLayer> layers) {
+      @Nonnull final MapAttributeValues mapValues, @Nonnull final List<MapLayerScaled> layers) {
     final AreaOfInterest areaOfInterest = mapValues.areaOfInterest;
     if (areaOfInterest != null && areaOfInterest.display == AreaOfInterest.AoiDisplay.RENDER) {
       FeatureLayer.FeatureLayerParam param = new FeatureLayer.FeatureLayerParam();
@@ -555,7 +558,7 @@ public final class CreateMapProcessor
       final FeatureLayer featureLayer =
           this.featureLayerPlugin.parse(mapValues.getTemplate(), param);
 
-      layers.add(featureLayer);
+      layers.add(new MapLayerScaled(featureLayer, featureLayer.getImageBufferScaling()));
     }
     return areaOfInterest;
   }
@@ -785,25 +788,26 @@ public final class CreateMapProcessor
     }
 
     public static List<LayerGroup> buildGroups(
-        final List<MapLayer> layers, final boolean mergeAsJPEGWithScale1) {
+        final List<MapLayerScaled> layers, final boolean mergeAsJPEGWithScale1) {
       final List<LayerGroup> result = new ArrayList<>();
       if (!mergeAsJPEGWithScale1) {
         LOGGER.debug("Building groups of layers");
         for (int i = 0; i < layers.size(); ) {
-          final RenderType renderType = getSupportedRenderType(layers.get(i).getRenderType());
-          final double imageBufferScaling = layers.get(i).getImageBufferScaling();
+          final RenderType renderType = getSupportedRenderType(layers.get(i).layer.getRenderType());
+          final double imageBufferScaling = layers.get(i).imageBufferScaling;
           final LayerGroup group = new LayerGroup(renderType, imageBufferScaling);
-          MapLayer l = layers.get(i);
-          LOGGER.debug("New group for layer {}, {}", l.getRenderType(), l.getImageBufferScaling());
+          MapLayer l = layers.get(i).layer;
+          LOGGER.debug(
+              "New group for layer {}, {}", l.getRenderType(), layers.get(i).imageBufferScaling());
           group.opaque = (i == 0 && renderType == RenderType.JPEG);
 
           // Merge consecutive layers of same render type and same buffer scaling (native
           // resolution)
           while (i < layers.size()
-              && getSupportedRenderType(layers.get(i).getRenderType()) == renderType
-              && imageBufferScaling == layers.get(i).getImageBufferScaling()) {
+              && getSupportedRenderType(layers.get(i).layer.getRenderType()) == renderType
+              && imageBufferScaling == layers.get(i).imageBufferScaling()) {
             // will always go there the first time
-            l = layers.get(i);
+            l = layers.get(i).layer;
             LOGGER.debug("Adding layer: {} named: {} to the group", i, l.getName());
             group.layers.add(l);
             group.opaque = group.opaque || (renderType == RenderType.JPEG && l.getOpacity() == 1.0);
@@ -816,7 +820,7 @@ public final class CreateMapProcessor
         LOGGER.debug("Merging together all layers as a JPEG image of scaling 1");
         final LayerGroup group = new LayerGroup(RenderType.JPEG, 1.0);
         group.opaque = true;
-        group.layers.addAll(layers);
+        group.layers.addAll(layers.stream().map(MapLayerScaled::layer).toList());
         result.add(group);
       }
 

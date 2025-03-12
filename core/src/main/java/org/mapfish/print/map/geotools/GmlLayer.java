@@ -48,6 +48,13 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
     super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params);
   }
 
+  @Override
+  public double prepareRender(
+      final MapfishMapContext transformer,
+      final MfClientHttpRequestFactory clientHttpRequestFactory) {
+    return DEFAULT_SCALING;
+  }
+
   /**
    * Renders GML layers.
    *

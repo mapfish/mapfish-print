@@ -123,6 +123,11 @@ public final class TiledWmsLayer extends AbstractTiledLayer<TiledWmsLayerParam> 
       return WmsUtilities.createWmsRequest(httpRequestFactory, uri, getParams().method);
     }
 
+    @Override
+    protected double getImageBufferScaling() {
+      return DEFAULT_SCALING;
+    }
+
     private CroppedStuff cropOutOfBoundTiles(
         final ReferencedEnvelope tileBounds, final Dimension sizeOnScreen) {
       // the way the tiles are build makes that we go out of bounds only on the right and on the top

@@ -40,6 +40,13 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
     super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params);
   }
 
+  @Override
+  public double prepareRender(
+      final MapfishMapContext transformer,
+      final MfClientHttpRequestFactory clientHttpRequestFactory) {
+    return DEFAULT_SCALING;
+  }
+
   /**
    * Renders GeoJSON layers.
    *

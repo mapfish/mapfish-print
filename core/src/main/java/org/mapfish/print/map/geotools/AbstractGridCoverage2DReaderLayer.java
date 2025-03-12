@@ -41,11 +41,6 @@ public abstract class AbstractGridCoverage2DReaderLayer extends AbstractGeotools
   }
 
   @Override
-  public final double getImageBufferScaling() {
-    return 1;
-  }
-
-  @Override
   public final synchronized List<? extends Layer> getLayers(
       final MfClientHttpRequestFactory httpRequestFactory,
       final MapfishMapContext mapContext,

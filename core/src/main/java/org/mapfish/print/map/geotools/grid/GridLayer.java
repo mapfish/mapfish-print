@@ -54,7 +54,14 @@ public final class GridLayer implements MapLayer {
       final LabelPositionCollector labels) {
     this.grid =
         new AbstractFeatureSourceLayer(
-            executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params) {};
+            executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params) {
+          @Override
+          public double prepareRender(
+              final MapfishMapContext transformer,
+              final MfClientHttpRequestFactory clientHttpRequestFactory) {
+            return DEFAULT_SCALING;
+          }
+        };
     this.params = params;
     this.labels = labels;
   }
@@ -65,14 +72,11 @@ public final class GridLayer implements MapLayer {
   }
 
   @Override
-  public double getImageBufferScaling() {
-    return 1.0;
-  }
-
-  @Override
-  public void prepareRender(
+  public double prepareRender(
       final MapfishMapContext transformer,
-      final MfClientHttpRequestFactory clientHttpRequestFactory) {}
+      final MfClientHttpRequestFactory clientHttpRequestFactory) {
+    return DEFAULT_SCALING;
+  }
 
   @Override
   public void render(

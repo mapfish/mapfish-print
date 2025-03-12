@@ -119,4 +119,11 @@ public final class WmsLayer extends AbstractSingleImageLayer {
   public Configuration getConfiguration() {
     return configuration;
   }
+
+  @Override
+  public double prepareRender(
+      final MapfishMapContext transformer,
+      final MfClientHttpRequestFactory clientHttpRequestFactory) {
+    return DEFAULT_SCALING;
+  }
 }
