@@ -41,10 +41,10 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
   }
 
   @Override
-  public double prepareRender(
+  public LayerContext prepareRender(
       final MapfishMapContext transformer,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
-    return getImageBufferScaling();
+    return new LayerContext(null, getImageBufferScaling());
   }
 
   public double getImageBufferScaling() {

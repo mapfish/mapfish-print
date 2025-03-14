@@ -4,6 +4,8 @@ import java.awt.Graphics2D;
 import java.util.Optional;
 import org.mapfish.print.http.HttpRequestFetcher;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
+import org.mapfish.print.map.tiled.AbstractTiledLayerParams;
+import org.mapfish.print.map.tiled.TileInformation;
 import org.mapfish.print.processor.Processor;
 
 /** Encapsulates the data required to load map data for a layer and render it. */
@@ -18,6 +20,15 @@ public interface MapLayer {
    * involving layer scaling.
    */
   double DEFAULT_SCALING = 1.0;
+
+  /**
+   * To record all the data linked to a particular context of a Layer.
+   *
+   * @param tileInformation the information linked to a context of a Layer
+   * @param scale the scaling factor to apply to the layer in this context
+   */
+  record LayerContext(
+      TileInformation<? extends AbstractTiledLayerParams> tileInformation, double scale) {}
 
   /**
    * Attempt to add the layer this layer so that both can be rendered as a single layer.
@@ -37,10 +48,9 @@ public interface MapLayer {
    *
    * @param transformer the map transformer containing the map bounds and size.
    * @param clientHttpRequestFactory the factory to use for making http requests.
-   * @return scale ratio between the tiles resolution and the target resolution. (Used to not scale
-   *     the tiles on tiled layer).
+   * @return the LayerContext for this requested rendering.
    */
-  double prepareRender(
+  LayerContext prepareRender(
       MapfishMapContext transformer, MfClientHttpRequestFactory clientHttpRequestFactory);
 
   /**

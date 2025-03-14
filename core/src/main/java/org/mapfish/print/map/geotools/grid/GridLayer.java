@@ -56,10 +56,10 @@ public final class GridLayer implements MapLayer {
         new AbstractFeatureSourceLayer(
             executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params) {
           @Override
-          public double prepareRender(
+          public LayerContext prepareRender(
               final MapfishMapContext transformer,
               final MfClientHttpRequestFactory clientHttpRequestFactory) {
-            return DEFAULT_SCALING;
+            return new LayerContext(null, DEFAULT_SCALING);
           }
         };
     this.params = params;
@@ -72,10 +72,10 @@ public final class GridLayer implements MapLayer {
   }
 
   @Override
-  public double prepareRender(
+  public LayerContext prepareRender(
       final MapfishMapContext transformer,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
-    return DEFAULT_SCALING;
+    return new LayerContext(null, DEFAULT_SCALING);
   }
 
   @Override

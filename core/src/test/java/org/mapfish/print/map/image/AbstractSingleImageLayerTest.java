@@ -49,9 +49,9 @@ public class AbstractSingleImageLayerTest {
     }
 
     @Override
-    public double prepareRender(
+    public LayerContext prepareRender(
         MapfishMapContext transformer, MfClientHttpRequestFactory clientHttpRequestFactory) {
-      return DEFAULT_SCALING;
+      return new LayerContext(null, DEFAULT_SCALING);
     }
 
     @Override

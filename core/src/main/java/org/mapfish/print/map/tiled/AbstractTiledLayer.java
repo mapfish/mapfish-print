@@ -80,10 +80,10 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
    *
    * @param mapContext the map transformer containing the map bounds and size.
    * @param clientHttpRequestFactory the factory to use for making http requests.
-   * @return The scale ratio between the tiles resolution and the target resolution.
+   * @return the LayerContext for this requested rendering.
    */
   @Override
-  public final double prepareRender(
+  public final LayerContext prepareRender(
       final MapfishMapContext mapContext,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
     this.tileInformation =
@@ -92,7 +92,7 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
             new Rectangle(mapContext.getRotatedMapSize()),
             mapContext.getDPI());
 
-    return tileInformation.getImageBufferScaling();
+    return new LayerContext(tileInformation, tileInformation.getImageBufferScaling());
   }
 
   @Override

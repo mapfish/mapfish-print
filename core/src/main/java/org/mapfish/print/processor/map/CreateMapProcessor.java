@@ -489,9 +489,10 @@ public final class CreateMapProcessor
     // prepare layers for rendering
     List<MapLayerScaled> layersScaled = new ArrayList<>(layers.size());
     for (final MapLayer layer : layers) {
-      final double scale = layer.prepareRender(mapContext, clientHttpRequestFactory);
-      layersScaled.add(new MapLayerScaled(layer, scale));
-      final MapfishMapContext transformer = getTransformer(mapContext, scale);
+      final MapLayer.LayerContext layerContext =
+          layer.prepareRender(mapContext, clientHttpRequestFactory);
+      layersScaled.add(new MapLayerScaled(layer, layerContext.scale()));
+      final MapfishMapContext transformer = getTransformer(mapContext, layerContext.scale());
       layer.prefetchResources(cache, clientHttpRequestFactory, transformer, context);
     }
     return layersScaled;

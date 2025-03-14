@@ -41,10 +41,10 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
   }
 
   @Override
-  public double prepareRender(
+  public LayerContext prepareRender(
       final MapfishMapContext transformer,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
-    return DEFAULT_SCALING;
+    return new LayerContext(null, DEFAULT_SCALING);
   }
 
   /**

@@ -121,9 +121,9 @@ public final class WmsLayer extends AbstractSingleImageLayer {
   }
 
   @Override
-  public double prepareRender(
+  public LayerContext prepareRender(
       final MapfishMapContext transformer,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
-    return DEFAULT_SCALING;
+    return new LayerContext(null, DEFAULT_SCALING);
   }
 }

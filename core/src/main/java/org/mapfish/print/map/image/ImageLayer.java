@@ -161,7 +161,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
   }
 
   @Override
-  public double prepareRender(
+  public LayerContext prepareRender(
       final MapfishMapContext transformer,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
     try {
@@ -173,7 +173,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         LOGGER.error("Error while fetching image", e);
         image = createErrorImage(new Rectangle(1, 1));
         imageLoadError = true;
-        return DEFAULT_SCALING;
+        return new LayerContext(null, DEFAULT_SCALING);
       }
     }
     imageLoadError = false;
@@ -184,8 +184,10 @@ public final class ImageLayer extends AbstractSingleImageLayer {
 
     double widthImageBufferScaling = paintArea.getWidth() / transformer.getMapSize().getWidth();
     double heightImageBufferScaling = paintArea.getHeight() / transformer.getMapSize().getHeight();
-    return Math.sqrt(
-        (Math.pow(widthImageBufferScaling, 2) + Math.pow(heightImageBufferScaling, 2)) / 2);
+    double scale =
+        Math.sqrt(
+            (Math.pow(widthImageBufferScaling, 2) + Math.pow(heightImageBufferScaling, 2)) / 2);
+    return new LayerContext(null, scale);
   }
 
   private BufferedImage fetchLayerImage(
