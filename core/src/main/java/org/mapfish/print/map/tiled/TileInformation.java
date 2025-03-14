@@ -17,9 +17,9 @@ import org.springframework.http.client.ClientHttpRequest;
  * Encapsulates the information needed to create tile requests for a particular map bounds and
  * display.
  *
- * @param <T> Type of the params associated to this Tile cache.
+ * @param <T> Type of the params associated to this Tile.
  */
-public abstract class TileCacheInformation<T extends AbstractTiledLayerParams> {
+public abstract class TileInformation<T extends AbstractTiledLayerParams> {
 
   /** the map bounds. */
   protected final MapBounds bounds;
@@ -40,7 +40,7 @@ public abstract class TileCacheInformation<T extends AbstractTiledLayerParams> {
    * @param dpi the DPI to render at
    * @param params the params with the data for creating the layer.
    */
-  protected TileCacheInformation(
+  protected TileInformation(
       final MapBounds bounds, final Rectangle paintArea, final double dpi, final T params) {
     this.bounds = bounds;
     this.paintArea = paintArea;
@@ -55,8 +55,8 @@ public abstract class TileCacheInformation<T extends AbstractTiledLayerParams> {
    * @param commonUrl the uri that is common to all tiles. See {@link #createCommonUrl()}
    * @param tileBounds the bounds of the image in world coordinates
    * @param tileSizeOnScreen the size of the tile on the screen or on the image.
-   * @param column the column index of the tile from the origin of the tile cache.
-   * @param row the row index of the tile from the origin of the tile cache.
+   * @param column the column index of the tile from the origin of the tile.
+   * @param row the row index of the tile from the origin of the tile.
    */
   @Nonnull
   public abstract ClientHttpRequest getTileRequest(
@@ -99,9 +99,9 @@ public abstract class TileCacheInformation<T extends AbstractTiledLayerParams> {
     return 0;
   }
 
-  /** Return the full bounds of the tileCache. */
+  /** Return the full bounds of the tile. */
   @Nonnull
-  protected abstract ReferencedEnvelope getTileCacheBounds();
+  protected abstract ReferencedEnvelope getTileBounds();
 
   /**
    * Calculate the minx and miny coordinate of the tile that is the minx and miny tile. It is the
@@ -115,15 +115,15 @@ public abstract class TileCacheInformation<T extends AbstractTiledLayerParams> {
   @Nonnull
   public Coordinate getMinGeoCoordinate(
       final ReferencedEnvelope envelope, final Coordinate geoTileSize) {
-    final ReferencedEnvelope tileCacheBounds = getTileCacheBounds();
-    final double tileCacheMinX = tileCacheBounds.getMinX();
+    final ReferencedEnvelope tileBounds = getTileBounds();
+    final double tileMinX = tileBounds.getMinX();
     double minGeoX = envelope.getMinX();
     double minGeoY = envelope.getMinY();
     double tileMinGeoX =
-        (tileCacheMinX + (Math.floor((minGeoX - tileCacheMinX) / geoTileSize.x) * geoTileSize.x));
-    final double tileCacheMinY = tileCacheBounds.getMinY();
+        (tileMinX + (Math.floor((minGeoX - tileMinX) / geoTileSize.x) * geoTileSize.x));
+    final double tileMinY = tileBounds.getMinY();
     double tileMinGeoY =
-        (tileCacheMinY + (Math.floor((minGeoY - tileCacheMinY) / geoTileSize.y) * geoTileSize.y));
+        (tileMinY + (Math.floor((minGeoY - tileMinY) / geoTileSize.y) * geoTileSize.y));
 
     return new Coordinate(tileMinGeoX, tileMinGeoY);
   }

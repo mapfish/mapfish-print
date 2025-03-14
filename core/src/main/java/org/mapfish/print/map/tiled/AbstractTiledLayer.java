@@ -32,7 +32,7 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
   private final MetricRegistry registry;
   private final Configuration configuration;
 
-  private TileCacheInformation<T> tileCacheInformation;
+  private TileInformation<T> tileInformation;
   private TilePreparationInfo tilePreparationInfo;
 
   /**
@@ -86,13 +86,13 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
   public final double prepareRender(
       final MapfishMapContext mapContext,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
-    this.tileCacheInformation =
+    this.tileInformation =
         createTileInformation(
             mapContext.getRotatedBoundsAdjustedForPreciseRotatedMapSize(),
             new Rectangle(mapContext.getRotatedMapSize()),
             mapContext.getDPI());
 
-    return tileCacheInformation.getImageBufferScaling();
+    return tileInformation.getImageBufferScaling();
   }
 
   @Override
@@ -107,7 +107,7 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
             getFailOnError(),
             this.registry,
             context,
-            this.tileCacheInformation,
+            this.tileInformation,
             this.configuration);
     final GridCoverage2D gridCoverage2D = task.call();
 
@@ -118,13 +118,13 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
   }
 
   /**
-   * Create the tile cache information object for the given parameters.
+   * Create the tile information object for the given parameters.
    *
    * @param bounds the map bounds
    * @param paintArea the area to paint
    * @param dpi the DPI to render at
    */
-  protected abstract TileCacheInformation<T> createTileInformation(
+  protected abstract TileInformation<T> createTileInformation(
       MapBounds bounds, Rectangle paintArea, double dpi);
 
   @Override
@@ -139,7 +139,7 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
         new TilePreparationTask(
             clientHttpRequestFactory,
             layerTransformer,
-            this.tileCacheInformation,
+            this.tileInformation,
             httpRequestFetcher,
             context);
     this.tilePreparationInfo = task.call();

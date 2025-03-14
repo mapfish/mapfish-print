@@ -36,7 +36,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CoverageTask.class);
 
-  private final TileCacheInformation tiledLayer;
+  private final TileInformation<? extends AbstractTiledLayerParams> tiledLayer;
   private final TilePreparationInfo tilePreparationInfo;
   private final boolean failOnError;
   private final MetricRegistry registry;
@@ -50,7 +50,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
    * @param failOnError fail on tile download error.
    * @param registry the metrics registry.
    * @param context the job ID.
-   * @param tileCacheInfo the object used to create the tile requests.
+   * @param tileInformation the object used to create the tile requests.
    * @param configuration the configuration.
    */
   CoverageTask(
@@ -58,11 +58,11 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
       final boolean failOnError,
       @Nonnull final MetricRegistry registry,
       @Nonnull final Processor.ExecutionContext context,
-      @Nonnull final TileCacheInformation tileCacheInfo,
+      @Nonnull final TileInformation<? extends AbstractTiledLayerParams> tileInformation,
       @Nonnull final Configuration configuration) {
     this.tilePreparationInfo = tilePreparationInfo;
     this.context = context;
-    this.tiledLayer = tileCacheInfo;
+    this.tiledLayer = tileInformation;
     this.failOnError = failOnError;
     this.registry = registry;
 
@@ -290,14 +290,18 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
               "Error making tile request: %s\n\tStatus: %d\n\tStatus message: %s",
               this.tileRequest.getURI(), httpStatusCode, response.getStatusText());
       LOGGER.debug(
-          String.format(
-              "Error making tile request: %s\nStatus: %d\n"
-                  + "Status message: %s\nServer:%s\nBody:\n%s",
-              this.tileRequest.getURI(),
-              httpStatusCode,
-              response.getStatusText(),
-              response.getHeaders().getFirst(HttpHeaders.SERVER),
-              IOUtils.toString(response.getBody(), StandardCharsets.UTF_8)));
+          """
+          Error making tile request: {}
+          Status: {}
+          Status message: {}
+          Server:{}
+          Body:
+          {}""",
+          this.tileRequest.getURI(),
+          httpStatusCode,
+          response.getStatusText(),
+          response.getHeaders().getFirst(HttpHeaders.SERVER),
+          IOUtils.toString(response.getBody(), StandardCharsets.UTF_8));
       this.registry.counter(baseMetricName + ".error").inc();
       if (this.failOnError) {
         throw new RuntimeException(errorMessage);

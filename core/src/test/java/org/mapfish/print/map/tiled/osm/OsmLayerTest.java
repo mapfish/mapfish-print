@@ -11,12 +11,12 @@ import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.StyleSupplier;
-import org.mapfish.print.map.tiled.TileCacheInformation;
+import org.mapfish.print.map.tiled.TileInformation;
 
 public class OsmLayerTest {
 
   @Test
-  public void testCreateTileInformation_CreatesNewCacheInformation() {
+  public void testCreateTileInformation_CreatesNewTileInformation() {
     // GIVEN
     ForkJoinPool forkJoinPool = new ForkJoinPool();
     OsmLayerParam osmLayerParam = new OsmLayerParam();
@@ -37,7 +37,7 @@ public class OsmLayerTest {
     when(mockBounds.getScale(mockPaintArea, dpi)).thenReturn(mockScale);
 
     // WHEN
-    TileCacheInformation<OsmLayerParam> tileInfo =
+    TileInformation<OsmLayerParam> tileInfo =
         osmLayer.createTileInformation(mockBounds, mockPaintArea, dpi);
 
     // THEN
@@ -66,7 +66,7 @@ public class OsmLayerTest {
     when(mockBounds1.getScale(mockPaintArea1, dpi1)).thenReturn(mockScale1);
 
     // WHEN
-    TileCacheInformation<OsmLayerParam> tileInformation1 =
+    TileInformation<OsmLayerParam> tileInformation1 =
         osmLayer.createTileInformation(mockBounds1, mockPaintArea1, dpi1);
 
     // GIVEN
@@ -79,7 +79,7 @@ public class OsmLayerTest {
     when(mockBounds2.getScale(mockPaintArea2, dpi2)).thenReturn(mockScale2);
 
     // WHEN
-    TileCacheInformation<OsmLayerParam> tileInformation2 =
+    TileInformation<OsmLayerParam> tileInformation2 =
         osmLayer.createTileInformation(mockBounds2, mockPaintArea2, dpi2);
 
     // THEN

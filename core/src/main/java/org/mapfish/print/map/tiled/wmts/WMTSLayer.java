@@ -19,7 +19,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
-import org.mapfish.print.map.tiled.TileCacheInformation;
+import org.mapfish.print.map.tiled.TileInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
@@ -50,9 +50,9 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
   }
 
   @Override
-  protected final TileCacheInformation<WMTSLayerParam> createTileInformation(
+  protected final TileInformation<WMTSLayerParam> createTileInformation(
       final MapBounds bounds, final Rectangle paintArea, final double dpi) {
-    return new WMTSTileCacheInfo(bounds, paintArea, dpi, this);
+    return new WMTSTileInfo(bounds, paintArea, dpi, this);
   }
 
   @Override
@@ -61,11 +61,11 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
   }
 
   @VisibleForTesting
-  static final class WMTSTileCacheInfo extends TileCacheInformation<WMTSLayerParam> {
+  static final class WMTSTileInfo extends TileInformation<WMTSLayerParam> {
     private Matrix matrix;
     private final double imageBufferScaling;
 
-    private WMTSTileCacheInfo(
+    private WMTSTileInfo(
         final MapBounds bounds,
         final Rectangle paintArea,
         final double dpi,
@@ -114,7 +114,7 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
 
     @Nonnull
     @Override
-    protected ReferencedEnvelope getTileCacheBounds() {
+    protected ReferencedEnvelope getTileBounds() {
       double resolution = getResolution();
       double minX = this.matrix.topLeftCorner[0];
       double tileHeight = this.matrix.getTileHeight();

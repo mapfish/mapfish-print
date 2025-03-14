@@ -16,7 +16,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
-import org.mapfish.print.map.tiled.TileCacheInformation;
+import org.mapfish.print.map.tiled.TileInformation;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 
@@ -44,9 +44,9 @@ public final class OsmLayer extends AbstractTiledLayer<OsmLayerParam> {
   }
 
   @Override
-  protected TileCacheInformation<OsmLayerParam> createTileInformation(
+  protected TileInformation<OsmLayerParam> createTileInformation(
       final MapBounds bounds, final Rectangle paintArea, final double dpi) {
-    return new OsmTileCacheInformation(bounds, paintArea, dpi, this.param);
+    return new OsmTileInformation(bounds, paintArea, dpi, this.param);
   }
 
   @Override
@@ -54,12 +54,12 @@ public final class OsmLayer extends AbstractTiledLayer<OsmLayerParam> {
     return RenderType.fromFileExtension(this.param.imageExtension);
   }
 
-  private static final class OsmTileCacheInformation extends TileCacheInformation<OsmLayerParam> {
+  private static final class OsmTileInformation extends TileInformation<OsmLayerParam> {
     private final double resolution;
     private final int resolutionIndex;
     private final double imageBufferScaling;
 
-    private OsmTileCacheInformation(
+    private OsmTileInformation(
         final MapBounds bounds,
         final Rectangle paintArea,
         final double dpi,
@@ -104,18 +104,7 @@ public final class OsmLayer extends AbstractTiledLayer<OsmLayerParam> {
       if (commonUrl.contains("{x}")
           && commonUrl.contains("{z}")
           && (commonUrl.contains("{y}") || commonUrl.contains("{-y}"))) {
-        String url =
-            commonUrl
-                .replace("{z}", Integer.toString(this.resolutionIndex))
-                .replace("{x}", Integer.toString(column))
-                .replace("{y}", Integer.toString(row));
-        if (commonUrl.contains("{-y}")) {
-          // {-y} is for  OSGeo TMS layers, see also: https://josm.openstreetmap
-          // .de/wiki/Maps#TileMapServicesTMS
-          url =
-              url.replace(
-                  "{-y}", Integer.toString((int) Math.pow(2, this.resolutionIndex) - 1 - row));
-        }
+        String url = generateTileUrl(commonUrl, column, row);
         uri = new URI(url);
       } else {
         StringBuilder path = new StringBuilder();
@@ -138,6 +127,22 @@ public final class OsmLayer extends AbstractTiledLayer<OsmLayerParam> {
           HttpMethod.GET);
     }
 
+    private String generateTileUrl(final String commonUrl, final int column, final int row) {
+      String url =
+          commonUrl
+              .replace("{z}", Integer.toString(this.resolutionIndex))
+              .replace("{x}", Integer.toString(column))
+              .replace("{y}", Integer.toString(row));
+      if (commonUrl.contains("{-y}")) {
+        // {-y} is for  OSGeo TMS layers, see also: https://josm.openstreetmap
+        // .de/wiki/Maps#TileMapServicesTMS
+        url =
+            url.replace(
+                "{-y}", Integer.toString((int) Math.pow(2, this.resolutionIndex) - 1 - row));
+      }
+      return url;
+    }
+
     @Override
     public double getResolution() {
       return this.resolution;
@@ -155,7 +160,7 @@ public final class OsmLayer extends AbstractTiledLayer<OsmLayerParam> {
 
     @Nonnull
     @Override
-    protected ReferencedEnvelope getTileCacheBounds() {
+    protected ReferencedEnvelope getTileBounds() {
       return new ReferencedEnvelope(getParams().getMaxExtent(), this.bounds.getProjection());
     }
   }

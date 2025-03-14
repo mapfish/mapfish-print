@@ -28,23 +28,23 @@ public class WMTSLayerTest {
     Rectangle paintArea = new Rectangle(0, 0, 256, 256);
     MapBounds bounds =
         new CenterScaleMapBounds(CRS.decode("EPSG:21781"), 595217.02, 236708.54, 7500);
-    WMTSLayer.WMTSTileCacheInfo tileInformation =
-        (WMTSLayer.WMTSTileCacheInfo) wmtsLayer.createTileInformation(bounds, paintArea, 256);
+    WMTSLayer.WMTSTileInfo tileInformation =
+        (WMTSLayer.WMTSTileInfo) wmtsLayer.createTileInformation(bounds, paintArea, 256);
 
-    ReferencedEnvelope tileCacheBounds = tileInformation.getTileCacheBounds();
+    ReferencedEnvelope tileBounds = tileInformation.getTileBounds();
 
-    assertEquals(420000, tileCacheBounds.getMinX(), 0.00001);
-    assertFalse("" + tileCacheBounds.getMinX(), Double.isInfinite(tileCacheBounds.getMinX()));
-    assertFalse("" + tileCacheBounds.getMinX(), Double.isNaN(tileCacheBounds.getMinX()));
-    assertTrue("" + tileCacheBounds.getMinY(), tileCacheBounds.getMinY() < 350000);
-    assertFalse("" + tileCacheBounds.getMinY(), Double.isInfinite(tileCacheBounds.getMinY()));
-    assertFalse("" + tileCacheBounds.getMinY(), Double.isNaN(tileCacheBounds.getMinY()));
-    assertTrue("" + tileCacheBounds.getMaxX(), tileCacheBounds.getMaxX() > 420000);
-    assertFalse("" + tileCacheBounds.getMaxX(), Double.isInfinite(tileCacheBounds.getMaxX()));
-    assertFalse("" + tileCacheBounds.getMaxX(), Double.isNaN(tileCacheBounds.getMaxX()));
-    assertEquals(350000, tileCacheBounds.getMaxY(), 0.00001);
-    assertFalse("" + tileCacheBounds.getMaxY(), Double.isInfinite(tileCacheBounds.getMaxY()));
-    assertFalse("" + tileCacheBounds.getMaxY(), Double.isNaN(tileCacheBounds.getMaxY()));
+    assertEquals(420000, tileBounds.getMinX(), 0.00001);
+    assertFalse("" + tileBounds.getMinX(), Double.isInfinite(tileBounds.getMinX()));
+    assertFalse("" + tileBounds.getMinX(), Double.isNaN(tileBounds.getMinX()));
+    assertTrue("" + tileBounds.getMinY(), tileBounds.getMinY() < 350000);
+    assertFalse("" + tileBounds.getMinY(), Double.isInfinite(tileBounds.getMinY()));
+    assertFalse("" + tileBounds.getMinY(), Double.isNaN(tileBounds.getMinY()));
+    assertTrue("" + tileBounds.getMaxX(), tileBounds.getMaxX() > 420000);
+    assertFalse("" + tileBounds.getMaxX(), Double.isInfinite(tileBounds.getMaxX()));
+    assertFalse("" + tileBounds.getMaxX(), Double.isNaN(tileBounds.getMaxX()));
+    assertEquals(350000, tileBounds.getMaxY(), 0.00001);
+    assertFalse("" + tileBounds.getMaxY(), Double.isInfinite(tileBounds.getMaxY()));
+    assertFalse("" + tileBounds.getMaxY(), Double.isNaN(tileBounds.getMaxY()));
   }
 
   @Test
