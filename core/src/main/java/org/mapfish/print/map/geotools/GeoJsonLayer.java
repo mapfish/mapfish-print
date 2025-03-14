@@ -34,7 +34,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
   public GeoJsonLayer(
       final ExecutorService executorService,
       final FeatureSourceSupplier featureSourceSupplier,
-      final StyleSupplier<FeatureSource> styleSupplier,
+      final StyleSupplier<FeatureSource<?, ?>> styleSupplier,
       final boolean renderAsSvg,
       final AbstractLayerParams params) {
     super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params);
@@ -44,7 +44,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
   public LayerContext prepareRender(
       final MapfishMapContext transformer,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
-    return new LayerContext(null, DEFAULT_SCALING);
+    return new LayerContext(null, DEFAULT_SCALING, null);
   }
 
   /**
@@ -84,7 +84,7 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
       return new FeatureSourceSupplier() {
         @Nonnull
         @Override
-        public FeatureSource load(
+        public FeatureSource<?, ?> load(
             @Nonnull final MfClientHttpRequestFactory requestFactory,
             @Nonnull final MapfishMapContext mapContext) {
           final FeaturesParser parser =

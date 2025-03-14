@@ -66,7 +66,7 @@ public final class GeotiffLayer extends AbstractGeotoolsLayer {
   public LayerContext prepareRender(
       final MapfishMapContext transformer,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
-    return new LayerContext(null, DEFAULT_SCALING);
+    return new LayerContext(null, DEFAULT_SCALING, null);
   }
 
   @Override

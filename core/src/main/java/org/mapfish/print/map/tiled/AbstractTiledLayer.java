@@ -31,7 +31,6 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
   private final StyleSupplier<GridCoverage2D> styleSupplier;
   private final MetricRegistry registry;
   private final Configuration configuration;
-  private TilePreparationInfo tilePreparationInfo;
 
   /**
    * Constructor.
@@ -90,7 +89,7 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
             new Rectangle(mapContext.getRotatedMapSize()),
             mapContext.getDPI());
 
-    return new LayerContext(tileInformation, tileInformation.getImageBufferScaling());
+    return new LayerContext(tileInformation, tileInformation.getImageBufferScaling(), null);
   }
 
   @Override
@@ -102,7 +101,7 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
 
     final CoverageTask task =
         new CoverageTask(
-            this.tilePreparationInfo,
+            layerContext.tilePreparationInfo(),
             getFailOnError(),
             this.registry,
             context,
@@ -127,7 +126,7 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
       MapBounds bounds, Rectangle paintArea, double dpi);
 
   @Override
-  public final void prefetchResources(
+  public final LayerContext prefetchResources(
       final HttpRequestFetcher httpRequestFetcher,
       final MfClientHttpRequestFactory clientHttpRequestFactory,
       final MapfishMapContext transformer,
@@ -142,6 +141,8 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
             layerContext.tileInformation(),
             httpRequestFetcher,
             context);
-    this.tilePreparationInfo = task.call();
+    TilePreparationInfo tilePreparationInfo = task.call();
+    return new LayerContext(
+        layerContext.tileInformation(), layerContext.scale(), tilePreparationInfo);
   }
 }

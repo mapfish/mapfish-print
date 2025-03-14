@@ -81,7 +81,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
   }
 
   @Override
-  public void prefetchResources(
+  public LayerContext prefetchResources(
       @Nonnull final HttpRequestFetcher httpRequestFetcher,
       @Nonnull final MfClientHttpRequestFactory requestFactory,
       @Nonnull final MapfishMapContext transformer,
@@ -111,6 +111,7 @@ public final class WmsLayer extends AbstractSingleImageLayer {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+    return layerContext;
   }
 
   public MetricRegistry getRegistry() {
@@ -125,6 +126,6 @@ public final class WmsLayer extends AbstractSingleImageLayer {
   public LayerContext prepareRender(
       final MapfishMapContext transformer,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
-    return new LayerContext(null, DEFAULT_SCALING);
+    return new LayerContext(null, DEFAULT_SCALING, null);
   }
 }

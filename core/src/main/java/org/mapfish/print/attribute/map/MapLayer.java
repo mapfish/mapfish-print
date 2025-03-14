@@ -6,6 +6,7 @@ import org.mapfish.print.http.HttpRequestFetcher;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.tiled.AbstractTiledLayerParams;
 import org.mapfish.print.map.tiled.TileInformation;
+import org.mapfish.print.map.tiled.TilePreparationInfo;
 import org.mapfish.print.processor.Processor;
 
 /** Encapsulates the data required to load map data for a layer and render it. */
@@ -24,11 +25,14 @@ public interface MapLayer {
   /**
    * To record all the data linked to a particular context of a Layer.
    *
-   * @param tileInformation the information linked to a context of a Layer
+   * @param tileInformation the information linked to a context of a Layer (if it exists)
    * @param scale the scaling factor to apply to the layer in this context
+   * @param tilePreparationInfo the information to prepare a tile (if it exists)
    */
   record LayerContext(
-      TileInformation<? extends AbstractTiledLayerParams> tileInformation, double scale) {}
+      TileInformation<? extends AbstractTiledLayerParams> tileInformation,
+      double scale,
+      TilePreparationInfo tilePreparationInfo) {}
 
   /**
    * Attempt to add the layer this layer so that both can be rendered as a single layer.
@@ -94,8 +98,9 @@ public interface MapLayer {
    * @param transformer transformer
    * @param context the job ID
    * @param layerContext the context of this layer
+   * @return the same layer context or one with updated contextual information
    */
-  void prefetchResources(
+  LayerContext prefetchResources(
       HttpRequestFetcher httpRequestFetcher,
       MfClientHttpRequestFactory clientHttpRequestFactory,
       MapfishMapContext transformer,

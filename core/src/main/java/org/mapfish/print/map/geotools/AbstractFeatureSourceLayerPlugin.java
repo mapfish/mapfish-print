@@ -3,12 +3,10 @@ package org.mapfish.print.map.geotools;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import org.geotools.api.data.FeatureSource;
-import org.geotools.api.style.Style;
 import org.locationtech.jts.geom.Geometry;
 import org.mapfish.print.OptionalUtils;
 import org.mapfish.print.SetsUtils;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.map.style.StyleParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,33 +51,29 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
    * @param template the template for this map
    * @param styleString a string that identifies a style.
    */
-  protected final StyleSupplier<FeatureSource> createStyleFunction(
+  protected final StyleSupplier<FeatureSource<?, ?>> createStyleFunction(
       final Template template, final String styleString) {
-    return new StyleSupplier<FeatureSource>() {
-      @Override
-      public Style load(
-          final MfClientHttpRequestFactory requestFactory, final FeatureSource featureSource) {
-        if (featureSource == null) {
-          throw new IllegalArgumentException("Feature source cannot be null");
-        }
-
-        final String geomType =
-            featureSource.getSchema() == null
-                ? Geometry.class.getSimpleName().toLowerCase()
-                : featureSource
-                    .getSchema()
-                    .getGeometryDescriptor()
-                    .getType()
-                    .getBinding()
-                    .getSimpleName();
-        final String styleRef = styleString != null ? styleString : geomType;
-
-        final StyleParser styleParser = AbstractFeatureSourceLayerPlugin.this.parser;
-        return OptionalUtils.or(
-                () -> template.getStyle(styleRef),
-                () -> styleParser.loadStyle(template.getConfiguration(), requestFactory, styleRef))
-            .orElseGet(() -> template.getConfiguration().getDefaultStyle(geomType));
+    return (requestFactory, featureSource) -> {
+      if (featureSource == null) {
+        throw new IllegalArgumentException("Feature source cannot be null");
       }
+
+      final String geomType =
+          featureSource.getSchema() == null
+              ? Geometry.class.getSimpleName().toLowerCase()
+              : featureSource
+                  .getSchema()
+                  .getGeometryDescriptor()
+                  .getType()
+                  .getBinding()
+                  .getSimpleName();
+      final String styleRef = styleString != null ? styleString : geomType;
+
+      final StyleParser styleParser = AbstractFeatureSourceLayerPlugin.this.parser;
+      return OptionalUtils.or(
+              () -> template.getStyle(styleRef),
+              () -> styleParser.loadStyle(template.getConfiguration(), requestFactory, styleRef))
+          .orElseGet(() -> template.getConfiguration().getDefaultStyle(geomType));
     };
   }
 

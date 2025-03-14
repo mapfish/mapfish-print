@@ -115,17 +115,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
           new RenderingHints(
               RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON));
 
-      graphics2D.addRenderingHints(hints);
-      renderer.setJava2DHints(hints);
-      Map<String, Object> renderHints = new HashMap<>();
-      if (transformer.isForceLongitudeFirst() != null) {
-        renderHints.put(
-            StreamingRenderer.FORCE_EPSG_AXIS_ORDER_KEY, transformer.isForceLongitudeFirst());
-      }
-      renderer.setRendererHints(renderHints);
-
-      renderer.setMapContent(content);
-      renderer.setThreadPool(this.executorService);
+      prepareLayerRendering(
+          transformer, graphics2D, content, renderer, hints, this.executorService);
 
       final ReferencedEnvelope mapArea =
           layerTransformer.getBounds().toReferencedEnvelope(paintArea);
@@ -138,6 +129,26 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     } finally {
       content.dispose();
     }
+  }
+
+  protected final void prepareLayerRendering(
+      final MapfishMapContext transformer,
+      final Graphics2D graphics,
+      final MapContent content,
+      final StreamingRenderer renderer,
+      final RenderingHints hints,
+      final ExecutorService executorService) {
+    graphics.addRenderingHints(hints);
+    renderer.setJava2DHints(hints);
+    Map<String, Object> renderHints = new HashMap<>();
+    if (transformer.isForceLongitudeFirst() != null) {
+      renderHints.put(
+          StreamingRenderer.FORCE_EPSG_AXIS_ORDER_KEY, transformer.isForceLongitudeFirst());
+    }
+    renderer.setRendererHints(renderHints);
+
+    renderer.setMapContent(content);
+    renderer.setThreadPool(executorService);
   }
 
   public double getOpacity() {
@@ -215,10 +226,12 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
   }
 
   @Override
-  public void prefetchResources(
+  public LayerContext prefetchResources(
       final HttpRequestFetcher httpRequestFetcher,
       final MfClientHttpRequestFactory clientHttpRequestFactory,
       final MapfishMapContext transformer,
       final Processor.ExecutionContext context,
-      final LayerContext layerContext) {}
+      final LayerContext layerContext) {
+    return layerContext;
+  }
 }

@@ -48,7 +48,7 @@ public final class GridLayer implements MapLayer {
   public GridLayer(
       final ExecutorService executorService,
       final FeatureSourceSupplier featureSourceSupplier,
-      final StyleSupplier<FeatureSource> styleSupplier,
+      final StyleSupplier<FeatureSource<?, ?>> styleSupplier,
       final boolean renderAsSvg,
       final GridParam params,
       final LabelPositionCollector labels) {
@@ -59,7 +59,7 @@ public final class GridLayer implements MapLayer {
           public LayerContext prepareRender(
               final MapfishMapContext transformer,
               final MfClientHttpRequestFactory clientHttpRequestFactory) {
-            return new LayerContext(null, DEFAULT_SCALING);
+            return new LayerContext(null, DEFAULT_SCALING, null);
           }
         };
     this.params = params;
@@ -75,7 +75,7 @@ public final class GridLayer implements MapLayer {
   public LayerContext prepareRender(
       final MapfishMapContext transformer,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
-    return new LayerContext(null, DEFAULT_SCALING);
+    return new LayerContext(null, DEFAULT_SCALING, null);
   }
 
   @Override
@@ -189,13 +189,13 @@ public final class GridLayer implements MapLayer {
   }
 
   @Override
-  public void prefetchResources(
+  public LayerContext prefetchResources(
       final HttpRequestFetcher httpRequestFetcher,
       final MfClientHttpRequestFactory clientHttpRequestFactory,
       final MapfishMapContext transformer,
       final Processor.ExecutionContext context,
       final LayerContext layerContext) {
-    this.grid.prefetchResources(
+    return this.grid.prefetchResources(
         httpRequestFetcher, clientHttpRequestFactory, transformer, context, layerContext);
   }
 

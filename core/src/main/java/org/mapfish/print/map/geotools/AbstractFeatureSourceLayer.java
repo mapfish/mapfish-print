@@ -25,7 +25,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
   private final Boolean renderAsSvg;
   private FeatureSourceSupplier featureSourceSupplier;
   private FeatureSource<?, ?> featureSource = null;
-  private StyleSupplier<FeatureSource> styleSupplier;
+  private StyleSupplier<FeatureSource<?, ?>> styleSupplier;
 
   /**
    * Constructor.
@@ -41,7 +41,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
   protected AbstractFeatureSourceLayer(
       final ExecutorService executorService,
       final FeatureSourceSupplier featureSourceSupplier,
-      final StyleSupplier<FeatureSource> styleSupplier,
+      final StyleSupplier<FeatureSource<?, ?>> styleSupplier,
       final boolean renderAsSvg,
       final AbstractLayerParams params) {
     super(executorService, params);
@@ -51,8 +51,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
     this.renderAsSvg = renderAsSvg;
   }
 
-  @SuppressWarnings("unchecked")
-  public final void setStyle(final StyleSupplier style) {
+  public final void setStyle(final StyleSupplier<FeatureSource<?, ?>> style) {
     this.styleSupplier = style;
   }
 
@@ -96,7 +95,7 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
         new FeatureSourceSupplier() {
           @Nonnull
           @Override
-          public FeatureSource load(
+          public FeatureSource<?, ?> load(
               @Nonnull final MfClientHttpRequestFactory requestFactory,
               @Nonnull final MapfishMapContext mapContext) {
             // GeoTools is not always thread safe. In particular the

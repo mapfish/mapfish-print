@@ -489,11 +489,13 @@ public final class CreateMapProcessor
     // prepare layers for rendering
     List<ContextualizedMapLayer> layersScaled = new ArrayList<>(layers.size());
     for (final MapLayer layer : layers) {
-      final MapLayer.LayerContext layerContext =
+      MapLayer.LayerContext layerContext =
           layer.prepareRender(mapContext, clientHttpRequestFactory);
-      layersScaled.add(new ContextualizedMapLayer(layer, layerContext));
       final MapfishMapContext transformer = getTransformer(mapContext, layerContext.scale());
-      layer.prefetchResources(cache, clientHttpRequestFactory, transformer, context, layerContext);
+      layerContext =
+          layer.prefetchResources(
+              cache, clientHttpRequestFactory, transformer, context, layerContext);
+      layersScaled.add(new ContextualizedMapLayer(layer, layerContext));
     }
     return layersScaled;
   }
