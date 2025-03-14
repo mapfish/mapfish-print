@@ -75,7 +75,8 @@ public abstract class AbstractFeatureSourceLayer extends AbstractGeotoolsLayer {
   public final List<? extends Layer> getLayers(
       @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
       @Nonnull final MapfishMapContext mapContext,
-      @Nonnull final Processor.ExecutionContext context) {
+      @Nonnull final Processor.ExecutionContext context,
+      final LayerContext layerContext) {
     FeatureSource<?, ?> source = getFeatureSource(httpRequestFactory, mapContext);
     Style style = this.styleSupplier.load(httpRequestFactory, source);
 

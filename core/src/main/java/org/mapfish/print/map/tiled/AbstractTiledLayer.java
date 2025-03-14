@@ -31,8 +31,6 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
   private final StyleSupplier<GridCoverage2D> styleSupplier;
   private final MetricRegistry registry;
   private final Configuration configuration;
-
-  private TileInformation<T> tileInformation;
   private TilePreparationInfo tilePreparationInfo;
 
   /**
@@ -86,7 +84,7 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
   public final LayerContext prepareRender(
       final MapfishMapContext mapContext,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
-    this.tileInformation =
+    TileInformation<T> tileInformation =
         createTileInformation(
             mapContext.getRotatedBoundsAdjustedForPreciseRotatedMapSize(),
             new Rectangle(mapContext.getRotatedMapSize()),
@@ -99,7 +97,8 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
   protected final List<? extends Layer> getLayers(
       final MfClientHttpRequestFactory httpRequestFactory,
       final MapfishMapContext mapContext,
-      final Processor.ExecutionContext context) {
+      final Processor.ExecutionContext context,
+      final LayerContext layerContext) {
 
     final CoverageTask task =
         new CoverageTask(
@@ -107,7 +106,7 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
             getFailOnError(),
             this.registry,
             context,
-            this.tileInformation,
+            layerContext.tileInformation(),
             this.configuration);
     final GridCoverage2D gridCoverage2D = task.call();
 
@@ -132,14 +131,15 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
       final HttpRequestFetcher httpRequestFetcher,
       final MfClientHttpRequestFactory clientHttpRequestFactory,
       final MapfishMapContext transformer,
-      final Processor.ExecutionContext context) {
+      final Processor.ExecutionContext context,
+      final LayerContext layerContext) {
     final MapfishMapContext layerTransformer = getLayerTransformer(transformer);
 
     final TilePreparationTask task =
         new TilePreparationTask(
             clientHttpRequestFactory,
             layerTransformer,
-            this.tileInformation,
+            layerContext.tileInformation(),
             httpRequestFetcher,
             context);
     this.tilePreparationInfo = task.call();

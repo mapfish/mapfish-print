@@ -66,7 +66,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
       final Graphics2D graphics2D,
       final MfClientHttpRequestFactory clientHttpRequestFactory,
       final MapfishMapContext transformer,
-      final Processor.ExecutionContext context) {
+      final Processor.ExecutionContext context,
+      final LayerContext layerContext) {
     java.awt.geom.AffineTransform originalTransform = graphics2D.getTransform();
 
     MapfishMapContext layerTransformer = getLayerTransformer(transformer);
@@ -79,7 +80,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     Rectangle paintArea = new Rectangle(layerTransformer.getMapSize());
     MapContent content = new MapContent();
     try {
-      List<? extends Layer> layers = getLayers(clientHttpRequestFactory, layerTransformer, context);
+      List<? extends Layer> layers =
+          getLayers(clientHttpRequestFactory, layerTransformer, context, layerContext);
       applyTransparency(layers);
 
       content.addLayers(layers);
@@ -164,11 +166,13 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
    * @param httpRequestFactory the factory for making http requests
    * @param transformer the map transformer
    * @param context the job ID
+   * @param layerContext the context of this layer
    */
   protected abstract List<? extends Layer> getLayers(
       MfClientHttpRequestFactory httpRequestFactory,
       MapfishMapContext transformer,
-      Processor.ExecutionContext context)
+      Processor.ExecutionContext context,
+      LayerContext layerContext)
       throws Exception;
 
   @Override
@@ -215,5 +219,6 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
       final HttpRequestFetcher httpRequestFetcher,
       final MfClientHttpRequestFactory clientHttpRequestFactory,
       final MapfishMapContext transformer,
-      final Processor.ExecutionContext context) {}
+      final Processor.ExecutionContext context,
+      final LayerContext layerContext) {}
 }

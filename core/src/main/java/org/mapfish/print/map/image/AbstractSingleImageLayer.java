@@ -79,7 +79,8 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
   protected final List<? extends Layer> getLayers(
       final MfClientHttpRequestFactory httpRequestFactory,
       final MapfishMapContext mapContext,
-      final Processor.ExecutionContext context) {
+      final Processor.ExecutionContext context,
+      final LayerContext layerContext) {
     BufferedImage image;
     try {
       image = loadImage(httpRequestFactory, mapContext);

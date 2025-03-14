@@ -17,6 +17,7 @@ import org.mapfish.print.processor.Processor;
 /** The AbstractGridCoverage2DReaderLayer class. */
 public abstract class AbstractGridCoverage2DReaderLayer extends AbstractGeotoolsLayer {
 
+  // TODO SR Remove class
   private final Function<MfClientHttpRequestFactory, @Nullable AbstractGridCoverage2DReader>
       coverage2DReaderSupplier;
   private final StyleSupplier<AbstractGridCoverage2DReader> styleSupplier;
@@ -44,7 +45,8 @@ public abstract class AbstractGridCoverage2DReaderLayer extends AbstractGeotools
   public final synchronized List<? extends Layer> getLayers(
       final MfClientHttpRequestFactory httpRequestFactory,
       final MapfishMapContext mapContext,
-      final Processor.ExecutionContext context) {
+      final Processor.ExecutionContext context,
+      final LayerContext layerContext) {
     AbstractGridCoverage2DReader coverage2DReader =
         this.coverage2DReaderSupplier.apply(httpRequestFactory);
     Style style = this.styleSupplier.load(httpRequestFactory, coverage2DReader);

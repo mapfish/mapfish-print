@@ -59,7 +59,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
     final List<? extends Layer> layers =
         layer.getLayers(
-            httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), CONTEXT);
+            httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), CONTEXT, null);
 
     assertEquals(1, layers.size());
 
@@ -88,7 +88,8 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
     MapfishParserTest.populateLayerParam(requestData, param, "type");
     geojsonLayerParser
         .parse(template, param)
-        .getLayers(httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), CONTEXT);
+        .getLayers(
+            httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), CONTEXT, null);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -104,7 +105,8 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
     param.geoJson = "file://../" + BASE_DIR + "/geojson.json";
     geojsonLayerParser
         .parse(template, param)
-        .getLayers(httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), CONTEXT);
+        .getLayers(
+            httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), CONTEXT, null);
   }
 
   @Test(expected = Exception.class)
@@ -125,7 +127,8 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
     MapfishParserTest.populateLayerParam(requestData, param, "type");
     geojsonLayerParser
         .parse(template, param)
-        .getLayers(httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), CONTEXT);
+        .getLayers(
+            httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), CONTEXT, null);
   }
 
   @Test
@@ -176,7 +179,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
     final List<? extends Layer> layers =
         mapLayer.getLayers(
-            httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), CONTEXT);
+            httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), CONTEXT, null);
 
     assertEquals(1, layers.size());
 
@@ -208,7 +211,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
     final List<? extends Layer> layers =
         mapLayer.getLayers(
-            httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), CONTEXT);
+            httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), CONTEXT, null);
 
     assertEquals(1, layers.size());
 

@@ -58,7 +58,7 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
     assertEquals(
         "Default Line",
         layer
-            .getLayers(httpClientFactory, mapContext, CONTEXT)
+            .getLayers(httpClientFactory, mapContext, CONTEXT, null)
             .get(0)
             .getStyle()
             .getDescription()

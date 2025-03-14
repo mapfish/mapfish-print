@@ -60,12 +60,14 @@ public interface MapLayer {
    * @param clientHttpRequestFactory The factory to use for making http requests.
    * @param transformer the map transformer containing the map bounds and size.
    * @param context the job ID
+   * @param layerContext the context of this layer
    */
   void render(
       Graphics2D graphics2D,
       MfClientHttpRequestFactory clientHttpRequestFactory,
       MapfishMapContext transformer,
-      Processor.ExecutionContext context);
+      Processor.ExecutionContext context,
+      LayerContext layerContext);
 
   /**
    * Indicate if the layer supports native rotation (e.g. WMS layers with the "angle" parameter).
@@ -91,12 +93,14 @@ public interface MapLayer {
    * @param clientHttpRequestFactory client http request factory
    * @param transformer transformer
    * @param context the job ID
+   * @param layerContext the context of this layer
    */
   void prefetchResources(
       HttpRequestFetcher httpRequestFetcher,
       MfClientHttpRequestFactory clientHttpRequestFactory,
       MapfishMapContext transformer,
-      Processor.ExecutionContext context);
+      Processor.ExecutionContext context,
+      LayerContext layerContext);
 
   /**
    * Gets the opacity.

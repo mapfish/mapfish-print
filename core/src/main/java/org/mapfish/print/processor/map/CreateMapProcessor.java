@@ -106,7 +106,8 @@ public final class CreateMapProcessor
   @Resource(name = "requestForkJoinPool")
   private ForkJoinPool requestForkJoinPool;
 
-  private record MapLayerScaled(MapLayer layer, double imageBufferScaling) {}
+  // TODO SR rename
+  private record MapLayerScaled(MapLayer layer, MapLayer.LayerContext layerContext) {}
 
   /** Constructor. */
   private CreateMapProcessor() {
@@ -491,9 +492,9 @@ public final class CreateMapProcessor
     for (final MapLayer layer : layers) {
       final MapLayer.LayerContext layerContext =
           layer.prepareRender(mapContext, clientHttpRequestFactory);
-      layersScaled.add(new MapLayerScaled(layer, layerContext.scale()));
+      layersScaled.add(new MapLayerScaled(layer, layerContext));
       final MapfishMapContext transformer = getTransformer(mapContext, layerContext.scale());
-      layer.prefetchResources(cache, clientHttpRequestFactory, transformer, context);
+      layer.prefetchResources(cache, clientHttpRequestFactory, transformer, context, layerContext);
     }
     return layersScaled;
   }
@@ -507,14 +508,19 @@ public final class CreateMapProcessor
       final AreaOfInterest areaOfInterest,
       final List<URI> graphics)
       throws ParserConfigurationException, IOException {
-    for (MapLayer layer : layerGroup.layers) {
+    for (MapLayerScaled mapLayerScaled : layerGroup.layers) {
       context.stopIfCanceled();
       final SVGGraphics2D graphics2D = createSvgGraphics(mapContext.getMapSize());
 
       try {
         final Graphics2D clippedGraphics2D =
             createClippedGraphics(mapContext, areaOfInterest, graphics2D);
-        layer.render(clippedGraphics2D, clientHttpRequestFactory, mapContext, context);
+        mapLayerScaled.layer.render(
+            clippedGraphics2D,
+            clientHttpRequestFactory,
+            mapContext,
+            context,
+            mapLayerScaled.layerContext);
 
         final File path = svgFileGenerator.generate();
         saveSvgFile(graphics2D, path);
@@ -535,10 +541,11 @@ public final class CreateMapProcessor
       final Graphics2D graphics2D)
       throws IOException {
     final MapfishMapContext transformer = getTransformer(mapContext, layerGroup.imageBufferScaling);
-    for (MapLayer cur : layerGroup.layers) {
+    for (MapLayerScaled mapLayerScaled : layerGroup.layers) {
       context.stopIfCanceled();
-      warnIfDifferentRenderType(layerGroup.renderType, cur, !pdfA);
-      cur.render(graphics2D, clientHttpRequestFactory, transformer, context);
+      warnIfDifferentRenderType(layerGroup.renderType, mapLayerScaled.layer, !pdfA);
+      mapLayerScaled.layer.render(
+          graphics2D, clientHttpRequestFactory, transformer, context, mapLayerScaled.layerContext);
     }
     imageWriter.writeImage();
   }
@@ -559,7 +566,7 @@ public final class CreateMapProcessor
       final FeatureLayer featureLayer =
           this.featureLayerPlugin.parse(mapValues.getTemplate(), param);
 
-      layers.add(new MapLayerScaled(featureLayer, featureLayer.getImageBufferScaling()));
+      layers.add(new MapLayerScaled(featureLayer, featureLayer.prepareRender(null, null)));
     }
     return areaOfInterest;
   }
@@ -778,7 +785,7 @@ public final class CreateMapProcessor
 
   /** Class that groups together layers that can end up in the same file. */
   private static final class LayerGroup {
-    public final List<MapLayer> layers = new ArrayList<>();
+    public final List<MapLayerScaled> layers = new ArrayList<>();
     public final RenderType renderType;
     public final double imageBufferScaling;
     public boolean opaque = false;
@@ -795,23 +802,26 @@ public final class CreateMapProcessor
         LOGGER.debug("Building groups of layers");
         for (int i = 0; i < layers.size(); ) {
           final RenderType renderType = getSupportedRenderType(layers.get(i).layer.getRenderType());
-          final double imageBufferScaling = layers.get(i).imageBufferScaling;
+          final double imageBufferScaling = layers.get(i).layerContext.scale();
           final LayerGroup group = new LayerGroup(renderType, imageBufferScaling);
-          MapLayer l = layers.get(i).layer;
+          MapLayerScaled l = layers.get(i);
           LOGGER.debug(
-              "New group for layer {}, {}", l.getRenderType(), layers.get(i).imageBufferScaling());
+              "New group for layer {}, {}",
+              l.layer.getRenderType(),
+              layers.get(i).layerContext.scale());
           group.opaque = (i == 0 && renderType == RenderType.JPEG);
 
           // Merge consecutive layers of same render type and same buffer scaling (native
           // resolution)
           while (i < layers.size()
               && getSupportedRenderType(layers.get(i).layer.getRenderType()) == renderType
-              && imageBufferScaling == layers.get(i).imageBufferScaling()) {
+              && imageBufferScaling == layers.get(i).layerContext.scale()) {
             // will always go there the first time
-            l = layers.get(i).layer;
-            LOGGER.debug("Adding layer: {} named: {} to the group", i, l.getName());
+            l = layers.get(i);
+            LOGGER.debug("Adding layer: {} named: {} to the group", i, l.layer.getName());
             group.layers.add(l);
-            group.opaque = group.opaque || (renderType == RenderType.JPEG && l.getOpacity() == 1.0);
+            group.opaque =
+                group.opaque || (renderType == RenderType.JPEG && l.layer.getOpacity() == 1.0);
             ++i;
           }
 
@@ -819,9 +829,9 @@ public final class CreateMapProcessor
         }
       } else {
         LOGGER.debug("Merging together all layers as a JPEG image of scaling 1");
-        final LayerGroup group = new LayerGroup(RenderType.JPEG, 1.0);
+        final LayerGroup group = new LayerGroup(RenderType.JPEG, MapLayer.DEFAULT_SCALING);
         group.opaque = true;
-        group.layers.addAll(layers.stream().map(MapLayerScaled::layer).toList());
+        group.layers.addAll(layers);
         result.add(group);
       }
 

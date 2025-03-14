@@ -85,7 +85,8 @@ public final class WmsLayer extends AbstractSingleImageLayer {
       @Nonnull final HttpRequestFetcher httpRequestFetcher,
       @Nonnull final MfClientHttpRequestFactory requestFactory,
       @Nonnull final MapfishMapContext transformer,
-      @Nonnull final Processor.ExecutionContext context) {
+      @Nonnull final Processor.ExecutionContext context,
+      @Nonnull final LayerContext layerContext) {
     try {
       final MapfishMapContext layerTransformer = getLayerTransformer(transformer);
 
