@@ -89,7 +89,7 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
             new Rectangle(mapContext.getRotatedMapSize()),
             mapContext.getDPI());
 
-    return new LayerContext(tileInformation, tileInformation.getImageBufferScaling(), null);
+    return new LayerContext(tileInformation.getImageBufferScaling(), tileInformation, null);
   }
 
   @Override
@@ -143,6 +143,6 @@ public abstract class AbstractTiledLayer<T extends AbstractTiledLayerParams>
             context);
     TilePreparationInfo tilePreparationInfo = task.call();
     return new LayerContext(
-        layerContext.tileInformation(), layerContext.scale(), tilePreparationInfo);
+        layerContext.scale(), layerContext.tileInformation(), tilePreparationInfo);
   }
 }

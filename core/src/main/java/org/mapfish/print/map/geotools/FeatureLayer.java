@@ -43,7 +43,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
   public LayerContext prepareRender(
       final MapfishMapContext transformer,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
-    return new LayerContext(null, getImageBufferScaling(), null);
+    return new LayerContext(getImageBufferScaling(), null, null);
   }
 
   public double getImageBufferScaling() {

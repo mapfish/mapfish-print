@@ -161,7 +161,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         LOGGER.error("Error while fetching image", e);
         image = createErrorImage(new Rectangle(1, 1));
         imageLoadError = true;
-        return new LayerContext(null, DEFAULT_SCALING, null);
+        return new LayerContext(DEFAULT_SCALING, null, null);
       }
     }
     imageLoadError = false;
@@ -175,7 +175,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
     double scale =
         Math.sqrt(
             (Math.pow(widthImageBufferScaling, 2) + Math.pow(heightImageBufferScaling, 2)) / 2);
-    return new LayerContext(null, scale, null);
+    return new LayerContext(scale, null, null);
   }
 
   private BufferedImage fetchLayerImage(

@@ -52,7 +52,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
   public LayerContext prepareRender(
       final MapfishMapContext transformer,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
-    return new LayerContext(null, DEFAULT_SCALING, null);
+    return new LayerContext(DEFAULT_SCALING, null, null);
   }
 
   /**

@@ -25,13 +25,13 @@ public interface MapLayer {
   /**
    * To record all the data linked to a particular context of a Layer.
    *
-   * @param tileInformation the information linked to a context of a Layer (if it exists)
    * @param scale the scaling factor to apply to the layer in this context
+   * @param tileInformation the information linked to a context of a Layer (if it exists)
    * @param tilePreparationInfo the information to prepare a tile (if it exists)
    */
   record LayerContext(
-      TileInformation<? extends AbstractTiledLayerParams> tileInformation,
       double scale,
+      TileInformation<? extends AbstractTiledLayerParams> tileInformation,
       TilePreparationInfo tilePreparationInfo) {}
 
   /**
