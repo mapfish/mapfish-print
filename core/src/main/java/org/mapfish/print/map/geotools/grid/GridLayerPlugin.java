@@ -3,10 +3,8 @@ package org.mapfish.print.map.geotools.grid;
 import java.util.concurrent.ForkJoinPool;
 import javax.annotation.Nonnull;
 import org.geotools.api.data.FeatureSource;
-import org.geotools.api.style.Style;
 import org.mapfish.print.OptionalUtils;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.AbstractFeatureSourceLayerPlugin;
 import org.mapfish.print.map.geotools.FeatureSourceSupplier;
 import org.mapfish.print.map.geotools.StyleSupplier;
@@ -37,7 +35,8 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
   public GridLayer parse(@Nonnull final Template template, @Nonnull final GridParam layerData) {
     LabelPositionCollector labels = new LabelPositionCollector();
     FeatureSourceSupplier featureSource = createFeatureSourceFunction(template, layerData, labels);
-    final StyleSupplier<FeatureSource> styleFunction = createStyleSupplier(template, layerData);
+    final StyleSupplier<FeatureSource<?, ?>> styleFunction =
+        createStyleSupplier(template, layerData);
     return new GridLayer(
         this.pool,
         featureSource,
@@ -47,20 +46,16 @@ public final class GridLayerPlugin extends AbstractFeatureSourceLayerPlugin<Grid
         labels);
   }
 
-  private StyleSupplier<FeatureSource> createStyleSupplier(
+  private StyleSupplier<FeatureSource<?, ?>> createStyleSupplier(
       final Template template, final GridParam layerData) {
-    return new StyleSupplier<FeatureSource>() {
-      @Override
-      public Style load(
-          final MfClientHttpRequestFactory requestFactory, final FeatureSource featureSource) {
-        String styleRef = layerData.style;
-        return OptionalUtils.or(
-                () -> template.getStyle(styleRef),
-                () ->
-                    GridLayerPlugin.super.parser.loadStyle(
-                        template.getConfiguration(), requestFactory, styleRef))
-            .orElseGet(() -> layerData.gridType.strategy.defaultStyle(template, layerData));
-      }
+    return (requestFactory, featureSource) -> {
+      String styleRef = layerData.style;
+      return OptionalUtils.or(
+              () -> template.getStyle(styleRef),
+              () ->
+                  GridLayerPlugin.super.parser.loadStyle(
+                      template.getConfiguration(), requestFactory, styleRef))
+          .orElseGet(() -> layerData.gridType.strategy.defaultStyle(template, layerData));
     };
   }
 

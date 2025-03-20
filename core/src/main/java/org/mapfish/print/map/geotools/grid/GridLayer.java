@@ -48,13 +48,20 @@ public final class GridLayer implements MapLayer {
   public GridLayer(
       final ExecutorService executorService,
       final FeatureSourceSupplier featureSourceSupplier,
-      final StyleSupplier<FeatureSource> styleSupplier,
+      final StyleSupplier<FeatureSource<?, ?>> styleSupplier,
       final boolean renderAsSvg,
       final GridParam params,
       final LabelPositionCollector labels) {
     this.grid =
         new AbstractFeatureSourceLayer(
-            executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params) {};
+            executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params) {
+          @Override
+          public LayerContext prepareRender(
+              final MapfishMapContext transformer,
+              final MfClientHttpRequestFactory clientHttpRequestFactory) {
+            return new LayerContext(DEFAULT_SCALING, null, null);
+          }
+        };
     this.params = params;
     this.labels = labels;
   }
@@ -65,27 +72,25 @@ public final class GridLayer implements MapLayer {
   }
 
   @Override
-  public double getImageBufferScaling() {
-    return 1.0;
-  }
-
-  @Override
-  public void prepareRender(
+  public LayerContext prepareRender(
       final MapfishMapContext transformer,
-      final MfClientHttpRequestFactory clientHttpRequestFactory) {}
+      final MfClientHttpRequestFactory clientHttpRequestFactory) {
+    return new LayerContext(DEFAULT_SCALING, null, null);
+  }
 
   @Override
   public void render(
       final Graphics2D graphics,
       final MfClientHttpRequestFactory clientHttpRequestFactory,
       final MapfishMapContext transformer,
-      final Processor.ExecutionContext context) {
+      final Processor.ExecutionContext context,
+      final LayerContext layerContext) {
     Graphics2D graphics2D = (Graphics2D) graphics.create();
     try {
       float haloRadius = (float) this.params.haloRadius;
       double dpiScaling = transformer.getDPI() / Constants.PDF_DPI;
 
-      this.grid.render(graphics2D, clientHttpRequestFactory, transformer, context);
+      this.grid.render(graphics2D, clientHttpRequestFactory, transformer, context, layerContext);
       Font baseFont = getBaseFont(dpiScaling);
       graphics2D.setFont(baseFont);
       int halfCharHeight = (graphics2D.getFontMetrics().getAscent() / 2);
@@ -175,7 +180,7 @@ public final class GridLayer implements MapLayer {
       @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
       @Nonnull final MapfishMapContext mapContext,
       @Nonnull final Processor.ExecutionContext context) {
-    return this.grid.getLayers(httpRequestFactory, mapContext, context);
+    return this.grid.getLayers(httpRequestFactory, mapContext, context, null);
   }
 
   @Override
@@ -184,12 +189,14 @@ public final class GridLayer implements MapLayer {
   }
 
   @Override
-  public void prefetchResources(
+  public LayerContext prefetchResources(
       final HttpRequestFetcher httpRequestFetcher,
       final MfClientHttpRequestFactory clientHttpRequestFactory,
       final MapfishMapContext transformer,
-      final Processor.ExecutionContext context) {
-    this.grid.prefetchResources(httpRequestFetcher, clientHttpRequestFactory, transformer, context);
+      final Processor.ExecutionContext context,
+      final LayerContext layerContext) {
+    return this.grid.prefetchResources(
+        httpRequestFetcher, clientHttpRequestFactory, transformer, context, layerContext);
   }
 
   @Override

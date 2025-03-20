@@ -11,7 +11,7 @@ import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.map.Scale;
 
 /**
- * Utility class that adjusts the bounds and the map size in case a rotation is set. Also it
+ * Utility class that adjusts the bounds and the map size in case a rotation is set. Also, it
  * provides an {@link AffineTransform} to render the layer graphics.
  */
 public final class MapfishMapContext {
@@ -173,8 +173,8 @@ public final class MapfishMapContext {
     final double adaptedHeight = envelope.getHeight() * heightRatio;
 
     final double widthDiff = adaptedWidth - envelope.getWidth();
-    final double heigthDiff = adaptedHeight - envelope.getHeight();
-    envelope.expandBy(widthDiff / 2.0, heigthDiff / 2.0);
+    final double heightDiff = adaptedHeight - envelope.getHeight();
+    envelope.expandBy(widthDiff / 2.0, heightDiff / 2.0);
 
     return new BBoxMapBounds(envelope);
   }
@@ -223,7 +223,7 @@ public final class MapfishMapContext {
    * <p>One of the output parameters of the {@link
    * org.mapfish.print.processor.map.CreateMapProcessor} is 'mapContext' which can be accessed in a
    * template. If the scale is required in the template then it can be accessed via: <code>
-   * $P{mapContext}.getRoundedScaleDenominato()</code>
+   * $P{mapContext}.getRoundedScaleDenominator()</code>
    *
    * @param geodetic Get geodetic scale
    */
@@ -306,7 +306,7 @@ public final class MapfishMapContext {
     // then rotate around this center
     transform.rotate(this.rotation);
 
-    // then move to an artificial origin (0,0) which might be outside of the actual
+    // then move to an artificial origin (0,0) which might be outside the actual
     // painting area. this origin still keeps the center of the original map area
     // at the center of the rotated map area.
     transform.translate(-rotatedMapSize.width / 2, -rotatedMapSize.height / 2);
@@ -342,7 +342,7 @@ public final class MapfishMapContext {
     return new Rectangle(this.mapSize);
   }
 
-  @Nullable
+  @Nonnull
   public Boolean isForceLongitudeFirst() {
     return this.forceLongitudeFirst;
   }

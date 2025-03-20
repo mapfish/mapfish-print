@@ -18,13 +18,13 @@ import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.image.wms.WmsLayer;
 import org.mapfish.print.map.image.wms.WmsUtilities;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
-import org.mapfish.print.map.tiled.TileCacheInformation;
+import org.mapfish.print.map.tiled.TileInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.client.ClientHttpRequest;
 
 /** Strategy object for rendering WMS based layers . */
-public final class TiledWmsLayer extends AbstractTiledLayer {
+public final class TiledWmsLayer extends AbstractTiledLayer<TiledWmsLayerParam> {
   private static final Logger LOGGER = LoggerFactory.getLogger(TiledWmsLayer.class);
   private final TiledWmsLayerParam param;
 
@@ -52,8 +52,8 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
    *
    * @param wmsLayer The source layer
    * @param tileSize The size of the tiles
-   * @param tileBufferWidth The width of the the buffer tile for meta tile
-   * @param tileBufferHeight The height of the the buffer tile for meta tile
+   * @param tileBufferWidth The width of the buffer tile for meta tile
+   * @param tileBufferHeight The height of the buffer tile for meta tile
    */
   public TiledWmsLayer(
       final WmsLayer wmsLayer,
@@ -76,9 +76,9 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
   }
 
   @Override
-  protected TileCacheInformation createTileInformation(
+  protected TileInformation<TiledWmsLayerParam> createTileInformation(
       final MapBounds bounds, final Rectangle paintArea, final double dpi) {
-    return new WmsTileCacheInformation(bounds, paintArea, dpi);
+    return new WmsTileInformation(bounds, paintArea, dpi, getParams());
   }
 
   @Override
@@ -86,11 +86,15 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
     return RenderType.fromMimeType(this.param.imageFormat);
   }
 
-  private final class WmsTileCacheInformation extends TileCacheInformation {
+  private static final class WmsTileInformation extends TileInformation<TiledWmsLayerParam> {
+    private record CroppedStuff(ReferencedEnvelope tileBounds, Dimension sizeOnScreen) {}
 
-    private WmsTileCacheInformation(
-        final MapBounds bounds, final Rectangle paintArea, final double dpi) {
-      super(bounds, paintArea, dpi, TiledWmsLayer.this.param);
+    private WmsTileInformation(
+        final MapBounds bounds,
+        final Rectangle paintArea,
+        final double dpi,
+        final TiledWmsLayerParam param) {
+      super(bounds, paintArea, dpi, param);
     }
 
     @Nonnull
@@ -108,21 +112,25 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
 
       final URI uri =
           WmsUtilities.makeWmsGetLayerRequest(
-              TiledWmsLayer.this.param,
+              getParams(),
               new URI(commonUrl),
               croppedStuff.sizeOnScreen,
               this.dpi,
               0.0,
               croppedStuff.tileBounds);
       LOGGER.info("Tiled WMS query: {}", uri);
-      return WmsUtilities.createWmsRequest(
-          httpRequestFactory, uri, TiledWmsLayer.this.param.method);
+      return WmsUtilities.createWmsRequest(httpRequestFactory, uri, getParams().method);
+    }
+
+    @Override
+    protected double getImageBufferScaling() {
+      return DEFAULT_SCALING;
     }
 
     private CroppedStuff cropOutOfBoundTiles(
         final ReferencedEnvelope tileBounds, final Dimension sizeOnScreen) {
       // the way the tiles are build makes that we go out of bounds only on the right and on the top
-      final ReferencedEnvelope mapBounds = getTileCacheBounds();
+      final ReferencedEnvelope mapBounds = getTileBounds();
       ReferencedEnvelope croppedTileBounds;
       Dimension croppedSizeOnScreen;
       if (tileBounds.getMaxX() > mapBounds.getMaxX()) {
@@ -162,8 +170,8 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
 
     @Override
     public double getResolution() {
-      final ReferencedEnvelope cacheBounds = getTileCacheBounds();
-      return cacheBounds.getWidth() / this.paintArea.width;
+      final ReferencedEnvelope tileBounds = getTileBounds();
+      return tileBounds.getWidth() / this.paintArea.width;
     }
 
     @Override
@@ -173,35 +181,24 @@ public final class TiledWmsLayer extends AbstractTiledLayer {
 
     @Override
     public Dimension getTileSize() {
-      return TiledWmsLayer.this.param.getTileSize();
+      return getParams().getTileSize();
     }
 
     @Override
     public int getTileBufferHeight() {
-      return TiledWmsLayer.this.param.getTileBufferHeight();
+      return getParams().getTileBufferHeight();
     }
 
     @Override
     public int getTileBufferWidth() {
-      return TiledWmsLayer.this.param.getTileBufferWidth();
+      return getParams().getTileBufferWidth();
     }
 
     @Nonnull
     @Override
-    protected ReferencedEnvelope getTileCacheBounds() {
+    protected ReferencedEnvelope getTileBounds() {
       return new ReferencedEnvelope(
           this.bounds.toReferencedEnvelope(paintArea), this.bounds.getProjection());
-    }
-
-    /** Just to work around language limitation (cannot return 2 values). */
-    private final class CroppedStuff {
-      final ReferencedEnvelope tileBounds;
-      final Dimension sizeOnScreen;
-
-      private CroppedStuff(final ReferencedEnvelope tileBounds, final Dimension sizeOnScreen) {
-        this.tileBounds = tileBounds;
-        this.sizeOnScreen = sizeOnScreen;
-      }
     }
   }
 }

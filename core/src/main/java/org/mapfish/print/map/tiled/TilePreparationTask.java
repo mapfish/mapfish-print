@@ -36,33 +36,33 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
   private final MapBounds bounds;
   private final Rectangle paintArea;
   private final MapfishMapContext transformer;
-  private final TileCacheInformation tiledLayer;
+  private final TileInformation<? extends AbstractTiledLayerParams> tiledLayer;
   private final Processor.ExecutionContext context;
   private final MfClientHttpRequestFactory httpRequestFactory;
-  private final HttpRequestFetcher requestCache;
-  private Optional<Geometry> cachedRotatedMapBounds = Optional.empty();
+  private final HttpRequestFetcher request;
+  private Optional<Geometry> rotatedMapBounds = Optional.empty();
 
   /**
    * Constructor.
    *
    * @param httpRequestFactory the factory to use for making http requests
    * @param transformer a transformer for making calculations
-   * @param tileCacheInfo the object used to create the tile requests
-   * @param requestCache request cache
+   * @param tileInformation the object used to create the tile requests
+   * @param request request
    * @param context the job ID
    */
   public TilePreparationTask(
       @Nonnull final MfClientHttpRequestFactory httpRequestFactory,
       @Nonnull final MapfishMapContext transformer,
-      @Nonnull final TileCacheInformation tileCacheInfo,
-      final HttpRequestFetcher requestCache,
+      @Nonnull final TileInformation<? extends AbstractTiledLayerParams> tileInformation,
+      final HttpRequestFetcher request,
       @Nonnull final Processor.ExecutionContext context) {
-    this.requestCache = requestCache;
+    this.request = request;
     this.bounds = transformer.getBounds();
     this.paintArea = new Rectangle(transformer.getMapSize());
     this.httpRequestFactory = httpRequestFactory;
     this.transformer = transformer;
-    this.tiledLayer = tileCacheInfo;
+    this.tiledLayer = tileInformation;
     this.context = context;
   }
 
@@ -97,7 +97,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
 
             final String commonUrl = this.tiledLayer.createCommonUrl();
 
-            ReferencedEnvelope tileCacheBounds = this.tiledLayer.getTileCacheBounds();
+            ReferencedEnvelope tileCacheBounds = this.tiledLayer.getTileBounds();
             double rowFactor = 1 / (resolution * tileSizeOnScreen.height);
             double columnFactor = 1 / (resolution * tileSizeOnScreen.width);
 
@@ -161,7 +161,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
                         row);
                 if (isInTileCacheBounds(tileCacheBounds, tileBounds)) {
                   if (isTileVisible(tileBounds)) {
-                    tileRequest = this.requestCache.register(tileRequest);
+                    tileRequest = this.request.register(tileRequest);
                     tiles.add(new SingleTilePreparationInfo(xIndex, yIndex, tileRequest));
                   }
                 } else {
@@ -207,7 +207,7 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
         && boundsMinX <= tileCacheBounds.getMaxX()
         && boundsMinY >= tileCacheBounds.getMinY()
         && boundsMinY <= tileCacheBounds.getMaxY();
-    // we don't use maxX and maxY since tilecache doesn't seems to care about those...
+    // we don't use maxX and maxY since tilecache doesn't seem to care about those...
   }
 
   /**
@@ -232,8 +232,8 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
 
   private Optional<Geometry> getRotatedMapBounds(final GeometryFactory gfac) {
 
-    if (this.cachedRotatedMapBounds.isPresent()) {
-      return this.cachedRotatedMapBounds;
+    if (this.rotatedMapBounds.isPresent()) {
+      return this.rotatedMapBounds;
     }
 
     // get the bounds for the unrotated map area
@@ -250,14 +250,14 @@ public final class TilePreparationTask implements Callable<TilePreparationInfo> 
 
     try {
       final Geometry rotatedBounds = JTS.transform(gfac.toGeometry(mapBounds), mathTransform);
-      this.cachedRotatedMapBounds = Optional.of(rotatedBounds);
+      this.rotatedMapBounds = Optional.of(rotatedBounds);
     } catch (TransformException e) {
       if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Failed to rotate map bounds: {}", mapBounds.toString(), e);
+        LOGGER.debug("Failed to rotate map bounds: {}", mapBounds, e);
       }
-      this.cachedRotatedMapBounds = Optional.empty();
+      this.rotatedMapBounds = Optional.empty();
     }
 
-    return this.cachedRotatedMapBounds;
+    return this.rotatedMapBounds;
   }
 }

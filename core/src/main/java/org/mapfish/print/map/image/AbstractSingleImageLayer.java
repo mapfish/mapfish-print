@@ -79,7 +79,8 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
   protected final List<? extends Layer> getLayers(
       final MfClientHttpRequestFactory httpRequestFactory,
       final MapfishMapContext mapContext,
-      final Processor.ExecutionContext context) {
+      final Processor.ExecutionContext context,
+      final LayerContext layerContext) {
     BufferedImage image;
     try {
       image = loadImage(httpRequestFactory, mapContext);
@@ -113,11 +114,6 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
    */
   protected abstract BufferedImage loadImage(
       MfClientHttpRequestFactory requestFactory, MapfishMapContext transformer) throws Exception;
-
-  @Override
-  public double getImageBufferScaling() {
-    return 1;
-  }
 
   public StyleSupplier<GridCoverage2D> getStyleSupplier() {
     return styleSupplier;

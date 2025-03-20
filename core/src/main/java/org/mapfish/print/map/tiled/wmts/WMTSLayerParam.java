@@ -4,6 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.URIUtils;
@@ -133,7 +134,7 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
         return false;
       }
       try {
-        WMTSLayer.createRestURI("matrix", 0, 0, this);
+        createRestURI("matrix", 0, 0);
         return true;
       } catch (URISyntaxException exc) {
         LOGGER.warn("URL {} is invalid: {}", url, exc.getMessage());
@@ -146,5 +147,58 @@ public final class WMTSLayerParam extends AbstractWMXLayerParams {
 
   private boolean containsVariables(final String url) {
     return url.contains("{TileMatrix}") && url.contains("{TileRow}") && url.contains("{TileCol}");
+  }
+
+  /**
+   * Prepare the baseURL to make a request.
+   *
+   * @param matrixId matrixId
+   * @param row row
+   * @param col cold
+   */
+  URI createRestURI(final String matrixId, final int row, final int col) throws URISyntaxException {
+    String path = baseURL;
+    if (dimensions != null) {
+      for (String dimension : dimensions) {
+        String value = dimensionParams.optString(dimension);
+        if (value == null) {
+          value = dimensionParams.getString(dimension.toUpperCase());
+        }
+        path = path.replace("{" + dimension + "}", value);
+      }
+    }
+    path = path.replaceAll("(?i)" + Pattern.quote("{TileMatrixSet}"), matrixSet);
+    path = path.replaceAll("(?i)" + Pattern.quote("{TileMatrix}"), matrixId);
+    path = path.replaceAll("(?i)" + Pattern.quote("{TileRow}"), String.valueOf(row));
+    path = path.replaceAll("(?i)" + Pattern.quote("{TileCol}"), String.valueOf(col));
+    path = path.replaceAll("(?i)" + Pattern.quote("{style}"), style);
+    path = path.replaceAll("(?i)" + Pattern.quote("{Layer}"), layer);
+
+    return new URI(path);
+  }
+
+  URI createKVPUri(
+      final URI commonURI, final int row, final int col, final String matrixIdentifier) {
+    final Multimap<String, String> queryParams = URIUtils.getParameters(commonURI);
+    queryParams.put("SERVICE", "WMTS");
+    queryParams.put("REQUEST", "GetTile");
+    queryParams.put("VERSION", version);
+    queryParams.put("LAYER", layer);
+    queryParams.put("STYLE", style);
+    queryParams.put("TILEMATRIXSET", matrixSet);
+    queryParams.put("TILEMATRIX", matrixIdentifier);
+    queryParams.put("TILEROW", String.valueOf(row));
+    queryParams.put("TILECOL", String.valueOf(col));
+    queryParams.put("FORMAT", imageFormat);
+    if (dimensions != null) {
+      for (String d : dimensions) {
+        String dimensionValue = dimensionParams.optString(d);
+        if (dimensionValue == null) {
+          dimensionValue = dimensionParams.getString(d.toUpperCase());
+        }
+        queryParams.put(d, dimensionValue);
+      }
+    }
+    return URIUtils.setQueryParams(commonURI, queryParams);
   }
 }

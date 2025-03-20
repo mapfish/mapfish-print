@@ -16,15 +16,12 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
-import org.mapfish.print.map.tiled.TileCacheInformation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mapfish.print.map.tiled.TileInformation;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 
 /** Strategy object for rendering Osm based layers. */
-public final class OsmLayer extends AbstractTiledLayer {
-  private static final Logger LOGGER = LoggerFactory.getLogger(OsmLayer.class);
+public final class OsmLayer extends AbstractTiledLayer<OsmLayerParam> {
   private final OsmLayerParam param;
 
   /**
@@ -47,9 +44,9 @@ public final class OsmLayer extends AbstractTiledLayer {
   }
 
   @Override
-  protected TileCacheInformation createTileInformation(
+  protected TileInformation<OsmLayerParam> createTileInformation(
       final MapBounds bounds, final Rectangle paintArea, final double dpi) {
-    return new OsmTileCacheInformation(bounds, paintArea, dpi);
+    return new OsmTileInformation(bounds, paintArea, dpi, this.param);
   }
 
   @Override
@@ -57,30 +54,39 @@ public final class OsmLayer extends AbstractTiledLayer {
     return RenderType.fromFileExtension(this.param.imageExtension);
   }
 
-  private final class OsmTileCacheInformation extends TileCacheInformation {
+  private static final class OsmTileInformation extends TileInformation<OsmLayerParam> {
     private final double resolution;
     private final int resolutionIndex;
+    private final double imageBufferScaling;
 
-    private OsmTileCacheInformation(
-        final MapBounds bounds, final Rectangle paintArea, final double dpi) {
-      super(bounds, paintArea, dpi, OsmLayer.this.param);
+    private OsmTileInformation(
+        final MapBounds bounds,
+        final Rectangle paintArea,
+        final double dpi,
+        final OsmLayerParam layerParameter) {
+      super(bounds, paintArea, dpi, layerParameter);
 
       final double targetResolution = bounds.getScale(paintArea, dpi).getResolution();
-
-      Double[] resolutions = OsmLayer.this.param.resolutions;
+      double ibf = DEFAULT_SCALING;
+      Double[] resolutions = getParams().resolutions;
       int pos = resolutions.length - 1;
       double result = resolutions[pos];
       for (int i = resolutions.length - 1; i >= 0; --i) {
         double cur = resolutions[i];
-        if (cur <= targetResolution * OsmLayer.this.param.resolutionTolerance) {
+        if (cur <= targetResolution * getParams().resolutionTolerance) {
           result = cur;
           pos = i;
-          OsmLayer.this.imageBufferScaling = cur / targetResolution;
+          ibf = cur / targetResolution;
         }
       }
-
+      imageBufferScaling = ibf;
       this.resolution = result;
       this.resolutionIndex = pos;
+    }
+
+    @Override
+    public double getImageBufferScaling() {
+      return imageBufferScaling;
     }
 
     @Nonnull
@@ -98,18 +104,7 @@ public final class OsmLayer extends AbstractTiledLayer {
       if (commonUrl.contains("{x}")
           && commonUrl.contains("{z}")
           && (commonUrl.contains("{y}") || commonUrl.contains("{-y}"))) {
-        String url =
-            commonUrl
-                .replace("{z}", Integer.toString(this.resolutionIndex))
-                .replace("{x}", Integer.toString(column))
-                .replace("{y}", Integer.toString(row));
-        if (commonUrl.contains("{-y}")) {
-          // {-y} is for  OSGeo TMS layers, see also: https://josm.openstreetmap
-          // .de/wiki/Maps#TileMapServicesTMS
-          url =
-              url.replace(
-                  "{-y}", Integer.toString((int) Math.pow(2, this.resolutionIndex) - 1 - row));
-        }
+        String url = generateTileUrl(commonUrl, column, row);
         uri = new URI(url);
       } else {
         StringBuilder path = new StringBuilder();
@@ -119,17 +114,33 @@ public final class OsmLayer extends AbstractTiledLayer {
         path.append(this.resolutionIndex);
         path.append('/').append(column);
         path.append('/').append(row);
-        path.append('.').append(OsmLayer.this.param.imageExtension);
+        path.append('.').append(getParams().imageExtension);
 
-        uri = new URI(commonUrl + path.toString());
+        uri = new URI(commonUrl + path);
       }
 
       return httpRequestFactory.createRequest(
           URIUtils.addParams(
               uri,
-              OsmLayerParam.convertToMultiMap(OsmLayer.this.param.customParams),
+              OsmLayerParam.convertToMultiMap(getParams().customParams),
               URIUtils.getParameters(uri).keySet()),
           HttpMethod.GET);
+    }
+
+    private String generateTileUrl(final String commonUrl, final int column, final int row) {
+      String url =
+          commonUrl
+              .replace("{z}", Integer.toString(this.resolutionIndex))
+              .replace("{x}", Integer.toString(column))
+              .replace("{y}", Integer.toString(row));
+      if (commonUrl.contains("{-y}")) {
+        // {-y} is for  OSGeo TMS layers, see also: https://josm.openstreetmap
+        // .de/wiki/Maps#TileMapServicesTMS
+        url =
+            url.replace(
+                "{-y}", Integer.toString((int) Math.pow(2, this.resolutionIndex) - 1 - row));
+      }
+      return url;
     }
 
     @Override
@@ -139,19 +150,18 @@ public final class OsmLayer extends AbstractTiledLayer {
 
     @Override
     public Double getLayerDpi() {
-      return OsmLayer.this.param.dpi;
+      return getParams().dpi;
     }
 
     @Override
     public Dimension getTileSize() {
-      return OsmLayer.this.param.getTileSize();
+      return getParams().getTileSize();
     }
 
     @Nonnull
     @Override
-    protected ReferencedEnvelope getTileCacheBounds() {
-      return new ReferencedEnvelope(
-          OsmLayer.this.param.getMaxExtent(), this.bounds.getProjection());
+    protected ReferencedEnvelope getTileBounds() {
+      return new ReferencedEnvelope(getParams().getMaxExtent(), this.bounds.getProjection());
     }
   }
 }

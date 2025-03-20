@@ -62,16 +62,12 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
   }
 
   @Override
-  public void prepareRender(
-      final MapfishMapContext transformer,
-      final MfClientHttpRequestFactory clientHttpRequestFactory) {}
-
-  @Override
   public final void render(
       final Graphics2D graphics2D,
       final MfClientHttpRequestFactory clientHttpRequestFactory,
       final MapfishMapContext transformer,
-      final Processor.ExecutionContext context) {
+      final Processor.ExecutionContext context,
+      final LayerContext layerContext) {
     java.awt.geom.AffineTransform originalTransform = graphics2D.getTransform();
 
     MapfishMapContext layerTransformer = getLayerTransformer(transformer);
@@ -84,7 +80,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     Rectangle paintArea = new Rectangle(layerTransformer.getMapSize());
     MapContent content = new MapContent();
     try {
-      List<? extends Layer> layers = getLayers(clientHttpRequestFactory, layerTransformer, context);
+      List<? extends Layer> layers =
+          getLayers(clientHttpRequestFactory, layerTransformer, context, layerContext);
       applyTransparency(layers);
 
       content.addLayers(layers);
@@ -118,17 +115,8 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
           new RenderingHints(
               RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON));
 
-      graphics2D.addRenderingHints(hints);
-      renderer.setJava2DHints(hints);
-      Map<String, Object> renderHints = new HashMap<>();
-      if (transformer.isForceLongitudeFirst() != null) {
-        renderHints.put(
-            StreamingRenderer.FORCE_EPSG_AXIS_ORDER_KEY, transformer.isForceLongitudeFirst());
-      }
-      renderer.setRendererHints(renderHints);
-
-      renderer.setMapContent(content);
-      renderer.setThreadPool(this.executorService);
+      prepareLayerRendering(
+          transformer, graphics2D, content, renderer, hints, this.executorService);
 
       final ReferencedEnvelope mapArea =
           layerTransformer.getBounds().toReferencedEnvelope(paintArea);
@@ -141,6 +129,26 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
     } finally {
       content.dispose();
     }
+  }
+
+  protected final void prepareLayerRendering(
+      final MapfishMapContext transformer,
+      final Graphics2D graphics,
+      final MapContent content,
+      final StreamingRenderer renderer,
+      final RenderingHints hints,
+      final ExecutorService executorService) {
+    graphics.addRenderingHints(hints);
+    renderer.setJava2DHints(hints);
+    Map<String, Object> renderHints = new HashMap<>();
+    if (transformer.isForceLongitudeFirst() != null) {
+      renderHints.put(
+          StreamingRenderer.FORCE_EPSG_AXIS_ORDER_KEY, transformer.isForceLongitudeFirst());
+    }
+    renderer.setRendererHints(renderHints);
+
+    renderer.setMapContent(content);
+    renderer.setThreadPool(executorService);
   }
 
   public double getOpacity() {
@@ -169,11 +177,13 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
    * @param httpRequestFactory the factory for making http requests
    * @param transformer the map transformer
    * @param context the job ID
+   * @param layerContext the context of this layer
    */
   protected abstract List<? extends Layer> getLayers(
       MfClientHttpRequestFactory httpRequestFactory,
       MapfishMapContext transformer,
-      Processor.ExecutionContext context)
+      Processor.ExecutionContext context,
+      LayerContext layerContext)
       throws Exception;
 
   @Override
@@ -216,9 +226,12 @@ public abstract class AbstractGeotoolsLayer implements MapLayer {
   }
 
   @Override
-  public void prefetchResources(
+  public LayerContext prefetchResources(
       final HttpRequestFetcher httpRequestFetcher,
       final MfClientHttpRequestFactory clientHttpRequestFactory,
       final MapfishMapContext transformer,
-      final Processor.ExecutionContext context) {}
+      final Processor.ExecutionContext context,
+      final LayerContext layerContext) {
+    return layerContext;
+  }
 }

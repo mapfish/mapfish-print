@@ -12,8 +12,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
@@ -46,7 +44,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 
 /**
- * Reads a image file from an URL.
+ * Reads an image file from a URL.
  *
  * @author MaxComse on 11/08/16.
  */
@@ -56,7 +54,6 @@ public final class ImageLayer extends AbstractSingleImageLayer {
   private final StyleSupplier<GridCoverage2D> styleSupplier;
   private final ExecutorService executorService;
   private final RenderType renderType;
-  private double imageBufferScaling;
   private BufferedImage image;
   private boolean imageLoadError = false;
   private static final Logger LOGGER = LoggerFactory.getLogger(ImageLayer.class);
@@ -70,7 +67,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
    * @param configuration the configuration.
    * @param registry the metrics object.
    */
-  protected ImageLayer(
+  private ImageLayer(
       @Nonnull final ExecutorService executorService,
       @Nonnull final StyleSupplier<GridCoverage2D> styleSupplier,
       @Nonnull final ImageParam params,
@@ -129,17 +126,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
       hints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
       hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-      graphics.addRenderingHints(hints);
-      renderer.setJava2DHints(hints);
-      Map<String, Object> renderHints = new HashMap<>();
-      if (transformer.isForceLongitudeFirst() != null) {
-        renderHints.put(
-            StreamingRenderer.FORCE_EPSG_AXIS_ORDER_KEY, transformer.isForceLongitudeFirst());
-      }
-      renderer.setRendererHints(renderHints);
-
-      renderer.setMapContent(content);
-      renderer.setThreadPool(this.executorService);
+      prepareLayerRendering(transformer, graphics, content, renderer, hints, this.executorService);
 
       renderer.paint(graphics, paintArea, envelope);
       return bufferedImage;
@@ -162,12 +149,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
   }
 
   @Override
-  public double getImageBufferScaling() {
-    return imageBufferScaling;
-  }
-
-  @Override
-  public void prepareRender(
+  public LayerContext prepareRender(
       final MapfishMapContext transformer,
       final MfClientHttpRequestFactory clientHttpRequestFactory) {
     try {
@@ -179,8 +161,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
         LOGGER.error("Error while fetching image", e);
         image = createErrorImage(new Rectangle(1, 1));
         imageLoadError = true;
-        imageBufferScaling = 1;
-        return;
+        return new LayerContext(DEFAULT_SCALING, null, null);
       }
     }
     imageLoadError = false;
@@ -191,16 +172,16 @@ public final class ImageLayer extends AbstractSingleImageLayer {
 
     double widthImageBufferScaling = paintArea.getWidth() / transformer.getMapSize().getWidth();
     double heightImageBufferScaling = paintArea.getHeight() / transformer.getMapSize().getHeight();
-    imageBufferScaling =
+    double scale =
         Math.sqrt(
             (Math.pow(widthImageBufferScaling, 2) + Math.pow(heightImageBufferScaling, 2)) / 2);
+    return new LayerContext(scale, null, null);
   }
 
   private BufferedImage fetchLayerImage(
       final MapfishMapContext transformer,
       final MfClientHttpRequestFactory clientHttpRequestFactory)
       throws URISyntaxException, IOException {
-    BufferedImage image;
     final URI commonUri = new URI(this.params.getBaseUrl());
     final ClientHttpRequest request =
         clientHttpRequestFactory.createRequest(commonUri, HttpMethod.GET);
@@ -234,7 +215,7 @@ public final class ImageLayer extends AbstractSingleImageLayer {
       String styleRef = layerData.style;
       return new ImageLayer(
           this.forkJoinPool,
-          super.<GridCoverage2D>createStyleSupplier(template, styleRef),
+          super.createStyleSupplier(template, styleRef),
           layerData,
           template.getConfiguration(),
           metricRegistry);

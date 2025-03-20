@@ -106,6 +106,8 @@ public final class CreateMapProcessor
   @Resource(name = "requestForkJoinPool")
   private ForkJoinPool requestForkJoinPool;
 
+  private record ContextualizedMapLayer(MapLayer layer, MapLayer.LayerContext layerContext) {}
+
   /** Constructor. */
   private CreateMapProcessor() {
     super(Output.class);
@@ -383,7 +385,7 @@ public final class CreateMapProcessor
       final ExecutionContext context,
       final MapfishMapContext mapContext)
       throws IOException, ParserConfigurationException {
-    final List<MapLayer> layers =
+    final List<ContextualizedMapLayer> layers =
         prepareLayers(printDirectory, clientHttpRequestFactory, mapValues, context, mapContext);
 
     final AreaOfInterest areaOfInterest = addAreaOfInterestLayer(mapValues, layers);
@@ -470,7 +472,7 @@ public final class CreateMapProcessor
         needTransparency ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
   }
 
-  private List<MapLayer> prepareLayers(
+  private List<ContextualizedMapLayer> prepareLayers(
       final File printDirectory,
       final MfClientHttpRequestFactory clientHttpRequestFactory,
       final MapAttributeValues mapValues,
@@ -485,13 +487,17 @@ public final class CreateMapProcessor
             printDirectory, this.metricRegistry, context, this.requestForkJoinPool);
 
     // prepare layers for rendering
+    List<ContextualizedMapLayer> layersScaled = new ArrayList<>(layers.size());
     for (final MapLayer layer : layers) {
-      layer.prepareRender(mapContext, clientHttpRequestFactory);
-      final MapfishMapContext transformer =
-          getTransformer(mapContext, layer.getImageBufferScaling());
-      layer.prefetchResources(cache, clientHttpRequestFactory, transformer, context);
+      MapLayer.LayerContext layerContext =
+          layer.prepareRender(mapContext, clientHttpRequestFactory);
+      final MapfishMapContext transformer = getTransformer(mapContext, layerContext.scale());
+      layerContext =
+          layer.prefetchResources(
+              cache, clientHttpRequestFactory, transformer, context, layerContext);
+      layersScaled.add(new ContextualizedMapLayer(layer, layerContext));
     }
-    return layers;
+    return layersScaled;
   }
 
   private void renderLayersAsSvg(
@@ -503,14 +509,19 @@ public final class CreateMapProcessor
       final AreaOfInterest areaOfInterest,
       final List<URI> graphics)
       throws ParserConfigurationException, IOException {
-    for (MapLayer layer : layerGroup.layers) {
+    for (ContextualizedMapLayer contextualizedMapLayer : layerGroup.layers) {
       context.stopIfCanceled();
       final SVGGraphics2D graphics2D = createSvgGraphics(mapContext.getMapSize());
 
       try {
         final Graphics2D clippedGraphics2D =
             createClippedGraphics(mapContext, areaOfInterest, graphics2D);
-        layer.render(clippedGraphics2D, clientHttpRequestFactory, mapContext, context);
+        contextualizedMapLayer.layer.render(
+            clippedGraphics2D,
+            clientHttpRequestFactory,
+            mapContext,
+            context,
+            contextualizedMapLayer.layerContext);
 
         final File path = svgFileGenerator.generate();
         saveSvgFile(graphics2D, path);
@@ -531,16 +542,22 @@ public final class CreateMapProcessor
       final Graphics2D graphics2D)
       throws IOException {
     final MapfishMapContext transformer = getTransformer(mapContext, layerGroup.imageBufferScaling);
-    for (MapLayer cur : layerGroup.layers) {
+    for (ContextualizedMapLayer contextualizedMapLayer : layerGroup.layers) {
       context.stopIfCanceled();
-      warnIfDifferentRenderType(layerGroup.renderType, cur, !pdfA);
-      cur.render(graphics2D, clientHttpRequestFactory, transformer, context);
+      warnIfDifferentRenderType(layerGroup.renderType, contextualizedMapLayer.layer, !pdfA);
+      contextualizedMapLayer.layer.render(
+          graphics2D,
+          clientHttpRequestFactory,
+          transformer,
+          context,
+          contextualizedMapLayer.layerContext);
     }
     imageWriter.writeImage();
   }
 
   private AreaOfInterest addAreaOfInterestLayer(
-      @Nonnull final MapAttributeValues mapValues, @Nonnull final List<MapLayer> layers) {
+      @Nonnull final MapAttributeValues mapValues,
+      @Nonnull final List<ContextualizedMapLayer> layers) {
     final AreaOfInterest areaOfInterest = mapValues.areaOfInterest;
     if (areaOfInterest != null && areaOfInterest.display == AreaOfInterest.AoiDisplay.RENDER) {
       FeatureLayer.FeatureLayerParam param = new FeatureLayer.FeatureLayerParam();
@@ -555,7 +572,7 @@ public final class CreateMapProcessor
       final FeatureLayer featureLayer =
           this.featureLayerPlugin.parse(mapValues.getTemplate(), param);
 
-      layers.add(featureLayer);
+      layers.add(new ContextualizedMapLayer(featureLayer, featureLayer.prepareRender(null, null)));
     }
     return areaOfInterest;
   }
@@ -774,7 +791,7 @@ public final class CreateMapProcessor
 
   /** Class that groups together layers that can end up in the same file. */
   private static final class LayerGroup {
-    public final List<MapLayer> layers = new ArrayList<>();
+    public final List<ContextualizedMapLayer> layers = new ArrayList<>();
     public final RenderType renderType;
     public final double imageBufferScaling;
     public boolean opaque = false;
@@ -785,28 +802,32 @@ public final class CreateMapProcessor
     }
 
     public static List<LayerGroup> buildGroups(
-        final List<MapLayer> layers, final boolean mergeAsJPEGWithScale1) {
+        final List<ContextualizedMapLayer> layers, final boolean mergeAsJPEGWithScale1) {
       final List<LayerGroup> result = new ArrayList<>();
       if (!mergeAsJPEGWithScale1) {
         LOGGER.debug("Building groups of layers");
         for (int i = 0; i < layers.size(); ) {
-          final RenderType renderType = getSupportedRenderType(layers.get(i).getRenderType());
-          final double imageBufferScaling = layers.get(i).getImageBufferScaling();
+          final RenderType renderType = getSupportedRenderType(layers.get(i).layer.getRenderType());
+          final double imageBufferScaling = layers.get(i).layerContext.scale();
           final LayerGroup group = new LayerGroup(renderType, imageBufferScaling);
-          MapLayer l = layers.get(i);
-          LOGGER.debug("New group for layer {}, {}", l.getRenderType(), l.getImageBufferScaling());
+          ContextualizedMapLayer l = layers.get(i);
+          LOGGER.debug(
+              "New group for layer {}, {}",
+              l.layer.getRenderType(),
+              layers.get(i).layerContext.scale());
           group.opaque = (i == 0 && renderType == RenderType.JPEG);
 
           // Merge consecutive layers of same render type and same buffer scaling (native
           // resolution)
           while (i < layers.size()
-              && getSupportedRenderType(layers.get(i).getRenderType()) == renderType
-              && imageBufferScaling == layers.get(i).getImageBufferScaling()) {
+              && getSupportedRenderType(layers.get(i).layer.getRenderType()) == renderType
+              && imageBufferScaling == layers.get(i).layerContext.scale()) {
             // will always go there the first time
             l = layers.get(i);
-            LOGGER.debug("Adding layer: {} named: {} to the group", i, l.getName());
+            LOGGER.debug("Adding layer: {} named: {} to the group", i, l.layer.getName());
             group.layers.add(l);
-            group.opaque = group.opaque || (renderType == RenderType.JPEG && l.getOpacity() == 1.0);
+            group.opaque =
+                group.opaque || (renderType == RenderType.JPEG && l.layer.getOpacity() == 1.0);
             ++i;
           }
 
@@ -814,7 +835,7 @@ public final class CreateMapProcessor
         }
       } else {
         LOGGER.debug("Merging together all layers as a JPEG image of scaling 1");
-        final LayerGroup group = new LayerGroup(RenderType.JPEG, 1.0);
+        final LayerGroup group = new LayerGroup(RenderType.JPEG, MapLayer.DEFAULT_SCALING);
         group.opaque = true;
         group.layers.addAll(layers);
         result.add(group);

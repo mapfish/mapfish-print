@@ -42,10 +42,17 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
   public GmlLayer(
       final ExecutorService executorService,
       final FeatureSourceSupplier featureSourceSupplier,
-      final StyleSupplier<FeatureSource> styleSupplier,
+      final StyleSupplier<FeatureSource<?, ?>> styleSupplier,
       final boolean renderAsSvg,
       final AbstractLayerParams params) {
     super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params);
+  }
+
+  @Override
+  public LayerContext prepareRender(
+      final MapfishMapContext transformer,
+      final MfClientHttpRequestFactory clientHttpRequestFactory) {
+    return new LayerContext(DEFAULT_SCALING, null, null);
   }
 
   /**
@@ -91,7 +98,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
       return new FeatureSourceSupplier() {
         @Nonnull
         @Override
-        public FeatureSource load(
+        public FeatureSource<?, ?> load(
             @Nonnull final MfClientHttpRequestFactory requestFactory,
             @Nonnull final MapfishMapContext mapContext) {
           SimpleFeatureCollection featureCollection;
@@ -134,31 +141,34 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
     }
 
     private SimpleFeatureCollection parseGml3(final String gmlData) throws IOException {
-      Parser gmlV3Parser = createParser(GML_3_PARSER);
-      gmlV3Parser.setStrict(false);
-      gmlV3Parser.setRootElementType(new QName("http://www.opengis.net/wfs", "FeatureCollection"));
+      final SimpleFeatureCollection featureCollection =
+          getSimpleFeatureCollection(gmlData, createParser(GML_3_PARSER));
+      if (featureCollection != null) {
+        return featureCollection;
+      }
+      return parseGml2(gmlData);
+    }
+
+    private SimpleFeatureCollection getSimpleFeatureCollection(
+        final String gmlData, final Parser parser) throws IOException {
+      parser.setStrict(false);
+      parser.setRootElementType(new QName("http://www.opengis.net/wfs", "FeatureCollection"));
       try {
-        final Object featureCollection = gmlV3Parser.parse(new StringReader(gmlData));
+        final Object featureCollection = parser.parse(new StringReader(gmlData));
         if (featureCollection instanceof SimpleFeatureCollection) {
           return (SimpleFeatureCollection) featureCollection;
         }
       } catch (SAXException | ParserConfigurationException e) {
         // do nothing try to load as gml2
       }
-      return parseGml2(gmlData);
+      return null;
     }
 
     private SimpleFeatureCollection parseGml2(final String gmlData) throws IOException {
-      Parser gmlV2Parser = createParser(GML_2_PARSER);
-      gmlV2Parser.setStrict(false);
-      gmlV2Parser.setRootElementType(new QName("http://www.opengis.net/wfs", "FeatureCollection"));
-      try {
-        final Object featureCollection = gmlV2Parser.parse(new StringReader(gmlData));
-        if (featureCollection instanceof SimpleFeatureCollection) {
-          return (SimpleFeatureCollection) featureCollection;
-        }
-      } catch (SAXException | ParserConfigurationException e) {
-        // do nothing try to load as gml32
+      final SimpleFeatureCollection featureCollection =
+          getSimpleFeatureCollection(gmlData, createParser(GML_2_PARSER));
+      if (featureCollection != null) {
+        return featureCollection;
       }
       return parseGml32(gmlData);
     }
@@ -191,7 +201,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
   /** The parameters for creating a layer that renders Gml formatted data. */
   public static class GmlParam extends AbstractVectorLayerParam {
     /**
-     * A url to the gml or the raw Gml data.
+     * An url to the gml or the raw Gml data.
      *
      * <p>The url can be a file url, however if it is it must be relative to the configuration
      * directory.

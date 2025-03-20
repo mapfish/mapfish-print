@@ -3,7 +3,6 @@ package org.mapfish.print.map.geotools;
 import java.util.concurrent.ExecutorService;
 import javax.annotation.Nonnull;
 import org.geotools.api.data.FeatureSource;
-import org.geotools.api.style.Style;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.mapfish.print.OptionalUtils;
@@ -34,10 +33,21 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
   public FeatureLayer(
       final ExecutorService executorService,
       final FeatureSourceSupplier featureSourceSupplier,
-      final StyleSupplier<FeatureSource> styleSupplier,
+      final StyleSupplier<FeatureSource<?, ?>> styleSupplier,
       final boolean renderAsSvg,
       final AbstractLayerParams params) {
     super(executorService, featureSourceSupplier, styleSupplier, renderAsSvg, params);
+  }
+
+  @Override
+  public LayerContext prepareRender(
+      final MapfishMapContext transformer,
+      final MfClientHttpRequestFactory clientHttpRequestFactory) {
+    return new LayerContext(getImageBufferScaling(), null, null);
+  }
+
+  public double getImageBufferScaling() {
+    return DEFAULT_SCALING;
   }
 
   /**
@@ -72,13 +82,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
 
     private FeatureSourceSupplier createFeatureSourceSupplier(
         final SimpleFeatureCollection features) {
-      return new FeatureSourceSupplier() {
-        @Override
-        public FeatureSource load(
-            final MfClientHttpRequestFactory requestFactory, final MapfishMapContext mapContext) {
-          return new CollectionFeatureSource(features);
-        }
-      };
+      return (requestFactory, mapContext) -> new CollectionFeatureSource(features);
     }
 
     /**
@@ -90,34 +94,30 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
      * @param defaultStyleName a custom name for the default style. If null, the default style is
      *     selected depending on the geometry type.
      */
-    protected StyleSupplier<FeatureSource> createStyleFunction(
+    private StyleSupplier<FeatureSource<?, ?>> createStyleFunction(
         final Template template, final String styleString, final String defaultStyleName) {
-      return new StyleSupplier<FeatureSource>() {
-        @Override
-        public Style load(
-            final MfClientHttpRequestFactory requestFactory, final FeatureSource featureSource) {
-          if (featureSource == null) {
-            throw new IllegalArgumentException("Feature source cannot be null");
-          }
-
-          final String geomType =
-              featureSource
-                  .getSchema()
-                  .getGeometryDescriptor()
-                  .getType()
-                  .getBinding()
-                  .getSimpleName();
-          final String styleRef =
-              styleString != null
-                  ? styleString
-                  : (defaultStyleName != null ? defaultStyleName : geomType);
-          return OptionalUtils.or(
-                  () -> template.getStyle(styleRef),
-                  () ->
-                      Plugin.this.parser.loadStyle(
-                          template.getConfiguration(), requestFactory, styleRef))
-              .orElseGet(() -> template.getConfiguration().getDefaultStyle(styleRef));
+      return (requestFactory, featureSource) -> {
+        if (featureSource == null) {
+          throw new IllegalArgumentException("Feature source cannot be null");
         }
+
+        final String geomType =
+            featureSource
+                .getSchema()
+                .getGeometryDescriptor()
+                .getType()
+                .getBinding()
+                .getSimpleName();
+        final String styleRef =
+            styleString != null
+                ? styleString
+                : (defaultStyleName != null ? defaultStyleName : geomType);
+        return OptionalUtils.or(
+                () -> template.getStyle(styleRef),
+                () ->
+                    Plugin.this.parser.loadStyle(
+                        template.getConfiguration(), requestFactory, styleRef))
+            .orElseGet(() -> template.getConfiguration().getDefaultStyle(styleRef));
       };
     }
   }
@@ -136,7 +136,7 @@ public final class FeatureLayer extends AbstractFeatureSourceLayer {
     public String style;
 
     /**
-     * If no style is defined, a default style with this name will be used. Otherwise a style will
+     * If no style is defined, a default style with this name will be used. Otherwise, a style will
      * be selected depending on the geometry type.
      */
     public String defaultStyle;
