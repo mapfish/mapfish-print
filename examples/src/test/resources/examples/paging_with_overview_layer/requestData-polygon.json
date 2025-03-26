@@ -1,0 +1,47 @@
+{
+  "layout": "A4 landscape",
+  "outputFormat": "png",
+  "attributes": {
+    "map": {
+      "projection": "EPSG:3857",
+      "dpi": 72,
+      "areaOfInterest": {
+        "area": {
+          "type": "MultiPolygon",
+          "coordinates": [
+            [
+              [
+                [-8234339.53, 4979733.43],
+                [-8234350.67, 4979561.99],
+                [-8234107.99, 4979618.77],
+                [-8234339.53, 4979733.43]
+              ]
+            ],
+            [
+              [
+                [-8234387.4, 4979268.11],
+                [-8234590.0, 4979538.62],
+                [-8234746.96, 4979359.39],
+                [-8234387.4, 4979268.11]
+              ]
+            ]
+          ]
+        }
+      },
+      "longitudeFirst": true,
+      "layers": [
+        {
+          "type": "WMS",
+          "layers": ["tiger-ny"],
+          "baseURL": "http://localhost:8082/geoserver/wms",
+          "imageFormat": "image/png",
+          "version": "1.1.1",
+          "customParams": {
+            "TRANSPARENT": "true",
+            "EXCEPTIONS": "INIMAGE"
+          }
+        }
+      ]
+    }
+  }
+}

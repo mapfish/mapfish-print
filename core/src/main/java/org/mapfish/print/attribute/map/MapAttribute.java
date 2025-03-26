@@ -87,6 +87,9 @@ public final class MapAttribute extends GenericMapAttribute {
 
     private MapBounds mapBounds;
 
+    /** Paging overview layer that displays the position of the pages on the main map. */
+    private MapLayer pagingOverviewLayer;
+
     /**
      * Constructor.
      *
@@ -120,6 +123,14 @@ public final class MapAttribute extends GenericMapAttribute {
     @Override
     public void setRawLayers(final PArray newLayers) {
       this.layers = newLayers;
+    }
+
+    public void setPagingOverviewLayer(final MapLayer newPagingOverviewLayer) {
+      this.pagingOverviewLayer = newPagingOverviewLayer;
+    }
+
+    public MapLayer getPagingOverviewLayer() {
+      return this.pagingOverviewLayer;
     }
 
     @Override
