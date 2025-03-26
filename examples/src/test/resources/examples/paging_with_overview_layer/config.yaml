@@ -1,0 +1,57 @@
+
+templates:
+  #===========================================================================
+  A4 landscape: !template
+    #===========================================================================
+    reportTemplate: simpleReport.jrxml
+    attributes:
+      map: !map
+        maxDpi: 400
+        width: 780
+        height: 330
+        default:
+          useAdjustBounds: true
+      paging: !paging
+        default:
+          scale: 500
+          overlap: 0
+          renderPagingOverview: true
+          pagingOverviewStyle: {
+            "version": "2",
+            "*": {
+              "symbolizers": [
+                {
+                  "strokeColor": "yellow",
+                  "strokeDashstyle": "solid",
+                  "strokeOpacity": 1,
+                  "strokeWidth": 1.5,
+                  "type": "line"
+                },
+                {
+                  "type": "text",
+                  "label": "[name]",
+                  "haloRadius": 1.5,
+                  "haloColor": "yellow",
+                  "fontColor": "red"
+                }
+              ]
+            }
+          }
+      scalebar: !scalebar
+        width: 240
+        height: 40
+    processors:
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createMapPages {}
+      - !createMap {}
+      - !createScalebar {}
+      - !createDataSource
+        attributes:
+          scalebar: !scalebar
+            width: 240
+            height: 40
+        processors:
+          - !createMap {}
+          - !createScalebar {}
+    tableData: jrDataSource
