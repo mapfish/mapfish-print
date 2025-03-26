@@ -64,5 +64,16 @@ public final class PagingAttribute
      * definition.
      */
     @HasDefaultValue public String aoiStyle = null;
+
+    /**
+     * If set to true will add an overview layer to the main map with all the pages and their label.
+     */
+    @HasDefaultValue public Boolean renderPagingOverview = false;
+
+    /**
+     * The style of the paging overview layer. This parameter is usefull only if
+     * renderPagingOverview is true.
+     */
+    @HasDefaultValue public String pagingOverviewStyle = null;
   }
 }
