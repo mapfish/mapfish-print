@@ -156,7 +156,7 @@ dependencies {
     )
     jasper(
             "net.sf.jasperreports:jasperreports:6.20.6",
-            "org.codehaus.groovy:groovy-all:3.0.23",
+            "org.codehaus.groovy:groovy-all:3.0.24",
             'ar.com.fdvs:DynamicJasper:5.3.9',
             "net.sf.jasperreports:jasperreports-fonts:6.20.6",
             "net.sf.jasperreports:jasperreports-functions:6.20.6",
@@ -164,9 +164,9 @@ dependencies {
     )
     compile fileTree(dir: "$projectDir/libs", include: '*.jar')
     compile(
-            "org.slf4j:slf4j-api:2.0.16",
-            "org.slf4j:jcl-over-slf4j:2.0.16",
-            "org.slf4j:jul-to-slf4j:2.0.16",
+            "org.slf4j:slf4j-api:2.0.17",
+            "org.slf4j:jcl-over-slf4j:2.0.17",
+            "org.slf4j:jul-to-slf4j:2.0.17",
             "ch.qos.logback:logback-classic:1.4.14",
             "ch.qos.logback:logback-access:1.4.14",
             'org.json:json:20231013',
