@@ -8,6 +8,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,7 +50,7 @@ public abstract class AbstractMapfishSpringTest {
   // The interval between retries used in tests
   public static final int HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS = 1;
   protected static final Processor.ExecutionContext CONTEXT =
-      new AbstractProcessor.Context(new HashMap<>());
+      new AbstractProcessor.Context(new HashMap<>(), new AtomicBoolean(false));
   static final Pattern IMPORT_PATTERN = Pattern.compile("@@importFile\\((\\S+)\\)@@");
 
   @Autowired private WorkingDirectories workingDirectories;

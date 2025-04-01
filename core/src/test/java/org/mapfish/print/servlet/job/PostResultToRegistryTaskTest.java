@@ -131,7 +131,8 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
 
     @Override
     protected PrintResult withOpenOutputStream(PrintAction function) throws Exception {
-      return new PrintResult(42, new AbstractProcessor.Context(new HashMap<>()));
+      return new PrintResult(
+          42, new AbstractProcessor.Context(new HashMap<>(), new AtomicBoolean(false)));
     }
 
     @Override
