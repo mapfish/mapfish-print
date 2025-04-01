@@ -1,0 +1,54 @@
+templates:
+  #===========================================================================
+  main: !template
+    #===========================================================================
+    reportTemplate: simpleReport.jrxml
+    attributes:
+      map: !map
+        maxDpi: 400
+        width: 780
+        height: 330
+        default:
+          zoomToFeatures:
+            zoomType: extent
+            layer: features_to_zoom
+            minMargin: 50
+            minScale: 5000
+      paging: !paging
+        default:
+          scale: 10000
+          overlap: 0
+      scalebar: !scalebar
+        height: 20
+        width: 143
+        default:
+          type: bar_sub
+          intervals: 5
+          fontSize: 8
+          lineWidth: 1
+          barSize: 5
+          renderAsSvg: true
+          geodetic: true
+    processors:
+      - !reportBuilder # compile all reports in current directory
+        directory: '.'
+      - !createMapPages {} # creates the iterable<Values> consumed by dataSource
+      - !createMap {}
+      - !createScalebar {}
+      - !createDataSource
+        attributes:
+          scalebar: !scalebar
+            height: 20
+            width: 143
+            default:
+              type: bar_sub
+              intervals: 4
+              fontSize: 8
+              lineWidth: 1
+              barSize: 5
+              renderAsSvg: true
+              geodetic: true
+        processors:
+          - !createMap {}
+          - !createScalebar {}
+    tableData: jrDataSource

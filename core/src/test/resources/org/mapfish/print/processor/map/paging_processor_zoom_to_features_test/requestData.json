@@ -1,0 +1,172 @@
+{
+  "layout": "main",
+  "attributes": {
+    "map": {
+      "projection": "EPSG:3857",
+      "dpi": 72,
+      "areaOfInterest": {
+        "area": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [-8234842.163180278, 4980450.801914547],
+              [-8234404.899063832, 4979475.366574329],
+              [-8232980.987710278, 4979172.645261847],
+              [-8234147.025354133, 4978668.109741045],
+              [-8233765.820739795, 4977255.410282798],
+              [-8234875.798881543, 4977771.157704063],
+              [-8235907.2937203385, 4977289.045984185],
+              [-8235234.579695038, 4978623.262139196],
+              [-8236434.253040158, 4979307.188067394],
+              [-8235133.672591242, 4979441.730872942],
+              [-8234842.163180278, 4980450.801914547]
+            ]
+          ]
+        }
+      },
+      "layers": [
+        {
+          "name" : "features_to_zoom",
+          "type" : "geojson",
+          "opacity" : 1,
+          "geoJson" : {
+            "type" : "FeatureCollection",
+            "features" : [{
+              "type" : "Feature",
+              "geometry" : {
+                "type" : "Polygon",
+                "coordinates" :  [
+                  [
+                    [
+                      -8234842.163180278,
+                      4980450.801914547
+                    ],
+                    [
+                      -8234404.899063832,
+                      4979475.366574329
+                    ],
+                    [
+                      -8232980.987710278,
+                      4979172.645261847
+                    ],
+                    [
+                      -8234147.025354133,
+                      4978668.109741045
+                    ],
+                    [
+                      -8233765.820739795,
+                      4977255.410282798
+                    ],
+                    [
+                      -8234875.798881543,
+                      4977771.157704063
+                    ],
+                    [
+                      -8235907.2937203385,
+                      4977289.045984185
+                    ],
+                    [
+                      -8235234.579695038,
+                      4978623.262139196
+                    ],
+                    [
+                      -8236434.253040158,
+                      4979307.188067394
+                    ],
+                    [
+                      -8235133.672591242,
+                      4979441.730872942
+                    ],
+                    [
+                      -8234842.163180278,
+                      4980450.801914547
+                    ]
+                  ]
+                ]
+              },
+              "properties" : {
+              },
+              "id" : "feature.0"
+            }
+            ],
+            "crs" : {
+              "type" : "name",
+              "properties" : {
+                "name" : "EPSG:3857"
+              }
+            },
+            "properties" : {}
+          },
+          "style" : {
+            "version" : "2",
+            "strokeColor" : "blue",
+            "strokeLinecap" : "round",
+            "strokeOpacity" : 1,
+            "fillOpacity" : 0.5,
+            "fillColor" : "blue",
+            "*" : {
+              "symbolizers" : [ {
+                "strokeDashstyle" : "solid",
+                "strokeWidth" : 1,
+                "type" : "polygon"
+              } ]
+            }
+          }
+        },
+        {
+          "name" : "other_features",
+          "type" : "geojson",
+          "opacity" : 1,
+          "geoJson" : {
+            "type" : "FeatureCollection",
+            "features" : [{
+              "type" : "Feature",
+              "geometry" : {
+                "type" : "Polygon",
+                "coordinates" :  [
+                  [
+                    [-8233193.18, 4982359.31],
+                    [-8232525.28, 4981764.01],
+                    [-8232256.67, 4982330.27],
+                    [-8233193.18, 4982359.31]
+                  ]
+                ]
+              },
+              "properties" : {
+              },
+              "id" : "feature.0"
+            }
+            ],
+            "crs" : {
+              "type" : "name",
+              "properties" : {
+                "name" : "EPSG:3857"
+              }
+            },
+            "properties" : {}
+          },
+          "style" : {
+            "version" : "2",
+            "strokeColor" : "red",
+            "strokeLinecap" : "round",
+            "strokeOpacity" : 1,
+            "fillOpacity" : 0.5,
+            "fillColor" : "red",
+            "*" : {
+              "symbolizers" : [ {
+                "strokeDashstyle" : "solid",
+                "strokeWidth" : 1,
+                "type" : "polygon"
+              } ]
+            }
+          }
+        },
+        {
+          "type": "geojson",
+          "style": "file://thinline.sld",
+          "geojson": "http://paging_processor_zoom_to_features_test.json/geojson/ny-roads-3857.json"
+        }
+      ]
+    }
+  }
+}
