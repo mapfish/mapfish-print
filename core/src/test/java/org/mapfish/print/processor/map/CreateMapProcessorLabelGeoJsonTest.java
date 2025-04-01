@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.imageio.ImageIO;
 import org.json.JSONException;
 import org.junit.Test;
@@ -56,7 +57,8 @@ public class CreateMapProcessorLabelGeoJsonTest extends AbstractMapfishSpringTes
             this.httpRequestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
 
     final ForkJoinTask<Values> taskFuture =
         this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
