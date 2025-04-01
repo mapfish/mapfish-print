@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -38,7 +39,8 @@ public class StyleAttributeTest extends AbstractMapfishSpringTest {
             this.clientHttpRequestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
     final StyleAttribute.StylesAttributeValues value =
         values.getObject("styleDef", StyleAttribute.StylesAttributeValues.class);
 

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -36,7 +37,8 @@ public class StringAttributeTest extends AbstractMapfishSpringTest {
             httpClientFactory,
             config.getDirectory(),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
 
     assertEquals("a loooooooooooooooooooong text", values.getString("field1"));
     assertEquals("a short text", values.getString("field2"));
@@ -56,7 +58,8 @@ public class StringAttributeTest extends AbstractMapfishSpringTest {
         httpClientFactory,
         config.getDirectory(),
         HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-        HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+        HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+        new AtomicBoolean(false));
   }
 
   private PJsonObject loadJsonRequestData() throws IOException {

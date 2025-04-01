@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 import org.mapfish.print.PrintException;
 import org.mapfish.print.processor.AbstractProcessor;
@@ -39,7 +40,8 @@ public class SingleTileLoaderTaskTest {
       int unsupportedStatusCode, ClientHttpRequest tileRequest)
       throws IOException, URISyntaxException {
     BufferedImage errorImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-    Processor.ExecutionContext context = new AbstractProcessor.Context(new HashMap<>());
+    Processor.ExecutionContext context =
+        new AbstractProcessor.Context(new HashMap<>(), new AtomicBoolean(false));
     MetricRegistry registry = new MetricRegistry();
 
     // mocking ClientHttpRequest
