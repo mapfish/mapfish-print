@@ -174,6 +174,7 @@ public class CreateMapPagesProcessor
                   map.getWidth(),
                   map.getHeight(),
                   (@Nonnull final MapAttributeValues input) -> {
+                    input.zoomToFeatures = null;
                     input.center = null;
                     input.bbox =
                         new double[] {
