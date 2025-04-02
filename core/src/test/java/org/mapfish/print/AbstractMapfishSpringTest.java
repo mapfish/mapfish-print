@@ -44,13 +44,12 @@ public abstract class AbstractMapfishSpringTest {
       "classpath:test-http-request-factory-application-context.xml";
   public static final String TEST_SPRING_FONT_XML =
       "classpath:test-mapfish-spring-custom-fonts.xml";
-  public static final String TMP = System.getProperty("java.io.tmpdir");
   // The maximum number of times to retry fetching a resource used in tests
   public static final int HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY = 2;
   // The interval between retries used in tests
   public static final int HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS = 1;
   protected static final Processor.ExecutionContext CONTEXT =
-      new AbstractProcessor.Context(new HashMap<String, String>());
+      new AbstractProcessor.Context(new HashMap<>());
   static final Pattern IMPORT_PATTERN = Pattern.compile("@@importFile\\((\\S+)\\)@@");
 
   @Autowired private WorkingDirectories workingDirectories;
@@ -88,14 +87,13 @@ public abstract class AbstractMapfishSpringTest {
   public static PJsonObject parseJSONObjectFromFile(Class<?> testClass, String fileName)
       throws IOException {
     final File file = getFile(testClass, fileName);
-    String jsonString = new String(Files.readAllBytes(file.toPath()), Constants.DEFAULT_CHARSET);
+    String jsonString = Files.readString(file.toPath(), Constants.DEFAULT_CHARSET);
     Matcher matcher = IMPORT_PATTERN.matcher(jsonString);
     while (matcher.find()) {
       final String importFileName = matcher.group(1);
       File importFile = new File(file.getParentFile(), importFileName);
       final String tagToReplace = matcher.group();
-      final String importJson =
-          new String(Files.readAllBytes(importFile.toPath()), Constants.DEFAULT_CHARSET);
+      final String importJson = Files.readString(importFile.toPath(), Constants.DEFAULT_CHARSET);
       jsonString = jsonString.replace(tagToReplace, importJson);
       matcher = IMPORT_PATTERN.matcher(jsonString);
     }
@@ -197,7 +195,7 @@ public abstract class AbstractMapfishSpringTest {
     String platformName = "expectedSimpleImage" + classifier + "-" + normalizedOSName() + ".png";
     String defaultName = "expectedSimpleImage" + classifier + ".png";
 
-    //        new File(TMP, baseDir).mkdirs();
+    //        new File(System.getProperty("java.io.tmpdir"), baseDir).mkdirs();
     //        ImageIO.write(actualImage, "png", new File(TMP, baseDir + "/" + platformVersionName));
     //        ImageIO.write(actualImage, "png", new File(TMP, baseDir + "/" + platformName));
     //        ImageIO.write(actualImage, "png", new File(TMP, baseDir + "/" + defaultName));

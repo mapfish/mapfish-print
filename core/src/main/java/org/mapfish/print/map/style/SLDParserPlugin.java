@@ -40,8 +40,6 @@ public class SLDParserPlugin implements StyleParserPlugin {
    */
   public static final String STYLE_INDEX_REF_SEPARATOR = "##";
 
-  public static final String RASTER = "raster";
-
   @Override
   public final Optional<Style> parseStyle(
       @Nullable final Configuration configuration,
@@ -88,7 +86,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
     Assert.isTrue(
         styleIndex == null || styleIndex > -1, "styleIndex must be > -1 but was: " + styleIndex);
 
-    if (RASTER.equals(new String(bytes, Charset.defaultCharset()))) {
+    if (isNonXml(bytes)) {
       return Optional.empty();
     }
     final Style[] styles;
@@ -159,6 +157,17 @@ public class SLDParserPlugin implements StyleParserPlugin {
     } else {
       return Optional.of(styles[styleIndex]);
     }
+  }
+
+  private static boolean isNonXml(final byte[] bytes) {
+    for (byte aByte : bytes) {
+      final byte[] xmlByte = new byte[] {aByte};
+      final String character = new String(xmlByte, Charset.defaultCharset());
+      if (!character.isBlank()) {
+        return !"<".equals(character);
+      }
+    }
+    return true;
   }
 
   /**
