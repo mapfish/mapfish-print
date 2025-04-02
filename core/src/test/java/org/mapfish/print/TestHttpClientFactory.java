@@ -36,6 +36,10 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
     handlers.put(matcher, handler);
   }
 
+  public void resetHandlers() {
+    handlers.clear();
+  }
+
   @Nonnull
   @Override
   public ConfigurableRequest createRequest(@Nonnull URI uri, @Nonnull final HttpMethod httpMethod) {

@@ -18,6 +18,7 @@ import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.config.Template;
+import org.mapfish.print.map.AbstractLayerParams;
 import org.mapfish.print.map.MapLayerFactoryPlugin;
 import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.MapfishParser;
@@ -462,6 +463,11 @@ public abstract class GenericMapAttribute
             layerParser.getTypeNames().contains(layer.getString(TYPE).toLowerCase());
         if (layerApplies) {
           Object param = layerParser.createParameter();
+          // We force fail on error parameter if requested in the template configuration
+          if (param instanceof AbstractLayerParams abstractLayerParams
+              && this.template.getConfiguration().isForceFailOnError()) {
+            abstractLayerParams.failOnError = true;
+          }
 
           MapfishParser.parse(
               this.template.getConfiguration().isThrowErrorOnExtraParameters(), layer, param, TYPE);

@@ -1,0 +1,97 @@
+{
+  "forceFailOnError": true,
+  "layout": "main",
+  "attributes": {
+    "map": {
+      "areaOfInterest": {
+        "area": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [-8234842.163180278, 4980450.801914547],
+              [-8234404.899063832, 4979475.366574329],
+              [-8232980.987710278, 4979172.645261847],
+              [-8234147.025354133, 4978668.109741045],
+              [-8233765.820739795, 4977255.410282798],
+              [-8234875.798881543, 4977771.157704063],
+              [-8235907.2937203385, 4977289.045984185],
+              [-8235234.579695038, 4978623.262139196],
+              [-8236434.253040158, 4979307.188067394],
+              [-8235133.672591242, 4979441.730872942],
+              [-8234842.163180278, 4980450.801914547]
+            ]
+          ]
+        }
+      },
+      "projection": "EPSG:3857",
+      "dpi": 72,
+      "layers": [
+        {
+          "type": "wms",
+          "baseURL": "http://paging_processor_force_fail_on_error_test.wms:1234/wms",
+          "opacity": 1.0,
+          "layers": ["tiger-ny"],
+          "styles": ["line"],
+          "version": "1.0.0",
+          "imageFormat": "image/png"
+        },
+        {
+          "type": "WMTS",
+          "baseURL": "http://paging_processor_force_fail_on_error_test.wmts:1234/wmts",
+          "opacity": 1.0,
+          "layer": "tiger-ny",
+          "version": "1.0.0",
+          "requestEncoding": "KVP",
+          "dimensions": null,
+          "dimensionParams": {},
+          "matrixSet": "EPSG:900913",
+          "matrices": [
+            {
+              "identifier": "EPSG:900913:12",
+              "matrixSize": [4096, 4096],
+              "scaleDenominator": 136494.69334738597,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-2.003750834e7, 2.0037508e7]
+            },
+            {
+              "identifier": "EPSG:900913:13",
+              "matrixSize": [8192, 8192],
+              "scaleDenominator": 68247.34667369298,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-2.003750834e7, 2.0037508e7]
+            },
+            {
+              "identifier": "EPSG:900913:14",
+              "matrixSize": [16384, 16384],
+              "scaleDenominator": 34123.67333684649,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-2.003750834e7, 2.0037508e7]
+            },
+            {
+              "identifier": "EPSG:900913:15",
+              "matrixSize": [32768, 32768],
+              "scaleDenominator": 17061.836668423246,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-2.003750834e7, 2.0037508e7]
+            },
+            {
+              "identifier": "EPSG:900913:16",
+              "matrixSize": [65536, 65536],
+              "scaleDenominator": 8530.9183342116231,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-2.003750834e7, 2.0037508e7]
+            },
+            {
+              "identifier": "EPSG:900913:17",
+              "matrixSize": [131072, 131072],
+              "scaleDenominator": 4265.4591671058115,
+              "tileSize": [256, 256],
+              "topLeftCorner": [-2.003750834e7, 2.0037508e7]
+            }
+          ],
+          "imageFormat": "image/png"
+        }
+      ]
+    }
+  }
+}
