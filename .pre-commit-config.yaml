@@ -24,3 +24,7 @@ repos:
     rev: 39.227.2
     hooks:
       - id: renovate-config-validator
+  - repo: https://github.com/sbrunner/hooks
+    rev: 1.4.0
+    hooks:
+      - id: canonicalize
