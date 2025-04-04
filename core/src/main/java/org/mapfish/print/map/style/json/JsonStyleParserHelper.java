@@ -410,7 +410,7 @@ public final class JsonStyleParserHelper {
     double value = Double.parseDouble(matcher.group(1));
     String unit = matcher.group(2);
 
-    if (unit.length() == 0) {
+    if (unit.isEmpty()) {
       return value;
     } else {
       return DistanceUnit.fromString(unit).convertTo(value, DistanceUnit.PX);
