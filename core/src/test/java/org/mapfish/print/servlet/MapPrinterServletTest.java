@@ -67,8 +67,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
   @Autowired private ServletInfo servletInfo;
   @Autowired private ServletMapPrinterFactory printerFactory;
   @Autowired private ThreadPoolJobManager jobManager;
-  @Autowired private TestHttpClientFactory requestFactory;
-
+  @Autowired private TestHttpClientFactory requestFactory;  
+  
   @Test
   public void testExampleRequest() throws Exception {
     setUpConfigFiles();
@@ -122,12 +122,16 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
   @Test(timeout = 60000)
   public void testCreateReport_Success_NoAppId() throws Exception {
+    System.out.printf("HERE-X: %s\n", "TEST");
     doCreateAndPollAndGetReport(
         (@Nullable MockHttpServletRequest servletCreateRequest) -> {
           try {
+            System.out.printf("HERE-X: %s\n", "TEST");
             final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
             String requestData = loadRequestDataAsString();
+            System.out.printf("HERE-A: %s\n", requestData);
             servlet.createReport("png", requestData, servletCreateRequest, servletCreateResponse);
+            System.out.printf("HERE-B: %s\n", servletCreateResponse);
             return servletCreateResponse;
           } catch (Exception e) {
             throw new AssertionError(e);
