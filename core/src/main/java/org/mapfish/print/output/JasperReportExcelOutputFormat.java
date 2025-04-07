@@ -2,9 +2,9 @@ package org.mapfish.print.output;
 
 import java.io.OutputStream;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.poi.export.JRXlsExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.poi.export.JRXlsExporter;
 
 /** An PDF output format that uses Jasper reports to generate the result. */
 public final class JasperReportExcelOutputFormat extends AbstractJasperReportOutputFormat

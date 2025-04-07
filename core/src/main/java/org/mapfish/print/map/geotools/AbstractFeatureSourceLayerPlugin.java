@@ -68,7 +68,7 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
                   .getBinding()
                   .getSimpleName();
       final String styleRef = styleString != null ? styleString : geomType;
-        System.out.printf("HERE-PRINT: %s %s %s\n", styleString, styleRef, geomType);
+      System.out.printf("HERE-PRINT: %s %s %s\n", styleString, styleRef, geomType);
       final StyleParser styleParser = AbstractFeatureSourceLayerPlugin.this.parser;
       return OptionalUtils.or(
               () -> template.getStyle(styleRef),
