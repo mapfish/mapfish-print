@@ -1,9 +1,12 @@
 package org.mapfish.print.output;
 
 import java.io.OutputStream;
+import java.util.WeakHashMap;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.PrintPageFormat;
+import net.sf.jasperreports.engine.util.ExifOrientationEnum;
+import net.sf.jasperreports.engine.util.Pair;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.pdf.JRPdfExporter;
