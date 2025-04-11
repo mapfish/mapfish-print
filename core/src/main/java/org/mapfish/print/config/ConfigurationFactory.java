@@ -22,14 +22,12 @@ import org.yaml.snakeyaml.representer.Representer;
 public class ConfigurationFactory {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationFactory.class);
   @Autowired private ConfigurableApplicationContext context;
-  private Yaml yaml;
+  private ThreadLocal<Yaml> yamlThreadLocal;
   private boolean doValidation = true;
 
   /** initialize this factory. Called by spring after construction. */
   @PostConstruct
   public final void init() {
-    MapfishPrintConstructor constructor = new MapfishPrintConstructor(this.context);
-
     LoaderOptions loaderOptions = new LoaderOptions();
     String maxAliases = System.getenv("PRINT_YAML_MAX_ALIASES");
     if (maxAliases != null) {
@@ -37,7 +35,12 @@ public class ConfigurationFactory {
     }
     DumperOptions dumperOptions = new DumperOptions();
     Representer representer = new Representer(dumperOptions);
-    this.yaml = new Yaml(constructor, representer, dumperOptions, loaderOptions);
+    this.yamlThreadLocal =
+        ThreadLocal.withInitial(
+            () -> {
+              MapfishPrintConstructor constructor = new MapfishPrintConstructor(this.context);
+              return new Yaml(constructor, representer, dumperOptions, loaderOptions);
+            });
   }
 
   /**
@@ -65,7 +68,7 @@ public class ConfigurationFactory {
     MapfishPrintConstructor.setConfigurationUnderConstruction(configuration);
 
     final Configuration config =
-        this.yaml.load(new InputStreamReader(configData, StandardCharsets.UTF_8));
+        this.yamlThreadLocal.get().load(new InputStreamReader(configData, StandardCharsets.UTF_8));
     if (this.doValidation) {
       final List<Throwable> validate = config.validate();
       if (!validate.isEmpty()) {
