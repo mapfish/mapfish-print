@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.10.0.final using JasperReports Library version 6.10.0-unknown  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Topicpage" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="493" leftMargin="51" rightMargin="51" topMargin="28" bottomMargin="20" uuid="3664412a-b6c6-4e1c-8c14-6c4af7e6efc2">
 	<property name="net.sf.jasperreports.print.create.bookmarks" value="true"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
@@ -448,7 +447,7 @@
 				<subreportExpression><![CDATA["legalprovision.jasper"]]></subreportExpression>
 			</subreport>
 			<textField>
-				<reportElement positionType="Float" stretchType="ContainerBottom" x="0" y="28" width="193" height="18" isPrintInFirstWholeBand="true" uuid="bc365be9-27bf-41cb-8f51-82a3b7af3eda">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="28" width="193" height="18" isPrintInFirstWholeBand="true" uuid="bc365be9-27bf-41cb-8f51-82a3b7af3eda">
 					<property name="local_mesure_unitheight" value="pixel"/>
 					<property name="local_mesure_unity" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
@@ -498,7 +497,7 @@
 				<subreportExpression><![CDATA["legalprovision.jasper"]]></subreportExpression>
 			</subreport>
 			<textField>
-				<reportElement positionType="Float" stretchType="ContainerBottom" x="0" y="0" width="193" height="18" isPrintInFirstWholeBand="true" uuid="8f553e43-b8da-410e-b472-0116a8793b6d">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="193" height="18" isPrintInFirstWholeBand="true" uuid="8f553e43-b8da-410e-b472-0116a8793b6d">
 					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 					<property name="local_mesure_unitheight" value="pixel"/>
 					<property name="local_mesure_unity" value="pixel"/>
@@ -549,7 +548,7 @@
 				<subreportExpression><![CDATA["legalprovision.jasper"]]></subreportExpression>
 			</subreport>
 			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" stretchType="ContainerBottom" x="0" y="0" width="193" height="18" isPrintInFirstWholeBand="true" uuid="94ac5c43-32f0-4769-ba84-96a56cb660b6">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="193" height="18" isPrintInFirstWholeBand="true" uuid="94ac5c43-32f0-4769-ba84-96a56cb660b6">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 					<property name="local_mesure_unitheight" value="pixel"/>
@@ -587,7 +586,7 @@
 				</reportElement>
 			</break>
 			<subreport>
-				<reportElement positionType="Float" stretchType="ContainerBottom" mode="Transparent" x="193" y="1" width="300" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="1d3ac1d8-7b5e-4caa-bcc0-cf857dddc651">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" mode="Transparent" x="193" y="1" width="300" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="1d3ac1d8-7b5e-4caa-bcc0-cf857dddc651">
 					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 					<property name="local_mesure_unitheight" value="pixel"/>
 					<property name="local_mesure_unity" value="pixel"/>
@@ -598,7 +597,7 @@
 				<subreportExpression><![CDATA["topicresponsibleoffice.jasper"]]></subreportExpression>
 			</subreport>
 			<textField>
-				<reportElement positionType="Float" stretchType="ContainerBottom" x="0" y="0" width="193" height="20" isPrintInFirstWholeBand="true" uuid="c4523b24-d156-4e85-bbec-36a92dd6c8b3">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="193" height="20" isPrintInFirstWholeBand="true" uuid="c4523b24-d156-4e85-bbec-36a92dd6c8b3">
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>

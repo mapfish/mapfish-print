@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.10.0.final using JasperReports Library version 6.10.0-unknown  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TocReport main" pageWidth="595" pageHeight="842" columnWidth="493" leftMargin="51" rightMargin="51" topMargin="28" bottomMargin="20" whenResourceMissingType="Empty" uuid="6e74177b-d551-4a75-ae51-6cdde3f284ce">
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
@@ -12,7 +11,7 @@
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<property name="net.sf.jasperreports.print.create.bookmarks" value="true"/>
 	<style name="Default" isDefault="true" fontName="Cadastra" fontSize="8"/>
-	<style name="Title" hTextAlign="Right" hImageAlign="Right" fontSize="32">
+	<style name="Title" hAlign="Right" fontSize="32">
 		<box>
 			<topPen lineWidth="1.0"/>
 		</box>

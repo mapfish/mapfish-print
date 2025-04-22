@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version last-->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9a3e59f5-6675-48cf-ad74-9c42b5a5b290">
 	<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
@@ -29,9 +28,7 @@
 			</subreport>
 			<image>
 				<reportElement x="540" y="341" width="240" height="40" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d"/>
-				<imageExpression class="net.sf.jasperreports.engine.JRRenderable">
-					<![CDATA[net.sf.jasperreports.renderers.BatikRenderer.getInstance(new java.io.File(new java.net.URI($P{scalebarGraphic})))]]>
-				</imageExpression>
+				<imageExpression><![CDATA[net.sf.jasperreports.renderers.BatikRenderer.getInstance(new java.io.File(new java.net.URI($P{scalebarGraphic})))]]></imageExpression>
 			</image>
 			<image>
 				<reportElement x="0" y="51" width="50" height="50" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d">
@@ -40,9 +37,7 @@
 					<property name="local_mesure_unitheight" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<imageExpression class="net.sf.jasperreports.engine.JRRenderable">
-					<![CDATA[net.sf.jasperreports.renderers.BatikRenderer.getInstance(new java.io.File(new java.net.URI($P{northArrowGraphic})))]]>
-				</imageExpression>
+				<imageExpression><![CDATA[net.sf.jasperreports.renderers.BatikRenderer.getInstance(new java.io.File(new java.net.URI($P{northArrowGraphic})))]]></imageExpression>
 			</image>
 		</band>
 	</title>

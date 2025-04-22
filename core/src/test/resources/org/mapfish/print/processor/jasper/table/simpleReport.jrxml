@@ -46,15 +46,15 @@
 	</pageHeader>
 	<columnHeader>
 		<band height="30">
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement key="header_id" style="dj_style_1_" positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="185" height="30" isPrintWhenDetailOverflows="true" uuid="3a4e9d49-3645-4ca7-8e36-abfb35c0f688"/>
 				<textFieldExpression><![CDATA["id"]]></textFieldExpression>
 			</textField>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement key="header_name" style="dj_style_1_" positionType="Float" stretchType="RelativeToTallestObject" x="185" y="0" width="185" height="30" isPrintWhenDetailOverflows="true" uuid="9fac5b94-c27f-4ed4-960c-ac48b60d0598"/>
 				<textFieldExpression><![CDATA["name"]]></textFieldExpression>
 			</textField>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement key="header_icon" style="dj_style_1_" positionType="Float" stretchType="RelativeToTallestObject" x="370" y="0" width="185" height="30" isPrintWhenDetailOverflows="true" uuid="2f0cd44c-ab66-42b2-9ad4-1636193577a4"/>
 				<textFieldExpression><![CDATA["icon"]]></textFieldExpression>
 			</textField>
@@ -62,15 +62,15 @@
 	</columnHeader>
 	<detail>
 		<band height="15" splitType="Immediate">
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="DejaVu Sans_for_column_DJR_2141_COLUMN_0_" positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="185" height="15" isPrintWhenDetailOverflows="true" uuid="9b56d8ed-049e-41dc-806e-350ad84a3842"/>
 				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
 			</textField>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="DejaVu Sans_for_column_DJR_2141_COLUMN_1_" positionType="Float" stretchType="RelativeToTallestObject" x="185" y="0" width="185" height="15" isPrintWhenDetailOverflows="true" uuid="1e0ee0ef-22a5-43d5-b8d2-a731fc573055"/>
 				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="DejaVu Sans_for_column_DJR_2141_COLUMN_2_" positionType="Float" stretchType="RelativeToTallestObject" x="370" y="0" width="185" height="15" isPrintWhenDetailOverflows="true" uuid="f0579b7e-28ae-4b28-a6ac-95ca1e3a3205"/>
 				<textFieldExpression><![CDATA[$F{icon}]]></textFieldExpression>
 			</textField>

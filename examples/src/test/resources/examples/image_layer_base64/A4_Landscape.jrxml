@@ -1,31 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.1.1.final using JasperReports Library version 6.1.1  -->
-<!-- 2017-05-08T10:59:01 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="803" leftMargin="39" rightMargin="0" topMargin="17" bottomMargin="0" uuid="9a3e59f5-6675-48cf-ad74-9c42b5a5b290">
-    <property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
-    <property name="com.jaspersoft.studio.unit." value="mm"/>
-    <property name="com.jaspersoft.studio.unit.pageHeight" value="mm"/>
-    <property name="com.jaspersoft.studio.unit.pageWidth" value="mm"/>
-    <property name="com.jaspersoft.studio.unit.topMargin" value="mm"/>
-    <property name="com.jaspersoft.studio.unit.bottomMargin" value="mm"/>
-    <property name="com.jaspersoft.studio.unit.leftMargin" value="mm"/>
-    <property name="com.jaspersoft.studio.unit.rightMargin" value="mm"/>
-    <property name="com.jaspersoft.studio.unit.columnWidth" value="mm"/>
-    <property name="com.jaspersoft.studio.unit.columnSpacing" value="mm"/>
-    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
-    <parameter name="mapSubReport" class="java.lang.String"/>
-    <parameter name="mapContext" class="org.mapfish.print.attribute.map.MapfishMapContext"/>
-    <detail>
-        <band height="482">
-            <property name="com.jaspersoft.studio.unit.height" value="mm"/>
-            <subreport>
-                <reportElement x="0" y="0" width="762" height="481" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d">
-                    <property name="local_mesure_unitwidth" value="pixel"/>
-                    <property name="local_mesure_unitheight" value="pixel"/>
-                    <property name="com.jaspersoft.studio.unit.height" value="mm"/>
-                </reportElement>
-                <subreportExpression><![CDATA[$P{mapSubReport}]]></subreportExpression>
-            </subreport>
-        </band>
-    </detail>
+	<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
+	<property name="com.jaspersoft.studio.unit." value="mm"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="mm"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="mm"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="mm"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="mm"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="mm"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="mm"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="mm"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="mm"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="mapSubReport" class="java.lang.String"/>
+	<parameter name="mapContext" class="org.mapfish.print.attribute.map.MapfishMapContext"/>
+	<detail>
+		<band height="482">
+			<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+			<subreport>
+				<reportElement x="0" y="0" width="762" height="481" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+				</reportElement>
+				<subreportExpression><![CDATA[$P{mapSubReport}]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
 </jasperReport>

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.10.0.final using JasperReports Library version 6.10.0-unknown  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TocReport" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="493" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" whenResourceMissingType="Empty" uuid="6e74177b-d551-4a75-ae51-6cdde3f284ce">
 	<property name="net.sf.jasperreports.bookmarks.data.source.parameter" value="REPORT_DATA_SOURCE"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
@@ -40,7 +39,7 @@
 				<hyperlinkReferenceExpression><![CDATA[((ArrayList)$P{TOC_Appendices}.get($P{Theme_Text})).add($F{Title}.equals("") ? $F{OfficialTitle} : $F{Title}) ? "" : ""]]></hyperlinkReferenceExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true" bookmarkLevel="2">
-				<reportElement stretchType="ContainerHeight" x="0" y="0" width="300" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" forecolor="#000000" uuid="114a9f86-a715-4eb3-a8a3-5b17bad23c1a">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="300" height="13" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" forecolor="#000000" uuid="114a9f86-a715-4eb3-a8a3-5b17bad23c1a">
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					<property name="local_mesure_unity" value="pixel"/>
 					<property name="local_mesure_unitheight" value="pixel"/>
@@ -56,7 +55,7 @@
 		<band height="9">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<subreport>
-				<reportElement stretchType="ContainerBottom" mode="Transparent" x="0" y="0" width="300" height="9" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="aea2a6e2-1814-4099-b8e4-6e588177db99">
+				<reportElement stretchType="RelativeToBandHeight" mode="Transparent" x="0" y="0" width="300" height="9" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="aea2a6e2-1814-4099-b8e4-6e588177db99">
 					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 					<property name="local_mesure_unitheight" value="pixel"/>
 					<property name="local_mesure_unity" value="pixel"/>
