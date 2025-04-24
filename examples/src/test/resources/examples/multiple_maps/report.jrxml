@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9a3e59f5-6675-48cf-ad74-9c42b5a5b290">
+<jasperReport name="report" language="java" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9a3e59f5-6675-48cf-ad74-9c42b5a5b290">
 	<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
@@ -14,50 +13,35 @@
 	<parameter name="title" class="java.lang.String"/>
 	<parameter name="mapSubReport1" class="java.lang.String"/>
 	<parameter name="mapSubReport2" class="java.lang.String"/>
-	<title>
-		<band height="50" splitType="Stretch">
-			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-			<textField>
-				<reportElement x="0" y="0" width="800" height="50" forecolor="#187ECC" uuid="3988392b-f1e2-4eda-9cb4-7caa2b3eb0cc">
-					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
-				</reportElement>
-				<textElement textAlignment="Center">
-					<font size="36"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{title}]]></textFieldExpression>
-			</textField>
-		</band>
+	<title height="50" splitType="Stretch">
+		<element kind="textField" uuid="3988392b-f1e2-4eda-9cb4-7caa2b3eb0cc" x="0" y="0" width="800" height="50" forecolor="#187ECC" fontSize="36.0" hTextAlign="Center">
+			<expression><![CDATA[$P{title}]]></expression>
+			<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+		</element>
+		<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 	</title>
 	<detail>
 		<band height="505">
+			<element kind="subreport" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d" x="4" y="50" width="200" height="405">
+				<expression><![CDATA[$P{mapSubReport1}]]></expression>
+				<property name="local_mesure_unitwidth" value="pixel"/>
+				<property name="local_mesure_unitheight" value="pixel"/>
+			</element>
+			<element kind="subreport" uuid="7a185ad3-37d1-488a-9581-13ecadc22b97" x="300" y="0" width="500" height="505">
+				<expression><![CDATA[$P{mapSubReport2}]]></expression>
+				<property name="local_mesure_unitwidth" value="pixel"/>
+				<property name="local_mesure_unitheight" value="pixel"/>
+				<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+			</element>
+			<element kind="rectangle" uuid="ccc6d01f-61d3-419a-bdd1-7554c4534b77" mode="Transparent" x="4" y="50" width="200" height="405">
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			</element>
+			<element kind="rectangle" uuid="036d1917-5d22-44b9-8aaa-b1051b30d673" mode="Transparent" x="300" y="0" width="500" height="505">
+				<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			</element>
 			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-			<subreport>
-				<reportElement x="4" y="50" width="200" height="405" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d">
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="local_mesure_unitheight" value="pixel"/>
-				</reportElement>
-				<subreportExpression><![CDATA[$P{mapSubReport1}]]></subreportExpression>
-			</subreport>
-			<subreport>
-				<reportElement x="300" y="0" width="500" height="505" uuid="7a185ad3-37d1-488a-9581-13ecadc22b97">
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="local_mesure_unitheight" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
-				</reportElement>
-				<subreportExpression><![CDATA[$P{mapSubReport2}]]></subreportExpression>
-			</subreport>
-			<rectangle>
-				<reportElement mode="Transparent" x="4" y="50" width="200" height="405" uuid="ccc6d01f-61d3-419a-bdd1-7554c4534b77">
-					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-				</reportElement>
-			</rectangle>
-			<rectangle>
-				<reportElement mode="Transparent" x="300" y="0" width="500" height="505" uuid="036d1917-5d22-44b9-8aaa-b1051b30d673">
-					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-				</reportElement>
-			</rectangle>
 		</band>
 	</detail>
 </jasperReport>

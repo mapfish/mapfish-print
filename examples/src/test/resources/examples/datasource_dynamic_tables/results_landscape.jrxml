@@ -1,23 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="gmf16_A4_portrait" pageWidth="800" pageHeight="595" orientation="Landscape" columnWidth="800" leftMargin="0" rightMargin="0" topMargin="20" bottomMargin="20" whenResourceMissingType="Key" uuid="3664412a-b6c6-4e1c-8c14-6c4af7e6efc2">
+<jasperReport name="gmf16_A4_portrait" language="java" pageWidth="800" pageHeight="595" orientation="Landscape" columnWidth="800" leftMargin="0" rightMargin="0" topMargin="20" bottomMargin="20" whenResourceMissingType="Key" uuid="3664412a-b6c6-4e1c-8c14-6c4af7e6efc2">
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<field name="title" class="java.lang.String"/>
 	<field name="tableDataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
 	<field name="tableSubReport" class="java.lang.String"/>
 	<detail>
 		<band height="65">
-			<subreport>
-				<reportElement x="0" y="23" width="255" height="42" isPrintInFirstWholeBand="true" uuid="2d58b926-6505-49df-ac13-667df92d4cb1"/>
+			<element kind="subreport" uuid="2d58b926-6505-49df-ac13-667df92d4cb1" x="0" y="23" width="255" height="42" printInFirstWholeBand="true">
 				<dataSourceExpression><![CDATA[$F{tableDataSource}]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$F{tableSubReport}]]></subreportExpression>
-			</subreport>
-			<textField>
-				<reportElement x="0" y="0" width="200" height="23" uuid="84bad327-cec3-4c53-b019-5c14b3fdacda"/>
-				<textElement>
-					<font size="16" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{title}]]></textFieldExpression>
-			</textField>
+				<expression><![CDATA[$F{tableSubReport}]]></expression>
+			</element>
+			<element kind="textField" uuid="84bad327-cec3-4c53-b019-5c14b3fdacda" x="0" y="0" width="200" height="23" fontSize="16.0" bold="true">
+				<expression><![CDATA[$F{title}]]></expression>
+			</element>
 		</band>
 	</detail>
 </jasperReport>

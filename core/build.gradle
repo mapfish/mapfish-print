@@ -206,7 +206,7 @@ dependencies {
             'net.sf.jasperreports:jasperreports-spring:7.0.2',
             'net.sf.jasperreports:jasperreports-velocity:7.0.1',
             'net.sf.jasperreports:jasperreports-xalan:7.0.2',
-
+            'xalan:serializer:2.7.3',
             // https://mvnrepository.com/artifact/org.jfree/jfreechart
             'org.jfree:jfreechart:1.5.5',
             'org.jfree:jcommon:1.0.24',

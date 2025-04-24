@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="803" leftMargin="39" rightMargin="0" topMargin="17" bottomMargin="0" uuid="9a3e59f5-6675-48cf-ad74-9c42b5a5b290">
+<jasperReport name="report" language="java" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="803" leftMargin="39" rightMargin="0" topMargin="17" bottomMargin="0" uuid="9a3e59f5-6675-48cf-ad74-9c42b5a5b290">
 	<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
 	<property name="com.jaspersoft.studio.unit." value="mm"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="mm"/>
@@ -15,15 +14,13 @@
 	<parameter name="mapContext" class="org.mapfish.print.attribute.map.MapfishMapContext"/>
 	<detail>
 		<band height="482">
+			<element kind="subreport" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d" x="0" y="0" width="762" height="481">
+				<expression><![CDATA[$P{mapSubReport}]]></expression>
+				<property name="local_mesure_unitwidth" value="pixel"/>
+				<property name="local_mesure_unitheight" value="pixel"/>
+				<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+			</element>
 			<property name="com.jaspersoft.studio.unit.height" value="mm"/>
-			<subreport>
-				<reportElement x="0" y="0" width="762" height="481" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d">
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="local_mesure_unitheight" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
-				</reportElement>
-				<subreportExpression><![CDATA[$P{mapSubReport}]]></subreportExpression>
-			</subreport>
 		</band>
 	</detail>
 </jasperReport>

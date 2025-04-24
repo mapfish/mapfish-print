@@ -1,58 +1,38 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Baselland_A4_Portrait" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5fb2edee-19b3-488e-bb13-1a3c485efd5f">
+<jasperReport name="Baselland_A4_Portrait" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5fb2edee-19b3-488e-bb13-1a3c485efd5f">
 	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
 	<parameter name="title" class="java.lang.String"/>
 	<parameter name="comments" class="java.lang.String"/>
 	<field name="title" class="java.lang.String"/>
 	<field name="description" class="java.lang.String"/>
 	<field name="mapSubReport" class="java.lang.String"/>
-	<title>
-		<band height="73">
-			<textField>
-				<reportElement x="0" y="0" width="455" height="20" uuid="b7d7f846-300d-49ac-96c9-7a138b077f01"/>
-				<textElement>
-					<font size="14" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{title}]]></textFieldExpression>
-			</textField>
-			<textField pattern="MMMMM dd, yyyy">
-				<reportElement x="455" y="0" width="100" height="20" uuid="683ac128-5095-4dcc-849f-3014faec93b6"/>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="20" width="555" height="38" uuid="9d4bd1be-fa73-48eb-8811-e5ccd5a92a75"/>
-				<textFieldExpression><![CDATA[$P{comments}]]></textFieldExpression>
-			</textField>
-		</band>
+	<title height="73">
+		<element kind="textField" uuid="b7d7f846-300d-49ac-96c9-7a138b077f01" x="0" y="0" width="455" height="20" fontSize="14.0" bold="true">
+			<expression><![CDATA[$P{title}]]></expression>
+		</element>
+		<element kind="textField" uuid="683ac128-5095-4dcc-849f-3014faec93b6" x="455" y="0" width="100" height="20" pattern="MMMMM dd, yyyy">
+			<expression><![CDATA[new java.util.Date()]]></expression>
+		</element>
+		<element kind="textField" uuid="9d4bd1be-fa73-48eb-8811-e5ccd5a92a75" x="0" y="20" width="555" height="38">
+			<expression><![CDATA[$P{comments}]]></expression>
+		</element>
 	</title>
 	<detail>
 		<band height="209" splitType="Stretch">
-			<textField>
-				<reportElement x="0" y="0" width="340" height="23" uuid="b00afc01-efec-4c59-98a7-7416c100f0b3"/>
-				<textElement>
-					<font size="16" isBold="true" isItalic="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{title}]]></textFieldExpression>
-			</textField>
-			<subreport>
-				<reportElement mode="Transparent" x="355" y="0" width="200" height="200" backcolor="#FFFFFF" uuid="c889b337-f931-43d3-b6b5-07e9adb33106">
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="local_mesure_unitheight" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<subreportExpression><![CDATA[$F{mapSubReport}]]></subreportExpression>
-			</subreport>
-			<line>
-				<reportElement x="0" y="200" width="555" height="5" uuid="85fcc37b-cbf7-46cc-92f9-b9964e439552"/>
-			</line>
-			<textField>
-				<reportElement x="0" y="30" width="340" height="110" uuid="c53ce7bb-2c35-4f08-ae84-577e87d8a47f"/>
-				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
-			</textField>
+			<element kind="textField" uuid="b00afc01-efec-4c59-98a7-7416c100f0b3" x="0" y="0" width="340" height="23" fontSize="16.0" bold="true" italic="true">
+				<expression><![CDATA[$F{title}]]></expression>
+			</element>
+			<element kind="subreport" uuid="c889b337-f931-43d3-b6b5-07e9adb33106" mode="Transparent" x="355" y="0" width="200" height="200" backcolor="#FFFFFF">
+				<expression><![CDATA[$F{mapSubReport}]]></expression>
+				<property name="local_mesure_unitwidth" value="pixel"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<property name="local_mesure_unitheight" value="pixel"/>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="line" uuid="85fcc37b-cbf7-46cc-92f9-b9964e439552" x="0" y="200" width="555" height="5"/>
+			<element kind="textField" uuid="c53ce7bb-2c35-4f08-ae84-577e87d8a47f" x="0" y="30" width="340" height="110">
+				<expression><![CDATA[$F{description}]]></expression>
+			</element>
 		</band>
 	</detail>
-	<summary>
-		<band height="65" splitType="Stretch"/>
-	</summary>
+	<summary height="65" splitType="Stretch"/>
 </jasperReport>

@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="pdfextract" pageWidth="595" pageHeight="842" sectionType="Part" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30" whenResourceMissingType="Error" uuid="d2716064-8ae4-40cf-a575-33afba400e3a">
+<jasperReport name="pdfextract" language="java" pageWidth="595" pageHeight="842" sectionType="Part" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30" whenResourceMissingType="Error" uuid="d2716064-8ae4-40cf-a575-33afba400e3a">
 	<property name="net.sf.jasperreports.print.create.bookmarks" value="true"/>
 	<property name="net.sf.jasperreports.export.pdfa.icc.profile.path" value="sRGB_IEC61966-2-1_black_scaled.icc"/>
 	<property name="net.sf.jasperreports.export.pdf.exclude.key.TransparentImage" value=""/>
 	<property name="net.sf.jasperreports.styles.inherit.from.default" value="false"/>
 	<property name="net.sf.jasperreports.export.pdfa.conformance" value="pdfa1a"/>
 	<property name="net.sf.jasperreports.export.pdf.tagged" value="true"/>
-	<style name="Default" isDefault="true" fontName="Cadastra" fontSize="8"/>
+	<style name="Default" default="true" fontName="Cadastra" fontSize="8.0"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
 	<parameter name="isReduced" class="java.lang.Boolean"/>
 	<parameter name="ExtractIdentifier" class="java.lang.String"/>
@@ -60,7 +59,7 @@
 		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
 	</parameter>
 	<variable name="TOC_Appendices" class="java.util.Map">
-		<variableExpression><![CDATA[new java.util.HashMap()]]></variableExpression>
+		<expression><![CDATA[new java.util.HashMap()]]></expression>
 	</variable>
 	<group name="Titlepage and TOC"/>
 </jasperReport>
