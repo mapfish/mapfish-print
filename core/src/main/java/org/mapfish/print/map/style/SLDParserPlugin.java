@@ -100,7 +100,6 @@ public class SLDParserPlugin implements StyleParserPlugin {
       dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
       DocumentBuilder db = dbf.newDocumentBuilder();
       db.setErrorHandler(new ErrorHandler());
-      System.out.println("HERE-BYTES: " + new String(bytes));
       db.parse(new ByteArrayInputStream(bytes));
 
       // then read the styles
