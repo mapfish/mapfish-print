@@ -29,6 +29,9 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
   @Value("${httpRequest.fetchRetry.intervalMillis}")
   private int httpRequestFetchRetryIntervalMillis;
 
+  @Value("${httpRequest.disableSSLCertificateCheck}")
+  private boolean httpRequestFetchDisableSSLCertificateCheck;
+
   /**
    * Constructor.
    *
@@ -80,6 +83,10 @@ public final class ConfigFileResolvingHttpRequestFactory implements MfClientHttp
 
   public int getHttpRequestFetchRetryIntervalMillis() {
     return httpRequestFetchRetryIntervalMillis;
+  }
+
+  public boolean disableSSLCertificateCheck() {
+    return httpRequestFetchDisableSSLCertificateCheck;
   }
 
   public List<RequestConfigurator> getCallbacks() {
