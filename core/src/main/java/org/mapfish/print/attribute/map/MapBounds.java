@@ -106,7 +106,11 @@ public abstract class MapBounds {
 
     if (geodetic) {
       newScale =
-          new Scale(result.getScale(unit).getDenominator(dpi) * scaleRatio, getProjection(), dpi);
+          new Scale(
+              result.getScale(unit).getDenominator(org.mapfish.print.Constants.PDF_DPI)
+                  * scaleRatio,
+              getProjection(),
+              dpi);
     } else {
       newScale = result.getScale(unit);
     }

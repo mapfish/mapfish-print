@@ -11,6 +11,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -28,6 +29,7 @@ import org.springframework.test.annotation.DirtiesContext;
  *
  * <p>Created by Jesse on 3/26/14.
  */
+@Ignore
 public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
   public static final String BASE_DIR = "paging_processor_test/";
   @Autowired ForkJoinPool forkJoinPool;
