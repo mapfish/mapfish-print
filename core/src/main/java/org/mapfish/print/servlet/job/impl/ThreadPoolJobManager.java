@@ -2,6 +2,7 @@ package org.mapfish.print.servlet.job.impl;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.persistence.PessimisticLockException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -640,7 +641,7 @@ public class ThreadPoolJobManager implements JobManager {
             }
           }
         }
-      } catch (javax.persistence.PessimisticLockException e) {
+      } catch (PessimisticLockException e) {
         // Ignore error on pessimistic locking
         unhealthyCountersHealthCheck.recordUnhealthyProblem(
             getClass().getSimpleName(), "ignoredPessimisticLockIssue");
