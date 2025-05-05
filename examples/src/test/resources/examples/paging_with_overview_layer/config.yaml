@@ -16,27 +16,20 @@ templates:
           scale: 500
           overlap: 0
           renderPagingOverview: true
-          pagingOverviewStyle: {
-            "version": "2",
-            "*": {
-              "symbolizers": [
-                {
-                  "strokeColor": "yellow",
-                  "strokeDashstyle": "solid",
-                  "strokeOpacity": 1,
-                  "strokeWidth": 1.5,
-                  "type": "line"
-                },
-                {
-                  "type": "text",
-                  "label": "[name]",
-                  "haloRadius": 1.5,
-                  "haloColor": "yellow",
-                  "fontColor": "red"
-                }
-              ]
-            }
-          }
+          pagingOverviewStyle:
+            version: "2"
+            "*":
+              symbolizers:
+                - type: line
+                  strokeColor: yellow
+                  strokeDashstyle: solid
+                  strokeOpacity: 1
+                  strokeWidth: 1.5
+                - type: text
+                  label: "[name]"
+                  haloRadius: 1.5
+                  haloColor: yellow
+                  fontColor: red
       scalebar: !scalebar
         width: 240
         height: 40

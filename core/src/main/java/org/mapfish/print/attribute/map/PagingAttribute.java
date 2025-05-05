@@ -10,7 +10,7 @@ import org.mapfish.print.parser.HasDefaultValue;
  * Attribute that defines how a map is displayed across many pages.
  *
  * <p>This is used by the <a href="processors.html#!paging">paging processor</a>.
- * [[examples=paging]]
+ * [[examples=paging,paging_with_overview_layer]]
  */
 public final class PagingAttribute
     extends ReflectiveAttribute<PagingAttribute.PagingProcessorValues> {
