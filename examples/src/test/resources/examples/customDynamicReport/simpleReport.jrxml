@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version last-->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9a3e59f5-6675-48cf-ad74-9c42b5a5b290">
+<jasperReport name="report" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9a3e59f5-6675-48cf-ad74-9c42b5a5b290">
 	<parameter name="mapSubReport" class="java.lang.String"/>
 	<parameter name="name" class="java.lang.String"/>
 	<parameter name="description" class="java.lang.String"/>
@@ -9,55 +7,31 @@
 	<field name="tableDataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
 	<field name="displayName" class="java.lang.String"/>
 	<field name="reportTemplate" class="java.lang.String"/>
-	<title>
-		<band height="390" splitType="Stretch">
-			<staticText>
-				<reportElement x="0" y="1" width="555" height="50" uuid="3988392b-f1e2-4eda-9cb4-7caa2b3eb0cc"/>
-				<textElement textAlignment="Center">
-					<font size="36"/>
-				</textElement>
-				<text><![CDATA[The Map]]></text>
-			</staticText>
-			<subreport>
-				<reportElement x="0" y="51" width="555" height="230" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d"/>
-				<subreportExpression><![CDATA[$P{mapSubReport}]]></subreportExpression>
-			</subreport>
-			<textField>
-				<reportElement x="0" y="280" width="555" height="23" uuid="245a4b0e-d6e2-4c82-a5ec-072b3cc182e4"/>
-				<textElement>
-					<font size="16" isBold="true" isItalic="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{name}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="300" width="555" height="23" uuid="5b59bca0-4d72-4f52-889c-833479a3edc2"/>
-				<textElement>
-					<font size="16" isBold="true" isItalic="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{description}]]></textFieldExpression>
-			</textField>
-			<break>
-				<reportElement x="0" y="360" width="100" height="1" uuid="63e34d7f-6ef9-4306-9b19-45d6f38fc760"/>
-			</break>
-		</band>
+	<title height="390" splitType="Stretch">
+		<element kind="staticText" uuid="3988392b-f1e2-4eda-9cb4-7caa2b3eb0cc" x="0" y="1" width="555" height="50" fontSize="36.0" hTextAlign="Center">
+			<text><![CDATA[The Map]]></text>
+		</element>
+		<element kind="subreport" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d" x="0" y="51" width="555" height="230">
+			<expression><![CDATA[$P{mapSubReport}]]></expression>
+		</element>
+		<element kind="textField" uuid="245a4b0e-d6e2-4c82-a5ec-072b3cc182e4" x="0" y="280" width="555" height="23" fontSize="16.0" bold="true" italic="true">
+			<expression><![CDATA[$P{name}]]></expression>
+		</element>
+		<element kind="textField" uuid="5b59bca0-4d72-4f52-889c-833479a3edc2" x="0" y="300" width="555" height="23" fontSize="16.0" bold="true" italic="true">
+			<expression><![CDATA[$P{description}]]></expression>
+		</element>
+		<element kind="break" uuid="63e34d7f-6ef9-4306-9b19-45d6f38fc760" x="0" y="360" width="100" height="1"/>
 	</title>
 	<detail>
 		<band height="65" splitType="Stretch">
-			<textField>
-				<reportElement x="0" y="0" width="555" height="23" uuid="d07b4b5c-e5f3-45ce-8c22-f020b1473383"/>
-				<textElement>
-					<font size="16" isBold="true" isItalic="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{displayName}]]></textFieldExpression>
-			</textField>
-			<subreport>
-				<reportElement x="0" y="23" width="555" height="42" uuid="b4cae0ad-a520-425e-b790-d6984af7ddc8"/>
+			<element kind="textField" uuid="d07b4b5c-e5f3-45ce-8c22-f020b1473383" x="0" y="0" width="555" height="23" fontSize="16.0" bold="true" italic="true">
+				<expression><![CDATA[$F{displayName}]]></expression>
+			</element>
+			<element kind="subreport" uuid="b4cae0ad-a520-425e-b790-d6984af7ddc8" x="0" y="23" width="555" height="42">
 				<dataSourceExpression><![CDATA[$F{tableDataSource}]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$F{reportTemplate}]]></subreportExpression>
-			</subreport>
-			<break>
-				<reportElement x="0" y="64" width="100" height="1" uuid="7e3114a8-51b8-438d-94ee-9878ddf894dd"/>
-			</break>
+				<expression><![CDATA[$F{reportTemplate}]]></expression>
+			</element>
+			<element kind="break" uuid="7e3114a8-51b8-438d-94ee-9878ddf894dd" x="0" y="64" width="100" height="1"/>
 		</band>
 	</detail>
 </jasperReport>
