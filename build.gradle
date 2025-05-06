@@ -3,10 +3,11 @@ buildscript {
         mavenCentral()
         maven { url "https://plugins.gradle.org/m2/" }
     }
+}
 
-    dependencies {
-        classpath "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.7.5"
-    }
+
+plugins {
+ id("com.github.spotbugs") version "6.1.9"
 }
 
 defaultTasks 'build'
@@ -27,6 +28,10 @@ configurations.configureEach {
     }
 }
 
+import com.github.spotbugs.snom.Effort
+import com.github.spotbugs.snom.Confidence
+
+
 configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     apply plugin: 'java'
     apply plugin: 'com.github.spotbugs'
@@ -46,10 +51,10 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     }
 
     spotbugs {
-        toolVersion = "4.7.3" // com.github.spotbugs:spotbugs-annotations
+        toolVersion = "4.8.6" // com.github.spotbugs:spotbugs-annotations
         reportsDir = file("$project.buildDir/reports/SpotBugsReports")
-        effort = "max"
-        reportLevel = "high"
+        effort = Effort.valueOf('MAX')
+        reportLevel = Confidence.valueOf('HIGH')
     }
 
     java {
