@@ -164,6 +164,8 @@ dependencies {
             'org.geotools:gt-cql:32.2',
     )
     jasper(
+            'net.sf.jasperreports:jasperreports-annotation-processors:7.0.2',
+            'net.sf.jasperreports:jasperreports-ant:7.0.2',
             'net.sf.jasperreports:jasperreports:7.0.2',
             'net.sf.jasperreports:jasperreports-barbecue:7.0.2',
             'net.sf.jasperreports:jasperreports-barcode4j:7.0.2',
@@ -184,7 +186,7 @@ dependencies {
             'net.sf.jasperreports:jasperreports-spring:7.0.2',
             'xalan:serializer:2.7.3',
             // https://mvnrepository.com/artifact/org.jfree/jfreechart
-            'org.jfree:jcommon:1.0.24',
+            'org.jfree:jcommon:1.0.24', 
             'org.apache.groovy:groovy-all:4.0.26',
             'com.itextpdf:itextpdf:5.5.13.4',
             'ar.com.fdvs:DynamicJasper:5.3.9',
