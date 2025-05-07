@@ -96,6 +96,13 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
     getMapAttributes(requestData).put("dpi", 254);
     testPrint(config, requestData, "higher-dpi", format, 3);
 
+    config = configurationFactory.getConfig(getFile(BASE_DIR + "config-geodetic.yaml"));
+    requestData = loadJsonRequestData();
+    testPrint(config, requestData, "geodetic", format, 0);
+
+    getMapAttributes(requestData).put("dpi", 254);
+    testPrint(config, requestData, "higher-dpi-geodetic", format, 3);
+
     config = configurationFactory.getConfig(getFile(BASE_DIR + "config-scalebar.yaml"));
     requestData = loadJsonRequestData();
     testPrint(config, requestData, "scalebar", format, 0);

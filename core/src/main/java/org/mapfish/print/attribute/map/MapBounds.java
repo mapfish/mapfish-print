@@ -1,7 +1,5 @@
 package org.mapfish.print.attribute.map;
 
-import static org.mapfish.print.Constants.PDF_DPI;
-
 import java.awt.Rectangle;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -108,8 +106,7 @@ public abstract class MapBounds {
 
     if (geodetic) {
       newScale =
-          new Scale(
-              result.getScale(unit).getDenominator(PDF_DPI) * scaleRatio, getProjection(), dpi);
+          new Scale(result.getScale(unit).getDenominator(dpi) * scaleRatio, getProjection(), dpi);
     } else {
       newScale = result.getScale(unit);
     }
