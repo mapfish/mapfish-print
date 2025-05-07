@@ -78,7 +78,7 @@ public class HttpProxyTest {
 
     httpsServer = createHttpsServer(HTTPS_PROXY_PORT);
   }
-  
+
   @AfterClass
   public static void tearDownClass() {
     proxyServer.stop(0);
@@ -210,9 +210,12 @@ public class HttpProxyTest {
     httpProxy.setPort(PROXY_PORT);
 
     final String path = "/request";
-    var proxyContext = proxyServer.createContext(path, (HttpExchange httpExchange) -> {
-        respond(httpExchange, MESSAGE_FROM_PROXY, 200);
-    });
+    var proxyContext =
+        proxyServer.createContext(
+            path,
+            (HttpExchange httpExchange) -> {
+              respond(httpExchange, MESSAGE_FROM_PROXY, 200);
+            });
 
     assertCorrectResponse(
         httpProxy, MESSAGE_FROM_PROXY, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
@@ -227,27 +230,31 @@ public class HttpProxyTest {
     httpProxy.setUsername("username");
 
     final String path = "/username";
-    var userContext = httpsServer.createContext(path, (HttpExchange httpExchange) -> {
-        final String authorization = httpExchange.getRequestHeaders().getFirst("Authorization");
-        if (authorization == null) {
-            httpExchange
+    var userContext =
+        httpsServer.createContext(
+            path,
+            (HttpExchange httpExchange) -> {
+              final String authorization =
+                  httpExchange.getRequestHeaders().getFirst("Authorization");
+              if (authorization == null) {
+                httpExchange
                     .getResponseHeaders()
                     .add("WWW-Authenticate", "Basic realm=\"Test Site\"");
-            httpExchange.sendResponseHeaders(401, 0);
-            httpExchange.close();
-        } else {
-            final String expectedAuth = "Basic dXNlcm5hbWU6bnVsbA==";
-            if (authorization.equals(expectedAuth)) {
-                respond(httpExchange, MESSAGE_FROM_PROXY, 200);
-            } else {
-                final String errorMessage =
-                        String.format(
-                                "Expected authorization:\n" + "'%s' but got:\n" + "'%s'",
-                                expectedAuth, authorization);
-                respond(httpExchange, errorMessage, 500);
-            }
-        }
-    });
+                httpExchange.sendResponseHeaders(401, 0);
+                httpExchange.close();
+              } else {
+                final String expectedAuth = "Basic dXNlcm5hbWU6bnVsbA==";
+                if (authorization.equals(expectedAuth)) {
+                  respond(httpExchange, MESSAGE_FROM_PROXY, 200);
+                } else {
+                  final String errorMessage =
+                      String.format(
+                          "Expected authorization:\n" + "'%s' but got:\n" + "'%s'",
+                          expectedAuth, authorization);
+                  respond(httpExchange, errorMessage, 500);
+                }
+              }
+            });
 
     assertCorrectResponse(
         httpProxy, MESSAGE_FROM_PROXY, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
@@ -263,29 +270,29 @@ public class HttpProxyTest {
     httpProxy.setPassword("password");
 
     final String path = "/usernameAndPassword";
-    httpsServer.createContext(path, (HttpExchange httpExchange) -> {
-        final String authorization = httpExchange.getRequestHeaders().getFirst("Authorization");
-        if (authorization == null) {
-            httpExchange
-                    .getResponseHeaders()
-                    .add("WWW-Authenticate", "Basic realm=\"Test Site\"");
+    httpsServer.createContext(
+        path,
+        (HttpExchange httpExchange) -> {
+          final String authorization = httpExchange.getRequestHeaders().getFirst("Authorization");
+          if (authorization == null) {
+            httpExchange.getResponseHeaders().add("WWW-Authenticate", "Basic realm=\"Test Site\"");
             httpExchange.sendResponseHeaders(401, 0);
             httpExchange.close();
-        } else {
+          } else {
             final String expectedAuth = "Basic dXNlcm5hbWU6cGFzc3dvcmQ=";
             if (authorization.equals(expectedAuth)) {
-                respond(httpExchange, MESSAGE_FROM_PROXY, 200);
+              respond(httpExchange, MESSAGE_FROM_PROXY, 200);
             } else {
-                final String errorMessage =
-                        "Expected authorization:\n'"
-                        + expectedAuth
-                        + "' but got:\n'"
-                        + authorization
-                        + "'";
-                respond(httpExchange, errorMessage, 500);
+              final String errorMessage =
+                  "Expected authorization:\n'"
+                      + expectedAuth
+                      + "' but got:\n'"
+                      + authorization
+                      + "'";
+              respond(httpExchange, errorMessage, 500);
             }
-        }
-    });
+          }
+        });
 
     assertCorrectResponse(
         httpProxy, MESSAGE_FROM_PROXY, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
@@ -302,13 +309,17 @@ public class HttpProxyTest {
     final String message = "Target was reached without proxy";
 
     final String path = "/nomatch";
-    targetServer.createContext(path, (HttpExchange httpExchange) -> {
-        respond(httpExchange, message, 200);
-    });
-    proxyServer.createContext(path, (HttpExchange httpExchange) -> {
-        String msg = "Proxy was reached but in this test the proxy should not have been used.";
-        respond(httpExchange, msg, 500);
-    });
+    targetServer.createContext(
+        path,
+        (HttpExchange httpExchange) -> {
+          respond(httpExchange, message, 200);
+        });
+    proxyServer.createContext(
+        path,
+        (HttpExchange httpExchange) -> {
+          String msg = "Proxy was reached but in this test the proxy should not have been used.";
+          respond(httpExchange, msg, 500);
+        });
 
     assertCorrectResponse(httpProxy, message, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
   }
@@ -324,13 +335,20 @@ public class HttpProxyTest {
     final String message = "Target was reached without proxy";
 
     final String path = "/nomatch";
-    var nomatchContext = targetServer.createContext(path, (httpExchange) -> {
-        respond(httpExchange, message, 200);
-    });
-    var nomatchProxyContext = proxyServer.createContext(path, (httpExchange) -> {
-        String msg = "Proxy was reached but in this test the proxy should not have been used.";
-        respond(httpExchange, msg, 500);
-    });
+    var nomatchContext =
+        targetServer.createContext(
+            path,
+            (httpExchange) -> {
+              respond(httpExchange, message, 200);
+            });
+    var nomatchProxyContext =
+        proxyServer.createContext(
+            path,
+            (httpExchange) -> {
+              String msg =
+                  "Proxy was reached but in this test the proxy should not have been used.";
+              respond(httpExchange, msg, 500);
+            });
 
     assertCorrectResponse(httpProxy, message, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
     targetServer.removeContext(nomatchContext);
