@@ -67,8 +67,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
   @Autowired private ServletInfo servletInfo;
   @Autowired private ServletMapPrinterFactory printerFactory;
   @Autowired private ThreadPoolJobManager jobManager;
-  @Autowired private TestHttpClientFactory requestFactory;  
-  
+  @Autowired private TestHttpClientFactory requestFactory;
+
   @Test
   public void testExampleRequest() throws Exception {
     setUpConfigFiles();

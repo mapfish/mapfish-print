@@ -76,9 +76,10 @@ public abstract class AbstractFeatureSourceLayerPlugin<P> implements MapLayerFac
     };
   }
 
-  /** 
+  /**
    * Sets the style parser for this feature source layer.
-   * @param parser 
+   *
+   * @param parser
    */
   public final void setParser(final StyleParser parser) {
     this.parser = parser;
