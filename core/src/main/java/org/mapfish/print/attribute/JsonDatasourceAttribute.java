@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.annotation.Nonnull;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.data.JsonDataSource;
+import net.sf.jasperreports.json.data.JsonDataSource;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;

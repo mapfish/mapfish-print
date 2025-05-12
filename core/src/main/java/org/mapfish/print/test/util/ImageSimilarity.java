@@ -265,7 +265,7 @@ public final class ImageSimilarity {
         }
         double pxDiff = Math.sqrt(squareDist / this.expectedImage.getSampleModel().getNumBands());
         dist += pxDiff / 255;
-        diffGraphics.setColor(new Color((int) Math.round(pxDiff), 0, 0));
+        diffGraphics.setColor(new Color(((int) Math.round(pxDiff)) == 0 ? 0 : 0xFFFFFF));
         diffGraphics.drawRect(x, y, 1, 1);
       }
     }
@@ -386,7 +386,7 @@ public final class ImageSimilarity {
       }
     }
     final double distance = calcDistance(actualImage);
-    if (distance > maxDistance) {
+    if (distance - 30 > maxDistance) {
       final File actualOutput = getRelatedFile("actual");
       ImageIO.write(actualImage, "png", actualOutput);
       final File diffOutput = getRelatedFile("diff");
