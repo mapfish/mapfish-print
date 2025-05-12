@@ -174,6 +174,8 @@ public class CreateMapPagesProcessor
                   map.getWidth(),
                   map.getHeight(),
                   (@Nonnull final MapAttributeValues input) -> {
+                    // Setting zoomToFeatures to null to ensure that the map does not automatically
+                    // zoom to any features, as the bounding box (bbox) is explicitly defined below.
                     input.zoomToFeatures = null;
                     input.center = null;
                     input.bbox =
