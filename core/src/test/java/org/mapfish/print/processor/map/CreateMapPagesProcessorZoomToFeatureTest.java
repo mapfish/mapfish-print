@@ -2,14 +2,12 @@ package org.mapfish.print.processor.map;
 
 import static org.junit.Assert.assertEquals;
 
-import com.google.common.base.Predicate;
 import com.google.common.io.Files;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ForkJoinPool;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,19 +31,14 @@ public class CreateMapPagesProcessorZoomToFeatureTest extends AbstractMapfishSpr
   @Autowired private ConfigurationFactory configurationFactory;
   @Autowired private TestHttpClientFactory requestFactory;
   @Autowired private Map<String, OutputFormat> outputFormat;
-  @Autowired ForkJoinPool forkJoinPool;
 
   @Before
   public void setUp() throws Exception {
     final String host = "paging_processor_zoom_to_features_test";
     requestFactory.registerHandler(
-        new Predicate<URI>() {
-          @Override
-          public boolean apply(URI input) {
-            return (("" + input.getHost()).contains(host + ".json"))
-                || input.getAuthority().contains(host + ".json");
-          }
-        },
+        input ->
+            (("" + input.getHost()).contains(host + ".json"))
+                || input.getAuthority().contains(host + ".json"),
         new TestHttpClientFactory.Handler() {
           @Override
           public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod)
@@ -80,11 +73,7 @@ public class CreateMapPagesProcessorZoomToFeatureTest extends AbstractMapfishSpr
       throws Exception {
     JasperPrint print =
         format.getJasperPrint(
-                new HashMap<String, String>(),
-                requestData,
-                config,
-                config.getDirectory(),
-                getTaskDirectory())
+                new HashMap<>(), requestData, config, config.getDirectory(), getTaskDirectory())
             .print;
     assertEquals(7, print.getPages().size());
     for (int i = 0; i < print.getPages().size(); i++) {
