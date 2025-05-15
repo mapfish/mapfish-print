@@ -3,6 +3,7 @@ package org.mapfish.print.processor;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -251,7 +252,7 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
         return action.get();
       } finally {
         if (changed) {
-          MDC.setContextMap(prev);
+          MDC.setContextMap(prev != null ? prev : new HashMap<>());
         }
       }
     }
@@ -268,7 +269,7 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
         return action.call();
       } finally {
         if (mdcChanged) {
-          MDC.setContextMap(prev);
+          MDC.setContextMap(prev != null ? prev : new HashMap<>());
         }
       }
     }
