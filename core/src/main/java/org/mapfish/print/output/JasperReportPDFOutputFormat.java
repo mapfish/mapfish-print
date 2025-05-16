@@ -15,7 +15,7 @@ import net.sf.jasperreports.pdf.type.PdfVersionEnum;
 import org.mapfish.print.config.PDFConfig;
 import org.mapfish.print.processor.ExecutionStats;
 
-/** An PDF output format that uses Jasper reports to generate the result. */
+/** A PDF output format that uses Jasper reports to generate the result. */
 public final class JasperReportPDFOutputFormat extends AbstractJasperReportOutputFormat
     implements OutputFormat {
 
@@ -32,24 +32,7 @@ public final class JasperReportPDFOutputFormat extends AbstractJasperReportOutpu
   @Override
   protected void doExport(final OutputStream outputStream, final Print print) throws JRException {
 
-    JRPdfExporter exporter =
-        new JRPdfExporter(print.context) {
-          @Override
-          protected void initReport() {
-            super.initReport();
-            // We use a WeakHashMap as an image cache to allow it to be automatically cleared
-            // when memory becomes low, while preserving the functionality (which helps produce a
-            // smaller PDF).
-            this.loadedImagesMap =
-                new WeakHashMap<>() {
-                  @Override
-                  public Pair<PdfImage, ExifOrientationEnum> put(
-                      final String key, final Pair<PdfImage, ExifOrientationEnum> value) {
-                    return super.put(new String(key.toCharArray()), value);
-                  }
-                };
-          }
-        };
+    JRPdfExporter exporter = new JRPdfExporterWeakHashMap(print.context);
 
     exporter.setExporterInput(new SimpleExporterInput(print.print));
     exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
