@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 import net.sf.jasperreports.engine.JasperPrint;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -59,6 +60,13 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
     final AbstractJasperReportOutputFormat format =
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     testPrint(config, requestData, "default-aoi", format, 0);
+
+    getPagingAttributes(requestData).put("renderPagingOverview", "true");
+    testPrint(config, requestData, "paging-overview-layer", format, 0);
+
+    getPagingAttributes(requestData).put("pagingOverviewStyle", createPagingOverviewStyle());
+    testPrint(config, requestData, "paging-overview-layer-styled", format, 0);
+    getPagingAttributes(requestData).put("renderPagingOverview", "false");
 
     getAreaOfInterest(requestData).put("display", "CLIP");
     testPrint(config, requestData, "clip-full-aoi", format, 0);
@@ -125,6 +133,33 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
   private JSONObject getMapAttributes(PJsonObject requestData) throws JSONException {
     final PJsonObject attributes = requestData.getJSONObject("attributes");
     return attributes.getInternalObj().optJSONObject("map");
+  }
+
+  private JSONObject createPagingOverviewStyle() throws JSONException {
+    JSONObject jsonStyle = new JSONObject();
+    jsonStyle.put("version", "2");
+    final JSONObject lineSymb = new JSONObject();
+    lineSymb.put("type", "line");
+    lineSymb.put("strokeColor", "blue");
+    lineSymb.put("strokeDashstyle", "solid");
+    lineSymb.put("strokeOpacity", "1");
+    lineSymb.put("strokeWidth", "1.5");
+
+    final JSONObject textSymb = new JSONObject();
+    textSymb.put("type", "text");
+    textSymb.put("label", "[name]");
+    textSymb.put("haloRadius", "1.5");
+    textSymb.put("haloColor", "yellow");
+    textSymb.put("fontColor", "red");
+
+    JSONArray symbs = new JSONArray();
+    symbs.put(lineSymb);
+    symbs.put(textSymb);
+
+    JSONObject rule = new JSONObject();
+    rule.put("symbolizers", symbs);
+    jsonStyle.put("*", rule);
+    return jsonStyle;
   }
 
   private void testPrint(

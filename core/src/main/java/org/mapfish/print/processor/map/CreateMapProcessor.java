@@ -482,6 +482,11 @@ public final class CreateMapProcessor
     final List<MapLayer> layers = new ArrayList<>(mapValues.getLayers());
     Collections.reverse(layers);
 
+    // add pagingOverviewLayer if present. this layer is only rendered in the main map.
+    if (mapValues.getPagingOverviewLayer() != null) {
+      layers.add(mapValues.getPagingOverviewLayer());
+    }
+
     HttpRequestFetcher cache =
         new HttpRequestFetcher(
             printDirectory, this.metricRegistry, context, this.requestForkJoinPool);
