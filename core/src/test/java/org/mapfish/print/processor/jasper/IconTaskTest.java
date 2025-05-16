@@ -14,6 +14,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.AbstractProcessor;
@@ -54,7 +55,8 @@ public class IconTaskTest {
       throws URISyntaxException, IOException {
     LegendProcessor legendProcessorMock = spy(LegendProcessor.class);
     when(legendProcessorMock.getMissingImage()).thenReturn(missingImage);
-    Processor.ExecutionContext context = new AbstractProcessor.Context(new HashMap<>());
+    Processor.ExecutionContext context =
+        new AbstractProcessor.Context(new HashMap<>(), new AtomicBoolean(false));
     URL icon = mock(URL.class);
     when(icon.toURI()).thenReturn(new URI("http://localhost/icon.png"));
     when(icon.getProtocol()).thenReturn("http");

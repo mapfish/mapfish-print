@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -51,7 +52,8 @@ public class CreateNorthArrowProcessorSvgTest extends AbstractMapfishSpringTest 
             this.requestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
     this.forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
     String northArrowGraphic = values.getObject("northArrowGraphic", String.class);

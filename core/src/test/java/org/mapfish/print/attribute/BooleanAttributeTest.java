@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -38,7 +39,8 @@ public class BooleanAttributeTest extends AbstractMapfishSpringTest {
             httpClientFactory,
             config.getDirectory(),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
 
     assertTrue(values.getBoolean("field1"));
     assertFalse(values.getBoolean("field2"));
