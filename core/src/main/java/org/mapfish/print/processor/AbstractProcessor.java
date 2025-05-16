@@ -207,7 +207,7 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
   /** Default implementation of {@link org.mapfish.print.processor.Processor.ExecutionContext}. */
   public static final class Context implements ExecutionContext {
     @Nonnull private final Map<String, String> mdcContext;
-    private AtomicBoolean canceled;
+    private final AtomicBoolean canceled;
     private final ExecutionStats stats = new ExecutionStats();
 
     /**
@@ -247,7 +247,7 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
       this.stopIfCanceled();
       final Map<String, String> prev = MDC.getCopyOfContextMap();
       final String prevJomId = MDC.get(MDC_JOB_ID_KEY);
-      final String jobId = this.mdcContext == null ? null : this.mdcContext.get(MDC_JOB_ID_KEY);
+      final String jobId = this.mdcContext.get(MDC_JOB_ID_KEY);
       boolean changed = prevJomId == null || (jobId != null && jobId.equals(prevJomId));
       if (changed) {
         MDC.setContextMap(this.mdcContext);

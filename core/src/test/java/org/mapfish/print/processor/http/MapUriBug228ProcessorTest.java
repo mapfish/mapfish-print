@@ -1,6 +1,7 @@
 package org.mapfish.print.processor.http;
 
 import static org.junit.Assert.assertEquals;
+import static org.mapfish.print.output.Values.MDC_CONTEXT_KEY;
 
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +66,7 @@ public class MapUriBug228ProcessorTest extends AbstractMapfishSpringTest {
     values.put(Values.TASK_DIRECTORY_KEY, temporaryFolder.getRoot());
     values.put(Values.VALUES_KEY, values);
     values.put(Values.TEMPLATE_KEY, template);
+    values.put(MDC_CONTEXT_KEY, new HashMap<>());
     MapAttribute.MapAttributeValues map = getMapValue(template);
     values.put("map", map);
     NorthArrowAttribute.NorthArrowAttributeValues northArrow = getNorthArrowValue(template);
