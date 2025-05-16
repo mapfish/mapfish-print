@@ -1,22 +1,18 @@
 package org.mapfish.print.output;
 
 import java.io.OutputStream;
-import java.util.WeakHashMap;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.PrintPageFormat;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.util.ExifOrientationEnum;
-import net.sf.jasperreports.engine.util.Pair;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
-import net.sf.jasperreports.export.pdf.PdfImage;
 import net.sf.jasperreports.export.type.PdfVersionEnum;
 import org.mapfish.print.config.PDFConfig;
 import org.mapfish.print.processor.ExecutionStats;
 
-/** An PDF output format that uses Jasper reports to generate the result. */
+/** A PDF output format that uses Jasper reports to generate the result. */
 public final class JasperReportPDFOutputFormat extends AbstractJasperReportOutputFormat
     implements OutputFormat {
 
@@ -33,24 +29,7 @@ public final class JasperReportPDFOutputFormat extends AbstractJasperReportOutpu
   @Override
   protected void doExport(final OutputStream outputStream, final Print print) throws JRException {
 
-    JRPdfExporter exporter =
-        new JRPdfExporter(print.context) {
-          @Override
-          protected void initReport() {
-            super.initReport();
-            // We use a WeakHashMap as an image cache to allow it to be automatically cleared
-            // when memory becomes low, while preserving the functionality (which helps produce a
-            // smaller PDF).
-            this.loadedImagesMap =
-                new WeakHashMap<>() {
-                  @Override
-                  public Pair<PdfImage, ExifOrientationEnum> put(
-                      final String key, final Pair<PdfImage, ExifOrientationEnum> value) {
-                    return super.put(new String(key.toCharArray()), value);
-                  }
-                };
-          }
-        };
+    JRPdfExporter exporter = new JRPdfExporterWeakHashMap(print.context);
 
     exporter.setExporterInput(new SimpleExporterInput(print.print));
     exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
