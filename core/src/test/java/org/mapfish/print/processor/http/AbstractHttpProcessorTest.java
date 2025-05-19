@@ -1,8 +1,10 @@
 package org.mapfish.print.processor.http;
 
 import static org.junit.Assert.assertEquals;
+import static org.mapfish.print.output.Values.MDC_CONTEXT_KEY;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
@@ -71,6 +73,7 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
         Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
         new MfClientHttpRequestFactoryProvider(this.httpClientFactory));
     values.put(Values.VALUES_KEY, values);
+    values.put(MDC_CONTEXT_KEY, new HashMap<>());
     addExtraValues(values);
     forkJoinPool.invoke(graph.createTask(values));
   }

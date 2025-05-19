@@ -2,8 +2,10 @@ package org.mapfish.print.processor.http;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.mapfish.print.output.Values.MDC_CONTEXT_KEY;
 
 import java.net.URI;
+import java.util.HashMap;
 import javax.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +54,7 @@ public class ForwardHeadersProcessorTest extends AbstractHttpProcessorTest {
                 + " \"header3\": [\"header3-value\"]}");
     headers.requestHeaders = new PJsonObject(inner, "headers");
     values.put("requestHeaders", headers);
+    values.put(MDC_CONTEXT_KEY, new HashMap<>());
   }
 
   @Test

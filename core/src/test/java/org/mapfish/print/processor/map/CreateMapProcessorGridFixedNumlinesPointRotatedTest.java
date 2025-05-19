@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -65,7 +66,8 @@ public class CreateMapProcessorGridFixedNumlinesPointRotatedTest extends Abstrac
               this.requestFactory,
               new File("."),
               HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-              HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+              HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+              new AtomicBoolean(false));
 
       final ForkJoinTask<Values> taskFuture =
           this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));

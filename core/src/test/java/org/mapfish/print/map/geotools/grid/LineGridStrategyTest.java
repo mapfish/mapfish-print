@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -51,7 +52,9 @@ public class LineGridStrategyTest {
     MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, true, true);
     final List<? extends Layer> layers =
         layer.getLayers(
-            new TestHttpClientFactory(), context, new AbstractProcessor.Context(new HashMap<>()));
+            new TestHttpClientFactory(),
+            context,
+            new AbstractProcessor.Context(new HashMap<>(), new AtomicBoolean(false)));
     assertEquals(1, layers.size());
 
     FeatureSource<?, ?> fs = layers.get(0).getFeatureSource();
@@ -92,7 +95,9 @@ public class LineGridStrategyTest {
     MapfishMapContext context = new MapfishMapContext(bounds, mapSize, rotation, dpi, true, true);
     final List<? extends Layer> layers =
         layer.getLayers(
-            new TestHttpClientFactory(), context, new AbstractProcessor.Context(new HashMap<>()));
+            new TestHttpClientFactory(),
+            context,
+            new AbstractProcessor.Context(new HashMap<>(), new AtomicBoolean(false)));
     assertEquals(1, layers.size());
 
     FeatureSource<?, ?> fs = layers.get(0).getFeatureSource();

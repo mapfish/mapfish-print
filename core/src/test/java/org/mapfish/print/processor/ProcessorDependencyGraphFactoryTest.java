@@ -4,11 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mapfish.print.output.Values.MDC_CONTEXT_KEY;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
@@ -145,6 +147,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     final TestOrderExecution execution = new TestOrderExecution();
     Values values = new Values();
     values.put(EXECUTION_TRACKER, execution);
+    values.put(MDC_CONTEXT_KEY, new HashMap<>());
     forkJoinPool.invoke(graph.createTask(values));
 
     assertEquals(execution.testOrderExecution.toString(), 5, execution.testOrderExecution.size());
@@ -164,6 +167,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     final TestOrderExecution execution = new TestOrderExecution();
     Values values = new Values();
     values.put(EXECUTION_TRACKER, execution);
+    values.put(MDC_CONTEXT_KEY, new HashMap<>());
     forkJoinPool.invoke(graph.createTask(values));
 
     assertEquals(execution.testOrderExecution.toString(), 5, execution.testOrderExecution.size());
@@ -185,6 +189,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     final TestOrderExecution execution = new TestOrderExecution();
     Values values = new Values();
     values.put(EXECUTION_TRACKER, execution);
+    values.put(MDC_CONTEXT_KEY, new HashMap<>());
     forkJoinPool.invoke(graph.createTask(values));
 
     assertEquals(execution.testOrderExecution.toString(), 6, execution.testOrderExecution.size());
@@ -227,6 +232,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     final TestOrderExecution execution = new TestOrderExecution();
     Values values = new Values();
     values.put(EXECUTION_TRACKER, execution);
+    values.put(MDC_CONTEXT_KEY, new HashMap<>());
     values.put("map2", "ov-map");
     forkJoinPool.invoke(graph.createTask(values));
 
@@ -278,6 +284,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     final TestOrderExecution execution = new TestOrderExecution();
     Values values = new Values();
     values.put(EXECUTION_TRACKER, execution);
+    values.put(MDC_CONTEXT_KEY, new HashMap<>());
     values.put("map2", "the 2nd map definition");
     forkJoinPool.invoke(graph.createTask(values));
 
@@ -310,6 +317,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     final TestOrderExecution execution = new TestOrderExecution();
     Values values = new Values();
     values.put(EXECUTION_TRACKER, execution);
+    values.put(MDC_CONTEXT_KEY, new HashMap<>());
 
     forkJoinPool.invoke(graph.createTask(values));
 
@@ -337,6 +345,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     final TestOrderExecution execution = new TestOrderExecution();
     Values values = new Values();
     values.put(Values.VALUES_KEY, values);
+    values.put(MDC_CONTEXT_KEY, new HashMap<>());
     values.put(EXECUTION_TRACKER, execution);
 
     forkJoinPool.invoke(graph.createTask(values));
@@ -368,7 +377,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     Values values = new Values();
     values.put(Values.VALUES_KEY, values);
     values.put(EXECUTION_TRACKER, execution);
-
+    values.put(MDC_CONTEXT_KEY, new HashMap<>());
     forkJoinPool.invoke(graph.createTask(values));
 
     assertEquals(0, execution.testOrderExecution.size());

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.junit.Before;
@@ -48,7 +49,8 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
             this.httpRequestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
     final MapAttribute.MapAttributeValues mapValue =
         values.getObject("map", MapAttribute.MapAttributeValues.class);
     final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =
@@ -86,7 +88,8 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
             this.httpRequestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
     final MapAttribute.MapAttributeValues mapValue =
         values.getObject("map", MapAttribute.MapAttributeValues.class);
     final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =
@@ -125,7 +128,8 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
             this.httpRequestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
     final MapAttribute.MapAttributeValues mapValue =
         values.getObject("map", MapAttribute.MapAttributeValues.class);
     final OverviewMapAttribute.OverviewMapAttributeValues overviewMapValue =

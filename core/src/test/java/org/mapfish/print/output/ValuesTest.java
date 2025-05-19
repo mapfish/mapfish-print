@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -48,7 +49,8 @@ public class ValuesTest extends AbstractMapfishSpringTest {
             this.httpRequestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
 
     assertTrue(values.containsKey("title"));
     assertEquals("title", values.getString("title"));
@@ -88,7 +90,8 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         this.httpRequestFactory,
         new File("."),
         HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-        HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+        HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+        new AtomicBoolean(false));
   }
 
   @Test
@@ -111,7 +114,8 @@ public class ValuesTest extends AbstractMapfishSpringTest {
             this.httpRequestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
 
     assertTrue(values.containsKey("title"));
     assertEquals("title", values.getString("title"));
@@ -162,6 +166,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
         this.httpRequestFactory,
         new File("."),
         HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-        HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+        HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+        new AtomicBoolean(false));
   }
 }
