@@ -7,9 +7,9 @@ import static org.mapfish.print.output.JasperReportImageOutputFormat.IMAGE_TYPES
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.annotations.VisibleForTesting;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfWriter;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -283,8 +283,9 @@ public final class CreateMapProcessor
     int height = mapContext.getMapSize().height;
 
     if ("pdf".equalsIgnoreCase(outputFormat)) {
-      try (com.lowagie.text.Document document =
-          new com.lowagie.text.Document(new com.lowagie.text.Rectangle(width, height))) {
+      try {
+        com.itextpdf.text.Document document =
+          new com.itextpdf.text.Document(new com.itextpdf.text.Rectangle(width, height));
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(mergedGraphic));
         document.open();
         PdfContentByte pdfCB = writer.getDirectContent();

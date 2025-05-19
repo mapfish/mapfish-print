@@ -163,12 +163,19 @@ dependencies {
             'org.geotools:gt-cql:33.0',
     )
     jasper(
-            'net.sf.jasperreports:jasperreports:6.21.4',
-            'net.sf.jasperreports:jasperreports-fonts:6.21.4',
-            'net.sf.jasperreports:jasperreports-functions:6.21.4',
-            'org.codehaus.groovy:groovy-all:3.0.23',
             'ar.com.fdvs:DynamicJasper:5.3.9',
-            'joda-time:joda-time:2.13.1',
+            'com.itextpdf:itextpdf:5.5.13.4',
+            'joda-time:joda-time:2.14.0',
+            'net.sf.jasperreports:jasperreports:7.0.2',
+            'net.sf.jasperreports:jasperreports-excel-poi:7.0.2',
+            'net.sf.jasperreports:jasperreports-fonts:7.0.2',
+            'net.sf.jasperreports:jasperreports-functions:7.0.2',
+            'net.sf.jasperreports:jasperreports-json:7.0.2',
+            'net.sf.jasperreports:jasperreports-jdt:7.0.2',
+            'net.sf.jasperreports:jasperreports-pdf:7.0.2',
+            'org.jfree:jcommon:1.0.24',
+            'org.apache.groovy:groovy-all:4.0.26',
+            'xalan:serializer:2.7.3',
     )
     implementation(
             'org.slf4j:slf4j-api:2.0.16',

@@ -1,4 +1,4 @@
-import groovy.util.slurpersupport.NoChildren
+import groovy.xml.XmlSlurper
 import org.ccil.cowan.tagsoup.Parser
 
 import java.lang.reflect.Field
@@ -17,7 +17,7 @@ class DocsXmlSupport {
     static String appendXmlToBuilder(node, StringBuilder stringBuilder) {
         stringBuilder.append("<").append(node.name())
 
-        if (node instanceof NoChildren) {
+        if (node.children().isEmpty()) {
             stringBuilder.append(">")
         } else {
             node.attributes().each { name, value ->
