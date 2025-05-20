@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version last-->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Baselland_A4_Portrait" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5fb2edee-19b3-488e-bb13-1a3c485efd5f">
-	<style name="Default" isDefault="true" fontName="Liberation Sans"/>
+<jasperReport name="Baselland_A4_Portrait" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5fb2edee-19b3-488e-bb13-1a3c485efd5f">
+	<style name="Default" default="true" fontName="Liberation Sans"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
 	<parameter name="title" class="java.lang.String"/>
 	<parameter name="comments" class="java.lang.String"/>
@@ -13,85 +11,53 @@
 	<field name="tableDataSource" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
 	<field name="title" class="java.lang.String"/>
 	<field name="tableSubReport" class="java.lang.String"/>
-	<title>
-		<band height="700">
-			<textField>
-				<reportElement x="0" y="0" width="455" height="20" uuid="b7d7f846-300d-49ac-96c9-7a138b077f01"/>
-				<textElement>
-					<font size="14" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{title}]]></textFieldExpression>
-			</textField>
-			<textField pattern="MMMMM dd, yyyy">
-				<reportElement x="455" y="0" width="100" height="20" uuid="683ac128-5095-4dcc-849f-3014faec93b6"/>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="20" width="555" height="38" uuid="9d4bd1be-fa73-48eb-8811-e5ccd5a92a75"/>
-				<textFieldExpression><![CDATA[$P{comments}]]></textFieldExpression>
-			</textField>
-			<subreport>
-				<reportElement mode="Transparent" x="0" y="58" width="554" height="634" backcolor="#FFFFFF" uuid="c889b337-f931-43d3-b6b5-07e9adb33106"/>
-				<subreportExpression><![CDATA[$P{mapSubReport}]]></subreportExpression>
-			</subreport>
-			<subreport>
-				<reportElement x="200" y="200" width="200" height="200" uuid="951bcde7-ee49-434c-96e7-9a4c72628b82"/>
-				<subreportExpression><![CDATA[$P{northArrowSubReport}]]></subreportExpression>
-			</subreport>
-			<subreport>
-				<reportElement x="0" y="240" width="230" height="40" uuid="27704f4b-934c-4f32-bfa8-7ba6a84fc794"/>
-				<subreportExpression><![CDATA[$P{scalebarSubReport}]]></subreportExpression>
-			</subreport>
-		</band>
+	<title height="700">
+		<element kind="textField" uuid="b7d7f846-300d-49ac-96c9-7a138b077f01" x="0" y="0" width="455" height="20" fontSize="14.0" bold="true">
+			<expression><![CDATA[$P{title}]]></expression>
+		</element>
+		<element kind="textField" uuid="683ac128-5095-4dcc-849f-3014faec93b6" x="455" y="0" width="100" height="20" pattern="MMMMM dd, yyyy">
+			<expression><![CDATA[new java.util.Date()]]></expression>
+		</element>
+		<element kind="textField" uuid="9d4bd1be-fa73-48eb-8811-e5ccd5a92a75" x="0" y="20" width="555" height="38">
+			<expression><![CDATA[$P{comments}]]></expression>
+		</element>
+		<element kind="subreport" uuid="c889b337-f931-43d3-b6b5-07e9adb33106" mode="Transparent" x="0" y="58" width="554" height="634" backcolor="#FFFFFF">
+			<expression><![CDATA[$P{mapSubReport}]]></expression>
+		</element>
+		<element kind="subreport" uuid="951bcde7-ee49-434c-96e7-9a4c72628b82" x="200" y="200" width="200" height="200">
+			<expression><![CDATA[$P{northArrowSubReport}]]></expression>
+		</element>
+		<element kind="subreport" uuid="27704f4b-934c-4f32-bfa8-7ba6a84fc794" x="0" y="240" width="230" height="40">
+			<expression><![CDATA[$P{scalebarSubReport}]]></expression>
+		</element>
 	</title>
-	<pageHeader>
-		<band height="26" splitType="Stretch">
-			<textField pattern="MMMMM dd, yyyy">
-				<reportElement x="455" y="0" width="100" height="20" uuid="09a6a75f-e95f-48dd-8784-33ac8325d863"/>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="0" width="455" height="20" uuid="529718eb-ee13-45e9-b45f-cbc428ddfc35"/>
-				<textElement>
-					<font size="14" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{title}]]></textFieldExpression>
-			</textField>
-		</band>
+	<pageHeader height="26" splitType="Stretch">
+		<element kind="textField" uuid="09a6a75f-e95f-48dd-8784-33ac8325d863" x="455" y="0" width="100" height="20" pattern="MMMMM dd, yyyy">
+			<expression><![CDATA[new java.util.Date()]]></expression>
+		</element>
+		<element kind="textField" uuid="529718eb-ee13-45e9-b45f-cbc428ddfc35" x="0" y="0" width="455" height="20" fontSize="14.0" bold="true">
+			<expression><![CDATA[$P{title}]]></expression>
+		</element>
 	</pageHeader>
 	<detail>
 		<band height="65" splitType="Stretch">
-			<textField>
-				<reportElement x="0" y="0" width="555" height="23" uuid="b00afc01-efec-4c59-98a7-7416c100f0b3"/>
-				<textElement>
-					<font size="16" isBold="true" isItalic="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{title}]]></textFieldExpression>
-			</textField>
-			<subreport>
-				<reportElement x="0" y="23" width="555" height="42" uuid="e1c028e8-5edc-4911-8f28-481a06730bc7"/>
+			<element kind="textField" uuid="b00afc01-efec-4c59-98a7-7416c100f0b3" x="0" y="0" width="555" height="23" fontSize="16.0" bold="true" italic="true">
+				<expression><![CDATA[$F{title}]]></expression>
+			</element>
+			<element kind="subreport" uuid="e1c028e8-5edc-4911-8f28-481a06730bc7" x="0" y="23" width="555" height="42">
 				<dataSourceExpression><![CDATA[$F{tableDataSource}]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$F{tableSubReport}]]></subreportExpression>
-			</subreport>
-			<break>
-				<reportElement x="0" y="64" width="100" height="1" uuid="7c96cf6a-0c02-4a65-ba72-965e4df64001"/>
-			</break>
+				<expression><![CDATA[$F{tableSubReport}]]></expression>
+			</element>
+			<element kind="break" uuid="7c96cf6a-0c02-4a65-ba72-965e4df64001" x="0" y="64" width="100" height="1"/>
 		</band>
 	</detail>
-	<summary>
-		<band height="65" splitType="Stretch">
-			<textField>
-				<reportElement x="0" y="0" width="555" height="23" uuid="7cc154e2-8f1e-4a6b-81f7-19b4e21a6f25"/>
-				<textElement>
-					<font size="16" isBold="true" isItalic="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Legend"]]></textFieldExpression>
-			</textField>
-			<subreport>
-				<reportElement mode="Transparent" x="0" y="23" width="554" height="42" backcolor="#FFFFFF" uuid="9c27cdfd-7317-4f81-8115-90c941506c51"/>
-				<dataSourceExpression><![CDATA[$P{legendDataSource}]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{legendSubReport}]]></subreportExpression>
-			</subreport>
-		</band>
+	<summary height="65" splitType="Stretch">
+		<element kind="textField" uuid="7cc154e2-8f1e-4a6b-81f7-19b4e21a6f25" x="0" y="0" width="555" height="23" fontSize="16.0" bold="true" italic="true">
+			<expression><![CDATA["Legend"]]></expression>
+		</element>
+		<element kind="subreport" uuid="9c27cdfd-7317-4f81-8115-90c941506c51" mode="Transparent" x="0" y="23" width="554" height="42" backcolor="#FFFFFF">
+			<dataSourceExpression><![CDATA[$P{legendDataSource}]]></dataSourceExpression>
+			<expression><![CDATA[$P{legendSubReport}]]></expression>
+		</element>
 	</summary>
 </jasperReport>
