@@ -285,7 +285,7 @@ public final class CreateMapProcessor
     if ("pdf".equalsIgnoreCase(outputFormat)) {
       try {
         com.itextpdf.text.Document document =
-          new com.itextpdf.text.Document(new com.itextpdf.text.Rectangle(width, height));
+            new com.itextpdf.text.Document(new com.itextpdf.text.Rectangle(width, height));
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(mergedGraphic));
         document.open();
         PdfContentByte pdfCB = writer.getDirectContent();
