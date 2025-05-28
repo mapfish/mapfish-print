@@ -4,7 +4,7 @@ Please read the documentation available here: <https://mapfish.github.io/mapfish
 
 # Prerequisites
 
-Building mapfish-print requires make and Docker.
+Building mapfish-print requires make and docker.
 
 # Build
 
