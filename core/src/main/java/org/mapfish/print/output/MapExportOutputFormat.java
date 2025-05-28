@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
 import org.apache.commons.io.IOUtils;
 import org.mapfish.print.Constants;
@@ -103,7 +104,8 @@ public class MapExportOutputFormat implements OutputFormat {
             null,
             this.fileSuffix,
             httpRequestMaxNumberFetchRetry,
-            httpRequestFetchRetryIntervalMillis);
+            httpRequestFetchRetryIntervalMillis,
+            new AtomicBoolean(false));
 
     final ProcessorDependencyGraph.ProcessorGraphForkJoinTask task =
         template.getProcessorGraph().createTask(values);

@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -48,7 +49,8 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
             this.httpClientFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
     forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
     final MapAttribute.MapAttributeValues map =

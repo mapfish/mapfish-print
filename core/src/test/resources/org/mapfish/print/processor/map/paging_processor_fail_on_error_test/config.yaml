@@ -1,0 +1,27 @@
+templates:
+  #===========================================================================
+  main: !template
+  #===========================================================================
+    reportTemplate: simpleReport.jrxml
+    attributes:
+      map: !map
+        maxDpi: 400
+        width: 780
+        height: 330
+        zoomSnapTolerance: 0.025
+        zoomLevelSnapStrategy: CLOSEST_LOWER_SCALE_ON_TIE
+        zoomLevels: !zoomLevels
+          scales: [5000, 10000, 50000, 110000, 500000, 1000000]
+      paging: !paging
+        default:
+          scale: 500
+          overlap: 0
+    processors:
+    - !reportBuilder # compile all reports in current directory
+      directory: '.'
+    - !createMapPages {} # creates the iterable<Values> consumed by dataSource
+    - !createMap {}
+    - !createDataSource
+      processors:
+        - !createMap {}
+    tableData: jrDataSource
