@@ -183,7 +183,7 @@ dependencies {
             'org.slf4j:jul-to-slf4j:2.0.16',
             'ch.qos.logback:logback-classic:1.5.16',
             'ch.qos.logback:logback-access:1.5.16',
-            'org.json:json:20250107',
+            'org.json:json:20250517',
             'org.yaml:snakeyaml:2.3',
             'com.github.spullara.cli-parser:cli-parser:1.1.6',
             'com.sun.mail:javax.mail:1.6.2',
