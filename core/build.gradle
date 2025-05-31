@@ -153,14 +153,14 @@ dependencies {
             'io.dropwizard.metrics:metrics-logback:4.2.30',
     )
     geotools(
-            'org.geotools:gt-epsg-hsql:33.0',
-            'org.geotools:gt-render:33.0',
-            'org.geotools:gt-geojson:33.0',
-            'org.geotools:gt-geotiff:33.0',
-            'org.geotools:gt-wms:33.0',
-            'org.geotools.xsd:gt-xsd-gml3:33.0',
-            'org.geotools:gt-svg:33.0',
-            'org.geotools:gt-cql:33.0',
+            'org.geotools:gt-epsg-hsql:33.1',
+            'org.geotools:gt-render:33.1',
+            'org.geotools:gt-geojson:33.1',
+            'org.geotools:gt-geotiff:33.1',
+            'org.geotools:gt-wms:33.1',
+            'org.geotools.xsd:gt-xsd-gml3:33.1',
+            'org.geotools:gt-svg:33.1',
+            'org.geotools:gt-cql:33.1',
     )
     jasper(
             'net.sf.jasperreports:jasperreports:6.21.4',
