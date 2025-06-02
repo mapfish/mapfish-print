@@ -5,6 +5,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -48,6 +53,48 @@ public class ConfigurationFactoryTest extends AbstractMapfishSpringTest {
     Processor processor = template.getProcessorGraph().getRoots().get(0).getProcessor();
     assertTrue(processor.toString(), processor instanceof ProcessorWithSpringInjection);
     ((ProcessorWithSpringInjection) processor).assertInjected();
+  }
+
+  @Test
+  public void testParallelConfigLoading() throws Exception {
+    File configFileThread1 = getFile(ConfigurationFactoryTest.class, "configThread1.yaml");
+    File configFileThread2 = getFile(ConfigurationFactoryTest.class, "configThread2.yaml");
+    ExecutorService executor = Executors.newFixedThreadPool(2);
+    CountDownLatch startLatch = new CountDownLatch(1);
+
+    Callable<Boolean> task1 =
+        () -> {
+          startLatch.await();
+          Configuration config = configurationFactory.getConfig(configFileThread1);
+          if (config.getTemplates() != null && config.getTemplates().containsKey("main")) {
+            return config.getTemplate("main").getAttributes().get("thread1") != null;
+          }
+          return false;
+        };
+
+    Callable<Boolean> task2 =
+        () -> {
+          startLatch.await();
+          Configuration config = configurationFactory.getConfig(configFileThread2);
+          if (config.getTemplates() != null && config.getTemplates().containsKey("main")) {
+            return config.getTemplate("main").getAttributes().get("thread2") != null;
+          }
+          return false;
+        };
+
+    Future<Boolean> thread1Futur = executor.submit(task1);
+    Future<Boolean> thread2Futur = executor.submit(task2);
+
+    // Threads start at the same time
+    startLatch.countDown();
+
+    boolean thread1Result = thread1Futur.get();
+    boolean thread2Result = thread2Futur.get();
+
+    assertTrue("thread 1 configuration loading was not OK", thread1Result);
+    assertTrue("thread 2 configuration loading was not OK", thread2Result);
+
+    executor.shutdown();
   }
 
   @Test

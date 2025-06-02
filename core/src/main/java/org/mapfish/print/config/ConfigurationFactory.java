@@ -67,20 +67,23 @@ public class ConfigurationFactory {
     configuration.setConfigurationFile(configFile);
     MapfishPrintConstructor.setConfigurationUnderConstruction(configuration);
 
-    final Configuration config =
-        this.yamlThreadLocal.get().load(new InputStreamReader(configData, StandardCharsets.UTF_8));
-    if (this.doValidation) {
-      final List<Throwable> validate = config.validate();
-      if (!validate.isEmpty()) {
-        StringBuilder errors = new StringBuilder();
-        for (Throwable throwable : validate) {
-          errors.append("\n\t* ").append(throwable.getMessage());
-          LOGGER.error("Configuration Error found", throwable);
+    try (InputStreamReader reader = new InputStreamReader(configData, StandardCharsets.UTF_8)) {
+      final Configuration config = this.yamlThreadLocal.get().load(reader);
+      if (this.doValidation) {
+        final List<Throwable> validate = config.validate();
+        if (!validate.isEmpty()) {
+          StringBuilder errors = new StringBuilder();
+          for (Throwable throwable : validate) {
+            errors.append("\n\t* ").append(throwable.getMessage());
+            LOGGER.error("Configuration Error found", throwable);
+          }
+          throw new Error(errors.toString(), validate.get(0));
         }
-        throw new Error(errors.toString(), validate.get(0));
       }
+      return config;
+    } finally {
+      this.yamlThreadLocal.remove();
     }
-    return config;
   }
 
   /**
