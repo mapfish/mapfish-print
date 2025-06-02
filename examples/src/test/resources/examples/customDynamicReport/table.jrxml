@@ -1,41 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DJR_2141" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" scriptletClass="ar.com.fdvs.dj.core.DJDefaultScriptlet" whenResourceMissingType="Key" uuid="e034c6ef-7449-4a6a-9b5e-4ce04cc083b2">
-	<style name="dj_style_1_" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Center" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="14" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded="false">
+<jasperReport name="DJR_2141" language="java" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" scriptletClass="ar.com.fdvs.dj.core.DJDefaultScriptlet" whenResourceMissingType="Key" uuid="e034c6ef-7449-4a6a-9b5e-4ce04cc083b2">
+	<style name="dj_style_1_" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hTextAlign="Center" vTextAlign="Middle" hImageAlign="Center" vImageAlign="Middle" rotation="None" blankWhenNull="true" fontName="DejaVu Sans" fontSize="14.0" bold="true" italic="false" underline="false" pdfEmbedded="false">
 		<box padding="2">
 			<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 			<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="dj_style_2_" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Left" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded="false">
+	<style name="dj_style_2_" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hTextAlign="Left" vTextAlign="Middle" hImageAlign="Left" vImageAlign="Middle" rotation="None" blankWhenNull="true" fontName="DejaVu Sans" fontSize="12.0" bold="false" italic="false" underline="false" pdfEmbedded="false">
 		<box padding="2">
 			<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="DejaVu Sans_for_column_DJR_2141_COLUMN_0_" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Left" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded="false">
+	<style name="DejaVu Sans_for_column_DJR_2141_COLUMN_0_" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hTextAlign="Left" vTextAlign="Middle" hImageAlign="Left" vImageAlign="Middle" rotation="None" blankWhenNull="true" fontName="DejaVu Sans" fontSize="12.0" bold="false" italic="false" underline="false" pdfEmbedded="false">
 		<box padding="2">
 			<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 		</box>
-		<conditionalStyle>
+		<conditionalStyle mode="Opaque" backcolor="#E6E6E6">
 			<conditionExpression><![CDATA[new java.lang.Boolean(((Number)$V{REPORT_COUNT}).doubleValue() % 2 == 0)]]></conditionExpression>
-			<style mode="Opaque" backcolor="#E6E6E6"/>
 		</conditionalStyle>
 	</style>
-	<style name="DejaVu Sans_for_column_DJR_2141_COLUMN_1_" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Left" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded="false">
+	<style name="DejaVu Sans_for_column_DJR_2141_COLUMN_1_" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hTextAlign="Left" vTextAlign="Middle" hImageAlign="Left" vImageAlign="Middle" rotation="None" blankWhenNull="true" fontName="DejaVu Sans" fontSize="12.0" bold="false" italic="false" underline="false" pdfEmbedded="false">
 		<box padding="2">
 			<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 		</box>
-		<conditionalStyle>
+		<conditionalStyle mode="Opaque" backcolor="#E6E6E6">
 			<conditionExpression><![CDATA[new java.lang.Boolean(((Number)$V{REPORT_COUNT}).doubleValue() % 2 == 0)]]></conditionExpression>
-			<style mode="Opaque" backcolor="#E6E6E6"/>
 		</conditionalStyle>
 	</style>
-	<style name="DejaVu Sans_for_column_DJR_2141_COLUMN_2_" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hAlign="Left" vAlign="Middle" rotation="None" isBlankWhenNull="true" fontName="DejaVu Sans" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded="false">
+	<style name="DejaVu Sans_for_column_DJR_2141_COLUMN_2_" mode="Transparent" forecolor="#000000" backcolor="#FFFFFF" radius="0" hTextAlign="Left" vTextAlign="Middle" hImageAlign="Left" vImageAlign="Middle" rotation="None" blankWhenNull="true" fontName="DejaVu Sans" fontSize="12.0" bold="false" italic="false" underline="false" pdfEmbedded="false">
 		<box padding="2">
 			<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 		</box>
-		<conditionalStyle>
+		<conditionalStyle mode="Opaque" backcolor="#E6E6E6">
 			<conditionExpression><![CDATA[new java.lang.Boolean(((Number)$V{REPORT_COUNT}).doubleValue() % 2 == 0)]]></conditionExpression>
-			<style mode="Opaque" backcolor="#E6E6E6"/>
 		</conditionalStyle>
 	</style>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
@@ -51,45 +47,31 @@
 	<field name="id" class="java.lang.Integer"/>
 	<field name="name" class="java.lang.String"/>
 	<field name="icon" class="java.lang.String"/>
-	<pageHeader>
-		<band/>
-	</pageHeader>
-	<columnHeader>
-		<band height="30">
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement key="header_id" style="dj_style_1_" positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="185" height="30" isPrintWhenDetailOverflows="true" uuid="3a4e9d49-3645-4ca7-8e36-abfb35c0f688"/>
-				<textFieldExpression><![CDATA["id"]]></textFieldExpression>
-			</textField>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement key="header_name" style="dj_style_1_" positionType="Float" stretchType="RelativeToTallestObject" x="185" y="0" width="185" height="30" isPrintWhenDetailOverflows="true" uuid="9fac5b94-c27f-4ed4-960c-ac48b60d0598"/>
-				<textFieldExpression><![CDATA["name"]]></textFieldExpression>
-			</textField>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement key="header_icon" style="dj_style_1_" positionType="Float" stretchType="RelativeToTallestObject" x="370" y="0" width="185" height="30" isPrintWhenDetailOverflows="true" uuid="2f0cd44c-ab66-42b2-9ad4-1636193577a4"/>
-				<textFieldExpression><![CDATA["icon"]]></textFieldExpression>
-			</textField>
-		</band>
+	<pageHeader/>
+	<columnHeader height="30">
+		<element kind="textField" uuid="3a4e9d49-3645-4ca7-8e36-abfb35c0f688" key="header_id" positionType="Float" stretchType="ElementGroupHeight" x="0" y="0" width="185" height="30" textAdjust="StretchHeight" blankWhenNull="true" printWhenDetailOverflows="true" style="dj_style_1_">
+			<expression><![CDATA["id"]]></expression>
+		</element>
+		<element kind="textField" uuid="9fac5b94-c27f-4ed4-960c-ac48b60d0598" key="header_name" positionType="Float" stretchType="ElementGroupHeight" x="185" y="0" width="185" height="30" textAdjust="StretchHeight" blankWhenNull="true" printWhenDetailOverflows="true" style="dj_style_1_">
+			<expression><![CDATA["name"]]></expression>
+		</element>
+		<element kind="textField" uuid="2f0cd44c-ab66-42b2-9ad4-1636193577a4" key="header_icon" positionType="Float" stretchType="ElementGroupHeight" x="370" y="0" width="185" height="30" textAdjust="StretchHeight" blankWhenNull="true" printWhenDetailOverflows="true" style="dj_style_1_">
+			<expression><![CDATA["icon"]]></expression>
+		</element>
 	</columnHeader>
 	<detail>
 		<band height="15" splitType="Immediate">
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement style="DejaVu Sans_for_column_DJR_2141_COLUMN_0_" positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="185" height="15" isPrintWhenDetailOverflows="true" uuid="9b56d8ed-049e-41dc-806e-350ad84a3842"/>
-				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
-			</textField>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement style="DejaVu Sans_for_column_DJR_2141_COLUMN_1_" positionType="Float" stretchType="RelativeToTallestObject" x="185" y="0" width="185" height="15" isPrintWhenDetailOverflows="true" uuid="1e0ee0ef-22a5-43d5-b8d2-a731fc573055"/>
-				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
-			</textField>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement style="DejaVu Sans_for_column_DJR_2141_COLUMN_2_" positionType="Float" stretchType="RelativeToTallestObject" x="370" y="0" width="185" height="15" isPrintWhenDetailOverflows="true" uuid="f0579b7e-28ae-4b28-a6ac-95ca1e3a3205"/>
-				<textFieldExpression><![CDATA[$F{icon}]]></textFieldExpression>
-			</textField>
+			<element kind="textField" uuid="9b56d8ed-049e-41dc-806e-350ad84a3842" positionType="Float" stretchType="ElementGroupHeight" x="0" y="0" width="185" height="15" textAdjust="StretchHeight" blankWhenNull="true" printWhenDetailOverflows="true" style="DejaVu Sans_for_column_DJR_2141_COLUMN_0_">
+				<expression><![CDATA[$F{id}]]></expression>
+			</element>
+			<element kind="textField" uuid="1e0ee0ef-22a5-43d5-b8d2-a731fc573055" positionType="Float" stretchType="ElementGroupHeight" x="185" y="0" width="185" height="15" textAdjust="StretchHeight" blankWhenNull="true" printWhenDetailOverflows="true" style="DejaVu Sans_for_column_DJR_2141_COLUMN_1_">
+				<expression><![CDATA[$F{name}]]></expression>
+			</element>
+			<element kind="textField" uuid="f0579b7e-28ae-4b28-a6ac-95ca1e3a3205" positionType="Float" stretchType="ElementGroupHeight" x="370" y="0" width="185" height="15" textAdjust="StretchHeight" blankWhenNull="true" printWhenDetailOverflows="true" style="DejaVu Sans_for_column_DJR_2141_COLUMN_2_">
+				<expression><![CDATA[$F{icon}]]></expression>
+			</element>
 		</band>
 	</detail>
-	<pageFooter>
-		<band/>
-	</pageFooter>
-	<summary>
-		<band/>
-	</summary>
+	<pageFooter/>
+	<summary/>
 </jasperReport>
