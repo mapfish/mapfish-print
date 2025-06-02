@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -88,7 +89,8 @@ public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
             this.httpRequestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
     final ScalebarAttribute.ScalebarAttributeValues value =
         values.getObject("scalebar", ScalebarAttribute.ScalebarAttributeValues.class);
 

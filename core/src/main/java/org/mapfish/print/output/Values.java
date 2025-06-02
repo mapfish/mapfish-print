@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,6 +61,9 @@ public final class Values {
   /** The key for the locale. */
   public static final String LOCALE_KEY = "REPORT_LOCALE";
 
+  /** The key for the globalCancel object. */
+  public static final String TASK_CANCELED_KEY = "taskCanceled";
+
   private final Map<String, Object> values = new ConcurrentHashMap<>();
 
   /**
@@ -88,6 +92,7 @@ public final class Values {
    * @param jasperTemplateBuild the directory where the jasper templates are compiled to
    * @param httpRequestMaxNumberFetchRetry the maximum number of times to retry fetching a resource
    * @param httpRequestFetchRetryIntervalMillis the interval between retries
+   * @param taskCancelled whether the task is canceled or not
    */
   public Values(
       @Nonnull final Map<String, String> mdcContext,
@@ -97,7 +102,8 @@ public final class Values {
       final MfClientHttpRequestFactoryImpl httpRequestFactory,
       final File jasperTemplateBuild,
       final int httpRequestMaxNumberFetchRetry,
-      final int httpRequestFetchRetryIntervalMillis) {
+      final int httpRequestFetchRetryIntervalMillis,
+      final AtomicBoolean taskCancelled) {
     // CSON: ParameterNumber
     this(
         mdcContext,
@@ -108,7 +114,8 @@ public final class Values {
         jasperTemplateBuild,
         null,
         httpRequestMaxNumberFetchRetry,
-        httpRequestFetchRetryIntervalMillis);
+        httpRequestFetchRetryIntervalMillis,
+        taskCancelled);
   }
 
   /**
@@ -123,6 +130,7 @@ public final class Values {
    * @param outputFormat the output format
    * @param httpRequestMaxNumberFetchRetry the maximum number of times to retry fetching a resource
    * @param httpRequestFetchRetryIntervalMillis the interval between retries
+   * @param taskCanceled whether the task is canceled or not
    */
   // CSOFF: ParameterNumber
   public Values(
@@ -134,7 +142,8 @@ public final class Values {
       final File jasperTemplateBuild,
       final String outputFormat,
       final int httpRequestMaxNumberFetchRetry,
-      final int httpRequestFetchRetryIntervalMillis) {
+      final int httpRequestFetchRetryIntervalMillis,
+      final AtomicBoolean taskCanceled) {
     // CSON: ParameterNumber
     Assert.isTrue(!taskDirectory.mkdirs() || taskDirectory.exists());
 
@@ -179,6 +188,7 @@ public final class Values {
       }
     }
     this.values.put(LOCALE_KEY, locale);
+    this.values.put(TASK_CANCELED_KEY, taskCanceled);
   }
 
   /**
@@ -287,6 +297,8 @@ public final class Values {
     this.values.put(VALUES_KEY, this);
     this.values.put(MDC_CONTEXT_KEY, sourceValues.getStringMap(MDC_CONTEXT_KEY));
     this.values.put(LOCALE_KEY, sourceValues.getObject(LOCALE_KEY, Locale.class));
+    this.values.put(
+        TASK_CANCELED_KEY, sourceValues.getObject(TASK_CANCELED_KEY, AtomicBoolean.class));
   }
 
   /**

@@ -20,6 +20,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.xml.parsers.DocumentBuilder;
@@ -152,7 +153,8 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
             this.httpRequestFactory,
             jasperTemplateBuild.getParentFile(),
             httpRequestMaxNumberFetchRetry,
-            httpRequestFetchRetryIntervalMillis);
+            httpRequestFetchRetryIntervalMillis,
+            new AtomicBoolean(false));
 
     double maxDpi = maxDpi(values);
 

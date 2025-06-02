@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.design.JRDesignField;
 import net.sf.jasperreports.json.data.JsonDataSource;
@@ -51,7 +52,8 @@ public class JsonDatasourceAttributeTest extends AbstractMapfishSpringTest {
             httpClientFactory,
             config.getDirectory(),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
 
     assertEquals(
         "s1", getValue(values.getObject("json", JsonDataSource.class), "a.b", String.class));

@@ -13,6 +13,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.json.JSONObject;
@@ -91,7 +92,8 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
             this.httpRequestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
     final MapAttribute.MapAttributeValues value =
         values.getObject("map", MapAttribute.MapAttributeValues.class);
 
@@ -120,7 +122,8 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
             this.httpRequestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
     final MapAttribute.MapAttributeValues value =
         values.getObject("map", MapAttribute.MapAttributeValues.class);
 
@@ -150,7 +153,8 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
             this.httpRequestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
     final MapAttribute.MapAttributeValues value =
         values.getObject("map", MapAttribute.MapAttributeValues.class);
 
@@ -180,7 +184,8 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
             this.httpRequestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
     final MapAttribute.MapAttributeValues value =
         values.getObject("map", MapAttribute.MapAttributeValues.class);
 
@@ -205,7 +210,8 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
             this.httpRequestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
     final MapAttribute.MapAttributeValues value =
         values.getObject("map", MapAttribute.MapAttributeValues.class);
 
