@@ -12,7 +12,7 @@ import net.sf.jasperreports.export.type.PdfVersionEnum;
 import org.mapfish.print.config.PDFConfig;
 import org.mapfish.print.processor.ExecutionStats;
 
-/** An PDF output format that uses Jasper reports to generate the result. */
+/** A PDF output format that uses Jasper reports to generate the result. */
 public final class JasperReportPDFOutputFormat extends AbstractJasperReportOutputFormat
     implements OutputFormat {
 
@@ -29,7 +29,7 @@ public final class JasperReportPDFOutputFormat extends AbstractJasperReportOutpu
   @Override
   protected void doExport(final OutputStream outputStream, final Print print) throws JRException {
 
-    JRPdfExporter exporter = new JRPdfExporter(print.context);
+    JRPdfExporter exporter = new JRPdfExporterWeakHashMap(print.context);
 
     exporter.setExporterInput(new SimpleExporterInput(print.print));
     exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
