@@ -7,7 +7,7 @@
          metadata-complete="true">
 
     <absolute-ordering/>
-
+    
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
@@ -38,7 +38,7 @@
         <init-param>
             <!-- The maximum request size in bytes (default: 1 MB). -->
             <param-name>maxContentLength</param-name>
-            <param-value>1048576</param-value>
+            <param-value>6129387</param-value>
         </init-param>
     </filter>
     <filter-mapping>

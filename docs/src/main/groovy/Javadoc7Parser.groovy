@@ -1,6 +1,6 @@
 import java.lang.reflect.Field
 import java.lang.reflect.Method
-
+import groovy.xml.XmlSlurper
 /**
  * Strategy for parsing out the field, class and method descriptions from Javadoc 7 compatible javadocs.
  */
