@@ -1,0 +1,5 @@
+templates:
+  main: !template
+    attributes:
+      thread1: !string
+        default: 'thread1'
