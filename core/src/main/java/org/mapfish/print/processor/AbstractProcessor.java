@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import org.mapfish.print.config.Configuration;
@@ -206,24 +207,27 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
   /** Default implementation of {@link org.mapfish.print.processor.Processor.ExecutionContext}. */
   public static final class Context implements ExecutionContext {
     @Nonnull private final Map<String, String> mdcContext;
-    private volatile boolean canceled = false;
+    private final AtomicBoolean canceled;
     private final ExecutionStats stats = new ExecutionStats();
 
     /**
      * @param mdcContext The MDC context.
+     * @param taskCanceled whether the task should be canceled or not
      */
-    public Context(@Nonnull final Map<String, String> mdcContext) {
+    public Context(
+        @Nonnull final Map<String, String> mdcContext, final AtomicBoolean taskCanceled) {
+      this.canceled = taskCanceled != null ? taskCanceled : new AtomicBoolean(false);
       this.mdcContext = mdcContext;
     }
 
     /** Sets the canceled flag. */
     public void cancel() {
-      this.canceled = true;
+      this.canceled.set(true);
     }
 
     @Override
     public void stopIfCanceled() {
-      if (this.canceled) {
+      if (this.canceled.get()) {
         throw new CancellationException("task was canceled");
       }
     }
@@ -243,7 +247,7 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
       this.stopIfCanceled();
       final Map<String, String> prev = MDC.getCopyOfContextMap();
       final String prevJomId = MDC.get(MDC_JOB_ID_KEY);
-      final String jobId = this.mdcContext == null ? null : this.mdcContext.get(MDC_JOB_ID_KEY);
+      final String jobId = this.mdcContext.get(MDC_JOB_ID_KEY);
       boolean changed = prevJomId == null || (jobId != null && jobId.equals(prevJomId));
       if (changed) {
         MDC.setContextMap(this.mdcContext);

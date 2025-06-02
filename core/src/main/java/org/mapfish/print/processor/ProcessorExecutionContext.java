@@ -3,6 +3,7 @@ package org.mapfish.print.processor;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.mapfish.print.output.Values;
@@ -23,7 +24,10 @@ public final class ProcessorExecutionContext {
    */
   public ProcessorExecutionContext(final Values values) {
     this.values = values;
-    this.context = new Context(values.getStringMap(Values.MDC_CONTEXT_KEY));
+    this.context =
+        new Context(
+            values.getStringMap(Values.MDC_CONTEXT_KEY),
+            values.getObject(Values.TASK_CANCELED_KEY, AtomicBoolean.class));
   }
 
   public Values getValues() {

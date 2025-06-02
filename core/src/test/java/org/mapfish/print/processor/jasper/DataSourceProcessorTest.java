@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -64,7 +65,8 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
             this.httpRequestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
     forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
     final DataSourceAttribute.DataSourceAttributeValue datasource =

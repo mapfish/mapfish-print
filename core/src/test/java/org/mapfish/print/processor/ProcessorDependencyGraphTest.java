@@ -3,6 +3,7 @@ package org.mapfish.print.processor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mapfish.print.output.Values.MDC_CONTEXT_KEY;
 
 import com.codahale.metrics.MetricRegistry;
 import java.util.HashMap;
@@ -52,6 +53,7 @@ public class ProcessorDependencyGraphTest {
     Values values = new Values();
     values.put(Values.VALUES_KEY, values);
     values.put("pp", "value");
+    values.put(MDC_CONTEXT_KEY, new HashMap<>());
     final TestProcessor processor = new TestProcessor("p");
     processor.getInputMapperBiMap().put("pp", "prop");
 
