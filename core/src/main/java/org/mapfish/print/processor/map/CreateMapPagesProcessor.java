@@ -3,12 +3,18 @@ package org.mapfish.print.processor.map;
 import static org.mapfish.print.Constants.PDF_DPI;
 
 import java.awt.Rectangle;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.locationtech.jts.geom.Coordinate;
@@ -16,6 +22,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
+import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.attribute.DataSourceAttribute;
 import org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue;
@@ -25,11 +32,14 @@ import org.mapfish.print.attribute.map.MapAttribute.MapAttributeValues;
 import org.mapfish.print.attribute.map.PagingAttribute;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.DistanceUnit;
+import org.mapfish.print.map.geotools.FeatureLayer;
 import org.mapfish.print.processor.AbstractProcessor;
+import org.mapfish.print.processor.InputOutputValue;
 import org.mapfish.print.processor.ProvideAttributes;
 import org.mapfish.print.processor.RequireAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Processor used to display a map on multiple pages.
@@ -48,6 +58,11 @@ import org.slf4j.LoggerFactory;
  *   <li>bottom value which is the name of the sub-map to the bottom of the current map
  * </ul>
  *
+ * <p>It will also create a paging overview layer for the main map if you have set
+ * renderPagingOverview to true in <a href="attributes.html#!paging">!paging</a> attribute
+ *
+ * <p>
+ *
  * <p>The iterable of values can be consumed by a <a
  * href="processors.html#!createDataSource">!createDataSource</a> processor and as a result be put
  * in the report (or one of the sub-reports) table. One must be careful as this can result in truly
@@ -65,6 +80,14 @@ public class CreateMapPagesProcessor
   private final GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
   private MapAttribute mapAttribute;
 
+  @Autowired FeatureLayer.Plugin featureLayerPlugin;
+
+  /** Name of features generated for paging. */
+  public static final String OVERVIEW_PAGING_FEATURE_NAME = "overviewPaging";
+
+  /** Name of the text attribut to be rendered in overviewPaging features. */
+  public static final String OVERVIEW_PAGING_ATTRIBUT_TEXT = "name";
+
   /** Constructor. */
   protected CreateMapPagesProcessor() {
     super(Output.class);
@@ -81,13 +104,16 @@ public class CreateMapPagesProcessor
 
   @SuppressWarnings("unchecked")
   @Override
-  public final Output execute(final Input values, final ExecutionContext context) {
+  public final Output execute(final Input values, final ExecutionContext context)
+      throws IOException {
 
     final MapAttributeValues map = values.map;
     final PagingAttribute.PagingProcessorValues paging = values.paging;
     CoordinateReferenceSystem projection = map.getMapBounds().getProjection();
     final Rectangle paintArea = new Rectangle(map.getMapSize());
     final DistanceUnit projectionUnit = DistanceUnit.fromProjection(projection);
+
+    final boolean renderPagingOverview = Boolean.TRUE.equals(paging.renderPagingOverview);
 
     AreaOfInterest areaOfInterest = map.areaOfInterest;
     if (areaOfInterest == null) {
@@ -127,6 +153,9 @@ public class CreateMapPagesProcessor
     final Envelope[][] mapsBounds = new Envelope[nbWidth][nbHeight];
     int mapIndex = 0;
 
+    final SimpleFeatureType typeOverviewPaging = simpleFeatureTypeBuilder(projection);
+    final DefaultFeatureCollection featuresOverviewPaging = new DefaultFeatureCollection();
+
     for (int j = 0; j < nbHeight; j++) {
       for (int i = 0; i < nbWidth; i++) {
         final double x1 = minX + i * (paintAreaWidth - overlapProj);
@@ -148,6 +177,10 @@ public class CreateMapPagesProcessor
         if (areaOfInterest.getArea().intersects(bbox)) {
           mapsBounds[i][j] = bbox.getEnvelopeInternal();
           mapIndexes[i][j] = mapIndex;
+          if (renderPagingOverview) {
+            featuresOverviewPaging.add(
+                buildOverviewPagingFeature(typeOverviewPaging, bbox, mapIndex));
+          }
           mapIndex++;
         } else {
           mapIndexes[i][j] = DO_NOT_RENDER_BBOX_INDEX;
@@ -200,10 +233,48 @@ public class CreateMapPagesProcessor
         }
       }
     }
+
+    addPagingOverviewLayer(featuresOverviewPaging, paging, map);
+
     LOGGER.info("Paging generate {} maps definitions.", mapList.size());
     DataSourceAttributeValue datasourceAttributes = new DataSourceAttributeValue();
     datasourceAttributes.attributesValues = mapList.toArray(new Map[0]);
     return new Output(datasourceAttributes);
+  }
+
+  private static SimpleFeatureType simpleFeatureTypeBuilder(
+      @Nonnull final CoordinateReferenceSystem crs) {
+    final SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
+    typeBuilder.setName(OVERVIEW_PAGING_FEATURE_NAME);
+    typeBuilder.add("geom", Polygon.class, crs);
+    typeBuilder.add(OVERVIEW_PAGING_ATTRIBUT_TEXT, String.class);
+    return typeBuilder.buildFeatureType();
+  }
+
+  private static SimpleFeature buildOverviewPagingFeature(
+      @Nonnull final SimpleFeatureType typeOverviewPaging,
+      @Nonnull final Polygon bbox,
+      final int mapIndex) {
+    return SimpleFeatureBuilder.build(
+        typeOverviewPaging,
+        new Object[] {bbox, Integer.toString(mapIndex)},
+        Integer.toString(mapIndex));
+  }
+
+  private void addPagingOverviewLayer(
+      @Nonnull final DefaultFeatureCollection featuresOverviewPaging,
+      @Nonnull final PagingAttribute.PagingProcessorValues paging,
+      @Nonnull final MapAttributeValues map)
+      throws IOException {
+    if (featuresOverviewPaging.getCount() > 0) {
+      FeatureLayer.FeatureLayerParam param = new FeatureLayer.FeatureLayerParam();
+      param.defaultStyle = Constants.Style.PagingOverviewLayer.NAME;
+      param.style = paging.pagingOverviewStyle;
+      param.renderAsSvg = true;
+      param.features = featuresOverviewPaging;
+      final FeatureLayer featureLayer = this.featureLayerPlugin.parse(map.getTemplate(), param);
+      map.setPagingOverviewLayer(featureLayer);
+    }
   }
 
   /**
@@ -235,8 +306,9 @@ public class CreateMapPagesProcessor
 
   /** The Input object for processor. */
   public static class Input {
+
     /** The required parameters for the map. */
-    public MapAttribute.MapAttributeValues map;
+    @InputOutputValue public MapAttribute.MapAttributeValues map;
 
     /**
      * Attributes that define how each page/sub-map will be generated. It defines the scale and how
