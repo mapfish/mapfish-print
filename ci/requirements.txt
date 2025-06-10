@@ -2,3 +2,4 @@ c2cciutils[checks,publish]==1.6.23
 security.md==0.2.3
 pre-commit==3.8.0
 cryptography>=44.0.1 # not directly required, pinned by Snyk to avoid a vulnerability
+requests>=2.32.4 # not directly required, pinned by Snyk to avoid a vulnerability
