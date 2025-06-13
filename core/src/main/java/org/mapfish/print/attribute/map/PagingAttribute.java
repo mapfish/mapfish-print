@@ -10,7 +10,7 @@ import org.mapfish.print.parser.HasDefaultValue;
  * Attribute that defines how a map is displayed across many pages.
  *
  * <p>This is used by the <a href="processors.html#!paging">paging processor</a>.
- * [[examples=paging]]
+ * [[examples=paging,paging_with_overview_layer]]
  */
 public final class PagingAttribute
     extends ReflectiveAttribute<PagingAttribute.PagingProcessorValues> {
@@ -64,5 +64,16 @@ public final class PagingAttribute
      * definition.
      */
     @HasDefaultValue public String aoiStyle = null;
+
+    /**
+     * If set to true will add an overview layer to the main map with all the pages and their label.
+     */
+    @HasDefaultValue public Boolean renderPagingOverview = false;
+
+    /**
+     * The style of the paging overview layer. This parameter is usefull only if
+     * renderPagingOverview is true.
+     */
+    @HasDefaultValue public String pagingOverviewStyle = null;
   }
 }
