@@ -53,7 +53,7 @@ tasks.register('integrationTest', Test) {
         showStackTraces true
         events TestLogEvent.STANDARD_OUT
     }
-    maxHeapSize = "750M"
+    maxHeapSize = "1G"
     reports {
         junitXml.getRequired().set(true)
         html.getRequired().set(true)

@@ -87,7 +87,6 @@ tasks.register('testCLI', Exec) {
 }
 
 test {
-    maxHeapSize = '500M'
     reports {
         junitXml.getRequired().set(true)
         html.getRequired().set(true)
