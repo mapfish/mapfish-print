@@ -8,18 +8,21 @@ import sys
 
 _TAG_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
 
+
 def _main():
     parser = argparse.ArgumentParser("Create new tags on every stabilisation branches")
     parser.add_argument("--dry-run", action="store_true", help="Do not create tags")
     args = parser.parse_args()
 
-    with open("SECURITY.md", encoding='utf-8') as security_file:
+    with open("SECURITY.md", encoding="utf-8") as security_file:
         security = security_md.Security(security_file.read())
 
     for branch in security.branches():
         subprocess.run(["git", "checkout", branch], check=True)
 
-        last_tag = subprocess.run(['git', 'describe', '--tags', '--abbrev=0'], stdout=subprocess.PIPE, encoding='utf-8').stdout.strip()
+        last_tag = subprocess.run(
+            ["git", "describe", "--tags", "--abbrev=0"], stdout=subprocess.PIPE, encoding="utf-8"
+        ).stdout.strip()
         last_tag_match = _TAG_RE.match(last_tag)
         if last_tag_match is None:
             print(f"Cannot parse tag {last_tag}")
