@@ -1,6 +1,6 @@
 # Contributing to MapFish Print
 
-Thanks for your interest in contributing to OpenLayers. Please follow Github code of conduct.
+Thanks for your interest in contributing to MapFish Print. Please follow Github code of conduct.
 
 ## Submitting Issues - Bug Reports
 
