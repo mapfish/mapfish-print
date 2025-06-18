@@ -107,14 +107,6 @@ Import project into Eclipse
 - Main class is `org.mapfish.print.cli.Main`
 - Program arguments: `-config samples/config.yaml -spec samples/spec.json -output \$HOME/print.pdf`
 
-# Contributor License Agreement
-
-Before accepting a contribution, we ask that you provide us a Contributor License Agreement. If you are making
-your contribution as part of work for your employer, please follow the guidelines on submitting a [Corporate
-Contributor License Agreement](https://github.com/mapfish/mapfish-print/wiki/C2C_Corporate-CLA_v1-0.pdf). If
-you are making your contribution as an individual, you can submit a digital [Individual Contributor License
-Agreement](http://goo.gl/forms/QO9UELxM9m).
-
 # Credits
 
 ![image](https://www.yourkit.com/images/yklogo.png)
@@ -137,10 +129,4 @@ Agreement](http://goo.gl/forms/QO9UELxM9m).
 
 ## Contributing
 
-Install then activate pre-commit hooks in your repository:
-(The 'pre-commit install' must be run once per repository)
-
-```bash
-sudo apt install pre-commit
-pre-commit install --allow-missing-config
-```
+Please read our guide on [contributing](CONTRIBUTING.md) if you're interested in getting involved.
