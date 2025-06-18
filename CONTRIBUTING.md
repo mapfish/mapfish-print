@@ -85,7 +85,7 @@ Please keep the header line short, no more than 50 characters.
 
 ### Be possible to merge automatically
 
-Occasionally other changes to `main` might mean that your pull request cannot
+Occasionally other changes to `master` might mean that your pull request cannot
 be merged automatically. In this case you may need to rebase your branch on a
 more recent `main`, resolve any conflicts, and `git push --force` to update
 your branch so that it can be merged automatically.
