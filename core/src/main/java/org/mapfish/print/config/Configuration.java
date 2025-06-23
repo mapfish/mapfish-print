@@ -706,10 +706,10 @@ public class Configuration implements ConfigurationObject {
   }
 
   /**
-   * If true all the rendered layers will have the parameter {@link
-   * org.mapfish.print.map.AbstractLayerParams#failOnError} set to true.
+   * Set the param forceFailOnError.
    *
-   * @param forceFailOnError
+   * @param forceFailOnError if true all the rendered layers will have the parameter {@link
+   *     org.mapfish.print.map.AbstractLayerParams#failOnError} set to true.
    */
   public void setForceFailOnError(final boolean forceFailOnError) {
     this.forceFailOnError = forceFailOnError;

@@ -5,10 +5,12 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Timeout;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.PrintException;
 import org.mapfish.print.TestHttpClientFactory;
@@ -38,14 +40,9 @@ public class CreateMapPagesForceFailOnErrorProcessorTest extends AbstractMapfish
         CreateMapPagesForceFailOnErrorProcessorTest.class, BASE_DIR + "requestData.json");
   }
 
-  private static AtomicBoolean hasFailOnce = new AtomicBoolean(false);
+  private static final AtomicBoolean hasFailOnce = new AtomicBoolean(false);
 
-  /**
-   * File handler that will fail on the first request
-   *
-   * @param filename
-   * @return
-   */
+  /** File handler that will fail on the first request. */
   protected TestHttpClientFactory.Handler createFailingFileHandler(Function<URI, String> filename) {
     return new TestHttpClientFactory.Handler() {
       @Override
@@ -65,6 +62,7 @@ public class CreateMapPagesForceFailOnErrorProcessorTest extends AbstractMapfish
 
   @Test
   @DirtiesContext
+  @Timeout(value = 1, unit = TimeUnit.MINUTES)
   public void testExecute() throws Exception {
     final String host = "paging_processor_force_fail_on_error_test";
     Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
@@ -83,7 +81,7 @@ public class CreateMapPagesForceFailOnErrorProcessorTest extends AbstractMapfish
     config.setForceFailOnError(false);
     testPrint(config, requestData, format, false);
 
-    // .wmts will fail once and create a PrintExcepption error
+    // .wmts will fail once and create a PrintException error
     config.setForceFailOnError(true);
     requestFactory.resetHandlers();
     hasFailOnce.set(false);
