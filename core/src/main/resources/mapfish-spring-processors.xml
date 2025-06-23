@@ -70,6 +70,19 @@
         </constructor-arg>
     </bean>
 
+
+    <bean class="org.mapfish.print.processor.ProcessorDependency">
+        <constructor-arg type="java.lang.Class" index="0"
+                         value="org.mapfish.print.processor.map.CreateMapPagesProcessor"/>
+        <constructor-arg type="java.lang.Class" index="1"
+                         value="org.mapfish.print.processor.map.CreateMapProcessor"/>
+        <constructor-arg type="java.util.Set" index="2">
+            <util:set>
+                <value>map</value>
+            </util:set>
+        </constructor-arg>
+    </bean>
+
     <bean class="org.mapfish.print.processor.ProcessorDependency">
         <constructor-arg type="java.lang.Class" index="0"
                          value="org.mapfish.print.processor.map.SetFeaturesProcessor"/>

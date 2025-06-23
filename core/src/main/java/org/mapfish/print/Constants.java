@@ -94,5 +94,15 @@ public final class Constants {
       /** The default style name for the bbox rectangle in the overview map. */
       public static final String NAME = "overview-map";
     }
+
+    public static final class PagingOverviewLayer {
+
+      private PagingOverviewLayer() {
+        // not called
+      }
+
+      /** The default style name for the bbox rectangle in the overview map. */
+      public static final String NAME = "paging-overview-layer";
+    }
   }
 }

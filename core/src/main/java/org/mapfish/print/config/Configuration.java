@@ -15,12 +15,18 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
+import org.geotools.api.filter.expression.Expression;
+import org.geotools.api.style.FeatureTypeStyle;
 import org.geotools.api.style.Fill;
+import org.geotools.api.style.Font;
 import org.geotools.api.style.Graphic;
+import org.geotools.api.style.Halo;
+import org.geotools.api.style.LineSymbolizer;
 import org.geotools.api.style.Mark;
 import org.geotools.api.style.Stroke;
 import org.geotools.api.style.Style;
 import org.geotools.api.style.Symbolizer;
+import org.geotools.api.style.TextSymbolizer;
 import org.geotools.styling.StyleBuilder;
 import org.json.JSONException;
 import org.json.JSONWriter;
@@ -43,6 +49,7 @@ import org.mapfish.print.map.style.StyleParser;
 import org.mapfish.print.map.style.json.ColorParser;
 import org.mapfish.print.processor.http.matcher.URIMatcher;
 import org.mapfish.print.processor.http.matcher.UriMatchers;
+import org.mapfish.print.processor.map.CreateMapPagesProcessor;
 import org.mapfish.print.servlet.fileloader.ConfigFileLoaderManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -372,6 +379,8 @@ public class Configuration implements ConfigurationObject {
         symbolizer = builder.createRasterSymbolizer();
       } else if (normalizedGeomName.startsWith(Constants.Style.OverviewMap.NAME)) {
         symbolizer = createMapOverviewStyle(normalizedGeomName, builder);
+      } else if (normalizedGeomName.startsWith(Constants.Style.PagingOverviewLayer.NAME)) {
+        return createOverviewPagingLayerStyle(builder);
       } else {
         final Style geomStyle = this.defaultStyle.get(Geometry.class.getSimpleName().toLowerCase());
         if (geomStyle != null) {
@@ -422,6 +431,28 @@ public class Configuration implements ConfigurationObject {
       return builder.createLineSymbolizer(stroke);
     }
     return builder.createPolygonSymbolizer(stroke, fill);
+  }
+
+  private Style createOverviewPagingLayerStyle(@Nonnull final StyleBuilder builder) {
+    Stroke stroke = builder.createStroke(Color.gray, 1.5);
+    LineSymbolizer polygonSymbolizer = builder.createLineSymbolizer(stroke);
+
+    Font[] fonts = new Font[] {builder.createFont("Lucida Sans", 10.0D)};
+    Halo halo = builder.createHalo(Color.white, 1);
+    Expression name =
+        builder.attributeExpression(CreateMapPagesProcessor.OVERVIEW_PAGING_ATTRIBUT_TEXT);
+    Fill fillColor = builder.createFill(Color.black);
+    TextSymbolizer textSymbolizer =
+        builder.createTextSymbolizer(fillColor, fonts, halo, name, null, null);
+
+    FeatureTypeStyle features =
+        builder.createFeatureTypeStyle(
+            CreateMapPagesProcessor.OVERVIEW_PAGING_FEATURE_NAME,
+            new Symbolizer[] {polygonSymbolizer, textSymbolizer});
+
+    Style s = builder.createStyle();
+    s.featureTypeStyles().add(features);
+    return s;
   }
 
   /**
