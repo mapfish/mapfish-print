@@ -107,6 +107,8 @@ public class Configuration implements ConfigurationObject {
   private Set<String> jdbcDrivers = new HashSet<>();
   private Map<String, Style> namedStyles = new HashMap<>();
   private UriMatchers allowedReferers = null;
+  private boolean forceFailOnError = false;
+
   private SmtpConfig smtp = null;
 
   /** The color used to draw the WMS tiles error default: transparent pink. */
@@ -727,5 +729,20 @@ public class Configuration implements ConfigurationObject {
   /** Sets the smtp config. */
   public void setSmtp(final SmtpConfig smtp) {
     this.smtp = smtp;
+  }
+
+  /** Get the forceFailOnError parameter value. */
+  public boolean isForceFailOnError() {
+    return forceFailOnError;
+  }
+
+  /**
+   * Set the param forceFailOnError.
+   *
+   * @param forceFailOnError if true all the rendered layers will have the parameter {@link
+   *     org.mapfish.print.map.AbstractLayerParams#failOnError} set to true.
+   */
+  public void setForceFailOnError(final boolean forceFailOnError) {
+    this.forceFailOnError = forceFailOnError;
   }
 }
