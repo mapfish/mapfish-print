@@ -10,5 +10,4 @@
 | 3.30    | 27/12/2024      |
 | 3.31    | Best effort     |
 | 3.32    | Best effort     |
-
-### Version 3.23 is prematurely end of support because its staging build system was no longer working.
+| 3.33    | Best effort     |
