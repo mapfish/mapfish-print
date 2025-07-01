@@ -296,7 +296,8 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
           Status message: {}
           Server:{}
           Body:
-          {}""",
+          {}\
+          """,
           this.tileRequest.getURI(),
           httpStatusCode,
           response.getStatusText(),
