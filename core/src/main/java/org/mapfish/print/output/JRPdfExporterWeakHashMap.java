@@ -2,10 +2,10 @@ package org.mapfish.print.output;
 
 import java.util.WeakHashMap;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.ExifOrientationEnum;
 import net.sf.jasperreports.engine.util.Pair;
-import net.sf.jasperreports.pdf.JRPdfExporter;
-import net.sf.jasperreports.pdf.common.PdfImage;
+import net.sf.jasperreports.export.pdf.PdfImage;
 
 public class JRPdfExporterWeakHashMap extends JRPdfExporter {
 

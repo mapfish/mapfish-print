@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.14.0
+    rev: v2.15.0
     hooks:
       - id: pretty-format-java
         args:
@@ -29,10 +29,10 @@ repos:
     hooks:
       - id: canonicalize
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.8
+    rev: v0.12.1
     hooks:
       - id: ruff-format
   - repo: https://github.com/sbrunner/python-versions-hook
-    rev: 1.0.0
+    rev: 1.1.2
     hooks:
       - id: python-versions
