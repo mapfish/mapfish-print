@@ -69,7 +69,7 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/libgcc-s1: 12.3.0-1ubuntu1~22.04
   ubuntu_22_04/libgcrypt20: 1.9.4-3ubuntu3
   ubuntu_22_04/libgmp10: 2:6.2.1+dfsg-3ubuntu1
-  ubuntu_22_04/libgnutls30: 3.7.3-4ubuntu1.6
+  ubuntu_22_04/libgnutls30: 3.7.3-4ubuntu1.7
   ubuntu_22_04/libgpg-error0: 1.43-3
   ubuntu_22_04/libgssapi-krb5-2: 1.19.2-2ubuntu0.7
   ubuntu_22_04/libhogweed6: 3.7.3-1build2
