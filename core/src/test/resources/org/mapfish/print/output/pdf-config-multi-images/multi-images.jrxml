@@ -1,52 +1,32 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version last-->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="simple-report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e4958fb5-e59e-420f-95d9-6d8780394891">
+<jasperReport name="simple-report" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e4958fb5-e59e-420f-95d9-6d8780394891">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<parameter name="mapSubReport" class="java.lang.String"/>
-	<queryString>
-		<![CDATA[]]>
-	</queryString>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<title>
-		<band height="500" splitType="Stretch">
-            <image>
-                <reportElement x="0" y="0" width="82" height="40" backcolor="#FF7F27" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4dd"/>
-                <imageExpression><![CDATA["map.png"]]></imageExpression>
-            </image>
-            <image>
-                <reportElement x="90" y="0" width="82" height="40" backcolor="#FF7F27" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4ee"/>
-                <imageExpression><![CDATA["map.png"]]></imageExpression>
-            </image>
-            <image>
-                <reportElement x="180" y="0" width="82" height="40" backcolor="#FF7F27" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4ff"/>
-                <imageExpression><![CDATA["map.png"]]></imageExpression>
-            </image>
-            <image>
-                <reportElement x="270" y="0" width="82" height="40" backcolor="#FF7F27" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4aa"/>
-                <imageExpression><![CDATA["map.png"]]></imageExpression>
-            </image>
-
-            <!-- line 2 -->
-            <image>
-                <reportElement x="0" y="82" width="82" height="40" backcolor="#FF7F27" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4cf"/>
-                <imageExpression><![CDATA["map.png"]]></imageExpression>
-            </image>
-            <image>
-                <reportElement x="90" y="82" width="82" height="40" backcolor="#FF7F27" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4ce"/>
-                <imageExpression><![CDATA["map.png"]]></imageExpression>
-            </image>
-            <image>
-                <reportElement x="180" y="82" width="82" height="40" backcolor="#FF7F27" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4c1"/>
-                <imageExpression><![CDATA["map.png"]]></imageExpression>
-            </image>
-            <image>
-                <reportElement x="270" y="82" width="82" height="40" backcolor="#FF7F27" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4c2"/>
-                <imageExpression><![CDATA["map.png"]]></imageExpression>
-            </image>
-        </band>
+	<query language="sql"><![CDATA[]]></query>
+	<background splitType="Stretch"/>
+	<title height="500" splitType="Stretch">
+		<element kind="image" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4dd" x="0" y="0" width="82" height="40" backcolor="#FF7F27">
+			<expression><![CDATA["map.png"]]></expression>
+		</element>
+		<element kind="image" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4ee" x="90" y="0" width="82" height="40" backcolor="#FF7F27">
+			<expression><![CDATA["map.png"]]></expression>
+		</element>
+		<element kind="image" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4ff" x="180" y="0" width="82" height="40" backcolor="#FF7F27">
+			<expression><![CDATA["map.png"]]></expression>
+		</element>
+		<element kind="image" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4aa" x="270" y="0" width="82" height="40" backcolor="#FF7F27">
+			<expression><![CDATA["map.png"]]></expression>
+		</element>
+		<element kind="image" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4cf" x="0" y="82" width="82" height="40" backcolor="#FF7F27">
+			<expression><![CDATA["map.png"]]></expression>
+		</element>
+		<element kind="image" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4ce" x="90" y="82" width="82" height="40" backcolor="#FF7F27">
+			<expression><![CDATA["map.png"]]></expression>
+		</element>
+		<element kind="image" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4c1" x="180" y="82" width="82" height="40" backcolor="#FF7F27">
+			<expression><![CDATA["map.png"]]></expression>
+		</element>
+		<element kind="image" uuid="a1d586d7-ed6a-4b0f-9194-3186eecfb4c2" x="270" y="82" width="82" height="40" backcolor="#FF7F27">
+			<expression><![CDATA["map.png"]]></expression>
+		</element>
 	</title>
-	<detail>
-	</detail>
 </jasperReport>
