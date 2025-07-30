@@ -130,7 +130,7 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/p11-kit: 0.24.0-6build1
   ubuntu_22_04/p11-kit-modules: 0.24.0-6build1
   ubuntu_22_04/passwd: 1:4.8.1-2ubuntu2.2
-  ubuntu_22_04/perl-base: 5.34.0-3ubuntu1.4
+  ubuntu_22_04/perl-base: 5.34.0-3ubuntu1.5
   ubuntu_22_04/pinentry-curses: 1.1.1-1build2
   ubuntu_22_04/procps: 2:3.3.17-6ubuntu2.1
   ubuntu_22_04/readline-common: 8.1.2-1
