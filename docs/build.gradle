@@ -16,7 +16,9 @@ repositories {
 
 dependencies {
     implementation project(':core')
-    implementation ("org.codehaus.groovy:groovy-all:3.0.23",
+    implementation (
+            'org.apache.groovy:groovy-xml:4.0.26',
+            'org.apache.groovy:groovy-json:4.0.26',
             "org.springframework:spring-test:5.3.39",
             'org.ccil.cowan.tagsoup:tagsoup:1.2.1',
             'com.samskivert:jmustache:1.16',
