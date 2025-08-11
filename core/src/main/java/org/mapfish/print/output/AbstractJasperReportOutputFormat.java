@@ -321,6 +321,10 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
       for (int i = 0; i < parameters.getLength(); i++) {
         final Element param = (Element) parameters.item(i);
         final String name = param.getAttribute("name");
+        if (param.getParentNode() != null
+            && !"jasperReport".equals(param.getParentNode().getNodeName())) {
+          continue;
+        }
         if (!values.containsKey(name)) {
           if (param.getElementsByTagName("defaultValueExpression").getLength() == 0) {
             missing.append("\t* ").append(name).append("\n");
