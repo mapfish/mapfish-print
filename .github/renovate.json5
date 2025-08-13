@@ -13,7 +13,7 @@
     'github>camptocamp/gs-renovate-config-preset:own.json5#1.4.0',
     'github>camptocamp/gs-renovate-config-preset:security.json5#1.4.0',
   ],
-  baseBranches: ['3.28', '3.29', '3.30', '3.31', 'master'],
+  baseBranches: ['3.28', '3.29', '3.30', '3.31', '3.32', '3.33', 'master'],
   customManagers: [
     {
       matchStrings: ['toolVersion = "(?<currentValue>.*)" // (?<depName>.*)'],
