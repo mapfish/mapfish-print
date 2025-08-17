@@ -1,8 +1,8 @@
 package org.mapfish.print.servlet.job.impl;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import org.hibernate.annotations.Type;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
