@@ -1,9 +1,9 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import java.net.URI;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
 import org.mapfish.print.servlet.job.impl.PrintJobResultImpl;
 
 /** Extension of Print Job Result that holds data as BLOB. */
