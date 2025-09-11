@@ -4,7 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.json.JSONObject;
 
 /**

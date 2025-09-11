@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.PrintException;
 import org.mapfish.print.config.Configuration;
