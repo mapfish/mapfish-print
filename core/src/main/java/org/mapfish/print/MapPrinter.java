@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;

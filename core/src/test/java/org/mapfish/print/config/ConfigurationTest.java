@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import org.geotools.api.style.FeatureTypeStyle;
 import org.geotools.api.style.LineSymbolizer;
 import org.geotools.api.style.PointSymbolizer;

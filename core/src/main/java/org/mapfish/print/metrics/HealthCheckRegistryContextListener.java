@@ -4,8 +4,8 @@ import static org.springframework.web.context.support.WebApplicationContextUtils
 
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.codahale.metrics.servlets.HealthCheckServlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
 import org.springframework.web.context.WebApplicationContext;
 
 /**

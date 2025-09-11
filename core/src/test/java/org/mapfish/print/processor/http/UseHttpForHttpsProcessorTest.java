@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.test.context.ContextConfiguration;

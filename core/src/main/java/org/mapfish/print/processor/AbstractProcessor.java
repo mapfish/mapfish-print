@@ -11,7 +11,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.parser.ParserUtils;
@@ -51,7 +51,7 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
   }
 
   @Override
-  @Nonnull
+  @jakarta.annotation.Nullable
   public final BiMap<String, String> getInputMapperBiMap() {
     return this.inputMapper;
   }
@@ -124,6 +124,7 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
 
   @Nonnull
   @Override
+  @jakarta.annotation.Nullable
   public final BiMap<String, String> getOutputMapperBiMap() {
     return this.outputMapper;
   }

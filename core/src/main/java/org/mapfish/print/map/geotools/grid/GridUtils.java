@@ -6,7 +6,7 @@ import static org.mapfish.print.map.geotools.grid.GridLabel.Side.RIGHT;
 import static org.mapfish.print.map.geotools.grid.GridLabel.Side.TOP;
 
 import java.awt.geom.AffineTransform;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.MathTransform;

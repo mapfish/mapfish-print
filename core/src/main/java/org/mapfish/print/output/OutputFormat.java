@@ -3,7 +3,7 @@ package org.mapfish.print.output;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.Map;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.wrapper.json.PJsonObject;

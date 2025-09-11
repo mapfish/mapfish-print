@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.Message;

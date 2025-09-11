@@ -2,7 +2,7 @@ package org.mapfish.print.map;
 
 import java.io.IOException;
 import java.util.Set;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.mapfish.print.attribute.map.MapLayer;
 import org.mapfish.print.config.Template;
 

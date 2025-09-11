@@ -1,7 +1,7 @@
 package org.mapfish.print.processor;
 
 import java.util.Collection;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * Classes that implement this interface indicate what she dynamically depends on, for the "values"

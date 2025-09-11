@@ -8,7 +8,7 @@ import static org.mapfish.print.output.Values.MDC_CONTEXT_KEY;
 import com.codahale.metrics.MetricRegistry;
 import java.util.HashMap;
 import java.util.List;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import org.junit.Test;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.output.Values;

@@ -4,7 +4,7 @@ import com.google.common.collect.BiMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import org.mapfish.print.config.ConfigurationObject;
 
 /**

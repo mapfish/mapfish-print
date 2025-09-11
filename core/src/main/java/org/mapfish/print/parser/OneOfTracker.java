@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.locationtech.jts.util.Assert;
 
 /** Keeps track of which OneOf groups there are and which ones are satisfied. */

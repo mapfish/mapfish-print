@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /** Utility method for getting and setting parameters on Processor Input and Output objects. */
 public final class ParserUtils {

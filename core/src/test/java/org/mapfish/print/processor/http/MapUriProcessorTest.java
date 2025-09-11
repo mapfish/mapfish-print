@@ -3,7 +3,7 @@ package org.mapfish.print.processor.http;
 import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.test.context.ContextConfiguration;

@@ -1,7 +1,7 @@
 package org.mapfish.print.processor.http;
 
 import java.util.List;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.http.matcher.URIMatcher;

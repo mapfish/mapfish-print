@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import org.junit.Test;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.output.Values;

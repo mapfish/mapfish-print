@@ -1,7 +1,7 @@
 package org.mapfish.print.map.geotools;
 
 import java.util.concurrent.ExecutorService;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;

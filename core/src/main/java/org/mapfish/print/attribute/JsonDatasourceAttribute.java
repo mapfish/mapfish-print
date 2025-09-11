@@ -3,7 +3,7 @@ package org.mapfish.print.attribute;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.json.data.JsonDataSource;
 import org.json.JSONException;

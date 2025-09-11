@@ -4,7 +4,7 @@ import static org.junit.Assert.assertNotNull;
 
 import com.codahale.metrics.MetricRegistry;
 import java.util.List;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 
