@@ -292,7 +292,7 @@ public final class CliServletContext implements ServletContext {
   }
 
   @Override
-  public javax.servlet.ServletRegistration.Dynamic addJspFile(final String p1, final String p2) {
+  public jakarta.servlet.ServletRegistration.Dynamic addJspFile(final String p1, final String p2) {
     return null;
   }
 }
