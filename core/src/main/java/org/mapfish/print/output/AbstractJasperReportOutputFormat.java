@@ -1,7 +1,6 @@
 package org.mapfish.print.output;
 
 import com.google.common.annotations.VisibleForTesting;
-import jakarta.annotation.Nonnegative;
 import jakarta.annotation.Nonnull;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -435,7 +434,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
     @Nonnull public final JasperPrint print;
 
     /** The print DPI. */
-    @Nonnegative public final double dpi;
+    public final double dpi;
 
     /** The execution context for the print job. */
     @Nonnull public final Processor.ExecutionContext executionContext;
@@ -450,7 +449,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         @Nonnull final JasperReportsContext context,
         @Nonnull final JasperPrint print,
         @Nonnull final Values values,
-        @Nonnegative final double dpi,
+        final double dpi,
         @Nonnull final Processor.ExecutionContext executionContext) {
       this.print = print;
       this.context = context;
