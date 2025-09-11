@@ -1,12 +1,12 @@
 package org.mapfish.print.map.tiled;
 
 import com.codahale.metrics.MetricRegistry;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;

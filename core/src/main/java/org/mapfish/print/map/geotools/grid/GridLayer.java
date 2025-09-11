@@ -1,6 +1,7 @@
 package org.mapfish.print.map.geotools.grid;
 
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.annotation.Nonnull;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -13,7 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
-import jakarta.annotation.Nonnull;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.map.Layer;
 import org.mapfish.print.Constants;

@@ -1,6 +1,7 @@
 package org.mapfish.print.parser;
 
 import com.google.common.collect.Collections2;
+import jakarta.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,7 +9,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import jakarta.annotation.Nonnull;
 import org.locationtech.jts.util.Assert;
 
 /** Keeps track of which OneOf groups there are and which ones are satisfied. */

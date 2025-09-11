@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mapfish.print.attribute.map.AreaOfInterest.AoiDisplay.CLIP;
 import static org.mapfish.print.attribute.map.AreaOfInterest.AoiDisplay.RENDER;
 
+import jakarta.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -15,7 +16,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
-import jakarta.annotation.Nonnull;
 import org.apache.batik.transcoder.TranscoderException;
 import org.json.JSONArray;
 import org.json.JSONException;

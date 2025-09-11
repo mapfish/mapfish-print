@@ -1,8 +1,8 @@
 package org.mapfish.print.map.style;
 
-import java.util.Optional;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import java.util.Optional;
 import org.geotools.api.style.Style;
 import org.mapfish.print.config.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;

@@ -1,5 +1,6 @@
 package org.mapfish.print.processor.http.matcher;
 
+import jakarta.annotation.Nullable;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -7,7 +8,6 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

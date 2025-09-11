@@ -1,6 +1,8 @@
 package org.mapfish.print.output;
 
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.annotation.Nonnegative;
+import jakarta.annotation.Nonnull;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -21,8 +23,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.atomic.AtomicBoolean;
-import jakarta.annotation.Nonnegative;
-import jakarta.annotation.Nonnull;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;

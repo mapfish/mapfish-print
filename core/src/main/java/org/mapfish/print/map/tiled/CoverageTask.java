@@ -2,6 +2,7 @@ package org.mapfish.print.map.tiled;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import jakarta.annotation.Nonnull;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -11,7 +12,6 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 import java.util.concurrent.RecursiveTask;
-import jakarta.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.CoverageFactoryFinder;

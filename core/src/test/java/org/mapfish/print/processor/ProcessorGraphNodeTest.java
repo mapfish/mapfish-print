@@ -5,9 +5,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
-import jakarta.annotation.Nullable;
 import org.junit.Test;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.output.Values;

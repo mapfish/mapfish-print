@@ -1,12 +1,12 @@
 package org.mapfish.print.map.tiled;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.locationtech.jts.geom.Coordinate;
 import org.mapfish.print.attribute.map.MapBounds;

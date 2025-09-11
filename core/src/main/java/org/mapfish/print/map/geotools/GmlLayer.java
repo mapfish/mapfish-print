@@ -1,12 +1,12 @@
 package org.mapfish.print.map.geotools;
 
+import jakarta.annotation.Nonnull;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
-import jakarta.annotation.Nonnull;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.emf.ecore.resource.URIHandler;

@@ -1,7 +1,7 @@
 package org.mapfish.print.http;
 
-import java.io.InputStream;
 import jakarta.annotation.Nonnull;
+import java.io.InputStream;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.AbstractClientHttpResponse;
 import org.springframework.util.StreamUtils;

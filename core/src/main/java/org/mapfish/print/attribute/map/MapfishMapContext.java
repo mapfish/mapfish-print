@@ -1,11 +1,11 @@
 package org.mapfish.print.attribute.map;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.map.Scale;

@@ -4,6 +4,8 @@ import static org.mapfish.print.FileUtils.testForLegalFileUrl;
 import static org.springframework.http.HttpMethod.HEAD;
 
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -19,8 +21,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import javax.imageio.ImageIO;
 import org.apache.commons.lang3.StringUtils;
 import org.geotools.api.filter.expression.Expression;

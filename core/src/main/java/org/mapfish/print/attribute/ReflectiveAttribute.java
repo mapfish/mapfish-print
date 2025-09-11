@@ -3,6 +3,8 @@ package org.mapfish.print.attribute;
 import static org.mapfish.print.parser.MapfishParser.stringRepresentation;
 
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.PostConstruct;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -11,8 +13,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.PostConstruct;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,6 +1,8 @@
 package org.mapfish.print.map.style.json;
 
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.style.Rule;
 import org.geotools.api.style.Style;

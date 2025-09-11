@@ -1,7 +1,7 @@
 package org.mapfish.print.attribute;
 
-import java.util.List;
 import jakarta.annotation.Nonnull;
+import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;

@@ -1,10 +1,10 @@
 package org.mapfish.print.attribute;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.PrintException;

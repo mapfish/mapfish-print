@@ -8,13 +8,13 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import jakarta.annotation.Nullable;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.annotation.Nullable;
 import org.geotools.api.style.FeatureTypeStyle;
 import org.geotools.api.style.LineSymbolizer;
 import org.geotools.api.style.PointSymbolizer;

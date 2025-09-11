@@ -4,9 +4,9 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mapfish.print.output.Values.MDC_CONTEXT_KEY;
 
+import jakarta.annotation.Nullable;
 import java.net.URI;
 import java.util.HashMap;
-import jakarta.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;

@@ -1,11 +1,11 @@
 package org.mapfish.print.map.style.json;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.expression.Expression;

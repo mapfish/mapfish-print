@@ -1,5 +1,6 @@
 package org.mapfish.print.map.geotools;
 
+import jakarta.annotation.Nonnull;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
-import jakarta.annotation.Nonnull;
 import org.apache.commons.io.IOUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.geotools.api.style.Style;

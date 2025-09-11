@@ -1,10 +1,10 @@
 package org.mapfish.print.map.tiled.osm;
 
 import com.codahale.metrics.MetricRegistry;
+import jakarta.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
-import jakarta.annotation.Nonnull;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.map.MapLayerFactoryPlugin;

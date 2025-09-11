@@ -1,12 +1,12 @@
 package org.mapfish.print.config.access;
 
 import com.google.common.collect.Collections2;
+import jakarta.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import jakarta.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,5 +1,6 @@
 package org.mapfish.print;
 
+import jakarta.annotation.Nonnull;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import jakarta.annotation.Nonnull;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;

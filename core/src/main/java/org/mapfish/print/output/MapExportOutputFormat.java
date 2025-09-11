@@ -1,5 +1,6 @@
 package org.mapfish.print.output;
 
+import jakarta.annotation.Nonnull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
@@ -10,7 +11,6 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.atomic.AtomicBoolean;
-import jakarta.annotation.Nonnull;
 import org.apache.commons.io.IOUtils;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;

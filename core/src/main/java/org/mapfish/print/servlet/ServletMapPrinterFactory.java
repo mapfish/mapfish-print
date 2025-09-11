@@ -2,6 +2,9 @@ package org.mapfish.print.servlet;
 
 import static java.nio.file.Files.walk;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -16,9 +19,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.MapPrinter;

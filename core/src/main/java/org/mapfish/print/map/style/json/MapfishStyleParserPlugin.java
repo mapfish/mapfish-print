@@ -2,9 +2,9 @@ package org.mapfish.print.map.style.json;
 
 import static org.mapfish.print.map.style.json.MapfishJsonStyleVersion1.DEFAULT_GEOM_ATT_NAME;
 
-import java.util.Optional;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import java.util.Optional;
 import org.geotools.api.style.Style;
 import org.geotools.styling.StyleBuilder;
 import org.json.JSONObject;

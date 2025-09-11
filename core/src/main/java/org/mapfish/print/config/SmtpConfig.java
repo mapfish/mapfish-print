@@ -1,8 +1,8 @@
 package org.mapfish.print.config;
 
-import java.util.List;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import java.util.List;
 
 /**
  * Email sending configuration.

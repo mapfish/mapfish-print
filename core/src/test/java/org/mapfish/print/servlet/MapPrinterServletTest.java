@@ -10,6 +10,7 @@ import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGU
 
 import de.saly.javamail.mock2.MailboxFolder;
 import de.saly.javamail.mock2.MockMailbox;
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -20,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import jakarta.annotation.Nullable;
 import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.Message;

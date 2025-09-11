@@ -2,6 +2,8 @@ package org.mapfish.print.servlet.job;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,8 +16,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;

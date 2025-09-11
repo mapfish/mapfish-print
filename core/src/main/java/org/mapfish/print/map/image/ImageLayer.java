@@ -3,6 +3,7 @@ package org.mapfish.print.map.image;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
 
 import com.codahale.metrics.MetricRegistry;
+import jakarta.annotation.Nonnull;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -15,7 +16,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
-import jakarta.annotation.Nonnull;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.style.Style;
 import org.geotools.coverage.CoverageFactoryFinder;

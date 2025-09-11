@@ -2,10 +2,10 @@ package org.mapfish.print.processor.http;
 
 import static org.junit.Assert.assertEquals;
 
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import jakarta.annotation.Nullable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.test.context.ContextConfiguration;

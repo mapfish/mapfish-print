@@ -1,8 +1,8 @@
 package org.mapfish.print.processor.map;
 
+import jakarta.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
-import jakarta.annotation.Nullable;
 import org.mapfish.print.attribute.map.GenericMapAttribute.GenericMapAttributeValues;
 import org.mapfish.print.attribute.map.StaticLayersAttribute;
 import org.mapfish.print.config.Configuration;
