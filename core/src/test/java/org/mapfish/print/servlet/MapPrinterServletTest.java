@@ -425,8 +425,9 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
               + lastTimeElapsed
               + " is not less or equal to timeElapsed: "
               + timeElapsed,
-          lastTimeElapsed <=
-              timeElapsed + allowDeltaBetweenCompletedJobStatusRegisteredStatsAndInstantaneousElapsedTime);
+          lastTimeElapsed
+              <= timeElapsed
+                  + allowDeltaBetweenCompletedJobStatusRegisteredStatsAndInstantaneousElapsedTime);
 
       lastTimeElapsed = timeElapsed;
 
