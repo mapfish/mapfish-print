@@ -1,3 +1,7 @@
+tasks.withType(JavaCompile).configureEach {
+    sourceCompatibility = '21'
+    targetCompatibility = '21'
+}
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 repositories {

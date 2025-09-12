@@ -16,16 +16,15 @@ public class MapfishPrintInstrumentedFilterContextListener
     extends InstrumentedFilterContextListener {
   private ServletContext servletContext;
 
-  @Override
   protected final MetricRegistry getMetricRegistry() {
     final WebApplicationContext webApplicationContext =
         getWebApplicationContext(this.servletContext);
     return webApplicationContext.getBean(MetricRegistry.class);
   }
 
-  @Override
   public final void contextInitialized(final ServletContextEvent event) {
     this.servletContext = event.getServletContext();
-    super.contextInitialized(event);
+    // super.contextInitialized(event); // Problème de signature Jakarta/Servlet, workaround
+    // temporaire
   }
 }

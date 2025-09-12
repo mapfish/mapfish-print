@@ -1173,7 +1173,14 @@ public class MapPrinterServlet extends BaseMapServlet {
       referrer = "http://localhost/";
     }
     try {
-      return allowedReferers.matches(new URI(referrer), HttpMethod.resolve(request.getMethod()));
+      // HttpMethod.resolve() n'existe plus, utiliser valueOf() avec gestion d'exception
+      HttpMethod method;
+      try {
+        method = HttpMethod.valueOf(request.getMethod());
+      } catch (IllegalArgumentException ex) {
+        return false;
+      }
+      return allowedReferers.matches(new URI(referrer), method);
     } catch (SocketException
         | UnknownHostException
         | URISyntaxException

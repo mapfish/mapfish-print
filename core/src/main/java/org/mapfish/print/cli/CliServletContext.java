@@ -81,19 +81,16 @@ public final class CliServletContext implements ServletContext {
     return null;
   }
 
-  @Override
   @Deprecated
   public Servlet getServlet(final String name) {
     return null;
   }
 
-  @Override
   @Deprecated
   public Enumeration<Servlet> getServlets() {
     return null;
   }
 
-  @Override
   @Deprecated
   public Enumeration<String> getServletNames() {
     return null;
@@ -102,7 +99,6 @@ public final class CliServletContext implements ServletContext {
   @Override
   public void log(final String msg) {}
 
-  @Override
   @Deprecated
   public void log(final Exception exception, final String msg) {}
 

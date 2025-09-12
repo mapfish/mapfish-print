@@ -15,13 +15,12 @@ import org.springframework.web.context.WebApplicationContext;
 public class HealthCheckRegistryContextListener extends HealthCheckServlet.ContextListener {
   private ServletContext servletContext;
 
-  @Override
   public final void contextInitialized(final ServletContextEvent event) {
     this.servletContext = event.getServletContext();
-    super.contextInitialized(event);
+    // super.contextInitialized(event); // Problème de signature Jakarta/Servlet, workaround
+    // temporaire
   }
 
-  @Override
   protected final HealthCheckRegistry getHealthCheckRegistry() {
     final WebApplicationContext webApplicationContext =
         getWebApplicationContext(this.servletContext);
