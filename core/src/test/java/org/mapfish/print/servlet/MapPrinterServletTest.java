@@ -414,16 +414,23 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
       downloadURL = createResponseJson.getString(MapPrinterServlet.JSON_DOWNLOAD_LINK);
       assertEquals("/print/report/" + ref, downloadURL);
 
+      reportReady = statusJson.getBool(MapPrinterServlet.JSON_DONE);
+
+      long allowDeltaBetweenCompletedJobStatusRegisteredStatsAndInstantaneousElapsedTime =
+          reportReady ? 200 : 0;
+
       timeElapsed = statusJson.getInt(MapPrinterServlet.JSON_ELAPSED_TIME);
       assertTrue(
           "lastTimeElapsed: "
               + lastTimeElapsed
               + " is not less or equal to timeElapsed: "
               + timeElapsed,
-          lastTimeElapsed <= timeElapsed);
+          lastTimeElapsed
+              <= timeElapsed
+                  + allowDeltaBetweenCompletedJobStatusRegisteredStatsAndInstantaneousElapsedTime);
+
       lastTimeElapsed = timeElapsed;
 
-      reportReady = statusJson.getBool(MapPrinterServlet.JSON_DONE);
       if (!reportReady) {
         Thread.sleep(500);
       }
