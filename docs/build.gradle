@@ -17,13 +17,13 @@ repositories {
 dependencies {
     implementation project(':core')
     implementation (
-            'org.apache.groovy:groovy-xml:4.0.26',
-            'org.apache.groovy:groovy-json:4.0.26',
+            'org.apache.groovy:groovy-xml:4.0.28',
+            'org.apache.groovy:groovy-json:4.0.28',
             "org.springframework:spring-test:5.3.39",
             'org.ccil.cowan.tagsoup:tagsoup:1.2.1',
             'com.samskivert:jmustache:1.16',
-            'com.google.guava:guava:33.3.1-jre',
-            'commons-io:commons-io:2.17.0',
+            'com.google.guava:guava:33.5.0-jre',
+            'commons-io:commons-io:2.20.0',
             "org.springframework:spring-beans:5.3.39",
             "org.springframework:spring-web:5.3.39",
             "org.springframework:spring-context:5.3.39",
