@@ -46,7 +46,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     }
 
     spotbugs {
-        toolVersion = "4.9.4" // com.github.spotbugs:spotbugs-annotations
+        toolVersion = "4.9.6" // com.github.spotbugs:spotbugs-annotations
         reportsDir = file("$project.buildDir/reports/SpotBugsReports")
         effort = "max"
         reportLevel = "high"
