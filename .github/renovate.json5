@@ -1,4 +1,5 @@
 {
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
   extends: [
     'github>camptocamp/gs-renovate-config-preset:base.json5#1.4.3',
     'github>camptocamp/gs-renovate-config-preset:group.json5#1.4.3',
@@ -130,6 +131,12 @@
       matchFileNames: ['.github/workflows/rebuild.yaml'],
       enabled: false,
     },
+    /** Temporary */
+    /** Ungroup patch versions */
+    {
+      groupName: 'all patch versions',
+      matchUpdateTypes: ['patch'],
+      automerge: true,
+    },
   ],
-  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
 }
