@@ -239,6 +239,15 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
       callback.configureRequest(requestToExecute);
     }
 
+    if (configFileResolvingHttpRequestFactory.disableSSLCertificateCheck()) {
+      HttpsURLConnection.setDefaultHostnameVerifier(
+          new HostnameVerifier() {
+            public boolean verify(String hostname, SSLSession session) {
+              return true;
+            }
+          });
+    }
+
     return requestToExecute.execute();
   }
 
