@@ -191,7 +191,7 @@ dependencies {
             // For JasperReports
             'joda-time:joda-time:2.14.0',
             'org.jfree:jcommon:1.0.24',
-            'org.apache.groovy:groovy-all:4.0.28',
+            'org.apache.groovy:groovy-all:5.0.1',
             'xalan:serializer:2.7.3',
     )
 
