@@ -1,4 +1,5 @@
 {
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
   extends: [
     'github>camptocamp/gs-renovate-config-preset:base.json5#1.4.3',
     'github>camptocamp/gs-renovate-config-preset:group.json5#1.4.3',
@@ -130,6 +131,11 @@
       matchFileNames: ['.github/workflows/rebuild.yaml'],
       enabled: false,
     },
+    /** Ungroup gradle updates, separate minor versions */
+    {
+      matchDepNames: ['gradle'],
+      groupName: 'gradle',
+      separateMultipleMinor: true,
+    },
   ],
-  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
 }
