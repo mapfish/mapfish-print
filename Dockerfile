@@ -1,4 +1,4 @@
-FROM gradle:8.11.1-jdk17 AS builder
+FROM gradle:8.12.1-jdk17 AS builder
 
 RUN --mount=type=cache,target=/var/cache,sharing=locked \
     --mount=type=cache,target=/root/.cache \
