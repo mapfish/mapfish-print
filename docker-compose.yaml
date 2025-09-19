@@ -1,5 +1,6 @@
 services:
   geoserver:
+    # Credentials: admin/geoserver
     image: camptocamp/geoserver:17
     volumes:
       - ./examples/geoserver-data/:/mnt/geoserver_datadir
