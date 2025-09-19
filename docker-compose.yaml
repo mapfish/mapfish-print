@@ -3,7 +3,7 @@ services:
     # Credentials: admin/geoserver
     image: camptocamp/geoserver:17
     volumes:
-      - ./examples/geoserver-data/:/mnt/geoserver_datadir
+      - ./examples/geoserver-data/:/mnt/geoserver_datadir:rw
       - ./core/src/test/resources/map-data/:/mnt/geoserver_datadir/www/map-data
 
   print:

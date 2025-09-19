@@ -53,6 +53,7 @@ tests: build-builder
 acceptance-tests-up: build .env
 	# Required to avoid root ownership of reports folder
 	mkdir -p examples/build/reports/ || true
+	chmod -R o+w core/src/test/resources/map-data/
 	docker compose $(DOCKER_COMPOSE_ARGS) up --detach
 
 .PHONY: acceptance-tests-run
