@@ -1,6 +1,7 @@
 services:
   geoserver:
-    image: camptocamp/geoserver:16
+    # Credentials: admin/geoserver
+    image: georchestra/geoserver:20.0.x
     volumes:
       - ./examples/geoserver-data/:/mnt/geoserver_datadir
       - ./core/src/test/resources/map-data/:/mnt/geoserver_datadir/www/map-data
