@@ -62,6 +62,7 @@ acceptance-tests-run: .env
 	docker compose exec $(DOCKER_COMPOSE_ARGS) -T print sh -c 'for i in $(shell seq 1 24); do curl --fail http://geoserver:8080/geoserver/web/ && exit 0; sleep 5; done; exit 1'
 
 	git status
+	ls -l core/src/test/resources/map-data/test-data/simple-squares-geojson.json
 
 	docker compose exec -T print curl --fail http://geoserver:8080/geoserver/www/map-data/test-data/simple-squares-geojson.json
 
