@@ -1,6 +1,7 @@
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'war'
 
 defaultTasks 'build'
 
@@ -10,8 +11,8 @@ repositories {
             excludeModule("javax.media", "jai_core")
         }
     }
-    maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
-    maven { url "https://repo.osgeo.org/repository/release/" }
+    maven { url = "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
+    maven { url = "https://repo.osgeo.org/repository/release/" }
 }
 
 dependencies {
@@ -44,7 +45,7 @@ tasks.register('copySite', Copy) {
     from(sourceSets.main.output.resourcesDir) {
         exclude 'pages.json', 'templates/*', 'templates'
     }
-    from(project(':core').webAppDir) {
+    from(project(":core").tasks.war.getWebAppDirectory()) {
         include 'favicon.ico', 'mapfish_transparent.png'
     }
 
@@ -62,7 +63,7 @@ tasks.register('buildDocs', JavaExec) {
     def javadocs = project(':core').tasks.javadoc.destinationDir
     def basicAppContext = 'classpath*:mapfish-spring-application-context.xml'
     def appContext = project(':core').projectDir.toURI().toString() + '/extraConfigFor/docs/*.xml'
-    def appContext2 = project(':core').webAppDir.toURI().toString() + '/WEB-INF/mapfish-print-servlet.xml'
+    def appContext2 = project(":core").tasks.war.getWebAppDirectory().getAsFile().get().toURI().toString() + '/WEB-INF/mapfish-print-servlet.xml'
     def overrideAppContext = 'classpath*:mapfish-spring-application-context-override.xml'
     args site, javadocs, basicAppContext, appContext, appContext2, overrideAppContext
 }
