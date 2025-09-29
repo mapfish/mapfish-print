@@ -6,7 +6,7 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/bsdutils: 1:2.37.2-4ubuntu3.4
   ubuntu_22_04/ca-certificates: 20240203~22.04.1
   ubuntu_22_04/coreutils: 8.32-4.1ubuntu1.2
-  ubuntu_22_04/curl: 7.81.0-1ubuntu1.20
+  ubuntu_22_04/curl: 7.81.0-1ubuntu1.21
   ubuntu_22_04/dash: 0.5.11+git20210903+057cd650a4ed-3build1
   ubuntu_22_04/debconf: 1.5.79ubuntu1
   ubuntu_22_04/debianutils: 5.5-1ubuntu2
@@ -52,7 +52,7 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/libcap2: 1:2.44-1ubuntu0.22.04.2
   ubuntu_22_04/libcom-err2: 1.46.5-2ubuntu1.2
   ubuntu_22_04/libcrypt1: 1:4.4.27-1
-  ubuntu_22_04/libcurl4: 7.81.0-1ubuntu1.20
+  ubuntu_22_04/libcurl4: 7.81.0-1ubuntu1.21
   ubuntu_22_04/libdb5.3: 5.3.28+dfsg1-0.8ubuntu3
   ubuntu_22_04/libdebconfclient0: 0.261ubuntu1
   ubuntu_22_04/libexpat1: 2.4.7-1ubuntu0.6
