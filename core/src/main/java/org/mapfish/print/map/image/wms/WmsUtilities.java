@@ -20,6 +20,7 @@ import org.geotools.api.referencing.FactoryException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.wms.request.GetMapRequest;
 import org.geotools.referencing.CRS;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.image.wms.WmsLayerParam.ServerType;
@@ -89,10 +90,14 @@ public final class WmsUtilities {
   }
 
   private static URL getUrl(final URI commonURI) throws MalformedURLException {
-    if (commonURI == null || commonURI.getAuthority() == null) {
-      throw new RuntimeException("Invalid WMS URI: " + commonURI);
+    if (commonURI == null) {
+      throw new PrintException("No URI provided");
+    } else if (commonURI.getAuthority() == null) {
+      throw new PrintException("Invalid WMS URI (does not contain authority): " + commonURI);
     }
     return commonURI.toURL();
+    // Warning: From Java21 onwards, the returned URL will contain the file extended
+    // with the query. And the query won't necessarily be empty.
   }
 
   private static void addDpiParam(
@@ -183,6 +188,7 @@ public final class WmsUtilities {
    * @param uri the URI, including the parameters
    * @param method the HTTP method
    * @return The request
+   * @throws IOException
    */
   public static ClientHttpRequest createWmsRequest(
       final MfClientHttpRequestFactory httpRequestFactory, final URI uri, final HttpMethod method)

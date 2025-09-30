@@ -538,7 +538,7 @@ public class PrintApiTest extends AbstractApiTest {
       String responseAsText = getBodyAsText(response);
       JSONObject infoResult = new JSONObject(responseAsText);
       final JSONArray layouts = infoResult.getJSONArray("layouts");
-      assertEquals(expectedNumberOfLayouts, layouts.length());
+      assertEquals("In " + responseAsText, expectedNumberOfLayouts, layouts.length());
       return layouts;
     }
   }
