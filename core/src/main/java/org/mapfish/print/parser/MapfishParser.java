@@ -9,6 +9,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -226,8 +228,8 @@ public final class MapfishParser {
       value = layer.getArray(name);
     } else if (type == URL.class) {
       try {
-        value = new URL(null, layer.getString(name), new Handler());
-      } catch (MalformedURLException e) {
+        value = URL.of(new URI(layer.getString(name)), new Handler());
+      } catch (MalformedURLException | URISyntaxException e) {
         throw new PrintException("Failed to create URL for " + name, e);
       }
     } else if (type.isArray()) {
@@ -278,7 +280,7 @@ public final class MapfishParser {
 
       for (Object enumConstant : enumConstants) {
         if (enumConstant.toString().equalsIgnoreCase(enumString)
-            || ((Enum) enumConstant).name().equalsIgnoreCase(enumString)) {
+            || ((Enum<?>) enumConstant).name().equalsIgnoreCase(enumString)) {
           return enumConstant;
         }
       }
@@ -324,8 +326,8 @@ public final class MapfishParser {
       value = array.getArray(i);
     } else if (type == URL.class) {
       try {
-        value = new URL(null, array.getString(i), new Handler());
-      } catch (MalformedURLException e) {
+        value = URL.of(new URI(array.getString(i)), new Handler());
+      } catch (MalformedURLException | URISyntaxException e) {
         throw new PrintException("Failed to create URL for index" + i, e);
       }
     } else if (type.isEnum()) {

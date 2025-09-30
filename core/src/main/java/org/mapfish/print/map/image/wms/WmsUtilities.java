@@ -92,19 +92,7 @@ public final class WmsUtilities {
     if (commonURI == null || commonURI.getAuthority() == null) {
       throw new RuntimeException("Invalid WMS URI: " + commonURI);
     }
-    String[] authority = commonURI.getAuthority().split(":");
-    URL url;
-    if (authority.length == 2) {
-      url =
-          new URL(
-              commonURI.getScheme(),
-              authority[0],
-              Integer.parseInt(authority[1]),
-              commonURI.getPath());
-    } else {
-      url = new URL(commonURI.getScheme(), authority[0], commonURI.getPath());
-    }
-    return url;
+    return commonURI.toURL();
   }
 
   private static void addDpiParam(
@@ -195,7 +183,6 @@ public final class WmsUtilities {
    * @param uri the URI, including the parameters
    * @param method the HTTP method
    * @return The request
-   * @throws IOException
    */
   public static ClientHttpRequest createWmsRequest(
       final MfClientHttpRequestFactory httpRequestFactory, final URI uri, final HttpMethod method)

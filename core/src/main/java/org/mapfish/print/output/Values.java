@@ -180,11 +180,11 @@ public final class Values {
     if (requestData.has("lang")) {
       String[] localeSplit = requestData.getString("lang").split("_");
       if (localeSplit.length == 1) {
-        locale = new Locale(localeSplit[0]);
+        locale = Locale.of(localeSplit[0]);
       } else if (localeSplit.length == 2) {
-        locale = new Locale(localeSplit[0], localeSplit[1]);
+        locale = Locale.of(localeSplit[0], localeSplit[1]);
       } else if (localeSplit.length > 2) {
-        locale = new Locale(localeSplit[0], localeSplit[1], localeSplit[2]);
+        locale = Locale.of(localeSplit[0], localeSplit[1], localeSplit[2]);
       }
     }
     this.values.put(LOCALE_KEY, locale);

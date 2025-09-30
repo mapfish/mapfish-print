@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -49,7 +50,13 @@ class CachingUrihandler extends HTTPURIHandler {
     if (super.canHandle(resolvedUri)) {
       return super.createInputStream(resolvedUri, options);
     } else {
-      URL resolvedUrl = new URL(null, resolved, new Handler());
+      URL resolvedUrl;
+      try {
+        resolvedUrl = URL.of(new java.net.URI(resolved), new Handler());
+      } catch (URISyntaxException e) {
+        throw new IOException("Don't know how to handle " + resolved, e);
+      }
+
       if (resolvedUrl.getProtocol().equals("file")) {
         return new FileInputStream(resolvedUrl.getPath());
       } else {

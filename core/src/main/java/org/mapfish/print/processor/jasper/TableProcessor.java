@@ -9,8 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -323,8 +323,7 @@ public final class TableProcessor
    * first converter, which claims that it can convert, will be used to do the conversion.
    */
   private Object tryConvert(
-      final MfClientHttpRequestFactory clientHttpRequestFactory, final Object rowValue)
-      throws URISyntaxException, IOException {
+      final MfClientHttpRequestFactory clientHttpRequestFactory, final Object rowValue) {
     if (this.converters.isEmpty()) {
       return rowValue;
     }
@@ -711,8 +710,10 @@ public final class TableProcessor
 
   private byte[] loadJasperTemplate(final Configuration configuration) throws IOException {
     if (this.defaultTemplate) {
-      try (InputStream is = new URL(this.jasperTemplate).openStream()) {
+      try (InputStream is = new URI(this.jasperTemplate).toURL().openStream()) {
         return IOUtils.toByteArray(is);
+      } catch (URISyntaxException e) {
+        throw new PrintException("Failed to build URL for " + this.jasperTemplate, e);
       }
     } else {
       return configuration.loadFile(this.jasperTemplate);
