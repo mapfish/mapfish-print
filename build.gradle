@@ -1,12 +1,12 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url = "https://plugins.gradle.org/m2/" }
     }
+}
 
-    dependencies {
-        classpath "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.7.5"
-    }
+plugins {
+  id("com.github.spotbugs") version "6.4.2"
 }
 
 defaultTasks 'build'
@@ -29,10 +29,10 @@ configurations.configureEach {
 
 configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     apply plugin: 'java'
-    apply plugin: 'com.github.spotbugs'
     apply plugin: 'eclipse'
     apply plugin: 'idea'
     apply plugin: 'project-report'
+    apply plugin: 'com.github.spotbugs'
     apply plugin: 'checkstyle'
 
     jar.dependsOn(checkstyleMain)
@@ -48,8 +48,8 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     spotbugs {
         toolVersion = "4.9.6" // com.github.spotbugs:spotbugs-annotations
         reportsDir = file("$project.buildDir/reports/SpotBugsReports")
-        effort = "max"
-        reportLevel = "high"
+        effort = com.github.spotbugs.snom.Effort.MAX
+        reportLevel = com.github.spotbugs.snom.Confidence.valueOf("HIGH")
     }
 
     java {

@@ -6,9 +6,9 @@ repositories {
             excludeModule("javax.media", "jai_core")
         }
     }
-    maven { url 'https://maven.restlet.org' }
-    maven { url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
-    maven { url "https://repo.osgeo.org/repository/release/" }
+    maven { url = 'https://maven.restlet.org' }
+    maven { url = "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
+    maven { url = "https://repo.osgeo.org/repository/release/" }
 }
 
 dependencies {

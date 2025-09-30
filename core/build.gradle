@@ -12,8 +12,8 @@ repositories {
             excludeModule('javax.media', 'jai_core')
         }
     }
-    maven { url 'https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts' }
-    maven { url 'https://repo.osgeo.org/repository/release/' }
+    maven { url = 'https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts' }
+    maven { url = 'https://repo.osgeo.org/repository/release/' }
 }
 
 // the task `run` of the gretty plugin conflicts with the task with the same
@@ -203,8 +203,8 @@ dependencies {
     providedCompile('javax.servlet:javax.servlet-api:4.0.1')
     compileOnly 'com.github.spotbugs:spotbugs-annotations:4.9.6'
 
-    testImplementation group: 'de.saly', name: 'javamail-mock2-fullmock', version: '0.5-beta4'
-    testImplementation group: 'com.h2database', name: 'h2', version: '2.3.232'
+    testImplementation 'de.saly:javamail-mock2-fullmock:0.5-beta4'
+    testImplementation 'com.h2database:h2:2.3.232'
 }
 
 static def gitRevision() {
@@ -247,6 +247,7 @@ war {
     archiveBaseName = 'print-servlet'
     addManifestAttribute(manifest)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    webAppDirectory = file('src/main/webapp')
 }
 
 tasks.register('show') {
