@@ -106,7 +106,7 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/libsqlite3-0: 3.37.2-2ubuntu0.5
   ubuntu_22_04/libss2: 1.46.5-2ubuntu1.2
   ubuntu_22_04/libssh-4: 0.9.6-2ubuntu0.22.04.4
-  ubuntu_22_04/libssl3: 3.0.2-0ubuntu1.19
+  ubuntu_22_04/libssl3: 3.0.2-0ubuntu1.20
   ubuntu_22_04/libstdc++6: 12.3.0-1ubuntu1~22.04.2
   ubuntu_22_04/libsystemd0: 249.11-0ubuntu3.16
   ubuntu_22_04/libtasn1-6: 4.18.0-4ubuntu0.1
@@ -126,7 +126,7 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/mount: 2.37.2-4ubuntu3.4
   ubuntu_22_04/ncurses-base: 6.3-2ubuntu0.1
   ubuntu_22_04/ncurses-bin: 6.3-2ubuntu0.1
-  ubuntu_22_04/openssl: 3.0.2-0ubuntu1.19
+  ubuntu_22_04/openssl: 3.0.2-0ubuntu1.20
   ubuntu_22_04/p11-kit: 0.24.0-6build1
   ubuntu_22_04/p11-kit-modules: 0.24.0-6build1
   ubuntu_22_04/passwd: 1:4.8.1-2ubuntu2.2
