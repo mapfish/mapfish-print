@@ -195,9 +195,7 @@ public class PrintApiTest extends AbstractApiTest {
 
     // create a large, fake request
     StringBuilder largeRequest = new StringBuilder();
-    for (int i = 0; i < 9999; i++) {
-      largeRequest.append(printSpec);
-    }
+    largeRequest.append(String.valueOf(printSpec).repeat(9999));
 
     setPrintSpec(largeRequest.toString(), request);
     try {

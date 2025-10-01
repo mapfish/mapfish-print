@@ -99,9 +99,7 @@ public abstract class AbstractProcessor<IN, OUT> implements Processor<IN, OUT> {
   @Override
   public void toString(final StringBuilder builder, final int indent, final String parent) {
     int spaces = (indent) * 2;
-    for (int i = 0; i < spaces; i++) {
-      builder.append(' ');
-    }
+    builder.append(" ".repeat(Math.max(0, spaces)));
     builder.append("\"");
     builder.append(parent.replace("\"", "\\\""));
     builder.append("\" -> \"");

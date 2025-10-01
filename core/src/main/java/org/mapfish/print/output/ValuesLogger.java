@@ -135,9 +135,7 @@ public final class ValuesLogger {
   }
 
   private StringBuilder addIndent() {
-    for (int i = 0; i < this.indent; i++) {
-      this.builder.append(" ");
-    }
+    this.builder.append(" ".repeat(Math.max(0, this.indent)));
     return this.builder;
   }
 }
