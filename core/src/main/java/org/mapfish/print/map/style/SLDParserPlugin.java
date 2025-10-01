@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
@@ -152,11 +153,7 @@ public class SLDParserPlugin implements StyleParserPlugin {
               styles.length));
     }
 
-    if (styleIndex == null) {
-      return Optional.of(styles[0]);
-    } else {
-      return Optional.of(styles[styleIndex]);
-    }
+    return Optional.of(styles[Objects.requireNonNullElse(styleIndex, 0)]);
   }
 
   private static boolean isNonXml(final byte[] bytes) {
