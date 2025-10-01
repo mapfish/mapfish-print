@@ -3,6 +3,7 @@ package org.mapfish.print.map.geotools;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
@@ -121,7 +122,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         final String gmlString)
         throws IOException {
       try {
-        URL url = new URL(gmlString);
+        URL url = new URI(gmlString).toURL();
         FileUtils.testForLegalFileUrl(template.getConfiguration(), url);
         try {
           final String gmlData = URIUtils.toString(httpRequestFactory, url.toURI());
@@ -135,7 +136,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         } catch (URISyntaxException e) {
           throw new PrintException("Failed to create URI for " + url, e);
         }
-      } catch (MalformedURLException e) {
+      } catch (MalformedURLException | URISyntaxException e) {
         return null;
       }
     }
@@ -193,7 +194,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
 
     private Parser createParser(final Configuration configuration) {
       final Parser parser = new Parser(configuration);
-      parser.getURIHandlers().add(0, this.cachingUrihandler);
+      parser.getURIHandlers().addFirst(this.cachingUrihandler);
       return parser;
     }
   }

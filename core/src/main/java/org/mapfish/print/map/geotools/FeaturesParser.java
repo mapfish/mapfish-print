@@ -169,14 +169,15 @@ public class FeaturesParser {
       final Template template, final String geoJsonUrl) throws IOException {
     URL url;
     try {
-      url = FileUtils.testForLegalFileUrl(template.getConfiguration(), new URL(geoJsonUrl));
-    } catch (MalformedURLException e) {
+      URI uri = new URI(geoJsonUrl);
+      url = FileUtils.testForLegalFileUrl(template.getConfiguration(), uri.toURL());
+    } catch (MalformedURLException | URISyntaxException e) {
       return null;
     }
 
     final String geojsonString;
     if (url.getProtocol().equalsIgnoreCase("file")) {
-      geojsonString = IOUtils.toString(url, Constants.DEFAULT_CHARSET.name());
+      geojsonString = IOUtils.toString(url, Constants.DEFAULT_CHARSET);
     } else {
       geojsonString = URIUtils.toString(this.httpRequestFactory, url);
     }

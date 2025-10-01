@@ -207,7 +207,7 @@ public class HttpProxyTest {
     httpProxy.setHost(LOCALHOST);
     httpProxy.setPort(PROXY_PORT);
 
-    final String path = "/request";
+    final String path = "/request-proxy-test";
     proxyServer.createContext(
         path,
         new HttpHandler() {
@@ -228,7 +228,7 @@ public class HttpProxyTest {
     httpProxy.setPort(HTTPS_PROXY_PORT);
     httpProxy.setUsername("username");
 
-    final String path = "/username";
+    final String path = "/username-test";
     httpsServer.createContext(
         path,
         new HttpHandler() {
@@ -268,7 +268,7 @@ public class HttpProxyTest {
     httpProxy.setUsername("username");
     httpProxy.setPassword("password");
 
-    final String path = "/usernameAndPassword";
+    final String path = "/usernameAndPassword-test";
     httpsServer.createContext(
         path,
         new HttpHandler() {
@@ -312,7 +312,7 @@ public class HttpProxyTest {
     httpProxy.setMatchers(Collections.singletonList(dnsHostMatcher));
     final String message = "Target was reached without proxy";
 
-    final String path = "/nomatch";
+    final String path = "/nomatch-test";
     targetServer.createContext(
         path,
         new HttpHandler() {
@@ -344,7 +344,7 @@ public class HttpProxyTest {
     httpProxy.setMatchers(Collections.singletonList(localHostMatcher));
     final String message = "Target was reached without proxy";
 
-    final String path = "/nomatch";
+    final String path = "/reject-test";
     targetServer.createContext(
         path,
         new HttpHandler() {

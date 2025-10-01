@@ -110,8 +110,7 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
   }
 
   private ClientHttpResponse doDataUriRequest() throws IOException {
-    final String urlStr = this.uri.toString();
-    final URL url = new URL("data", null, 0, urlStr.substring("data:".length()), new Handler());
+    final URL url = URL.of(this.uri, new Handler());
     final DataUrlConnection duc = new DataUrlConnection(url);
     final InputStream is = duc.getInputStream();
     final String contentType = duc.getContentType();

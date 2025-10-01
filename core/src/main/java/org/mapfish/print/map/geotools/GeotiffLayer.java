@@ -3,6 +3,7 @@ package org.mapfish.print.map.geotools;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
@@ -116,8 +117,14 @@ public final class GeotiffLayer extends AbstractGeotoolsLayer {
 
     private Function<MfClientHttpRequestFactory, AbstractGridCoverage2DReader> getGeotiffReader(
         final Template template, final String geotiffUrl) throws IOException {
+      URI geotiffResourceUrl;
+      try {
+        geotiffResourceUrl = new URI(geotiffUrl);
+      } catch (URISyntaxException e) {
+        throw new PrintException("Failed to create URI from " + geotiffUrl, e);
+      }
       final URL url =
-          FileUtils.testForLegalFileUrl(template.getConfiguration(), new URL(geotiffUrl));
+          FileUtils.testForLegalFileUrl(template.getConfiguration(), geotiffResourceUrl.toURL());
       return (final MfClientHttpRequestFactory requestFactory) -> {
         try {
           final File geotiffFile;
@@ -145,7 +152,7 @@ public final class GeotiffLayer extends AbstractGeotoolsLayer {
   /** The parameters for reading a Geotiff file, either from the server or from a URL. */
   public static final class GeotiffParam extends AbstractLayerParams {
     /**
-     * The url of the geotiff. It can be a file but if it is the file must be contained within the
+     * The url of the geotiff. It can be a file, but if it is, the file must be contained within the
      * config directory.
      */
     public String url;

@@ -208,10 +208,9 @@ public final class JsonStyleParserHelper {
       ExternalGraphic externalGraphic = null;
       if (externalGraphicUrl.startsWith("data:")) {
         try {
-          externalGraphic =
-              this.styleBuilder.createExternalGraphic(
-                  new URL(null, externalGraphicUrl, new Handler()), graphicFormat);
-        } catch (MalformedURLException e) {
+          URL url = URL.of(new URI(externalGraphicUrl), new Handler());
+          externalGraphic = this.styleBuilder.createExternalGraphic(url, graphicFormat);
+        } catch (MalformedURLException | URISyntaxException e) {
           // ignored
         }
       } else {
@@ -275,17 +274,17 @@ public final class JsonStyleParserHelper {
 
   private String validateURL(final String externalGraphicUrl) {
     try {
-      new URL(externalGraphicUrl);
-    } catch (MalformedURLException e) {
+      URL.of(new URI(externalGraphicUrl), null);
+    } catch (MalformedURLException | URISyntaxException | IllegalArgumentException e) {
       // not a url so assume a file or data url and verify that it is valid
       try {
         if (externalGraphicUrl.startsWith("data:")) {
-          new URL(null, externalGraphicUrl, new Handler());
+          URL.of(new URI(externalGraphicUrl), new Handler());
           return externalGraphicUrl;
         }
-        final URL fileURL = new URL("file://" + externalGraphicUrl);
+        final URL fileURL = URL.of(new URI("file://" + externalGraphicUrl), null);
         return testForLegalFileUrl(this.configuration, fileURL).toExternalForm();
-      } catch (MalformedURLException e1) {
+      } catch (MalformedURLException | URISyntaxException e1) {
         throw new PrintException("Unable to convert to file URL " + externalGraphicUrl, e);
       }
     }
