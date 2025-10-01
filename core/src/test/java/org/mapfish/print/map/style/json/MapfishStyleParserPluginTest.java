@@ -127,34 +127,40 @@ public class MapfishStyleParserPluginTest {
       assertEquals(1, symbolizers.size());
 
       for (Symbolizer symbolizer : symbolizers) {
-        if (symbolizer instanceof PointSymbolizer) {
-          assertEquals("1_Point", rule.getName());
+        switch (symbolizer) {
+          case PointSymbolizer pointSymbolizer -> {
+            assertEquals("1_Point", rule.getName());
 
-          assertNull(point);
-          point = (PointSymbolizer) symbolizer;
-          assertFilter(geomSelectFunction, Point.class, MultiPoint.class, GeometryCollection.class);
-        } else if (symbolizer instanceof LineSymbolizer) {
-          assertEquals("1_LineString", rule.getName());
-          assertNull(line);
-          line = (LineSymbolizer) symbolizer;
-          assertFilter(
-              geomSelectFunction,
-              LineString.class,
-              LinearRing.class,
-              MultiLineString.class,
-              GeometryCollection.class);
-        } else if (symbolizer instanceof PolygonSymbolizer) {
-          assertEquals("1_Polygon", rule.getName());
-          assertNull(polygon);
-          polygon = (PolygonSymbolizer) symbolizer;
-          assertFilter(
-              geomSelectFunction, Polygon.class, MultiPolygon.class, GeometryCollection.class);
-        } else if (symbolizer instanceof TextSymbolizer) {
-          assertEquals("1_Text", rule.getName());
-          assertNull(text);
-          text = (TextSymbolizer) symbolizer;
-        } else {
-          fail(symbolizer + " was unexpected");
+            assertNull(point);
+            point = pointSymbolizer;
+            assertFilter(
+                geomSelectFunction, Point.class, MultiPoint.class, GeometryCollection.class);
+          }
+          case LineSymbolizer lineSymbolizer -> {
+            assertEquals("1_LineString", rule.getName());
+            assertNull(line);
+            line = lineSymbolizer;
+            assertFilter(
+                geomSelectFunction,
+                LineString.class,
+                LinearRing.class,
+                MultiLineString.class,
+                GeometryCollection.class);
+          }
+          case PolygonSymbolizer polygonSymbolizer -> {
+            assertEquals("1_Polygon", rule.getName());
+            assertNull(polygon);
+            polygon = polygonSymbolizer;
+            assertFilter(
+                geomSelectFunction, Polygon.class, MultiPolygon.class, GeometryCollection.class);
+          }
+          case TextSymbolizer textSymbolizer -> {
+            assertEquals("1_Text", rule.getName());
+            assertNull(text);
+            text = textSymbolizer;
+          }
+          case null -> fail(symbolizer + " was unexpected");
+          default -> fail(symbolizer + " was unexpected");
         }
       }
     }

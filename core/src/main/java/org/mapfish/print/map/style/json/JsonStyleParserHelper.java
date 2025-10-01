@@ -601,20 +601,20 @@ public final class JsonStyleParserHelper {
       String yAlign = labelAlign.substring(1, 2);
 
       final double anchorInMiddle = 0.5;
-      if ("l".equals(xAlign)) {
-        anchorX = this.styleBuilder.literalExpression(0.0);
-      } else if ("c".equals(xAlign)) {
-        anchorX = this.styleBuilder.literalExpression(anchorInMiddle);
-      } else if ("r".equals(xAlign)) {
-        anchorX = this.styleBuilder.literalExpression(1.0);
-      }
-      if ("b".equals(yAlign)) {
-        anchorY = this.styleBuilder.literalExpression(0.0);
-      } else if ("m".equals(yAlign)) {
-        anchorY = this.styleBuilder.literalExpression(anchorInMiddle);
-      } else if ("t".equals(yAlign)) {
-        anchorY = this.styleBuilder.literalExpression(1.0);
-      }
+      anchorX =
+          switch (xAlign) {
+            case "l" -> this.styleBuilder.literalExpression(0.0);
+            case "c" -> this.styleBuilder.literalExpression(anchorInMiddle);
+            case "r" -> this.styleBuilder.literalExpression(1.0);
+            default -> anchorX;
+          };
+      anchorY =
+          switch (yAlign) {
+            case "b" -> this.styleBuilder.literalExpression(0.0);
+            case "m" -> this.styleBuilder.literalExpression(anchorInMiddle);
+            case "t" -> this.styleBuilder.literalExpression(1.0);
+            default -> anchorY;
+          };
     }
     boolean returnNull = true;
     if (anchorX == null) {
