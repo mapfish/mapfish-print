@@ -48,12 +48,15 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
   public void testParseCRSBackwardCompat() throws Exception {
     JSONObject crsJSON =
         new JSONObject(
-            "{\"crs\":{\n"
-                + "  \"type\":\"EPSG\",\n"
-                + "  \"properties\" : {\n"
-                + "     \"code\":\"4326\"\n"
-                + "  }\n"
-                + "}\n}");
+            """
+            {"crs":{
+              "type":"EPSG",
+              "properties" : {
+                 "code":"4326"
+              }
+            }
+            }\
+            """);
 
     CoordinateReferenceSystem crs =
         FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
@@ -65,12 +68,14 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
   public void testParseCRSNameCode() throws Exception {
     JSONObject crsJSON =
         new JSONObject(
-            "{\"crs\":{\n"
-                + "  \"type\":\"name\",\n"
-                + "  \"properties\" : {\n"
-                + "     \"name\":\"EPSG:4326\"\n"
-                + "  }\n"
-                + "}}");
+            """
+            {"crs":{
+              "type":"name",
+              "properties" : {
+                 "name":"EPSG:4326"
+              }
+            }}\
+            """);
 
     CoordinateReferenceSystem crs =
         FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
@@ -82,12 +87,14 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
   public void testParseCRSNameURI() throws Exception {
     JSONObject crsJSON =
         new JSONObject(
-            "{\"crs\":{\n"
-                + "  \"type\":\"name\",\n"
-                + "  \"properties\" : {\n"
-                + "     \"name\":\"urn:ogc:def:crs:EPSG::4326\"\n"
-                + "  }\n"
-                + "}}");
+            """
+            {"crs":{
+              "type":"name",
+              "properties" : {
+                 "name":"urn:ogc:def:crs:EPSG::4326"
+              }
+            }}\
+            """);
 
     CoordinateReferenceSystem crs =
         FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
@@ -118,14 +125,16 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
         });
     JSONObject crsJSON =
         new JSONObject(
-            "{\"crs\":{\n"
-                + "  \"type\":\"link\",\n"
-                + "  \"properties\" : {\n"
-                + "     \"href\":\"http://spatialreference"
-                + ".org/ref/epsg/4326/ogcwkt/\",\n"
-                + "     \"type\":\"ogcwkt\"\n"
-                + "  }\n"
-                + "}}");
+            """
+            {"crs":{
+              "type":"link",
+              "properties" : {
+                 "href":"http://spatialreference\
+            .org/ref/epsg/4326/ogcwkt/",
+                 "type":"ogcwkt"
+              }
+            }}\
+            """);
 
     CoordinateReferenceSystem crs =
         FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
@@ -167,14 +176,16 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
         });
     JSONObject crsJSON =
         new JSONObject(
-            "{\"crs\":{\n"
-                + "  \"type\":\"link\",\n"
-                + "  \"properties\" : {\n"
-                + "     \"href\":\"http://spatialreference"
-                + ".org/ref/epsg/4326/esriwkt/\",\n"
-                + "     \"type\":\"esriwkt\"\n"
-                + "  }\n"
-                + "}}");
+            """
+            {"crs":{
+              "type":"link",
+              "properties" : {
+                 "href":"http://spatialreference\
+            .org/ref/epsg/4326/esriwkt/",
+                 "type":"esriwkt"
+              }
+            }}\
+            """);
 
     CoordinateReferenceSystem crs =
         FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);
@@ -186,14 +197,16 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
   public void testUnsupportedLinkTypeProj4() {
     JSONObject crsJSON =
         new JSONObject(
-            "{\"crs\":{\n"
-                + "  \"type\":\"link\",\n"
-                + "  \"properties\" : {\n"
-                + "     \"href\":\"http://spatialreference"
-                + ".org/ref/epsg/4326/proj4/\",\n"
-                + "     \"type\":\"proj4\"\n"
-                + "  }\n"
-                + "}}");
+            """
+            {"crs":{
+              "type":"link",
+              "properties" : {
+                 "href":"http://spatialreference\
+            .org/ref/epsg/4326/proj4/",
+                 "type":"proj4"
+              }
+            }}\
+            """);
 
     CoordinateReferenceSystem crs =
         FeaturesParser.parseCoordinateReferenceSystem(this.requestFactory, crsJSON, false);

@@ -430,10 +430,13 @@ public final class LegendProcessor
 
     private void logNotOkResponseStatus(final ClientHttpResponse httpResponse) throws IOException {
       LOGGER.warn(
-          "Failed to load image from: {} due to server side error.\n"
-              + "\tResponse Code: {}\n"
-              + "\tResponse Text: {}\n"
-              + "\tWith Headers:\n\t{}",
+          """
+          Failed to load image from: {} due to server side error.
+          \tResponse Code: {}
+          \tResponse Text: {}
+          \tWith Headers:
+          \t{}\
+          """,
           this.icon,
           httpResponse.getRawStatusCode(),
           httpResponse.getStatusText(),

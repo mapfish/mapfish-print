@@ -366,8 +366,12 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
               ".  The class attribute in the template xml does not match the class of the "
                   + "actual object.")
           .append(
-              "\nEither change the declaration in the jasper template or update the "
-                  + "configuration so that the parameters have the correct type.\n\n")
+              """
+
+              Either change the declaration in the jasper template or update the \
+              configuration so that the parameters have the correct type.
+
+              """)
           .append(wrongType);
     }
 

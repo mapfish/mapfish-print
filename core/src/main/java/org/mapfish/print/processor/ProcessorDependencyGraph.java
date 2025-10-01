@@ -146,7 +146,12 @@ public final class ProcessorDependencyGraph {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append("strict digraph g {\n" + "  rankdir=\"LR\";\n" + "  node [shape=\"box\"];\n");
+    builder.append(
+        """
+        strict digraph g {
+          rankdir="LR";
+          node [shape="box"];
+        """);
     toString(builder, 0, "root");
     builder.append("}");
     return builder.toString();

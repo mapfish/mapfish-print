@@ -248,7 +248,11 @@ public class HttpProxyTest {
               } else {
                 final String errorMessage =
                     String.format(
-                        "Expected authorization:\n" + "'%s' but got:\n" + "'%s'",
+                        """
+                        Expected authorization:
+                        '%s' but got:
+                        '%s'\
+                        """,
                         expectedAuth, authorization);
                 respond(httpExchange, errorMessage, 500);
               }
