@@ -10,6 +10,7 @@ import static org.mapfish.print.map.style.json.MapfishStyleParserPluginTest.REQU
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -46,7 +47,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
 
-@SuppressWarnings("deprecation")
 public class JsonStyleParserHelperTest {
 
   private static final float FLOAT_DELTA = 0.00001f;
@@ -745,9 +745,8 @@ public class JsonStyleParserHelperTest {
   @Test
   public void testExpressionProperties() throws Exception {
     String jsonString =
-        new String(
-            java.nio.file.Files.readAllBytes(
-                getFile("v2-style-all-properies-as-expressions.json").toPath()),
+        Files.readString(
+            getFile("v2-style-all-properies-as-expressions.json").toPath(),
             Constants.DEFAULT_CHARSET);
 
     PJsonObject json = MapPrinter.parseSpec(jsonString).getJSONObject("*");

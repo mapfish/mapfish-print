@@ -11,6 +11,7 @@ import static org.mapfish.print.map.style.json.JsonStyleParserHelperTest.valueOf
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -239,7 +240,6 @@ public class MapfishStyleParserPluginTest {
     return geomClass.cast(geom);
   }
 
-  @SuppressWarnings("deprecation")
   @Test
   public void testV2ParseSymbolizersWithDefaultsAndValues() throws Throwable {
     final Style style = parseStyle("v2-style-symbolizers-default-values.json");
@@ -313,8 +313,7 @@ public class MapfishStyleParserPluginTest {
   }
 
   private String getSpec(String name) throws IOException, URISyntaxException {
-    return new String(
-        java.nio.file.Files.readAllBytes(getFile(name).toPath()), Constants.DEFAULT_CHARSET);
+    return Files.readString(getFile(name).toPath(), Constants.DEFAULT_CHARSET);
   }
 
   private File getFile(String name) throws URISyntaxException {

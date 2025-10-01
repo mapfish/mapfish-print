@@ -83,7 +83,7 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
   }
 
   private String getExpected() throws IOException {
-    return new String(Files.readAllBytes(logbackXml.toPath()), Constants.DEFAULT_CHARSET);
+    return Files.readString(logbackXml.toPath(), Constants.DEFAULT_CHARSET);
   }
 
   @Test

@@ -27,6 +27,7 @@ public class ColorParserTest {
     assertEquals(new Color(1.0f, 0.0f, 0.0f, 0.5f), ColorParser.toColor("rgba(255, 0, 0, 0.5)"));
   }
 
+  @Test
   public void testToRGB() {
     assertEquals("rgb(1, 2, 3)", ColorParser.toRGB(ColorParser.toColor("rgb(1, 2, 3)")));
   }
