@@ -114,7 +114,7 @@ public class JsonStyleParserHelperTest {
 
     assertEquals(1, graphicalSymbols.size());
 
-    ExternalGraphic externalGraphic = (ExternalGraphic) graphicalSymbols.get(0);
+    ExternalGraphic externalGraphic = (ExternalGraphic) graphicalSymbols.getFirst();
     assertEquals("image/png", externalGraphic.getFormat());
     assertEquals(getFile("mark.png"), new File(externalGraphic.getLocation().toURI()));
   }
@@ -145,7 +145,7 @@ public class JsonStyleParserHelperTest {
     final Graphic graphic = symbolizer.getGraphic();
     assertEquals(1, graphic.graphicalSymbols().size());
 
-    Mark externalGraphic = (Mark) graphic.graphicalSymbols().get(0);
+    Mark externalGraphic = (Mark) graphic.graphicalSymbols().getFirst();
 
     assertEquals("circle", valueOf(externalGraphic.getWellKnownName()));
 
@@ -540,7 +540,7 @@ public class JsonStyleParserHelperTest {
 
     final Graphic graphic = pointSymbolizer.getGraphic();
     assertEquals(1, graphic.graphicalSymbols().size());
-    Mark mark = (Mark) graphic.graphicalSymbols().get(0);
+    Mark mark = (Mark) graphic.graphicalSymbols().getFirst();
 
     assertEquals("circle", valueOf(mark.getWellKnownName()));
     assertNotNull(mark.getFill());
@@ -558,7 +558,7 @@ public class JsonStyleParserHelperTest {
     assertNotNull(pointSymbolizer);
 
     final Graphic graphic = pointSymbolizer.getGraphic();
-    Mark mark = (Mark) graphic.graphicalSymbols().get(0);
+    Mark mark = (Mark) graphic.graphicalSymbols().getFirst();
     Stroke stroke = mark.getStroke();
     assertArrayEquals(
         Arrays.toString(stroke.getDashArray()),
@@ -764,7 +764,7 @@ public class JsonStyleParserHelperTest {
     assertEquals("graphicOpacity", propertyName(graphic.getOpacity()));
     assertEquals("pointRadius", propertyName(graphic.getSize()));
 
-    Mark mark = (Mark) graphic.graphicalSymbols().get(0);
+    Mark mark = (Mark) graphic.graphicalSymbols().getFirst();
     assertEquals("graphicName", propertyName(mark.getWellKnownName()));
 
     assertEquals("fillOpacity", propertyName(mark.getFill().getOpacity()));
@@ -789,7 +789,7 @@ public class JsonStyleParserHelperTest {
     assertEquals("PolyFillColor", propertyName(polygonSymbolizer.getFill().getColor()));
 
     assertEquals("fontColor", propertyName(textSymbolizer.getFill().getColor()));
-    assertEquals("fontFamily", propertyName(textSymbolizer.getFont().getFamily().get(0)));
+    assertEquals("fontFamily", propertyName(textSymbolizer.getFont().getFamily().getFirst()));
     assertEquals("fontSize", propertyName(textSymbolizer.getFont().getSize()));
     assertEquals("fontStyle", propertyName(textSymbolizer.getFont().getStyle()));
     assertEquals("fontWeight", propertyName(textSymbolizer.getFont().getWeight()));

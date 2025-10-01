@@ -182,7 +182,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
       throws IOException {
     if (contentType == null || contentType.size() != 1) {
       LOGGER.debug("The image {} didn't return a valid content type header.", request.getURI());
-    } else if (!contentType.get(0).startsWith("image/")) {
+    } else if (!contentType.getFirst().startsWith("image/")) {
       final byte[] data;
       try (InputStream body = httpResponse.getBody()) {
         data = IOUtils.toByteArray(body);
@@ -233,11 +233,11 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
       LOGGER.debug(
           "We get a wrong image for {}, content type: {}\nresult:\n{}",
           request.getURI(),
-          contentType.get(0),
+          contentType.getFirst(),
           responseBody);
       this.registry.counter(MetricRegistry.name(baseMetricName, "error")).inc();
       if (getFailOnError()) {
-        throw new RuntimeException("Wrong content-type : " + contentType.get(0));
+        throw new RuntimeException("Wrong content-type : " + contentType.getFirst());
       } else {
         return false;
       }

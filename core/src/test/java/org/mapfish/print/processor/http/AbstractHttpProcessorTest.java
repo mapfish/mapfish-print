@@ -60,7 +60,7 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
     List<ProcessorGraphNode<?, ?>> roots = graph.getRoots();
 
     assertEquals(1, roots.size());
-    final ProcessorGraphNode<?, ?> processor = roots.get(0);
+    final ProcessorGraphNode<?, ?> processor = roots.getFirst();
     assertEquals(classUnderTest(), processor.getProcessor().getClass());
 
     final Set dependencies = processor.getAllProcessors();
@@ -95,7 +95,7 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
     List<ProcessorGraphNode<?, ?>> roots = graph.getRoots();
 
     assertEquals(1, roots.size());
-    final ProcessorGraphNode<?, ?> compositeClientHttpRequestFactoryProcessor = roots.get(0);
+    final ProcessorGraphNode<?, ?> compositeClientHttpRequestFactoryProcessor = roots.getFirst();
     assertEquals(
         classUnderTest(), compositeClientHttpRequestFactoryProcessor.getProcessor().getClass());
     final Set dependencies = compositeClientHttpRequestFactoryProcessor.getAllProcessors();

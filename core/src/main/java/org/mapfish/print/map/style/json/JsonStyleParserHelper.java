@@ -426,7 +426,7 @@ public final class JsonStyleParserHelper {
     Expression fontFamily =
         parseExpression(null, styleJson, JSON_FONT_FAMILY, fontFamily1 -> fontFamily1);
     if (fontFamily == null) {
-      fontFamily = defaultFont.getFamily().get(0);
+      fontFamily = defaultFont.getFamily().getFirst();
     }
     List<Expression> fontFamilies = getFontExpressions(fontFamily, fontWeight);
 
@@ -440,7 +440,8 @@ public final class JsonStyleParserHelper {
       fontStyle = defaultFont.getStyle();
     }
 
-    Font font = this.styleBuilder.createFont(fontFamilies.get(0), fontStyle, fontWeight, fontSize);
+    Font font =
+        this.styleBuilder.createFont(fontFamilies.getFirst(), fontStyle, fontWeight, fontSize);
     if (fontFamilies.size() > 1) {
       // add remaining "fallback" fonts
       for (int i = 1; i < fontFamilies.size(); i++) {
@@ -815,7 +816,7 @@ public final class JsonStyleParserHelper {
       }
 
       if (contentTypes != null && contentTypes.size() == 1) {
-        String contentType = contentTypes.get(0);
+        String contentType = contentTypes.getFirst();
         int index = contentType.lastIndexOf(";");
         return index >= 0 ? contentType.substring(0, index) : contentType;
       }

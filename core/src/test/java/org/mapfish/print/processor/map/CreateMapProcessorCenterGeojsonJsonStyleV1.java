@@ -71,6 +71,6 @@ public class CreateMapProcessorCenterGeojsonJsonStyleV1 extends AbstractMapfishS
     assertEquals(1, layerGraphics.size());
 
     new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-        .assertSimilarity(new File(layerGraphics.get(0)), 0);
+        .assertSimilarity(new File(layerGraphics.getFirst()), 0);
   }
 }

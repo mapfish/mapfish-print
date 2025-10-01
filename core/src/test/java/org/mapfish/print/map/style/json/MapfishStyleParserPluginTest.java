@@ -113,7 +113,7 @@ public class MapfishStyleParserPluginTest {
         And andFilter = (And) rule.getFilter();
         assertEquals(2, andFilter.getChildren().size());
 
-        PropertyIsEqualTo filter = (PropertyIsEqualTo) andFilter.getChildren().get(0);
+        PropertyIsEqualTo filter = (PropertyIsEqualTo) andFilter.getChildren().getFirst();
         PropertyName propertyName = (PropertyName) filter.getExpression1();
         assertEquals("_gx_style", propertyName.getPropertyName());
         Literal valueExpression = (Literal) filter.getExpression2();
@@ -246,9 +246,9 @@ public class MapfishStyleParserPluginTest {
 
     final List<FeatureTypeStyle> featureTypeStyles = style.featureTypeStyles();
     assertEquals(1, featureTypeStyles.size());
-    final List<Rule> rules = featureTypeStyles.get(0).rules();
+    final List<Rule> rules = featureTypeStyles.getFirst().rules();
     assertEquals(1, rules.size());
-    final Rule rule = rules.get(0);
+    final Rule rule = rules.getFirst();
 
     assertEquals(1000000, rule.getMaxScaleDenominator(), DELTA);
     assertEquals(100, rule.getMinScaleDenominator(), DELTA);
@@ -259,11 +259,11 @@ public class MapfishStyleParserPluginTest {
 
     assertEquals(2, rule.symbolizers().size());
 
-    PointSymbolizer symbolizer = (PointSymbolizer) rule.symbolizers().get(0);
+    PointSymbolizer symbolizer = (PointSymbolizer) rule.symbolizers().getFirst();
 
     assertEquals(1, symbolizer.getGraphic().graphicalSymbols().size());
 
-    Mark mark = (Mark) symbolizer.getGraphic().graphicalSymbols().get(0);
+    Mark mark = (Mark) symbolizer.getGraphic().graphicalSymbols().getFirst();
 
     assertEquals("circle", valueOf(mark.getWellKnownName()));
     assertEquals(30, (Double) valueOf(symbolizer.getGraphic().getRotation()), DELTA);
@@ -280,9 +280,9 @@ public class MapfishStyleParserPluginTest {
 
     final List<FeatureTypeStyle> featureTypeStyles = style.featureTypeStyles();
     assertEquals(1, featureTypeStyles.size());
-    final List<Rule> rules = featureTypeStyles.get(0).rules();
+    final List<Rule> rules = featureTypeStyles.getFirst().rules();
     assertEquals(1, rules.size());
-    final Rule rule = rules.get(0);
+    final Rule rule = rules.getFirst();
 
     assertEquals(Filter.INCLUDE, rule.getFilter());
 

@@ -57,8 +57,8 @@ public class LineGridStrategyTest {
             new AbstractProcessor.Context(new HashMap<>(), new AtomicBoolean(false)));
     assertEquals(1, layers.size());
 
-    FeatureSource<?, ?> fs = layers.get(0).getFeatureSource();
-    assertNotNull(layers.get(0).getStyle());
+    FeatureSource<?, ?> fs = layers.getFirst().getFeatureSource();
+    assertNotNull(layers.getFirst().getStyle());
 
     final SimpleFeatureCollection features = (SimpleFeatureCollection) fs.getFeatures();
     assertEquals(3, features.size());
@@ -100,8 +100,8 @@ public class LineGridStrategyTest {
             new AbstractProcessor.Context(new HashMap<>(), new AtomicBoolean(false)));
     assertEquals(1, layers.size());
 
-    FeatureSource<?, ?> fs = layers.get(0).getFeatureSource();
-    assertNotNull(layers.get(0).getStyle());
+    FeatureSource<?, ?> fs = layers.getFirst().getFeatureSource();
+    assertNotNull(layers.getFirst().getStyle());
 
     final SimpleFeatureCollection features = (SimpleFeatureCollection) fs.getFeatures();
     assertEquals(5, features.size());

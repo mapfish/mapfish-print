@@ -461,7 +461,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     final List<Processor> processorList = Arrays.asList(processors);
 
     for (int i = 0; i < processorList.size(); i++) {
-      final Processor p = processorList.get(0);
+      final Processor p = processorList.getFirst();
       int actualIndex = execution.testOrderExecution.indexOf(p);
       for (Processor p2 : processorList.subList(i + 1, processorList.size())) {
         assertTrue(actualIndex < execution.testOrderExecution.indexOf(p2));

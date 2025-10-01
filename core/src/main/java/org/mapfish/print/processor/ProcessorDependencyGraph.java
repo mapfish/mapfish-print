@@ -53,7 +53,7 @@ public final class ProcessorDependencyGraph {
 
     if (!tasks.isEmpty()) {
       // compute one task in current thread so as not to waste threads
-      tasks.get(0).compute();
+      tasks.getFirst().compute();
 
       for (ProcessorGraphNode.ProcessorNodeForkJoinTask task : tasks.subList(1, tasks.size())) {
         task.join();

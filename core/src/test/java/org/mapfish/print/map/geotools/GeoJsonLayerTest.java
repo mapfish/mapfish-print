@@ -63,7 +63,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
     assertEquals(1, layers.size());
 
-    FeatureLayer featureLayer = (FeatureLayer) layers.get(0);
+    FeatureLayer featureLayer = (FeatureLayer) layers.getFirst();
     final int count = featureLayer.getFeatureSource().getCount(Query.ALL);
     assertEquals(3, count);
     assertEquals(RenderType.SVG, layer.getRenderType());
@@ -183,7 +183,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
     assertEquals(1, layers.size());
 
-    FeatureLayer layer = (FeatureLayer) layers.get(0);
+    FeatureLayer layer = (FeatureLayer) layers.getFirst();
     final int count = layer.getFeatureSource().getCount(Query.ALL);
     assertEquals(3, count);
   }
@@ -215,7 +215,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
     assertEquals(1, layers.size());
 
-    FeatureLayer layer = (FeatureLayer) layers.get(0);
+    FeatureLayer layer = (FeatureLayer) layers.getFirst();
     final int count = layer.getFeatureSource().getCount(Query.ALL);
     assertEquals(3, count);
     assertEquals(RenderType.UNKNOWN, mapLayer.getRenderType());

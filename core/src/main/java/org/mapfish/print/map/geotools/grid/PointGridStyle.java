@@ -26,12 +26,12 @@ public final class PointGridStyle {
         crossSymbolizer("shape://plus", builder, CROSS_SIZE, params.gridColor);
     final Style style = builder.createStyle(pointSymbolizer);
     final List<Symbolizer> symbolizers =
-        style.featureTypeStyles().get(0).rules().get(0).symbolizers();
+        style.featureTypeStyles().getFirst().rules().getFirst().symbolizers();
 
     if (params.haloRadius > 0.0) {
       Symbolizer halo =
           crossSymbolizer("cross", builder, CROSS_SIZE + params.haloRadius * 2.0, params.haloColor);
-      symbolizers.add(0, halo);
+      symbolizers.addFirst(halo);
     }
 
     return style;

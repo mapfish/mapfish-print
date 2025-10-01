@@ -129,7 +129,7 @@ public final class ImageSimilarity {
       throw new IllegalArgumentException("no graphics given");
     }
 
-    BufferedImage mergedImage = loadGraphic(graphicFiles.get(0), width, height);
+    BufferedImage mergedImage = loadGraphic(graphicFiles.getFirst(), width, height);
     Graphics g = mergedImage.getGraphics();
     for (int i = 1; i < graphicFiles.size(); i++) {
       BufferedImage image = loadGraphic(graphicFiles.get(i), width, height);

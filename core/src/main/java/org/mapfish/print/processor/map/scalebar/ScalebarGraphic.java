@@ -80,12 +80,11 @@ public class ScalebarGraphic {
         TextLayout labelLayout = new TextLayout(labelText, font, frc);
         labels.add(new Label(intervalLengthInPixels * i, labelLayout, graphics2D));
       }
-      leftLabelMargin = labels.get(0).getRotatedWidth(scalebarParams.getLabelRotation()) / 2.0f;
-      rightLabelMargin =
-          labels.get(labels.size() - 1).getRotatedWidth(scalebarParams.getLabelRotation()) / 2.0f;
-      topLabelMargin = labels.get(0).getRotatedHeight(scalebarParams.getLabelRotation()) / 2.0f;
+      leftLabelMargin = labels.getFirst().getRotatedWidth(scalebarParams.getLabelRotation()) / 2.0f;
+      rightLabelMargin = labels.getLast().getRotatedWidth(scalebarParams.getLabelRotation()) / 2.0f;
+      topLabelMargin = labels.getFirst().getRotatedHeight(scalebarParams.getLabelRotation()) / 2.0f;
       bottomLabelMargin =
-          labels.get(labels.size() - 1).getRotatedHeight(scalebarParams.getLabelRotation()) / 2.0f;
+          labels.getLast().getRotatedHeight(scalebarParams.getLabelRotation()) / 2.0f;
     } else {
       // if there is only one interval, place the label centered between the two tick marks
       String labelText =
