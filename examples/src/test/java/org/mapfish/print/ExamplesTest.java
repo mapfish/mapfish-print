@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.core.util.StatusPrinter;
+import ch.qos.logback.core.util.StatusPrinter2;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +15,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -99,6 +101,7 @@ public class ExamplesTest {
   private static Pattern exampleFilter;
   private static Pattern requestFilter;
   private static final List<String> requiringPdfAValidationTests = List.of("pdf_a_compliant");
+  private static final StatusPrinter2 statusPrinter2 = new StatusPrinter2();
 
   static {
     Handler.configureProtocolHandler();
@@ -109,7 +112,7 @@ public class ExamplesTest {
   @BeforeClass
   public static void setUp() {
     final LoggerContext loggerContext = getLoggerContext();
-    StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
+    statusPrinter2.printInCaseOfErrorsOrWarnings(loggerContext);
 
     String filterProperty = System.getProperty(FILTER_PROPERTY);
     if (!StringUtils.isEmpty(filterProperty)) {
@@ -308,7 +311,7 @@ public class ExamplesTest {
           errors.put(String.format("%s (%s)", example.getName(), requestFile.getName()), e);
         }
       }
-    } catch (IOException | RuntimeException e) {
+    } catch (IOException | RuntimeException | URISyntaxException e) {
       errors.put(example.getName(), e);
     }
 
@@ -378,7 +381,8 @@ public class ExamplesTest {
   }
 
   private HttpURLConnection createHttpUrlConnection(
-      String exampleName, String outputFormat, int contentLength) throws IOException {
+      String exampleName, String outputFormat, int contentLength)
+      throws IOException, URISyntaxException {
     HttpURLConnection http = (HttpURLConnection) createUrlConnection(exampleName, outputFormat);
     http.setRequestMethod("POST");
     http.setDoInput(true);
@@ -389,15 +393,17 @@ public class ExamplesTest {
   }
 
   private URLConnection createUrlConnection(String exampleName, String outputFormat)
-      throws IOException {
+      throws IOException, URISyntaxException {
     URL url =
-        new URL(
-            AbstractApiTest.PRINT_SERVER
-                + "print/"
-                + exampleName
-                + MapPrinterServlet.CREATE_AND_GET_URL
-                + "."
-                + outputFormat);
+        URL.of(
+            new URI(
+                AbstractApiTest.PRINT_SERVER
+                    + "print/"
+                    + exampleName
+                    + MapPrinterServlet.CREATE_AND_GET_URL
+                    + "."
+                    + outputFormat),
+            null);
     URLConnection connection = url.openConnection();
     connection.setRequestProperty("Referer", AbstractApiTest.PRINT_SERVER);
     connection.setRequestProperty("Cache-Control", "max-age=0");
