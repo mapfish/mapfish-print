@@ -42,7 +42,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
 
     final Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             pJsonObject,
             template,
             getTaskDirectory(),
@@ -81,7 +81,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
 
     final Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             pJsonObject,
             template,
             getTaskDirectory(),
@@ -121,7 +121,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
 
     final Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             pJsonObject,
             template,
             getTaskDirectory(),

@@ -35,7 +35,7 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     JasperPrint print =
         format.getJasperPrint(
-                new HashMap<String, String>(),
+                new HashMap<>(),
                 requestData,
                 config,
                 getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
@@ -61,7 +61,7 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
       }
       final OutputStream outputStream = new ByteArrayOutputStream();
       format.print(
-          new HashMap<String, String>(),
+          new HashMap<>(),
           requestData,
           config,
           getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),

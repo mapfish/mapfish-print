@@ -66,7 +66,7 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
 
       Values values =
           new Values(
-              new HashMap<String, String>(),
+              new HashMap<>(),
               requestData,
               template,
               getTaskDirectory(),

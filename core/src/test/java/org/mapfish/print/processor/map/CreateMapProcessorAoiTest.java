@@ -250,7 +250,7 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
 
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),

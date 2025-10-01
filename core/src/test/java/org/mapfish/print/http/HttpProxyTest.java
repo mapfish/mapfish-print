@@ -113,7 +113,7 @@ public class HttpProxyTest {
         new ConfigFileResolvingHttpRequestFactory(
             requestFactory,
             config,
-            new HashMap<String, String>(),
+            new HashMap<>(),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
             HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 

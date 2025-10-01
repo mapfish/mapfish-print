@@ -36,8 +36,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
   private static TestProcessor RootDebugMapOut2 =
       new RootDebugMapOutClass("RootDebugMapOut2", DebugMapOutput.class);
   private static TestProcessor RootTableAndWidthOut =
-      new TestProcessor<TrackerContainer, TableAndWidth>(
-          "RootTableAndWidthOut", TableAndWidth.class) {
+      new TestProcessor<>("RootTableAndWidthOut", TableAndWidth.class) {
 
         @Override
         protected TableAndWidth getExtras() {
@@ -62,7 +61,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
   private static TestProcessor<OverviewMapInput, Void> NeedsOverviewMapAndMap =
       new NeedsOverviewMapAndMapClass("NeedsOverviewMapAndMap", Void.class);
   private static TestProcessor<TableInput, Void> NeedsTable =
-      new TestProcessor<TableInput, Void>("NeedsTable", Void.class) {
+      new TestProcessor<>("NeedsTable", Void.class) {
         @Override
         protected Void getExtras() {
           return null;

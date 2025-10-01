@@ -42,7 +42,7 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
         parseJSONObjectFromFile(SetStyleProcessorTest.class, BASE_DIR + "basic/request.json");
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             this.folder.getRoot(),

@@ -171,11 +171,7 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
       throws Exception {
     JasperPrint print =
         format.getJasperPrint(
-                new HashMap<String, String>(),
-                requestData,
-                config,
-                config.getDirectory(),
-                getTaskDirectory())
+                new HashMap<>(), requestData, config, config.getDirectory(), getTaskDirectory())
             .print;
 
     assertEquals(7, print.getPages().size());

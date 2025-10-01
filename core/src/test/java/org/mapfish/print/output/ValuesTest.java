@@ -42,7 +42,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
     Template template = config.getTemplates().values().iterator().next();
     final Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             new File("tmp"),
@@ -83,7 +83,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
 
     Template template = config.getTemplates().values().iterator().next();
     new Values(
-        new HashMap<String, String>(),
+        new HashMap<>(),
         requestData,
         template,
         new File("tmp"),
@@ -107,7 +107,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
     Template template = config.getTemplates().values().iterator().next();
     final Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             new File("tmp"),
@@ -161,7 +161,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
 
     Template template = config.getTemplates().values().iterator().next();
     new Values(
-        new HashMap<String, String>(),
+        new HashMap<>(),
         requestData,
         template,
         new File("tmp"),

@@ -50,7 +50,7 @@ public class CreateMapProcessorLabelGeoJsonTest extends AbstractMapfishSpringTes
     final Template template = config.getTemplate("main");
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),

@@ -59,7 +59,7 @@ public class CreateMapProcessorGridFixedNumlinesPointRotatedTest extends Abstrac
       map.getInternalObj().put("rotation", rotation);
       Values values =
           new Values(
-              new HashMap<String, String>(),
+              new HashMap<>(),
               requestData,
               template,
               getTaskDirectory(),

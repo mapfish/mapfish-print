@@ -58,7 +58,7 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),
@@ -85,11 +85,7 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     JasperPrint print =
         format.getJasperPrint(
-                new HashMap<String, String>(),
-                requestData,
-                config,
-                config.getDirectory(),
-                getTaskDirectory())
+                new HashMap<>(), requestData, config, config.getDirectory(), getTaskDirectory())
             .print;
 
     assertEquals(1, print.getPages().size());

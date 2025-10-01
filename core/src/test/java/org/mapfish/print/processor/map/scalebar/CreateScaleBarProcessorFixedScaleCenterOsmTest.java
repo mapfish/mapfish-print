@@ -58,7 +58,7 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),
@@ -90,7 +90,7 @@ public class CreateScaleBarProcessorFixedScaleCenterOsmTest extends AbstractMapf
     final Template template_noreport = config_noreport.getTemplate("main");
     Values values_noreport =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template_noreport,
             getTaskDirectory(),

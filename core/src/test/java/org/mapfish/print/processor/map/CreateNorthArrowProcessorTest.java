@@ -61,7 +61,7 @@ public class CreateNorthArrowProcessorTest extends AbstractMapfishSpringTest {
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),
@@ -85,7 +85,7 @@ public class CreateNorthArrowProcessorTest extends AbstractMapfishSpringTest {
     final Template templateNoReport = configNoReport.getTemplate("main");
     Values valuesNoReport =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             templateNoReport,
             getTaskDirectory(),

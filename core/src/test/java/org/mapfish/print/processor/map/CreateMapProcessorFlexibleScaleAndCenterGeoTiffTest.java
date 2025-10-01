@@ -45,7 +45,7 @@ public class CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest extends Abstrac
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),

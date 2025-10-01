@@ -44,7 +44,7 @@ public class CustomFontLoaderTest extends AbstractMapfishSpringTest {
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     JasperPrint print =
         format.getJasperPrint(
-                new HashMap<String, String>(),
+                new HashMap<>(),
                 requestData,
                 config,
                 getFile(CustomFontLoaderTest.class, BASE_DIR),

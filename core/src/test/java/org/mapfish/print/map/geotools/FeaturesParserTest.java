@@ -221,7 +221,7 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
         new ConfigFileResolvingHttpRequestFactory(
             requestFactory,
             configuration,
-            new HashMap<String, String>(),
+            new HashMap<>(),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
             HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
     FeaturesParser featuresParser = new FeaturesParser(configRequestFactory, false);
@@ -248,7 +248,7 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
         new ConfigFileResolvingHttpRequestFactory(
             requestFactory,
             configuration,
-            new HashMap<String, String>(),
+            new HashMap<>(),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
             HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
     FeaturesParser featuresParser = new FeaturesParser(configRequestFactory, false);

@@ -32,7 +32,7 @@ public class StyleAttributeTest extends AbstractMapfishSpringTest {
         parseJSONObjectFromFile(StyleAttributeTest.class, "style_attributes/request.json");
     final Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             pJsonObject,
             template,
             this.folder.getRoot(),

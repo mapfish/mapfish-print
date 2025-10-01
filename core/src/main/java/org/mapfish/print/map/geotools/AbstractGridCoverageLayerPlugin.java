@@ -25,7 +25,7 @@ public abstract class AbstractGridCoverageLayerPlugin {
    */
   protected final <T> StyleSupplier<T> createStyleSupplier(
       final Template template, final String styleRef) {
-    return new StyleSupplier<T>() {
+    return new StyleSupplier<>() {
       @Override
       public Style load(final MfClientHttpRequestFactory requestFactory, final T featureSource) {
         final StyleParser parser = AbstractGridCoverageLayerPlugin.this.styleParser;

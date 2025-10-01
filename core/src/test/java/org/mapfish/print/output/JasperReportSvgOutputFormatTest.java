@@ -27,7 +27,7 @@ public class JasperReportSvgOutputFormatTest extends AbstractJasperReportOutputF
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     OutputFormat format = this.outputFormat.get("svgOutputFormat");
     format.print(
-        new HashMap<String, String>(),
+        new HashMap<>(),
         requestData,
         config,
         getFile(JasperReportSvgOutputFormatTest.class, BASE_DIR),
