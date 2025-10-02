@@ -46,8 +46,8 @@ public class HibernateAccounting extends Accounting {
           new HibernateAccountingEntry(
               this.entry, PrintJobStatus.Status.FINISHED, this.configuration);
       accountingEntry.setProcessingTimeMS(jobDurationInNanoSec / 1000000L);
-      accountingEntry.setFileSize(printResult.fileSize);
-      accountingEntry.setStats(printResult.executionContext.getStats());
+      accountingEntry.setFileSize(printResult.fileSize());
+      accountingEntry.setStats(printResult.executionContext().getStats());
       insertRecord(accountingEntry);
       return jobDurationInNanoSec;
     }

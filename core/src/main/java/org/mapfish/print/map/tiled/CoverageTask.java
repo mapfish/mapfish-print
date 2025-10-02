@@ -82,12 +82,12 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
     try {
       BufferedImage coverageImage =
           this.tiledLayer.createBufferedImage(
-              this.tilePreparationInfo.getImageWidth(), this.tilePreparationInfo.getImageHeight());
+              this.tilePreparationInfo.imageWidth(), this.tilePreparationInfo.imageHeight());
       Graphics2D graphics = coverageImage.createGraphics();
       try {
-        for (SingleTilePreparationInfo tileInfo : this.tilePreparationInfo.getSingleTiles()) {
+        for (SingleTilePreparationInfo tileInfo : this.tilePreparationInfo.singleTiles()) {
           final Tile tile = getTile(tileInfo);
-          if (tile.getImage() != null) {
+          if (tile.image() != null) {
             // crop the image here
             BufferedImage noBufferTileImage;
             if (this.tiledLayer.getTileBufferWidth() > 0
@@ -95,25 +95,25 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
               int noBufferWidth =
                   Math.min(
                       this.tiledLayer.getTileSize().width,
-                      tile.getImage().getWidth() - this.tiledLayer.getTileBufferWidth());
+                      tile.image().getWidth() - this.tiledLayer.getTileBufferWidth());
               int noBufferHeight =
                   Math.min(
                       this.tiledLayer.getTileSize().height,
-                      tile.getImage().getHeight() - this.tiledLayer.getTileBufferHeight());
+                      tile.image().getHeight() - this.tiledLayer.getTileBufferHeight());
               noBufferTileImage =
-                  tile.getImage()
+                  tile.image()
                       .getSubimage(
                           this.tiledLayer.getTileBufferWidth(),
                           this.tiledLayer.getTileBufferHeight(),
                           noBufferWidth,
                           noBufferHeight);
             } else {
-              noBufferTileImage = tile.getImage();
+              noBufferTileImage = tile.image();
             }
             graphics.drawImage(
                 noBufferTileImage,
-                tile.getxIndex() * this.tiledLayer.getTileSize().width,
-                tile.getyIndex() * this.tiledLayer.getTileSize().height,
+                tile.xIndex() * this.tiledLayer.getTileSize().width,
+                tile.yIndex() * this.tiledLayer.getTileSize().height,
                 null);
           }
         }
@@ -122,12 +122,12 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
       }
 
       GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
-      GeneralBounds gridEnvelope = new GeneralBounds(this.tilePreparationInfo.getMapProjection());
+      GeneralBounds gridEnvelope = new GeneralBounds(this.tilePreparationInfo.mapProjection());
       gridEnvelope.setEnvelope(
-          this.tilePreparationInfo.getGridCoverageOrigin().x,
-          this.tilePreparationInfo.getGridCoverageOrigin().y,
-          this.tilePreparationInfo.getGridCoverageMaxX(),
-          this.tilePreparationInfo.getGridCoverageMaxY());
+          this.tilePreparationInfo.gridCoverageOrigin().x,
+          this.tilePreparationInfo.gridCoverageOrigin().y,
+          this.tilePreparationInfo.gridCoverageMaxX(),
+          this.tilePreparationInfo.gridCoverageMaxY());
       return factory.create(
           this.tiledLayer.createCommonUrl(), coverageImage, gridEnvelope, null, null, null);
     } catch (URISyntaxException e) {
@@ -137,22 +137,20 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
   private Tile getTile(final SingleTilePreparationInfo tileInfo) {
     final TileTask task;
-    if (tileInfo.getTileRequest() != null) {
+    if (tileInfo.tileRequest() != null) {
       task =
           new SingleTileLoaderTask(
-              tileInfo.getTileRequest(),
+              tileInfo.tileRequest(),
               this.errorImage,
-              tileInfo.getTileIndexX(),
-              tileInfo.getTileIndexY(),
+              tileInfo.tileIndexX(),
+              tileInfo.tileIndexY(),
               this.failOnError,
               this.registry,
               this.context);
     } else {
       task =
           new PlaceHolderImageTask(
-              this.tiledLayer.getMissingTileImage(),
-              tileInfo.getTileIndexX(),
-              tileInfo.getTileIndexY());
+              this.tiledLayer.getMissingTileImage(), tileInfo.tileIndexX(), tileInfo.tileIndexY());
     }
     return task.call();
   }
@@ -336,48 +334,14 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
     }
   }
 
-  /** Tile. */
-  public static final class Tile {
-    /** The tile image. */
-    private final BufferedImage image;
-
-    /** The x index of the image. the x coordinate to draw this tile is xIndex * tileSizeX */
-    private final int xIndex;
-
-    /** The y index of the image. the y coordinate to draw this tile is yIndex * tileSizeY */
-    private final int yIndex;
-
-    private Tile(final BufferedImage image, final int xIndex, final int yIndex) {
-      this.image = image;
-      this.xIndex = xIndex;
-      this.yIndex = yIndex;
-    }
-
-    /**
-     * Get image.
-     *
-     * @return image
-     */
-    public BufferedImage getImage() {
-      return this.image;
-    }
-
-    /**
-     * Get x index.
-     *
-     * @return x index
-     */
-    public int getxIndex() {
-      return this.xIndex;
-    }
-
-    /**
-     * Get y index.
-     *
-     * @return y index
-     */
-    public int getyIndex() {
-      return this.yIndex;
-    }
-  }
+  /**
+   * Tile.
+   *
+   * @param image The tile image.
+   * @param xIndex The x index of the image. The x coordinate to draw this tile is xIndex *
+   *     tileSizeX
+   * @param yIndex The y index of the image. The y coordinate to draw this tile is yIndex *
+   *     tileSizeY
+   */
+  public record Tile(BufferedImage image, int xIndex, int yIndex) {}
 }

@@ -336,15 +336,7 @@ public final class LegendProcessor
     }
   }
 
-  private static final class NameTask implements Callable<Object[]> {
-
-    private final String name;
-    private final int level;
-
-    private NameTask(final String name, final int level) {
-      this.name = name;
-      this.level = level;
-    }
+  private record NameTask(String name, int level) implements Callable<Object[]> {
 
     @Override
     public Object[] call() {

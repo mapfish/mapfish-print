@@ -398,14 +398,13 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
     Processor.ExecutionContext run(OutputStream outputStream) throws Exception;
   }
 
-  /** Holds the info that goes with the result of a print. */
-  public static class PrintResult {
-    /** The result size in bytes. */
-    public final long fileSize;
-
-    /** The execution context used during the computation. */
-    @Nonnull public final Processor.ExecutionContext executionContext;
-
+  /**
+   * Holds the info that goes with the result of a print.
+   *
+   * @param fileSize The result size in bytes.
+   * @param executionContext The execution context used during the computation.
+   */
+  public record PrintResult(long fileSize, @Nonnull Processor.ExecutionContext executionContext) {
     /**
      * Constructor.
      *

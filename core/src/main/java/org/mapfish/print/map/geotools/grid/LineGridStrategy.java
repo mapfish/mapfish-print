@@ -218,17 +218,5 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
     return featureBuilder.buildFeature("grid." + (ordinate == 1 ? 'x' : 'y') + "." + i);
   }
 
-  private static final class SpacesAndMins {
-    public final double xSpace;
-    public final double ySpace;
-    public final double minX;
-    public final double minY;
-
-    SpacesAndMins(final double xSpace, final double ySpace, final double minX, final double minY) {
-      this.xSpace = xSpace;
-      this.ySpace = ySpace;
-      this.minX = minX;
-      this.minY = minY;
-    }
-  }
+  private record SpacesAndMins(double xSpace, double ySpace, double minX, double minY) {}
 }

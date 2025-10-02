@@ -257,20 +257,12 @@ public final class MergeDataSourceProcessor
     public Values values;
   }
 
-  /** The output object for {@link org.mapfish.print.processor.jasper.MergeDataSourceProcessor}. */
-  public static class Out {
-    /** The resulting datasource. */
-    public final JRDataSource mergedDataSource;
-
-    /**
-     * Constructor.
-     *
-     * @param mergedDataSource the merged datasource
-     */
-    public Out(final JRDataSource mergedDataSource) {
-      this.mergedDataSource = mergedDataSource;
-    }
-  }
+  /**
+   * The output object for {@link MergeDataSourceProcessor}.
+   *
+   * @param mergedDataSource The resulting datasource.
+   */
+  public record Out(JRDataSource mergedDataSource) {}
 
   /**
    * Describes the objects used as sources for a merged data source (see <a

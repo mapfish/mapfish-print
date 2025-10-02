@@ -114,18 +114,10 @@ public class DateFormatProcessor
     public Locale REPORT_LOCALE;
   }
 
-  /** The output of the processor. */
-  public static final class Output {
-    /** The date formatter. */
-    public final DateFormat dateFormat;
-
-    /**
-     * Constructor.
-     *
-     * @param dateFormat the formatter.
-     */
-    public Output(final DateFormat dateFormat) {
-      this.dateFormat = dateFormat;
-    }
-  }
+  /**
+   * The output of the processor.
+   *
+   * @param dateFormat The date formatter.
+   */
+  public record Output(DateFormat dateFormat) {}
 }

@@ -325,18 +325,20 @@ public final class DataSourceProcessor
     public DataSourceAttributeValue datasource;
   }
 
-  /** Contains the datasource output. */
-  public static final class Output {
-    /** The datasource to be assigned to a report or sub-report detail/table section. */
-    public final JRDataSource jrDataSource;
-
+  /**
+   * Contains the datasource output.
+   *
+   * @param jrDataSource The datasource to be assigned to a report or sub-report detail/table
+   *     section.
+   */
+  public record Output(JRDataSource jrDataSource) {
     /**
      * Constructor for setting the table data.
      *
-     * @param datasource the table data
+     * @param jrDataSource the table data
      */
-    public Output(@Nonnull final JRDataSource datasource) {
-      this.jrDataSource = datasource;
+    public Output(@Nonnull final JRDataSource jrDataSource) {
+      this.jrDataSource = jrDataSource;
     }
   }
 }

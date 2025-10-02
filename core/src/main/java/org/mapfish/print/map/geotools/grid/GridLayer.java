@@ -101,16 +101,19 @@ public final class GridLayer implements MapLayer {
 
       for (GridLabel label : this.labels) {
         Shape textShape =
-            baseFont.createGlyphVector(graphics2D.getFontRenderContext(), label.text).getOutline();
+            baseFont
+                .createGlyphVector(graphics2D.getFontRenderContext(), label.text())
+                .getOutline();
 
         Rectangle2D textBounds = textShape.getBounds2D();
         AffineTransform transform = new AffineTransform(baseTransform);
-        transform.translate(label.x, label.y);
+        transform.translate(label.x(), label.y());
 
-        applyOffset(transform, label.side);
+        applyOffset(transform, label.side());
 
         RotationQuadrant.getQuadrant(transformer.getRotation(), this.params.rotateLabels)
-            .updateTransform(transform, this.params.indent, label.side, halfCharHeight, textBounds);
+            .updateTransform(
+                transform, this.params.indent, label.side(), halfCharHeight, textBounds);
         graphics2D.setTransform(transform);
 
         if (haloRadius > 0.0f) {
