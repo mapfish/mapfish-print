@@ -93,8 +93,7 @@ public class SetTiledWmsProcessor extends AbstractProcessor<SetTiledWmsProcessor
       final MapLayer layer = layers.get(i);
 
       context.stopIfCanceled();
-      if (layer instanceof WmsLayer) {
-        final WmsLayer wmsLayer = (WmsLayer) layer;
+      if (layer instanceof WmsLayer wmsLayer) {
         final WmsLayerParam params = wmsLayer.getParams();
         if (matchers.matches(new URI(params.baseURL), HttpMethod.GET)) {
           if (LOGGER.isInfoEnabled()) {

@@ -227,11 +227,9 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         final Object dataSourceObj = values.getObject(template.getTableDataKey(), Object.class);
         if (dataSourceObj instanceof JRDataSource) {
           dataSource = (JRDataSource) dataSourceObj;
-        } else if (dataSourceObj instanceof Iterable) {
-          Iterable sourceObj = (Iterable) dataSourceObj;
+        } else if (dataSourceObj instanceof Iterable sourceObj) {
           dataSource = toJRDataSource(sourceObj.iterator());
-        } else if (dataSourceObj instanceof Iterator) {
-          Iterator sourceObj = (Iterator) dataSourceObj;
+        } else if (dataSourceObj instanceof Iterator sourceObj) {
           dataSource = toJRDataSource(sourceObj);
         } else if (dataSourceObj.getClass().isArray()) {
           Object[] sourceObj = (Object[]) dataSourceObj;
@@ -263,8 +261,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
       final Configuration configuration,
       final JRDataSource dataSource,
       final String reportTemplate) {
-    if (dataSource instanceof JRRewindableDataSource) {
-      JRRewindableDataSource source = (JRRewindableDataSource) dataSource;
+    if (dataSource instanceof JRRewindableDataSource source) {
       StringBuilder wrongType = new StringBuilder();
       try {
         while (source.next()) {
@@ -404,8 +401,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
     List<Map<String, ?>> rows = new ArrayList<>();
     while (iterator.hasNext()) {
       Object next = iterator.next();
-      if (next instanceof Values) {
-        Values values = (Values) next;
+      if (next instanceof Values values) {
         rows.add(values.asMap());
       } else if (next instanceof Map) {
         @SuppressWarnings("unchecked")

@@ -238,10 +238,8 @@ public class ThreadPoolJobManager implements JobManager {
 
           @Override
           protected void beforeExecute(final Thread t, final Runnable runnable) {
-            if (!ThreadPoolJobManager.this.clustered && runnable instanceof JobFutureTask<?>) {
-              JobFutureTask<?> task = (JobFutureTask<?>) runnable;
-              if (task.getCallable() instanceof PrintJob) {
-                PrintJob printJob = (PrintJob) task.getCallable();
+            if (!ThreadPoolJobManager.this.clustered && runnable instanceof JobFutureTask<?> task) {
+              if (task.getCallable() instanceof PrintJob printJob) {
                 try {
                   ThreadPoolJobManager.this.jobQueue.start(printJob.getEntry().getReferenceId());
                 } catch (RuntimeException e) {

@@ -68,8 +68,7 @@ public final class AddHeadersProcessor extends AbstractClientHttpRequestFactoryP
   public void setHeaders(final Map<String, Object> headers) {
     this.headers.clear();
     for (Map.Entry<String, Object> entry : headers.entrySet()) {
-      if (entry.getValue() instanceof List) {
-        List value = (List) entry.getValue();
+      if (entry.getValue() instanceof List value) {
         // verify they are all strings
         for (Object o : value) {
           Assert.isTrue(

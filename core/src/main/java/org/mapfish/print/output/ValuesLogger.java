@@ -90,8 +90,7 @@ public final class ValuesLogger {
             .append("  - This value is a Jasper Reports DataSource and thus can be passed to a ")
             .append("subtemplate as a DataSource and used in the subtemplate's detail band.\n");
       }
-      if (parameter.getValue() instanceof JRMapCollectionDataSource) {
-        JRMapCollectionDataSource source = (JRMapCollectionDataSource) parameter.getValue();
+      if (parameter.getValue() instanceof JRMapCollectionDataSource source) {
 
         addIndent()
             .append(

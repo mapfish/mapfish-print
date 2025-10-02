@@ -706,8 +706,7 @@ public final class JsonStyleParserHelper {
     if (styleJson.has(JSON_STROKE_DASHSTYLE)
         && !STROKE_DASHSTYLE_SOLID.equals(styleJson.getString(JSON_STROKE_DASHSTYLE))) {
       double width = 1.0;
-      if (widthExpression instanceof Literal) {
-        Literal expression = (Literal) widthExpression;
+      if (widthExpression instanceof Literal expression) {
         width = ((Number) expression.getValue()).doubleValue();
       }
       final Expression defaultDashSpacingE = this.styleBuilder.literalExpression(0.1f);

@@ -42,8 +42,7 @@ public class AllRegisteredReflectiveAttributeValidationTest extends AbstractMapf
       Map<String, Attribute> attMap = new HashMap<>();
       attMap.put(attName, attribute);
       template.setAttributes(attMap);
-      if (attribute instanceof ReflectiveAttribute<?>) {
-        ReflectiveAttribute<?> reflectiveAttribute = (ReflectiveAttribute<?>) attribute;
+      if (attribute instanceof ReflectiveAttribute<?> reflectiveAttribute) {
 
         AttributeTesting.configureAttributeForTesting(reflectiveAttribute);
       }

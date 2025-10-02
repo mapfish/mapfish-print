@@ -43,8 +43,7 @@ public final class RoleAccessAssertion implements AccessAssertion {
     if (assertionRequiredRoles == null) {
       this.requiredRoles = Collections.unmodifiableSet(Collections.emptySet());
     } else {
-      if (assertionRequiredRoles instanceof Set) {
-        Set roles = (Set) assertionRequiredRoles;
+      if (assertionRequiredRoles instanceof Set roles) {
         this.requiredRoles = Collections.unmodifiableSet(roles);
       } else {
         this.requiredRoles = Set.copyOf(assertionRequiredRoles);

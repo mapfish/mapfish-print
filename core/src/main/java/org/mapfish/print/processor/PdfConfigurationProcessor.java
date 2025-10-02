@@ -89,8 +89,7 @@ public final class PdfConfigurationProcessor
       if (entry.getValue() instanceof Update) {
         update = (Update) entry.getValue();
         update.property = property;
-      } else if (entry.getValue() instanceof String) {
-        String value = (String) entry.getValue();
+      } else if (entry.getValue() instanceof String value) {
         update = new Update();
         update.property = property;
         update.setValueKey(value);
@@ -177,8 +176,7 @@ public final class PdfConfigurationProcessor
     if (keywordsObj == null) {
       return Collections.emptyList();
     }
-    if (keywordsObj instanceof Iterable) {
-      Iterable obj = (Iterable) keywordsObj;
+    if (keywordsObj instanceof Iterable obj) {
       final ArrayList<String> list = new ArrayList<>();
       for (Object keyword : obj) {
         list.add(keyword.toString());
