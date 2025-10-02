@@ -2,7 +2,6 @@ package org.mapfish.print.map.geotools.grid;
 
 import java.awt.geom.AffineTransform;
 import javax.annotation.Nonnull;
-import org.geotools.api.data.FeatureSource;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -20,7 +19,6 @@ import org.locationtech.jts.geom.Polygon;
 import org.mapfish.print.Constants.Style.Grid;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.FeatureSourceSupplier;
 
 /** Strategy for creating the style and features for the grid when the grid consists of lines. */
@@ -33,23 +31,16 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
   @Override
   public FeatureSourceSupplier createFeatureSource(
       final Template template, final GridParam layerData, final LabelPositionCollector labels) {
-    return new FeatureSourceSupplier() {
-      @Nonnull
-      @Override
-      public FeatureSource load(
-          @Nonnull final MfClientHttpRequestFactory requestFactory,
-          @Nonnull final MapfishMapContext mapContext) {
-        SimpleFeatureType featureType =
-            GridUtils.createGridFeatureType(mapContext, LineString.class);
-        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureType);
-        final DefaultFeatureCollection features;
-        if (layerData.numberOfLines != null) {
-          features = createFeaturesFromNumberOfLines(mapContext, featureBuilder, layerData, labels);
-        } else {
-          features = createFeaturesFromSpacing(mapContext, featureBuilder, layerData, labels);
-        }
-        return new CollectionFeatureSource(features);
+    return (requestFactory, mapContext) -> {
+      SimpleFeatureType featureType = GridUtils.createGridFeatureType(mapContext, LineString.class);
+      SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureType);
+      final DefaultFeatureCollection features;
+      if (layerData.numberOfLines != null) {
+        features = createFeaturesFromNumberOfLines(mapContext, featureBuilder, layerData, labels);
+      } else {
+        features = createFeaturesFromSpacing(mapContext, featureBuilder, layerData, labels);
       }
+      return new CollectionFeatureSource(features);
     };
   }
 
