@@ -96,11 +96,7 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
 
     uri = logbackXml.toURI();
     final ClientHttpRequest request2 = resolvingFactory.createRequest(uri, HttpMethod.POST);
-    assertThrows(
-        IllegalFileAccessException.class,
-        () -> {
-          request2.execute();
-        });
+    assertThrows(IllegalFileAccessException.class, request2::execute);
   }
 
   @Test
@@ -116,11 +112,7 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
     uri = logbackXml.toURI();
     ClientHttpRequest request2 = resolvingFactory.createRequest(uri, HttpMethod.GET);
     request2.getBody().write(new byte[] {1, 2, 3});
-    assertThrows(
-        IllegalFileAccessException.class,
-        () -> {
-          request2.execute();
-        });
+    assertThrows(IllegalFileAccessException.class, request2::execute);
   }
 
   @Test
