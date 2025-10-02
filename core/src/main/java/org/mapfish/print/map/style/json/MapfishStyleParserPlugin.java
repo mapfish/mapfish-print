@@ -452,12 +452,11 @@ public final class MapfishStyleParserPlugin implements StyleParserPlugin {
     return ParserPluginUtils.loadStyleAsURI(
         clientHttpRequestFactory,
         styleString,
-        (final byte[] input) -> {
-          return tryParse(
-              configuration,
-              new String(input, Constants.DEFAULT_CHARSET),
-              clientHttpRequestFactory);
-        });
+        (final byte[] input) ->
+            tryParse(
+                configuration,
+                new String(input, Constants.DEFAULT_CHARSET),
+                clientHttpRequestFactory));
   }
 
   private Optional<Style> tryParse(
