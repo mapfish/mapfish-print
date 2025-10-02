@@ -320,19 +320,15 @@ public class ScalebarGraphic {
 
     // ok, find first character
     int firstChar = (int) (value / pow10);
-    switch (firstChar) {
-      case 1:
-        return 2;
-      case 2:
-        return 2;
-      case 5:
-        return 5;
-      case 10:
-        return 2;
-      default:
-        throw new RuntimeException(
-            "Invalid interval: " + value + intervalUnit + " (" + firstChar + ")");
-    }
+    return switch (firstChar) {
+      case 1 -> 2;
+      case 2 -> 2;
+      case 5 -> 5;
+      case 10 -> 2;
+      default ->
+          throw new RuntimeException(
+              "Invalid interval: " + value + intervalUnit + " (" + firstChar + ")");
+    };
   }
 
   private static int getFontSize(final ScaleBarRenderSettings settings) {

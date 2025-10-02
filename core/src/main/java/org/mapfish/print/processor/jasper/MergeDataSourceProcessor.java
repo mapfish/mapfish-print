@@ -42,14 +42,11 @@ public final class MergeDataSourceProcessor
   }
 
   private static String indexString(final int i) {
-    switch (i + 1) {
-      case 1:
-        return "1st";
-      case 2:
-        return "2nd";
-      default:
-        return (i + 1) + "th";
-    }
+    return switch (i + 1) {
+      case 1 -> "1st";
+      case 2 -> "2nd";
+      default -> (i + 1) + "th";
+    };
   }
 
   /**

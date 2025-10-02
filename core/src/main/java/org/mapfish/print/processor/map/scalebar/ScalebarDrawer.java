@@ -65,39 +65,28 @@ public abstract class ScalebarDrawer {
 
   /** Create a transformation which takes the alignment settings into account. */
   private AffineTransform getAlignmentTransform() {
-    final int offsetX;
-    switch (this.settings.getParams().getAlign()) {
-      case LEFT:
-        offsetX = 0;
-        break;
-      case RIGHT:
-        offsetX = this.settings.getMaxSize().width - this.settings.getSize().width;
-        break;
-      case CENTER:
-      default:
-        offsetX =
-            (int)
-                Math.floor(
-                    this.settings.getMaxSize().width / 2.0 - this.settings.getSize().width / 2.0);
-        break;
-    }
+    final int offsetX =
+        switch (this.settings.getParams().getAlign()) {
+          case LEFT -> 0;
+          case RIGHT -> this.settings.getMaxSize().width - this.settings.getSize().width;
+          case null -> 0;
+          default ->
+              (int)
+                  Math.floor(
+                      this.settings.getMaxSize().width / 2.0 - this.settings.getSize().width / 2.0);
+        };
 
-    final int offsetY;
-    switch (this.settings.getParams().getVerticalAlign()) {
-      case TOP:
-        offsetY = 0;
-        break;
-      case BOTTOM:
-        offsetY = this.settings.getMaxSize().height - this.settings.getSize().height;
-        break;
-      case MIDDLE:
-      default:
-        offsetY =
-            (int)
-                Math.floor(
-                    this.settings.getMaxSize().height / 2.0 - this.settings.getSize().height / 2.0);
-        break;
-    }
+    final int offsetY =
+        switch (this.settings.getParams().getVerticalAlign()) {
+          case TOP -> 0;
+          case BOTTOM -> this.settings.getMaxSize().height - this.settings.getSize().height;
+          case null -> 0;
+          default ->
+              (int)
+                  Math.floor(
+                      this.settings.getMaxSize().height / 2.0
+                          - this.settings.getSize().height / 2.0);
+        };
 
     return AffineTransform.getTranslateInstance(Math.round(offsetX), Math.round(offsetY));
   }
