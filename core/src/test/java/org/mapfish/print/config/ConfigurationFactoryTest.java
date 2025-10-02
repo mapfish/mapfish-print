@@ -50,7 +50,7 @@ public class ConfigurationFactoryTest extends AbstractMapfishSpringTest {
 
     assertEquals(1, template.getProcessorGraph().getAllProcessors().size());
     assertEquals(1, template.getProcessorGraph().getRoots().size());
-    Processor processor = template.getProcessorGraph().getRoots().getFirst().getProcessor();
+    Processor<?, ?> processor = template.getProcessorGraph().getRoots().getFirst().getProcessor();
     assertTrue(processor.toString(), processor instanceof ProcessorWithSpringInjection);
     ((ProcessorWithSpringInjection) processor).assertInjected();
   }

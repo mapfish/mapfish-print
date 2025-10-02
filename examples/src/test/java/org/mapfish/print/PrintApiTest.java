@@ -152,7 +152,7 @@ public class PrintApiTest extends AbstractApiTest {
 
   private void checkExampleRequest(String responseAsText) throws JSONException {
     JSONObject samplesRequest = new JSONObject(responseAsText);
-    final Iterator keys = samplesRequest.keys();
+    final Iterator<String> keys = samplesRequest.keys();
     assertTrue(keys.hasNext());
     String key = (String) keys.next();
     JSONObject sampleRequest = new JSONObject(samplesRequest.getString(key));
