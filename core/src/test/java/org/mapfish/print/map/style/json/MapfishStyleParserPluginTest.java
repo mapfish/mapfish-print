@@ -159,8 +159,7 @@ public class MapfishStyleParserPluginTest {
             assertNull(text);
             text = textSymbolizer;
           }
-          case null -> fail(symbolizer + " was unexpected");
-          default -> fail(symbolizer + " was unexpected");
+          case null, default -> fail(symbolizer + " was unexpected");
         }
       }
     }
@@ -172,8 +171,7 @@ public class MapfishStyleParserPluginTest {
   }
 
   @SafeVarargs
-  private final void assertFilter(
-      Filter geomSelectFunction, Class<? extends Geometry>... geomClasses) {
+  private void assertFilter(Filter geomSelectFunction, Class<? extends Geometry>... geomClasses) {
 
     List<Class<? extends Geometry>> allowed = Arrays.asList(geomClasses);
 
