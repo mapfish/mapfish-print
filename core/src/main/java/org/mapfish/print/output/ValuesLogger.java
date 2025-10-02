@@ -110,9 +110,7 @@ public final class ValuesLogger {
             } else {
               // if the value for this key is null, let's take the next value so that we
               // eventually get the type of the column
-              if (columns.get(column.getKey()) == null) {
-                columns.put(column.getKey(), column.getValue());
-              }
+              columns.computeIfAbsent(column.getKey(), k -> column.getValue());
             }
           }
         }
