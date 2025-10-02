@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
@@ -131,7 +130,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
           this.tilePreparationInfo.getGridCoverageMaxY());
       return factory.create(
           this.tiledLayer.createCommonUrl(), coverageImage, gridEnvelope, null, null, null);
-    } catch (URISyntaxException | UnsupportedEncodingException e) {
+    } catch (URISyntaxException e) {
       throw new PrintException("Failed to call the coverage task", e);
     }
   }

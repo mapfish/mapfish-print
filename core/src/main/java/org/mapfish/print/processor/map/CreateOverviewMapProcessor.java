@@ -145,8 +145,7 @@ public class CreateOverviewMapProcessor
       final Geometry mapExtent,
       final MapAttribute.OverriddenMapAttributeValues mapParams,
       final String style,
-      final CoordinateReferenceSystem crs)
-      throws IOException {
+      final CoordinateReferenceSystem crs) {
     FeatureLayerParam layerParams = new FeatureLayerParam();
     layerParams.style = style;
     layerParams.defaultStyle = Constants.Style.OverviewMap.NAME;

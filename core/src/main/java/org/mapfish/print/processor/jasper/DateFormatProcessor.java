@@ -79,7 +79,7 @@ public class DateFormatProcessor
 
   @Nullable
   @Override
-  public Output execute(final Input values, final ExecutionContext context) throws Exception {
+  public Output execute(final Input values, final ExecutionContext context) {
 
     SimpleDateFormat dateFormat = new SimpleDateFormat(pattern, values.REPORT_LOCALE);
     if (values.timezone != null) {

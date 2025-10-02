@@ -18,7 +18,7 @@ public class UnhealthyCountersHealthCheck extends HealthCheck {
    * it is associated to a Http 500 status.
    */
   @Override
-  protected HealthCheck.Result check() throws Exception {
+  protected HealthCheck.Result check() {
     StringBuilder messageBuilder = new StringBuilder();
     boolean first = true;
     for (String unhealthyCounter : this.unhealthyCounters) {

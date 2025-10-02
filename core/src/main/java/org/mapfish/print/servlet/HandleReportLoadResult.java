@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import org.mapfish.print.servlet.job.PrintJobStatus;
 import org.mapfish.print.servlet.job.loader.ReportLoader;
@@ -55,7 +54,7 @@ abstract class HandleReportLoadResult<R> {
       HttpServletResponse httpServletResponse,
       URI reportURI,
       ReportLoader loader)
-      throws IOException, ServletException;
+      throws IOException;
 
   /**
    * Called when a print job failed.

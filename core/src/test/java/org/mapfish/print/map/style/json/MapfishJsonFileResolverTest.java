@@ -80,7 +80,7 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
 
   @Test
   @DirtiesContext
-  public void testLoadFromURL() throws Throwable {
+  public void testLoadFromURL() {
     final String rootFile =
         getFile("/test-http-request-factory-application-context.xml")
             .getParentFile()
@@ -124,7 +124,7 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
     assertNotNull(styleOptional.get());
   }
 
-  private Optional<Style> loadStyle(String configFile, String styleString) throws Throwable {
+  private Optional<Style> loadStyle(String configFile, String styleString) {
     Configuration configuration = new Configuration();
     configuration.setFileLoaderManager(this.fileLoaderManager);
     configuration.setConfigurationFile(getFile(configFile));

@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -554,8 +553,7 @@ public class PrintApiTest extends AbstractApiTest {
     }
   }
 
-  private void addAuthHeader(ClientHttpRequest request, String credentials)
-      throws UnsupportedEncodingException {
+  private void addAuthHeader(ClientHttpRequest request, String credentials) {
     request
         .getHeaders()
         .add(

@@ -110,7 +110,7 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
   }
 
   @Test(expected = Exception.class)
-  public void testGeoNotUrlNotGeoJson() throws Exception {
+  public void testGeoNotUrlNotGeoJson() {
     final File file =
         getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
     final PJsonObject requestData =

@@ -3,7 +3,6 @@ package org.mapfish.print.map.tiled;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -144,7 +143,7 @@ public abstract class TileInformation<T extends AbstractTiledLayerParams> {
    * ({matrixId}) if the layer desires. That is up to the layer implementation because the layer is
    * responsible for taking the commonUrl and transforming it to a final tile URI.
    */
-  protected String createCommonUrl() throws URISyntaxException, UnsupportedEncodingException {
+  protected String createCommonUrl() throws URISyntaxException {
     return this.params.createCommonUrl();
   }
 

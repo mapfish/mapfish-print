@@ -25,7 +25,7 @@ public class JobQueueHealthCheck extends HealthCheck {
    * it is associated to a Http 500 status.
    */
   @Override
-  protected Result check() throws Exception {
+  protected Result check() {
     long waitingJobsCount = jobQueue.getWaitingJobsCount();
     if (waitingJobsCount == 0) {
       return Result.healthy("No print job is waiting in the queue.");
