@@ -51,10 +51,10 @@ public final class JasperReportImageOutputFormat extends AbstractJasperReportOut
   @Override
   protected void doExport(final OutputStream outputStream, final Print print)
       throws JRException, IOException {
-    JasperPrint jasperPrint = print.print;
+    JasperPrint jasperPrint = print.print();
     final int numPages = jasperPrint.getPages().size();
 
-    final float dpiRatio = (float) (print.dpi / PDF_DPI);
+    final float dpiRatio = (float) (print.dpi() / PDF_DPI);
     final int pageHeightOnImage = (int) (jasperPrint.getPageHeight() * dpiRatio);
     final int pageWidthOnImage = (int) (jasperPrint.getPageWidth() * dpiRatio);
     final int separatorHeight = 1;
@@ -73,7 +73,7 @@ public final class JasperReportImageOutputFormat extends AbstractJasperReportOut
     }
 
     try {
-      JasperPrintManager printManager = JasperPrintManager.getInstance(print.context);
+      JasperPrintManager printManager = JasperPrintManager.getInstance(print.context());
 
       for (int pageIndex = 0; pageIndex < numPages; pageIndex++) {
         Image pageImage = printManager.printToImage(jasperPrint, pageIndex, dpiRatio);

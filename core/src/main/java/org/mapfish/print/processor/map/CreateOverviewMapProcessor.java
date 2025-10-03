@@ -99,7 +99,7 @@ public class CreateOverviewMapProcessor
     setOverviewMapBounds(mapParams, boundsOfOriginalMap, values);
 
     CreateMapProcessor.Output output = this.mapProcessor.execute(mapProcessorValues, context);
-    return new Output(output.layerGraphics, output.mapSubReport);
+    return new Output(output.layerGraphics(), output.mapSubReport());
   }
 
   private void setOriginalMapExtentLayer(
@@ -145,8 +145,7 @@ public class CreateOverviewMapProcessor
       final Geometry mapExtent,
       final MapAttribute.OverriddenMapAttributeValues mapParams,
       final String style,
-      final CoordinateReferenceSystem crs)
-      throws IOException {
+      final CoordinateReferenceSystem crs) {
     FeatureLayerParam layerParams = new FeatureLayerParam();
     layerParams.style = style;
     layerParams.defaultStyle = Constants.Style.OverviewMap.NAME;
@@ -207,18 +206,11 @@ public class CreateOverviewMapProcessor
     public GenericMapAttribute.GenericMapAttributeValues overviewMap;
   }
 
-  /** Output for the processor. */
-  public static final class Output {
-
-    /** The paths to a graphic for each layer. */
-    @InternalValue public final List<URI> layerGraphics;
-
-    /** The path to the compiled sub-report for the overview map. */
-    public final String overviewMapSubReport;
-
-    private Output(final List<URI> layerGraphics, final String overviewMapSubReport) {
-      this.layerGraphics = layerGraphics;
-      this.overviewMapSubReport = overviewMapSubReport;
-    }
-  }
+  /**
+   * Output for the processor.
+   *
+   * @param layerGraphics The paths to a graphic for each layer.
+   * @param overviewMapSubReport The path to the compiled sub-report for the overview map.
+   */
+  public record Output(@InternalValue List<URI> layerGraphics, String overviewMapSubReport) {}
 }

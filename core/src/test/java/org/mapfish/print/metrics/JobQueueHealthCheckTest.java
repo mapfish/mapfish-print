@@ -27,7 +27,7 @@ public class JobQueueHealthCheckTest extends AbstractMapfishSpringTest {
   @Autowired @InjectMocks private JobQueueHealthCheck jobQueueHealthCheck;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     // Initialize mocks created above
     MockitoAnnotations.openMocks(this);
   }
@@ -43,7 +43,7 @@ public class JobQueueHealthCheckTest extends AbstractMapfishSpringTest {
   }
 
   @Test
-  public void testCheck_Failed_NoPrintJobs() throws Exception {
+  public void testCheck_Failed_NoPrintJobs() {
     when(jobQueue.getWaitingJobsCount()).thenReturn(1L);
     when(jobManager.getLastExecutedJobTimestamp()).thenReturn(new Date(0L));
 

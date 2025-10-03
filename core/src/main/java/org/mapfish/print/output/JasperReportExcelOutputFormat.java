@@ -24,7 +24,7 @@ public final class JasperReportExcelOutputFormat extends AbstractJasperReportOut
   protected void doExport(final OutputStream outputStream, final Print print) throws JRException {
     JRXlsExporter exporter = new JRXlsExporter();
 
-    exporter.setExporterInput(new SimpleExporterInput(print.print));
+    exporter.setExporterInput(new SimpleExporterInput(print.print()));
     exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
 
     exporter.exportReport();

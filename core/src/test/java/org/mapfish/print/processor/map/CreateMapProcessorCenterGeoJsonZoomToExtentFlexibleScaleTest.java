@@ -47,7 +47,7 @@ public class CreateMapProcessorCenterGeoJsonZoomToExtentFlexibleScaleTest
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),
@@ -66,6 +66,6 @@ public class CreateMapProcessorCenterGeoJsonZoomToExtentFlexibleScaleTest
     assertEquals(1, layerGraphics.size());
 
     new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-        .assertSimilarity(layerGraphics.get(0), 500, 400, 0);
+        .assertSimilarity(layerGraphics.getFirst(), 500, 400, 0);
   }
 }

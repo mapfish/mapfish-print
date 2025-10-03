@@ -11,6 +11,7 @@ import static org.mapfish.print.map.style.json.JsonStyleParserHelperTest.valueOf
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -112,7 +113,7 @@ public class MapfishStyleParserPluginTest {
         And andFilter = (And) rule.getFilter();
         assertEquals(2, andFilter.getChildren().size());
 
-        PropertyIsEqualTo filter = (PropertyIsEqualTo) andFilter.getChildren().get(0);
+        PropertyIsEqualTo filter = (PropertyIsEqualTo) andFilter.getChildren().getFirst();
         PropertyName propertyName = (PropertyName) filter.getExpression1();
         assertEquals("_gx_style", propertyName.getPropertyName());
         Literal valueExpression = (Literal) filter.getExpression2();
@@ -126,34 +127,39 @@ public class MapfishStyleParserPluginTest {
       assertEquals(1, symbolizers.size());
 
       for (Symbolizer symbolizer : symbolizers) {
-        if (symbolizer instanceof PointSymbolizer) {
-          assertEquals("1_Point", rule.getName());
+        switch (symbolizer) {
+          case PointSymbolizer pointSymbolizer -> {
+            assertEquals("1_Point", rule.getName());
 
-          assertNull(point);
-          point = (PointSymbolizer) symbolizer;
-          assertFilter(geomSelectFunction, Point.class, MultiPoint.class, GeometryCollection.class);
-        } else if (symbolizer instanceof LineSymbolizer) {
-          assertEquals("1_LineString", rule.getName());
-          assertNull(line);
-          line = (LineSymbolizer) symbolizer;
-          assertFilter(
-              geomSelectFunction,
-              LineString.class,
-              LinearRing.class,
-              MultiLineString.class,
-              GeometryCollection.class);
-        } else if (symbolizer instanceof PolygonSymbolizer) {
-          assertEquals("1_Polygon", rule.getName());
-          assertNull(polygon);
-          polygon = (PolygonSymbolizer) symbolizer;
-          assertFilter(
-              geomSelectFunction, Polygon.class, MultiPolygon.class, GeometryCollection.class);
-        } else if (symbolizer instanceof TextSymbolizer) {
-          assertEquals("1_Text", rule.getName());
-          assertNull(text);
-          text = (TextSymbolizer) symbolizer;
-        } else {
-          fail(symbolizer + " was unexpected");
+            assertNull(point);
+            point = pointSymbolizer;
+            assertFilter(
+                geomSelectFunction, Point.class, MultiPoint.class, GeometryCollection.class);
+          }
+          case LineSymbolizer lineSymbolizer -> {
+            assertEquals("1_LineString", rule.getName());
+            assertNull(line);
+            line = lineSymbolizer;
+            assertFilter(
+                geomSelectFunction,
+                LineString.class,
+                LinearRing.class,
+                MultiLineString.class,
+                GeometryCollection.class);
+          }
+          case PolygonSymbolizer polygonSymbolizer -> {
+            assertEquals("1_Polygon", rule.getName());
+            assertNull(polygon);
+            polygon = polygonSymbolizer;
+            assertFilter(
+                geomSelectFunction, Polygon.class, MultiPolygon.class, GeometryCollection.class);
+          }
+          case TextSymbolizer textSymbolizer -> {
+            assertEquals("1_Text", rule.getName());
+            assertNull(text);
+            text = textSymbolizer;
+          }
+          case null, default -> fail(symbolizer + " was unexpected");
         }
       }
     }
@@ -165,8 +171,7 @@ public class MapfishStyleParserPluginTest {
   }
 
   @SafeVarargs
-  private final void assertFilter(
-      Filter geomSelectFunction, Class<? extends Geometry>... geomClasses) {
+  private void assertFilter(Filter geomSelectFunction, Class<? extends Geometry>... geomClasses) {
 
     List<Class<? extends Geometry>> allowed = Arrays.asList(geomClasses);
 
@@ -239,16 +244,15 @@ public class MapfishStyleParserPluginTest {
     return geomClass.cast(geom);
   }
 
-  @SuppressWarnings("deprecation")
   @Test
   public void testV2ParseSymbolizersWithDefaultsAndValues() throws Throwable {
     final Style style = parseStyle("v2-style-symbolizers-default-values.json");
 
     final List<FeatureTypeStyle> featureTypeStyles = style.featureTypeStyles();
     assertEquals(1, featureTypeStyles.size());
-    final List<Rule> rules = featureTypeStyles.get(0).rules();
+    final List<Rule> rules = featureTypeStyles.getFirst().rules();
     assertEquals(1, rules.size());
-    final Rule rule = rules.get(0);
+    final Rule rule = rules.getFirst();
 
     assertEquals(1000000, rule.getMaxScaleDenominator(), DELTA);
     assertEquals(100, rule.getMinScaleDenominator(), DELTA);
@@ -259,11 +263,11 @@ public class MapfishStyleParserPluginTest {
 
     assertEquals(2, rule.symbolizers().size());
 
-    PointSymbolizer symbolizer = (PointSymbolizer) rule.symbolizers().get(0);
+    PointSymbolizer symbolizer = (PointSymbolizer) rule.symbolizers().getFirst();
 
     assertEquals(1, symbolizer.getGraphic().graphicalSymbols().size());
 
-    Mark mark = (Mark) symbolizer.getGraphic().graphicalSymbols().get(0);
+    Mark mark = (Mark) symbolizer.getGraphic().graphicalSymbols().getFirst();
 
     assertEquals("circle", valueOf(mark.getWellKnownName()));
     assertEquals(30, (Double) valueOf(symbolizer.getGraphic().getRotation()), DELTA);
@@ -280,9 +284,9 @@ public class MapfishStyleParserPluginTest {
 
     final List<FeatureTypeStyle> featureTypeStyles = style.featureTypeStyles();
     assertEquals(1, featureTypeStyles.size());
-    final List<Rule> rules = featureTypeStyles.get(0).rules();
+    final List<Rule> rules = featureTypeStyles.getFirst().rules();
     assertEquals(1, rules.size());
-    final Rule rule = rules.get(0);
+    final Rule rule = rules.getFirst();
 
     assertEquals(Filter.INCLUDE, rule.getFilter());
 
@@ -313,8 +317,7 @@ public class MapfishStyleParserPluginTest {
   }
 
   private String getSpec(String name) throws IOException, URISyntaxException {
-    return new String(
-        java.nio.file.Files.readAllBytes(getFile(name).toPath()), Constants.DEFAULT_CHARSET);
+    return Files.readString(getFile(name).toPath(), Constants.DEFAULT_CHARSET);
   }
 
   private File getFile(String name) throws URISyntaxException {

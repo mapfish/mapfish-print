@@ -218,9 +218,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
           }
         }
       }
-      if (this.request instanceof HttpEntityEnclosingRequest) {
-        final HttpEntityEnclosingRequest entityEnclosingRequest =
-            (HttpEntityEnclosingRequest) this.request;
+      if (this.request instanceof HttpEntityEnclosingRequest entityEnclosingRequest) {
         final HttpEntity requestEntity = new ByteArrayEntity(this.outputStream.toByteArray());
         entityEnclosingRequest.setEntity(requestEntity);
       }

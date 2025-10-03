@@ -227,11 +227,9 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
         final Object dataSourceObj = values.getObject(template.getTableDataKey(), Object.class);
         if (dataSourceObj instanceof JRDataSource) {
           dataSource = (JRDataSource) dataSourceObj;
-        } else if (dataSourceObj instanceof Iterable) {
-          Iterable sourceObj = (Iterable) dataSourceObj;
+        } else if (dataSourceObj instanceof Iterable sourceObj) {
           dataSource = toJRDataSource(sourceObj.iterator());
-        } else if (dataSourceObj instanceof Iterator) {
-          Iterator sourceObj = (Iterator) dataSourceObj;
+        } else if (dataSourceObj instanceof Iterator sourceObj) {
           dataSource = toJRDataSource(sourceObj);
         } else if (dataSourceObj.getClass().isArray()) {
           Object[] sourceObj = (Object[]) dataSourceObj;
@@ -263,8 +261,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
       final Configuration configuration,
       final JRDataSource dataSource,
       final String reportTemplate) {
-    if (dataSource instanceof JRRewindableDataSource) {
-      JRRewindableDataSource source = (JRRewindableDataSource) dataSource;
+    if (dataSource instanceof JRRewindableDataSource source) {
       StringBuilder wrongType = new StringBuilder();
       try {
         while (source.next()) {
@@ -366,8 +363,12 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
               ".  The class attribute in the template xml does not match the class of the "
                   + "actual object.")
           .append(
-              "\nEither change the declaration in the jasper template or update the "
-                  + "configuration so that the parameters have the correct type.\n\n")
+              """
+
+              Either change the declaration in the jasper template or update the \
+              configuration so that the parameters have the correct type.
+
+              """)
           .append(wrongType);
     }
 
@@ -400,8 +401,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
     List<Map<String, ?>> rows = new ArrayList<>();
     while (iterator.hasNext()) {
       Object next = iterator.next();
-      if (next instanceof Values) {
-        Values values = (Values) next;
+      if (next instanceof Values values) {
         rows.add(values.asMap());
       } else if (next instanceof Map) {
         @SuppressWarnings("unchecked")
@@ -429,34 +429,19 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
     return maxDpi;
   }
 
-  /** The print information for doing the export. */
-  public static final class Print {
-    /** The print information for Jasper. */
-    @Nonnull public final JasperPrint print;
-
-    /** The print DPI. */
-    @Nonnegative public final double dpi;
-
-    /** The execution context for the print job. */
-    @Nonnull public final Processor.ExecutionContext executionContext;
-
-    /** The JasperReports context for the print job. */
-    @Nonnull public final JasperReportsContext context;
-
-    /** The values used to do the print. */
-    @Nonnull public final Values values;
-
-    private Print(
-        @Nonnull final JasperReportsContext context,
-        @Nonnull final JasperPrint print,
-        @Nonnull final Values values,
-        @Nonnegative final double dpi,
-        @Nonnull final Processor.ExecutionContext executionContext) {
-      this.print = print;
-      this.context = context;
-      this.values = values;
-      this.dpi = dpi;
-      this.executionContext = executionContext;
-    }
-  }
+  /**
+   * The print information for doing the export.
+   *
+   * @param print The print information for Jasper.
+   * @param dpi The print DPI.
+   * @param executionContext The execution context for the print job.
+   * @param context The JasperReports context for the print job.
+   * @param values The values used to do the print.
+   */
+  public record Print(
+      @Nonnull JasperReportsContext context,
+      @Nonnull JasperPrint print,
+      @Nonnull Values values,
+      @Nonnegative double dpi,
+      @Nonnull Processor.ExecutionContext executionContext) {}
 }

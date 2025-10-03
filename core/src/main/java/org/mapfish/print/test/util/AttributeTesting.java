@@ -21,17 +21,14 @@ public final class AttributeTesting {
    * the specific type of attribute and its properties.
    */
   public static void configureAttributeForTesting(final Attribute att) {
-    if (att instanceof GenericMapAttribute) {
-      GenericMapAttribute genericMapAttribute = (GenericMapAttribute) att;
+    if (att instanceof GenericMapAttribute genericMapAttribute) {
       genericMapAttribute.setWidth(500);
       genericMapAttribute.setHeight(500);
       genericMapAttribute.setMaxDpi(400.0);
-    } else if (att instanceof ScalebarAttribute) {
-      ScalebarAttribute scalebarAttribute = (ScalebarAttribute) att;
+    } else if (att instanceof ScalebarAttribute scalebarAttribute) {
       scalebarAttribute.setWidth(300);
       scalebarAttribute.setHeight(120);
-    } else if (att instanceof NorthArrowAttribute) {
-      NorthArrowAttribute northArrowAttribute = (NorthArrowAttribute) att;
+    } else if (att instanceof NorthArrowAttribute northArrowAttribute) {
       northArrowAttribute.setSize(50);
     }
   }

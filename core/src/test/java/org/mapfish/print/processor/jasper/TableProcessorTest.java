@@ -53,9 +53,9 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     final File file = getFile(TableProcessorTest.class, baseDir);
     JasperPrint print =
-        format.getJasperPrint(
-                new HashMap<String, String>(), requestData, config, file, getTaskDirectory())
-            .print;
+        format
+            .getJasperPrint(new HashMap<>(), requestData, config, file, getTaskDirectory())
+            .print();
 
     // note that we are using a sample size of 50, because the image is quite big.
     // otherwise small differences are not detected!
@@ -71,7 +71,7 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
     PJsonObject requestData = loadJsonRequestData(baseDir);
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),
@@ -103,9 +103,9 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     final File file = getFile(TableProcessorTest.class, baseDir);
     JasperPrint print =
-        format.getJasperPrint(
-                new HashMap<String, String>(), requestData, config, file, getTaskDirectory())
-            .print;
+        format
+            .getJasperPrint(new HashMap<>(), requestData, config, file, getTaskDirectory())
+            .print();
 
     // note that we are using a sample size of 50, because the image is quite big.
     // otherwise small differences are not detected!
@@ -122,9 +122,9 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     final File file = getFile(TableProcessorTest.class, baseDir);
     JasperPrint print =
-        format.getJasperPrint(
-                new HashMap<String, String>(), requestData, config, file, getTaskDirectory())
-            .print;
+        format
+            .getJasperPrint(new HashMap<>(), requestData, config, file, getTaskDirectory())
+            .print();
 
     // note that we are using a sample size of 50, because the image is quite big.
     // otherwise small differences are not detected!
@@ -145,9 +145,9 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     final File file = getFile(TableProcessorTest.class, baseDir);
     JasperPrint print =
-        format.getJasperPrint(
-                new HashMap<String, String>(), requestData, config, file, getTaskDirectory())
-            .print;
+        format
+            .getJasperPrint(new HashMap<>(), requestData, config, file, getTaskDirectory())
+            .print();
 
     // note that we are using a sample size of 50, because the image is quite big.
     // otherwise small differences are not detected!
@@ -169,9 +169,9 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     final File file = getFile(TableProcessorTest.class, baseDir);
     JasperPrint print =
-        format.getJasperPrint(
-                new HashMap<String, String>(), requestData, config, file, getTaskDirectory())
-            .print;
+        format
+            .getJasperPrint(new HashMap<>(), requestData, config, file, getTaskDirectory())
+            .print();
 
     // note that we are using a sample size of 50, because the image is quite big.
     // otherwise small differences are not detected!
@@ -188,9 +188,9 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     final File file = getFile(TableProcessorTest.class, baseDir);
     JasperPrint print =
-        format.getJasperPrint(
-                new HashMap<String, String>(), requestData, config, file, getTaskDirectory())
-            .print;
+        format
+            .getJasperPrint(new HashMap<>(), requestData, config, file, getTaskDirectory())
+            .print();
 
     // note that we are using a sample size of 50, because the image is quite big.
     // otherwise small differences are not detected!

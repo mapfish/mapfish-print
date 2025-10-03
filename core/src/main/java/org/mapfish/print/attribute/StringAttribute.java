@@ -39,8 +39,7 @@ public class StringAttribute extends PrimitiveAttribute<String> {
 
   @Override
   public final void validateValue(final Object value) {
-    if (this.maxLength >= 0 && value instanceof String) {
-      String text = (String) value;
+    if (this.maxLength >= 0 && value instanceof String text) {
       if (text.length() > this.maxLength) {
         throw new IllegalArgumentException(
             "text contains more than " + this.maxLength + " characters");

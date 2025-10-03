@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
@@ -69,11 +70,7 @@ public class MapExportOutputFormat implements OutputFormat {
       if (processor instanceof CreateMapProcessor) {
         String mapSubReport =
             ((CreateMapProcessor) processor).getOutputMapperBiMap().get(MAP_SUBREPORT);
-        if (mapSubReport == null) {
-          return MAP_SUBREPORT;
-        } else {
-          return mapSubReport;
-        }
+        return Objects.requireNonNullElse(mapSubReport, MAP_SUBREPORT);
       }
     }
     // validation has already confirmed there is exactly one createmap processor

@@ -1,7 +1,8 @@
 package org.mapfish.print.metrics;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.codahale.metrics.Counter;
@@ -22,7 +23,7 @@ public class UnhealthyCountersHealthCheckTest extends AbstractMapfishSpringTest 
   @Autowired @InjectMocks private UnhealthyCountersHealthCheck unhealthyCountersHealthCheck;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     // Initialize mocks created above
     MockitoAnnotations.openMocks(this);
   }

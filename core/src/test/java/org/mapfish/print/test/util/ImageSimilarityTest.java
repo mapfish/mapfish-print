@@ -11,7 +11,7 @@ public class ImageSimilarityTest extends AbstractMapfishSpringTest {
 
   /** Ensure that we ar not regenerating the expected images in the CI. */
   @Test
-  public void testNotRegenerateImage() throws Exception {
+  public void testNotRegenerateImage() {
     assertFalse(
         "This flag should not be committed as true", ImageSimilarity.REGENERATE_EXPECTED_IMAGES);
   }

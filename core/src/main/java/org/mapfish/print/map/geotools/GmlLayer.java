@@ -96,23 +96,17 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
 
     private FeatureSourceSupplier createFeatureSourceSupplier(
         final Template template, final String url) {
-      return new FeatureSourceSupplier() {
-        @Nonnull
-        @Override
-        public FeatureSource<?, ?> load(
-            @Nonnull final MfClientHttpRequestFactory requestFactory,
-            @Nonnull final MapfishMapContext mapContext) {
-          SimpleFeatureCollection featureCollection;
-          try {
-            featureCollection = createFeatureSource(template, requestFactory, url);
-          } catch (IOException e) {
-            throw new PrintException("Failed to create feature source for " + url, e);
-          }
-          if (featureCollection == null) {
-            throw new IllegalArgumentException(url + " does not reference a GML file");
-          }
-          return new CollectionFeatureSource(featureCollection);
+      return (requestFactory, mapContext) -> {
+        SimpleFeatureCollection featureCollection;
+        try {
+          featureCollection = createFeatureSource(template, requestFactory, url);
+        } catch (IOException e) {
+          throw new PrintException("Failed to create feature source for " + url, e);
         }
+        if (featureCollection == null) {
+          throw new IllegalArgumentException(url + " does not reference a GML file");
+        }
+        return new CollectionFeatureSource(featureCollection);
       };
     }
 

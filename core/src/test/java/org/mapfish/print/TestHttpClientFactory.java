@@ -81,12 +81,8 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
     }
   }
 
-  private static class TestConfigurableRequest implements ConfigurableRequest {
-    private final MockClientHttpRequest httpRequest;
-
-    public TestConfigurableRequest(MockClientHttpRequest httpRequest) {
-      this.httpRequest = httpRequest;
-    }
+  private record TestConfigurableRequest(MockClientHttpRequest httpRequest)
+      implements ConfigurableRequest {
 
     @Override
     public HttpRequestBase getUnderlyingRequest() {

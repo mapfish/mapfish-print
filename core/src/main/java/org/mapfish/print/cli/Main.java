@@ -123,22 +123,13 @@ public final class Main {
 
   private static void configureLogs(final String verbose) {
     final ClassLoader classLoader = Main.class.getClassLoader();
-    URL logfile;
-    switch (Integer.parseInt(verbose)) {
-      case LOGLEVEL_QUIET:
-        logfile = classLoader.getResource("shell-quiet-log.xml");
-        break;
-      case LOGLEVEL_INFO:
-        logfile = classLoader.getResource("shell-info-log.xml");
-        break;
-      case LOGLEVEL_VERBOSE:
-        logfile = classLoader.getResource("shell-verbose-log.xml");
-        break;
-      case LOGLEVEL_DEFAULT:
-      default:
-        logfile = classLoader.getResource("shell-default-log.xml");
-        break;
-    }
+    URL logfile =
+        switch (Integer.parseInt(verbose)) {
+          case LOGLEVEL_QUIET -> classLoader.getResource("shell-quiet-log.xml");
+          case LOGLEVEL_INFO -> classLoader.getResource("shell-info-log.xml");
+          case LOGLEVEL_VERBOSE -> classLoader.getResource("shell-verbose-log.xml");
+          default -> classLoader.getResource("shell-default-log.xml");
+        };
 
     LoggerContext loggerContext = getLoggerContext(logfile);
     new StatusPrinter2().printInCaseOfErrorsOrWarnings(loggerContext);

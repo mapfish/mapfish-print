@@ -237,8 +237,7 @@ public final class Values {
 
         String defaults = "";
 
-        if (attribute instanceof ReflectiveAttribute<?>) {
-          ReflectiveAttribute<?> reflectiveAttribute = (ReflectiveAttribute<?>) attribute;
+        if (attribute instanceof ReflectiveAttribute<?> reflectiveAttribute) {
           defaults = "\n\n The attribute defaults are: " + reflectiveAttribute.getDefaultValue();
         }
 

@@ -3,6 +3,7 @@ package org.mapfish.print.attribute.map;
 import static org.mapfish.print.Constants.PDF_DPI;
 
 import java.awt.Rectangle;
+import java.util.Objects;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.geometry.Position2D;
@@ -201,10 +202,10 @@ public final class CenterScaleMapBounds extends MapBounds {
 
     final CenterScaleMapBounds that = (CenterScaleMapBounds) o;
 
-    if (this.center != null ? !this.center.equals(that.center) : that.center != null) {
+    if (!Objects.equals(this.center, that.center)) {
       return false;
     }
-    return this.scale != null ? this.scale.equals(that.scale) : that.scale == null;
+    return Objects.equals(this.scale, that.scale);
   }
 
   @Override

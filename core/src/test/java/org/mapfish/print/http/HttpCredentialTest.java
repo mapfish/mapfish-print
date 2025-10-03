@@ -4,10 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpsServer;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -117,29 +114,24 @@ public class HttpCredentialTest {
     final String path = "/username";
     httpsServer.createContext(
         path,
-        new HttpHandler() {
-          @Override
-          public void handle(HttpExchange httpExchange) throws IOException {
-            final String authorization = httpExchange.getRequestHeaders().getFirst("Authorization");
-            if (authorization == null) {
-              httpExchange
-                  .getResponseHeaders()
-                  .add("WWW-Authenticate", "Basic realm=\"Test Site\"");
-              httpExchange.sendResponseHeaders(401, 0);
-              httpExchange.close();
+        httpExchange -> {
+          final String authorization = httpExchange.getRequestHeaders().getFirst("Authorization");
+          if (authorization == null) {
+            httpExchange.getResponseHeaders().add("WWW-Authenticate", "Basic realm=\"Test Site\"");
+            httpExchange.sendResponseHeaders(401, 0);
+            httpExchange.close();
+          } else {
+            final String expectedAuth = "Basic dXNlcm5hbWU6cGFzc3dvcmQ=";
+            if (authorization.equals(expectedAuth)) {
+              HttpProxyTest.respond(httpExchange, message, 200);
             } else {
-              final String expectedAuth = "Basic dXNlcm5hbWU6cGFzc3dvcmQ=";
-              if (authorization.equals(expectedAuth)) {
-                HttpProxyTest.respond(httpExchange, message, 200);
-              } else {
-                final String errorMessage =
-                    "Expected authorization:\n'"
-                        + expectedAuth
-                        + "' but got:\n'"
-                        + authorization
-                        + "'";
-                HttpProxyTest.respond(httpExchange, errorMessage, 500);
-              }
+              final String errorMessage =
+                  "Expected authorization:\n'"
+                      + expectedAuth
+                      + "' but got:\n'"
+                      + authorization
+                      + "'";
+              HttpProxyTest.respond(httpExchange, errorMessage, 500);
             }
           }
         });

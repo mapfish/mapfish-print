@@ -426,7 +426,7 @@ public final class JsonStyleParserHelper {
     Expression fontFamily =
         parseExpression(null, styleJson, JSON_FONT_FAMILY, fontFamily1 -> fontFamily1);
     if (fontFamily == null) {
-      fontFamily = defaultFont.getFamily().get(0);
+      fontFamily = defaultFont.getFamily().getFirst();
     }
     List<Expression> fontFamilies = getFontExpressions(fontFamily, fontWeight);
 
@@ -440,7 +440,8 @@ public final class JsonStyleParserHelper {
       fontStyle = defaultFont.getStyle();
     }
 
-    Font font = this.styleBuilder.createFont(fontFamilies.get(0), fontStyle, fontWeight, fontSize);
+    Font font =
+        this.styleBuilder.createFont(fontFamilies.getFirst(), fontStyle, fontWeight, fontSize);
     if (fontFamilies.size() > 1) {
       // add remaining "fallback" fonts
       for (int i = 1; i < fontFamilies.size(); i++) {
@@ -600,20 +601,20 @@ public final class JsonStyleParserHelper {
       String yAlign = labelAlign.substring(1, 2);
 
       final double anchorInMiddle = 0.5;
-      if ("l".equals(xAlign)) {
-        anchorX = this.styleBuilder.literalExpression(0.0);
-      } else if ("c".equals(xAlign)) {
-        anchorX = this.styleBuilder.literalExpression(anchorInMiddle);
-      } else if ("r".equals(xAlign)) {
-        anchorX = this.styleBuilder.literalExpression(1.0);
-      }
-      if ("b".equals(yAlign)) {
-        anchorY = this.styleBuilder.literalExpression(0.0);
-      } else if ("m".equals(yAlign)) {
-        anchorY = this.styleBuilder.literalExpression(anchorInMiddle);
-      } else if ("t".equals(yAlign)) {
-        anchorY = this.styleBuilder.literalExpression(1.0);
-      }
+      anchorX =
+          switch (xAlign) {
+            case "l" -> this.styleBuilder.literalExpression(0.0);
+            case "c" -> this.styleBuilder.literalExpression(anchorInMiddle);
+            case "r" -> this.styleBuilder.literalExpression(1.0);
+            default -> anchorX;
+          };
+      anchorY =
+          switch (yAlign) {
+            case "b" -> this.styleBuilder.literalExpression(0.0);
+            case "m" -> this.styleBuilder.literalExpression(anchorInMiddle);
+            case "t" -> this.styleBuilder.literalExpression(1.0);
+            default -> anchorY;
+          };
     }
     boolean returnNull = true;
     if (anchorX == null) {
@@ -705,8 +706,7 @@ public final class JsonStyleParserHelper {
     if (styleJson.has(JSON_STROKE_DASHSTYLE)
         && !STROKE_DASHSTYLE_SOLID.equals(styleJson.getString(JSON_STROKE_DASHSTYLE))) {
       double width = 1.0;
-      if (widthExpression instanceof Literal) {
-        Literal expression = (Literal) widthExpression;
+      if (widthExpression instanceof Literal expression) {
         width = ((Number) expression.getValue()).doubleValue();
       }
       final Expression defaultDashSpacingE = this.styleBuilder.literalExpression(0.1f);
@@ -815,7 +815,7 @@ public final class JsonStyleParserHelper {
       }
 
       if (contentTypes != null && contentTypes.size() == 1) {
-        String contentType = contentTypes.get(0);
+        String contentType = contentTypes.getFirst();
         int index = contentType.lastIndexOf(";");
         return index >= 0 ? contentType.substring(0, index) : contentType;
       }

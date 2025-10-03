@@ -40,8 +40,8 @@ public class JasperReportSvgOutputFormat extends AbstractJasperReportOutputForma
     SimpleGraphics2DExporterOutput output = new SimpleGraphics2DExporterOutput();
     output.setGraphics2D(grx);
 
-    JRGraphics2DExporter exporter = new JRGraphics2DExporter(print.context);
-    exporter.setExporterInput(new SimpleExporterInput(print.print));
+    JRGraphics2DExporter exporter = new JRGraphics2DExporter(print.context());
+    exporter.setExporterInput(new SimpleExporterInput(print.print()));
     exporter.setExporterOutput(output);
     exporter.setConfiguration(configuration);
     exporter.exportReport();

@@ -301,7 +301,7 @@ public final class MapfishMapContext {
     final AffineTransform transform = AffineTransform.getTranslateInstance(0.0, 0.0);
     // move to the center of the original map rectangle (this is the actual
     // size of the graphic)
-    transform.translate(this.mapSize.width / 2, this.mapSize.height / 2);
+    transform.translate(this.mapSize.width / 2.0, this.mapSize.height / 2.0);
 
     // then rotate around this center
     transform.rotate(this.rotation);
@@ -309,7 +309,7 @@ public final class MapfishMapContext {
     // then move to an artificial origin (0,0) which might be outside the actual
     // painting area. this origin still keeps the center of the original map area
     // at the center of the rotated map area.
-    transform.translate(-rotatedMapSize.width / 2, -rotatedMapSize.height / 2);
+    transform.translate(-rotatedMapSize.width / 2.0, -rotatedMapSize.height / 2.0);
 
     return transform;
   }

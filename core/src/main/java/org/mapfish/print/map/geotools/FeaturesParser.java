@@ -100,7 +100,13 @@ public class FeaturesParser {
                     return CRS.parseWKT(wkt);
                   } catch (FactoryException e) {
                     LOGGER.warn(
-                        "Unable to load linked CRS from geojson: \n{}\n\nWKT loaded" + " from:\n{}",
+                        """
+                        Unable to load linked CRS from geojson:\s
+                        {}
+
+                        WKT loaded from:
+                        {}\
+                        """,
                         crsJson,
                         wkt);
                   }

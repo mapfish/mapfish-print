@@ -82,7 +82,7 @@ public class PdfConfigurationProcessorTest {
   }
 
   @Test
-  public void testKeywords() throws Exception {
+  public void testKeywords() {
     Map<String, Object> attributeMap = new HashMap<>();
     String keywordsKey = "keywordsAtt";
     attributeMap.put("keywords", keywordsKey);

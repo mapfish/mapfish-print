@@ -18,7 +18,7 @@ public final class Utils {
    * @param headers The headers
    */
   public static List<String> getPrintableHeadersList(final Map<String, List<String>> headers) {
-    final List<String> result = new ArrayList<String>();
+    final List<String> result = new ArrayList<>();
     for (String header : headers.keySet()) {
       List<String> value = headers.get(header);
       if (AUTH_HEADERS.contains(header.toLowerCase())) {

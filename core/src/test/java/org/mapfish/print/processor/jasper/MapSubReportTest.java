@@ -37,7 +37,7 @@ public class MapSubReportTest {
 
     assertEquals(4, report.getNoData().getChildren().size());
 
-    JRDesignImage image0 = (JRDesignImage) report.getNoData().getChildren().get(0);
+    JRDesignImage image0 = (JRDesignImage) report.getNoData().getChildren().getFirst();
     assertEquals(400, image0.getWidth());
     assertEquals(500, image0.getHeight());
     assertEquals(

@@ -115,11 +115,9 @@ public class PYamlArray extends PElement implements PArray {
     final int size = this.array.size();
     for (int i = 0; i < size; i++) {
       final Object o = get(i);
-      if (o instanceof PYamlObject) {
-        PYamlObject pYamlObject = (PYamlObject) o;
+      if (o instanceof PYamlObject pYamlObject) {
         jsonArray.put(pYamlObject.toJSON().getInternalObj());
-      } else if (o instanceof PYamlArray) {
-        PYamlArray pYamlArray = (PYamlArray) o;
+      } else if (o instanceof PYamlArray pYamlArray) {
         jsonArray.put(pYamlArray.toJSON().getInternalArray());
       } else {
         jsonArray.put(o);

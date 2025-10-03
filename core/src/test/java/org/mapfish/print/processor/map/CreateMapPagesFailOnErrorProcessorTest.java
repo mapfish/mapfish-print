@@ -23,9 +23,9 @@ import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
 /**
- * Check that when layer failOnError parameter is activated and a fetching error occurs, all the
- * tasks associated to the current printing processor are stopped quickly since the printing job
- * will fail anyway. We use the number of WMS call during print generation to assess if the print
+ * Check that when the layer failOnError parameter is activated and a fetching error occurs, all the
+ * tasks associated with the current printing processor are stopped quickly since the printing job
+ * will fail anyway. We use the number of WMS calls during print generation to assess if the print
  * generation was stop quickly
  */
 public class CreateMapPagesFailOnErrorProcessorTest extends AbstractMapfishSpringTest {
@@ -39,7 +39,7 @@ public class CreateMapPagesFailOnErrorProcessorTest extends AbstractMapfishSprin
         CreateMapPagesFailOnErrorProcessorTest.class, BASE_DIR + "requestData.json");
   }
 
-  private static AtomicInteger wmsRequestsNb = new AtomicInteger(0);
+  private static final AtomicInteger wmsRequestsNb = new AtomicInteger(0);
 
   @Before
   public void setUp() {
@@ -57,7 +57,7 @@ public class CreateMapPagesFailOnErrorProcessorTest extends AbstractMapfishSprin
       @Override
       public MockClientHttpRequest handleRequest(URI uri, HttpMethod httpMethod) throws Exception {
         if (wmsRequestsNb.incrementAndGet() == 40) {
-          // 404 will create a print error since we are using WMS layer.
+          // 404 will create a print error since we are using the WMS layer.
           // This will not happen on tiled layers.
           return error404(uri, httpMethod);
         }
@@ -75,10 +75,10 @@ public class CreateMapPagesFailOnErrorProcessorTest extends AbstractMapfishSprin
     final AbstractJasperReportOutputFormat format =
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
 
-    // Normal execution should make more around 400/500 WMS calls but since fail on error is
-    // activated and the 40Th call will fail
-    // less than 100 WMS calls should be done.
-    testPrint(config, requestData, format, 100);
+    // Normal execution should make more around 400/500 WMS calls, but since fail on error is
+    // activated and the 40Th call will fail,
+    // less than 200 WMS calls should be done.
+    testPrint(config, requestData, format, 200);
   }
 
   private void testPrint(

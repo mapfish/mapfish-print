@@ -58,15 +58,13 @@ public class PYamlObject extends PAbstractObject {
   @Override
   public final String optString(final String key) {
     Object value = this.obj.get(key);
-    if (value == null || value instanceof String) {
-      return (String) value;
-    } else if (value instanceof Map) {
-      return new JSONObject((Map) value).toString();
-    } else if (value instanceof Collection) {
-      return new JSONArray((Collection) value).toString();
-    } else {
-      return value.toString();
-    }
+    return switch (value) {
+      case null -> (String) null;
+      case String s -> s;
+      case Map map -> new JSONObject(map).toString();
+      case Collection collection -> new JSONArray(collection).toString();
+      default -> value.toString();
+    };
   }
 
   @Override

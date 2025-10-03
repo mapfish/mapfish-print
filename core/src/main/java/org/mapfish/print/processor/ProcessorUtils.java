@@ -16,7 +16,7 @@ import org.mapfish.print.PrintException;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.parser.HasDefaultValue;
 
-/** Shared methods for working with processor. */
+/** Shared methods for working with a processor. */
 public final class ProcessorUtils {
   private ProcessorUtils() {
     // do nothing
@@ -84,9 +84,13 @@ public final class ProcessorUtils {
     }
 
     final Collection<Field> fields = getAllAttributes(output.getClass());
+    boolean isRecord = output.getClass().isRecord();
     for (Field field : fields) {
       String name = getOutputValueName(processor.getOutputPrefix(), mapper, field);
       try {
+        if (isRecord) {
+          field.trySetAccessible();
+        }
         final Object value = field.get(output);
         if (value != null) {
           values.put(name, value);

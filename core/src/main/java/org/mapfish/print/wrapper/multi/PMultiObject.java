@@ -133,7 +133,7 @@ public class PMultiObject extends PAbstractObject {
       return null;
     }
     if (results.size() == 1) {
-      return results.get(0);
+      return results.getFirst();
     }
     return new PMultiObject(results.toArray(new PObject[0]));
   }

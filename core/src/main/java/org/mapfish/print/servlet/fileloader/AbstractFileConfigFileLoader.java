@@ -96,8 +96,7 @@ public abstract class AbstractFileConfigFileLoader implements ConfigFileLoaderPl
   }
 
   @Override
-  public final boolean isAccessible(final URI configFileUri, final String pathToSubResource)
-      throws IOException {
+  public final boolean isAccessible(final URI configFileUri, final String pathToSubResource) {
     try {
       final Optional<File> childFile = toFile(configFileUri, pathToSubResource);
       return childFile.isPresent() && childFile.get().exists();

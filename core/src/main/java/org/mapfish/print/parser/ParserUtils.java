@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 /** Utility method for getting and setting parameters on Processor Input and Output objects. */
@@ -84,11 +83,12 @@ public final class ParserUtils {
       final Predicate<Field> filter) {
 
     if (classToInspect != null && classToInspect != Void.class) {
+      Field[] fields = classToInspect.getFields();
+      if (classToInspect.isRecord()) {
+        fields = classToInspect.getDeclaredFields();
+      }
       Collection<? extends V> resultsForClass =
-          Arrays.stream(classToInspect.getFields())
-              .filter(filter)
-              .map(map)
-              .collect(Collectors.toList());
+          Arrays.stream(fields).filter(filter).map(map).toList();
       results.addAll(resultsForClass);
       if (classToInspect.getSuperclass() != null) {
         getAllAttributes(classToInspect.getSuperclass(), results, map, filter);

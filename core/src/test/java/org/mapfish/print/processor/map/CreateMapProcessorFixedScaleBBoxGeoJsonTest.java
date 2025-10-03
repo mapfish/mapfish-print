@@ -45,7 +45,7 @@ public class CreateMapProcessorFixedScaleBBoxGeoJsonTest extends AbstractMapfish
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),
@@ -64,6 +64,6 @@ public class CreateMapProcessorFixedScaleBBoxGeoJsonTest extends AbstractMapfish
     assertEquals(1, layerGraphics.size());
 
     new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-        .assertSimilarity(layerGraphics.get(0), 500, 100, 0);
+        .assertSimilarity(layerGraphics.getFirst(), 500, 100, 0);
   }
 }

@@ -24,7 +24,7 @@ public class URLSLDParserPluginTest extends AbstractMapfishSpringTest {
 
   @Test
   @DirtiesContext
-  public void testParseStyle() throws Throwable {
+  public void testParseStyle() {
     final String host = "URLSLDParserPluginTest.com";
     clientHttpRequestFactory.registerHandler(
         input -> (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host),
@@ -39,7 +39,7 @@ public class URLSLDParserPluginTest extends AbstractMapfishSpringTest {
         new ConfigFileResolvingHttpRequestFactory(
             this.clientHttpRequestFactory,
             configuration,
-            new HashMap<String, String>(),
+            new HashMap<>(),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
             HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
     final Optional<Style> styleOptional =

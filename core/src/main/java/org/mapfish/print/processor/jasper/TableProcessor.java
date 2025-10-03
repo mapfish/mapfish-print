@@ -83,21 +83,21 @@ public final class TableProcessor
   private boolean defaultTemplate;
 
   /** Constructor. */
-  protected TableProcessor() {
+  private TableProcessor() {
     super(Output.class);
   }
 
   /**
-   * The path to the JasperReports template that contains the template for the sub-report. If
-   * dynamic is false then the template will be used without any changes. It will simply be compiled
-   * and used as is.
+   * The path to the JasperReports template that contains the template for the subreport. If the
+   * dynamic is false, then the template will be used without any changes. It will simply be
+   * compiled and used as is.
    *
    * <p>If dynamic is true then the template will be used to obtain the column styles and the size
    * of the subreport and to get the position of the first header and field element. The actual
    * field and column definitions will be dynamically generated from the table data that is
-   * provided. This may be null if dynamic is false. If it is null then the main template will
+   * provided. This may be null if the dynamic is false. If it is null, then the main template will
    * likely use the generated table datasource directly as its datasource for use in its detail
-   * section and the table will be directly in the main template's detail section. Or a later
+   * section, and the table will be directly in the main template's detail section. Or a later
    * processor may use the table's datasource in someway.
    *
    * @param jasperTemplate the template to use for rendering the table.
@@ -107,7 +107,7 @@ public final class TableProcessor
   }
 
   /**
-   * If true then the JasperReport template will be generated dynamically based on the columns in
+   * If true, then the JasperReport template will be generated dynamically based on the columns in
    * the table attribute.
    *
    * <p>Default: false
@@ -119,7 +119,7 @@ public final class TableProcessor
   }
 
   /**
-   * If dynamic is true, the page width of the table report can be adjusted with this property.
+   * If the dynamic is true, the page width of the table report can be adjusted with this property.
    *
    * @param reportWidth The report width to use.
    */
@@ -133,7 +133,7 @@ public final class TableProcessor
    *
    * <p>Note: The type returned by the column converter must match the type in the jasper template.
    *
-   * @param columnConverters Map from column name -&gt; {@link TableColumnConverter}
+   * @param columnConverters Map from column name &gt; {@link TableColumnConverter}
    */
   public void setColumns(final Map<String, TableColumnConverter<?>> columnConverters) {
     this.columnConverterMap = columnConverters;
@@ -158,7 +158,7 @@ public final class TableProcessor
    *
    * <p>The style must be a style element in the jasperTemplate.
    *
-   * @param firstHeaderStyle a ref to a style in the japserTemplate
+   * @param firstHeaderStyle a ref to a style in the jasperTemplate
    */
   public void setFirstHeaderStyle(final String firstHeaderStyle) {
     this.firstHeaderStyle = firstHeaderStyle;
@@ -169,7 +169,7 @@ public final class TableProcessor
    *
    * <p>The style must be a style element in the jasperTemplate.
    *
-   * @param lastHeaderStyle a ref to a style in the japserTemplate
+   * @param lastHeaderStyle a ref to a style in the jasperTemplate
    */
   public void setLastHeaderStyle(final String lastHeaderStyle) {
     this.lastHeaderStyle = lastHeaderStyle;
@@ -177,12 +177,13 @@ public final class TableProcessor
 
   /**
    * The id of the style to apply to the all columns in the table header except first and last
-   * columns. This value is will be used as a default if either firstHeaderStyle or lastHeaderStyle
-   * is not defined. This is required if dynamic is true and is not permitted if dynamic is false.
+   * columns. This value will be used as a default if either firstHeaderStyle or lastHeaderStyle is
+   * not defined. This is required if the dynamic is true and is not permitted if the dynamic is
+   * false.
    *
    * <p>The style must be a style element in the jasperTemplate.
    *
-   * @param headerStyle a ref to a style in the japserTemplate
+   * @param headerStyle a ref to a style in the jasperTemplate
    */
   public void setHeaderStyle(final String headerStyle) {
     this.headerStyle = headerStyle;
@@ -211,14 +212,14 @@ public final class TableProcessor
   }
 
   /**
-   * The id of the style to apply to the all columns in the table detail section except first and
-   * last columns. This value is will be used as a default if either firstDetailStyle or
-   * lastDetailStyle is not defined. This is required if dynamic is true and is not permitted if
-   * dynamic is false.
+   * The id of the style to apply to the all columns in the table detail section except the first
+   * and last columns. This value will be used as a default if either firstDetailStyle or
+   * lastDetailStyle is not defined. This is required if the dynamic is true and is not permitted if
+   * the dynamic is false.
    *
    * <p>The style must be a style element in the jasperTemplate.
    *
-   * @param detailStyle a ref to a style in the japserTemplate
+   * @param detailStyle a ref to a style in the jasperTemplate
    */
   public void setDetailStyle(final String detailStyle) {
     this.detailStyle = detailStyle;
@@ -288,7 +289,7 @@ public final class TableProcessor
       table.add(row);
     }
 
-    // check if there are columns with mixed int and bigdecimal values
+    // check if there are columns with mixed int and BigDecimal values
     HashSet<String> toCorrect = new HashSet<>();
     for (Map.Entry<String, Class<?>> entry : columns.entrySet()) {
       if (Integer.class.equals(entry.getValue())) {
@@ -299,7 +300,7 @@ public final class TableProcessor
         }
       }
     }
-    // convert all int values in columns with mixed values to bigdecimal and change the column type
+    // convert all int values in columns with mixed values to BigDecimal and change the column type
     for (String name : toCorrect) {
       columns.put(name, BigDecimal.class);
       for (Map row : table) {
@@ -749,24 +750,14 @@ public final class TableProcessor
     public TableAttributeValue table;
   }
 
-  /** The Output of the processor. */
-  public static final class Output {
-    /** The table datasource. */
-    public final JRMapCollectionDataSource tableDataSource;
-
-    /** The number of rows in the table. */
-    public final int numberOfTableRows;
-
-    /** The path to the generated sub-report. If dynamic is false then this will be null. */
-    public final String tableSubReport;
-
-    private Output(
-        final JRMapCollectionDataSource dataSource,
-        final int numberOfTableRows,
-        final String subReport) {
-      this.tableDataSource = dataSource;
-      this.numberOfTableRows = numberOfTableRows;
-      this.tableSubReport = subReport;
-    }
-  }
+  /**
+   * The Output of the processor.
+   *
+   * @param tableDataSource The table datasource.
+   * @param numberOfTableRows The number of rows in the table.
+   * @param tableSubReport The path to the generated subreport. If the dynamic is false, then this
+   *     will be null.
+   */
+  public record Output(
+      JRMapCollectionDataSource tableDataSource, int numberOfTableRows, String tableSubReport) {}
 }

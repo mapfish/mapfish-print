@@ -101,12 +101,7 @@ public class ExecutionStats {
     }
   }
 
-  private static final class PageStats {
-    private final PrintPageFormat format;
-
-    private PageStats(final PrintPageFormat format) {
-      this.format = format;
-    }
+  private record PageStats(PrintPageFormat format) {
 
     public void toJson(final ObjectNode target) {
       target.put("width", this.format.getPageWidth());

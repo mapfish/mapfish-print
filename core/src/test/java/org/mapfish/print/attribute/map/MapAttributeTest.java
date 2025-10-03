@@ -85,7 +85,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
     final Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             pJsonObject,
             template,
             getTaskDirectory(),
@@ -115,7 +115,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-yaml.json");
     final Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             pJsonObject,
             template,
             getTaskDirectory(),
@@ -146,7 +146,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-json.json");
     final Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             pJsonObject,
             template,
             getTaskDirectory(),
@@ -177,7 +177,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
         parseJSONObjectFromFile(MapAttributeTest.class, "map_attributes/requestData-zoomTo.json");
     final Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             pJsonObject,
             template,
             getTaskDirectory(),
@@ -203,7 +203,7 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
             MapAttributeTest.class, "map_attributes/requestData-zoomToCenter" + ".json");
     final Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             pJsonObject,
             template,
             getTaskDirectory(),

@@ -66,7 +66,7 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),
@@ -101,7 +101,7 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
     PJsonObject requestData = loadDynamicJsonRequestData();
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),
@@ -165,7 +165,7 @@ public class LegendProcessorTest extends AbstractMapfishSpringTest {
 
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),

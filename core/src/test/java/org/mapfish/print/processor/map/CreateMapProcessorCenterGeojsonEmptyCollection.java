@@ -48,7 +48,7 @@ public class CreateMapProcessorCenterGeojsonEmptyCollection extends AbstractMapf
     final Template template = config.getTemplate("main");
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),
@@ -67,6 +67,6 @@ public class CreateMapProcessorCenterGeojsonEmptyCollection extends AbstractMapf
     assertEquals(1, layerGraphics.size());
 
     new ImageSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"))
-        .assertSimilarity(new File(layerGraphics.get(0)), 0);
+        .assertSimilarity(new File(layerGraphics.getFirst()), 0);
   }
 }

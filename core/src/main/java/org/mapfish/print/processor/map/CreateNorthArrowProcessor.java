@@ -127,18 +127,11 @@ public class CreateNorthArrowProcessor
     public Template template;
   }
 
-  /** Output for the processor. */
-  public static final class Output {
-
-    /** The path to the north arrow graphic (for testing purposes). */
-    public final String northArrowGraphic;
-
-    /** The path to the compiled sub-report for the north arrow. */
-    public final String northArrowSubReport;
-
-    private Output(final String northArrowGraphic, final String northArrowSubReport) {
-      this.northArrowGraphic = northArrowGraphic;
-      this.northArrowSubReport = northArrowSubReport;
-    }
-  }
+  /**
+   * Output for the processor.
+   *
+   * @param northArrowGraphic The path to the north arrow graphic (for testing purposes).
+   * @param northArrowSubReport The path to the compiled sub-report for the north arrow.
+   */
+  public record Output(String northArrowGraphic, String northArrowSubReport) {}
 }

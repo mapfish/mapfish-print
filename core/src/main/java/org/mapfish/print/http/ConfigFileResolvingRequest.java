@@ -258,14 +258,8 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
     return this.uri;
   }
 
-  private static class ConfigFileResolverHttpResponse implements ClientHttpResponse {
-    private final InputStream is;
-    private final HttpHeaders headers;
-
-    ConfigFileResolverHttpResponse(final InputStream is, final HttpHeaders headers) {
-      this.headers = headers;
-      this.is = is;
-    }
+  private record ConfigFileResolverHttpResponse(InputStream is, HttpHeaders headers)
+      implements ClientHttpResponse {
 
     @Override
     @Nonnull

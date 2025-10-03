@@ -46,7 +46,7 @@ public class AbstractJasperReportOutputFormatTest extends AbstractMapfishSpringT
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     try {
       format.getJasperPrint(
-          new HashMap<String, String>(),
+          new HashMap<>(),
           requestData,
           config,
           getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
@@ -70,7 +70,7 @@ public class AbstractJasperReportOutputFormatTest extends AbstractMapfishSpringT
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     try {
       format.getJasperPrint(
-          new HashMap<String, String>(),
+          new HashMap<>(),
           requestData,
           config,
           getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
@@ -96,7 +96,7 @@ public class AbstractJasperReportOutputFormatTest extends AbstractMapfishSpringT
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     try {
       format.getJasperPrint(
-          new HashMap<String, String>(),
+          new HashMap<>(),
           requestData,
           config,
           getFile(JasperReportOutputFormatSimpleMapTest.class, TABLE_BASE_DIR),

@@ -81,21 +81,15 @@ public final class GeoJsonLayer extends AbstractFeatureSourceLayer {
 
     private FeatureSourceSupplier createFeatureSourceSupplier(
         final Template template, final String geoJsonString) {
-      return new FeatureSourceSupplier() {
-        @Nonnull
-        @Override
-        public FeatureSource<?, ?> load(
-            @Nonnull final MfClientHttpRequestFactory requestFactory,
-            @Nonnull final MapfishMapContext mapContext) {
-          final FeaturesParser parser =
-              new FeaturesParser(requestFactory, mapContext.isForceLongitudeFirst());
-          SimpleFeatureCollection featureCollection;
-          try {
-            featureCollection = parser.autoTreat(template, geoJsonString);
-            return new CollectionFeatureSource(featureCollection);
-          } catch (IOException e) {
-            throw new PrintException("Failed to load " + mapContext, e);
-          }
+      return (requestFactory, mapContext) -> {
+        final FeaturesParser parser =
+            new FeaturesParser(requestFactory, mapContext.isForceLongitudeFirst());
+        SimpleFeatureCollection featureCollection;
+        try {
+          featureCollection = parser.autoTreat(template, geoJsonString);
+          return new CollectionFeatureSource(featureCollection);
+        } catch (IOException e) {
+          throw new PrintException("Failed to load " + mapContext, e);
         }
       };
     }

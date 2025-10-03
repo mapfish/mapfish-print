@@ -55,7 +55,7 @@ public class CreateMapProcessorAoiForBoundsTest extends AbstractMapfishSpringTes
 
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),

@@ -749,27 +749,16 @@ public final class CreateMapProcessor
     @HasDefaultValue public String outputFormat = null;
   }
 
-  /** Output for the processor. */
-  public static final class Output {
-
-    /** The paths to a graphic for each layer. */
-    @InternalValue public final List<URI> layerGraphics;
-
-    /** The path to the compiled sub-report for the map. */
-    public final String mapSubReport;
-
-    /** The map parameters used after zooming and all other calculations that are made. */
-    public final MapfishMapContext mapContext;
-
-    private Output(
-        final List<URI> layerGraphics,
-        final String mapSubReport,
-        final MapfishMapContext mapContext) {
-      this.layerGraphics = layerGraphics;
-      this.mapSubReport = mapSubReport;
-      this.mapContext = mapContext;
-    }
-  }
+  /**
+   * Output for the processor.
+   *
+   * @param layerGraphics The paths to a graphic for each layer.
+   * @param mapSubReport The path to the compiled subreport for the map.
+   * @param mapContext The map parameters used after zooming and all other calculations that are
+   *     made.
+   */
+  public record Output(
+      @InternalValue List<URI> layerGraphics, String mapSubReport, MapfishMapContext mapContext) {}
 
   private static final class OpacityAdjustingStyleHandler extends DefaultStyleHandler {
     @Override

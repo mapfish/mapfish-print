@@ -2,10 +2,8 @@ package org.mapfish.print.map.geotools;
 
 import static org.mapfish.print.Constants.Style.Raster.NAME;
 
-import org.geotools.api.style.Style;
 import org.mapfish.print.OptionalUtils;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.style.StyleParser;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,15 +23,12 @@ public abstract class AbstractGridCoverageLayerPlugin {
    */
   protected final <T> StyleSupplier<T> createStyleSupplier(
       final Template template, final String styleRef) {
-    return new StyleSupplier<T>() {
-      @Override
-      public Style load(final MfClientHttpRequestFactory requestFactory, final T featureSource) {
-        final StyleParser parser = AbstractGridCoverageLayerPlugin.this.styleParser;
-        return OptionalUtils.or(
-                () -> template.getStyle(styleRef),
-                () -> parser.loadStyle(template.getConfiguration(), requestFactory, styleRef))
-            .orElse(template.getConfiguration().getDefaultStyle(NAME));
-      }
+    return (requestFactory, featureSource) -> {
+      final StyleParser parser = AbstractGridCoverageLayerPlugin.this.styleParser;
+      return OptionalUtils.or(
+              () -> template.getStyle(styleRef),
+              () -> parser.loadStyle(template.getConfiguration(), requestFactory, styleRef))
+          .orElse(template.getConfiguration().getDefaultStyle(NAME));
     };
   }
 }

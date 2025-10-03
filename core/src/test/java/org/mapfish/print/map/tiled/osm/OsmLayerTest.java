@@ -6,21 +6,30 @@ import static org.mockito.Mockito.*;
 import com.codahale.metrics.MetricRegistry;
 import java.awt.Rectangle;
 import java.util.concurrent.ForkJoinPool;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.junit.Before;
 import org.junit.Test;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.map.Scale;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.tiled.TileInformation;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 public class OsmLayerTest {
+  @Mock private StyleSupplier<GridCoverage2D> styleSupplier;
+
+  @Before
+  public void setUp() {
+    MockitoAnnotations.openMocks(this);
+  }
 
   @Test
   public void testCreateTileInformation_CreatesNewTileInformation() {
     // GIVEN
     ForkJoinPool forkJoinPool = new ForkJoinPool();
     OsmLayerParam osmLayerParam = new OsmLayerParam();
-    StyleSupplier styleSupplier = mock(StyleSupplier.class);
     MetricRegistry metricRegistry = mock(MetricRegistry.class);
     Configuration configuration = mock(Configuration.class);
 
@@ -50,7 +59,6 @@ public class OsmLayerTest {
     // GIVEN
     ForkJoinPool forkJoinPool = new ForkJoinPool();
     OsmLayerParam osmLayerParam = new OsmLayerParam();
-    StyleSupplier styleSupplier = mock(StyleSupplier.class);
     MetricRegistry metricRegistry = mock(MetricRegistry.class);
     Configuration configuration = mock(Configuration.class);
 

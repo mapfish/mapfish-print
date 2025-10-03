@@ -32,11 +32,11 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
 
     assertTrue(styleOptional.isPresent());
     assertEquals(1, styleOptional.get().featureTypeStyles().size());
-    assertEquals(2, styleOptional.get().featureTypeStyles().get(0).rules().size());
+    assertEquals(2, styleOptional.get().featureTypeStyles().getFirst().rules().size());
     assertEquals(
-        1, styleOptional.get().featureTypeStyles().get(0).rules().get(0).symbolizers().size());
+        1, styleOptional.get().featureTypeStyles().getFirst().rules().get(0).symbolizers().size());
     assertEquals(
-        1, styleOptional.get().featureTypeStyles().get(0).rules().get(1).symbolizers().size());
+        1, styleOptional.get().featureTypeStyles().getFirst().rules().get(1).symbolizers().size());
   }
 
   @Test
@@ -45,11 +45,11 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
     final Optional<Style> styleOptional = loadStyle(fileName, fileName + "##1");
     assertTrue(styleOptional.isPresent());
     assertEquals(1, styleOptional.get().featureTypeStyles().size());
-    assertEquals(2, styleOptional.get().featureTypeStyles().get(0).rules().size());
+    assertEquals(2, styleOptional.get().featureTypeStyles().getFirst().rules().size());
     assertEquals(
-        1, styleOptional.get().featureTypeStyles().get(0).rules().get(0).symbolizers().size());
+        1, styleOptional.get().featureTypeStyles().getFirst().rules().get(0).symbolizers().size());
     assertEquals(
-        1, styleOptional.get().featureTypeStyles().get(0).rules().get(1).symbolizers().size());
+        1, styleOptional.get().featureTypeStyles().getFirst().rules().get(1).symbolizers().size());
   }
 
   @Test
@@ -59,11 +59,11 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
 
     assertTrue(styleOptional.isPresent());
     assertEquals(1, styleOptional.get().featureTypeStyles().size());
-    assertEquals(2, styleOptional.get().featureTypeStyles().get(0).rules().size());
+    assertEquals(2, styleOptional.get().featureTypeStyles().getFirst().rules().size());
     assertEquals(
-        1, styleOptional.get().featureTypeStyles().get(0).rules().get(0).symbolizers().size());
+        1, styleOptional.get().featureTypeStyles().getFirst().rules().get(0).symbolizers().size());
     assertEquals(
-        1, styleOptional.get().featureTypeStyles().get(0).rules().get(1).symbolizers().size());
+        1, styleOptional.get().featureTypeStyles().getFirst().rules().get(1).symbolizers().size());
   }
 
   @Test
@@ -88,18 +88,19 @@ public class FileSLDParserPluginTest extends AbstractMapfishSpringTest {
 
     assertTrue(styleOptional.isPresent());
     assertEquals(1, styleOptional.get().featureTypeStyles().size());
-    assertEquals(2, styleOptional.get().featureTypeStyles().get(0).rules().size());
+    assertEquals(2, styleOptional.get().featureTypeStyles().getFirst().rules().size());
     assertEquals(
-        1, styleOptional.get().featureTypeStyles().get(0).rules().get(0).symbolizers().size());
+        1, styleOptional.get().featureTypeStyles().getFirst().rules().get(0).symbolizers().size());
     assertEquals(
-        1, styleOptional.get().featureTypeStyles().get(0).rules().get(1).symbolizers().size());
+        1, styleOptional.get().featureTypeStyles().getFirst().rules().get(1).symbolizers().size());
 
     styleOptional = loadStyle(fileName, fileName + "##2");
     assertTrue(styleOptional.isPresent());
     assertEquals(1, styleOptional.get().featureTypeStyles().size());
-    assertEquals(1, styleOptional.get().featureTypeStyles().get(0).rules().size());
+    assertEquals(1, styleOptional.get().featureTypeStyles().getFirst().rules().size());
     assertEquals(
-        2, styleOptional.get().featureTypeStyles().get(0).rules().get(0).symbolizers().size());
+        2,
+        styleOptional.get().featureTypeStyles().getFirst().rules().getFirst().symbolizers().size());
   }
 
   @Test

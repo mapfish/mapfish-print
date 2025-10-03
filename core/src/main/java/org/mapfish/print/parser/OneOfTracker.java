@@ -137,10 +137,7 @@ final class OneOfTracker {
     }
   }
 
-  private static final class OneOfSatisfier {
-    private final Field field;
-    private final boolean isCanSatisfy;
-
+  private record OneOfSatisfier(Field field, boolean isCanSatisfy) {
     private OneOfSatisfier(@Nonnull final Field field, final boolean isCanSatisfy) {
       this.field = field;
       this.isCanSatisfy = isCanSatisfy;
