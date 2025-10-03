@@ -429,34 +429,19 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
     return maxDpi;
   }
 
-  /** The print information for doing the export. */
-  public static final class Print {
-    /** The print information for Jasper. */
-    @Nonnull public final JasperPrint print;
-
-    /** The print DPI. */
-    @Nonnegative public final double dpi;
-
-    /** The execution context for the print job. */
-    @Nonnull public final Processor.ExecutionContext executionContext;
-
-    /** The JasperReports context for the print job. */
-    @Nonnull public final JasperReportsContext context;
-
-    /** The values used to do the print. */
-    @Nonnull public final Values values;
-
-    private Print(
-        @Nonnull final JasperReportsContext context,
-        @Nonnull final JasperPrint print,
-        @Nonnull final Values values,
-        @Nonnegative final double dpi,
-        @Nonnull final Processor.ExecutionContext executionContext) {
-      this.print = print;
-      this.context = context;
-      this.values = values;
-      this.dpi = dpi;
-      this.executionContext = executionContext;
-    }
-  }
+  /**
+   * The print information for doing the export.
+   *
+   * @param print The print information for Jasper.
+   * @param dpi The print DPI.
+   * @param executionContext The execution context for the print job.
+   * @param context The JasperReports context for the print job.
+   * @param values The values used to do the print.
+   */
+  public record Print(
+      @Nonnull JasperReportsContext context,
+      @Nonnull JasperPrint print,
+      @Nonnull Values values,
+      @Nonnegative double dpi,
+      @Nonnull Processor.ExecutionContext executionContext) {}
 }

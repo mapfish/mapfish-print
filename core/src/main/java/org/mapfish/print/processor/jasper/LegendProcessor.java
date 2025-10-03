@@ -315,26 +315,15 @@ public final class LegendProcessor
     public LegendAttributeValue legend;
   }
 
-  /** The Output object of the legend processor method. */
-  public static final class Output {
-    /** The datasource for the legend object in the report. */
-    public final JRTableModelDataSource legendDataSource;
-
-    /** The path to the compiled sub-report. */
-    public final String legendSubReport;
-
-    /** The number of rows in the legend. */
-    public final int numberOfLegendRows;
-
-    Output(
-        final JRTableModelDataSource legendDataSource,
-        final int numberOfLegendRows,
-        final String legendSubReport) {
-      this.legendDataSource = legendDataSource;
-      this.numberOfLegendRows = numberOfLegendRows;
-      this.legendSubReport = legendSubReport;
-    }
-  }
+  /**
+   * The Output object of the legend processor method.
+   *
+   * @param legendDataSource The datasource for the legend object in the report.
+   * @param legendSubReport The path to the compiled sub-report.
+   * @param numberOfLegendRows The number of rows in the legend.
+   */
+  public record Output(
+      JRTableModelDataSource legendDataSource, int numberOfLegendRows, String legendSubReport) {}
 
   private record NameTask(String name, int level) implements Callable<Object[]> {
 

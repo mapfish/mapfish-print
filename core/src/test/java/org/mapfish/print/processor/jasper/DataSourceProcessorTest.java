@@ -84,9 +84,10 @@ public class DataSourceProcessorTest extends AbstractMapfishSpringTest {
     final AbstractJasperReportOutputFormat format =
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     JasperPrint print =
-        format.getJasperPrint(
+        format
+            .getJasperPrint(
                 new HashMap<>(), requestData, config, config.getDirectory(), getTaskDirectory())
-            .print;
+            .print();
 
     assertEquals(1, print.getPages().size());
 

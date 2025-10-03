@@ -34,13 +34,14 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
     final AbstractJasperReportOutputFormat format =
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     JasperPrint print =
-        format.getJasperPrint(
+        format
+            .getJasperPrint(
                 new HashMap<>(),
                 requestData,
                 config,
                 getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
                 getTaskDirectory())
-            .print;
+            .print();
 
     // note that we are using a sample size of 50, because the image is quite big.
     // otherwise small differences are not detected!

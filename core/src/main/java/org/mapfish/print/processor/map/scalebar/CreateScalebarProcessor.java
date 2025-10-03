@@ -99,18 +99,11 @@ public class CreateScalebarProcessor
     public Template template;
   }
 
-  /** Output for the processor. */
-  public static final class Output {
-
-    /** The path to the scalebar graphic (for testing purposes). */
-    public final String scalebarGraphic;
-
-    /** The path to the compiled sub-report for the scalebar. */
-    public final String scalebarSubReport;
-
-    private Output(final String scalebarGraphic, final String subReport) {
-      this.scalebarGraphic = scalebarGraphic;
-      this.scalebarSubReport = subReport;
-    }
-  }
+  /**
+   * Output for the processor.
+   *
+   * @param scalebarGraphic The path to the scalebar graphic (for testing purposes).
+   * @param scalebarSubReport The path to the compiled sub-report for the scalebar.
+   */
+  public record Output(String scalebarGraphic, String scalebarSubReport) {}
 }
