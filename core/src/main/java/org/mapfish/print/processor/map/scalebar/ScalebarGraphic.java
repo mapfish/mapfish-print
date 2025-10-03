@@ -251,7 +251,7 @@ public class ScalebarGraphic {
     double scaledValue = scaleUnit.convertTo(value, intervalUnit);
 
     // assume that there is no interval smaller then 0.0001
-    scaledValue = Math.round(scaledValue * 10000) / 10000;
+    scaledValue = Math.round(scaledValue * 10000) / 10000.0;
     String decimals = Double.toString(scaledValue).split("\\.")[1];
 
     if (Double.parseDouble(decimals) == 0) {
