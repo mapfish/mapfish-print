@@ -71,9 +71,8 @@ public abstract class ScalebarDrawer {
           case RIGHT -> this.settings.getMaxSize().width - this.settings.getSize().width;
           case null -> 0;
           default ->
-              (int)
-                  Math.floor(
-                      this.settings.getMaxSize().width / 2.0 - this.settings.getSize().width / 2.0);
+              Math.round(
+                  this.settings.getMaxSize().width / 2.0f - this.settings.getSize().width / 2.0f);
         };
 
     final int offsetY =
@@ -82,13 +81,11 @@ public abstract class ScalebarDrawer {
           case BOTTOM -> this.settings.getMaxSize().height - this.settings.getSize().height;
           case null -> 0;
           default ->
-              (int)
-                  Math.floor(
-                      this.settings.getMaxSize().height / 2.0
-                          - this.settings.getSize().height / 2.0);
+              Math.round(
+                  this.settings.getMaxSize().height / 2.0f - this.settings.getSize().height / 2.0f);
         };
 
-    return AffineTransform.getTranslateInstance(Math.round(offsetX), Math.round(offsetY));
+    return AffineTransform.getTranslateInstance(offsetX, offsetY);
   }
 
   private void setLineTranslate(final AffineTransform lineTransform) {
