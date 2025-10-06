@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -54,13 +55,8 @@ public final class URIUtils {
         key = pair;
         value = "";
       } else {
-
-        try {
-          key = URLDecoder.decode(pair.substring(0, pos), "UTF-8");
-          value = URLDecoder.decode(pair.substring(pos + 1), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-          throw new PrintException("Failed to get parameters for query " + rawQuery, e);
-        }
+        key = URLDecoder.decode(pair.substring(0, pos), StandardCharsets.UTF_8);
+        value = URLDecoder.decode(pair.substring(pos + 1), StandardCharsets.UTF_8);
       }
 
       result.put(key, value);

@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
@@ -29,13 +30,13 @@ public abstract class AbstractApiTest {
   }
 
   protected String getBodyAsText(ClientHttpResponse response) throws IOException {
-    return IOUtils.toString(response.getBody(), "UTF-8");
+    return IOUtils.toString(response.getBody(), StandardCharsets.UTF_8);
   }
 
   protected String getPrintSpec(String file) throws IOException {
     try (InputStream is = getClass().getClassLoader().getResourceAsStream(file)) {
       assert is != null;
-      return IOUtils.toString(is, "UTF-8");
+      return IOUtils.toString(is, StandardCharsets.UTF_8);
     }
   }
 

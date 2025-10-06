@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import org.apache.http.entity.ContentType;
@@ -37,7 +38,7 @@ public class DataUrlConnection extends URLConnection {
       final ContentType contentType = ContentType.parse(fullContentType);
       Charset charset = contentType.getCharset();
       if (charset == null) {
-        charset = Charset.forName("UTF-8");
+        charset = StandardCharsets.UTF_8;
       }
       byte[] bytes = charset.encode(data).array();
       if (bytes[bytes.length - 1] == 0) {

@@ -4,6 +4,7 @@ import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -62,7 +63,7 @@ public final class FontTools {
         String[] commands = {"fc-list", "-b", family};
         Process process = Runtime.getRuntime().exec(commands);
 
-        inputStreamReader = new InputStreamReader(process.getInputStream(), "utf-8");
+        inputStreamReader = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8);
         stdInput = new BufferedReader(inputStreamReader);
         String inputLine;
         FontConfigDescription description = null;
