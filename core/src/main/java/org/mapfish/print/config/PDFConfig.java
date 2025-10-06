@@ -102,7 +102,7 @@ public class PDFConfig implements ConfigurationObject {
   public void setKeywords(final List<String> keywords) {
     StringBuilder builder = new StringBuilder();
     for (String keyword : keywords) {
-      if (builder.length() > 0) {
+      if (!builder.isEmpty()) {
         builder.append(',');
       }
       builder.append(keyword.trim());

@@ -152,7 +152,7 @@ public final class ProcessorDependencyGraphFactory {
     }
 
     Assert.isTrue(
-        0 == errors.length(), errorMessagePrefix + errors + listOptions(attributeNames) + "\n");
+        errors.isEmpty(), errorMessagePrefix + errors + listOptions(attributeNames) + "\n");
   }
 
   private static String listOptions(final Set<String> attributeNames) {

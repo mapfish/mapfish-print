@@ -35,7 +35,7 @@ public final class ValuesLogger {
     if (!LOGGER.isInfoEnabled()) {
       return;
     }
-    if (this.builder.length() > 0) {
+    if (!this.builder.isEmpty()) {
       this.builder.append("\n");
     }
 

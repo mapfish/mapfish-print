@@ -115,7 +115,7 @@ final class OneOfTracker {
   private String toNames(final Collection<Field> choices) {
     StringBuilder names = new StringBuilder();
     for (Field choice : choices) {
-      if (names.length() > 0) {
+      if (!names.isEmpty()) {
         names.append(", ");
       }
       String type = choice.getType().getName();

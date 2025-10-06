@@ -210,7 +210,7 @@ public final class URIUtils {
       final URI initialUri, final Multimap<String, String> queryParams) {
     StringBuilder queryString = new StringBuilder();
     for (Map.Entry<String, String> entry : queryParams.entries()) {
-      if (queryString.length() > 0) {
+      if (!queryString.isEmpty()) {
         queryString.append("&");
       }
       queryString.append(entry.getKey()).append("=").append(entry.getValue());

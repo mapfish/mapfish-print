@@ -50,7 +50,7 @@ public final class ConfigFileLoaderManager implements ConfigFileLoaderPlugin {
       }
     }
 
-    if (violations.length() > 0) {
+    if (!violations.isEmpty()) {
       throw new IllegalStateException(violations.toString());
     }
   }

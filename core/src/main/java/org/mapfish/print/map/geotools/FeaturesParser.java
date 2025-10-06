@@ -126,7 +126,7 @@ public class FeaturesParser {
           "Error reading the required elements to parse crs of the geojson: \n{}", geojson, e);
     }
     try {
-      if (code.length() > 0) {
+      if (!code.isEmpty()) {
         crs = CRS.decode(code.toString(), forceLongitudeFirst);
       }
     } catch (NoSuchAuthorityCodeException e) {

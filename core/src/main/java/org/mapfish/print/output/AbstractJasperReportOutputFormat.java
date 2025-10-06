@@ -341,7 +341,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
     }
 
     StringBuilder finalError = new StringBuilder();
-    if (missing.length() > 0) {
+    if (!missing.isEmpty()) {
       finalError
           .append("The following parameters are declared in ")
           .append(reportTemplate)
@@ -355,7 +355,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
 
   private void assertNoError(
       final String reportTemplate, final StringBuilder wrongType, final StringBuilder finalError) {
-    if (wrongType.length() > 0) {
+    if (!wrongType.isEmpty()) {
       finalError
           .append("The following parameters are declared in ")
           .append(reportTemplate)
@@ -372,7 +372,7 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
           .append(wrongType);
     }
 
-    if (finalError.length() > 0) {
+    if (!finalError.isEmpty()) {
       throw new AssertionFailedException(finalError.toString());
     }
   }

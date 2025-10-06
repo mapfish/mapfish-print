@@ -81,7 +81,7 @@ public final class ProcessorDependencyGraph {
       }
     }
 
-    if (missingAttributes.length() > 0) {
+    if (!missingAttributes.isEmpty()) {
       throw new IllegalArgumentException(
           "It has been found that one or more required attributes are "
               + "missing from the values object:"
