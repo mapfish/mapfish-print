@@ -37,7 +37,7 @@ public final class MergeDataSourceProcessor
   private List<Source> sources = new ArrayList<>();
 
   /** Constructor. */
-  protected MergeDataSourceProcessor() {
+  MergeDataSourceProcessor() {
     super(Out.class);
   }
 

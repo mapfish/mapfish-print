@@ -61,7 +61,7 @@ public record ProcessorDependency(
   }
 
   @Override
-  public final String toString() {
+  public String toString() {
     return "ProcessorDependency{"
         + "required="
         + this.required.getSimpleName()

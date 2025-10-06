@@ -296,9 +296,8 @@ public final class JsonStyleParserHelper {
    *
    * @param styleJson The old style.
    */
-  @VisibleForTesting
   @Nullable
-  protected LineSymbolizer createLineSymbolizer(final PJsonObject styleJson) {
+  LineSymbolizer createLineSymbolizer(final PJsonObject styleJson) {
     final Stroke stroke = createStroke(styleJson, true);
     if (stroke == null) {
       return null;
@@ -313,8 +312,7 @@ public final class JsonStyleParserHelper {
    * @param styleJson The old style.
    */
   @Nullable
-  @VisibleForTesting
-  protected PolygonSymbolizer createPolygonSymbolizer(final PJsonObject styleJson) {
+  PolygonSymbolizer createPolygonSymbolizer(final PJsonObject styleJson) {
     if (this.allowNullSymbolizer && !styleJson.has(JSON_FILL_COLOR)) {
       return null;
     }
@@ -332,8 +330,7 @@ public final class JsonStyleParserHelper {
    *
    * @param styleJson The old style.
    */
-  @VisibleForTesting
-  protected TextSymbolizer createTextSymbolizer(final PJsonObject styleJson) {
+  TextSymbolizer createTextSymbolizer(final PJsonObject styleJson) {
     final TextSymbolizer textSymbolizer = this.styleBuilder.createTextSymbolizer();
 
     // make sure that labels are also rendered if a part of the text would be outside

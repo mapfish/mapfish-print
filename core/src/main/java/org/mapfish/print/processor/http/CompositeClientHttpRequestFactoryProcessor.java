@@ -63,7 +63,7 @@ public final class CompositeClientHttpRequestFactoryProcessor
   private List<HttpProcessor> httpProcessors = new ArrayList<>();
 
   /** Constructor. */
-  protected CompositeClientHttpRequestFactoryProcessor() {
+  private CompositeClientHttpRequestFactoryProcessor() {
     super(Void.class);
   }
 
