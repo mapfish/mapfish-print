@@ -2,6 +2,7 @@ package org.mapfish.print.attribute.map;
 
 import static org.mapfish.print.Constants.PDF_DPI;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.awt.Rectangle;
 import java.util.Objects;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -180,12 +181,21 @@ public final class CenterScaleMapBounds extends MapBounds {
     }
   }
 
-  private double rollLongitude(final double x) {
-    return x - (((int) (x + Math.signum(x) * 180)) / 360) * 360.0;
+  @VisibleForTesting
+  double rollLongitude(final double x) {
+    return modulo(x + 180, 360.0) - 180;
   }
 
-  private double rollLatitude(final double y) {
-    return y - (((int) (y + Math.signum(y) * 90)) / 180) * 180.0;
+  private static double modulo(final double a, final double b) {
+    return b - ((-a % b) + b) % b;
+  }
+
+  @VisibleForTesting
+  double rollLatitude(final double y) {
+    if (y > 90 || y < -90) {
+      throw new IllegalArgumentException("Latitude must be between -90 and 90");
+    }
+    return y;
   }
 
   @Override

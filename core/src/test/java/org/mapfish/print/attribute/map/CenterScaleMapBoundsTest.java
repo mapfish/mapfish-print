@@ -1,6 +1,7 @@
 package org.mapfish.print.attribute.map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.awt.Rectangle;
 import org.geotools.api.referencing.FactoryException;
@@ -110,5 +111,37 @@ public class CenterScaleMapBoundsTest {
     assertEquals(envelope.getMaxX() * 2, newEnvelope.getMaxX(), delta);
     assertEquals(envelope.getMinY() * 2, newEnvelope.getMinY(), delta);
     assertEquals(envelope.getMaxY() * 2, newEnvelope.getMaxY(), delta);
+  }
+
+  @Test
+  public void testRollLongitude() {
+    final double denominator = 10000.0;
+    final CenterScaleMapBounds bounds =
+        new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0.0, 0.0, denominator);
+
+    assertEquals(0.0, bounds.rollLongitude(0.0), 1e-6);
+    assertEquals(180.0, bounds.rollLongitude(-180.0), 1e-6);
+    assertEquals(180.0, bounds.rollLongitude(180.0), 1e-6);
+    assertEquals(-179.0, bounds.rollLongitude(181.0), 1e-6);
+    assertEquals(179.0, bounds.rollLongitude(-181.0), 1e-6);
+    assertEquals(1.0, bounds.rollLongitude(361.0), 1e-6);
+    assertEquals(-1.0, bounds.rollLongitude(-361.0), 1e-6);
+  }
+
+  @Test
+  public void testRollLatitude() {
+    final double denominator = 10000.0;
+    final CenterScaleMapBounds bounds =
+        new CenterScaleMapBounds(DefaultGeographicCRS.WGS84, 0.0, 0.0, denominator);
+
+    assertEquals(0.0, bounds.rollLatitude(0.0), 1e-6);
+    assertEquals(90.0, bounds.rollLatitude(90.0), 1e-6);
+    assertEquals(-90.0, bounds.rollLatitude(-90.0), 1e-6);
+    assertThrows(IllegalArgumentException.class, () -> bounds.rollLatitude(91.0));
+    assertThrows(IllegalArgumentException.class, () -> bounds.rollLatitude(-91.0));
+    assertThrows(IllegalArgumentException.class, () -> bounds.rollLatitude(180.0));
+    assertThrows(IllegalArgumentException.class, () -> bounds.rollLatitude(-180.0));
+    assertThrows(IllegalArgumentException.class, () -> bounds.rollLatitude(181.0));
+    assertThrows(IllegalArgumentException.class, () -> bounds.rollLatitude(-181.0));
   }
 }
