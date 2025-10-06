@@ -39,11 +39,10 @@ public class ServletConfigFileLoaderTest extends AbstractConfigLoaderTest {
 
   @Test
   public void testLastModified() throws Exception {
-    final File file = CONFIG_FILE;
-
     Optional<Long> lastModified = this.loader.lastModified(new URI(CONFIG_FILE_URI_STRING));
+
     assertTrue(lastModified.isPresent());
-    assertEquals(file.lastModified(), lastModified.get().longValue());
+    assertEquals(CONFIG_FILE.lastModified(), lastModified.get().longValue());
   }
 
   @Test
@@ -54,10 +53,9 @@ public class ServletConfigFileLoaderTest extends AbstractConfigLoaderTest {
 
   @Test
   public void testLoadFile() throws Exception {
-    final File file = CONFIG_FILE;
-
     byte[] loaded = this.loader.loadFile(new URI(CONFIG_FILE_URI_STRING));
-    assertArrayEquals(Files.readAllBytes(file.toPath()), loaded);
+
+    assertArrayEquals(Files.readAllBytes(CONFIG_FILE.toPath()), loaded);
   }
 
   @Test

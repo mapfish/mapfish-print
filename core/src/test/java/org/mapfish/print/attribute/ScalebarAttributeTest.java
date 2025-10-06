@@ -106,7 +106,6 @@ public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
     ScalebarAttribute attribute = new ScalebarAttribute();
     attribute.setWidth(300);
     attribute.setHeight(120);
-    ScalebarAttributeValues values = attribute.createValue(null);
-    return values;
+    return attribute.createValue(null);
   }
 }
