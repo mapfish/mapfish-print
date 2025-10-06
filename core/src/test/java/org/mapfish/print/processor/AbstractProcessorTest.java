@@ -49,15 +49,17 @@ public class AbstractProcessorTest {
     assertFalse(errors.isEmpty());
   }
 
-  class TestIn {
+  static class TestIn {
+    @SuppressWarnings("unused")
     public String prop;
   }
 
-  class TestOut {
+  static class TestOut {
+    @SuppressWarnings("unused")
     public String prop;
   }
 
-  class TestProcessor extends AbstractProcessor<TestIn, TestOut> {
+  static class TestProcessor extends AbstractProcessor<TestIn, TestOut> {
 
     protected TestProcessor() {
       super(TestOut.class);
