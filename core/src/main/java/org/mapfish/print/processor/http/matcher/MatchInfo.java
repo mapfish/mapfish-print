@@ -102,7 +102,6 @@ public final class MatchInfo {
    *
    * @param authscope the authscope
    */
-  @SuppressWarnings("StringEquality")
   public static MatchInfo fromAuthScope(final AuthScope authscope) {
     String newScheme =
         StringUtils.equals(authscope.getScheme(), AuthScope.ANY_SCHEME)

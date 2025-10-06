@@ -23,7 +23,6 @@ import org.mapfish.print.processor.map.SetStyleProcessor;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@SuppressWarnings("unchecked")
 public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
   public static final String BASE_DIR = "setstyle/";
 

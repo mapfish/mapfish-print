@@ -3,7 +3,6 @@ package org.mapfish.print.attribute;
 /** An attribute that can contain an array of strings. [[examples=verboseExample]] */
 public class StringArrayAttribute extends PrimitiveAttribute<String[]> {
   /** Constructor. */
-  @SuppressWarnings("unchecked")
   public StringArrayAttribute() {
     super(String[].class);
   }
