@@ -33,7 +33,7 @@ public class JobQueueHealthCheckTest extends AbstractMapfishSpringTest {
   }
 
   @Test
-  public void testCheck_Success_NoPrintJobs() throws Exception {
+  public void testCheck_Success_NoPrintJobs() {
     when(jobQueue.getWaitingJobsCount()).thenReturn(0L);
 
     HealthCheck.Result result = jobQueueHealthCheck.check();
@@ -61,7 +61,7 @@ public class JobQueueHealthCheckTest extends AbstractMapfishSpringTest {
   }
 
   @Test
-  public void testCheck_Success_PrintJobs() throws Exception {
+  public void testCheck_Success_PrintJobs() {
     when(jobQueue.getWaitingJobsCount()).thenReturn(5L, 4L);
     when(jobManager.getLastExecutedJobTimestamp()).thenReturn(new Date());
 
@@ -73,7 +73,7 @@ public class JobQueueHealthCheckTest extends AbstractMapfishSpringTest {
   }
 
   @Test
-  public void testCheck_Fail_TooManyJobsAreQueued() throws Exception {
+  public void testCheck_Fail_TooManyJobsAreQueued() {
     when(jobQueue.getWaitingJobsCount()).thenReturn(4L, 5L);
     when(jobManager.getLastExecutedJobTimestamp()).thenReturn(new Date());
 

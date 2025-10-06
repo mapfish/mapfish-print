@@ -2,7 +2,6 @@ package org.mapfish.print.processor.map;
 
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import org.geotools.api.feature.simple.SimpleFeatureType;
@@ -105,8 +104,7 @@ public class CreateOverviewMapProcessor
   private void setOriginalMapExtentLayer(
       final MapBounds originalBounds,
       final Input values,
-      final MapAttribute.OverriddenMapAttributeValues mapParams)
-      throws IOException {
+      final MapAttribute.OverriddenMapAttributeValues mapParams) {
     Rectangle originalPaintArea = new Rectangle(values.map.getMapSize());
     MapBounds adjustedBounds =
         CreateMapProcessor.adjustBoundsToScaleAndMapSize(

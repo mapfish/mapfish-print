@@ -31,7 +31,7 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
   @Autowired private ServletConfigFileLoader configFileLoader;
 
   @Test
-  public void testLoadFromFile() throws Throwable {
+  public void testLoadFromFile() {
     final String rootFile =
         getFile("/test-http-request-factory-application-context.xml")
             .getParentFile()
@@ -107,7 +107,7 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
   }
 
   @Test
-  public void testLoadFromClasspath() throws Throwable {
+  public void testLoadFromClasspath() {
 
     final String rootFile =
         getFile("/test-http-request-factory-application-context.xml")

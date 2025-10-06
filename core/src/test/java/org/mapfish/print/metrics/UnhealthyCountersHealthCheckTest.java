@@ -29,7 +29,7 @@ public class UnhealthyCountersHealthCheckTest extends AbstractMapfishSpringTest 
   }
 
   @Test
-  public void testCheck_Success_WithEmptyCounters() throws Exception {
+  public void testCheck_Success_WithEmptyCounters() {
     MetricRegistry metricRegistryImpl = new MetricRegistry();
     TreeSet<String> stringTreeSet = new TreeSet<>();
     when(metricRegistry.getNames()).thenReturn(stringTreeSet);
@@ -55,7 +55,7 @@ public class UnhealthyCountersHealthCheckTest extends AbstractMapfishSpringTest 
   }
 
   @Test
-  public void testCheck_Success_NoCounters() throws Exception {
+  public void testCheck_Success_NoCounters() {
     HealthCheck.Result result = unhealthyCountersHealthCheck.check();
 
     assertTrue(result.isHealthy());
@@ -63,7 +63,7 @@ public class UnhealthyCountersHealthCheckTest extends AbstractMapfishSpringTest 
   }
 
   @Test
-  public void testCheck_Fail_WithCounters() throws Exception {
+  public void testCheck_Fail_WithCounters() {
     MetricRegistry metricRegistryImpl = new MetricRegistry();
     TreeSet<String> stringTreeSet = new TreeSet<>();
     when(metricRegistry.getNames()).thenReturn(stringTreeSet);

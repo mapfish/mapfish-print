@@ -1187,7 +1187,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       final String referenceId,
       final HttpServletResponse httpServletResponse,
       final HandleReportLoadResult<R> handler)
-      throws IOException, ServletException {
+      throws IOException {
     PrintJobStatus metadata;
 
     try {
