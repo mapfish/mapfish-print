@@ -4,24 +4,27 @@ import static junit.framework.TestCase.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 public class TestHandler {
   @Test
-  public void testBase64() throws IOException {
+  public void testBase64() throws IOException, URISyntaxException {
     Handler.configureProtocolHandler();
-    final URL url = new URL("data:text/plain;base64,SGVsbG8gd29ybGQ=");
+    final URL url = URL.of(new URI("data:text/plain;base64,SGVsbG8gd29ybGQ="), null);
     final InputStream content = (InputStream) url.getContent();
-    assertEquals("Hello world", IOUtils.toString(content, "utf-8"));
+    assertEquals("Hello world", IOUtils.toString(content, StandardCharsets.UTF_8));
   }
 
   @Test
-  public void testText() throws IOException {
+  public void testText() throws IOException, URISyntaxException {
     Handler.configureProtocolHandler();
-    final URL url = new URL("data:text/plain;charset=utf-8,HelloWorld");
+    final URL url = URL.of(new URI("data:text/plain;charset=utf-8,HelloWorld"), null);
     final InputStream content = (InputStream) url.getContent();
-    assertEquals("HelloWorld", IOUtils.toString(content, "utf-8"));
+    assertEquals("HelloWorld", IOUtils.toString(content, StandardCharsets.UTF_8));
   }
 }

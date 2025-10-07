@@ -432,10 +432,10 @@ public class ScalebarDrawerTest {
     }
     settings.setLabels(labels);
 
-    settings.setLeftLabelMargin(labels.get(0).getWidth() / 2.0f);
-    settings.setRightLabelMargin(labels.get(labels.size() - 1).getWidth() / 2.0f);
-    settings.setTopLabelMargin(labels.get(0).getHeight() / 2.0f);
-    settings.setBottomLabelMargin(labels.get(labels.size() - 1).getHeight() / 2.0f);
+    settings.setLeftLabelMargin(labels.getFirst().getWidth() / 2.0f);
+    settings.setRightLabelMargin(labels.getLast().getWidth() / 2.0f);
+    settings.setTopLabelMargin(labels.getFirst().getHeight() / 2.0f);
+    settings.setBottomLabelMargin(labels.getLast().getHeight() / 2.0f);
   }
 
   private File getFile(String fileName) {

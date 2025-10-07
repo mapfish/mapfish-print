@@ -43,13 +43,14 @@ public class CustomFontLoaderTest extends AbstractMapfishSpringTest {
     final AbstractJasperReportOutputFormat format =
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
     JasperPrint print =
-        format.getJasperPrint(
-                new HashMap<String, String>(),
+        format
+            .getJasperPrint(
+                new HashMap<>(),
                 requestData,
                 config,
                 getFile(CustomFontLoaderTest.class, BASE_DIR),
                 getTaskDirectory())
-            .print;
+            .print();
     ImageSimilarity.exportReportToImage(print, 0);
     // no error, ok
   }

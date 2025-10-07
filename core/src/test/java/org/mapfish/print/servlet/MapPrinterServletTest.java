@@ -83,7 +83,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
     String example = createResponseJson.getString("requestData");
     JSONObject obj = new JSONObject(example);
-    assertTrue(obj.length() > 0);
+    assertFalse(obj.isEmpty());
 
     final MockHttpServletResponse getExampleResponseExplicit = new MockHttpServletResponse();
     this.servlet.getExampleRequest(

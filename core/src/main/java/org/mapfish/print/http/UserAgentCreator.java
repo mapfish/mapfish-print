@@ -39,7 +39,6 @@ public final class UserAgentCreator {
       LOGGER.error("Error getting MapFishPrint version", e);
     }
 
-    final String userAgent = String.format("%s/%s %s", AGENT_NAME, mfpRelease, httpClientUserAgent);
-    return userAgent;
+    return String.format("%s/%s %s", AGENT_NAME, mfpRelease, httpClientUserAgent);
   }
 }

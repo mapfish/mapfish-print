@@ -200,7 +200,6 @@ public class PJsonObject extends PAbstractObject {
    * @return The keys iterator
    */
   @Override
-  @SuppressWarnings("unchecked")
   public final Iterator<String> keys() {
     return this.obj.keys();
   }

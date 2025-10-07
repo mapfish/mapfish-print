@@ -292,15 +292,17 @@ public class MapfishParserTest {
   @Test(expected = ExtraPropertyException.class)
   public void testDoesntMap() {
     String legendAtts =
-        "{\n"
-            + "    \"extra\": \"\",\n"
-            + "    \"classes\": [{\n"
-            + "        \"name\": \"osm\",\n"
-            + "        \"icons\":"
-            + " [\"http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic"
-            + "&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states\"]\n"
-            + "    }]\n"
-            + "}\n";
+        """
+        {
+            "extra": "",
+            "classes": [{
+                "name": "osm",
+                "icons":\
+         ["http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic\
+        &VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states"]
+            }]
+        }
+        """;
     PObject requestData = new PJsonObject(new JSONObject(legendAtts), "legend");
     LegendAttribute.LegendAttributeValue param = new LegendAttribute.LegendAttributeValue();
     MapfishParser.parse(true, requestData, param);

@@ -30,7 +30,6 @@ public final class MapAttribute extends GenericMapAttribute {
       ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE;
   private static final boolean DEFAULT_SNAP_GEODETIC = false;
 
-  @SuppressWarnings("unchecked")
   @Override
   public Class<MapAttributeValues> getValueType() {
     return MapAttributeValues.class;

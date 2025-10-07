@@ -41,7 +41,6 @@ public final class OverviewMapAttribute extends GenericMapAttribute {
     this.style = style;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Class<OverviewMapAttributeValues> getValueType() {
     return OverviewMapAttributeValues.class;

@@ -97,7 +97,7 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPI_SVG_Test
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),

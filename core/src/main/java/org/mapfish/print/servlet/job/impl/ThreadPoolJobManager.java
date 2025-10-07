@@ -238,10 +238,8 @@ public class ThreadPoolJobManager implements JobManager {
 
           @Override
           protected void beforeExecute(final Thread t, final Runnable runnable) {
-            if (!ThreadPoolJobManager.this.clustered && runnable instanceof JobFutureTask<?>) {
-              JobFutureTask<?> task = (JobFutureTask<?>) runnable;
-              if (task.getCallable() instanceof PrintJob) {
-                PrintJob printJob = (PrintJob) task.getCallable();
+            if (!ThreadPoolJobManager.this.clustered && runnable instanceof JobFutureTask<?> task) {
+              if (task.getCallable() instanceof PrintJob printJob) {
                 try {
                   ThreadPoolJobManager.this.jobQueue.start(printJob.getEntry().getReferenceId());
                 } catch (RuntimeException e) {
@@ -383,8 +381,8 @@ public class ThreadPoolJobManager implements JobManager {
       if (this.runningTasksFutures.containsKey(referenceId)) {
         // the job is not yet finished (or has not even started), cancel
         final SubmittedPrintJob printJob = this.runningTasksFutures.get(referenceId);
-        printJob.getEntry().assertAccess();
-        if (!printJob.getReportFuture().cancel(true)) {
+        printJob.entry().assertAccess();
+        if (!printJob.reportFuture().cancel(true)) {
           LOGGER.info("Could not cancel job {}", referenceId);
         }
         this.runningTasksFutures.remove(referenceId);
@@ -454,22 +452,22 @@ public class ThreadPoolJobManager implements JobManager {
     final Iterator<SubmittedPrintJob> submittedJobs = this.runningTasksFutures.values().iterator();
     while (submittedJobs.hasNext()) {
       final SubmittedPrintJob printJob = submittedJobs.next();
-      if (!printJob.getReportFuture().isDone()
+      if (!printJob.reportFuture().isDone()
           && (isTimeoutExceeded(printJob) || isAbandoned(printJob))) {
         LOGGER.info(
             "About to attempt timeout based automatic cancellation of job {}",
-            printJob.getEntry().getReferenceId());
-        if (!printJob.getReportFuture().cancel(true)) {
+            printJob.entry().getReferenceId());
+        if (!printJob.reportFuture().cancel(true)) {
           LOGGER.info(
               "Automatic cancellation after timeout failed for job {}",
-              printJob.getEntry().getReferenceId());
+              printJob.entry().getReferenceId());
         }
         // remove all canceled tasks from the work queue (otherwise the queue comparator
         // might stumble on non-PrintJob entries)
         this.executor.purge();
       }
 
-      if (printJob.getReportFuture().isDone()) {
+      if (printJob.reportFuture().isDone()) {
         updated = true;
         submittedJobs.remove();
         try {
@@ -477,12 +475,12 @@ public class ThreadPoolJobManager implements JobManager {
             // set the completion date to the moment the job was
             // marked as completed
             // in the registry.
-            final PrintJobResult result = printJob.getReportFuture().get();
+            final PrintJobResult result = printJob.reportFuture().get();
             if (result != null) {
-              this.jobQueue.done(printJob.getEntry().getReferenceId(), result);
+              this.jobQueue.done(printJob.entry().getReferenceId(), result);
             } else {
               // The report was sent to the user => don't need to keep it
-              this.jobQueue.delete(printJob.getEntry().getReferenceId());
+              this.jobQueue.delete(printJob.entry().getReferenceId());
             }
           } catch (InterruptedException e) {
             // if this happens, the timer task was interrupted.
@@ -492,12 +490,12 @@ public class ThreadPoolJobManager implements JobManager {
           } catch (ExecutionException e) {
             // failure occurred
             this.jobQueue.fail(
-                printJob.getEntry().getReferenceId(), ExceptionUtils.getRootCause(e).toString());
+                printJob.entry().getReferenceId(), ExceptionUtils.getRootCause(e).toString());
 
           } catch (CancellationException e) {
             // cancellation occurred, set cancellation status
             this.jobQueue.cancel(
-                printJob.getEntry().getReferenceId(), "task canceled (timeout)", true);
+                printJob.entry().getReferenceId(), "task canceled (timeout)", true);
           }
           notifyIfStopped();
         } catch (NoSuchReferenceException e) {
@@ -509,7 +507,7 @@ public class ThreadPoolJobManager implements JobManager {
   }
 
   private boolean isTimeoutExceeded(final SubmittedPrintJob printJob) {
-    return printJob.getEntry().getTimeSinceStart()
+    return printJob.entry().getTimeSinceStart()
         > TimeUnit.MILLISECONDS.convert(ThreadPoolJobManager.this.timeout, TimeUnit.SECONDS);
   }
 
@@ -522,13 +520,13 @@ public class ThreadPoolJobManager implements JobManager {
   private boolean isAbandoned(final SubmittedPrintJob printJob) {
     final long duration =
         ThreadPoolJobManager.this.jobQueue.timeSinceLastStatusCheck(
-            printJob.getEntry().getReferenceId());
+            printJob.entry().getReferenceId());
     final boolean abandoned =
         duration > TimeUnit.SECONDS.toMillis(ThreadPoolJobManager.this.abandonedTimeout);
     if (abandoned) {
       LOGGER.info(
           "Job {} is abandoned (no status check within the last {} seconds)",
-          printJob.getEntry().getReferenceId(),
+          printJob.entry().getReferenceId(),
           ThreadPoolJobManager.this.abandonedTimeout);
     }
     return abandoned;

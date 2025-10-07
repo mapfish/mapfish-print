@@ -31,7 +31,7 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
   @Autowired private ServletConfigFileLoader configFileLoader;
 
   @Test
-  public void testLoadFromFile() throws Throwable {
+  public void testLoadFromFile() {
     final String rootFile =
         getFile("/test-http-request-factory-application-context.xml")
             .getParentFile()
@@ -80,7 +80,7 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
 
   @Test
   @DirtiesContext
-  public void testLoadFromURL() throws Throwable {
+  public void testLoadFromURL() {
     final String rootFile =
         getFile("/test-http-request-factory-application-context.xml")
             .getParentFile()
@@ -107,7 +107,7 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
   }
 
   @Test
-  public void testLoadFromClasspath() throws Throwable {
+  public void testLoadFromClasspath() {
 
     final String rootFile =
         getFile("/test-http-request-factory-application-context.xml")
@@ -124,7 +124,7 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
     assertNotNull(styleOptional.get());
   }
 
-  private Optional<Style> loadStyle(String configFile, String styleString) throws Throwable {
+  private Optional<Style> loadStyle(String configFile, String styleString) {
     Configuration configuration = new Configuration();
     configuration.setFileLoaderManager(this.fileLoaderManager);
     configuration.setConfigurationFile(getFile(configFile));
@@ -133,7 +133,7 @@ public class MapfishJsonFileResolverTest extends AbstractMapfishSpringTest {
         new ConfigFileResolvingHttpRequestFactory(
             this.httpClient,
             configuration,
-            new HashMap<String, String>(),
+            new HashMap<>(),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
             HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 

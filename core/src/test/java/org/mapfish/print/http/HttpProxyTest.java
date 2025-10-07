@@ -5,7 +5,6 @@ import static org.mapfish.print.AbstractMapfishSpringTest.HTTP_REQUEST_FETCH_RET
 import static org.mapfish.print.AbstractMapfishSpringTest.HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
@@ -113,7 +112,7 @@ public class HttpProxyTest {
         new ConfigFileResolvingHttpRequestFactory(
             requestFactory,
             config,
-            new HashMap<String, String>(),
+            new HashMap<>(),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
             HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
 
@@ -208,14 +207,7 @@ public class HttpProxyTest {
     httpProxy.setPort(PROXY_PORT);
 
     final String path = "/request-proxy-test";
-    proxyServer.createContext(
-        path,
-        new HttpHandler() {
-          @Override
-          public void handle(HttpExchange httpExchange) throws IOException {
-            respond(httpExchange, MESSAGE_FROM_PROXY, 200);
-          }
-        });
+    proxyServer.createContext(path, httpExchange -> respond(httpExchange, MESSAGE_FROM_PROXY, 200));
 
     assertCorrectResponse(
         httpProxy, MESSAGE_FROM_PROXY, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
@@ -231,27 +223,26 @@ public class HttpProxyTest {
     final String path = "/username-test";
     httpsServer.createContext(
         path,
-        new HttpHandler() {
-          @Override
-          public void handle(HttpExchange httpExchange) throws IOException {
-            final String authorization = httpExchange.getRequestHeaders().getFirst("Authorization");
-            if (authorization == null) {
-              httpExchange
-                  .getResponseHeaders()
-                  .add("WWW-Authenticate", "Basic realm=\"Test Site\"");
-              httpExchange.sendResponseHeaders(401, 0);
-              httpExchange.close();
+        httpExchange -> {
+          final String authorization = httpExchange.getRequestHeaders().getFirst("Authorization");
+          if (authorization == null) {
+            httpExchange.getResponseHeaders().add("WWW-Authenticate", "Basic realm=\"Test Site\"");
+            httpExchange.sendResponseHeaders(401, 0);
+            httpExchange.close();
+          } else {
+            final String expectedAuth = "Basic dXNlcm5hbWU6bnVsbA==";
+            if (authorization.equals(expectedAuth)) {
+              respond(httpExchange, MESSAGE_FROM_PROXY, 200);
             } else {
-              final String expectedAuth = "Basic dXNlcm5hbWU6bnVsbA==";
-              if (authorization.equals(expectedAuth)) {
-                respond(httpExchange, MESSAGE_FROM_PROXY, 200);
-              } else {
-                final String errorMessage =
-                    String.format(
-                        "Expected authorization:\n" + "'%s' but got:\n" + "'%s'",
-                        expectedAuth, authorization);
-                respond(httpExchange, errorMessage, 500);
-              }
+              final String errorMessage =
+                  String.format(
+                      """
+                      Expected authorization:
+                      '%s' but got:
+                      '%s'\
+                      """,
+                      expectedAuth, authorization);
+              respond(httpExchange, errorMessage, 500);
             }
           }
         });
@@ -271,29 +262,24 @@ public class HttpProxyTest {
     final String path = "/usernameAndPassword-test";
     httpsServer.createContext(
         path,
-        new HttpHandler() {
-          @Override
-          public void handle(HttpExchange httpExchange) throws IOException {
-            final String authorization = httpExchange.getRequestHeaders().getFirst("Authorization");
-            if (authorization == null) {
-              httpExchange
-                  .getResponseHeaders()
-                  .add("WWW-Authenticate", "Basic realm=\"Test Site\"");
-              httpExchange.sendResponseHeaders(401, 0);
-              httpExchange.close();
+        httpExchange -> {
+          final String authorization = httpExchange.getRequestHeaders().getFirst("Authorization");
+          if (authorization == null) {
+            httpExchange.getResponseHeaders().add("WWW-Authenticate", "Basic realm=\"Test Site\"");
+            httpExchange.sendResponseHeaders(401, 0);
+            httpExchange.close();
+          } else {
+            final String expectedAuth = "Basic dXNlcm5hbWU6cGFzc3dvcmQ=";
+            if (authorization.equals(expectedAuth)) {
+              respond(httpExchange, MESSAGE_FROM_PROXY, 200);
             } else {
-              final String expectedAuth = "Basic dXNlcm5hbWU6cGFzc3dvcmQ=";
-              if (authorization.equals(expectedAuth)) {
-                respond(httpExchange, MESSAGE_FROM_PROXY, 200);
-              } else {
-                final String errorMessage =
-                    "Expected authorization:\n'"
-                        + expectedAuth
-                        + "' but got:\n'"
-                        + authorization
-                        + "'";
-                respond(httpExchange, errorMessage, 500);
-              }
+              final String errorMessage =
+                  "Expected authorization:\n'"
+                      + expectedAuth
+                      + "' but got:\n'"
+                      + authorization
+                      + "'";
+              respond(httpExchange, errorMessage, 500);
             }
           }
         });
@@ -313,22 +299,12 @@ public class HttpProxyTest {
     final String message = "Target was reached without proxy";
 
     final String path = "/nomatch-test";
-    targetServer.createContext(
-        path,
-        new HttpHandler() {
-          @Override
-          public void handle(HttpExchange httpExchange) throws IOException {
-            respond(httpExchange, message, 200);
-          }
-        });
+    targetServer.createContext(path, httpExchange -> respond(httpExchange, message, 200));
     proxyServer.createContext(
         path,
-        new HttpHandler() {
-          @Override
-          public void handle(HttpExchange httpExchange) throws IOException {
-            String msg = "Proxy was reached but in this test the proxy should not have been used.";
-            respond(httpExchange, msg, 500);
-          }
+        httpExchange -> {
+          String msg = "Proxy was reached but in this test the proxy should not have been used.";
+          respond(httpExchange, msg, 500);
         });
 
     assertCorrectResponse(httpProxy, message, "http://" + LOCALHOST + ":" + TARGET_PORT, path);
@@ -345,22 +321,12 @@ public class HttpProxyTest {
     final String message = "Target was reached without proxy";
 
     final String path = "/reject-test";
-    targetServer.createContext(
-        path,
-        new HttpHandler() {
-          @Override
-          public void handle(HttpExchange httpExchange) throws IOException {
-            respond(httpExchange, message, 200);
-          }
-        });
+    targetServer.createContext(path, httpExchange -> respond(httpExchange, message, 200));
     proxyServer.createContext(
         path,
-        new HttpHandler() {
-          @Override
-          public void handle(HttpExchange httpExchange) throws IOException {
-            String msg = "Proxy was reached but in this test the proxy should not have been used.";
-            respond(httpExchange, msg, 500);
-          }
+        httpExchange -> {
+          String msg = "Proxy was reached but in this test the proxy should not have been used.";
+          respond(httpExchange, msg, 500);
         });
 
     assertCorrectResponse(httpProxy, message, "http://" + LOCALHOST + ":" + TARGET_PORT, path);

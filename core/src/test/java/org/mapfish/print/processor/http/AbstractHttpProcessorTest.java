@@ -17,10 +17,7 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.output.Values;
-import org.mapfish.print.processor.AbstractProcessor;
-import org.mapfish.print.processor.InputOutputValue;
-import org.mapfish.print.processor.ProcessorDependencyGraph;
-import org.mapfish.print.processor.ProcessorGraphNode;
+import org.mapfish.print.processor.*;
 import org.mapfish.print.processor.map.CreateMapProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -60,10 +57,10 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
     List<ProcessorGraphNode<?, ?>> roots = graph.getRoots();
 
     assertEquals(1, roots.size());
-    final ProcessorGraphNode<?, ?> processor = roots.get(0);
+    final ProcessorGraphNode<?, ?> processor = roots.getFirst();
     assertEquals(classUnderTest(), processor.getProcessor().getClass());
 
-    final Set dependencies = processor.getAllProcessors();
+    final Set<? extends Processor<?, ?>> dependencies = processor.getAllProcessors();
     dependencies.remove(processor.getProcessor());
     assertEquals(1, dependencies.size());
     assertEquals(testProcessorClass(), dependencies.iterator().next().getClass());
@@ -95,10 +92,11 @@ public abstract class AbstractHttpProcessorTest extends AbstractMapfishSpringTes
     List<ProcessorGraphNode<?, ?>> roots = graph.getRoots();
 
     assertEquals(1, roots.size());
-    final ProcessorGraphNode<?, ?> compositeClientHttpRequestFactoryProcessor = roots.get(0);
+    final ProcessorGraphNode<?, ?> compositeClientHttpRequestFactoryProcessor = roots.getFirst();
     assertEquals(
         classUnderTest(), compositeClientHttpRequestFactoryProcessor.getProcessor().getClass());
-    final Set dependencies = compositeClientHttpRequestFactoryProcessor.getAllProcessors();
+    final Set<? extends Processor<?, ?>> dependencies =
+        compositeClientHttpRequestFactoryProcessor.getAllProcessors();
     dependencies.remove(compositeClientHttpRequestFactoryProcessor.getProcessor());
     assertEquals(1, dependencies.size());
     assertEquals(CreateMapProcessor.class, dependencies.iterator().next().getClass());

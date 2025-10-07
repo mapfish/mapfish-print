@@ -29,15 +29,15 @@ public final class JasperReportPDFOutputFormat extends AbstractJasperReportOutpu
   @Override
   protected void doExport(final OutputStream outputStream, final Print print) throws JRException {
 
-    JRPdfExporter exporter = new JRPdfExporterWeakHashMap(print.context);
+    JRPdfExporter exporter = new JRPdfExporterWeakHashMap(print.context());
 
-    exporter.setExporterInput(new SimpleExporterInput(print.print));
+    exporter.setExporterInput(new SimpleExporterInput(print.print()));
     exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
 
     SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
     configuration.setPdfVersion(PdfVersionEnum.VERSION_1_7);
 
-    final PDFConfig pdfConfig = print.values.getObject(Values.PDF_CONFIG_KEY, PDFConfig.class);
+    final PDFConfig pdfConfig = print.values().getObject(Values.PDF_CONFIG_KEY, PDFConfig.class);
 
     configuration.setCompressed(pdfConfig.isCompressed());
     configuration.setMetadataAuthor(pdfConfig.getAuthor());
@@ -51,7 +51,7 @@ public final class JasperReportPDFOutputFormat extends AbstractJasperReportOutpu
     exporter.exportReport();
 
     final JasperPrint jasperPrint = exporter.getCurrentJasperPrint();
-    final ExecutionStats stats = print.executionContext.getStats();
+    final ExecutionStats stats = print.executionContext().getStats();
     for (int i = 0; i < jasperPrint.getPages().size(); ++i) {
       final PrintPageFormat pageFormat = jasperPrint.getPageFormat(i);
       stats.addPageStats(pageFormat);

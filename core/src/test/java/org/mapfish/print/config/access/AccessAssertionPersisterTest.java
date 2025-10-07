@@ -18,16 +18,14 @@ public class AccessAssertionPersisterTest extends AbstractMapfishSpringTest {
     for (AccessAssertion assertion : this.accessAssertions) {
       try {
         final JSONObject marshaled = persister.marshal(assertion);
-        final AccessAssertion unmarshaled = persister.unmarshal(marshaled);
-        assertNotNull(unmarshaled);
+        final AccessAssertion unmarshalled = persister.unmarshal(marshaled);
 
-        assertSame(assertion.getClass(), unmarshaled.getClass());
-      } catch (AssertionError e) {
-        throw e;
+        assertNotNull(unmarshalled);
+        assertSame(assertion.getClass(), unmarshalled.getClass());
       } catch (Exception e) {
-        e.printStackTrace();
         throw new AssertionError(
-            "Marshaling or unmarshaling access assertion: " + assertion.getClass() + " failed");
+            "Marshalling or unmarshalling access assertion: " + assertion.getClass() + " failed",
+            e);
       }
     }
   }

@@ -62,30 +62,30 @@ public class MergeDataSourceProcessorTest {
 
     JRDesignField field = new JRDesignField();
     field.setName("row1");
-    assertTrue(execute.mergedDataSource.next());
-    Object value = execute.mergedDataSource.getFieldValue(field);
+    assertTrue(execute.mergedDataSource().next());
+    Object value = execute.mergedDataSource().getFieldValue(field);
     assertEquals("hello10", value);
     field.setName("row11");
-    value = execute.mergedDataSource.getFieldValue(field);
+    value = execute.mergedDataSource().getFieldValue(field);
     assertEquals("hello11", value);
 
-    assertTrue(execute.mergedDataSource.next());
+    assertTrue(execute.mergedDataSource().next());
     field.setName("renamed");
-    value = execute.mergedDataSource.getFieldValue(field);
+    value = execute.mergedDataSource().getFieldValue(field);
     assertEquals("hello2", value);
 
     for (int i = 0; i < 3; i++) {
-      assertTrue(execute.mergedDataSource.next());
+      assertTrue(execute.mergedDataSource().next());
       field.setName("col1");
-      value = execute.mergedDataSource.getFieldValue(field);
+      value = execute.mergedDataSource().getFieldValue(field);
       assertEquals(innerData.get(i).get("col1"), value);
 
       field.setName("col3");
-      value = execute.mergedDataSource.getFieldValue(field);
+      value = execute.mergedDataSource().getFieldValue(field);
       assertNull(value);
 
       field.setName("col2");
-      value = execute.mergedDataSource.getFieldValue(field);
+      value = execute.mergedDataSource().getFieldValue(field);
       assertEquals(innerData.get(i).get("col3"), value);
     }
   }

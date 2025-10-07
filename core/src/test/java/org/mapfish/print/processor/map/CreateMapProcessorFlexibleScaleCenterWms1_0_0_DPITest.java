@@ -96,7 +96,7 @@ public class CreateMapProcessorFlexibleScaleCenterWms1_0_0_DPITest
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),

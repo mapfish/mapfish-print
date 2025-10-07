@@ -23,7 +23,6 @@ import org.mapfish.print.processor.map.SetStyleProcessor;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@SuppressWarnings("unchecked")
 public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
   public static final String BASE_DIR = "setstyle/";
 
@@ -42,7 +41,7 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
         parseJSONObjectFromFile(SetStyleProcessorTest.class, BASE_DIR + "basic/request.json");
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             this.folder.getRoot(),
@@ -55,13 +54,14 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
 
     final MapAttribute.MapAttributeValues map =
         values.getObject("map", MapAttribute.MapAttributeValues.class);
-    final AbstractFeatureSourceLayer layer = (AbstractFeatureSourceLayer) map.getLayers().get(0);
+    final AbstractFeatureSourceLayer layer =
+        (AbstractFeatureSourceLayer) map.getLayers().getFirst();
     final MapfishMapContext mapContext = AbstractMapfishSpringTest.createTestMapContext();
     assertEquals(
         "Default Line",
         layer
             .getLayers(httpClientFactory, mapContext, CONTEXT, null)
-            .get(0)
+            .getFirst()
             .getStyle()
             .getDescription()
             .getTitle()
@@ -79,7 +79,7 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
     List<ProcessorGraphNode<?, ?>> roots = graph.getRoots();
 
     assertEquals(1, roots.size());
-    ProcessorGraphNode<?, ?> rootNode = roots.get(0);
+    ProcessorGraphNode<?, ?> rootNode = roots.getFirst();
     assertEquals(SetStyleProcessor.class, rootNode.getProcessor().getClass());
     assertEquals(2, rootNode.getAllProcessors().size());
   }
@@ -95,7 +95,7 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
     List<ProcessorGraphNode<?, ?>> roots = graph.getRoots();
 
     assertEquals(2, roots.size());
-    ProcessorGraphNode<?, ?> rootNode1 = roots.get(0);
+    ProcessorGraphNode<?, ?> rootNode1 = roots.getFirst();
     assertEquals(SetStyleProcessor.class, rootNode1.getProcessor().getClass());
     assertEquals(2, rootNode1.getAllProcessors().size());
 

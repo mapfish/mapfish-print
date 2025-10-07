@@ -105,7 +105,7 @@ public final class PJoinedArray implements PArray {
   public String getPath(final String key) {
     StringBuilder builder = new StringBuilder();
     for (PArray array : this.arrays) {
-      if (builder.length() == 0) {
+      if (builder.isEmpty()) {
         builder.append(" + ");
       }
       builder.append(array.getPath(key));
@@ -117,7 +117,7 @@ public final class PJoinedArray implements PArray {
   public String getCurrentPath() {
     StringBuilder builder = new StringBuilder();
     for (PArray array : this.arrays) {
-      if (builder.length() == 0) {
+      if (builder.isEmpty()) {
         builder.append(" + ");
       }
       builder.append(array.getCurrentPath());

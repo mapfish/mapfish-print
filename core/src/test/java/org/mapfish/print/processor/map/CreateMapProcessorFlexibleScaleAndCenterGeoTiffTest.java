@@ -45,7 +45,7 @@ public class CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest extends Abstrac
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),
@@ -65,7 +65,7 @@ public class CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest extends Abstrac
 
     //        Files.copy(new File(layerGraphics.get(0)), new File(TMP,
     // getClass().getSimpleName()+".png"));
-    new ImageSimilarity(new File(layerGraphics.get(0)))
+    new ImageSimilarity(new File(layerGraphics.getFirst()))
         .assertSimilarity(getFile(BASE_DIR + "expectedSimpleImage.png"), 0);
   }
 }

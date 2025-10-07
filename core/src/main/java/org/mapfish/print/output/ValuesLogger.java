@@ -35,7 +35,7 @@ public final class ValuesLogger {
     if (!LOGGER.isInfoEnabled()) {
       return;
     }
-    if (this.builder.length() > 0) {
+    if (!this.builder.isEmpty()) {
       this.builder.append("\n");
     }
 
@@ -90,8 +90,7 @@ public final class ValuesLogger {
             .append("  - This value is a Jasper Reports DataSource and thus can be passed to a ")
             .append("subtemplate as a DataSource and used in the subtemplate's detail band.\n");
       }
-      if (parameter.getValue() instanceof JRMapCollectionDataSource) {
-        JRMapCollectionDataSource source = (JRMapCollectionDataSource) parameter.getValue();
+      if (parameter.getValue() instanceof JRMapCollectionDataSource source) {
 
         addIndent()
             .append(
@@ -111,9 +110,7 @@ public final class ValuesLogger {
             } else {
               // if the value for this key is null, let's take the next value so that we
               // eventually get the type of the column
-              if (columns.get(column.getKey()) == null) {
-                columns.put(column.getKey(), column.getValue());
-              }
+              columns.computeIfAbsent(column.getKey(), k -> column.getValue());
             }
           }
         }
@@ -135,9 +132,7 @@ public final class ValuesLogger {
   }
 
   private StringBuilder addIndent() {
-    for (int i = 0; i < this.indent; i++) {
-      this.builder.append(" ");
-    }
+    this.builder.append(" ".repeat(Math.max(0, this.indent)));
     return this.builder;
   }
 }

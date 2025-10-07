@@ -43,11 +43,10 @@ public final class RoleAccessAssertion implements AccessAssertion {
     if (assertionRequiredRoles == null) {
       this.requiredRoles = Collections.unmodifiableSet(Collections.emptySet());
     } else {
-      if (assertionRequiredRoles instanceof Set) {
-        Set roles = (Set) assertionRequiredRoles;
+      if (assertionRequiredRoles instanceof Set roles) {
         this.requiredRoles = Collections.unmodifiableSet(roles);
       } else {
-        this.requiredRoles = Collections.unmodifiableSet(new HashSet<>(assertionRequiredRoles));
+        this.requiredRoles = Set.copyOf(assertionRequiredRoles);
       }
     }
     return this;
@@ -135,7 +134,7 @@ public final class RoleAccessAssertion implements AccessAssertion {
   @Override
   public AccessAssertion copy() {
     RoleAccessAssertion assertion = new RoleAccessAssertion();
-    assertion.requiredRoles = Collections.unmodifiableSet(new HashSet<>(this.requiredRoles));
+    assertion.requiredRoles = Set.copyOf(this.requiredRoles);
     return assertion;
   }
 }

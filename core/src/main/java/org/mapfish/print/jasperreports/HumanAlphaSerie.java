@@ -59,7 +59,6 @@ public final class HumanAlphaSerie {
     if (number > 26 || number < 0) {
       return '\0';
     }
-    char c = (char) ('A' + number - 1);
-    return c;
+    return (char) ('A' + number - 1);
   }
 }

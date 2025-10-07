@@ -53,7 +53,7 @@ public final class ProcessorDependencyGraph {
 
     if (!tasks.isEmpty()) {
       // compute one task in current thread so as not to waste threads
-      tasks.get(0).compute();
+      tasks.getFirst().compute();
 
       for (ProcessorGraphNode.ProcessorNodeForkJoinTask task : tasks.subList(1, tasks.size())) {
         task.join();
@@ -81,7 +81,7 @@ public final class ProcessorDependencyGraph {
       }
     }
 
-    if (missingAttributes.length() > 0) {
+    if (!missingAttributes.isEmpty()) {
       throw new IllegalArgumentException(
           "It has been found that one or more required attributes are "
               + "missing from the values object:"
@@ -146,7 +146,12 @@ public final class ProcessorDependencyGraph {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append("strict digraph g {\n" + "  rankdir=\"LR\";\n" + "  node [shape=\"box\"];\n");
+    builder.append(
+        """
+        strict digraph g {
+          rankdir="LR";
+          node [shape="box"];
+        """);
     toString(builder, 0, "root");
     builder.append("}");
     return builder.toString();

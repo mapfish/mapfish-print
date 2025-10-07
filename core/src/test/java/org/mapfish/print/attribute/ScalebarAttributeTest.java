@@ -82,7 +82,7 @@ public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
         parseJSONObjectFromFile(ScalebarAttributeTest.class, "scalebar/requestData.json");
     final Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             pJsonObject,
             template,
             getTaskDirectory(),
@@ -106,7 +106,6 @@ public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
     ScalebarAttribute attribute = new ScalebarAttribute();
     attribute.setWidth(300);
     attribute.setHeight(120);
-    ScalebarAttributeValues values = attribute.createValue(null);
-    return values;
+    return attribute.createValue(null);
   }
 }

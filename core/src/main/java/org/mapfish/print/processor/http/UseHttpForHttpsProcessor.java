@@ -47,7 +47,7 @@ public final class UseHttpForHttpsProcessor extends AbstractClientHttpRequestFac
   private List<Pattern> hosts = new ArrayList<>();
 
   /** Constructor. */
-  protected UseHttpForHttpsProcessor() {
+  private UseHttpForHttpsProcessor() {
     this.portMapping.put(HTTPS_STANDARD_PORT, HTTP_STANDARD_PORT);
     this.portMapping.put(JAVA_HTTPS_STANDARD_PORT, JAVA_HTTP_STANDARD_PORT);
   }

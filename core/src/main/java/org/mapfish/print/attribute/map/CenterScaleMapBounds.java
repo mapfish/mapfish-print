@@ -2,7 +2,9 @@ package org.mapfish.print.attribute.map;
 
 import static org.mapfish.print.Constants.PDF_DPI;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.awt.Rectangle;
+import java.util.Objects;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.geometry.Position2D;
@@ -179,12 +181,21 @@ public final class CenterScaleMapBounds extends MapBounds {
     }
   }
 
-  private double rollLongitude(final double x) {
-    return x - (((int) (x + Math.signum(x) * 180)) / 360) * 360.0;
+  @VisibleForTesting
+  double rollLongitude(final double x) {
+    return modulo(x + 180, 360.0) - 180;
   }
 
-  private double rollLatitude(final double y) {
-    return y - (((int) (y + Math.signum(y) * 90)) / 180) * 180.0;
+  private static double modulo(final double a, final double b) {
+    return b - ((-a % b) + b) % b;
+  }
+
+  @VisibleForTesting
+  double rollLatitude(final double y) {
+    if (y > 90 || y < -90) {
+      throw new IllegalArgumentException("Latitude must be between -90 and 90");
+    }
+    return y;
   }
 
   @Override
@@ -201,10 +212,10 @@ public final class CenterScaleMapBounds extends MapBounds {
 
     final CenterScaleMapBounds that = (CenterScaleMapBounds) o;
 
-    if (this.center != null ? !this.center.equals(that.center) : that.center != null) {
+    if (!Objects.equals(this.center, that.center)) {
       return false;
     }
-    return this.scale != null ? this.scale.equals(that.scale) : that.scale == null;
+    return Objects.equals(this.scale, that.scale);
   }
 
   @Override

@@ -80,12 +80,11 @@ public class ScalebarGraphic {
         TextLayout labelLayout = new TextLayout(labelText, font, frc);
         labels.add(new Label(intervalLengthInPixels * i, labelLayout, graphics2D));
       }
-      leftLabelMargin = labels.get(0).getRotatedWidth(scalebarParams.getLabelRotation()) / 2.0f;
-      rightLabelMargin =
-          labels.get(labels.size() - 1).getRotatedWidth(scalebarParams.getLabelRotation()) / 2.0f;
-      topLabelMargin = labels.get(0).getRotatedHeight(scalebarParams.getLabelRotation()) / 2.0f;
+      leftLabelMargin = labels.getFirst().getRotatedWidth(scalebarParams.getLabelRotation()) / 2.0f;
+      rightLabelMargin = labels.getLast().getRotatedWidth(scalebarParams.getLabelRotation()) / 2.0f;
+      topLabelMargin = labels.getFirst().getRotatedHeight(scalebarParams.getLabelRotation()) / 2.0f;
       bottomLabelMargin =
-          labels.get(labels.size() - 1).getRotatedHeight(scalebarParams.getLabelRotation()) / 2.0f;
+          labels.getLast().getRotatedHeight(scalebarParams.getLabelRotation()) / 2.0f;
     } else {
       // if there is only one interval, place the label centered between the two tick marks
       String labelText =
@@ -252,7 +251,7 @@ public class ScalebarGraphic {
     double scaledValue = scaleUnit.convertTo(value, intervalUnit);
 
     // assume that there is no interval smaller then 0.0001
-    scaledValue = Math.round(scaledValue * 10000) / 10000;
+    scaledValue = Math.round(scaledValue * 10000) / 10000.0;
     String decimals = Double.toString(scaledValue).split("\\.")[1];
 
     if (Double.parseDouble(decimals) == 0) {
@@ -321,19 +320,15 @@ public class ScalebarGraphic {
 
     // ok, find first character
     int firstChar = (int) (value / pow10);
-    switch (firstChar) {
-      case 1:
-        return 2;
-      case 2:
-        return 2;
-      case 5:
-        return 5;
-      case 10:
-        return 2;
-      default:
-        throw new RuntimeException(
-            "Invalid interval: " + value + intervalUnit + " (" + firstChar + ")");
-    }
+    return switch (firstChar) {
+      case 1 -> 2;
+      case 2 -> 2;
+      case 5 -> 5;
+      case 10 -> 2;
+      default ->
+          throw new RuntimeException(
+              "Invalid interval: " + value + intervalUnit + " (" + firstChar + ")");
+    };
   }
 
   private static int getFontSize(final ScaleBarRenderSettings settings) {

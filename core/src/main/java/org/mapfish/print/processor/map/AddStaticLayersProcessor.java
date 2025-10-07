@@ -29,7 +29,7 @@ public final class AddStaticLayersProcessor
   private StaticLayerPosition position;
 
   /** Constructor. */
-  protected AddStaticLayersProcessor() {
+  private AddStaticLayersProcessor() {
     super(Void.class);
   }
 

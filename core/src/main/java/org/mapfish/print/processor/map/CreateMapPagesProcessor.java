@@ -391,13 +391,10 @@ public class CreateMapPagesProcessor
     public PagingAttribute.PagingProcessorValues paging;
   }
 
-  /** Output of processor. */
-  public static final class Output {
-    /** Resulting list of values for the maps. */
-    public final DataSourceAttributeValue datasource;
-
-    private Output(final DataSourceAttributeValue tableList) {
-      this.datasource = tableList;
-    }
-  }
+  /**
+   * Output of processor.
+   *
+   * @param datasource Resulting list of values for the maps.
+   */
+  public record Output(DataSourceAttributeValue datasource) {}
 }

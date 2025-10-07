@@ -46,7 +46,7 @@ public class JasperReportPDFOutputFormatTest extends AbstractMapfishSpringTest {
     OutputStream outputStream = new ByteArrayOutputStream();
     OutputFormat format = this.outputFormat.get("pdfOutputFormat");
     format.print(
-        new HashMap<String, String>(),
+        new HashMap<>(),
         requestData,
         config,
         getFile(JasperReportPDFOutputFormatTest.class, BASE_DIR),
@@ -78,7 +78,7 @@ public class JasperReportPDFOutputFormatTest extends AbstractMapfishSpringTest {
     OutputStream outputStream = new ByteArrayOutputStream();
     OutputFormat format = this.outputFormat.get("pdfOutputFormat");
     format.print(
-        new HashMap<String, String>(),
+        new HashMap<>(),
         requestData,
         config,
         getFile(JasperReportPDFOutputFormatTest.class, BASE_DIR),
@@ -110,7 +110,7 @@ public class JasperReportPDFOutputFormatTest extends AbstractMapfishSpringTest {
     OutputStream outputStream = new ByteArrayOutputStream();
     OutputFormat format = this.outputFormat.get("pdfOutputFormat");
     format.print(
-        new HashMap<String, String>(),
+        new HashMap<>(),
         requestData,
         config,
         getFile(JasperReportPDFOutputFormatTest.class, BASE_DIR),
@@ -142,7 +142,7 @@ public class JasperReportPDFOutputFormatTest extends AbstractMapfishSpringTest {
     OutputStream outputStream = new ByteArrayOutputStream();
     OutputFormat format = this.outputFormat.get("pdfOutputFormat");
     format.print(
-        new HashMap<String, String>(),
+        new HashMap<>(),
         requestData,
         config,
         getFile(JasperReportPDFOutputFormatTest.class, BASE_DIR),

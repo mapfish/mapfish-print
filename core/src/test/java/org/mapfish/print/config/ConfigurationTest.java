@@ -142,7 +142,7 @@ public class ConfigurationTest {
   }
 
   @Test
-  public void testTemplateAccess() throws Exception {
+  public void testTemplateAccess() {
     Configuration configuration = new Configuration();
     Map<String, Template> templates = new HashMap<>();
     Template unrestricted = new Template();
@@ -187,7 +187,7 @@ public class ConfigurationTest {
   }
 
   @Test
-  public void testTemplateAccess_ConfigHasAccess() throws Exception {
+  public void testTemplateAccess_ConfigHasAccess() {
     Configuration configuration = new Configuration();
     Map<String, Template> templates = new HashMap<>();
     Template template1 = new Template();
@@ -330,9 +330,9 @@ public class ConfigurationTest {
 
   private void assertStyleType(Class<?> expectedSymbolizerType, Style style) {
     assertNotNull(style);
-    final FeatureTypeStyle featureTypeStyle = style.featureTypeStyles().get(0);
-    final Rule rule = featureTypeStyle.rules().get(0);
-    final Class<? extends Symbolizer> symbClass = rule.symbolizers().get(0).getClass();
+    final FeatureTypeStyle featureTypeStyle = style.featureTypeStyles().getFirst();
+    final Rule rule = featureTypeStyle.rules().getFirst();
+    final Class<? extends Symbolizer> symbClass = rule.symbolizers().getFirst().getClass();
     assertTrue(
         "Expected: " + expectedSymbolizerType.getName() + " but was: " + symbClass,
         expectedSymbolizerType.isAssignableFrom(symbClass));

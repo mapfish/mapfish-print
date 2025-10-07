@@ -60,7 +60,7 @@ public class CreateMapProcessorWmtsBufferTest extends AbstractMapfishSpringTest 
     PJsonObject requestData = loadJsonRequestData();
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),
@@ -79,6 +79,6 @@ public class CreateMapProcessorWmtsBufferTest extends AbstractMapfishSpringTest 
     assertEquals(1, layerGraphics.size());
 
     new ImageSimilarity(getFile(BASE_DIR + "/expectedSimpleImage.png"))
-        .assertSimilarity(new File(layerGraphics.get(0)), 0);
+        .assertSimilarity(new File(layerGraphics.getFirst()), 0);
   }
 }

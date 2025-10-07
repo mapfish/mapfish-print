@@ -4,20 +4,22 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-/** Models a dependency between two processors. */
-public class ProcessorDependency {
-
-  private final Class<? extends Processor<?, ?>> required;
-  private final Class<? extends Processor<?, ?>> dependent;
-  private final Set<String> commonInputs;
+/**
+ * Models a dependency between two processors. The processor <code>dependent</code> requires the
+ * processor <code>required</code>
+ *
+ * @param required The processor which is required to be executed before the other.
+ * @param dependent The processor which requires the other to be executed first.
+ * @param commonInputs The dependency is only enforced if the two processors have these inputs in
+ *     common.
+ */
+public record ProcessorDependency(
+    Class<? extends Processor<?, ?>> required,
+    Class<? extends Processor<?, ?>> dependent,
+    Set<String> commonInputs) {
 
   /**
    * Constructor. The processor <code>dependent</code> requires the processor <code>required</code>.
-   *
-   * @param required The processor which is required to be executed before the other.
-   * @param dependent The processor which requires the other to be executed first.
-   * @param commonInputs The dependency is only enforced if the two processors have these inputs in
-   *     common.
    */
   public ProcessorDependency(
       final Class<? extends Processor<?, ?>> required,
@@ -41,31 +43,25 @@ public class ProcessorDependency {
   }
 
   /** Returns the processor which is required to be executed before the other. */
-  public final Class<? extends Processor<?, ?>> getRequired() {
+  @Override
+  public Class<? extends Processor<?, ?>> required() {
     return this.required;
   }
 
   /** Returns the processor which requires the other to be executed first. */
-  public final Class<? extends Processor<?, ?>> getDependent() {
+  @Override
+  public Class<? extends Processor<?, ?>> dependent() {
     return this.dependent;
   }
 
   /** The inputs that both processors must have in common. */
-  public final Set<String> getCommonInputs() {
+  @Override
+  public Set<String> commonInputs() {
     return Collections.unmodifiableSet(this.commonInputs);
   }
 
-  /**
-   * Add a common input to this dependency.
-   *
-   * @param inputName the name of the input to add
-   */
-  public final void addCommonInput(final String inputName) {
-    this.commonInputs.add(inputName);
-  }
-
   @Override
-  public final String toString() {
+  public String toString() {
     return "ProcessorDependency{"
         + "required="
         + this.required.getSimpleName()

@@ -115,7 +115,7 @@ final class OneOfTracker {
   private String toNames(final Collection<Field> choices) {
     StringBuilder names = new StringBuilder();
     for (Field choice : choices) {
-      if (names.length() > 0) {
+      if (!names.isEmpty()) {
         names.append(", ");
       }
       String type = choice.getType().getName();
@@ -137,10 +137,7 @@ final class OneOfTracker {
     }
   }
 
-  private static final class OneOfSatisfier {
-    private final Field field;
-    private final boolean isCanSatisfy;
-
+  private record OneOfSatisfier(Field field, boolean isCanSatisfy) {
     private OneOfSatisfier(@Nonnull final Field field, final boolean isCanSatisfy) {
       this.field = field;
       this.isCanSatisfy = isCanSatisfy;

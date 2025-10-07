@@ -250,7 +250,7 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
 
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),
@@ -269,7 +269,7 @@ public class CreateMapProcessorAoiTest extends AbstractMapfishSpringTest {
     int expectedNumberOfLayers = useSVG ? (aoiDisplay == RENDER ? 3 : 2) : (useJPEG ? 2 : 1);
     assertEquals(expectedNumberOfLayers, layerGraphics.size());
     if (useJPEG) {
-      assertTrue(layerGraphics.get(0).getPath().endsWith(".jpeg"));
+      assertTrue(layerGraphics.getFirst().getPath().endsWith(".jpeg"));
     }
 
     new ImageSimilarity(getFile(BASE_DIR + "/output/" + expectedImageName))

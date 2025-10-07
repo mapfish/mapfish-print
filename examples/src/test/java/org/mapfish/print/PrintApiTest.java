@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -152,7 +151,7 @@ public class PrintApiTest extends AbstractApiTest {
 
   private void checkExampleRequest(String responseAsText) throws JSONException {
     JSONObject samplesRequest = new JSONObject(responseAsText);
-    final Iterator keys = samplesRequest.keys();
+    final Iterator<String> keys = samplesRequest.keys();
     assertTrue(keys.hasNext());
     String key = (String) keys.next();
     JSONObject sampleRequest = new JSONObject(samplesRequest.getString(key));
@@ -195,9 +194,7 @@ public class PrintApiTest extends AbstractApiTest {
 
     // create a large, fake request
     StringBuilder largeRequest = new StringBuilder();
-    for (int i = 0; i < 9999; i++) {
-      largeRequest.append(printSpec);
-    }
+    largeRequest.append(String.valueOf(printSpec).repeat(9999));
 
     setPrintSpec(largeRequest.toString(), request);
     try {
@@ -396,7 +393,8 @@ public class PrintApiTest extends AbstractApiTest {
       throws IOException, URISyntaxException, JSONException {
     ClientHttpResponse exampleResp =
         getPrintRequest(MapPrinterServlet.EXAMPLE_REQUEST_URL, HttpMethod.GET).execute();
-    JSONObject examples = new JSONObject(IOUtils.toString(exampleResp.getBody(), "UTF-8"));
+    JSONObject examples =
+        new JSONObject(IOUtils.toString(exampleResp.getBody(), StandardCharsets.UTF_8));
     return examples.getString(examples.keys().next());
   }
 
@@ -556,8 +554,7 @@ public class PrintApiTest extends AbstractApiTest {
     }
   }
 
-  private void addAuthHeader(ClientHttpRequest request, String credentials)
-      throws UnsupportedEncodingException {
+  private void addAuthHeader(ClientHttpRequest request, String credentials) {
     request
         .getHeaders()
         .add(

@@ -35,7 +35,7 @@ public class DateFormatProcessorTest extends AbstractMapfishSpringTest {
     final Template template = config.getTemplate("main");
     Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             getTaskDirectory(),

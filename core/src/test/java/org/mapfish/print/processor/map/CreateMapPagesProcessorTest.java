@@ -170,13 +170,10 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
       double tolerance)
       throws Exception {
     JasperPrint print =
-        format.getJasperPrint(
-                new HashMap<String, String>(),
-                requestData,
-                config,
-                config.getDirectory(),
-                getTaskDirectory())
-            .print;
+        format
+            .getJasperPrint(
+                new HashMap<>(), requestData, config, config.getDirectory(), getTaskDirectory())
+            .print();
 
     assertEquals(7, print.getPages().size());
     for (int i = 0; i < print.getPages().size(); i++) {

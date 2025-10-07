@@ -42,7 +42,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
     Template template = config.getTemplates().values().iterator().next();
     final Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             new File("tmp"),
@@ -83,7 +83,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
 
     Template template = config.getTemplates().values().iterator().next();
     new Values(
-        new HashMap<String, String>(),
+        new HashMap<>(),
         requestData,
         template,
         new File("tmp"),
@@ -107,7 +107,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
     Template template = config.getTemplates().values().iterator().next();
     final Values values =
         new Values(
-            new HashMap<String, String>(),
+            new HashMap<>(),
             requestData,
             template,
             new File("tmp"),
@@ -141,15 +141,17 @@ public class ValuesTest extends AbstractMapfishSpringTest {
     PJsonObject requestData =
         parseJSONObjectFromFile(ValuesTest.class, BASE_DIR + "requestData.json");
     String badLegendConf =
-        "[{\n"
-            + "    \"name\": \"\",\n"
-            + "    \"classes\": [{\n"
-            + "        \"name\": \"osm\",\n"
-            + "        \"icons\":"
-            + " [\"http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic"
-            + "&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states\"]\n"
-            + "    }]\n"
-            + "}]\n";
+        """
+        [{
+            "name": "",
+            "classes": [{
+                "name": "osm",
+                "icons":\
+         ["http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic\
+        &VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states"]
+            }]
+        }]
+        """;
     requestData
         .getInternalObj()
         .getJSONObject("attributes")
@@ -159,7 +161,7 @@ public class ValuesTest extends AbstractMapfishSpringTest {
 
     Template template = config.getTemplates().values().iterator().next();
     new Values(
-        new HashMap<String, String>(),
+        new HashMap<>(),
         requestData,
         template,
         new File("tmp"),

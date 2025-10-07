@@ -315,36 +315,17 @@ public final class LegendProcessor
     public LegendAttributeValue legend;
   }
 
-  /** The Output object of the legend processor method. */
-  public static final class Output {
-    /** The datasource for the legend object in the report. */
-    public final JRTableModelDataSource legendDataSource;
+  /**
+   * The Output object of the legend processor method.
+   *
+   * @param legendDataSource The datasource for the legend object in the report.
+   * @param legendSubReport The path to the compiled sub-report.
+   * @param numberOfLegendRows The number of rows in the legend.
+   */
+  public record Output(
+      JRTableModelDataSource legendDataSource, int numberOfLegendRows, String legendSubReport) {}
 
-    /** The path to the compiled sub-report. */
-    public final String legendSubReport;
-
-    /** The number of rows in the legend. */
-    public final int numberOfLegendRows;
-
-    Output(
-        final JRTableModelDataSource legendDataSource,
-        final int numberOfLegendRows,
-        final String legendSubReport) {
-      this.legendDataSource = legendDataSource;
-      this.numberOfLegendRows = numberOfLegendRows;
-      this.legendSubReport = legendSubReport;
-    }
-  }
-
-  private static final class NameTask implements Callable<Object[]> {
-
-    private final String name;
-    private final int level;
-
-    private NameTask(final String name, final int level) {
-      this.name = name;
-      this.level = level;
-    }
+  private record NameTask(String name, int level) implements Callable<Object[]> {
 
     @Override
     public Object[] call() {
@@ -430,10 +411,13 @@ public final class LegendProcessor
 
     private void logNotOkResponseStatus(final ClientHttpResponse httpResponse) throws IOException {
       LOGGER.warn(
-          "Failed to load image from: {} due to server side error.\n"
-              + "\tResponse Code: {}\n"
-              + "\tResponse Text: {}\n"
-              + "\tWith Headers:\n\t{}",
+          """
+          Failed to load image from: {} due to server side error.
+          \tResponse Code: {}
+          \tResponse Text: {}
+          \tWith Headers:
+          \t{}\
+          """,
           this.icon,
           httpResponse.getRawStatusCode(),
           httpResponse.getStatusText(),
