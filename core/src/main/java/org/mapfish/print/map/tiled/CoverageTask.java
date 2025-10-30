@@ -271,6 +271,16 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
         final ClientHttpResponse response, final String baseMetricName) throws IOException {
       BufferedImage image = ImageIO.read(response.getBody());
       if (image == null) {
+        if (this.failOnError) {
+          this.registry.counter(baseMetricName + ".failOn.error").inc();
+          String message =
+              String.format(
+                  "SingleTileLoader Task stopped since fail on error parameter is enabled and the"
+                      + " URL %s is an image format than cannot be decoded",
+                  this.tileRequest.getURI());
+          LOGGER.error(message);
+          throw new PrintException(message);
+        }
         LOGGER.warn(
             "The URL: {} is an image format that cannot be decoded", this.tileRequest.getURI());
         image = this.errorImage;
