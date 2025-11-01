@@ -49,7 +49,7 @@ jobs:
       - run: pre-commit run --all-files --color=always
       - run: git diff --exit-code --patch > /tmp/pre-commit.patch; git diff --color; git reset --hard || true
         if: failure()
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: Apply pre-commit fix.patch
           path: /tmp/pre-commit.patch
@@ -110,7 +110,7 @@ jobs:
       - run: make build
 
       - run: make checks
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: Checkstyle and SpotBugs reports
           path: reports
@@ -120,13 +120,13 @@ jobs:
       - timeout-minutes: 10
         run: make tests
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: Unit test results
           path: core/build/resources/test/org/mapfish/print/
           if-no-files-found: ignore
         if: failure()
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: Unit test report
           path: core/build/reports/tests/test/
@@ -139,7 +139,7 @@ jobs:
       - run: c2cciutils-docker-logs || true
         if: always()
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: Acceptance tests (Examples)
           path: examples/build/resources/test/examples/
@@ -155,7 +155,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: git diff --exit-code --patch > /tmp/dpkg-versions.patch; git diff --color; git reset --hard || true
         if: failure()
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: Update dpkg versions list.patch
           path: /tmp/dpkg-versions.patch
