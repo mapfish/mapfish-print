@@ -6,7 +6,7 @@ buildscript {
 }
 
 plugins {
-  id("com.github.spotbugs") version "6.4.2"
+  id("com.github.spotbugs") version "6.4.4"
 }
 
 defaultTasks 'build'
@@ -46,7 +46,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     }
 
     spotbugs {
-        toolVersion = "4.9.6" // com.github.spotbugs:spotbugs-annotations
+        toolVersion = "4.9.8" // com.github.spotbugs:spotbugs-annotations
         reportsDir = file("$project.buildDir/reports/SpotBugsReports")
         effort = com.github.spotbugs.snom.Effort.MAX
         reportLevel = com.github.spotbugs.snom.Confidence.valueOf("HIGH")
