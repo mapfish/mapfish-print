@@ -185,7 +185,7 @@ dependencies {
             'com.amazonaws:aws-java-sdk-s3:1.12.791',
             'io.sentry:sentry-logback:8.23.0',
             // For JSON logs
-            'net.logstash.logback:logstash-logback-encoder:8.1',
+            'net.logstash.logback:logstash-logback-encoder:9.0',
             // For PDF/A
             'com.adobe.xmp:xmpcore:6.1.11',
             // For JasperReports
