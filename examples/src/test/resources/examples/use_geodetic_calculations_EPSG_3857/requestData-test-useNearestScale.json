@@ -1,0 +1,129 @@
+{
+  "layout": "use_geodetic_calculations_EPSG_3857",
+  "outputFilename": "use_geodetic_calculations_EPSG_3857-useNearestScale",
+  "outputFormat": "pdf",
+  "attributes": {
+    "map": {
+      "projection": "EPSG:3857",
+      "useGeodeticCalculations":true,
+      "dpi": 96,
+      "rotation": "0",
+      "center": [-207511.294398448, 4721294.60441192],
+      "scale": 1692.7491482896,
+      "useNearestScale": true,
+      "layers": [
+        {
+          "type": "geojson",
+          "geoJson": {
+            "type":"FeatureCollection",
+            "features": [
+              {
+                "type":"Feature",
+                "properties":{
+                  "id":1
+                },
+                "geometry":{
+                  "type":"LineString",
+                    "coordinates":[
+                      [-207579.48461324992,4721194.581674164],[-207579.32433715693,4721207.486538315]
+                    ]
+                }
+              },
+              {
+                "type":"Feature",
+                "properties":{
+                  "id":2
+                },
+                "geometry":{
+                  "type":"LineString",
+                    "coordinates":[
+                      [-207566.6320769279,4721194.420737812],[-207566.47178454386,4721207.325601241]
+                    ]
+                }
+              },
+              {
+                "type":"Feature",
+                "properties":{
+                  "id":3
+                },
+                "geometry":{
+                  "type":"LineString",
+                    "coordinates":[
+                      [-207553.7795413239,4721194.259785101],[-207553.6192326485,4721207.164647809]
+                    ]
+                }
+              },
+              {
+                "type":"Feature",
+                "properties":{
+                  "id":4
+                },
+                "geometry":{
+                  "type":"LineString",
+                    "coordinates":[
+                      [-207540.92700643768,4721194.09881603],[-207540.766681471,4721207.003678024]
+                    ]
+                }
+              },
+              {
+                "type":"Feature",
+                "properties":{
+                  "id":5
+                },
+                "geometry":{
+                  "type":"LineString",
+                    "coordinates":[
+                      [-207528.07447226948,4721193.937830606],[-207527.91413101146,4721206.842691877]
+                    ]
+                }
+              },
+              {
+                "type":"Feature",
+                "properties":{
+                  "id":6
+                },
+                "geometry":{
+                  "type":"LineString",
+                    "coordinates":[
+                      [-207515.22193881928,4721193.77682882],[-207515.06158126998,4721206.681689373]
+                    ]
+                }
+              },
+              {
+                "type":"Feature",
+                "properties":{
+                  "id":7
+                },
+                "geometry":{
+                  "type":"LineString",
+                    "coordinates":[
+                      [-207502.3694060872,4721193.615810677],[-207502.20903224667,4721206.520670515]
+                    ]
+                }
+              }
+            ]
+          },
+          "style":{
+            "version":"2",
+            "*":{
+              "symbolizers":[
+                {
+                  "type":"LINE",
+                  "strokeColor": "red",
+                  "strokeOpacity": 1,
+                  "strokeWidth": 1            
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "OpenStreetMap",
+          "baseURL": "http://a.tile.openstreetmap.org",
+          "type": "OSM",
+          "imageExtension": "png"
+        }
+      ]
+    }
+  }
+}

@@ -11,6 +11,7 @@ import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
 import org.locationtech.jts.geom.Coordinate;
+import org.mapfish.print.PseudoMercatorUtils;
 import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.PrintException;
 import org.mapfish.print.map.DistanceUnit;
@@ -38,9 +39,25 @@ public final class CenterScaleMapBounds extends MapBounds {
       final double centerX,
       final double centerY,
       final double scaleDenominator) {
-    super(projection);
-    this.center = new Coordinate(centerX, centerY);
-    this.scale = new Scale(scaleDenominator, getProjection(), PDF_DPI);
+    this(projection, centerX, centerY, scaleDenominator, false);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param projection the projection these bounds are defined in.
+   * @param centerX the x coordinate of the center point.
+   * @param centerY the y coordinate of the center point.
+   * @param scaleDenominator the scale denominator of the map.
+   * @param useGeodeticCalculations force to use geodetic calculations in PseudoMercator projection
+   */
+  public CenterScaleMapBounds(
+      final CoordinateReferenceSystem projection,
+      final double centerX,
+      final double centerY,
+      final double scaleDenominator,
+      final boolean useGeodeticCalculations) {
+    this(projection, centerX, centerY, new Scale(scaleDenominator, projection, PDF_DPI), useGeodeticCalculations);
   }
 
   /**
@@ -56,7 +73,25 @@ public final class CenterScaleMapBounds extends MapBounds {
       final double centerX,
       final double centerY,
       final Scale scale) {
-    super(projection);
+    this(projection, centerX, centerY, scale, false);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param projection the projection these bounds are defined in.
+   * @param centerX the x coordinate of the center point.
+   * @param centerY the y coordinate of the center point.
+   * @param scale the scale of the map.
+   * @param useGeodeticCalculations force to use geodetic calculations in PseudoMercator projection
+   */
+  public CenterScaleMapBounds(
+      final CoordinateReferenceSystem projection,
+      final double centerX,
+      final double centerY,
+      final Scale scale,
+      final boolean useGeodeticCalculations) {
+    super(projection, useGeodeticCalculations);
     this.center = new Coordinate(centerX, centerY);
     this.scale = scale;
   }
@@ -64,11 +99,18 @@ public final class CenterScaleMapBounds extends MapBounds {
   @Override
   public ReferencedEnvelope toReferencedEnvelope(final Rectangle paintArea) {
     ReferencedEnvelope bbox;
-    final DistanceUnit projectionUnit = DistanceUnit.fromProjection(getProjection());
+    CoordinateReferenceSystem crs = getProjection();
+    final DistanceUnit projectionUnit = DistanceUnit.fromProjection(crs);
     if (projectionUnit == DistanceUnit.DEGREES) {
       double geoWidthInches = this.scale.getResolutionInInches() * paintArea.width;
       double geoHeightInches = this.scale.getResolutionInInches() * paintArea.height;
       bbox = computeGeodeticBBox(geoWidthInches, geoHeightInches);
+      
+    } else if (this.useGeodeticCalculations() && PseudoMercatorUtils.isPseudoMercator(crs)) {
+      double geoWidthInM = scale.getResolution() * paintArea.width;
+      double geoHeightInM = scale.getResolution() * paintArea.height;
+      bbox = computeGeodeticBBoxInPseudoMercator(geoWidthInM, geoHeightInM);
+      
     } else {
       final double centerX = this.center.getOrdinate(0);
       final double centerY = this.center.getOrdinate(1);
@@ -80,7 +122,7 @@ public final class CenterScaleMapBounds extends MapBounds {
       double minGeoY = centerY - (geoHeight / 2.0);
       double maxGeoX = minGeoX + geoWidth;
       double maxGeoY = minGeoY + geoHeight;
-      bbox = new ReferencedEnvelope(minGeoX, maxGeoX, minGeoY, maxGeoY, getProjection());
+      bbox = new ReferencedEnvelope(minGeoX, maxGeoX, minGeoY, maxGeoY, crs);
     }
 
     return bbox;
@@ -103,7 +145,7 @@ public final class CenterScaleMapBounds extends MapBounds {
     final Scale newScale =
         getNearestScale(zoomLevels, tolerance, zoomLevelSnapStrategy, geodetic, paintArea, dpi);
 
-    return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, newScale);
+    return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, newScale, this.useGeodeticCalculations());
   }
 
   @Override
@@ -125,12 +167,12 @@ public final class CenterScaleMapBounds extends MapBounds {
 
     final double newResolution = this.scale.getResolution() * factor;
     return new CenterScaleMapBounds(
-        getProjection(), this.center.x, this.center.y, this.scale.toResolution(newResolution));
+        getProjection(), this.center.x, this.center.y, this.scale.toResolution(newResolution), this.useGeodeticCalculations());
   }
 
   @Override
   public MapBounds zoomToScale(final Scale newScale) {
-    return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, newScale);
+    return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, newScale, this.useGeodeticCalculations());
   }
 
   @Override
@@ -138,6 +180,75 @@ public final class CenterScaleMapBounds extends MapBounds {
     return this.center;
   }
 
+  /**
+   * Computes a {@link ReferencedEnvelope} representing the geographic extent for a map
+   * in Pseudo-Mercator projection from given metric dimensions.
+   * <p>
+   * This method calculates a real-world geographic bounding box starting from a center coordinate
+   * and using the specified width and height in meters. It accounts for Earth's curvature and the
+   * properties of the Coordinate Reference System's ellipsoid through geodetic calculations.
+   * <p>
+   * The geodetic computation involves:
+   * <ol>
+   *   <li>Converting the metric dimensions to the units of the CRS's ellipsoid.</li>
+   *   <li>Using a {@link GeodeticCalculator} to determine the min/max geographic coordinates by
+   *       calculating distances from the center point towards the west, east, north, and south.</li>
+   * </ol>
+   * <p>
+   * This method is particularly suited for Web Mercator (EPSG:3857) and similar projections where
+   * geodetic calculations are more accurate than linear approximation.
+   *
+   * @param geoWidthInM The width of the bounding box in meters.
+   * @param geoHeightInM The height of the bounding box in meters.
+   * @return The calculated {@link ReferencedEnvelope} representing the map's geographic extent.
+   * @throws PrintException if the geodetic calculation fails or the coordinate transformation is invalid.
+   */
+  private ReferencedEnvelope computeGeodeticBBoxInPseudoMercator(final double geoWidthInM, final double geoHeightInM) {
+    try {
+        CoordinateReferenceSystem crs = this.getProjection(); 
+        
+        GeodeticCalculator calc = new GeodeticCalculator(crs);
+
+        DistanceUnit ellipsoidUnit
+            = DistanceUnit.fromString(calc.getEllipsoid().getAxisUnit().toString());
+        double geoWidth = DistanceUnit.M.convertTo(geoWidthInM, ellipsoidUnit);
+        double geoHeight = DistanceUnit.M.convertTo(geoHeightInM, ellipsoidUnit);
+
+        Position2D directPosition2D = new Position2D(this.center.x, this.center.y);
+        directPosition2D.setCoordinateReferenceSystem(crs);
+        calc.setStartingPosition(directPosition2D);
+
+        final int west = -90;
+        calc.setDirection(west, geoWidth / 2.0);
+        double minGeoX = calc.getDestinationPosition().getOrdinate(0);
+
+        final int east = 90;
+        calc.setDirection(east, geoWidth / 2.0);
+        double maxGeoX = calc.getDestinationPosition().getOrdinate(0);
+
+        final int south = 180;
+        calc.setDirection(south, geoHeight / 2.0);
+        double southHeight = calc.getOrthodromicDistance();
+
+        final int north = 0;
+        calc.setDirection(north, geoHeight / 2.0);
+        double northHeight = calc.getOrthodromicDistance();
+
+        double halfHeight = (southHeight + northHeight) / 2;
+        double minGeoY = calc.getStartingPosition().getOrdinate(1) - halfHeight;
+        double maxGeoY = calc.getStartingPosition().getOrdinate(1) + halfHeight;
+
+        return new ReferencedEnvelope(
+            minGeoX,
+            maxGeoX,
+            minGeoY,
+            maxGeoY,
+            crs);
+    } catch (TransformException e) {
+      throw new PrintException("Failed to compute geodetic bbox for pseudo-mercator projection", e);
+    }
+  }
+  
   private ReferencedEnvelope computeGeodeticBBox(
       final double geoWidthInInches, final double geoHeightInInches) {
     try {

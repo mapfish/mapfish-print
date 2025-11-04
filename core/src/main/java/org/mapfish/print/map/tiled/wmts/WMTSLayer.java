@@ -12,10 +12,19 @@ import java.net.URISyntaxException;
 import java.util.concurrent.ForkJoinPool;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.GeodeticCalculator;
+import org.locationtech.jts.geom.Coordinate;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.PseudoMercatorUtils;
+import org.mapfish.print.attribute.map.GenericMapAttribute;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
@@ -24,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
+
 
 /** Class for loading data from a WMTS. */
 public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
@@ -78,16 +88,18 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
           "Computing imageBufferScaling of layer {} at target resolution {}",
           layer.getName(),
           targetResolution);
+      double scalingFactor = computeExtraScalingFactor(bounds);
 
       for (Matrix m : getParams().matrices) {
-        final double resolution = m.getResolution(this.bounds.getProjection());
+        double resolution = m.getResolution(this.bounds.getProjection());
         LOGGER.debug(
-            "Checking tile resolution {} ({} scaling)", resolution, targetResolution / resolution);
+            "Checking tile resolution {} ({} scaling)", resolution, (targetResolution / resolution) * scalingFactor);
         final double delta = Math.abs(resolution - targetResolution);
         if (delta < diff) {
           diff = delta;
           this.matrix = m;
-          ibf = targetResolution / resolution;
+          // Apply the scaling factor to compensate for Mercator projection distortion.
+          ibf = (targetResolution / resolution) * scalingFactor;
         }
       }
       imageBufferScaling = ibf;
@@ -98,6 +110,40 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
             "Unable to find a matrix for the resolution: " + targetResolution);
       }
     }
+
+    /**
+     * The scalingFactor is used to correct for the distortion of the Web Mercator projection. 
+     * This projection distorts distances and areas as one moves away from the equator.
+     * This factor ensures that the final printed map's scale is accurate at the map's center.
+    */
+    @SuppressWarnings("UseSpecificCatch")
+    private double computeExtraScalingFactor(final MapBounds bounds) {
+        try {
+            CoordinateReferenceSystem crs = this.bounds.getProjection();
+            if(!(bounds.useGeodeticCalculations() && PseudoMercatorUtils.isPseudoMercator(crs))) {
+                return 1;
+            }
+            GeodeticCalculator calculator = new GeodeticCalculator(crs);
+            calculator.setStartingGeographicPoint(0, 0);
+            calculator.setDestinationGeographicPoint(1, 0);
+            double equador1DegreeDistance = calculator.getOrthodromicDistance();
+
+            double centerY = bounds.getCenter().getOrdinate(1);
+            final MathTransform transform = CRS.findMathTransform(crs, GenericMapAttribute.parseProjection("EPSG:4326", true));
+            final Coordinate start = JTS.transform(new Coordinate(0, centerY), null, transform);
+            calculator.setStartingGeographicPoint(0, start.y);
+            calculator.setDestinationGeographicPoint(1, start.y);
+            double latitud1DegreeDistance = calculator.getOrthodromicDistance();
+
+            double factor = equador1DegreeDistance / latitud1DegreeDistance;
+
+            return factor;
+        } catch (Exception e) {
+            throw new PrintException("Can't compute scaling factor correction for PseudoMercator", e);
+        }
+
+    }
+    
 
     @Override
     public double getImageBufferScaling() {
