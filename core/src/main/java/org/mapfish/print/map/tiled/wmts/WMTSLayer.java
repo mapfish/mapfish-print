@@ -12,10 +12,12 @@ import java.net.URISyntaxException;
 import java.util.concurrent.ForkJoinPool;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.config.Configuration;
+import org.mapfish.print.EPSG3857Utils;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.geotools.StyleSupplier;
 import org.mapfish.print.map.tiled.AbstractTiledLayer;
@@ -24,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
+
 
 /** Class for loading data from a WMTS. */
 public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
@@ -78,16 +81,25 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
           "Computing imageBufferScaling of layer {} at target resolution {}",
           layer.getName(),
           targetResolution);
+      CoordinateReferenceSystem crs = this.bounds.getProjection();
+        // The scalingFactor is used to correct for the distortion of the EPSG:3857 (Web Mercator)
+        // projection. This projection distorts distances and areas as one moves away from the equator.
+        // This factor ensures that the final printed map's scale is accurate at the map's center.
+        double scalingFactor = 1;
+        if (EPSG3857Utils.is3857(crs)){
+            scalingFactor = EPSG3857Utils.computeScalingFactor(bounds);
+        }
 
       for (Matrix m : getParams().matrices) {
-        final double resolution = m.getResolution(this.bounds.getProjection());
+        double resolution = m.getResolution(crs);
         LOGGER.debug(
-            "Checking tile resolution {} ({} scaling)", resolution, targetResolution / resolution);
+            "Checking tile resolution {} ({} scaling)", resolution, (targetResolution / resolution) * scalingFactor);
         final double delta = Math.abs(resolution - targetResolution);
         if (delta < diff) {
           diff = delta;
           this.matrix = m;
-          ibf = targetResolution / resolution;
+          // Apply the scaling factor to compensate for Mercator projection distortion.
+          ibf = (targetResolution / resolution) * scalingFactor;
         }
       }
       imageBufferScaling = ibf;

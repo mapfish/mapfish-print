@@ -9,6 +9,7 @@ import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
 import org.locationtech.jts.geom.Coordinate;
+import org.mapfish.print.EPSG3857Utils;
 import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.PrintException;
 import org.mapfish.print.map.DistanceUnit;
@@ -62,11 +63,19 @@ public final class CenterScaleMapBounds extends MapBounds {
   @Override
   public ReferencedEnvelope toReferencedEnvelope(final Rectangle paintArea) {
     ReferencedEnvelope bbox;
-    final DistanceUnit projectionUnit = DistanceUnit.fromProjection(getProjection());
+    CoordinateReferenceSystem crs = getProjection();
+    final DistanceUnit projectionUnit = DistanceUnit.fromProjection(crs);
     if (projectionUnit == DistanceUnit.DEGREES) {
       double geoWidthInches = this.scale.getResolutionInInches() * paintArea.width;
       double geoHeightInches = this.scale.getResolutionInInches() * paintArea.height;
       bbox = computeGeodeticBBox(geoWidthInches, geoHeightInches);
+    } else if (EPSG3857Utils.is3857(crs)){
+        // For EPSG:3857 (Web Mercator), a direct linear calculation of the bounding box
+        // from the center and scale is inaccurate due to the projection's significant
+        // distance distortion, which varies with latitude.
+        // Therefore, a specialized utility function is used to correctly compute the
+        // ReferencedEnvelope, accounting for this distortion.
+        bbox = EPSG3857Utils.computeReferencedEnvelope(paintArea, this.scale, this.center, crs);
     } else {
       final double centerX = this.center.getOrdinate(0);
       final double centerY = this.center.getOrdinate(1);
@@ -78,7 +87,7 @@ public final class CenterScaleMapBounds extends MapBounds {
       double minGeoY = centerY - (geoHeight / 2.0);
       double maxGeoX = minGeoX + geoWidth;
       double maxGeoY = minGeoY + geoHeight;
-      bbox = new ReferencedEnvelope(minGeoX, maxGeoX, minGeoY, maxGeoY, getProjection());
+      bbox = new ReferencedEnvelope(minGeoX, maxGeoX, minGeoY, maxGeoY, crs);
     }
 
     return bbox;

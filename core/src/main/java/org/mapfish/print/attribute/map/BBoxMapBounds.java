@@ -9,6 +9,10 @@ import org.locationtech.jts.geom.Envelope;
 import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
+import org.mapfish.print.EPSG3857Utils;
+
+
+
 
 /**
  * Represent the map bounds with a bounding box.
@@ -114,11 +118,12 @@ public final class BBoxMapBounds extends MapBounds {
   public Scale getScale(final Rectangle paintArea, final double dpi) {
     final ReferencedEnvelope bboxAdjustedToScreen = toReferencedEnvelope(paintArea);
 
-    DistanceUnit projUnit = DistanceUnit.fromProjection(getProjection());
+    CoordinateReferenceSystem crs = getProjection();
+    DistanceUnit projUnit = DistanceUnit.fromProjection(crs);
 
     double geoWidthInInches;
     if (projUnit == DistanceUnit.DEGREES) {
-      GeodeticCalculator calculator = new GeodeticCalculator(getProjection());
+      GeodeticCalculator calculator = new GeodeticCalculator(crs);
       final double centerY = bboxAdjustedToScreen.centre().y;
       calculator.setStartingGeographicPoint(bboxAdjustedToScreen.getMinX(), centerY);
       calculator.setDestinationGeographicPoint(bboxAdjustedToScreen.getMaxX(), centerY);
@@ -127,6 +132,12 @@ public final class BBoxMapBounds extends MapBounds {
           DistanceUnit.fromString(calculator.getEllipsoid().getAxisUnit().toString());
 
       geoWidthInInches = ellipsoidUnit.convertTo(geoWidthInEllipsoidUnits, DistanceUnit.IN);
+    } else if (EPSG3857Utils.is3857(crs)){
+        // EPSG:3857 (Web Mercator) uses "Mercator meters" which are not true ground distances.
+        // This projection severely distorts distances and areas with increasing latitude.
+        // Therefore, a special calculation is required to determine the true orthodromic width
+        // to ensure the calculated scale is accurate.
+        geoWidthInInches = EPSG3857Utils.computeOrthodromicWidthInInches(bboxAdjustedToScreen);
     } else {
       // (scale * width ) / dpi = geowidith
       geoWidthInInches = projUnit.convertTo(bboxAdjustedToScreen.getWidth(), DistanceUnit.IN);
