@@ -127,14 +127,14 @@ public final class OverviewMapAttribute extends GenericMapAttribute {
         double centerX = this.center[0];
         double centerY = this.center[1];
 
-        bounds = new CenterScaleMapBounds(crs, centerX, centerY, this.scale);
+        bounds = new CenterScaleMapBounds(crs, centerX, centerY, this.scale, this.useGeodeticCalculations);
       } else if (this.bbox != null) {
         final int maxYIndex = 3;
         double minX = this.bbox[0];
         double minY = this.bbox[1];
         double maxX = this.bbox[2];
         double maxY = this.bbox[maxYIndex];
-        bounds = new BBoxMapBounds(crs, minX, minY, maxX, maxY);
+        bounds = new BBoxMapBounds(crs, minX, minY, maxX, maxY, this.useGeodeticCalculations);
       }
 
       return bounds;
