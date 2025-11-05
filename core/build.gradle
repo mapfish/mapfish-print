@@ -116,7 +116,7 @@ configurations {
 dependencies {
     compile(
             "org.springframework:spring-context:5.3.39",
-            "org.springframework:spring-web:5.3.39",
+            "org.springframework:spring-web:6.0.0",
             "org.springframework:spring-webmvc:5.3.39",
             "org.springframework.security:spring-security-config:5.8.16",
             "org.springframework.security:spring-security-web:5.8.16",
