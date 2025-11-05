@@ -24,7 +24,7 @@ dependencies {
             'commons-io:commons-io:2.17.0',
             "org.springframework:spring-beans:5.3.39",
             "org.springframework:spring-web:5.3.39",
-            "org.springframework:spring-context:5.3.39",
+            "org.springframework:spring-context:6.0.0",
             'javax.servlet:javax.servlet-api:4.0.1'
     )
 }
