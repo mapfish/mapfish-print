@@ -126,7 +126,7 @@ configurations {
 dependencies {
     implementation(
             'org.springframework:spring-context:5.3.39',
-            'org.springframework:spring-web:5.3.39',
+            'org.springframework:spring-web:6.0.0',
             'org.springframework:spring-webmvc:5.3.39',
             'org.springframework:spring-aspects:5.3.39',
             'org.springframework:spring-orm:5.3.39',
