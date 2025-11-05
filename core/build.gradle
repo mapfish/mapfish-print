@@ -113,7 +113,7 @@ configurations {
 }
 
 ext {
-    springVersion = '5.3.39'
+    springVersion = '6.0.0'
 }
 
 dependencies {
