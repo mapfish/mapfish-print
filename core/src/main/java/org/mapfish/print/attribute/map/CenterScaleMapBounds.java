@@ -37,9 +37,24 @@ public final class CenterScaleMapBounds extends MapBounds {
       final double centerX,
       final double centerY,
       final double scaleDenominator) {
-    super(projection);
-    this.center = new Coordinate(centerX, centerY);
-    this.scale = new Scale(scaleDenominator, getProjection(), PDF_DPI);
+    this(projection, centerX, centerY, scaleDenominator, false);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param projection the projection these bounds are defined in.
+   * @param centerX the x coordinate of the center point.
+   * @param centerY the y coordinate of the center point.
+   * @param scaleDenominator the scale denominator of the map.
+   */
+  public CenterScaleMapBounds(
+      final CoordinateReferenceSystem projection,
+      final double centerX,
+      final double centerY,
+      final double scaleDenominator,
+      final boolean useGeodeticCalculations) {
+    this(projection, centerX, centerY, new Scale(scaleDenominator, projection, PDF_DPI), useGeodeticCalculations);
   }
 
   /**
@@ -55,7 +70,24 @@ public final class CenterScaleMapBounds extends MapBounds {
       final double centerX,
       final double centerY,
       final Scale scale) {
-    super(projection);
+    this(projection, centerX, centerY, scale, false);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param projection the projection these bounds are defined in.
+   * @param centerX the x coordinate of the center point.
+   * @param centerY the y coordinate of the center point.
+   * @param scale the scale of the map.
+   */
+  public CenterScaleMapBounds(
+      final CoordinateReferenceSystem projection,
+      final double centerX,
+      final double centerY,
+      final Scale scale,
+      final boolean useGeodeticCalculations) {
+    super(projection, useGeodeticCalculations);
     this.center = new Coordinate(centerX, centerY);
     this.scale = scale;
   }

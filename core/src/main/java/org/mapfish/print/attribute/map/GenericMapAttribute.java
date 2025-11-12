@@ -385,6 +385,12 @@ public abstract class GenericMapAttribute
     @HasDefaultValue public Boolean pdfA = null;
 
     /**
+     * Should use geodetic calculations to manage Pseudo-mercator projection? (Default: false) 
+     * 
+     */
+    @HasDefaultValue public Boolean useGeodeticCalculations = null;
+
+    /**
      * Constructor.
      *
      * @param template the template this map is part of.

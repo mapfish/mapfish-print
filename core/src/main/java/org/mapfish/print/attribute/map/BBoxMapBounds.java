@@ -28,9 +28,38 @@ public final class BBoxMapBounds extends MapBounds {
    * @param projection the projection these bounds are defined in.
    * @param envelope the bounds
    */
-  public BBoxMapBounds(final CoordinateReferenceSystem projection, final Envelope envelope) {
-    super(projection);
+  public BBoxMapBounds(final CoordinateReferenceSystem projection, final Envelope envelope, final boolean useGeodeticCalculations) {
+    super(projection, useGeodeticCalculations);
     this.bbox = envelope;
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param projection the projection these bounds are defined in.
+   * @param envelope the bounds
+   */
+  public BBoxMapBounds(final CoordinateReferenceSystem projection, final Envelope envelope) {
+    this(projection, envelope, false);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param projection the projection these bounds are defined in.
+   * @param minX min X coordinate for the MapBounds
+   * @param minY min Y coordinate for the MapBounds
+   * @param maxX max X coordinate for the MapBounds
+   * @param maxY max Y coordinate for the MapBounds
+   */
+  public BBoxMapBounds(
+      final CoordinateReferenceSystem projection,
+      final double minX,
+      final double minY,
+      final double maxX,
+      final double maxY,
+      final boolean useGeodeticCalculations) {
+    this(projection, new Envelope(minX, maxX, minY, maxY), useGeodeticCalculations);
   }
 
   /**

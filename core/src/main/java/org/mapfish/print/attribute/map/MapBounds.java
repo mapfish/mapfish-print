@@ -16,6 +16,18 @@ import org.slf4j.LoggerFactory;
 public abstract class MapBounds {
   private static final Logger LOGGER = LoggerFactory.getLogger(MapBounds.class);
   private final CoordinateReferenceSystem projection;
+  private final boolean useGeodeticCalculations;
+
+  /**
+   * Constructor.
+   *
+   * @param projection the projection these bounds are defined in.
+   * @param useGeodeticCalculations
+   */
+  protected MapBounds(final CoordinateReferenceSystem projection, boolean useGeodeticCalculations) {
+    this.projection = projection;
+    this.useGeodeticCalculations = useGeodeticCalculations;
+  }
 
   /**
    * Constructor.
@@ -23,7 +35,7 @@ public abstract class MapBounds {
    * @param projection the projection these bounds are defined in.
    */
   protected MapBounds(final CoordinateReferenceSystem projection) {
-    this.projection = projection;
+    this(projection, false);
   }
 
   /**
@@ -153,6 +165,10 @@ public abstract class MapBounds {
    * @return the center position
    */
   public abstract Coordinate getCenter();
+  
+  public boolean useGeodeticCalculations(){
+    return this.useGeodeticCalculations;
+  }
 
   @Override
   public boolean equals(final Object o) {
