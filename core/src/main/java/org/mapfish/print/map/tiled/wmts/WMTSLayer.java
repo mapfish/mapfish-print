@@ -116,6 +116,7 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
      * This projection distorts distances and areas as one moves away from the equator.
      * This factor ensures that the final printed map's scale is accurate at the map's center.
     */
+    @SuppressWarnings("UseSpecificCatch")
     private double computeExtraScalingFactor(final MapBounds bounds) {
         try {
             CoordinateReferenceSystem crs = this.bounds.getProjection();

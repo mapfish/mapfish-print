@@ -47,6 +47,7 @@ public final class CenterScaleMapBounds extends MapBounds {
    * @param centerX the x coordinate of the center point.
    * @param centerY the y coordinate of the center point.
    * @param scaleDenominator the scale denominator of the map.
+   * @param useGeodeticCalculations force to use geodetic calculations in PseudoMercator projection
    */
   public CenterScaleMapBounds(
       final CoordinateReferenceSystem projection,
@@ -80,6 +81,7 @@ public final class CenterScaleMapBounds extends MapBounds {
    * @param centerX the x coordinate of the center point.
    * @param centerY the y coordinate of the center point.
    * @param scale the scale of the map.
+   * @param useGeodeticCalculations force to use geodetic calculations in PseudoMercator projection
    */
   public CenterScaleMapBounds(
       final CoordinateReferenceSystem projection,
@@ -97,6 +99,7 @@ public final class CenterScaleMapBounds extends MapBounds {
     ReferencedEnvelope bbox;
     CoordinateReferenceSystem crs = getProjection();
     final DistanceUnit projectionUnit = DistanceUnit.fromProjection(crs);
+    System.out.println("CenterScaleMapBounds: useGeodeticCalculations="+this.useGeodeticCalculations()+"isPseudoMercator="+PseudoMercatorUtils.isPseudoMercator(crs));
     if (projectionUnit == DistanceUnit.DEGREES) {
       double geoWidthInches = this.scale.getResolutionInInches() * paintArea.width;
       double geoHeightInches = this.scale.getResolutionInInches() * paintArea.height;
@@ -141,7 +144,7 @@ public final class CenterScaleMapBounds extends MapBounds {
     final Scale newScale =
         getNearestScale(zoomLevels, tolerance, zoomLevelSnapStrategy, geodetic, paintArea, dpi);
 
-    return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, newScale);
+    return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, newScale, this.useGeodeticCalculations());
   }
 
   @Override
@@ -163,12 +166,12 @@ public final class CenterScaleMapBounds extends MapBounds {
 
     final double newResolution = this.scale.getResolution() * factor;
     return new CenterScaleMapBounds(
-        getProjection(), this.center.x, this.center.y, this.scale.toResolution(newResolution));
+        getProjection(), this.center.x, this.center.y, this.scale.toResolution(newResolution), this.useGeodeticCalculations());
   }
 
   @Override
   public MapBounds zoomToScale(final Scale newScale) {
-    return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, newScale);
+    return new CenterScaleMapBounds(getProjection(), this.center.x, this.center.y, newScale, this.useGeodeticCalculations());
   }
 
   @Override

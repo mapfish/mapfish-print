@@ -176,7 +176,7 @@ public final class MapfishMapContext {
     final double heightDiff = adaptedHeight - envelope.getHeight();
     envelope.expandBy(widthDiff / 2.0, heightDiff / 2.0);
 
-    return new BBoxMapBounds(envelope);
+    return new BBoxMapBounds(envelope, rotatedBounds.useGeodeticCalculations());
   }
 
   /**

@@ -31,6 +31,7 @@ public final class BBoxMapBounds extends MapBounds {
    *
    * @param projection the projection these bounds are defined in.
    * @param envelope the bounds
+   * @param useGeodeticCalculations force to use geodetic calculations in PseudoMercator projection
    */
   public BBoxMapBounds(final CoordinateReferenceSystem projection, final Envelope envelope, final boolean useGeodeticCalculations) {
     super(projection, useGeodeticCalculations);
@@ -55,6 +56,7 @@ public final class BBoxMapBounds extends MapBounds {
    * @param minY min Y coordinate for the MapBounds
    * @param maxX max X coordinate for the MapBounds
    * @param maxY max Y coordinate for the MapBounds
+   * @param useGeodeticCalculations force to use geodetic calculations in PseudoMercator projection
    */
   public BBoxMapBounds(
       final CoordinateReferenceSystem projection,
@@ -82,6 +84,22 @@ public final class BBoxMapBounds extends MapBounds {
       final double maxX,
       final double maxY) {
     this(projection, new Envelope(minX, maxX, minY, maxY));
+  }
+
+  /**
+   * Create from a bbox.
+   *
+   * @param bbox the bounds.
+   * @param useGeodeticCalculations force to use geodetic calculations in PseudoMercator projection
+   */
+  public BBoxMapBounds(final ReferencedEnvelope bbox, final boolean useGeodeticCalculations) {
+    this(
+        bbox.getCoordinateReferenceSystem(),
+        bbox.getMinX(),
+        bbox.getMinY(),
+        bbox.getMaxX(),
+        bbox.getMaxY(),
+        useGeodeticCalculations);
   }
 
   /**
@@ -117,7 +135,8 @@ public final class BBoxMapBounds extends MapBounds {
           centerX - finalDiff,
           this.bbox.getMinY(),
           centerX + finalDiff,
-          this.bbox.getMaxY());
+          this.bbox.getMaxY(),
+          this.useGeodeticCalculations());
     } else {
       double centerY = (this.bbox.getMinY() + this.bbox.getMaxY()) / 2;
       double factor = bboxAspectRatio / paintAreaAspectRatio;
@@ -127,7 +146,8 @@ public final class BBoxMapBounds extends MapBounds {
           this.bbox.getMinX(),
           centerY - finalDiff,
           this.bbox.getMaxX(),
-          centerY + finalDiff);
+          centerY + finalDiff,
+          this.useGeodeticCalculations());
     }
   }
 
@@ -144,7 +164,7 @@ public final class BBoxMapBounds extends MapBounds {
         getNearestScale(zoomLevels, tolerance, zoomLevelSnapStrategy, geodetic, paintArea, dpi);
 
     Coordinate center = this.bbox.centre();
-    return new CenterScaleMapBounds(getProjection(), center.x, center.y, newScale);
+    return new CenterScaleMapBounds(getProjection(), center.x, center.y, newScale, this.useGeodeticCalculations());
   }
 
   @Override
@@ -157,6 +177,7 @@ public final class BBoxMapBounds extends MapBounds {
     double geoWidthInInches;
     
     // If it is geodetic/degress OR it is a special case requiring geodetic calculation (PseudoMercator)
+    System.out.println("BBoxMapBounds: useGeodeticCalculations="+this.useGeodeticCalculations()+"isPseudoMercator="+PseudoMercatorUtils.isPseudoMercator(crs));
     if (projUnit == DistanceUnit.DEGREES || (this.useGeodeticCalculations() && PseudoMercatorUtils.isPseudoMercator(crs))) {
         geoWidthInInches = this.computeGeodeticWidthInInches(bboxAdjustedToScreen);    
     } else {
@@ -219,7 +240,7 @@ public final class BBoxMapBounds extends MapBounds {
     final double rotatedMinY = this.bbox.getMinY() - heightDifference;
     final double rotatedMaxY = this.bbox.getMaxY() + heightDifference;
 
-    return new BBoxMapBounds(getProjection(), rotatedMinX, rotatedMinY, rotatedMaxX, rotatedMaxY);
+    return new BBoxMapBounds(getProjection(), rotatedMinX, rotatedMinY, rotatedMaxX, rotatedMaxY, this.useGeodeticCalculations());
   }
 
   private double getRotatedWidth(final double rotation) {
@@ -259,7 +280,7 @@ public final class BBoxMapBounds extends MapBounds {
     double minGeoY = centerY - destHeight / 2.0f;
     double maxGeoY = centerY + destHeight / 2.0f;
 
-    return new BBoxMapBounds(getProjection(), minGeoX, minGeoY, maxGeoX, maxGeoY);
+    return new BBoxMapBounds(getProjection(), minGeoX, minGeoY, maxGeoX, maxGeoY, this.useGeodeticCalculations());
   }
 
   @Override
@@ -303,7 +324,7 @@ public final class BBoxMapBounds extends MapBounds {
     final double minGeoY = centerY - destHeight / 2.0;
     final double maxGeoY = centerY + destHeight / 2.0;
 
-    return new BBoxMapBounds(getProjection(), minGeoX, minGeoY, maxGeoX, maxGeoY);
+    return new BBoxMapBounds(getProjection(), minGeoX, minGeoY, maxGeoX, maxGeoY, this.useGeodeticCalculations());
   }
 
   @Override

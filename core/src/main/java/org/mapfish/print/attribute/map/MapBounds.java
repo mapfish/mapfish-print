@@ -22,7 +22,7 @@ public abstract class MapBounds {
    * Constructor.
    *
    * @param projection the projection these bounds are defined in.
-   * @param useGeodeticCalculations
+   * @param useGeodeticCalculations force to use geodetic calculations in PseudoMercator projection
    */
   protected MapBounds(final CoordinateReferenceSystem projection, final boolean useGeodeticCalculations) {
     this.projection = projection;
@@ -166,6 +166,11 @@ public abstract class MapBounds {
    */
   public abstract Coordinate getCenter();
   
+  /**
+   * Should use geodetic calculations to manage Pseudo-mercator projection?
+   * 
+   * @return true if the use of geodetic calculations is forced in the PseudoMercator projection; otherwise, it returns false.
+   */
   public boolean useGeodeticCalculations(){
     return this.useGeodeticCalculations;
   }

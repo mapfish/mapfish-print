@@ -180,7 +180,7 @@ public final class CreateMapProcessor
               dpi);
     }
 
-    newBounds = new BBoxMapBounds(newBounds.toReferencedEnvelope(paintArea));
+    newBounds = new BBoxMapBounds(newBounds.toReferencedEnvelope(paintArea), bounds.useGeodeticCalculations());
 
     if (mapValues.isUseAdjustBounds()) {
       newBounds = newBounds.adjustedEnvelope(paintArea);

@@ -388,7 +388,7 @@ public abstract class GenericMapAttribute
      * Should use geodetic calculations to manage Pseudo-mercator projection? (Default: false) 
      * 
      */
-    @HasDefaultValue public Boolean useGeodeticCalculations = null;
+    @HasDefaultValue public Boolean useGeodeticCalculations = false;
 
     /**
      * Constructor.
