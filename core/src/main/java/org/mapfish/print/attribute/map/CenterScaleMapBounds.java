@@ -9,7 +9,7 @@ import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.GeodeticCalculator;
 import org.locationtech.jts.geom.Coordinate;
-import org.mapfish.print.EPSG3857Utils;
+import org.mapfish.print.PseudoMercatorUtils;
 import org.mapfish.print.FloatingPointUtil;
 import org.mapfish.print.PrintException;
 import org.mapfish.print.map.DistanceUnit;
@@ -101,13 +101,12 @@ public final class CenterScaleMapBounds extends MapBounds {
       double geoWidthInches = this.scale.getResolutionInInches() * paintArea.width;
       double geoHeightInches = this.scale.getResolutionInInches() * paintArea.height;
       bbox = computeGeodeticBBox(geoWidthInches, geoHeightInches);
-    } else if (EPSG3857Utils.is3857(crs)){
-        // For EPSG:3857 (Web Mercator), a direct linear calculation of the bounding box
-        // from the center and scale is inaccurate due to the projection's significant
-        // distance distortion, which varies with latitude.
-        // Therefore, a specialized utility function is used to correctly compute the
-        // ReferencedEnvelope, accounting for this distortion.
-        bbox = EPSG3857Utils.computeReferencedEnvelope(paintArea, this.scale, this.center, crs);
+      
+    } else if (this.useGeodeticCalculations() && PseudoMercatorUtils.isPseudoMercator(crs)) {
+      double geoWidthInM = scale.getResolution() * paintArea.width;
+      double geoHeightInM = scale.getResolution() * paintArea.height;
+      bbox = computeGeodeticBBoxInPseudoMercator(geoWidthInM, geoHeightInM);
+      
     } else {
       final double centerX = this.center.getOrdinate(0);
       final double centerY = this.center.getOrdinate(1);
@@ -177,6 +176,75 @@ public final class CenterScaleMapBounds extends MapBounds {
     return this.center;
   }
 
+  /**
+   * Computes a {@link ReferencedEnvelope} representing the geographic extent for a map
+   * in Pseudo-Mercator projection from given metric dimensions.
+   * <p>
+   * This method calculates a real-world geographic bounding box starting from a center coordinate
+   * and using the specified width and height in meters. It accounts for Earth's curvature and the
+   * properties of the Coordinate Reference System's ellipsoid through geodetic calculations.
+   * <p>
+   * The geodetic computation involves:
+   * <ol>
+   *   <li>Converting the metric dimensions to the units of the CRS's ellipsoid.</li>
+   *   <li>Using a {@link GeodeticCalculator} to determine the min/max geographic coordinates by
+   *       calculating distances from the center point towards the west, east, north, and south.</li>
+   * </ol>
+   * <p>
+   * This method is particularly suited for Web Mercator (EPSG:3857) and similar projections where
+   * geodetic calculations are more accurate than linear approximation.
+   *
+   * @param geoWidthInM The width of the bounding box in meters.
+   * @param geoHeightInM The height of the bounding box in meters.
+   * @return The calculated {@link ReferencedEnvelope} representing the map's geographic extent.
+   * @throws PrintException if the geodetic calculation fails or the coordinate transformation is invalid.
+   */
+  private ReferencedEnvelope computeGeodeticBBoxInPseudoMercator(final double geoWidthInM, final double geoHeightInM) {
+    try {
+        CoordinateReferenceSystem crs = this.getProjection(); 
+        
+        GeodeticCalculator calc = new GeodeticCalculator(crs);
+
+        DistanceUnit ellipsoidUnit
+            = DistanceUnit.fromString(calc.getEllipsoid().getAxisUnit().toString());
+        double geoWidth = DistanceUnit.M.convertTo(geoWidthInM, ellipsoidUnit);
+        double geoHeight = DistanceUnit.M.convertTo(geoHeightInM, ellipsoidUnit);
+
+        Position2D directPosition2D = new Position2D(this.center.x, this.center.y);
+        directPosition2D.setCoordinateReferenceSystem(crs);
+        calc.setStartingPosition(directPosition2D);
+
+        final int west = -90;
+        calc.setDirection(west, geoWidth / 2.0);
+        double minGeoX = calc.getDestinationPosition().getOrdinate(0);
+
+        final int east = 90;
+        calc.setDirection(east, geoWidth / 2.0);
+        double maxGeoX = calc.getDestinationPosition().getOrdinate(0);
+
+        final int south = 180;
+        calc.setDirection(south, geoHeight / 2.0);
+        double southHeight = calc.getOrthodromicDistance();
+
+        final int north = 0;
+        calc.setDirection(north, geoHeight / 2.0);
+        double northHeight = calc.getOrthodromicDistance();
+
+        double halfHeight = (southHeight + northHeight) / 2;
+        double minGeoY = calc.getStartingPosition().getOrdinate(1) - halfHeight;
+        double maxGeoY = calc.getStartingPosition().getOrdinate(1) + halfHeight;
+
+        return new ReferencedEnvelope(
+            minGeoX,
+            maxGeoX,
+            minGeoY,
+            maxGeoY,
+            crs);
+    } catch (TransformException e) {
+      throw new PrintException("Failed to compute geodetic bbox for pseudo-mercator projection", e);
+    }
+  }
+  
   private ReferencedEnvelope computeGeodeticBBox(
       final double geoWidthInInches, final double geoHeightInInches) {
     try {

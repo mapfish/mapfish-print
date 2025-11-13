@@ -24,7 +24,7 @@ public abstract class MapBounds {
    * @param projection the projection these bounds are defined in.
    * @param useGeodeticCalculations
    */
-  protected MapBounds(final CoordinateReferenceSystem projection, boolean useGeodeticCalculations) {
+  protected MapBounds(final CoordinateReferenceSystem projection, final boolean useGeodeticCalculations) {
     this.projection = projection;
     this.useGeodeticCalculations = useGeodeticCalculations;
   }

@@ -2,14 +2,18 @@ package org.mapfish.print.attribute.map;
 
 import java.awt.Rectangle;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.GeodeticCalculator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.mapfish.print.FloatingPointUtil;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
-import org.mapfish.print.EPSG3857Utils;
+import org.mapfish.print.PseudoMercatorUtils;
 
 
 
@@ -151,28 +155,46 @@ public final class BBoxMapBounds extends MapBounds {
     DistanceUnit projUnit = DistanceUnit.fromProjection(crs);
 
     double geoWidthInInches;
-    if (projUnit == DistanceUnit.DEGREES) {
-      GeodeticCalculator calculator = new GeodeticCalculator(crs);
-      final double centerY = bboxAdjustedToScreen.centre().y;
-      calculator.setStartingGeographicPoint(bboxAdjustedToScreen.getMinX(), centerY);
-      calculator.setDestinationGeographicPoint(bboxAdjustedToScreen.getMaxX(), centerY);
-      double geoWidthInEllipsoidUnits = calculator.getOrthodromicDistance();
-      DistanceUnit ellipsoidUnit =
-          DistanceUnit.fromString(calculator.getEllipsoid().getAxisUnit().toString());
-
-      geoWidthInInches = ellipsoidUnit.convertTo(geoWidthInEllipsoidUnits, DistanceUnit.IN);
-    } else if (EPSG3857Utils.is3857(crs)){
-        // EPSG:3857 (Web Mercator) uses "Mercator meters" which are not true ground distances.
-        // This projection severely distorts distances and areas with increasing latitude.
-        // Therefore, a special calculation is required to determine the true orthodromic width
-        // to ensure the calculated scale is accurate.
-        geoWidthInInches = EPSG3857Utils.computeOrthodromicWidthInInches(bboxAdjustedToScreen);
+    
+    // If it is geodetic/degress OR it is a special case requiring geodetic calculation (PseudoMercator)
+    if (projUnit == DistanceUnit.DEGREES || (this.useGeodeticCalculations() && PseudoMercatorUtils.isPseudoMercator(crs))) {
+        geoWidthInInches = this.computeGeodeticWidthInInches(bboxAdjustedToScreen);    
     } else {
       // (scale * width ) / dpi = geowidith
       geoWidthInInches = projUnit.convertTo(bboxAdjustedToScreen.getWidth(), DistanceUnit.IN);
     }
 
     return new Scale(geoWidthInInches * (dpi / paintArea.getWidth()), projUnit, dpi);
+  }
+
+  @SuppressWarnings("UseSpecificCatch")
+  private double computeGeodeticWidthInInches(final ReferencedEnvelope bbox) {
+    try {
+        CoordinateReferenceSystem crs = bbox.getCoordinateReferenceSystem();
+        GeodeticCalculator calculator = new GeodeticCalculator(crs); // Use the original CRS for the ellipsoid
+
+        double centerY = bbox.centre().y;
+        Coordinate start = new Coordinate(bbox.getMinX(), centerY);
+        Coordinate end = new Coordinate(bbox.getMaxX(), centerY);
+        
+        if (this.useGeodeticCalculations() && PseudoMercatorUtils.isPseudoMercator(crs)) {
+            // Needs reprojection
+            final MathTransform transform = CRS.findMathTransform(crs, GenericMapAttribute.parseProjection("EPSG:4326", true));
+            start = JTS.transform(start, null, transform);
+            end = JTS.transform(end, null, transform);
+        }
+
+        // --- Common Logic ---
+        calculator.setStartingGeographicPoint(start.x, start.y);
+        calculator.setDestinationGeographicPoint(end.x, end.y);
+        final double orthodromicWidth = calculator.getOrthodromicDistance();
+        final DistanceUnit ellipsoidUnit = DistanceUnit.fromString(calculator.getEllipsoid().getAxisUnit().toString());
+
+        return ellipsoidUnit.convertTo(orthodromicWidth, DistanceUnit.IN);
+
+    } catch (Exception e) {
+        throw new PrintException("Failed to compute geodetic width", e);
+    }
   }
 
   @Override
