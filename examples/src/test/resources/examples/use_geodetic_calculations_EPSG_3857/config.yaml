@@ -1,0 +1,58 @@
+templates:
+  #===========================================================================
+  use_geodetic_calculations_EPSG_3857: !template
+  #===========================================================================
+    reportTemplate: use_geodetic_calculations_EPSG_3857.jrxml
+    attributes:
+      title: !string
+        default: "Default Title"
+      crs: !string
+        default: "EPSG:3857"
+      crsPermanent: !string
+        default: "EPSG:3857"
+      map: !map
+        zoomLevels: !zoomLevels
+          scales: [50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 500000]
+        maxDpi: 400
+        width: 580
+        height: 425
+        default:
+          useAdjustBounds: true
+
+      scalebar: !scalebar
+        width: 200
+        height: 40
+        default:
+          backgroundColor: "rgba(255, 255, 255, 0)"
+          align: "left"
+          fontSize: 9
+          barSize: 5
+          intervals: 4
+          geodetic: false
+          #geodetic: true
+      northArrowDef: !northArrow
+        size: 75
+        default:
+          graphic: "file://north.svg"
+          backgroundColor: "rgba(255, 255, 255, 0)"
+      scale: !string
+        default: ""
+      author: !string
+        default: ""
+      notes: !string
+        default: ""
+      visorName: !string
+        default: ""
+      service: !string
+        default: ""
+      backgroundCartography: !string
+        default: ""
+    processors:
+    - !reportBuilder # compile all reports in current directory
+      directory: '.'
+    - !createMap
+      inputMapper: {map: map}
+      outputMapper: {mapSubReport: mapSubReport}
+    - !createScalebar {}
+    - !createNorthArrow
+        inputMapper: {map: map, northArrowDef: northArrow}

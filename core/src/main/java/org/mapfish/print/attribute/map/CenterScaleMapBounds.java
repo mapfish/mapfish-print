@@ -99,7 +99,6 @@ public final class CenterScaleMapBounds extends MapBounds {
     ReferencedEnvelope bbox;
     CoordinateReferenceSystem crs = getProjection();
     final DistanceUnit projectionUnit = DistanceUnit.fromProjection(crs);
-    System.out.println("CenterScaleMapBounds: useGeodeticCalculations="+this.useGeodeticCalculations()+"isPseudoMercator="+PseudoMercatorUtils.isPseudoMercator(crs));
     if (projectionUnit == DistanceUnit.DEGREES) {
       double geoWidthInches = this.scale.getResolutionInInches() * paintArea.width;
       double geoHeightInches = this.scale.getResolutionInInches() * paintArea.height;

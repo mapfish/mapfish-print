@@ -101,7 +101,7 @@ public abstract class MapBounds {
     final Scale scale = getScale(paintArea, dpi);
     final Scale correctedScale;
     final double scaleRatio;
-    if (geodetic) {
+    if (geodetic && !this.useGeodeticCalculations()) {
       final double currentScaleDenominator =
           scale.getGeodeticDenominator(getProjection(), dpi, getCenter());
       scaleRatio = scale.getDenominator(dpi) / currentScaleDenominator;
@@ -116,7 +116,7 @@ public abstract class MapBounds {
         zoomLevelSnapStrategy.search(correctedScale, tolerance, zoomLevels);
     final Scale newScale;
 
-    if (geodetic) {
+    if (geodetic && !this.useGeodeticCalculations()) {
       newScale =
           new Scale(result.getScale(unit).getDenominator(dpi) * scaleRatio, getProjection(), dpi);
     } else {

@@ -263,7 +263,6 @@ public final class CreateMapProcessor
     }
 
     context.getStats().addMapStats(mapContext, mapValues);
-
     return new Output(graphics, mapSubReport.toString(), mapContext);
   }
 

@@ -177,7 +177,6 @@ public final class BBoxMapBounds extends MapBounds {
     double geoWidthInInches;
     
     // If it is geodetic/degress OR it is a special case requiring geodetic calculation (PseudoMercator)
-    System.out.println("BBoxMapBounds: useGeodeticCalculations="+this.useGeodeticCalculations()+"isPseudoMercator="+PseudoMercatorUtils.isPseudoMercator(crs));
     if (projUnit == DistanceUnit.DEGREES || (this.useGeodeticCalculations() && PseudoMercatorUtils.isPseudoMercator(crs))) {
         geoWidthInInches = this.computeGeodeticWidthInInches(bboxAdjustedToScreen);    
     } else {
