@@ -185,6 +185,8 @@ dependencies {
             'net.logstash.logback:logstash-logback-encoder:8.0',
             // For PDF/A
             'com.adobe.xmp:xmpcore:6.1.11',
+            // For WebP images
+            'com.twelvemonkeys.imageio:imageio-webp:3.12.0',
     )
 
     implementation(
