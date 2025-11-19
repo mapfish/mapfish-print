@@ -1,5 +1,5 @@
-<!-- Created with Jaspersoft Studio version 6.21.3.final using JasperReports Library version 6.21.3-4a3078d20785ebe464f18037d738d12fc98c13cf  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" uuid="9a3e59f5-6675-48cf-ad74-9c42b5a5b290">
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="report" language="java" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" uuid="9a3e59f5-6675-48cf-ad74-9c42b5a5b290">
 	<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
@@ -16,19 +16,15 @@
 	<detail>
 		<band height="450" splitType="Prevent">
 			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
-			<subreport overflowType="NoStretch">
-				<reportElement positionType="Float" x="0" y="0" width="802" height="425" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
-				</reportElement>
-				<subreportExpression><![CDATA[$P{mapSubReport}]]></subreportExpression>
-			</subreport>
-			<subreport overflowType="NoStretch">
-				<reportElement x="580" y="360" width="200" height="44" uuid="ece5b3c1-ed42-4432-9ba6-eea975e72549">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<subreportExpression><![CDATA[$P{scalebarSubReport}]]></subreportExpression>
-			</subreport>
+			<element kind="subreport" uuid="fa145068-76a5-4834-98ed-ce65b1976b3d" positionType="Float" x="0" y="0" width="802" height="425" overflowType="NoStretch">
+				<expression><![CDATA[$P{mapSubReport}]]></expression>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+			</element>
+			<element kind="subreport" uuid="ece5b3c1-ed42-4432-9ba6-eea975e72549" x="580" y="360" width="200" height="44" overflowType="NoStretch">
+				<expression><![CDATA[$P{scalebarSubReport}]]></expression>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			</element>
 		</band>
 	</detail>
 </jasperReport>
