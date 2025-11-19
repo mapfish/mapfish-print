@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.annotation.Nonnull;
+import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
@@ -40,6 +42,13 @@ public class MapPrinter {
 
   private File configFile;
   @Autowired private WorkingDirectories workingDirectories;
+
+  @PostConstruct
+  public final void init() {
+    if (System.getProperty("mapfish.image.plugins", "false").equals("true")) {
+      ImageIO.scanForPlugins();
+    }
+  }
 
   /**
    * Parse the JSON string and return the object. The string is expected to be the JSON print data

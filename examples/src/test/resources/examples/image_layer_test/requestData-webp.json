@@ -1,0 +1,22 @@
+{
+  "layout": "A4 landscape",
+  "outputFormat": "png",
+  "attributes": {
+    "map": {
+      "bbox": [4150836.3839982115, 7600898.092677928, 5703147.34969658, 8257645.039704161],
+      "dpi": 300,
+      "layers": [
+        {
+          "baseURL": "http://geoserver:8080/geoserver/www/GeoServer.webp",
+          "extent": [4392836.015549079, 7861166.1739889495, 4481502.968359884, 7888169.291435877],
+          "name": "image",
+          "opacity": 1,
+          "type": "image"
+        }
+      ],
+      "longitudeFirst": true,
+      "projection": "EPSG:3857",
+      "rotation": 0
+    }
+  }
+}
