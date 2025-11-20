@@ -26,10 +26,28 @@ import org.springframework.http.client.ClientHttpResponse;
 public class SingleTileLoaderTaskTest {
 
   @Test
-  public void testCompute() throws IOException, URISyntaxException {
+  public void testComputeFailOnErrorTrue() throws IOException, URISyntaxException {
+    final int unsupportedStatusCode = 200;
+    final String errorMessage =
+        "SingleTileLoader Task stopped since fail on error parameter is enabled and the URL"
+            + " http://localhost is an image format than cannot be decoded";
+    ClientHttpRequest tileRequest = mock(ClientHttpRequest.class);
+    CoverageTask.SingleTileLoaderTask task = prepareTest(unsupportedStatusCode, tileRequest, true);
+
+    try {
+      task.compute();
+      fail("Did not throw exception indicating that the image format is not supported");
+    } catch (PrintException e) {
+      assertTrue(e.getCause().getMessage().contains(errorMessage));
+      verify(tileRequest, times(3)).getURI();
+    }
+  }
+
+  @Test
+  public void testComputeFailOnErrorFalse() throws IOException, URISyntaxException {
     final int unsupportedStatusCode = 200;
     ClientHttpRequest tileRequest = mock(ClientHttpRequest.class);
-    CoverageTask.SingleTileLoaderTask task = prepareTest(unsupportedStatusCode, tileRequest);
+    CoverageTask.SingleTileLoaderTask task = prepareTest(unsupportedStatusCode, tileRequest, false);
 
     CoverageTask.Tile singleTile = task.compute();
     assertNotNull(singleTile);
@@ -37,7 +55,7 @@ public class SingleTileLoaderTaskTest {
   }
 
   private CoverageTask.SingleTileLoaderTask prepareTest(
-      int unsupportedStatusCode, ClientHttpRequest tileRequest)
+      int unsupportedStatusCode, ClientHttpRequest tileRequest, boolean failOnError)
       throws IOException, URISyntaxException {
     BufferedImage errorImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
     Processor.ExecutionContext context =
@@ -50,14 +68,14 @@ public class SingleTileLoaderTaskTest {
     when(tileRequest.getURI()).thenReturn(new URI("http://localhost"));
 
     return new CoverageTask.SingleTileLoaderTask(
-        tileRequest, errorImage, 0, 0, true, registry, context);
+        tileRequest, errorImage, 0, 0, failOnError, registry, context);
   }
 
   @Test
   public void testComputeWithUnsupportedStatusCode() throws IOException, URISyntaxException {
     final int unsupportedStatusCode = 999;
     ClientHttpRequest tileRequest = mock(ClientHttpRequest.class);
-    CoverageTask.SingleTileLoaderTask task = prepareTest(unsupportedStatusCode, tileRequest);
+    CoverageTask.SingleTileLoaderTask task = prepareTest(unsupportedStatusCode, tileRequest, true);
 
     try {
       task.compute();
