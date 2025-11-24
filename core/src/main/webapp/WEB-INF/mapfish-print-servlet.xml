@@ -16,4 +16,5 @@
     </bean>
 
     <bean id="versionInfo" class="org.mapfish.print.VersionInfo" lazy-init="false"/>
+    <bean id="imageInit" class="org.mapfish.print.ImageInit" lazy-init="false"/>
 </beans>

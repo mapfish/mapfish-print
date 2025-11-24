@@ -7,7 +7,7 @@
       "dpi": 300,
       "layers": [
         {
-          "baseURL": "http://geoserver:8080/does-not-exist.png",
+          "baseURL": "http://geoserver:8080/geoserver/www/GeoServer.webp",
           "extent": [4392836.015549079, 7861166.1739889495, 4481502.968359884, 7888169.291435877],
           "name": "image",
           "opacity": 1,

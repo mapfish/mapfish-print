@@ -10,6 +10,7 @@
   },
   "pages": {
     "index": "Overview",
+    "properties": "Properties",
     "jasperreports": "Jasper Reports",
     "api": "Web Protocol",
     "tableimages": "Configuration of tables with HTML images",

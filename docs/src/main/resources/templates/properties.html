@@ -1,0 +1,27 @@
+<p>List the Java properties that can be set to configure Mapfish Print 3.</p>
+<p>
+  The properties can be set using the <code>-D</code> option when starting the Java Virtual Machine. For
+  example: by setting the <code>JAVA_OPTS</code> environment variable.
+</p>
+<ul>
+  <li>
+    <code>db.*</code> see the <a href="scaling.html#database_configuration">Database Configuration</a> section
+    for details.
+  </li>
+
+  <li>
+    <code>mapfish.file.encoding</code>: the default character encoding used, the default is <code>UTF-8</code>
+  </li>
+  <li>
+    <code>mapfish.maxContentLength</code>: the maximum size in bytes of HTTP request body specifications. The
+    default is <code>10485760</code> (10 MB).
+  </li>
+  <li>
+    <code>mapfish.image.plugins</code>: set to <code>true</code> to enable scanning for image plugins at
+    startup (see
+    <a
+      href="https://docs.oracle.com/en/java/javase/17/docs/api/java.desktop/javax/imageio/ImageIO.html#scanForPlugins()"
+      >scanForPlugins</a
+    >), used to enable WebP image format support. Default is <code>false</code>.
+  </li>
+</ul>
