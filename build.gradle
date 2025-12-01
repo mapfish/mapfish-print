@@ -6,7 +6,7 @@ buildscript {
 }
 
 plugins {
-  id("com.github.spotbugs") version "6.4.4"
+  id("com.github.spotbugs") version "6.4.7"
 }
 
 defaultTasks 'build'
