@@ -1,8 +1,9 @@
 package org.mapfish.print.map.geotools.grid;
 
+import static java.lang.Math.PI;
+
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import static java.lang.Math.PI;
 
 /**
  * The strategies for rotating and translating the when the rotation is in a specific rotation.

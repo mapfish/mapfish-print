@@ -2,7 +2,6 @@ package org.mapfish.print;
 
 import java.awt.image.BufferedImage;
 import java.net.URI;
-
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
