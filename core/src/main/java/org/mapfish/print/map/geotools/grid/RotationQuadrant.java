@@ -1,9 +1,8 @@
 package org.mapfish.print.map.geotools.grid;
 
-import static java.lang.Math.PI;
-
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import static java.lang.Math.PI;
 
 /**
  * The strategies for rotating and translating the when the rotation is in a specific rotation.
@@ -180,7 +179,7 @@ enum RotationQuadrant {
       int halfCharHeight,
       Rectangle2D textBounds);
 
-  private static class Constants {
+  private static final class Constants {
     public static final double MINUS_NINETY_RADIANS = -PI / 2;
     public static final double ONE_EIGHTY_RADIANS = PI;
     public static final double NINETY_RADIANS = PI / 2;

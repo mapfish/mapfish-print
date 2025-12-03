@@ -2,6 +2,7 @@ package org.mapfish.print;
 
 import java.awt.image.BufferedImage;
 import java.net.URI;
+
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -36,7 +37,7 @@ public final class SvgUtil {
   }
 
   /** An image transcoder which allows to retrieve an {@link BufferedImage}. */
-  private static class BufferedImageTranscoder extends ImageTranscoder {
+  private static final class BufferedImageTranscoder extends ImageTranscoder {
 
     private BufferedImage img = null;
 
