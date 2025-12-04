@@ -7,6 +7,7 @@ buildscript {
 
 plugins {
   id("com.github.spotbugs") version "6.4.8"
+  id("org.openrewrite.rewrite") version("latest.release")
 }
 
 defaultTasks 'build'
@@ -89,3 +90,16 @@ tasks.register('docs') {
     enabled = false
 }
 
+
+rewrite {
+    activeRecipe("org.openrewrite.java.spring.framework.UpgradeSpringFramework_7_0")
+    setExportDatatables(true)
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    rewrite("org.openrewrite.recipe:rewrite-spring:6.19.0")
+}
