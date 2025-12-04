@@ -88,7 +88,7 @@ public class SingleTileLoaderTaskTest {
 
   private ClientHttpResponse getMockResponse(int rawStatusCode) throws IOException {
     ClientHttpResponse response = mock(ClientHttpResponse.class);
-    when(response.getRawStatusCode()).thenReturn(rawStatusCode);
+    when(response.getStatusCode().value()).thenReturn(rawStatusCode);
     when(response.getStatusCode())
         .thenThrow(new RuntimeException("Unsupported status code has no HttpStatus"));
     when(response.getBody()).thenReturn(new ByteArrayInputStream(new byte[0]));

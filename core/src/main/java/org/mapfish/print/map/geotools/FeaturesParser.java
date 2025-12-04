@@ -93,7 +93,7 @@ public class FeaturesParser {
                   requestFactory.createRequest(new URI(uri), HttpMethod.GET);
               try (ClientHttpResponse response = request.execute()) {
 
-                if (response.getRawStatusCode() == HttpStatus.OK.value()) {
+                if (response.getStatusCode().value() == HttpStatus.OK.value()) {
                   final String wkt =
                       IOUtils.toString(response.getBody(), Constants.DEFAULT_ENCODING);
                   try {

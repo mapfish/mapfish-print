@@ -386,7 +386,7 @@ public final class LegendProcessor
               this.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
           try (Timer.Context ignored = metricRegistry.timer(metricName).time()) {
             try (ClientHttpResponse httpResponse = request.execute()) {
-              if (httpResponse.getRawStatusCode() == HttpStatus.OK.value()) {
+              if (httpResponse.getStatusCode().value() == HttpStatus.OK.value()) {
                 image = ImageIO.read(httpResponse.getBody());
                 if (image == null) {
                   LOGGER.warn("There is no image in this response body {}", httpResponse.getBody());
@@ -419,7 +419,7 @@ public final class LegendProcessor
           \t{}\
           """,
           this.icon,
-          httpResponse.getRawStatusCode(),
+          httpResponse.getStatusCode().value(),
           httpResponse.getStatusText(),
           String.join("\n\t", Utils.getPrintableHeadersList(httpResponse.getHeaders())));
     }

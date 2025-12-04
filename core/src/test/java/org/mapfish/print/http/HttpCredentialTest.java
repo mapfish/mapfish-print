@@ -8,8 +8,8 @@ import com.sun.net.httpserver.HttpsServer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.Credentials;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -77,7 +77,7 @@ public class HttpCredentialTest {
     matcher.setHost(HttpProxyTest.LOCALHOST);
     credential.setMatchers(Collections.singletonList(matcher));
 
-    AuthScope authscope = AuthScope.ANY;
+    AuthScope authscope = new AuthScope(null, -1);
     final Credentials object = credential.toCredentials(authscope);
     assertNotNull(object);
     assertEquals(USERNAME, object.getUserPrincipal().getName());

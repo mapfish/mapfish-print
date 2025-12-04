@@ -1,6 +1,6 @@
 package org.mapfish.print.http;
 
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.mapfish.print.config.Configuration;
 import org.springframework.http.client.ClientHttpRequest;
 
@@ -10,7 +10,7 @@ import org.springframework.http.client.ClientHttpRequest;
  */
 public interface ConfigurableRequest extends ClientHttpRequest {
   /** Obtain the request object. */
-  HttpRequestBase getUnderlyingRequest();
+  HttpUriRequestBase getUnderlyingRequest();
 
   /**
    * Set the current configuration object. This should only be called by {@link

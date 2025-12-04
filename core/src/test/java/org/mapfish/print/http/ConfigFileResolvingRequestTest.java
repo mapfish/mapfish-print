@@ -46,7 +46,7 @@ public class ConfigFileResolvingRequestTest {
     var resp = req.executeInternal(new HttpHeaders());
 
     // Then
-    assertEquals(200, resp.getRawStatusCode());
+    assertEquals(200, resp.getStatusCode().value());
     resp.close();
   }
 
@@ -67,7 +67,7 @@ public class ConfigFileResolvingRequestTest {
     var resp = req.executeInternal(new HttpHeaders());
 
     // Then
-    assertEquals(200, resp.getRawStatusCode());
+    assertEquals(200, resp.getStatusCode().value());
     resp.close();
   }
 
@@ -108,7 +108,7 @@ public class ConfigFileResolvingRequestTest {
 
   private ClientHttpResponse createResponse(final int statusCode) throws IOException {
     var clientHttpResponse = mock(ClientHttpResponse.class);
-    when(clientHttpResponse.getRawStatusCode()).thenReturn(statusCode);
+    when(clientHttpResponse.getStatusCode().value()).thenReturn(statusCode);
     return clientHttpResponse;
   }
 }

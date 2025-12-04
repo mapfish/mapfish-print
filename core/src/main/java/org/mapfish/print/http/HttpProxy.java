@@ -1,7 +1,7 @@
 package org.mapfish.print.http;
 
 import java.util.List;
-import org.apache.http.HttpHost;
+import org.apache.hc.core5.http.HttpHost;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.http.matcher.URIMatcher;
 
@@ -34,7 +34,7 @@ public final class HttpProxy extends HttpCredential {
   private String scheme;
 
   public HttpHost getHttpHost() {
-    return new HttpHost(this.host, this.port, getScheme());
+    return new HttpHost(getScheme(), this.host, this.port);
   }
 
   private String getScheme() {

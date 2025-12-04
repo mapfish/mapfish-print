@@ -2,10 +2,10 @@ package org.mapfish.print.http;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.SystemDefaultCredentialsProvider;
+import org.apache.hc.client5.http.auth.CredentialsProvider;
+import org.apache.hc.client5.http.impl.auth.SystemDefaultCredentialsProvider;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.Credentials;
 import org.mapfish.print.config.Configuration;
 
 /**
@@ -13,7 +13,7 @@ import org.mapfish.print.config.Configuration;
  * org.mapfish.print.http.MfClientHttpRequestFactoryImpl#CURRENT_CONFIGURATION}.
  *
  * <p>If authentication is not found in configuration then it will fall back to {@link
- * org.apache.http.impl.client.SystemDefaultCredentialsProvider}
+ * org.apache.hc.client5.http.impl.auth.SystemDefaultCredentialsProvider}
  *
  * <p>{@link MfClientHttpRequestFactoryImpl.Request} will set the correct configuration before the
  * request is executed so that correct proxies will be set.

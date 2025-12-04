@@ -184,7 +184,7 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
     final int minStatusCodeError = HttpStatus.INTERNAL_SERVER_ERROR.value();
     int rawStatusCode = minStatusCodeError;
     try {
-      rawStatusCode = response.getRawStatusCode();
+      rawStatusCode = response.getStatusCode().value();
       if (rawStatusCode < minStatusCodeError) {
         LOGGER.debug("Successfully fetched {}, with status code {}", getURI(), rawStatusCode);
         return response;

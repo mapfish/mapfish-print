@@ -1,6 +1,6 @@
 package org.mapfish.print.servlet.job;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.ObjectNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import java.util.Date;
 import javax.persistence.Column;

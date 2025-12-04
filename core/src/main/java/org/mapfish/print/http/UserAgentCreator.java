@@ -1,6 +1,6 @@
 package org.mapfish.print.http;
 
-import org.apache.http.util.VersionInfo;
+import org.apache.hc.core5.util.VersionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
