@@ -85,7 +85,7 @@ public final class HttpRequestFetcher {
 
     private CachedClientHttpResponse(final ClientHttpResponse originalResponse) throws IOException {
       this.headers = originalResponse.getHeaders();
-      this.status = originalResponse.getRawStatusCode();
+      this.status = originalResponse.getStatusCode().value();
       this.statusText = originalResponse.getStatusText();
       this.cachedFile = createCachedFile(originalResponse.getBody());
     }

@@ -43,7 +43,7 @@ public class ParserPluginUtilsTest {
 
     when(factory.createRequest(new URI("http://valid.uri"), HttpMethod.GET)).thenReturn(request);
     when(request.execute()).thenReturn(response);
-    when(response.getRawStatusCode()).thenReturn(httpStatusCode);
+    when(response.getStatusCode().value()).thenReturn(httpStatusCode);
     when(response.getBody())
         .thenReturn(
             new ByteArrayInputStream(

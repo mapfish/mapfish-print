@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mapfish.print.processor.http.matcher.MatcherTestUtils.assertMatch;
 
 import java.net.URI;
-import org.apache.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.AuthScope;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 

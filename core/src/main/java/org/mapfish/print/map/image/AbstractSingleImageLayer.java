@@ -198,7 +198,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
       final String stringBody,
       final String baseMetricName)
       throws IOException {
-    if (httpResponse.getRawStatusCode() != HttpStatus.OK.value()) {
+    if (httpResponse.getStatusCode().value() != HttpStatus.OK.value()) {
       String message =
           String.format(
               """
@@ -209,7 +209,7 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
               %s\
               """,
               request.getURI(),
-              httpResponse.getRawStatusCode(),
+              httpResponse.getStatusCode().value(),
               HttpStatus.OK.value(),
               httpResponse.getStatusText(),
               String.join("\n", Utils.getPrintableHeadersList(request.getHeaders())),

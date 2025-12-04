@@ -125,14 +125,14 @@ configurations {
 
 dependencies {
     implementation(
-            'org.springframework:spring-context:5.3.39',
-            'org.springframework:spring-web:5.3.39',
-            'org.springframework:spring-webmvc:5.3.39',
-            'org.springframework:spring-aspects:5.3.39',
-            'org.springframework:spring-orm:5.3.39',
-            'org.springframework:spring-jdbc:5.3.39',
-            'org.springframework:spring-tx:5.3.39',
-            'org.springframework:spring-test:5.3.39',
+            'org.springframework:spring-context:7.0.1',
+            'org.springframework:spring-web:7.0.1',
+            'org.springframework:spring-webmvc:7.0.1',
+            'org.springframework:spring-aspects:7.0.1',
+            'org.springframework:spring-orm:7.0.1',
+            'org.springframework:spring-jdbc:7.0.1',
+            'org.springframework:spring-tx:7.0.1',
+            'org.springframework:spring-test:7.0.1',
             'org.springframework.security:spring-security-config:5.8.16',
             'org.springframework.security:spring-security-web:5.8.16',
             'com.thetransactioncompany:cors-filter:2.10',
@@ -161,6 +161,7 @@ dependencies {
             'org.geotools:gt-svg:34.1',
             'org.geotools:gt-cql:34.1',
     )
+    implementation "org.apache.httpcomponents.client5:httpclient5:5.4.4"
     jasper(
             'ar.com.fdvs:DynamicJasper:5.3.9',
             'com.itextpdf:itextpdf:5.5.13.4',
