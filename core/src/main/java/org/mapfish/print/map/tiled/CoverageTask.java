@@ -251,7 +251,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
     private Tile handleSpecialStatuses(
         final ClientHttpResponse response, final String baseMetricName) throws IOException {
-      final int httpStatusCode = response.getRawStatusCode();
+      final int httpStatusCode = response.getStatusCode().value();
       if (httpStatusCode == HttpStatus.NO_CONTENT.value()
           || httpStatusCode == HttpStatus.NOT_FOUND.value()) {
         if (httpStatusCode == HttpStatus.NOT_FOUND.value()) {
@@ -291,7 +291,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
     private Tile handleNonOkStatus(final ClientHttpResponse response, final String baseMetricName)
         throws IOException {
-      final int httpStatusCode = response.getRawStatusCode();
+      final int httpStatusCode = response.getStatusCode().value();
       String errorMessage =
           String.format(
               "Error making tile request: %s\n\tStatus: %d\n\tStatus message: %s",

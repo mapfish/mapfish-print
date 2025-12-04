@@ -47,7 +47,7 @@ public final class ParserPluginUtils {
     try {
       final ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
       try (ClientHttpResponse response = request.execute()) {
-        httpStatusCode = response.getRawStatusCode();
+        httpStatusCode = response.getStatusCode().value();
         input = IOUtils.toByteArray(response.getBody());
       }
     } catch (Exception e) {
