@@ -3,9 +3,10 @@ package org.mapfish.print.metrics;
 import static org.springframework.web.context.support.WebApplicationContextUtils.getWebApplicationContext;
 
 import com.codahale.metrics.MetricRegistry;
+import io.dropwizard.metrics.servlets.HealthCheckServlet;
 import com.codahale.metrics.servlet.InstrumentedFilterContextListener;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -18,6 +19,7 @@ public class MapfishPrintInstrumentedFilterContextListener
 
   @Override
   protected final MetricRegistry getMetricRegistry() {
+
     final WebApplicationContext webApplicationContext =
         getWebApplicationContext(this.servletContext);
     return webApplicationContext.getBean(MetricRegistry.class);
