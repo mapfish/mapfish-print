@@ -2,9 +2,9 @@ package org.mapfish.print.processor;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import jakarta.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.output.Values;
@@ -43,20 +43,21 @@ public class ProcessorGraphNodeTest {
 
   @Test
   public void testNullableProperty() {
-    assertThrows(RuntimeException.class, () -> {
+    assertThrows(
+        RuntimeException.class,
+        () -> {
+          Values values = new Values();
+          values.put(iMappingName, intVal);
+          values.put(bMappingName, true);
+          values.put("s", sVal);
+          values.put("ls", lsVal);
+          // NO da value is specified so an exception should be thrown.
 
-      Values values = new Values();
-      values.put(iMappingName, intVal);
-      values.put(bMappingName, true);
-      values.put("s", sVal);
-      values.put("ls", lsVal);
-      // NO da value is specified so an exception should be thrown.
-
-      TestProcessor processor = new TestProcessor();
-      processor.getInputMapperBiMap().put(iMappingName, "i");
-      processor.getInputMapperBiMap().put(bMappingName, "b");
-      ProcessorUtils.populateInputParameter(processor, values);
-    });
+          TestProcessor processor = new TestProcessor();
+          processor.getInputMapperBiMap().put(iMappingName, "i");
+          processor.getInputMapperBiMap().put(bMappingName, "b");
+          ProcessorUtils.populateInputParameter(processor, values);
+        });
   }
 
   @Test

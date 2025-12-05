@@ -1,13 +1,13 @@
 package org.mapfish.print.config;
 
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Date;
 import java.util.Objects;
-import javax.annotation.PostConstruct;
-import jakarta.servlet.ServletContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.mapfish.print.metrics.UnhealthyCountersHealthCheck;

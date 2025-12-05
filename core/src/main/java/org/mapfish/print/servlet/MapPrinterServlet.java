@@ -7,6 +7,10 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import io.sentry.Sentry;
+import jakarta.annotation.Nonnull;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -30,10 +34,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nonnull;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.fonts.FontFamily;
 import net.sf.jasperreports.extensions.ExtensionsEnvironment;
 import org.apache.commons.io.FilenameUtils;
@@ -1174,7 +1174,8 @@ public class MapPrinterServlet extends BaseMapServlet {
       referrer = "http://localhost/";
     }
     try {
-      return allowedReferers.matches(new URI(referrer), HttpMethod.valueOf(request.getMethod().toUpperCase(Locale.ROOT)));
+      return allowedReferers.matches(
+          new URI(referrer), HttpMethod.valueOf(request.getMethod().toUpperCase(Locale.ROOT)));
     } catch (SocketException
         | UnknownHostException
         | URISyntaxException

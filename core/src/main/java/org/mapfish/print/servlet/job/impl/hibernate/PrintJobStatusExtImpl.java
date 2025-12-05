@@ -1,6 +1,6 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import org.mapfish.print.servlet.job.PrintJobEntry;

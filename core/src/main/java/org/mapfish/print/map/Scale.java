@@ -2,7 +2,7 @@ package org.mapfish.print.map;
 
 import static org.mapfish.print.Constants.PDF_DPI;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.MathTransform;

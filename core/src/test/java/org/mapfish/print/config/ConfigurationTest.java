@@ -2,13 +2,13 @@ package org.mapfish.print.config;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import jakarta.annotation.Nullable;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 import org.geotools.api.style.FeatureTypeStyle;
 import org.geotools.api.style.LineSymbolizer;
 import org.geotools.api.style.PointSymbolizer;

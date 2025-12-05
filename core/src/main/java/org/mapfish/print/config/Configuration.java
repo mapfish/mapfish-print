@@ -1,5 +1,8 @@
 package org.mapfish.print.config;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.annotation.PostConstruct;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -12,9 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.api.style.FeatureTypeStyle;
 import org.geotools.api.style.Fill;

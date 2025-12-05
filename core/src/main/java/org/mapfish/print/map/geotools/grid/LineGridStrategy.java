@@ -1,7 +1,7 @@
 package org.mapfish.print.map.geotools.grid;
 
+import jakarta.annotation.Nonnull;
 import java.awt.geom.AffineTransform;
-import javax.annotation.Nonnull;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;

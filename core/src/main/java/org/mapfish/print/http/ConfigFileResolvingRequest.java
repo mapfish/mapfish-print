@@ -1,5 +1,6 @@
 package org.mapfish.print.http;
 
+import jakarta.annotation.Nonnull;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +15,6 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.PrintException;
 import org.mapfish.print.config.Configuration;

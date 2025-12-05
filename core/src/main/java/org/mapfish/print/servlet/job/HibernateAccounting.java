@@ -1,6 +1,6 @@
 package org.mapfish.print.servlet.job;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
