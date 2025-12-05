@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.mapfish.print.PrintException;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.Processor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
@@ -86,9 +87,7 @@ public class SingleTileLoaderTaskTest {
 
   private ClientHttpResponse getMockResponse(int rawStatusCode) throws IOException {
     ClientHttpResponse response = mock(ClientHttpResponse.class);
-    when(response.getStatusCode().value()).thenReturn(rawStatusCode);
-    when(response.getStatusCode())
-        .thenThrow(new RuntimeException("Unsupported status code has no HttpStatus"));
+    when(response.getStatusCode()).thenReturn(HttpStatusCode.valueOf(rawStatusCode));
     when(response.getBody()).thenReturn(new ByteArrayInputStream(new byte[0]));
     when(response.getHeaders()).thenReturn(new org.springframework.http.HttpHeaders());
     return response;

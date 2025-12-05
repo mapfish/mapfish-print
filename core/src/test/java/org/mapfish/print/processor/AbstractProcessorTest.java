@@ -3,9 +3,9 @@ package org.mapfish.print.processor;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mapfish.print.config.Configuration;
 

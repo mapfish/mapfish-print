@@ -1,9 +1,9 @@
 package org.mapfish.print.config.access;
 
+import jakarta.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Nonnull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

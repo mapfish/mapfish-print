@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mapfish.print.output.Values.MDC_CONTEXT_KEY;
 
 import com.codahale.metrics.MetricRegistry;
+import jakarta.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
-import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.output.Values;
@@ -71,19 +71,21 @@ public class ProcessorDependencyGraphTest {
 
   @Test
   public void testCreateTaskAllDependenciesAreMissing() {
-    assertThrows(IllegalArgumentException.class, () -> {
-      Values values = new Values();
-      // this is a misconfiguration prop should be pp thus an exception should be thrown below.
-      values.put("prop", "value");
-      values.put(Values.MDC_CONTEXT_KEY, new HashMap<>());
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          Values values = new Values();
+          // this is a misconfiguration prop should be pp thus an exception should be thrown below.
+          values.put("prop", "value");
+          values.put(Values.MDC_CONTEXT_KEY, new HashMap<>());
 
-      final TestProcessor processor = new TestProcessor("p");
-      processor.getInputMapperBiMap().put("pp", "prop");
+          final TestProcessor processor = new TestProcessor("p");
+          processor.getInputMapperBiMap().put("pp", "prop");
 
-      final ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
-      graph.addRoot(new ProcessorGraphNode(processor, new MetricRegistry()));
-      graph.createTask(values);
-    });
+          final ProcessorDependencyGraph graph = new ProcessorDependencyGraph();
+          graph.addRoot(new ProcessorGraphNode(processor, new MetricRegistry()));
+          graph.createTask(values);
+        });
   }
 
   static class TestIn {

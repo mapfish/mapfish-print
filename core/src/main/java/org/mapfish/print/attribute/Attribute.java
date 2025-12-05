@@ -1,6 +1,6 @@
 package org.mapfish.print.attribute;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.mapfish.print.config.ConfigurationObject;

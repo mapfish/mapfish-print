@@ -1,7 +1,7 @@
 package org.mapfish.print;
 
 import com.twelvemonkeys.imageio.plugins.webp.WebPImageReaderSpi;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 import org.slf4j.Logger;

@@ -2,13 +2,13 @@ package org.mapfish.print.processor.map;
 
 import static org.mapfish.print.Constants.PDF_DPI;
 
+import jakarta.annotation.Nonnull;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nonnull;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;

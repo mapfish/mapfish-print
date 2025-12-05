@@ -1,10 +1,10 @@
 package org.mapfish.print.http;
 
+import jakarta.annotation.Nullable;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
-import javax.annotation.Nullable;
 import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.Credentials;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;

@@ -1,13 +1,13 @@
 package org.mapfish.print;
 
+import jakarta.annotation.Nullable;
+import jakarta.annotation.PostConstruct;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
