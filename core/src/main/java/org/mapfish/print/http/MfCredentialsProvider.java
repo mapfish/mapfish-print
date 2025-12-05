@@ -6,6 +6,7 @@ import org.apache.hc.client5.http.auth.CredentialsProvider;
 import org.apache.hc.client5.http.impl.auth.SystemDefaultCredentialsProvider;
 import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.Credentials;
+import org.apache.hc.core5.http.protocol.HttpContext;
 import org.mapfish.print.config.Configuration;
 
 /**
@@ -22,13 +23,7 @@ public final class MfCredentialsProvider implements CredentialsProvider {
   private final CredentialsProvider fallback = new SystemDefaultCredentialsProvider();
 
   @Override
-  public void setCredentials(final AuthScope authscope, final Credentials credentials) {
-    throw new UnsupportedOperationException(
-        "Credentials should be set the default Java way or in the configuration yaml file.");
-  }
-
-  @Override
-  public Credentials getCredentials(final AuthScope authscope) {
+  public Credentials getCredentials(AuthScope authScope, HttpContext context) {
 
     Configuration config = MfClientHttpRequestFactoryImpl.getCurrentConfiguration();
     if (config != null) {
@@ -36,18 +31,12 @@ public final class MfCredentialsProvider implements CredentialsProvider {
       allCredentials.addAll(config.getProxies());
 
       for (HttpCredential credential : allCredentials) {
-        final Credentials credentials = credential.toCredentials(authscope);
+        final Credentials credentials = credential.toCredentials(authScope);
         if (credentials != null) {
           return credentials;
         }
       }
     }
-    return this.fallback.getCredentials(authscope);
-  }
-
-  @Override
-  public void clear() {
-    throw new UnsupportedOperationException(
-        "Credentials should be set the default Java way or in the configuration yaml file.");
+    return this.fallback.getCredentials(authScope, context);
   }
 }

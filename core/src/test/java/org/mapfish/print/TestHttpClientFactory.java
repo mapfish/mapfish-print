@@ -113,13 +113,6 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
 
     @Nonnull
     @Override
-    public String getMethodValue() {
-      final HttpMethod method = httpRequest.getMethod();
-      return method.name();
-    }
-
-    @Nonnull
-    @Override
     public URI getURI() {
       return httpRequest.getURI();
     }
