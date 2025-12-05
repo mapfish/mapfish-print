@@ -1,7 +1,7 @@
 package org.mapfish.print.map.geotools.grid;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Dimension;
 import java.util.Arrays;
@@ -10,7 +10,7 @@ import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.referencing.crs.DefaultEngineeringCRS;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -62,10 +62,10 @@ public class PointGridStrategyTest extends AbstractMapfishSpringTest {
       while (features.hasNext()) {
         SimpleFeature next = features.next();
         assertTrue(
-            next.getDefaultGeometry().getClass().getName(),
-            next.getDefaultGeometry() instanceof Point);
+            next.getDefaultGeometry() instanceof Point,
+            next.getDefaultGeometry().getClass().getName());
         Coordinate coord = ((Point) next.getDefaultGeometry()).getCoordinate();
-        assertTrue(coord + " is not one of the expected points", expectedPoints.contains(coord));
+        assertTrue(expectedPoints.contains(coord), coord + " is not one of the expected points");
       }
     }
   }
@@ -113,10 +113,10 @@ public class PointGridStrategyTest extends AbstractMapfishSpringTest {
       while (features.hasNext()) {
         SimpleFeature next = features.next();
         assertTrue(
-            next.getDefaultGeometry().getClass().getName(),
-            next.getDefaultGeometry() instanceof Point);
+            next.getDefaultGeometry() instanceof Point,
+            next.getDefaultGeometry().getClass().getName());
         Coordinate coord = ((Point) next.getDefaultGeometry()).getCoordinate();
-        assertTrue(coord + " is not one of the expected points", expectedPoints.contains(coord));
+        assertTrue(expectedPoints.contains(coord), coord + " is not one of the expected points");
       }
       assertEquals(expectedPoints.size(), featureSource.getFeatures().size());
     }

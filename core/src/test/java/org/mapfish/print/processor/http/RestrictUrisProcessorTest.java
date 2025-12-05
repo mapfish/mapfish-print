@@ -1,13 +1,14 @@
 package org.mapfish.print.processor.http;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.processor.http.matcher.AcceptAllMatcher;
@@ -21,7 +22,7 @@ import org.springframework.mock.http.client.MockClientHttpRequest;
 public class RestrictUrisProcessorTest {
   static final TestHttpClientFactory requestFactory = new TestHttpClientFactory();
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() {
     requestFactory.registerHandler(
         input -> true,
@@ -43,13 +44,15 @@ public class RestrictUrisProcessorTest {
     factoryWrapper.createRequest(new URI("http://localhost:8080/geoserver/wms"), HttpMethod.GET);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testCreateFactoryWrapperIllegalRequest() throws Exception {
-    final RestrictUrisProcessor restrictUrisProcessor = createLocalhostOnly();
-    ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
-    final ClientHttpRequestFactory factoryWrapper =
-        restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
-    factoryWrapper.createRequest(new URI("http://www.google.com/q"), HttpMethod.GET);
+    assertThrows(IllegalArgumentException.class, () -> {
+      final RestrictUrisProcessor restrictUrisProcessor = createLocalhostOnly();
+      ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
+      final ClientHttpRequestFactory factoryWrapper =
+          restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
+      factoryWrapper.createRequest(new URI("http://www.google.com/q"), HttpMethod.GET);
+    });
   }
 
   @Test
@@ -61,13 +64,15 @@ public class RestrictUrisProcessorTest {
     factoryWrapper.createRequest(new URI("http://localhost/q"), HttpMethod.GET);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testRejectWithIllegalRequest() throws Exception {
-    final RestrictUrisProcessor restrictUrisProcessor = createDenyInternal();
-    ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
-    final ClientHttpRequestFactory factoryWrapper =
-        restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
-    factoryWrapper.createRequest(new URI("http://192.168.12.23/q"), HttpMethod.GET);
+    assertThrows(IllegalArgumentException.class, () -> {
+      final RestrictUrisProcessor restrictUrisProcessor = createDenyInternal();
+      ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
+      final ClientHttpRequestFactory factoryWrapper =
+          restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
+      factoryWrapper.createRequest(new URI("http://192.168.12.23/q"), HttpMethod.GET);
+    });
   }
 
   private RestrictUrisProcessor createLocalhostOnly() {

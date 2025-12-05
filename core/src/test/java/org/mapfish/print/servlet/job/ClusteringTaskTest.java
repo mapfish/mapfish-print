@@ -1,11 +1,13 @@
 package org.mapfish.print.servlet.job;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.access.AlwaysAllowAssertion;
@@ -30,14 +32,15 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
   TestJobManager jobMan2;
   @Autowired private ApplicationContext context;
 
-  @Before
+  @BeforeEach
   public void setup() {
     context.getBean(ThreadPoolJobManager.class).shutdown();
     jobMan1 = new TestJobManager("uno");
     jobMan2 = new TestJobManager("duo");
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testRun() throws Exception {
     LOGGER.error("Starting jobs");
 

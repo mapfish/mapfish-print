@@ -1,8 +1,6 @@
 package org.mapfish.print.http;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.sun.net.httpserver.HttpsServer;
 import java.util.ArrayList;
@@ -10,9 +8,9 @@ import java.util.Collections;
 import java.util.List;
 import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.Credentials;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
@@ -38,12 +36,12 @@ public class HttpCredentialTest {
   @Autowired ConfigurationFactory configurationFactory;
   @Autowired private MfClientHttpRequestFactoryImpl requestFactory;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() throws Exception {
     httpsServer = HttpProxyTest.createHttpsServer(HTTPS_PROXY_PORT);
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDown() {
     httpsServer.stop(0);
   }

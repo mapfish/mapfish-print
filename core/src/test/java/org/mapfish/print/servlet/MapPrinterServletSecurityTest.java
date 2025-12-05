@@ -1,17 +1,17 @@
 package org.mapfish.print.servlet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.access.AccessAssertionTestUtil;
 import org.mapfish.print.test.util.ImageSimilarity;
@@ -34,12 +34,13 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
   @Autowired private MapPrinterServlet servlet;
   @Autowired private ServletMapPrinterFactory printerFactory;
 
-  @After
+  @AfterEach
   public void tearDown() {
     SecurityContextHolder.clearContext();
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReportAndGet_Success() throws Exception {
     AccessAssertionTestUtil.setCreds("ROLE_USER", "ROLE_EDITOR");
     setUpConfigFiles();
@@ -56,34 +57,41 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
     assertCorrectResponse(servletCreateResponse);
   }
 
-  @Test(timeout = 60000, expected = AccessDeniedException.class)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReportAndGet_InsufficientPrivileges() throws Exception {
-    AccessAssertionTestUtil.setCreds("ROLE_USER");
-    setUpConfigFiles();
+    assertThrows(AccessDeniedException.class, () -> {
+      AccessAssertionTestUtil.setCreds("ROLE_USER");
+      setUpConfigFiles();
 
-    final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
-    final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+      final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+      final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
 
-    String requestData = loadRequestDataAsString();
+      String requestData = loadRequestDataAsString();
 
-    this.servlet.createReportAndGetNoAppId(
-        "png", requestData, false, servletCreateRequest, servletCreateResponse);
+      this.servlet.createReportAndGetNoAppId(
+          "png", requestData, false, servletCreateRequest, servletCreateResponse);
+    });
   }
 
-  @Test(timeout = 60000, expected = AuthenticationCredentialsNotFoundException.class)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReportAndGet_NoCredentials() throws Exception {
-    setUpConfigFiles();
+    assertThrows(AuthenticationCredentialsNotFoundException.class, () -> {
+      setUpConfigFiles();
 
-    final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
-    final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+      final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+      final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
 
-    String requestData = loadRequestDataAsString();
+      String requestData = loadRequestDataAsString();
 
-    this.servlet.createReportAndGetNoAppId(
-        "png", requestData, false, servletCreateRequest, servletCreateResponse);
+      this.servlet.createReportAndGetNoAppId(
+          "png", requestData, false, servletCreateRequest, servletCreateResponse);
+    });
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReportAndGet_RequestAllowed_OtherGetDenied() throws Exception {
     AccessAssertionTestUtil.setCreds("ROLE_USER", "ROLE_EDITOR");
     setUpConfigFiles();
@@ -110,7 +118,7 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
       String contentAsString = servletStatusResponse.getContentAsString();
 
       final PJsonObject statusJson = parseJSONObjectFromString(contentAsString);
-      assertTrue(statusJson.toString(), statusJson.has(MapPrinterServlet.JSON_DONE));
+      assertTrue(statusJson.has(MapPrinterServlet.JSON_DONE), statusJson.toString());
 
       done = statusJson.getBool(MapPrinterServlet.JSON_DONE);
       if (!done) {

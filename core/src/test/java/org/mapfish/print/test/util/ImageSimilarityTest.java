@@ -1,10 +1,10 @@
 package org.mapfish.print.test.util;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.imageio.ImageIO;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 
 public class ImageSimilarityTest extends AbstractMapfishSpringTest {
@@ -13,7 +13,7 @@ public class ImageSimilarityTest extends AbstractMapfishSpringTest {
   @Test
   public void testNotRegenerateImage() {
     assertFalse(
-        "This flag should not be committed as true", ImageSimilarity.REGENERATE_EXPECTED_IMAGES);
+        ImageSimilarity.REGENERATE_EXPECTED_IMAGES, "This flag should not be committed as true");
   }
 
   /** Test that we get a distance in images with small differences. */

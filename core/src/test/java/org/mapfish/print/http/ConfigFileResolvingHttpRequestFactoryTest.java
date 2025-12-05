@@ -1,7 +1,7 @@
 package org.mapfish.print.http;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,8 +9,8 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.util.HashMap;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.Constants;
 import org.mapfish.print.IllegalFileAccessException;
@@ -41,7 +41,7 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
 
   private ConfigFileResolvingHttpRequestFactory resolvingFactory;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     requestFactory.registerHandler(input -> true, createFileHandler(URI::getPath));
 
@@ -147,12 +147,14 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
     assertEquals(expected, actual);
   }
 
-  @Test(expected = IllegalFileAccessException.class)
+  @Test
   public void testCreateRequestIllegalFile() throws Exception {
-    final URI uri = logbackXml.toURI();
-    final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
+    assertThrows(IllegalFileAccessException.class, () -> {
+      final URI uri = logbackXml.toURI();
+      final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
 
-    request.execute();
+      request.execute();
+    });
   }
 
   @Test

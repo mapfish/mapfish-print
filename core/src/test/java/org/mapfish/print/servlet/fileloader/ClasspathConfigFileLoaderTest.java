@@ -1,16 +1,13 @@
 package org.mapfish.print.servlet.fileloader;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Files;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -101,47 +98,57 @@ public class ClasspathConfigFileLoaderTest extends AbstractMapfishSpringTest {
             configFileUri, "classpath://org/mapfish/print/servlet/fileloader/" + resourceFileName));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testLoadFileChildResource_NotInConfigDir() throws Exception {
-    final URI configFileUri = new URI(configFileUriString);
+    assertThrows(IllegalArgumentException.class, () -> {
+      final URI configFileUri = new URI(configFileUriString);
 
-    this.loader.loadFile(
-        configFileUri, "classpath://test-http-request-factory-application-context.xml");
+      this.loader.loadFile(
+          configFileUri, "classpath://test-http-request-factory-application-context.xml");
+    });
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testLoadFileChildResource_NotClasspathURI() throws Exception {
-    final URI configFileUri = new URI(configFileUriString);
-    final String resourceFileName = "resourceFile.txt";
+    assertThrows(IllegalArgumentException.class, () -> {
+      final URI configFileUri = new URI(configFileUriString);
+      final String resourceFileName = "resourceFile.txt";
 
-    final String uri = getFile(FileConfigFileLoader.class, resourceFileName).toURI().toString();
-    this.loader.loadFile(configFileUri, uri);
+      final String uri = getFile(FileConfigFileLoader.class, resourceFileName).toURI().toString();
+      this.loader.loadFile(configFileUri, uri);
+    });
   }
 
-  @Test(expected = NoSuchElementException.class)
+  @Test
   public void testLoadFileChildResource_DoesNotExist() throws Exception {
-    final URI configFileUri = new URI(configFileUriString);
-    final String resourceFileName = "resourceFile.txt";
+    assertThrows(NoSuchElementException.class, () -> {
+      final URI configFileUri = new URI(configFileUriString);
+      final String resourceFileName = "resourceFile.txt";
 
-    final File file =
-        new File(
-            getFile(FileConfigFileLoader.class, resourceFileName).getParentFile(), "doesNotExist");
-    this.loader.loadFile(configFileUri, file.getPath());
+      final File file =
+          new File(
+              getFile(FileConfigFileLoader.class, resourceFileName).getParentFile(), "doesNotExist");
+      this.loader.loadFile(configFileUri, file.getPath());
+    });
   }
 
-  @Test(expected = NoSuchElementException.class)
+  @Test
   public void testLoadFileChildResource_DoesNotExist2() throws Exception {
-    final URI configFileUri = new URI(configFileUriString);
+    assertThrows(NoSuchElementException.class, () -> {
+      final URI configFileUri = new URI(configFileUriString);
 
-    this.loader.loadFile(configFileUri, "doesNotExist");
+      this.loader.loadFile(configFileUri, "doesNotExist");
+    });
   }
 
-  @Test(expected = NoSuchElementException.class)
+  @Test
   public void testLoadFileChildResource_ConfigFileDoesNotExist() throws Exception {
-    final URI configFileUri = new URI("classpath://xyz.yaml");
-    final String resourceFileName = "resourceFile.txt";
+    assertThrows(NoSuchElementException.class, () -> {
+      final URI configFileUri = new URI("classpath://xyz.yaml");
+      final String resourceFileName = "resourceFile.txt";
 
-    this.loader.loadFile(
-        configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).toURI().toString());
+      this.loader.loadFile(
+          configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).toURI().toString());
+    });
   }
 }

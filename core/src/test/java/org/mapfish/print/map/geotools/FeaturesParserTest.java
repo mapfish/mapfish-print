@@ -1,10 +1,6 @@
 package org.mapfish.print.map.geotools;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.net.URI;
@@ -18,7 +14,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultEngineeringCRS;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.Constants;
 import org.mapfish.print.TestHttpClientFactory;
@@ -232,7 +228,7 @@ public class FeaturesParserTest extends AbstractMapfishSpringTest {
             java.nio.file.Files.readString(geojsonExample.toPath(), Constants.DEFAULT_CHARSET);
         final SimpleFeatureCollection simpleFeatureCollection =
             featuresParser.treatStringAsGeoJson(geojson);
-        assertEquals(geojsonExample.getName(), numFeatures, simpleFeatureCollection.size());
+        assertEquals(numFeatures, simpleFeatureCollection.size(), geojsonExample.getName());
       } catch (RuntimeException t) {
         throw new RuntimeException(
             "Exception raised when processing: " + geojsonExample.getName() + "\n" + t.getMessage(),

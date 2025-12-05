@@ -1,12 +1,12 @@
 package org.mapfish.print.output;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.util.AssertionFailedException;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.ExtraPropertyException;
@@ -54,7 +54,7 @@ public class AbstractJasperReportOutputFormatTest extends AbstractMapfishSpringT
       fail("Expected a " + AssertionFailedException.class);
     } catch (AssertionFailedException e) {
       assertTrue(
-          e.getMessage(), e.getMessage().contains("does not match the class of the actual object"));
+          e.getMessage().contains("does not match the class of the actual object"), e.getMessage());
     }
   }
 
@@ -78,8 +78,8 @@ public class AbstractJasperReportOutputFormatTest extends AbstractMapfishSpringT
       fail("Expected a " + ExtraPropertyException.class);
     } catch (ExtraPropertyException e) {
       assertTrue(
-          e.getMessage(),
-          e.getMessage().contains("Extra properties found in the request attributes"));
+          e.getMessage().contains("Extra properties found in the request attributes"),
+          e.getMessage());
     }
   }
 
@@ -104,7 +104,7 @@ public class AbstractJasperReportOutputFormatTest extends AbstractMapfishSpringT
       fail("Expected a " + AssertionFailedException.class);
     } catch (AssertionFailedException e) {
       assertTrue(
-          e.getMessage(), e.getMessage().contains("does not match the class of the actual object"));
+          e.getMessage().contains("does not match the class of the actual object"), e.getMessage());
     }
   }
 }

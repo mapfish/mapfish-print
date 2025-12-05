@@ -14,7 +14,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.referencing.CRS;
-import org.junit.runner.RunWith;
+// JUnit 5 Imports
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.WorkingDirectories;
@@ -25,32 +26,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Class that loads the normal spring application context from the spring config file. Subclasses
  * can use Autowired to get dependencies from the application context.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(
-    locations = {
-      AbstractMapfishSpringTest.DEFAULT_SPRING_XML,
-      AbstractMapfishSpringTest.TEST_SPRING_XML,
-      AbstractMapfishSpringTest.TEST_SPRING_FONT_XML
-    })
+  locations = {
+    AbstractMapfishSpringTest.DEFAULT_SPRING_XML,
+    AbstractMapfishSpringTest.TEST_SPRING_XML,
+    AbstractMapfishSpringTest.TEST_SPRING_FONT_XML
+  })
 public abstract class AbstractMapfishSpringTest {
   public static final String DEFAULT_SPRING_XML =
-      "classpath:mapfish-spring-application-context.xml";
+    "classpath:mapfish-spring-application-context.xml";
   public static final String TEST_SPRING_XML =
-      "classpath:test-http-request-factory-application-context.xml";
+    "classpath:test-http-request-factory-application-context.xml";
   public static final String TEST_SPRING_FONT_XML =
-      "classpath:test-mapfish-spring-custom-fonts.xml";
+    "classpath:test-mapfish-spring-custom-fonts.xml";
   // The maximum number of times to retry fetching a resource used in tests
   public static final int HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY = 2;
   // The interval between retries used in tests
   public static final int HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS = 1;
   protected static final Processor.ExecutionContext CONTEXT =
-      new AbstractProcessor.Context(new HashMap<>(), new AtomicBoolean(false));
+    new AbstractProcessor.Context(new HashMap<>(), new AtomicBoolean(false));
   static final Pattern IMPORT_PATTERN = Pattern.compile("@@importFile\\((\\S+)\\)@@");
 
   @Autowired private WorkingDirectories workingDirectories;
@@ -66,7 +67,7 @@ public abstract class AbstractMapfishSpringTest {
     final URL resource = testClass.getResource(fileName);
     if (resource == null) {
       throw new AssertionError(
-          "Unable to find test resource: " + fileName + ", on: " + testClass.getName());
+        "Unable to find test resource: " + fileName + ", on: " + testClass.getName());
     }
 
     return new File(resource.getFile());
@@ -86,7 +87,7 @@ public abstract class AbstractMapfishSpringTest {
   }
 
   public static PJsonObject parseJSONObjectFromFile(Class<?> testClass, String fileName)
-      throws IOException {
+    throws IOException {
     final File file = getFile(testClass, fileName);
     String jsonString = Files.readString(file.toPath(), Constants.DEFAULT_CHARSET);
     Matcher matcher = IMPORT_PATTERN.matcher(jsonString);
@@ -104,7 +105,7 @@ public abstract class AbstractMapfishSpringTest {
   public static MapfishMapContext createTestMapContext() {
     try {
       final CenterScaleMapBounds bounds =
-          new CenterScaleMapBounds(CRS.decode("CRS:84"), 0, 0, 30000);
+        new CenterScaleMapBounds(CRS.decode("CRS:84"), 0, 0, 30000);
       return new MapfishMapContext(bounds, new Dimension(500, 500), 0, 72, true, true);
     } catch (FactoryException e) {
       throw new RuntimeException(e);
@@ -186,13 +187,13 @@ public abstract class AbstractMapfishSpringTest {
     }
 
     String platformVersionName =
-        "expectedSimpleImage"
-            + classifier
-            + "-"
-            + normalizedOSName()
-            + "-jdk"
-            + javaVersion
-            + ".png";
+      "expectedSimpleImage"
+        + classifier
+        + "-"
+        + normalizedOSName()
+        + "-jdk"
+        + javaVersion
+        + ".png";
     String platformName = "expectedSimpleImage" + classifier + "-" + normalizedOSName() + ".png";
     String defaultName = "expectedSimpleImage" + classifier + ".png";
 
@@ -202,8 +203,8 @@ public abstract class AbstractMapfishSpringTest {
     //        ImageIO.write(actualImage, "png", new File(TMP, baseDir + "/" + defaultName));
 
     return OptionalUtils.or(
-            () -> findImage(baseDir, platformVersionName), () -> findImage(baseDir, platformName))
-        .orElse(defaultName);
+        () -> findImage(baseDir, platformVersionName), () -> findImage(baseDir, platformName))
+      .orElse(defaultName);
   }
 
   private Optional<String> findImage(final String baseDir, final String fileName) {

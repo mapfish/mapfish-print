@@ -1,16 +1,14 @@
 package org.mapfish.print.attribute.map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
@@ -25,7 +23,7 @@ public class OverviewMapAttributeTest extends AbstractMapfishSpringTest {
   @Autowired private ConfigurationFactory configurationFactory;
   @Autowired private TestHttpClientFactory httpRequestFactory;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     this.configurationFactory.setDoValidation(false);
   }

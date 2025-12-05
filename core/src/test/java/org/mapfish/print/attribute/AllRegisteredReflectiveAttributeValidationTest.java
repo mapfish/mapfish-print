@@ -1,7 +1,6 @@
 package org.mapfish.print.attribute;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -9,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.json.JSONObject;
 import org.json.JSONWriter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
@@ -21,11 +20,15 @@ public class AllRegisteredReflectiveAttributeValidationTest extends AbstractMapf
 
   @Autowired List<Attribute> allAttributes;
 
-  @Test(expected = Test.None.class /* no exception expected */)
+  @Test
   public void testAllAttributesHaveLegalValues() {
-    for (ReflectiveAttribute<?> attribute : allReflectiveAttributes) {
-      attribute.init();
-    }
+    assertDoesNotThrow(() -> {
+      for (ReflectiveAttribute<?> attribute : allReflectiveAttributes) {
+        attribute.init();
+      }
+
+      // no exception... good
+    });
 
     // no exception... good
   }

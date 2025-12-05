@@ -7,7 +7,7 @@ import java.nio.file.Files;
 import java.util.Date;
 import java.util.Objects;
 import javax.annotation.PostConstruct;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.mapfish.print.metrics.UnhealthyCountersHealthCheck;

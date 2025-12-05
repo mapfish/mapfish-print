@@ -1,16 +1,13 @@
 package org.mapfish.print.servlet.fileloader;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Files;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.IllegalFileAccessException;
 import org.mapfish.print.servlet.MapPrinterServletTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,28 +109,34 @@ public class ServletConfigFileLoaderTest extends AbstractConfigLoaderTest {
             configFileUri, "servlet:///org/mapfish/print/servlet/fileloader/" + resourceFileName));
   }
 
-  @Test(expected = IllegalFileAccessException.class)
+  @Test
   public void testLoadFileChildResource_NotInConfigDir() throws Exception {
-    final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
+    assertThrows(IllegalFileAccessException.class, () -> {
+      final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
 
-    this.loader.loadFile(
-        configFileUri,
-        getFile(FileConfigFileLoader.class, "/test-http-request-factory-application-context.xml")
-            .getAbsolutePath());
+      this.loader.loadFile(
+          configFileUri,
+          getFile(FileConfigFileLoader.class, "/test-http-request-factory-application-context.xml")
+              .getAbsolutePath());
+    });
   }
 
-  @Test(expected = IllegalFileAccessException.class)
+  @Test
   public void testLoadFileChildResource_NotInConfigDir_ServletURI() throws Exception {
-    final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
+    assertThrows(IllegalFileAccessException.class, () -> {
+      final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
 
-    this.loader.loadFile(
-        configFileUri, "servlet:///test-http-request-factory-application-context.xml");
+      this.loader.loadFile(
+          configFileUri, "servlet:///test-http-request-factory-application-context.xml");
+    });
   }
 
-  @Test(expected = NoSuchElementException.class)
+  @Test
   public void testLoadFileChildResource_DoesNotExist() throws Exception {
-    final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
+    assertThrows(NoSuchElementException.class, () -> {
+      final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
 
-    this.loader.loadFile(configFileUri, "doesNotExist");
+      this.loader.loadFile(configFileUri, "doesNotExist");
+    });
   }
 }

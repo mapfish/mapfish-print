@@ -71,3 +71,6 @@ tasks.register('buildDocs', JavaExec) {
 build {
     dependsOn buildDocs
 }
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}

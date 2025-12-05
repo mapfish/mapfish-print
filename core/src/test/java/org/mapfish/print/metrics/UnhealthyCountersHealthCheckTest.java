@@ -9,8 +9,8 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheck;
 import java.util.TreeSet;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -22,7 +22,7 @@ public class UnhealthyCountersHealthCheckTest extends AbstractMapfishSpringTest 
 
   @Autowired @InjectMocks private UnhealthyCountersHealthCheck unhealthyCountersHealthCheck;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     // Initialize mocks created above
     MockitoAnnotations.openMocks(this);
