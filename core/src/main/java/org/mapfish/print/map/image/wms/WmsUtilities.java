@@ -193,34 +193,33 @@ public final class WmsUtilities {
   public static ClientHttpRequest createWmsRequest(
       final MfClientHttpRequestFactory httpRequestFactory, final URI uri, final HttpMethod method)
       throws IOException {
-    switch (method) {
-      case GET:
-        return httpRequestFactory.createRequest(uri, method);
-      case POST:
-        final String params = uri.getQuery();
-        final URI paramlessUri;
-        try {
-          paramlessUri =
-              new URI(
-                  uri.getScheme(),
-                  uri.getUserInfo(),
-                  uri.getHost(),
-                  uri.getPort(),
-                  uri.getPath(),
-                  null,
-                  null);
-        } catch (URISyntaxException e) {
-          throw new RuntimeException(e);
-        }
-        final ClientHttpRequest request = httpRequestFactory.createRequest(paramlessUri, method);
-        final byte[] encodedParams = params.getBytes(StandardCharsets.UTF_8);
-        request.getHeaders().set("Content-Type", "application/x-www-form-urlencoded");
-        request.getHeaders().set("Charset", "utf-8");
-        request.getHeaders().set("Content-Length", Integer.toString(encodedParams.length));
-        request.getBody().write(encodedParams);
-        return request;
-      default:
-        throw new RuntimeException("Unsupported WMS request method: " + method);
+    if (method.equals(HttpMethod.GET)) {
+      return httpRequestFactory.createRequest(uri, method);
     }
+    if (method.equals(HttpMethod.POST)) {
+      final String params = uri.getQuery();
+      final URI paramlessUri;
+      try {
+        paramlessUri =
+          new URI(
+            uri.getScheme(),
+            uri.getUserInfo(),
+            uri.getHost(),
+            uri.getPort(),
+            uri.getPath(),
+            null,
+            null);
+      } catch (URISyntaxException e) {
+        throw new RuntimeException(e);
+      }
+      final ClientHttpRequest request = httpRequestFactory.createRequest(paramlessUri, method);
+      final byte[] encodedParams = params.getBytes(StandardCharsets.UTF_8);
+      request.getHeaders().set("Content-Type", "application/x-www-form-urlencoded");
+      request.getHeaders().set("Charset", "utf-8");
+      request.getHeaders().set("Content-Length", Integer.toString(encodedParams.length));
+      request.getBody().write(encodedParams);
+      return request;
+    }
+    throw new RuntimeException("Unsupported WMS request method: " + method);
   }
 }

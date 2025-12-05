@@ -171,7 +171,7 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
     LOGGER.debug(
         "Fetching {}, using headers:\n{}",
         this.getURI(),
-        headers.entrySet().stream()
+        headers.headerSet().stream()
             .map(entry -> entry.getKey() + "=" + String.join(", ", entry.getValue()))
             .collect(Collectors.joining("\n")));
   }
@@ -248,12 +248,6 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
 
   @Override
   @Nonnull
-  public String getMethodValue() {
-    return this.httpMethod.name();
-  }
-
-  @Override
-  @Nonnull
   public URI getURI() {
     return this.uri;
   }
@@ -265,11 +259,6 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
     @Nonnull
     public HttpStatus getStatusCode() {
       return HttpStatus.OK;
-    }
-
-    @Override
-    public int getRawStatusCode() {
-      return getStatusCode().value();
     }
 
     @Override

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,12 +20,10 @@ import javax.annotation.Nullable;
 import org.apache.hc.client5.http.SystemDefaultDnsResolver;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
-import org.apache.hc.core5.http.Header;
-import org.apache.hc.core5.http.HeaderElement;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.HttpEntityContainer;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
+import org.apache.hc.core5.http.*;
 import org.apache.hc.client5.http.config.RequestConfig;
-import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
@@ -35,8 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.AbstractClientHttpRequest;
-import org.springframework.http.client.AbstractClientHttpResponse;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 /** Default implementation. */
@@ -91,16 +91,18 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             .build();
 
     final HttpClientBuilder httpClientBuilder =
-        HttpClients.custom()
-            .disableCookieManagement()
-            .setDnsResolver(new RandomizingDnsResolver())
-            .setRoutePlanner(new MfRoutePlanner())
-            .setSSLSocketFactory(new MfSSLSocketFactory())
-            .setDefaultCredentialsProvider(new MfCredentialsProvider())
-            .setDefaultRequestConfig(requestConfig)
-            .setMaxConnTotal(maxConnTotal)
-            .setMaxConnPerRoute(maxConnPerRoute)
-            .setUserAgent(UserAgentCreator.getUserAgent());
+      HttpClients.custom()
+        .disableCookieManagement()
+        .setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create()
+          .setTlsSocketStrategy(new MfTLSSocketStrategy())
+          .setDnsResolver(new RandomizingDnsResolver())
+          .setMaxConnPerRoute(maxConnTotal)
+          .setMaxConnPerRoute(maxConnPerRoute)
+          .build())
+        .setRoutePlanner(new MfRoutePlanner())
+        .setDefaultCredentialsProvider(new MfCredentialsProvider())
+        .setDefaultRequestConfig(requestConfig)
+        .setUserAgent(UserAgentCreator.getUserAgent());
     CloseableHttpClient closeableHttpClient = httpClientBuilder.build();
     LOGGER.debug(
         "Created CloseableHttpClient using connectionRequestTimeout: {} connectTimeout: {}"
@@ -177,19 +179,18 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
       return this.request;
     }
 
+    @Override
     public HttpMethod getMethod() {
       return HttpMethod.valueOf(this.request.getMethod());
     }
 
     @Nonnull
-    @Override
-    public String getMethodValue() {
-      return this.request.getMethod();
-    }
-
-    @Nonnull
     public URI getURI() {
-      return this.request.getUri();
+      try {
+        return this.request.getUri();
+      } catch (URISyntaxException ex) {
+        throw new RuntimeException(ex);
+      }
     }
 
     @Nonnull
@@ -209,7 +210,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
           this.getURI(),
           String.join("\n", Utils.getPrintableHeadersList(headers)));
 
-      for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+      for (Map.Entry<String, List<String>> entry : headers.headerSet()) {
         String headerName = entry.getKey();
         if (!headerName.equalsIgnoreCase(org.apache.hc.core5.http.HttpHeaders.CONTENT_LENGTH)
             && !headerName.equalsIgnoreCase(org.apache.hc.core5.http.HttpHeaders.TRANSFER_ENCODING)) {
@@ -219,17 +220,20 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         }
       }
       if (this.request instanceof HttpEntityContainer entityEnclosingRequest) {
-        final HttpEntity requestEntity = new ByteArrayEntity(this.outputStream.toByteArray());
+        var bytes = this.outputStream.toByteArray();
+        final HttpEntity requestEntity = new ByteArrayEntity(bytes, ContentType.APPLICATION_OCTET_STREAM);
         entityEnclosingRequest.setEntity(requestEntity);
       }
-      ClassicHttpResponse response = this.client.execute(this.request, this.context);
+
+      ClassicHttpResponse response = this.client.executeOpen(null, this.request, this.context);
       LOGGER.debug("Response: {} -- {}", response.getCode(), this.getURI());
 
       return new Response(response);
     }
   }
 
-  public static class Response extends AbstractClientHttpResponse {
+  // TODO: Do we need this class after all?
+  public static class Response implements ClientHttpResponse {
     private static final Logger LOGGER = LoggerFactory.getLogger(Response.class);
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();
     private final ClassicHttpResponse response;
@@ -242,8 +246,8 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     }
 
     @Override
-    public int getRawStatusCode() {
-      return this.response.getCode();
+    public HttpStatusCode getStatusCode() throws IOException {
+      return HttpStatusCode.valueOf(this.response.getCode());
     }
 
     @Nonnull
@@ -290,11 +294,9 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     @Override
     public HttpHeaders getHeaders() {
       final HttpHeaders translatedHeaders = new HttpHeaders();
-      final Header[] allHeaders = this.response.getAllHeaders();
+      final Header[] allHeaders = this.response.getHeaders();
       for (Header header : allHeaders) {
-        for (HeaderElement element : header.getElements()) {
-          translatedHeaders.add(header.getName(), element.toString());
-        }
+          translatedHeaders.add(header.getName(), header.getValue());
       }
       return translatedHeaders;
     }
