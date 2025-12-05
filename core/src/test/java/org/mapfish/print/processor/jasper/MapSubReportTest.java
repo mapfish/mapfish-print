@@ -1,6 +1,6 @@
 package org.mapfish.print.processor.jasper;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.awt.Dimension;
 import java.io.File;
@@ -11,13 +11,12 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JRDesignImage;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRLoader;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class MapSubReportTest {
 
-  @Rule public TemporaryFolder folder = new TemporaryFolder();
+  @TempDir public File folder;
 
   @Test
   public void testCompile() throws Exception {
@@ -49,10 +48,10 @@ public class MapSubReportTest {
     assertEquals(
         "\"" + layer3SVG.getPath().replace('\\', '/') + "\"", image3.getExpression().getText());
 
-    File compiledReportFile = folder.newFile();
+    File compiledReportFile = File.createTempFile("junit", null, folder);
     subReport.compile(compiledReportFile);
 
     JasperReport jasperReport = (JasperReport) JRLoader.loadObject(compiledReportFile);
-    assertEquals("report can be loaded from compiled file", "map", jasperReport.getName());
+    assertEquals("map", jasperReport.getName(), "report can be loaded from compiled file");
   }
 }

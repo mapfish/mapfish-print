@@ -1,10 +1,11 @@
 package org.mapfish.print.config.access;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collections;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -15,30 +16,34 @@ public class AndAccessAssertionTest extends AbstractMapfishSpringTest {
 
   @Autowired ApplicationContext applicationContext;
 
-  @After
+  @AfterEach
   public void tearDown() {
     SecurityContextHolder.clearContext();
   }
 
-  @Test(expected = AssertionError.class)
+  @Test
   public void testSetPredicates() {
+    assertThrows(AssertionError.class, () -> {
 
-    final AndAccessAssertion andAssertion = applicationContext.getBean(AndAccessAssertion.class);
-    andAssertion.setPredicates(AlwaysAllowAssertion.INSTANCE, AlwaysAllowAssertion.INSTANCE);
-    andAssertion.setPredicates(AlwaysAllowAssertion.INSTANCE);
+      final AndAccessAssertion andAssertion = applicationContext.getBean(AndAccessAssertion.class);
+      andAssertion.setPredicates(AlwaysAllowAssertion.INSTANCE, AlwaysAllowAssertion.INSTANCE);
+      andAssertion.setPredicates(AlwaysAllowAssertion.INSTANCE);
+    });
   }
 
-  @Test(expected = AccessDeniedException.class)
+  @Test
   public void testAssertAccessNotAllowed() {
-    final AndAccessAssertion andAssertion = applicationContext.getBean(AndAccessAssertion.class);
-    AccessAssertion pred1 =
-        new RoleAccessAssertion().setRequiredRoles(Collections.singleton("ROLE_USER"));
-    AccessAssertion pred2 =
-        new RoleAccessAssertion().setRequiredRoles(Collections.singleton("ROLE_OTHER"));
-    andAssertion.setPredicates(pred1, pred2);
+    assertThrows(AccessDeniedException.class, () -> {
+      final AndAccessAssertion andAssertion = applicationContext.getBean(AndAccessAssertion.class);
+      AccessAssertion pred1 =
+          new RoleAccessAssertion().setRequiredRoles(Collections.singleton("ROLE_USER"));
+      AccessAssertion pred2 =
+          new RoleAccessAssertion().setRequiredRoles(Collections.singleton("ROLE_OTHER"));
+      andAssertion.setPredicates(pred1, pred2);
 
-    AccessAssertionTestUtil.setCreds("ROLE_USER");
-    andAssertion.assertAccess("", this);
+      AccessAssertionTestUtil.setCreds("ROLE_USER");
+      andAssertion.assertAccess("", this);
+    });
   }
 
   @Test

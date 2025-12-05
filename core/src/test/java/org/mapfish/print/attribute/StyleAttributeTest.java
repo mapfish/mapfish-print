@@ -1,13 +1,12 @@
 package org.mapfish.print.attribute;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
@@ -18,7 +17,7 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class StyleAttributeTest extends AbstractMapfishSpringTest {
-  @Rule public TemporaryFolder folder = new TemporaryFolder();
+  @TempDir public File folder;
   @Autowired private ConfigurationFactory configurationFactory;
   @Autowired private TestHttpClientFactory clientHttpRequestFactory;
 
@@ -35,7 +34,7 @@ public class StyleAttributeTest extends AbstractMapfishSpringTest {
             new HashMap<>(),
             pJsonObject,
             template,
-            this.folder.getRoot(),
+            this.folder,
             this.clientHttpRequestFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,

@@ -8,8 +8,8 @@ import static org.mockito.Mockito.when;
 
 import com.codahale.metrics.health.HealthCheck;
 import java.util.Date;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.servlet.job.JobQueue;
 import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
@@ -26,7 +26,7 @@ public class JobQueueHealthCheckTest extends AbstractMapfishSpringTest {
 
   @Autowired @InjectMocks private JobQueueHealthCheck jobQueueHealthCheck;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     // Initialize mocks created above
     MockitoAnnotations.openMocks(this);
@@ -50,10 +50,9 @@ public class JobQueueHealthCheckTest extends AbstractMapfishSpringTest {
     RuntimeException rte =
         assertThrowsExactly(
             RuntimeException.class,
-            () -> {
+            () ->
               // WHEN
-              jobQueueHealthCheck.check();
-            });
+              jobQueueHealthCheck.check());
 
     assertEquals(
         "None of the print job queued was processed by this server, in the last (seconds): 300",

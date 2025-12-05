@@ -42,7 +42,9 @@ tasks.register('geoserver' , Exec) {
 // prevent that the tests target can be directly called. the integration tests
 // must be run with `./gradlew examples:geoserver` to make sure the
 // server is running
-test {}
+test {
+    useJUnitPlatform()
+}
 test.onlyIf { false }
 
 tasks.register('integrationTest', Test) {

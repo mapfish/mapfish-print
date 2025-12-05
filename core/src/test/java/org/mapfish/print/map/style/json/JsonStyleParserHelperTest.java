@@ -1,10 +1,6 @@
 package org.mapfish.print.map.style.json;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mapfish.print.map.style.json.MapfishStyleParserPluginTest.REQUEST_DATA_STYLE_JSON_V1_STYLE_JSON;
 
 import java.io.File;
@@ -38,8 +34,8 @@ import org.geotools.styling.StyleBuilder;
 import org.geotools.xml.styling.SLDTransformer;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.Constants;
 import org.mapfish.print.MapPrinter;
 import org.mapfish.print.TestHttpClientFactory;
@@ -77,7 +73,7 @@ public class JsonStyleParserHelperTest {
     assertEquals(fillOpacity, valueOf(fill.getOpacity()));
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     Configuration configuration = new Configuration();
     final File file =
@@ -561,10 +557,10 @@ public class JsonStyleParserHelperTest {
     Mark mark = (Mark) graphic.graphicalSymbols().getFirst();
     Stroke stroke = mark.getStroke();
     assertArrayEquals(
-        Arrays.toString(stroke.getDashArray()),
         new float[] {5f, 4f},
         stroke.getDashArray(),
-        FLOAT_DELTA);
+        FLOAT_DELTA,
+        Arrays.toString(stroke.getDashArray()));
   }
 
   @Test
@@ -593,10 +589,10 @@ public class JsonStyleParserHelperTest {
 
     final Stroke stroke = lineSymbolizer.getStroke();
     assertArrayEquals(
-        Arrays.toString(stroke.getDashArray()),
         new float[] {5f, 4f},
         stroke.getDashArray(),
-        FLOAT_DELTA);
+        FLOAT_DELTA,
+        Arrays.toString(stroke.getDashArray()));
   }
 
   @Test
@@ -626,10 +622,10 @@ public class JsonStyleParserHelperTest {
 
     final Stroke stroke = polygonSymbolizer.getStroke();
     assertArrayEquals(
-        Arrays.toString(stroke.getDashArray()),
         new float[] {5f, 4f},
         stroke.getDashArray(),
-        FLOAT_DELTA);
+        FLOAT_DELTA,
+        Arrays.toString(stroke.getDashArray()));
 
     assertNotNull(polygonSymbolizer.getFill());
   }
@@ -682,7 +678,7 @@ public class JsonStyleParserHelperTest {
         styleJson.getInternalObj().put(JsonStyleParserHelper.JSON_GRAPHIC_FORMAT, mimeType);
         final String graphicFormat =
             helper.getGraphicFormat("http://somefile.com/file.jpeg", styleJson);
-        assertTrue(graphicFormat + " is not supported", strings.contains(graphicFormat));
+        assertTrue(strings.contains(graphicFormat), graphicFormat + " is not supported");
       }
     }
   }
@@ -698,10 +694,10 @@ public class JsonStyleParserHelperTest {
           continue;
         }
         final String gf1 = helper.getGraphicFormat("data:" + mimeType + ",blabla", styleJson);
-        assertTrue(gf1 + " is not supported", strings.contains(gf1));
+        assertTrue(strings.contains(gf1), gf1 + " is not supported");
         final String gf2 =
             helper.getGraphicFormat("data:" + mimeType + ";base64,blabla", styleJson);
-        assertTrue(gf2 + " is not supported", strings.contains(gf2));
+        assertTrue(strings.contains(gf2), gf2 + " is not supported");
       }
     }
   }
@@ -815,9 +811,9 @@ public class JsonStyleParserHelperTest {
     final Stroke stroke = helper.createStroke(pStyle, false);
     assertNotNull(stroke);
     assertArrayEquals(
-        Arrays.toString(stroke.getDashArray()),
         expectedDashArray,
         stroke.getDashArray(),
-        FLOAT_DELTA);
+        FLOAT_DELTA,
+        Arrays.toString(stroke.getDashArray()));
   }
 }

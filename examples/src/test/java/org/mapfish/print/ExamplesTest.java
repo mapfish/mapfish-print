@@ -1,7 +1,7 @@
 package org.mapfish.print;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -29,9 +29,9 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.junit.internal.TextListener;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.RunListener;
@@ -109,7 +109,7 @@ public class ExamplesTest {
 
   @Autowired MapPrinter mapPrinter;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() {
     final LoggerContext loggerContext = getLoggerContext();
     statusPrinter2.printInCaseOfErrorsOrWarnings(loggerContext);
@@ -195,12 +195,12 @@ public class ExamplesTest {
     }
 
     assertEquals(
+        0,
+        errors.length(),
         String.format(
             "All example directory names must match the pattern: '%s'.  "
                 + "The following fail that test: %s",
-            namePattern, errors),
-        0,
-        errors.length());
+            namePattern, errors));
   }
 
   @Test

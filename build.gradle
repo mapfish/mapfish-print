@@ -66,6 +66,7 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
 
     dependencies {
         testImplementation(
+                'org.junit.jupiter:junit-jupiter:6.0.1',
                 'org.mockito:mockito-core:5.20.0',
         )
     }
@@ -92,7 +93,7 @@ tasks.register('docs') {
 
 
 rewrite {
-    activeRecipe("org.openrewrite.java.spring.framework.UpgradeSpringFramework_7_0")
+    activeRecipe("org.openrewrite.java.testing.junit5.JUnit4to5Migration")
     setExportDatatables(true)
 }
 

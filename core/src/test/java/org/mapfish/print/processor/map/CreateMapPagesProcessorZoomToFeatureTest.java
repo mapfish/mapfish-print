@@ -1,6 +1,6 @@
 package org.mapfish.print.processor.map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.common.io.Files;
 import java.awt.image.BufferedImage;
@@ -9,8 +9,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import net.sf.jasperreports.engine.JasperPrint;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
@@ -32,7 +32,7 @@ public class CreateMapPagesProcessorZoomToFeatureTest extends AbstractMapfishSpr
   @Autowired private TestHttpClientFactory requestFactory;
   @Autowired private Map<String, OutputFormat> outputFormat;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     final String host = "paging_processor_zoom_to_features_test";
     requestFactory.registerHandler(

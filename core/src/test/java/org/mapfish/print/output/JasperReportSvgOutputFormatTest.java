@@ -1,6 +1,6 @@
 package org.mapfish.print.output;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
@@ -47,6 +47,6 @@ public class JasperReportSvgOutputFormatTest extends AbstractJasperReportOutputF
     writer.close();
 
     String expected = getFileContent(BASE_DIR + "expectedReport.svg");
-    assertEquals(actual.toString(), expected, outputStream.toString(Constants.DEFAULT_CHARSET));
+    assertEquals(expected, outputStream.toString(Constants.DEFAULT_CHARSET), actual.toString());
   }
 }

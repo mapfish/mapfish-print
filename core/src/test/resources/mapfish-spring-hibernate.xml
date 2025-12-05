@@ -6,7 +6,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
-    <bean id="mfSessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+    <bean id="mfSessionFactory" class="org.springframework.orm.jpa.hibernate.LocalSessionFactoryBean">
         <property name="dataSource" ref="mfDataSource"/>
         <property name="annotatedClasses">
             <list>
@@ -28,7 +28,7 @@
         </property>
     </bean>
 
-    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+    <bean id="transactionManager" class="org.springframework.orm.jpa.hibernate.HibernateTransactionManager">
         <property name="sessionFactory" ref="mfSessionFactory"/>
     </bean>
     <tx:annotation-driven transaction-manager="transactionManager"/>
