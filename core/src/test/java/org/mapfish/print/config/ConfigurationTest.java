@@ -1,12 +1,6 @@
 package org.mapfish.print.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.StringWriter;
 import java.util.Arrays;
@@ -27,8 +21,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.Constants;
 import org.mockito.Mockito;
@@ -42,7 +36,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 /** Tests for {@link org.mapfish.print.config.Configuration} class. */
 public class ConfigurationTest {
 
-  @After
+  @AfterEach
   public void tearDown() {
     SecurityContextHolder.clearContext();
   }
@@ -334,7 +328,7 @@ public class ConfigurationTest {
     final Rule rule = featureTypeStyle.rules().getFirst();
     final Class<? extends Symbolizer> symbClass = rule.symbolizers().getFirst().getClass();
     assertTrue(
-        "Expected: " + expectedSymbolizerType.getName() + " but was: " + symbClass,
-        expectedSymbolizerType.isAssignableFrom(symbClass));
+        expectedSymbolizerType.isAssignableFrom(symbClass),
+        "Expected: " + expectedSymbolizerType.getName() + " but was: " + symbClass);
   }
 }

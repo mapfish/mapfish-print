@@ -1,12 +1,14 @@
 package org.mapfish.print.output;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import net.sf.jasperreports.engine.JasperPrint;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
@@ -48,28 +50,30 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
     new ImageSimilarity(getFile(BASE_DIR + "expectedReport.png")).assertSimilarity(print, 0, 0);
   }
 
-  @Test(expected = Test.None.class /* no exception expected */)
+  @Test
   public void testAllOutputFormats() throws Exception {
-    final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
-    final PJsonObject requestData = loadJsonRequestData();
+    assertDoesNotThrow(() -> {
+      final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+      final PJsonObject requestData = loadJsonRequestData();
 
-    for (OutputFormat format : this.outputFormat.values()) {
-      if ("bmp".equals(format.getFileSuffix())
-          || "jpeg".equals(format.getFileSuffix())
-          || "jpg".equals(format.getFileSuffix())) {
-        // BMP and JPEG do not support transparency
-        continue;
+      for (OutputFormat format : this.outputFormat.values()) {
+        if ("bmp".equals(format.getFileSuffix())
+            || "jpeg".equals(format.getFileSuffix())
+            || "jpg".equals(format.getFileSuffix())) {
+          // BMP and JPEG do not support transparency
+          continue;
+        }
+        final OutputStream outputStream = new ByteArrayOutputStream();
+        format.print(
+            new HashMap<>(),
+            requestData,
+            config,
+            getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
+            getTaskDirectory(),
+            outputStream);
+        // no error?  its a pass
+
       }
-      final OutputStream outputStream = new ByteArrayOutputStream();
-      format.print(
-          new HashMap<>(),
-          requestData,
-          config,
-          getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
-          getTaskDirectory(),
-          outputStream);
-      // no error?  its a pass
-
-    }
+    });
   }
 }

@@ -1,7 +1,7 @@
 package org.mapfish.print.processor.map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.URIUtils;
@@ -57,27 +57,27 @@ public class CreateMapProcessorScaleBBoxNativeRotationWms1_3_0Test
               }
 
               assertTrue(
-                  "SERVICE != WMS: " + uppercaseParams.get("WMS"),
-                  uppercaseParams.containsEntry("SERVICE", "WMS"));
+                  uppercaseParams.containsEntry("SERVICE", "WMS"),
+                  "SERVICE != WMS: " + uppercaseParams.get("WMS"));
               assertTrue(
-                  "FORMAT != IMAGE/PNG: " + uppercaseParams.get("FORMAT"),
-                  uppercaseParams.containsEntry("FORMAT", "IMAGE/PNG"));
+                  uppercaseParams.containsEntry("FORMAT", "IMAGE/PNG"),
+                  "FORMAT != IMAGE/PNG: " + uppercaseParams.get("FORMAT"));
               assertTrue(
-                  "REQUEST != GETMAP: " + uppercaseParams.get("REQUEST"),
-                  uppercaseParams.containsEntry("REQUEST", "GETMAP"));
+                  uppercaseParams.containsEntry("REQUEST", "GETMAP"),
+                  "REQUEST != GETMAP: " + uppercaseParams.get("REQUEST"));
               assertTrue(
-                  "VERSION != 1.3.0: " + uppercaseParams.get("VERSION"),
-                  uppercaseParams.containsEntry("VERSION", "1.3.0"));
+                  uppercaseParams.containsEntry("VERSION", "1.3.0"),
+                  "VERSION != 1.3.0: " + uppercaseParams.get("VERSION"));
               assertTrue(
-                  "LAYERS != TOPP:STATES: " + uppercaseParams.get("LAYERS"),
-                  uppercaseParams.containsEntry("LAYERS", "TOPP:STATES"));
-              assertTrue("ANGLE != 90", uppercaseParams.containsEntry("ANGLE", "90.0"));
-              assertTrue("BBOX is missing", uppercaseParams.containsKey("BBOX"));
+                  uppercaseParams.containsEntry("LAYERS", "TOPP:STATES"),
+                  "LAYERS != TOPP:STATES: " + uppercaseParams.get("LAYERS"));
+              assertTrue(uppercaseParams.containsEntry("ANGLE", "90.0"), "ANGLE != 90");
+              assertTrue(uppercaseParams.containsKey("BBOX"), "BBOX is missing");
               assertTrue(
-                  "mapSize is not rotated (width)", uppercaseParams.containsEntry("WIDTH", "780"));
+                  uppercaseParams.containsEntry("WIDTH", "780"), "mapSize is not rotated (width)");
               assertTrue(
-                  "mapSize is not rotated (height)",
-                  uppercaseParams.containsEntry("HEIGHT", "330"));
+                  uppercaseParams.containsEntry("HEIGHT", "330"),
+                  "mapSize is not rotated (height)");
               return "/map-data/states-native-rotation.png";
             }));
     final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));

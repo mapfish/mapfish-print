@@ -2,9 +2,7 @@ package org.mapfish.print.processor.map;
 
 import static java.lang.Math.PI;
 import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mapfish.print.Constants.PDF_DPI;
 
 import java.awt.Dimension;
@@ -16,7 +14,7 @@ import org.geotools.api.referencing.crs.CRSAuthorityFactory;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.attribute.map.BBoxMapBounds;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
 import org.mapfish.print.attribute.map.MapAttribute;
@@ -50,7 +48,7 @@ public class MapfishMapContextTest {
   @Test
   public void testGetRotation() {
     MapfishMapContext transformer = new MapfishMapContext(null, null, PI / 2, PDF_DPI, null, true);
-    assertEquals("converted to radians", PI / 2, transformer.getRotation(), 1e-9);
+    assertEquals(PI / 2, transformer.getRotation(), 1e-9, "converted to radians");
   }
 
   @Test

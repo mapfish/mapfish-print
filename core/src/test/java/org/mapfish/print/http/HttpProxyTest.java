@@ -1,6 +1,6 @@
 package org.mapfish.print.http;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mapfish.print.AbstractMapfishSpringTest.HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS;
 import static org.mapfish.print.AbstractMapfishSpringTest.HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY;
 
@@ -29,9 +29,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManagerFactory;
 import org.apache.commons.io.IOUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.Constants;
@@ -66,7 +66,7 @@ public class HttpProxyTest {
   @Autowired ConfigurationFactory configurationFactory;
   @Autowired private MfClientHttpRequestFactoryImpl requestFactory;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() throws Exception {
     proxyServer = HttpServer.create(new InetSocketAddress(LOCALHOST, PROXY_PORT), 0);
     proxyServer.start();
@@ -77,7 +77,7 @@ public class HttpProxyTest {
     httpsServer = createHttpsServer(HTTPS_PROXY_PORT);
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDown() {
     proxyServer.stop(0);
     targetServer.stop(0);
@@ -121,7 +121,7 @@ public class HttpProxyTest {
     final ClientHttpResponse response = request.execute();
 
     final String message = IOUtils.toString(response.getBody(), Constants.DEFAULT_ENCODING);
-    assertEquals(message, HttpStatus.OK, response.getStatusCode());
+    assertEquals(HttpStatus.OK, response.getStatusCode(), message);
 
     assertEquals(expected, message);
   }

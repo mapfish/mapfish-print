@@ -6,8 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
@@ -27,7 +27,7 @@ public class NorthArrowGraphicTest extends AbstractMapfishSpringTest {
 
   private Color bgColor;
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
     Configuration config = this.configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
     this.requestFactoryWrapper =

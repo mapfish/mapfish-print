@@ -1,7 +1,7 @@
 package org.mapfish.print.processor.map.scalebar;
 
 import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.attribute.ScalebarAttribute;
 import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;

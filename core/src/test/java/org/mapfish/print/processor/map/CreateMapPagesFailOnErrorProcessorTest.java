@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
@@ -41,7 +41,7 @@ public class CreateMapPagesFailOnErrorProcessorTest extends AbstractMapfishSprin
 
   private static final AtomicInteger wmsRequestsNb = new AtomicInteger(0);
 
-  @Before
+  @BeforeEach
   public void setUp() {
     final String host = "paging_processor_fail_on_error_test";
     requestFactory.registerHandler(
@@ -89,15 +89,15 @@ public class CreateMapPagesFailOnErrorProcessorTest extends AbstractMapfishSprin
     try {
       format.getJasperPrint(
           new HashMap<>(), requestData, config, config.getDirectory(), getTaskDirectory());
-      Assert.fail("Generation was not canceled");
+      Assertions.fail("Generation was not canceled");
     } catch (Exception e) {
-      Assert.assertTrue(e instanceof ExecutionException);
+      Assertions.assertTrue(e instanceof ExecutionException);
     } finally {
-      Assert.assertTrue(
+      Assertions.assertTrue(
+          wmsRequestsNb.get() < maxWmsRequestsNumber,
           String.format(
               "Number of WMS requests (%d) during print generation should be less than %d",
-              wmsRequestsNb.get(), maxWmsRequestsNumber),
-          wmsRequestsNb.get() < maxWmsRequestsNumber);
+              wmsRequestsNb.get(), maxWmsRequestsNumber));
     }
   }
 }

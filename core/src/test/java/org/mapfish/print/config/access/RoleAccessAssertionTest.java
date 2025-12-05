@@ -1,6 +1,7 @@
 package org.mapfish.print.config.access;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mapfish.print.config.access.AccessAssertionTestUtil.setCreds;
 
 import java.util.ArrayList;
@@ -8,8 +9,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.SetsUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -17,33 +18,39 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class RoleAccessAssertionTest {
 
-  @After
+  @AfterEach
   public void tearDown() {
     SecurityContextHolder.clearContext();
   }
 
-  @Test(expected = AssertionError.class)
+  @Test
   public void testSetRequiredRoles() {
-    final RoleAccessAssertion assertion = new RoleAccessAssertion();
-    assertion.setRequiredRoles(Collections.singleton("ROLE_USER"));
-    assertion.setRequiredRoles(Collections.singleton("ROLE_USER"));
+    assertThrows(AssertionError.class, () -> {
+      final RoleAccessAssertion assertion = new RoleAccessAssertion();
+      assertion.setRequiredRoles(Collections.singleton("ROLE_USER"));
+      assertion.setRequiredRoles(Collections.singleton("ROLE_USER"));
+    });
   }
 
-  @Test(expected = AuthenticationCredentialsNotFoundException.class)
+  @Test
   public void testAssertAccessNoCredentials() {
-    final RoleAccessAssertion assertion = new RoleAccessAssertion();
-    assertion.setRequiredRoles(Collections.singleton("ROLE_USER"));
+    assertThrows(AuthenticationCredentialsNotFoundException.class, () -> {
+      final RoleAccessAssertion assertion = new RoleAccessAssertion();
+      assertion.setRequiredRoles(Collections.singleton("ROLE_USER"));
 
-    assertion.assertAccess("", this);
+      assertion.assertAccess("", this);
+    });
   }
 
-  @Test(expected = AccessDeniedException.class)
+  @Test
   public void testAssertAccessWrongCreds() {
-    final RoleAccessAssertion assertion = new RoleAccessAssertion();
-    assertion.setRequiredRoles(Collections.singleton("ROLE_USER"));
+    assertThrows(AccessDeniedException.class, () -> {
+      final RoleAccessAssertion assertion = new RoleAccessAssertion();
+      assertion.setRequiredRoles(Collections.singleton("ROLE_USER"));
 
-    setCreds("ROLE_USER2");
-    assertion.assertAccess("", this);
+      setCreds("ROLE_USER2");
+      assertion.assertAccess("", this);
+    });
   }
 
   @Test
@@ -73,23 +80,27 @@ public class RoleAccessAssertionTest {
     assertion.assertAccess("", this);
   }
 
-  @Test(expected = AccessDeniedException.class)
+  @Test
   public void testAssertAccessOneOfFailed() {
-    final RoleAccessAssertion assertion = new RoleAccessAssertion();
-    assertion.setRequiredRoles(SetsUtils.create("ROLE_USER", "ROLE_USER2"));
+    assertThrows(AccessDeniedException.class, () -> {
+      final RoleAccessAssertion assertion = new RoleAccessAssertion();
+      assertion.setRequiredRoles(SetsUtils.create("ROLE_USER", "ROLE_USER2"));
 
-    setCreds("ROLE_OTHER");
-    assertion.assertAccess("", this);
+      setCreds("ROLE_OTHER");
+      assertion.assertAccess("", this);
+    });
   }
 
-  @Test(expected = AuthenticationCredentialsNotFoundException.class)
+  @Test
   public void testAssertNoRolesNoCreds() {
-    final RoleAccessAssertion assertion = new RoleAccessAssertion();
-    assertion.setRequiredRoles(new HashSet<>());
+    assertThrows(AuthenticationCredentialsNotFoundException.class, () -> {
+      final RoleAccessAssertion assertion = new RoleAccessAssertion();
+      assertion.setRequiredRoles(new HashSet<>());
 
-    assertion.assertAccess("", this);
-    setCreds("ROLE_OTHER", "ROLE_USER2");
-    assertion.assertAccess("", this);
+      assertion.assertAccess("", this);
+      setCreds("ROLE_OTHER", "ROLE_USER2");
+      assertion.assertAccess("", this);
+    });
   }
 
   @Test
@@ -104,27 +115,31 @@ public class RoleAccessAssertionTest {
     assertion.assertAccess("", this);
   }
 
-  @Test(expected = AuthenticationCredentialsNotFoundException.class)
+  @Test
   public void testMarshalUnmarshalNoAuth() {
-    final RoleAccessAssertion assertion = new RoleAccessAssertion();
-    assertion.setRequiredRoles(Collections.singleton("ROLE_USER"));
-    final JSONObject marshalData = assertion.marshal();
+    assertThrows(AuthenticationCredentialsNotFoundException.class, () -> {
+      final RoleAccessAssertion assertion = new RoleAccessAssertion();
+      assertion.setRequiredRoles(Collections.singleton("ROLE_USER"));
+      final JSONObject marshalData = assertion.marshal();
 
-    RoleAccessAssertion newAssertion = new RoleAccessAssertion();
-    newAssertion.unmarshal(marshalData);
-    newAssertion.assertAccess("", this);
+      RoleAccessAssertion newAssertion = new RoleAccessAssertion();
+      newAssertion.unmarshal(marshalData);
+      newAssertion.assertAccess("", this);
+    });
   }
 
-  @Test(expected = AccessDeniedException.class)
+  @Test
   public void testMarshalUnmarshalNotPermitted() {
-    setCreds("ROLE_OTHER");
-    final RoleAccessAssertion assertion = new RoleAccessAssertion();
-    assertion.setRequiredRoles(Collections.singleton("ROLE_USER"));
-    final JSONObject marshalData = assertion.marshal();
+    assertThrows(AccessDeniedException.class, () -> {
+      setCreds("ROLE_OTHER");
+      final RoleAccessAssertion assertion = new RoleAccessAssertion();
+      assertion.setRequiredRoles(Collections.singleton("ROLE_USER"));
+      final JSONObject marshalData = assertion.marshal();
 
-    RoleAccessAssertion newAssertion = new RoleAccessAssertion();
-    newAssertion.unmarshal(marshalData);
-    newAssertion.assertAccess("", this);
+      RoleAccessAssertion newAssertion = new RoleAccessAssertion();
+      newAssertion.unmarshal(marshalData);
+      newAssertion.assertAccess("", this);
+    });
   }
 
   @Test

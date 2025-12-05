@@ -1,6 +1,6 @@
 package org.mapfish.print.processor.http.matcher;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.net.MalformedURLException;
 import java.net.SocketException;

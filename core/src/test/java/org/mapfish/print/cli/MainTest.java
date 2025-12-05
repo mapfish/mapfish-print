@@ -1,8 +1,8 @@
 package org.mapfish.print.cli;
 
 import java.io.File;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.test.util.ImageSimilarity;
 
@@ -12,7 +12,7 @@ public class MainTest {
   private File configFile;
   private File v3ApiRequestFile;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     this.outputFile = File.createTempFile("main-test", ".png");
     this.configFile = getFile("config.yaml");

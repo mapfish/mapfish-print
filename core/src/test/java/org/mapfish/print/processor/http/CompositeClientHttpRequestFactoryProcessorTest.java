@@ -1,7 +1,7 @@
 package org.mapfish.print.processor.http;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mapfish.print.output.Values.MDC_CONTEXT_KEY;
 
 import java.net.URI;

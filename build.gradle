@@ -92,7 +92,7 @@ tasks.register('docs') {
 
 
 rewrite {
-    activeRecipe("org.openrewrite.java.spring.framework.UpgradeSpringFramework_7_0")
+    activeRecipe("org.openrewrite.java.testing.junit5.JUnit4to5Migration")
     setExportDatatables(true)
 }
 

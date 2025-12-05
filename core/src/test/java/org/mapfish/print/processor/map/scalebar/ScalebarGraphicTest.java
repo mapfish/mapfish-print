@@ -1,15 +1,14 @@
 package org.mapfish.print.processor.map.scalebar;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.awt.Dimension;
 import java.io.File;
 import java.net.URI;
 import org.geotools.referencing.CRS;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.attribute.ScalebarAttribute;
 import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
@@ -25,10 +24,10 @@ public class ScalebarGraphicTest {
 
   private final double TOLERANCE = 0.000000001;
 
-  @Rule public TemporaryFolder folder = new TemporaryFolder();
+  @TempDir public File folder;
   private Template template;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     Configuration configuration = new Configuration();
     this.template = new Template();
@@ -126,7 +125,7 @@ public class ScalebarGraphicTest {
     scalebarParams.renderAsSvg = false;
 
     ScalebarGraphic scalebar = new ScalebarGraphic();
-    URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
+    URI file = scalebar.render(mapParams, scalebarParams, folder, this.template);
     new ImageSimilarity(getFile("expected-scalebar-graphic.png"))
         .assertSimilarity(new File(file), 0);
   }
@@ -146,7 +145,7 @@ public class ScalebarGraphicTest {
     scalebarParams.renderAsSvg = false;
 
     ScalebarGraphic scalebar = new ScalebarGraphic();
-    URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
+    URI file = scalebar.render(mapParams, scalebarParams, folder, this.template);
     new ImageSimilarity(getFile("expected-scalebar-graphic-dpi.png"))
         .assertSimilarity(new File(file), 0);
   }
@@ -167,7 +166,7 @@ public class ScalebarGraphicTest {
     scalebarParams.font = "Liberation Sans";
 
     ScalebarGraphic scalebar = new ScalebarGraphic();
-    URI file = scalebar.render(mapParams, scalebarParams, folder.getRoot(), this.template);
+    URI file = scalebar.render(mapParams, scalebarParams, folder, this.template);
     new ImageSimilarity(getFile("expected-scalebar-graphic-svg.png"))
         .assertSimilarity(file, 300, 40, 0);
   }

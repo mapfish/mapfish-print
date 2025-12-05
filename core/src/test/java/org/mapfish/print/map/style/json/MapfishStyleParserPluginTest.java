@@ -1,10 +1,6 @@
 package org.mapfish.print.map.style.json;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mapfish.print.AbstractMapfishSpringTest.parseJSONObjectFromFile;
 import static org.mapfish.print.map.style.json.JsonStyleParserHelperTest.valueOf;
 
@@ -37,7 +33,7 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.xml.styling.SLDTransformer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
