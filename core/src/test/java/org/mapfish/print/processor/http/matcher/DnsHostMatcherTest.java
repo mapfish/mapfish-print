@@ -30,15 +30,15 @@ public class DnsHostMatcherTest {
     assertTrue(
         dnsHostMatcher.matches(
             MatchInfo.fromAuthScope(
-                new AuthScope(AuthScope.ANY_HOST, 80, AuthScope.ANY_REALM, "http"))));
+                new AuthScope(MatchInfo.ANY_SCHEME, MatchInfo.ANY_HOST, 80, MatchInfo.ANY_REALM, "http"))));
     assertTrue(
         dnsHostMatcher.matches(
             MatchInfo.fromAuthScope(
-                new AuthScope("localhost", AuthScope.ANY_PORT, AuthScope.ANY_REALM, "http"))));
+                new AuthScope(MatchInfo.ANY_SCHEME, "localhost", MatchInfo.ANY_PORT, MatchInfo.ANY_REALM, "http"))));
     assertTrue(
         dnsHostMatcher.matches(
             MatchInfo.fromAuthScope(
-                new AuthScope("127.0.0.1", 80, AuthScope.ANY_REALM, AuthScope.ANY_SCHEME))));
+                new AuthScope(MatchInfo.ANY_SCHEME, "127.0.0.1", 80, MatchInfo.ANY_REALM, MatchInfo.ANY_SCHEME))));
 
     dnsHostMatcher.setPort(8080);
 

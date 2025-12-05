@@ -2,8 +2,8 @@ package org.mapfish.print.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.mapfish.print.PrintException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -117,6 +117,11 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
       return httpRequest.getURI();
     }
 
+    @Override
+    public Map<String, Object> getAttributes() {
+      return Map.of();
+    }
+
     @Nonnull
     @Override
     public HttpHeaders getHeaders() {
