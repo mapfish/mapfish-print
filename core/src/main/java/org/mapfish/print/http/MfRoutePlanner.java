@@ -7,10 +7,8 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.List;
 import org.apache.hc.client5.http.impl.routing.DefaultRoutePlanner;
-import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.HttpException;
 import org.apache.hc.core5.http.HttpHost;
-import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.http.protocol.HttpCoreContext;
 import org.mapfish.print.config.Configuration;
@@ -31,7 +29,7 @@ public final class MfRoutePlanner extends DefaultRoutePlanner {
   }
 
   @Override
-  protected HttpHost determineProxy(HttpHost target, HttpContext context) throws HttpException {
+  protected HttpHost determineProxy(final HttpHost target, final HttpContext context) throws HttpException {
     Configuration config = MfClientHttpRequestFactoryImpl.getCurrentConfiguration();
     if (config == null) {
       return null;

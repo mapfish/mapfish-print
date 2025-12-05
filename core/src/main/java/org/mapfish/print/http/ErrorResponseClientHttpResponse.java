@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import javax.annotation.Nonnull;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;

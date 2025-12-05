@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import org.mapfish.print.servlet.job.PrintJobStatus;
 import org.mapfish.print.servlet.job.loader.ReportLoader;
 import org.slf4j.Logger;

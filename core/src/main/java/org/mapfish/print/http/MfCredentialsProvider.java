@@ -23,7 +23,7 @@ public final class MfCredentialsProvider implements CredentialsProvider {
   private final CredentialsProvider fallback = new SystemDefaultCredentialsProvider();
 
   @Override
-  public Credentials getCredentials(AuthScope authScope, HttpContext context) {
+  public Credentials getCredentials(final AuthScope authScope, final HttpContext context) {
 
     Configuration config = MfClientHttpRequestFactoryImpl.getCurrentConfiguration();
     if (config != null) {

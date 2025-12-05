@@ -4,7 +4,7 @@ import java.io.File;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Iterator;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /** A plugin that loads the config resources from urls starting with prefix: {@value #PREFIX}://. */
