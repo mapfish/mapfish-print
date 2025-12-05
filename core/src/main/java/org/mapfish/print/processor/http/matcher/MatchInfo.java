@@ -3,7 +3,6 @@ package org.mapfish.print.processor.http.matcher;
 import java.net.MalformedURLException;
 import java.net.URI;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.apache.hc.client5.http.auth.AuthScope;
 import org.springframework.http.HttpMethod;

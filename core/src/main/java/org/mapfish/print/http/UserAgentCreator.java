@@ -41,7 +41,7 @@ public final class UserAgentCreator {
     return String.format("%s/%s %s", AGENT_NAME, mfpRelease, httpClientUserAgent);
   }
 
-  public static String getUserAgent(String name, String pkg, Class<?> cls) {
+  public static String getUserAgent(final String name, final String pkg, final Class<?> cls) {
     var vi = VersionInfo.loadVersionInfo(pkg, cls.getClassLoader());
     String release = vi != null ? vi.getRelease() : "UNAVAILABLE";
     String javaVersion = System.getProperty("java.version");

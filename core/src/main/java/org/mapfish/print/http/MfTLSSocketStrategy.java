@@ -14,7 +14,11 @@ public final class MfTLSSocketStrategy implements TlsSocketStrategy {
   private final TlsSocketStrategy defaultStrategy = DefaultClientTlsStrategy.createDefault();
 
   @Override
-  public SSLSocket upgrade(Socket socket, String target, int port, Object attachment, HttpContext context) throws IOException {
+  public SSLSocket upgrade(final Socket socket,
+                           final String target,
+                           final int port,
+                           final Object attachment,
+                           final HttpContext context) throws IOException {
     return getSocketStrategy().upgrade(socket, target, port, attachment, context);
   }
 
