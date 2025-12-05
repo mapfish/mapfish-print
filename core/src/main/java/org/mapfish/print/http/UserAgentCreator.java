@@ -24,8 +24,7 @@ public final class UserAgentCreator {
    */
   public static String getUserAgent() {
 
-    final String httpClientUserAgent =
-        VersionInfo.getUserAgent(
+    final String httpClientUserAgent = getUserAgent(
             "Apache-HttpClient", "org.apache.http.client", UserAgentCreator.class);
 
     // This is based on the code from HttpClient:
@@ -40,5 +39,12 @@ public final class UserAgentCreator {
     }
 
     return String.format("%s/%s %s", AGENT_NAME, mfpRelease, httpClientUserAgent);
+  }
+
+  public static String getUserAgent(String name, String pkg, Class<?> cls) {
+    var vi = VersionInfo.loadVersionInfo(pkg, cls.getClassLoader());
+    String release = vi != null ? vi.getRelease() : "UNAVAILABLE";
+    String javaVersion = System.getProperty("java.version");
+    return String.format("%s/%s (Java/%s)", name, release, javaVersion);
   }
 }

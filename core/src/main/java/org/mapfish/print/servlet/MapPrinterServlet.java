@@ -21,13 +21,7 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
@@ -1173,7 +1167,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       referrer = "http://localhost/";
     }
     try {
-      return allowedReferers.matches(new URI(referrer), HttpMethod.resolve(request.getMethod()));
+      return allowedReferers.matches(new URI(referrer), HttpMethod.valueOf(request.getMethod().toUpperCase(Locale.ROOT)));
     } catch (SocketException
         | UnknownHostException
         | URISyntaxException

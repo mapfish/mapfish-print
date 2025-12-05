@@ -1,5 +1,7 @@
 package org.mapfish.print.http;
 
+import org.springframework.http.HttpHeaders;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,9 +19,9 @@ public final class Utils {
    *
    * @param headers The headers
    */
-  public static List<String> getPrintableHeadersList(final Map<String, List<String>> headers) {
+  public static List<String> getPrintableHeadersList(HttpHeaders headers) {
     final List<String> result = new ArrayList<>();
-    for (String header : headers.keySet()) {
+    for (String header : headers.headerNames()) {
       List<String> value = headers.get(header);
       if (AUTH_HEADERS.contains(header.toLowerCase())) {
         value = Arrays.asList(new String[] {"***"});
