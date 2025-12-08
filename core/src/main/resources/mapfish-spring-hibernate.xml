@@ -8,6 +8,13 @@
 
     <bean id="mfSessionFactory" class="org.springframework.orm.jpa.hibernate.LocalSessionFactoryBean">
         <property name="dataSource" ref="mfDataSource"/>
+        <property name="packagesToScan">
+            <array>
+<!--                <value>org.mapfish.print.servlet.job</value>-->
+                <value>org.mapfish.print.servlet.job.impl</value>
+                <value>org.mapfish.print.servlet.job.impl.hibernate</value>
+            </array>
+        </property>
         <property name="hibernateProperties">
             <value>
                 hibernate.hbm2ddl.auto=update
