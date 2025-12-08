@@ -8,16 +8,6 @@
 
     <bean id="mfSessionFactory" class="org.springframework.orm.jpa.hibernate.LocalSessionFactoryBean">
         <property name="dataSource" ref="mfDataSource"/>
-        <property name="annotatedClasses">
-            <list>
-                <value>org.mapfish.print.servlet.job.impl.PrintJobEntryImpl</value>
-                <value>org.mapfish.print.servlet.job.impl.PrintJobStatusImpl</value>
-                <value>org.mapfish.print.servlet.job.impl.PrintJobResultImpl</value>
-                <value>org.mapfish.print.servlet.job.impl.hibernate.PrintJobStatusExtImpl</value>
-                <value>org.mapfish.print.servlet.job.impl.hibernate.PrintJobResultExtImpl</value>
-                <value>org.mapfish.print.servlet.job.HibernateAccountingEntry</value>
-            </list>
-        </property>
         <property name="hibernateProperties">
             <value>
                 hibernate.hbm2ddl.auto=update

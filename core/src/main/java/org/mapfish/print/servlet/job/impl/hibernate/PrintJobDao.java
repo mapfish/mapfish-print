@@ -1,7 +1,7 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
 import jakarta.annotation.Nullable;
-import jakarta.annotation.PostConstruct;
+import jakarta.persistence.PessimisticLockException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.hibernate.LockMode;
-import org.hibernate.PessimisticLockException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -24,12 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class PrintJobDao {
 
   @Autowired private SessionFactory sf;
-
-  /** Initialize db manager. */
-  @PostConstruct
-  public final void init() {
-    this.sf.openSession();
-  }
 
   private Session getSession() {
     return this.sf.getCurrentSession();
@@ -226,7 +219,8 @@ public class PrintJobDao {
     query.setMaxResults(size);
     // LOCK but don't wait for release (since this is run continuously
     // anyway, no wait prevents deadlock)
-    query.setLockMode("pj", LockMode.UPGRADE_NOWAIT);
+    query.setLockMode("pj", LockMode.PESSIMISTIC_WRITE);
+    query.setHint("jakarta.persistence.lock.timeout", 0);
     try {
       return query.getResultList();
     } catch (PessimisticLockException ex) {

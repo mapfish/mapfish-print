@@ -15,6 +15,7 @@ import org.geotools.api.style.Style;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
@@ -41,7 +42,7 @@ public class ParserPluginUtilsTest {
 
     when(factory.createRequest(new URI("http://valid.uri"), HttpMethod.GET)).thenReturn(request);
     when(request.execute()).thenReturn(response);
-    when(response.getStatusCode().value()).thenReturn(httpStatusCode);
+    when(response.getStatusCode()).thenReturn(HttpStatusCode.valueOf(httpStatusCode));
     when(response.getBody())
         .thenReturn(
             new ByteArrayInputStream(
