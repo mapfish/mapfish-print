@@ -11,7 +11,7 @@ import org.apache.hc.client5.http.auth.Credentials;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
@@ -19,9 +19,9 @@ import org.mapfish.print.processor.http.matcher.DnsHostMatcher;
 import org.mapfish.print.processor.http.matcher.MatchInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(
     locations = {
       AbstractMapfishSpringTest.DEFAULT_SPRING_XML,
@@ -80,30 +80,51 @@ public class HttpCredentialTest {
     final Credentials object = credential.toCredentials(authscope);
     assertNotNull(object);
     assertEquals(USERNAME, object.getUserPrincipal().getName());
-    assertEquals(PASSWORD, object.getPassword());
+    assertEquals(PASSWORD, new String(object.getPassword()));
 
     authscope =
         new AuthScope(
-            MatchInfo.ANY_SCHEME, MatchInfo.ANY_HOST, MatchInfo.ANY_PORT, MatchInfo.ANY_REALM, MatchInfo.ANY_SCHEME);
+            MatchInfo.ANY_SCHEME,
+            MatchInfo.ANY_HOST,
+            MatchInfo.ANY_PORT,
+            MatchInfo.ANY_REALM,
+            MatchInfo.ANY_SCHEME);
     assertNotNull(credential.toCredentials(authscope));
 
     authscope =
         new AuthScope(
-          MatchInfo.ANY_SCHEME,
-          MatchInfo.ANY_HOST,
+            MatchInfo.ANY_SCHEME,
+            MatchInfo.ANY_HOST,
             HttpProxyTest.HTTPS_PROXY_PORT,
             MatchInfo.ANY_REALM,
             MatchInfo.ANY_SCHEME);
     assertNotNull(credential.toCredentials(authscope));
 
-    authscope = new AuthScope(MatchInfo.ANY_SCHEME, MatchInfo.ANY_HOST, 80, MatchInfo.ANY_REALM, MatchInfo.ANY_SCHEME);
+    authscope =
+        new AuthScope(
+            MatchInfo.ANY_SCHEME,
+            MatchInfo.ANY_HOST,
+            80,
+            MatchInfo.ANY_REALM,
+            MatchInfo.ANY_SCHEME);
     assertNotNull(credential.toCredentials(authscope));
 
     authscope =
-        new AuthScope(MatchInfo.ANY_SCHEME, "google.com", MatchInfo.ANY_PORT, MatchInfo.ANY_REALM, MatchInfo.ANY_SCHEME);
+        new AuthScope(
+            MatchInfo.ANY_SCHEME,
+            "google.com",
+            MatchInfo.ANY_PORT,
+            MatchInfo.ANY_REALM,
+            MatchInfo.ANY_SCHEME);
     assertNull(credential.toCredentials(authscope));
 
-    authscope = new AuthScope(MatchInfo.ANY_SCHEME, MatchInfo.ANY_HOST, MatchInfo.ANY_PORT, MatchInfo.ANY_REALM, "http");
+    authscope =
+        new AuthScope(
+            MatchInfo.ANY_SCHEME,
+            MatchInfo.ANY_HOST,
+            MatchInfo.ANY_PORT,
+            MatchInfo.ANY_REALM,
+            "http");
     assertNotNull(credential.toCredentials(authscope));
   }
 

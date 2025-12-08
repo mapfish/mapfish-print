@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mapfish.print.PrintException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
 
 public class ConfigFileResolvingRequestTest {
@@ -108,7 +109,7 @@ public class ConfigFileResolvingRequestTest {
 
   private ClientHttpResponse createResponse(final int statusCode) throws IOException {
     var clientHttpResponse = mock(ClientHttpResponse.class);
-    when(clientHttpResponse.getStatusCode().value()).thenReturn(statusCode);
+    when(clientHttpResponse.getStatusCode()).thenReturn(HttpStatusCode.valueOf(statusCode));
     return clientHttpResponse;
   }
 }

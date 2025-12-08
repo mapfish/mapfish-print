@@ -91,7 +91,13 @@ public class CreateMapPagesFailOnErrorProcessorTest extends AbstractMapfishSprin
           new HashMap<>(), requestData, config, config.getDirectory(), getTaskDirectory());
       Assertions.fail("Generation was not canceled");
     } catch (Exception e) {
-      Assertions.assertTrue(e instanceof ExecutionException);
+      if (!(e instanceof ExecutionException)) {
+        e.printStackTrace(System.err);
+      }
+      Assertions.assertTrue(
+          e instanceof ExecutionException,
+          String.format(
+              "Expected ExecutionException, got %s (%s)", e.getClass().getName(), e.getMessage()));
     } finally {
       Assertions.assertTrue(
           wmsRequestsNb.get() < maxWmsRequestsNumber,
