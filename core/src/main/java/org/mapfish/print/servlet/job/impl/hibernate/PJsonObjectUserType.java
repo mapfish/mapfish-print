@@ -12,25 +12,24 @@ import org.json.JSONObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
 
 /** Hibernate User Type for PJson object. */
-public class PJsonObjectUserType implements UserType {
+public class PJsonObjectUserType implements UserType<PJsonObject> {
 
-  private static final int[] SQL_TYPES = {Types.LONGVARCHAR};
+  private static final int SQL_TYPE = Types.LONGVARCHAR;
 
   private static final String CONTEXT_NAME = "spec";
 
   @Override
-  public final Object assemble(final Serializable cached, final Object owner) {
-    return deepCopy(cached);
+  public final PJsonObject assemble(final Serializable cached, final Object owner) {
+    return deepCopy((PJsonObject) cached);
   }
 
   @Override
-  public final Object deepCopy(final Object value) {
+  public final PJsonObject deepCopy(final PJsonObject value) {
     if (value == null) {
       return null;
     } else {
       try {
-        return new PJsonObject(
-            new JSONObject(((PJsonObject) value).getInternalObj().toString()), CONTEXT_NAME);
+        return new PJsonObject(new JSONObject(value.getInternalObj().toString()), CONTEXT_NAME);
       } catch (JSONException e) {
         throw new RuntimeException(e);
       }
@@ -38,21 +37,21 @@ public class PJsonObjectUserType implements UserType {
   }
 
   @Override
-  public final Serializable disassemble(final Object value) {
+  public final Serializable disassemble(final PJsonObject value) {
     return (Serializable) deepCopy(value);
   }
 
   @Override
-  public final boolean equals(final Object x, final Object y) {
+  public final boolean equals(final PJsonObject x, final PJsonObject y) {
     if (x == null) {
-      return (y != null);
+      return y == null;
     } else {
-      return (x.equals(y));
+      return x.equals(y);
     }
   }
 
   @Override
-  public final int hashCode(final Object x) {
+  public final int hashCode(final PJsonObject x) {
     return x.hashCode();
   }
 
@@ -62,13 +61,13 @@ public class PJsonObjectUserType implements UserType {
   }
 
   @Override
-  public final Object nullSafeGet(
+  public final PJsonObject nullSafeGet(
       final ResultSet rs,
-      final String[] names,
+      final int position,
       final SharedSessionContractImplementor session,
       final Object owner)
       throws SQLException {
-    String value = rs.getString(names[0]);
+    String value = rs.getString(position);
     if (value != null) {
       try {
         return new PJsonObject(new JSONObject(value), CONTEXT_NAME);
@@ -82,19 +81,20 @@ public class PJsonObjectUserType implements UserType {
   @Override
   public final void nullSafeSet(
       final PreparedStatement st,
-      final Object value,
+      final PJsonObject value,
       final int index,
       final SharedSessionContractImplementor session)
       throws SQLException {
     if (value == null) {
-      st.setNull(index, SQL_TYPES[0]);
+      st.setNull(index, SQL_TYPE);
     } else {
-      st.setString(index, ((PJsonObject) value).getInternalObj().toString());
+      st.setString(index, value.getInternalObj().toString());
     }
   }
 
   @Override
-  public final Object replace(final Object original, final Object target, final Object owner) {
+  public final PJsonObject replace(
+      final PJsonObject original, final PJsonObject target, final Object owner) {
     return deepCopy(original);
   }
 
@@ -104,7 +104,7 @@ public class PJsonObjectUserType implements UserType {
   }
 
   @Override
-  public final int[] sqlTypes() {
-    return SQL_TYPES;
+  public final int getSqlType() {
+    return SQL_TYPE;
   }
 }
