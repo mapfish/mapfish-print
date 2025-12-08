@@ -638,7 +638,7 @@ public class ThreadPoolJobManager implements JobManager {
             }
           }
         }
-      } catch (javax.persistence.PessimisticLockException e) {
+      } catch (jakarta.persistence.PessimisticLockException e) {
         // Ignore error on pessimistic locking
         unhealthyCountersHealthCheck.recordUnhealthyProblem(
             getClass().getSimpleName(), "ignoredPessimisticLockIssue");

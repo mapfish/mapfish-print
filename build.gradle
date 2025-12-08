@@ -6,7 +6,8 @@ buildscript {
 }
 
 plugins {
-  id("com.github.spotbugs") version "6.4.7"
+    id("com.github.spotbugs") version "6.4.7"
+    id("org.openrewrite.rewrite") version("latest.release")
 }
 
 defaultTasks 'build'
@@ -65,8 +66,8 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
 
     dependencies {
         testImplementation(
-                'org.junit.jupiter:junit-jupiter:6.0.1',
-                'org.mockito:mockito-core:5.20.0',
+            'org.junit.jupiter:junit-jupiter:6.0.1',
+            'org.mockito:mockito-core:5.20.0',
         )
     }
 
@@ -92,4 +93,13 @@ tasks.register('docs') {
 
 repositories {
     mavenCentral()
+}
+
+rewrite {
+    activeRecipe("org.openrewrite.hibernate.MigrateToHibernate66")
+    setExportDatatables(true)
+}
+
+dependencies {
+    rewrite("org.openrewrite.recipe:rewrite-hibernate:2.16.0")
 }
