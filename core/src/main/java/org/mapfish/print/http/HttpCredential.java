@@ -106,13 +106,6 @@ public class HttpCredential implements ConfigurationObject {
     if (this.username == null) {
       return null;
     }
-
-    final String passwordString;
-    if (this.password != null) {
-      passwordString = new String(this.password);
-    } else {
-      passwordString = null;
-    }
-    return new UsernamePasswordCredentials(this.username, passwordString.toCharArray());
+    return new UsernamePasswordCredentials(this.username, this.password);
   }
 }
