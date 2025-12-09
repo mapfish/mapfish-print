@@ -29,23 +29,23 @@ public final class MfRoutePlanner extends DefaultRoutePlanner {
   }
 
   @Override
-  protected HttpHost determineProxy(final HttpHost target, final HttpContext context) throws HttpException {
+  protected HttpHost determineProxy(final HttpHost target, final HttpContext context)
+      throws HttpException {
     Configuration config = MfClientHttpRequestFactoryImpl.getCurrentConfiguration();
-    if (config == null) {
+    if (config == null || context == null) {
       return null;
     }
-    var coreCtx = HttpCoreContext.cast(context);
-    if (coreCtx == null || coreCtx.getRequest() == null) {
-      return null;
+    var ctx = HttpCoreContext.cast(context);
+    var uri = (URI) ctx.getAttribute("request-uri");
+    var method = (HttpMethod) ctx.getAttribute("request-method");
+    if (ctx.getRequest() != null) {
+      try {
+        uri = ctx.getRequest().getUri();
+        method = HttpMethod.valueOf(ctx.getRequest().getMethod());
+      } catch (URISyntaxException e) {
+        throw new RuntimeException(e);
+      }
     }
-    var request = coreCtx.getRequest();
-    final URI uri;
-    try {
-      uri = request.getUri();
-    } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
-    }
-    HttpMethod method = HttpMethod.valueOf(request.getMethod());
 
     final List<HttpProxy> proxies = config.getProxies();
     for (HttpProxy proxy : proxies) {

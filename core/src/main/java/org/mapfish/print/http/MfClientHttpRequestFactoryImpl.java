@@ -25,6 +25,7 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
@@ -73,6 +74,13 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             connectionRequestTimeout,
             connectTimeout,
             socketTimeout));
+    setHttpContextFactory(
+        ((httpMethod, uri) -> {
+          var context = HttpClientContext.create();
+          context.setAttribute("request-uri", uri);
+          context.setAttribute("request-method", httpMethod);
+          return (HttpContext) context;
+        }));
   }
 
   @Nullable
@@ -231,7 +239,8 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         entityEnclosingRequest.setEntity(requestEntity);
       }
 
-      ClassicHttpResponse response = this.client.executeOpen(null, this.request, this.context);
+      ClassicHttpResponse response =
+          (ClassicHttpResponse) this.client.execute(this.request, this.context);
       LOGGER.debug("Response: {} -- {}", response.getCode(), this.getURI());
 
       return new Response(response);

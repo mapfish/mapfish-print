@@ -230,7 +230,7 @@ public class HttpProxyTest {
             httpExchange.sendResponseHeaders(401, 0);
             httpExchange.close();
           } else {
-            final String expectedAuth = "Basic dXNlcm5hbWU6bnVsbA==";
+            final String expectedAuth = "Basic dXNlcm5hbWU6";
             if (authorization.equals(expectedAuth)) {
               respond(httpExchange, MESSAGE_FROM_PROXY, 200);
             } else {
