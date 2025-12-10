@@ -28,7 +28,6 @@ dependencies {
             "org.springframework:spring-beans:7.0.1",
             "org.springframework:spring-web:7.0.1",
             "org.springframework:spring-context:7.0.1",
-            'javax.servlet:javax.servlet-api:4.0.1'
     )
 }
 

@@ -1,5 +1,6 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
+import java.io.InvalidClassException;
 import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,7 +21,10 @@ public class PJsonObjectUserType implements UserType<PJsonObject> {
 
   @Override
   public final PJsonObject assemble(final Serializable cached, final Object owner) {
-    return deepCopy((PJsonObject) cached);
+    if (cached instanceof PJsonObject value) {
+      return deepCopy(value);
+    }
+    throw new RuntimeException(new InvalidClassException(cached.getClass().getName()));
   }
 
   @Override

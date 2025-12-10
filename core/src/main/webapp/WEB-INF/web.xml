@@ -71,7 +71,7 @@
 
     <filter>
         <filter-name>instrumentedFilter</filter-name>
-        <filter-class>com.codahale.metrics.servlet.InstrumentedFilter</filter-class>
+        <filter-class>io.dropwizard.metrics.servlet.InstrumentedFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>instrumentedFilter</filter-name>
@@ -101,7 +101,7 @@
 
     <servlet>
         <servlet-name>metrics-servlet</servlet-name>
-        <servlet-class>com.codahale.metrics.servlets.AdminServlet</servlet-class>
+        <servlet-class>io.dropwizard.metrics.servlets.AdminServlet</servlet-class>
     </servlet>
 
     <!-- single mapping to spring, this only works properly if the advanced dispatch filter is
