@@ -8,16 +8,15 @@
         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-7.0.xsd">
 
     <!-- needed to allow double slashes in the URLs -->
-<!--    <beans:bean id="httpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall">-->
-<!--        <beans:property name="allowUrlEncodedSlash" value="true"/>-->
-<!--    </beans:bean>-->
+    <beans:bean id="httpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall">
+        <beans:property name="allowUrlEncodedSlash" value="true"/>
+    </beans:bean>
 
-<!--    <http-firewall ref="httpFirewall"/>-->
+    <http-firewall ref="httpFirewall"/>
 
     <http use-expressions="true">
-        <!-- in order to get a challenge (for capabilities for example) you need to use the print/sec/* urls -->
         <csrf disabled="true"/>
-        <intercept-url pattern="/sec/print/**" requires-channel="https" access="isAuthenticated()"/>
+        <intercept-url pattern="/sec/print/**" access="isAuthenticated()"/>
         <intercept-url pattern="/**" access="permitAll()"/>
         <http-basic/>
         <anonymous/>
