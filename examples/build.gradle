@@ -23,7 +23,8 @@ dependencies {
         "org.springframework:spring-test:7.0.1",
         "ch.qos.logback:logback-classic:1.5.15",
         "org.verapdf:validation-model:1.24.1",
-        "junit:junit:4.13.2",
+        'org.junit.platform:junit-platform-launcher:6.0.1',
+
     )
 }
 
