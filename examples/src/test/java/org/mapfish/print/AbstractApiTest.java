@@ -10,13 +10,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
 public abstract class AbstractApiTest {
 
   protected static final String PRINT_SERVER = "http://print:8080/";

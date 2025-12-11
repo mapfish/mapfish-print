@@ -192,7 +192,7 @@ public class ExamplesTest {
 
     launcher.execute(request);
 
-    listener.getSummary().printTo(new PrintWriter(System.out));
+    listener.getSummary().printTo(new PrintWriter(System.out, true, StandardCharsets.UTF_8));
 
     if (listener.getSummary().getTestsFailedCount() > 0) {
       System.exit(1);

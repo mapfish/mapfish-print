@@ -15,12 +15,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Test the servlet print API.
@@ -33,6 +35,7 @@ import org.springframework.http.client.ClientHttpResponse;
  *
  * <p>./gradlew examples:geoserver
  */
+@ExtendWith(SpringExtension.class)
 public class PrintApiTest extends AbstractApiTest {
 
   @Test
