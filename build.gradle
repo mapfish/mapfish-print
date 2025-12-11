@@ -7,7 +7,6 @@ buildscript {
 
 plugins {
   id("com.github.spotbugs") version "6.4.8"
-    id("org.openrewrite.rewrite") version("latest.release")
 }
 
 defaultTasks 'build'
@@ -93,13 +92,4 @@ tasks.register('docs') {
 
 repositories {
     mavenCentral()
-}
-
-rewrite {
-    activeRecipe("org.openrewrite.hibernate.MigrateToHibernate66")
-    setExportDatatables(true)
-}
-
-dependencies {
-    rewrite("org.openrewrite.recipe:rewrite-hibernate:2.16.0")
 }
