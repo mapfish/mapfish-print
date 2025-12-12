@@ -25,7 +25,7 @@
             <property name="scope" value="protected"/>
         </module>
         <module name="JavadocVariable">
-            <property name="accessModifiers" value="protected"/>
+            <property name="scope" value="protected"/>
             <property name="ignoreNamePattern" value="^[A-Z_]*$"/>
         </module>
         <module name="JavadocStyle"/>

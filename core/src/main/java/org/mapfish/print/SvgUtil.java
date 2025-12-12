@@ -36,7 +36,7 @@ public final class SvgUtil {
   }
 
   /** An image transcoder which allows to retrieve an {@link BufferedImage}. */
-  private static final class BufferedImageTranscoder extends ImageTranscoder {
+  private static class BufferedImageTranscoder extends ImageTranscoder {
 
     private BufferedImage img = null;
 

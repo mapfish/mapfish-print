@@ -180,7 +180,7 @@ enum RotationQuadrant {
       int halfCharHeight,
       Rectangle2D textBounds);
 
-  private static final class Constants {
+  private static class Constants {
     public static final double MINUS_NINETY_RADIANS = -PI / 2;
     public static final double ONE_EIGHTY_RADIANS = PI;
     public static final double NINETY_RADIANS = PI / 2;

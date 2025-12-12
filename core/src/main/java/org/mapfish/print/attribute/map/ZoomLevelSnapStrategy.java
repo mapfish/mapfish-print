@@ -180,7 +180,7 @@ public enum ZoomLevelSnapStrategy {
     }
   }
 
-  private static final class Constants {
+  private static class Constants {
     private static final double DISTANCE_TREATED_AS_EQUAL = 0.00000000001;
   }
 }
