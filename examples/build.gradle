@@ -22,7 +22,8 @@ dependencies {
         "org.slf4j:slf4j-api:2.0.16",
         "org.springframework:spring-test:5.3.39",
         "ch.qos.logback:logback-classic:1.5.15",
-        "org.verapdf:validation-model:1.24.1"
+        "org.verapdf:validation-model:1.24.1",
+        "junit:junit:4.13.2",
     )
 }
 
@@ -45,17 +46,31 @@ test {}
 test.onlyIf { false }
 
 tasks.register('integrationTest', Test) {
-    dependsOn(':core:compileJava', 'geoserver')
+    // Ensure this Test task actually executes the tests from the standard test source set
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    dependsOn(':core:compileJava', 'geoserver', testClasses)
+    // Use JUnit for tests discovery
+    useJUnit()
     testLogging {
         exceptionFormat = 'full'
         showCauses true
         showExceptions true
         showStackTraces true
-        events TestLogEvent.STANDARD_OUT
+        events TestLogEvent.STARTED, TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.STANDARD_ERROR, TestLogEvent.STANDARD_OUT
     }
-    maxHeapSize = "1G"
+    maxHeapSize = "2G"
     reports {
         junitXml.getRequired().set(true)
         html.getRequired().set(true)
+    }
+    afterSuite { desc, result ->
+        if (desc.parent) { // will match the outermost suite
+            return;
+        }
+        println ""
+        println "Acceptance test result: ${result.resultType}. Total:  ${result.testCount}, " +
+            "passed: ${result.successfulTestCount}, failed: ${result.failedTestCount}, " +
+            "skipped: ${result.skippedTestCount}"
     }
 }

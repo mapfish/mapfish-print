@@ -136,7 +136,6 @@ templates:
                             Title: *optStr #/definitions/MultilingualText
                             OfficialTitle: *optStr #/definitions/MultilingualText
                             Abbreviation: *optStr #/definitions/MultilingualText
-                            OfficialNumber: *optStr
                             Canton: *optStr #/definitions/CantonCode
                             Municipality: *optStr #/definitions/MunicipalityCode
                             ResponsibleOffice_Name: !string {} #/definitions/MultilingualText
