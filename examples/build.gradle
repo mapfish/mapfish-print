@@ -64,4 +64,13 @@ tasks.register('integrationTest', Test) {
         junitXml.getRequired().set(true)
         html.getRequired().set(true)
     }
+    afterSuite { desc, result ->
+        if (desc.parent) { // will match the outermost suite
+            return;
+        }
+        println ""
+        println "Acceptance test result: ${result.resultType}. Total:  ${result.testCount}, " +
+            "passed: ${result.successfulTestCount}, failed: ${result.failedTestCount}, " +
+            "skipped: ${result.skippedTestCount}"
+    }
 }
