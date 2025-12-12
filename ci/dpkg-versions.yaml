@@ -90,7 +90,7 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/libpam0g: 1.4.0-11ubuntu2.6
   ubuntu_22_04/libpcre2-8-0: 10.39-3ubuntu0.1
   ubuntu_22_04/libpcre3: 2:8.39-13ubuntu0.22.04.1
-  ubuntu_22_04/libpng16-16: 1.6.37-3build5
+  ubuntu_22_04/libpng16-16: 1.6.37-3ubuntu0.1
   ubuntu_22_04/libprocps8: 2:3.3.17-6ubuntu2.1
   ubuntu_22_04/libpsl5: 0.21.0-1.2build2
   ubuntu_22_04/libreadline8: 8.1.2-1
