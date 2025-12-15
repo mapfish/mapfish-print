@@ -385,8 +385,8 @@ public class MapPrinterServlet extends BaseMapServlet {
       value = "/{appId}" + STATUS_URL + "/{referenceId:\\S+}.json",
       method = RequestMethod.GET)
   public final void getStatusSpecificAppId(
-      @Nonnull @PathVariable final String appId,
-      @Nonnull @PathVariable final String referenceId,
+      @Nonnull @PathVariable("appId") final String appId,
+      @Nonnull @PathVariable("referenceId") final String referenceId,
       final HttpServletRequest statusRequest,
       final HttpServletResponse statusResponse) {
     withAppIdCounter.inc();
@@ -408,7 +408,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = STATUS_URL + "/{referenceId:\\S+}.json", method = RequestMethod.GET)
   public final void getStatusPath(
-      @Nonnull @PathVariable final String referenceId,
+      @Nonnull @PathVariable("referenceId") final String referenceId,
       final HttpServletRequest statusRequest,
       final HttpServletResponse statusResponse) {
     noAppIdCounter.inc();
@@ -478,8 +478,8 @@ public class MapPrinterServlet extends BaseMapServlet {
       value = "/{appId}" + CANCEL_URL + "/{referenceId:\\S+}",
       method = RequestMethod.DELETE)
   public final void cancelSpecificAppId(
-      @Nonnull @PathVariable final String appId,
-      @Nonnull @PathVariable final String referenceId,
+      @Nonnull @PathVariable("appId") final String appId,
+      @Nonnull @PathVariable("referenceId") final String referenceId,
       final HttpServletResponse statusResponse) {
     withAppIdCounter.inc();
     try (Timer.Context ignored = cancelTimer.time()) {
@@ -498,7 +498,8 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = CANCEL_URL + "/{referenceId:\\S+}", method = RequestMethod.DELETE)
   public final void cancelPath(
-      @Nonnull @PathVariable final String referenceId, final HttpServletResponse statusResponse) {
+      @Nonnull @PathVariable("referenceId") final String referenceId,
+      final HttpServletResponse statusResponse) {
     noAppIdCounter.inc();
     try (Timer.Context ignored = cancelTimer.time()) {
       cancel("default", referenceId, statusResponse);
@@ -541,8 +542,8 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = "/{appId}" + REPORT_URL + ".{format:\\w+}", method = RequestMethod.POST)
   public final void createReport(
-      @Nonnull @PathVariable final String appId,
-      @PathVariable final String format,
+      @Nonnull @PathVariable("appId") final String appId,
+      @PathVariable("format") final String format,
       @RequestBody final String requestData,
       final HttpServletRequest createReportRequest,
       final HttpServletResponse createReportResponse)
@@ -597,8 +598,8 @@ public class MapPrinterServlet extends BaseMapServlet {
       value = "/{appId}" + REPORT_URL + "/{referenceId:\\S+}",
       method = RequestMethod.GET)
   public final void getReportSpecificAppId(
-      @Nonnull @PathVariable final String appId,
-      @Nonnull @PathVariable final String referenceId,
+      @Nonnull @PathVariable("appId") final String appId,
+      @Nonnull @PathVariable("referenceId") final String referenceId,
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
       final HttpServletResponse getReportResponse)
       throws IOException, ServletException {
@@ -617,7 +618,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = REPORT_URL + "/{referenceId:\\S+}", method = RequestMethod.GET)
   public final void getReportPath(
-      @Nonnull @PathVariable final String referenceId,
+      @Nonnull @PathVariable("referenceId") final String referenceId,
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
       final HttpServletResponse getReportResponse)
       throws IOException, ServletException {
@@ -658,7 +659,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = REPORT_URL + ".{format:\\w+}", method = RequestMethod.POST)
   public final void createReport(
-      @PathVariable final String format,
+      @PathVariable("format") final String format,
       @RequestBody final String requestData,
       final HttpServletRequest createReportRequest,
       final HttpServletResponse createReportResponse)
@@ -703,8 +704,8 @@ public class MapPrinterServlet extends BaseMapServlet {
       value = "/{appId}" + CREATE_AND_GET_URL + ".{format:\\w+}",
       method = RequestMethod.POST)
   public final void createReportAndGet(
-      @Nonnull @PathVariable final String appId,
-      @PathVariable final String format,
+      @Nonnull @PathVariable("appId") final String appId,
+      @PathVariable("format") final String format,
       @RequestBody final String requestData,
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
       final HttpServletRequest createReportRequest,
@@ -757,7 +758,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = CREATE_AND_GET_URL + ".{format:\\w+}", method = RequestMethod.POST)
   public final void createReportAndGetNoAppId(
-      @PathVariable final String format,
+      @PathVariable("format") final String format,
       @RequestBody final String requestData,
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
       final HttpServletRequest createReportRequest,
@@ -830,7 +831,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = "/{appId}" + CAPABILITIES_URL, method = RequestMethod.GET)
   public final void getCapabilities(
-      @Nonnull @PathVariable final String appId,
+      @Nonnull @PathVariable("appId") final String appId,
       @RequestParam(value = "pretty", defaultValue = "false") final boolean pretty,
       final HttpServletRequest request,
       final HttpServletResponse capabilitiesResponse)
@@ -911,7 +912,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = "{appId}" + EXAMPLE_REQUEST_URL, method = RequestMethod.GET)
   public final void getExampleRequest(
-      @Nonnull @PathVariable final String appId,
+      @Nonnull @PathVariable("appId") final String appId,
       final HttpServletRequest request,
       final HttpServletResponse getExampleResponse)
       throws IOException {
