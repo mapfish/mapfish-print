@@ -9,6 +9,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
@@ -29,7 +31,9 @@ public abstract class AbstractApiTest {
 
   protected ClientHttpRequest getRequest(String path, HttpMethod method)
       throws IOException, URISyntaxException {
-    return httpRequestFactory.createRequest(new URI(PRINT_SERVER + path), method);
+    var actualUrl =
+        Stream.of(path.split("/")).filter(s -> !s.isEmpty()).collect(Collectors.joining("/"));
+    return httpRequestFactory.createRequest(new URI(PRINT_SERVER + actualUrl), method);
   }
 
   protected String getBodyAsText(ClientHttpResponse response) throws IOException {
