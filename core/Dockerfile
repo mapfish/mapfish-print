@@ -45,6 +45,8 @@ ENV LOG_LEVEL=INFO \
   PRINT_YAML_MAX_ALIASES=50 \
   SENTRY_DSN=
 
+COPY extraConfigFor/acceptanceTests/mapfish-spring-application-context-override.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/
+
 CMD ["/usr/local/tomcat/bin/docker-start-print"]
 
 FROM runner AS tester

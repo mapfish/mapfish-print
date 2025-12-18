@@ -521,6 +521,7 @@ public class PrintApiTest extends AbstractApiTest {
     request.getHeaders().set("Origin", "http://example.com/");
     request.getHeaders().set("Access-Control-Request-Method", "POST");
     request.getHeaders().set("Access-Control-Request-Headers", "X-Toto");
+    request.getHeaders().set("Content-Type", "application/json");
     try (ClientHttpResponse response = request.execute()) {
       assertEquals(HttpStatus.OK, response.getStatusCode());
       assertEquals("*", response.getHeaders().getFirst("Access-Control-Allow-Origin"));

@@ -18,6 +18,7 @@ dependencies {
         'org.springframework:spring-tx:7.0.1',
         'org.springframework:spring-test:7.0.1',
         'org.springframework:spring-web:7.0.1',
+        'org.junit.jupiter:junit-jupiter:6.0.1',
         'org.json:json:20250517',
         'commons-io:commons-io:2.21.0',
         'org.apache.commons:commons-lang3:3.20.0',
@@ -42,9 +43,7 @@ tasks.register('geoserver' , Exec) {
 // prevent that the tests target can be directly called. the integration tests
 // must be run with `./gradlew examples:geoserver` to make sure the
 // server is running
-test {
-    useJUnitPlatform()
-}
+test {}
 test.onlyIf { false }
 
 tasks.register('integrationTest', Test) {

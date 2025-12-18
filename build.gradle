@@ -65,7 +65,6 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
 
     dependencies {
         testImplementation(
-            'org.junit.jupiter:junit-jupiter:6.0.1',
             'org.mockito:mockito-core:5.20.0',
         )
     }
@@ -88,8 +87,4 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
 
 tasks.register('docs') {
     enabled = false
-}
-
-repositories {
-    mavenCentral()
 }
