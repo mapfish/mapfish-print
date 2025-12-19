@@ -12,6 +12,14 @@
         <beans:property name="allowUrlEncodedSlash" value="true"/>
     </beans:bean>
 
+    <beans:bean id="httpsRedirectFilter" class="org.springframework.security.web.transport.HttpsRedirectFilter">
+        <beans:property name="requestMatcher">
+            <beans:bean factory-method="pathPattern" class="org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher">
+                <beans:constructor-arg value="/sec/print/**"/>
+            </beans:bean>
+        </beans:property>
+    </beans:bean>
+
     <http-firewall ref="httpFirewall"/>
 
     <http use-expressions="true">
@@ -20,6 +28,7 @@
         <intercept-url pattern="/**" access="permitAll()"/>
         <http-basic/>
         <anonymous/>
+        <custom-filter ref="httpsRedirectFilter" after="FIRST"/>
     </http>
 
     <!--
