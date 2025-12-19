@@ -211,8 +211,12 @@ dependencies {
     //providedCompile('jakarta.servlet:jakarta.servlet-api:6.1.0')
     compileOnly 'com.github.spotbugs:spotbugs-annotations:4.9.8'
 
-    testImplementation 'de.saly:javamail-mock2-fullmock:0.5-beta4'
-    testImplementation 'com.h2database:h2:2.4.240'
+    testImplementation (
+        'de.saly:javamail-mock2-fullmock:0.5-beta4',
+        'com.h2database:h2:2.4.240',
+        'org.junit.jupiter:junit-jupiter:6.0.1',
+        'org.junit.jupiter:junit-jupiter-api:6.0.1',
+    )
 }
 
 static def gitRevision() {
