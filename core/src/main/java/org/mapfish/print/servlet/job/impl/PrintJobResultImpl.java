@@ -20,13 +20,13 @@ import org.mapfish.print.servlet.job.PrintJobStatus;
 @Table(name = "print_job_results")
 public class PrintJobResultImpl implements PrintJobResult {
 
-  @Id private final String reportURI;
+  @Id private String reportURI;
 
-  @Column private final String mimeType;
+  @Column private String mimeType;
 
-  @Column private final String fileExtension;
+  @Column private String fileExtension;
 
-  @Column private final String fileName;
+  @Column private String fileName;
 
   @OneToOne(targetEntity = PrintJobStatusImpl.class, fetch = FetchType.LAZY)
   @OnDelete(action = OnDeleteAction.CASCADE)
