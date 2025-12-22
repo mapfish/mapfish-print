@@ -10,7 +10,7 @@ import org.mapfish.print.servlet.job.impl.PrintJobResultImpl;
 @Entity
 public class PrintJobResultExtImpl extends PrintJobResultImpl {
 
-  @Column(length = 1000000000)
+  @Column(length = 1000000)
   @Basic
   private byte[] data;
 

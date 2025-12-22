@@ -23,7 +23,7 @@ import org.mapfish.print.servlet.job.PrintJobStatus;
 public class PrintJobStatusImpl implements PrintJobStatus {
   @Embedded
   @Target(PrintJobEntryImpl.class)
-  private final PrintJobEntry entry;
+  private PrintJobEntry entry;
 
   @Id private String referenceId;
 
