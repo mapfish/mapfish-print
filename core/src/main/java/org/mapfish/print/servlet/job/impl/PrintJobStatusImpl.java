@@ -35,6 +35,7 @@ public class PrintJobStatusImpl implements PrintJobStatus {
 
   @Column private long requestCount;
 
+  @Column(length = 4096)
   private String error;
 
   @OneToOne(targetEntity = PrintJobResultImpl.class, cascade = CascadeType.ALL, mappedBy = "status")
