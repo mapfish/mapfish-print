@@ -53,8 +53,8 @@ import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.http.matcher.UriMatchers;
 import org.mapfish.print.servlet.job.JobManager;
 import org.mapfish.print.servlet.job.NoSuchReferenceException;
+import org.mapfish.print.servlet.job.PrintJobEntry;
 import org.mapfish.print.servlet.job.PrintJobStatus;
-import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
 import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.mapfish.print.servlet.job.loader.ReportLoader;
 import org.mapfish.print.url.data.Handler;
@@ -1152,7 +1152,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       return null;
     }
 
-    PrintJobEntryImpl jobEntry = new PrintJobEntryImpl(ref, specJson, System.currentTimeMillis());
+    PrintJobEntry jobEntry = new PrintJobEntry(ref, specJson, System.currentTimeMillis());
     jobEntry.configureAccess(template, this.context);
 
     try {

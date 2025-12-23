@@ -39,7 +39,6 @@ import org.mapfish.print.config.WorkingDirectories;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.processor.ExecutionStats;
 import org.mapfish.print.processor.Processor;
-import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -385,7 +384,7 @@ public abstract class PrintJob implements Callable<PrintJobResult> {
             return null;
           }
         };
-    this.entry = new PrintJobEntryImpl();
+    this.entry = new PrintJobEntry();
   }
 
   /** Interface encapsulating the code to run with the open output stream. */

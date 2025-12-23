@@ -11,7 +11,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.Date;
-import org.hibernate.annotations.Target;
 import org.mapfish.print.config.access.AccessAssertion;
 import org.mapfish.print.servlet.job.PrintJobEntry;
 import org.mapfish.print.servlet.job.PrintJobResult;
@@ -21,9 +20,8 @@ import org.mapfish.print.servlet.job.PrintJobStatus;
 @Entity
 @Table(name = "print_job_statuses")
 public class PrintJobStatusImpl implements PrintJobStatus {
-  @Embedded
-  @Target(PrintJobEntryImpl.class)
-  private PrintJobEntry entry;
+
+  @Embedded private PrintJobEntry entry;
 
   @Id private String referenceId;
 
