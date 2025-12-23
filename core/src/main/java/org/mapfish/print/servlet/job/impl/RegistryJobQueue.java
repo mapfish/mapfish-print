@@ -225,7 +225,7 @@ public class RegistryJobQueue implements JobQueue {
 
       PrintJobStatusImpl report =
           new PrintJobStatusImpl(
-              new PrintJobEntryImpl(referenceId, requestData, startTime, accessAssertion),
+              new PrintJobEntry(referenceId, requestData, startTime, accessAssertion),
               requestCount);
       report.setStatus(status);
 

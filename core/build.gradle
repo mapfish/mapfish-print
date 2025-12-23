@@ -91,6 +91,7 @@ test {
         junitXml.getRequired().set(true)
         html.getRequired().set(true)
     }
+    maxHeapSize = "2G"
     useJUnitPlatform()
 }
 

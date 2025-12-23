@@ -13,7 +13,6 @@ import org.mapfish.print.Constants;
 import org.mapfish.print.config.access.AlwaysAllowAssertion;
 import org.mapfish.print.servlet.ClusteredMapPrinterServletTest;
 import org.mapfish.print.servlet.MapPrinterServlet;
-import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
 import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
@@ -63,16 +62,16 @@ public class ClusteringTaskTest extends AbstractMapfishSpringTest {
                     + "}"),
             "job");
     jobMan1.submit(
-        new PrintJobEntryImpl(
+        new PrintJobEntry(
             "first job", requestData, System.currentTimeMillis(), new AlwaysAllowAssertion()));
     jobMan1.submit(
-        new PrintJobEntryImpl(
+        new PrintJobEntry(
             "second job", requestData, System.currentTimeMillis(), new AlwaysAllowAssertion()));
     jobMan1.submit(
-        new PrintJobEntryImpl(
+        new PrintJobEntry(
             "third job", requestData, System.currentTimeMillis(), new AlwaysAllowAssertion()));
     jobMan1.submit(
-        new PrintJobEntryImpl(
+        new PrintJobEntry(
             "fourth job", requestData, System.currentTimeMillis(), new AlwaysAllowAssertion()));
 
     int ready = 0;
