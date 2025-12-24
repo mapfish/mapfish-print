@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.hc.client5.http.SystemDefaultDnsResolver;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
@@ -97,7 +98,6 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     final RequestConfig requestConfig =
         RequestConfig.custom()
             .setConnectionRequestTimeout(connectionRequestTimeout, TimeUnit.MILLISECONDS)
-            .setConnectTimeout(connectTimeout, TimeUnit.MILLISECONDS)
             .setResponseTimeout(socketTimeout, TimeUnit.MILLISECONDS)
             .build();
 
@@ -106,6 +106,10 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             .disableCookieManagement()
             .setConnectionManager(
                 PoolingHttpClientConnectionManagerBuilder.create()
+                    .setDefaultConnectionConfig(
+                        ConnectionConfig.custom()
+                            .setConnectTimeout(connectTimeout, TimeUnit.MILLISECONDS)
+                            .build())
                     .setTlsSocketStrategy(new MfTLSSocketStrategy())
                     .setDnsResolver(new RandomizingDnsResolver())
                     .setMaxConnPerRoute(maxConnTotal)
@@ -238,9 +242,7 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
             new ByteArrayEntity(bytes, ContentType.APPLICATION_OCTET_STREAM);
         entityEnclosingRequest.setEntity(requestEntity);
       }
-
-      ClassicHttpResponse response =
-          (ClassicHttpResponse) this.client.execute(this.request, this.context);
+      ClassicHttpResponse response = this.client.executeOpen(null, this.request, this.context);
       LOGGER.debug("Response: {} -- {}", response.getCode(), this.getURI());
 
       return new Response(response);
@@ -274,16 +276,16 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     @Override
     public void close() {
       try {
-        getBody();
         if (inputStream != null) {
           inputStream.close();
-          inputStream = null;
         }
+        this.response.close();
       } catch (IOException e) {
         LOGGER.error(
             "Error occurred while trying to retrieve Http Response {} in order to close it.",
             this.id,
             e);
+      } finally {
         inputStream = null;
       }
       LOGGER.trace("Closed Http Response object: {}", this.id);

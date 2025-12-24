@@ -164,7 +164,7 @@ public class PrintJobDao {
                     builder.lessThan(root.get("lastCheckTime"), checkTimeThreshold)))));
     update.set(root.get("status"), PrintJobStatus.Status.CANCELED);
     update.set(root.get("error"), message);
-    getSession().createQuery(update).executeUpdate();
+    getSession().createMutationQuery(update).executeUpdate();
   }
 
   /**
@@ -180,7 +180,7 @@ public class PrintJobDao {
     final Root<PrintJobStatusExtImpl> root = update.from(PrintJobStatusExtImpl.class);
     update.where(builder.equal(root.get("referenceId"), id));
     update.set(root.get("lastCheckTime"), lastCheckTime);
-    getSession().createQuery(update).executeUpdate();
+    getSession().createMutationQuery(update).executeUpdate();
   }
 
   /**
@@ -198,7 +198,7 @@ public class PrintJobDao {
         builder.and(
             builder.isNotNull(root.get("lastCheckTime")),
             builder.lessThan(root.get("lastCheckTime"), checkTimeThreshold)));
-    return getSession().createQuery(delete).executeUpdate();
+    return getSession().createMutationQuery(delete).executeUpdate();
   }
 
   /**
@@ -255,6 +255,6 @@ public class PrintJobDao {
         builder.createCriteriaDelete(PrintJobStatusExtImpl.class);
     final Root<PrintJobStatusExtImpl> root = delete.from(PrintJobStatusExtImpl.class);
     delete.where(builder.equal(root.get("referenceId"), referenceId));
-    getSession().createQuery(delete).executeUpdate();
+    getSession().createMutationQuery(delete).executeUpdate();
   }
 }
