@@ -6,7 +6,6 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
 import org.apache.hc.client5.http.auth.AuthScope;
-import org.apache.hc.client5.http.auth.Credentials;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationObject;
@@ -94,7 +93,7 @@ public class HttpCredential implements ConfigurationObject {
    * @param authscope the scope to test against.
    */
   @Nullable
-  public final Credentials toCredentials(final AuthScope authscope) {
+  public final UsernamePasswordCredentials toCredentials(final AuthScope authscope) {
     try {
 
       if (!matches(MatchInfo.fromAuthScope(authscope))) {

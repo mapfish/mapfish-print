@@ -6,7 +6,6 @@ import java.io.InputStream;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.util.StreamUtils;
 
 public class ErrorResponseClientHttpResponse implements ClientHttpResponse {
   private final Exception exception;
@@ -28,10 +27,11 @@ public class ErrorResponseClientHttpResponse implements ClientHttpResponse {
   @Override
   @Nonnull
   public InputStream getBody() {
-    return StreamUtils.emptyInput();
+    return InputStream.nullInputStream();
   }
 
   @Override
+  @Nonnull
   public HttpStatusCode getStatusCode() throws IOException {
     return FAKE_HTTP_ERROR_CODE;
   }

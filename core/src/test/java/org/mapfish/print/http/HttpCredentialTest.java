@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.apache.hc.client5.http.auth.AuthScope;
-import org.apache.hc.client5.http.auth.Credentials;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -77,10 +77,10 @@ public class HttpCredentialTest {
     credential.setMatchers(Collections.singletonList(matcher));
 
     AuthScope authscope = new AuthScope(null, -1);
-    final Credentials object = credential.toCredentials(authscope);
+    final UsernamePasswordCredentials object = credential.toCredentials(authscope);
     assertNotNull(object);
     assertEquals(USERNAME, object.getUserPrincipal().getName());
-    assertEquals(PASSWORD, new String(object.getPassword()));
+    assertEquals(PASSWORD, new String(object.getUserPassword()));
 
     authscope =
         new AuthScope(
