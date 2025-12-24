@@ -12,6 +12,7 @@ import com.sun.net.httpserver.HttpsServer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.security.KeyManagementException;
@@ -160,7 +161,9 @@ public class HttpProxyTest {
       throws IOException {
     final byte[] bytes = errorMessage.getBytes(Constants.DEFAULT_CHARSET);
     httpExchange.sendResponseHeaders(responseCode, bytes.length);
-    httpExchange.getResponseBody().write(bytes);
+    try (OutputStream os = httpExchange.getResponseBody()) {
+      os.write(bytes);
+    }
     httpExchange.close();
   }
 

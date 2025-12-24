@@ -14,8 +14,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hc.core5.net.URLEncodedUtils;
 import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.net.URIBuilder;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.wms.request.GetMapRequest;
@@ -73,7 +73,7 @@ public final class WmsUtilities {
 
     Multimap<String, String> extraParams = HashMultimap.create();
     if (commonURI.getQuery() != null) {
-      for (NameValuePair pair : URLEncodedUtils.parse(commonURI, StandardCharsets.UTF_8)) {
+      for (NameValuePair pair : new URIBuilder(commonURI).getQueryParams()) {
         extraParams.put(pair.getName(), pair.getValue());
       }
     }
@@ -201,14 +201,14 @@ public final class WmsUtilities {
       final URI paramlessUri;
       try {
         paramlessUri =
-          new URI(
-            uri.getScheme(),
-            uri.getUserInfo(),
-            uri.getHost(),
-            uri.getPort(),
-            uri.getPath(),
-            null,
-            null);
+            new URI(
+                uri.getScheme(),
+                uri.getUserInfo(),
+                uri.getHost(),
+                uri.getPort(),
+                uri.getPath(),
+                null,
+                null);
       } catch (URISyntaxException e) {
         throw new RuntimeException(e);
       }
