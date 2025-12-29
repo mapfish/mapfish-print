@@ -3,7 +3,6 @@ package org.mapfish.print.http;
 import java.io.IOException;
 import java.net.Socket;
 import javax.net.ssl.SSLSocket;
-
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.protocol.HttpContext;
@@ -14,11 +13,13 @@ public final class MfTLSSocketStrategy implements TlsSocketStrategy {
   private final TlsSocketStrategy defaultStrategy = DefaultClientTlsStrategy.createDefault();
 
   @Override
-  public SSLSocket upgrade(final Socket socket,
-                           final String target,
-                           final int port,
-                           final Object attachment,
-                           final HttpContext context) throws IOException {
+  public SSLSocket upgrade(
+      final Socket socket,
+      final String target,
+      final int port,
+      final Object attachment,
+      final HttpContext context)
+      throws IOException {
     return getSocketStrategy().upgrade(socket, target, port, attachment, context);
   }
 

@@ -24,8 +24,8 @@ public final class UserAgentCreator {
    */
   public static String getUserAgent() {
 
-    final String httpClientUserAgent = getUserAgent(
-            "Apache-HttpClient", "org.apache.http.client", UserAgentCreator.class);
+    final String httpClientUserAgent =
+        getUserAgent("Apache-HttpClient", "org.apache.http.client", UserAgentCreator.class);
 
     // This is based on the code from HttpClient:
     final VersionInfo mapFishPrintVersionInfo =

@@ -72,27 +72,29 @@ public class ValuesTest extends AbstractMapfishSpringTest {
 
   @Test
   public void testNoDefaults_Error_OnMissing_Attribute() throws Exception {
-    assertThrows(ObjectMissingException.class, () -> {
-      configurationFactory.setDoValidation(false);
-      final JSONObject obj = new JSONObject();
-      PJsonObject requestData = new PJsonObject(obj, "");
-      final JSONObject atts = new JSONObject();
-      obj.put("attributes", atts);
-      final Configuration config =
-          configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
+    assertThrows(
+        ObjectMissingException.class,
+        () -> {
+          configurationFactory.setDoValidation(false);
+          final JSONObject obj = new JSONObject();
+          PJsonObject requestData = new PJsonObject(obj, "");
+          final JSONObject atts = new JSONObject();
+          obj.put("attributes", atts);
+          final Configuration config =
+              configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
-      Template template = config.getTemplates().values().iterator().next();
-      new Values(
-          new HashMap<>(),
-          requestData,
-          template,
-          new File("tmp"),
-          this.httpRequestFactory,
-          new File("."),
-          HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-          HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
-          new AtomicBoolean(false));
-    });
+          Template template = config.getTemplates().values().iterator().next();
+          new Values(
+              new HashMap<>(),
+              requestData,
+              template,
+              new File("tmp"),
+              this.httpRequestFactory,
+              new File("."),
+              HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+              HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+              new AtomicBoolean(false));
+        });
   }
 
   @Test
@@ -138,40 +140,41 @@ public class ValuesTest extends AbstractMapfishSpringTest {
 
   @Test
   public void testExpectObjectGetArray() throws Exception {
-    assertThrows(IllegalArgumentException.class, () -> {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          PJsonObject requestData =
+              parseJSONObjectFromFile(ValuesTest.class, BASE_DIR + "requestData.json");
+          String badLegendConf =
+              """
+              [{
+                  "name": "",
+                  "classes": [{
+                      "name": "osm",
+                      "icons":\
+               ["http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic\
+              &VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states"]
+                  }]
+              }]
+              """;
+          requestData
+              .getInternalObj()
+              .getJSONObject("attributes")
+              .put("legend", new JSONArray(badLegendConf));
+          final Configuration config =
+              configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
 
-      PJsonObject requestData =
-          parseJSONObjectFromFile(ValuesTest.class, BASE_DIR + "requestData.json");
-      String badLegendConf =
-          """
-        [{
-            "name": "",
-            "classes": [{
-                "name": "osm",
-                "icons":\
-         ["http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic\
-        &VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states"]
-            }]
-        }]
-        """;
-      requestData
-          .getInternalObj()
-          .getJSONObject("attributes")
-          .put("legend", new JSONArray(badLegendConf));
-      final Configuration config =
-          configurationFactory.getConfig(getFile(BASE_DIR + "config-no-defaults.yaml"));
-
-      Template template = config.getTemplates().values().iterator().next();
-      new Values(
-          new HashMap<>(),
-          requestData,
-          template,
-          new File("tmp"),
-          this.httpRequestFactory,
-          new File("."),
-          HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-          HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
-          new AtomicBoolean(false));
-    });
+          Template template = config.getTemplates().values().iterator().next();
+          new Values(
+              new HashMap<>(),
+              requestData,
+              template,
+              new File("tmp"),
+              this.httpRequestFactory,
+              new File("."),
+              HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+              HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+              new AtomicBoolean(false));
+        });
   }
 }

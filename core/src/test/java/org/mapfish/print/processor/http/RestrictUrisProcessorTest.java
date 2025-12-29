@@ -46,13 +46,15 @@ public class RestrictUrisProcessorTest {
 
   @Test
   public void testCreateFactoryWrapperIllegalRequest() throws Exception {
-    assertThrows(IllegalArgumentException.class, () -> {
-      final RestrictUrisProcessor restrictUrisProcessor = createLocalhostOnly();
-      ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
-      final ClientHttpRequestFactory factoryWrapper =
-          restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
-      factoryWrapper.createRequest(new URI("http://www.google.com/q"), HttpMethod.GET);
-    });
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          final RestrictUrisProcessor restrictUrisProcessor = createLocalhostOnly();
+          ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
+          final ClientHttpRequestFactory factoryWrapper =
+              restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
+          factoryWrapper.createRequest(new URI("http://www.google.com/q"), HttpMethod.GET);
+        });
   }
 
   @Test
@@ -66,13 +68,15 @@ public class RestrictUrisProcessorTest {
 
   @Test
   public void testRejectWithIllegalRequest() throws Exception {
-    assertThrows(IllegalArgumentException.class, () -> {
-      final RestrictUrisProcessor restrictUrisProcessor = createDenyInternal();
-      ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
-      final ClientHttpRequestFactory factoryWrapper =
-          restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
-      factoryWrapper.createRequest(new URI("http://192.168.12.23/q"), HttpMethod.GET);
-    });
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          final RestrictUrisProcessor restrictUrisProcessor = createDenyInternal();
+          ClientHttpFactoryProcessorParam params = new ClientHttpFactoryProcessorParam();
+          final ClientHttpRequestFactory factoryWrapper =
+              restrictUrisProcessor.createFactoryWrapper(params, requestFactory);
+          factoryWrapper.createRequest(new URI("http://192.168.12.23/q"), HttpMethod.GET);
+        });
   }
 
   private RestrictUrisProcessor createLocalhostOnly() {

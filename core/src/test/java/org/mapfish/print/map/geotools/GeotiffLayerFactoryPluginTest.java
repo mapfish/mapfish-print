@@ -15,36 +15,43 @@ public class GeotiffLayerFactoryPluginTest {
 
   @Test
   public void testGeoIllegalFileUrl() throws Exception {
-    assertThrows(IllegalFileAccessException.class, () -> {
-      final File file =
-          AbstractMapfishSpringTest.getFile(
-              CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest.class,
-              CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest.BASE_DIR + "sampleGeoTiff.tif");
-      final Configuration configuration = new Configuration();
-      configuration.setConfigurationFile(File.createTempFile("xyz", ".yaml"));
+    assertThrows(
+        IllegalFileAccessException.class,
+        () -> {
+          final File file =
+              AbstractMapfishSpringTest.getFile(
+                  CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest.class,
+                  CreateMapProcessorFlexibleScaleAndCenterGeoTiffTest.BASE_DIR
+                      + "sampleGeoTiff.tif");
+          final Configuration configuration = new Configuration();
+          configuration.setConfigurationFile(File.createTempFile("xyz", ".yaml"));
 
-      Template template = new Template();
-      template.setConfiguration(configuration);
+          Template template = new Template();
+          template.setConfiguration(configuration);
 
-      GeotiffLayer.GeotiffParam param = new GeotiffLayer.GeotiffParam();
-      param.url = file.toURI().toURL().toString();
-      new GeotiffLayer.Plugin().parse(template, param);
-    });
+          GeotiffLayer.GeotiffParam param = new GeotiffLayer.GeotiffParam();
+          param.url = file.toURI().toURL().toString();
+          new GeotiffLayer.Plugin().parse(template, param);
+        });
   }
 
   @Test
   public void testGeoIllegalFileUrl2() throws Exception {
-    assertThrows(IllegalArgumentException.class, () -> {
-      final Configuration configuration = new Configuration();
-      configuration.setConfigurationFile(File.createTempFile("xyz", ".yaml"));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          final Configuration configuration = new Configuration();
+          configuration.setConfigurationFile(File.createTempFile("xyz", ".yaml"));
 
-      Template template = new Template();
-      template.setConfiguration(configuration);
+          Template template = new Template();
+          template.setConfiguration(configuration);
 
-      GeotiffLayer.GeotiffParam param = new GeotiffLayer.GeotiffParam();
-      param.url =
-          "file://../" + CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.BASE_DIR + "/geojson.json";
-      new GeotiffLayer.Plugin().parse(template, param);
-    });
+          GeotiffLayer.GeotiffParam param = new GeotiffLayer.GeotiffParam();
+          param.url =
+              "file://../"
+                  + CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.BASE_DIR
+                  + "/geojson.json";
+          new GeotiffLayer.Plugin().parse(template, param);
+        });
   }
 }
