@@ -70,70 +70,87 @@ public class GeoJsonLayerTest extends AbstractMapfishSpringTest {
 
   @Test
   public void testGeoIllegalFileUrl() throws Exception {
-    assertThrows(IllegalFileAccessException.class, () -> {
-      final File file =
-          getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
-      final PJsonObject requestData =
-          parseJSONObjectFromString(
-              "{type:\"geojson\";style:\"polygon\";geoJson:\"" + file.toURI().toURL() + "\"}");
+    assertThrows(
+        IllegalFileAccessException.class,
+        () -> {
+          final File file =
+              getFile(
+                  CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
+          final PJsonObject requestData =
+              parseJSONObjectFromString(
+                  "{type:\"geojson\";style:\"polygon\";geoJson:\"" + file.toURI().toURL() + "\"}");
 
-      final Configuration configuration = new Configuration();
-      configuration.setConfigurationFile(File.createTempFile("xyz", ".yaml"));
-      configuration.setFileLoaderManager(this.fileLoaderManager);
+          final Configuration configuration = new Configuration();
+          configuration.setConfigurationFile(File.createTempFile("xyz", ".yaml"));
+          configuration.setFileLoaderManager(this.fileLoaderManager);
 
-      Template template = new Template();
-      template.setConfiguration(configuration);
+          Template template = new Template();
+          template.setConfiguration(configuration);
 
-      GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
-      MapfishParserTest.populateLayerParam(requestData, param, "type");
-      geojsonLayerParser
-          .parse(template, param)
-          .getLayers(
-              httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), CONTEXT, null);
-    });
+          GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
+          MapfishParserTest.populateLayerParam(requestData, param, "type");
+          geojsonLayerParser
+              .parse(template, param)
+              .getLayers(
+                  httpRequestFactory,
+                  AbstractMapfishSpringTest.createTestMapContext(),
+                  CONTEXT,
+                  null);
+        });
   }
 
   @Test
   public void testGeoIllegalFileUrl2() throws Exception {
-    assertThrows(IllegalArgumentException.class, () -> {
-      final Configuration configuration = new Configuration();
-      configuration.setConfigurationFile(File.createTempFile("xyz", ".yaml"));
-      configuration.setFileLoaderManager(this.fileLoaderManager);
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          final Configuration configuration = new Configuration();
+          configuration.setConfigurationFile(File.createTempFile("xyz", ".yaml"));
+          configuration.setFileLoaderManager(this.fileLoaderManager);
 
-      Template template = new Template();
-      template.setConfiguration(configuration);
+          Template template = new Template();
+          template.setConfiguration(configuration);
 
-      GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
-      param.geoJson = "file://../" + BASE_DIR + "/geojson.json";
-      geojsonLayerParser
-          .parse(template, param)
-          .getLayers(
-              httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), CONTEXT, null);
-    });
+          GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
+          param.geoJson = "file://../" + BASE_DIR + "/geojson.json";
+          geojsonLayerParser
+              .parse(template, param)
+              .getLayers(
+                  httpRequestFactory,
+                  AbstractMapfishSpringTest.createTestMapContext(),
+                  CONTEXT,
+                  null);
+        });
   }
 
   @Test
   public void testGeoNotUrlNotGeoJson() {
-    assertThrows(Exception.class, () -> {
-      final File file =
-          getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
-      final PJsonObject requestData =
-          parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\"Random\"}");
+    assertThrows(
+        Exception.class,
+        () -> {
+          final File file =
+              getFile(
+                  CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "geojson.json");
+          final PJsonObject requestData =
+              parseJSONObjectFromString("{type:\"geojson\";style:\"polygon\";geoJson:\"Random\"}");
 
-      final Configuration configuration = new Configuration();
-      configuration.setConfigurationFile(file);
-      configuration.setFileLoaderManager(this.fileLoaderManager);
+          final Configuration configuration = new Configuration();
+          configuration.setConfigurationFile(file);
+          configuration.setFileLoaderManager(this.fileLoaderManager);
 
-      Template template = new Template();
-      template.setConfiguration(configuration);
+          Template template = new Template();
+          template.setConfiguration(configuration);
 
-      GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
-      MapfishParserTest.populateLayerParam(requestData, param, "type");
-      geojsonLayerParser
-          .parse(template, param)
-          .getLayers(
-              httpRequestFactory, AbstractMapfishSpringTest.createTestMapContext(), CONTEXT, null);
-    });
+          GeoJsonLayer.GeoJsonParam param = new GeoJsonLayer.GeoJsonParam();
+          MapfishParserTest.populateLayerParam(requestData, param, "type");
+          geojsonLayerParser
+              .parse(template, param)
+              .getLayers(
+                  httpRequestFactory,
+                  AbstractMapfishSpringTest.createTestMapContext(),
+                  CONTEXT,
+                  null);
+        });
   }
 
   @Test

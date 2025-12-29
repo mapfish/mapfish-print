@@ -149,12 +149,14 @@ public class ConfigFileResolvingHttpRequestFactoryTest extends AbstractMapfishSp
 
   @Test
   public void testCreateRequestIllegalFile() throws Exception {
-    assertThrows(IllegalFileAccessException.class, () -> {
-      final URI uri = logbackXml.toURI();
-      final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
+    assertThrows(
+        IllegalFileAccessException.class,
+        () -> {
+          final URI uri = logbackXml.toURI();
+          final ClientHttpRequest request = resolvingFactory.createRequest(uri, HttpMethod.GET);
 
-      request.execute();
-    });
+          request.execute();
+        });
   }
 
   @Test

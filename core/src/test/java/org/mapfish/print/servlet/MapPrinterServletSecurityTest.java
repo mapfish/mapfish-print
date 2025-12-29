@@ -60,34 +60,38 @@ public class MapPrinterServletSecurityTest extends AbstractMapfishSpringTest {
   @Test
   @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReportAndGet_InsufficientPrivileges() throws Exception {
-    assertThrows(AccessDeniedException.class, () -> {
-      AccessAssertionTestUtil.setCreds("ROLE_USER");
-      setUpConfigFiles();
+    assertThrows(
+        AccessDeniedException.class,
+        () -> {
+          AccessAssertionTestUtil.setCreds("ROLE_USER");
+          setUpConfigFiles();
 
-      final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
-      final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+          final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+          final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
 
-      String requestData = loadRequestDataAsString();
+          String requestData = loadRequestDataAsString();
 
-      this.servlet.createReportAndGetNoAppId(
-          "png", requestData, false, servletCreateRequest, servletCreateResponse);
-    });
+          this.servlet.createReportAndGetNoAppId(
+              "png", requestData, false, servletCreateRequest, servletCreateResponse);
+        });
   }
 
   @Test
   @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReportAndGet_NoCredentials() throws Exception {
-    assertThrows(AuthenticationCredentialsNotFoundException.class, () -> {
-      setUpConfigFiles();
+    assertThrows(
+        AuthenticationCredentialsNotFoundException.class,
+        () -> {
+          setUpConfigFiles();
 
-      final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
-      final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
+          final MockHttpServletRequest servletCreateRequest = new MockHttpServletRequest();
+          final MockHttpServletResponse servletCreateResponse = new MockHttpServletResponse();
 
-      String requestData = loadRequestDataAsString();
+          String requestData = loadRequestDataAsString();
 
-      this.servlet.createReportAndGetNoAppId(
-          "png", requestData, false, servletCreateRequest, servletCreateResponse);
-    });
+          this.servlet.createReportAndGetNoAppId(
+              "png", requestData, false, servletCreateRequest, servletCreateResponse);
+        });
   }
 
   @Test

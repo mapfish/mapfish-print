@@ -120,19 +120,25 @@ public class ConfigurationFactoryTest extends AbstractMapfishSpringTest {
 
   @Test
   public void testConfigurationAttributeMustImplementAttribute() throws Exception {
-    assertThrows(ConstructorException.class, () -> {
-      File configFile =
-          getFile(ConfigurationFactoryTest.class, "configWithProcessorAsAttribute_bad_config.yaml");
-      configurationFactory.getConfig(configFile);
-    });
+    assertThrows(
+        ConstructorException.class,
+        () -> {
+          File configFile =
+              getFile(
+                  ConfigurationFactoryTest.class, "configWithProcessorAsAttribute_bad_config.yaml");
+          configurationFactory.getConfig(configFile);
+        });
   }
 
   @Test
   public void testConfigurationProcessorMustImplementProcessor() throws Exception {
-    assertThrows(ConstructorException.class, () -> {
-      File configFile =
-          getFile(ConfigurationFactoryTest.class, "configWithAttributeAsProcessor_bad_config.yaml");
-      configurationFactory.getConfig(configFile);
-    });
+    assertThrows(
+        ConstructorException.class,
+        () -> {
+          File configFile =
+              getFile(
+                  ConfigurationFactoryTest.class, "configWithAttributeAsProcessor_bad_config.yaml");
+          configurationFactory.getConfig(configFile);
+        });
   }
 }

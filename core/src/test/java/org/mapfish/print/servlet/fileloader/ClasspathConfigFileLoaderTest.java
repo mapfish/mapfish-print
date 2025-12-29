@@ -100,55 +100,68 @@ public class ClasspathConfigFileLoaderTest extends AbstractMapfishSpringTest {
 
   @Test
   public void testLoadFileChildResource_NotInConfigDir() throws Exception {
-    assertThrows(IllegalArgumentException.class, () -> {
-      final URI configFileUri = new URI(configFileUriString);
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          final URI configFileUri = new URI(configFileUriString);
 
-      this.loader.loadFile(
-          configFileUri, "classpath://test-http-request-factory-application-context.xml");
-    });
+          this.loader.loadFile(
+              configFileUri, "classpath://test-http-request-factory-application-context.xml");
+        });
   }
 
   @Test
   public void testLoadFileChildResource_NotClasspathURI() throws Exception {
-    assertThrows(IllegalArgumentException.class, () -> {
-      final URI configFileUri = new URI(configFileUriString);
-      final String resourceFileName = "resourceFile.txt";
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          final URI configFileUri = new URI(configFileUriString);
+          final String resourceFileName = "resourceFile.txt";
 
-      final String uri = getFile(FileConfigFileLoader.class, resourceFileName).toURI().toString();
-      this.loader.loadFile(configFileUri, uri);
-    });
+          final String uri =
+              getFile(FileConfigFileLoader.class, resourceFileName).toURI().toString();
+          this.loader.loadFile(configFileUri, uri);
+        });
   }
 
   @Test
   public void testLoadFileChildResource_DoesNotExist() throws Exception {
-    assertThrows(NoSuchElementException.class, () -> {
-      final URI configFileUri = new URI(configFileUriString);
-      final String resourceFileName = "resourceFile.txt";
+    assertThrows(
+        NoSuchElementException.class,
+        () -> {
+          final URI configFileUri = new URI(configFileUriString);
+          final String resourceFileName = "resourceFile.txt";
 
-      final File file =
-          new File(
-              getFile(FileConfigFileLoader.class, resourceFileName).getParentFile(), "doesNotExist");
-      this.loader.loadFile(configFileUri, file.getPath());
-    });
+          final File file =
+              new File(
+                  getFile(FileConfigFileLoader.class, resourceFileName).getParentFile(),
+                  "doesNotExist");
+          this.loader.loadFile(configFileUri, file.getPath());
+        });
   }
 
   @Test
   public void testLoadFileChildResource_DoesNotExist2() throws Exception {
-    assertThrows(NoSuchElementException.class, () -> {
-      final URI configFileUri = new URI(configFileUriString);
+    assertThrows(
+        NoSuchElementException.class,
+        () -> {
+          final URI configFileUri = new URI(configFileUriString);
 
-      this.loader.loadFile(configFileUri, "doesNotExist");
-    });
+          this.loader.loadFile(configFileUri, "doesNotExist");
+        });
   }
 
   @Test
   public void testLoadFileChildResource_ConfigFileDoesNotExist() throws Exception {
-    assertThrows(NoSuchElementException.class, () -> {
-      final URI configFileUri = new URI("classpath://xyz.yaml");
-      final String resourceFileName = "resourceFile.txt";
+    assertThrows(
+        NoSuchElementException.class,
+        () -> {
+          final URI configFileUri = new URI("classpath://xyz.yaml");
+          final String resourceFileName = "resourceFile.txt";
 
-      this.loader.loadFile(
-          configFileUri, getFile(FileConfigFileLoader.class, resourceFileName).toURI().toString());
-    });
+          this.loader.loadFile(
+              configFileUri,
+              getFile(FileConfigFileLoader.class, resourceFileName).toURI().toString());
+        });
   }
 }

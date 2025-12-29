@@ -20,15 +20,26 @@ public class AddressHostMatcherTest {
     assertTrue(
         addressHostMatcher.matches(
             MatchInfo.fromAuthScope(
-                new AuthScope(MatchInfo.ANY_SCHEME, MatchInfo.ANY_HOST, 80, MatchInfo.ANY_REALM, "http"))));
+                new AuthScope(
+                    MatchInfo.ANY_SCHEME, MatchInfo.ANY_HOST, 80, MatchInfo.ANY_REALM, "http"))));
     assertTrue(
         addressHostMatcher.matches(
             MatchInfo.fromAuthScope(
-                new AuthScope(MatchInfo.ANY_SCHEME, "127.0.0.1", MatchInfo.ANY_PORT, MatchInfo.ANY_REALM, "http"))));
+                new AuthScope(
+                    MatchInfo.ANY_SCHEME,
+                    "127.0.0.1",
+                    MatchInfo.ANY_PORT,
+                    MatchInfo.ANY_REALM,
+                    "http"))));
     assertTrue(
         addressHostMatcher.matches(
             MatchInfo.fromAuthScope(
-                new AuthScope(MatchInfo.ANY_SCHEME, "127.0.0.1", 80, MatchInfo.ANY_REALM, MatchInfo.ANY_SCHEME))));
+                new AuthScope(
+                    MatchInfo.ANY_SCHEME,
+                    "127.0.0.1",
+                    80,
+                    MatchInfo.ANY_REALM,
+                    MatchInfo.ANY_SCHEME))));
 
     addressHostMatcher.setMask("255.255.255.0");
     addressHostMatcher.setIp("127.0.0.0");
@@ -42,15 +53,26 @@ public class AddressHostMatcherTest {
     assertTrue(
         addressHostMatcher.matches(
             MatchInfo.fromAuthScope(
-                new AuthScope(MatchInfo.ANY_SCHEME, MatchInfo.ANY_HOST, 80, MatchInfo.ANY_REALM, "http"))));
+                new AuthScope(
+                    MatchInfo.ANY_SCHEME, MatchInfo.ANY_HOST, 80, MatchInfo.ANY_REALM, "http"))));
     assertTrue(
         addressHostMatcher.matches(
             MatchInfo.fromAuthScope(
-                new AuthScope(MatchInfo.ANY_SCHEME, "127.0.0.1", MatchInfo.ANY_PORT, MatchInfo.ANY_REALM, "http"))));
+                new AuthScope(
+                    MatchInfo.ANY_SCHEME,
+                    "127.0.0.1",
+                    MatchInfo.ANY_PORT,
+                    MatchInfo.ANY_REALM,
+                    "http"))));
     assertTrue(
         addressHostMatcher.matches(
             MatchInfo.fromAuthScope(
-                new AuthScope(MatchInfo.ANY_SCHEME, "127.0.0.1", 80, MatchInfo.ANY_REALM, MatchInfo.ANY_SCHEME))));
+                new AuthScope(
+                    MatchInfo.ANY_SCHEME,
+                    "127.0.0.1",
+                    80,
+                    MatchInfo.ANY_REALM,
+                    MatchInfo.ANY_SCHEME))));
 
     addressHostMatcher.setPort(8080);
     assertMatch(addressHostMatcher, true, new URI("http://127.0.0.1:8080"), HttpMethod.GET);

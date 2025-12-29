@@ -23,27 +23,32 @@ public class AndAccessAssertionTest extends AbstractMapfishSpringTest {
 
   @Test
   public void testSetPredicates() {
-    assertThrows(AssertionError.class, () -> {
-
-      final AndAccessAssertion andAssertion = applicationContext.getBean(AndAccessAssertion.class);
-      andAssertion.setPredicates(AlwaysAllowAssertion.INSTANCE, AlwaysAllowAssertion.INSTANCE);
-      andAssertion.setPredicates(AlwaysAllowAssertion.INSTANCE);
-    });
+    assertThrows(
+        AssertionError.class,
+        () -> {
+          final AndAccessAssertion andAssertion =
+              applicationContext.getBean(AndAccessAssertion.class);
+          andAssertion.setPredicates(AlwaysAllowAssertion.INSTANCE, AlwaysAllowAssertion.INSTANCE);
+          andAssertion.setPredicates(AlwaysAllowAssertion.INSTANCE);
+        });
   }
 
   @Test
   public void testAssertAccessNotAllowed() {
-    assertThrows(AccessDeniedException.class, () -> {
-      final AndAccessAssertion andAssertion = applicationContext.getBean(AndAccessAssertion.class);
-      AccessAssertion pred1 =
-          new RoleAccessAssertion().setRequiredRoles(Collections.singleton("ROLE_USER"));
-      AccessAssertion pred2 =
-          new RoleAccessAssertion().setRequiredRoles(Collections.singleton("ROLE_OTHER"));
-      andAssertion.setPredicates(pred1, pred2);
+    assertThrows(
+        AccessDeniedException.class,
+        () -> {
+          final AndAccessAssertion andAssertion =
+              applicationContext.getBean(AndAccessAssertion.class);
+          AccessAssertion pred1 =
+              new RoleAccessAssertion().setRequiredRoles(Collections.singleton("ROLE_USER"));
+          AccessAssertion pred2 =
+              new RoleAccessAssertion().setRequiredRoles(Collections.singleton("ROLE_OTHER"));
+          andAssertion.setPredicates(pred1, pred2);
 
-      AccessAssertionTestUtil.setCreds("ROLE_USER");
-      andAssertion.assertAccess("", this);
-    });
+          AccessAssertionTestUtil.setCreds("ROLE_USER");
+          andAssertion.assertAccess("", this);
+        });
   }
 
   @Test

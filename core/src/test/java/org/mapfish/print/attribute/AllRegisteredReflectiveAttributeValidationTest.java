@@ -22,13 +22,14 @@ public class AllRegisteredReflectiveAttributeValidationTest extends AbstractMapf
 
   @Test
   public void testAllAttributesHaveLegalValues() {
-    assertDoesNotThrow(() -> {
-      for (ReflectiveAttribute<?> attribute : allReflectiveAttributes) {
-        attribute.init();
-      }
+    assertDoesNotThrow(
+        () -> {
+          for (ReflectiveAttribute<?> attribute : allReflectiveAttributes) {
+            attribute.init();
+          }
 
-      // no exception... good
-    });
+          // no exception... good
+        });
 
     // no exception... good
   }

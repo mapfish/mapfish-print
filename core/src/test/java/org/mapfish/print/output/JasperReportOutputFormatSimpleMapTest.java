@@ -52,28 +52,30 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
 
   @Test
   public void testAllOutputFormats() throws Exception {
-    assertDoesNotThrow(() -> {
-      final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
-      final PJsonObject requestData = loadJsonRequestData();
+    assertDoesNotThrow(
+        () -> {
+          final Configuration config =
+              configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+          final PJsonObject requestData = loadJsonRequestData();
 
-      for (OutputFormat format : this.outputFormat.values()) {
-        if ("bmp".equals(format.getFileSuffix())
-            || "jpeg".equals(format.getFileSuffix())
-            || "jpg".equals(format.getFileSuffix())) {
-          // BMP and JPEG do not support transparency
-          continue;
-        }
-        final OutputStream outputStream = new ByteArrayOutputStream();
-        format.print(
-            new HashMap<>(),
-            requestData,
-            config,
-            getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
-            getTaskDirectory(),
-            outputStream);
-        // no error?  its a pass
+          for (OutputFormat format : this.outputFormat.values()) {
+            if ("bmp".equals(format.getFileSuffix())
+                || "jpeg".equals(format.getFileSuffix())
+                || "jpg".equals(format.getFileSuffix())) {
+              // BMP and JPEG do not support transparency
+              continue;
+            }
+            final OutputStream outputStream = new ByteArrayOutputStream();
+            format.print(
+                new HashMap<>(),
+                requestData,
+                config,
+                getFile(JasperReportOutputFormatSimpleMapTest.class, BASE_DIR),
+                getTaskDirectory(),
+                outputStream);
+            // no error?  its a pass
 
-      }
-    });
+          }
+        });
   }
 }

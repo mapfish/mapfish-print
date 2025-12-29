@@ -40,24 +40,28 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
   @SuppressWarnings("unchecked")
   @Test
   public void testMaxDpi() throws Exception {
-    assertThrows(IllegalArgumentException.class, () -> {
-      final File configFile =
-          getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "config.yaml");
-      final Configuration config = configurationFactory.getConfig(configFile);
-      final Template template = config.getTemplate("main");
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          final File configFile =
+              getFile(
+                  CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "config.yaml");
+          final Configuration config = configurationFactory.getConfig(configFile);
+          final Template template = config.getTemplate("main");
 
-      final PJsonObject pJsonObject = loadJsonRequestData();
-      final PJsonObject attributesJson = pJsonObject.getJSONObject("attributes");
-      final JSONObject map = attributesJson.getJSONObject("map").getInternalObj();
-      map.remove("dpi");
-      map.accumulate("dpi", 1000);
+          final PJsonObject pJsonObject = loadJsonRequestData();
+          final PJsonObject attributesJson = pJsonObject.getJSONObject("attributes");
+          final JSONObject map = attributesJson.getJSONObject("map").getInternalObj();
+          map.remove("dpi");
+          map.accumulate("dpi", 1000);
 
-      final ReflectiveAttribute<MapAttribute.MapAttributeValues> mapAttribute =
-          (ReflectiveAttribute<MapAttribute.MapAttributeValues>) template.getAttributes().get("map");
+          final ReflectiveAttribute<MapAttribute.MapAttributeValues> mapAttribute =
+              (ReflectiveAttribute<MapAttribute.MapAttributeValues>)
+                  template.getAttributes().get("map");
 
-      final MapAttribute.MapAttributeValues value = mapAttribute.createValue(template);
-      MapfishParser.parse(true, attributesJson.getJSONObject("map"), value);
-    });
+          final MapAttribute.MapAttributeValues value = mapAttribute.createValue(template);
+          MapfishParser.parse(true, attributesJson.getJSONObject("map"), value);
+        });
   }
 
   @Test

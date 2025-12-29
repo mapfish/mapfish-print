@@ -43,42 +43,49 @@ public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
 
   @Test
   public void testPostConstruct() {
-    assertDoesNotThrow(() -> {
-      ScalebarAttributeValues values = getValues();
-      values.postConstruct();
-      // passes.. ok
-    });
+    assertDoesNotThrow(
+        () -> {
+          ScalebarAttributeValues values = getValues();
+          values.postConstruct();
+          // passes.. ok
+        });
     // passes.. ok
   }
 
   @Test
   public void testPostConstructInvalidColor() {
-    assertThrows(IllegalArgumentException.class, () -> {
-      ScalebarAttributeValues values = getValues();
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          ScalebarAttributeValues values = getValues();
 
-      values.backgroundColor = "sun-yellow";
-      values.postConstruct();
-    });
+          values.backgroundColor = "sun-yellow";
+          values.postConstruct();
+        });
   }
 
   @Test
   public void testPostConstructInvalidUnit() {
-    assertThrows(IllegalArgumentException.class, () -> {
-      ScalebarAttributeValues values = getValues();
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          ScalebarAttributeValues values = getValues();
 
-      values.unit = "light-years";
-      values.postConstruct();
-    });
+          values.unit = "light-years";
+          values.postConstruct();
+        });
   }
 
   @Test
   public void testPostConstructInvalidIntervals() {
-    assertThrows(IllegalArgumentException.class, () -> {
-      ScalebarAttributeValues values = getValues();
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          ScalebarAttributeValues values = getValues();
 
-      values.intervals = 0;
-      values.postConstruct();
-    });
+          values.intervals = 0;
+          values.postConstruct();
+        });
   }
 
   @Test

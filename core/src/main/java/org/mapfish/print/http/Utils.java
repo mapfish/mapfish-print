@@ -1,10 +1,9 @@
 package org.mapfish.print.http;
 
-import org.springframework.http.HttpHeaders;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.http.HttpHeaders;
 
 /** Network utils class. */
 public final class Utils {

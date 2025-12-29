@@ -2,10 +2,10 @@ package org.mapfish.print.http;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.hc.client5.http.auth.CredentialsProvider;
-import org.apache.hc.client5.http.impl.auth.SystemDefaultCredentialsProvider;
 import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.Credentials;
+import org.apache.hc.client5.http.auth.CredentialsProvider;
+import org.apache.hc.client5.http.impl.auth.SystemDefaultCredentialsProvider;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.mapfish.print.config.Configuration;
 
