@@ -385,8 +385,8 @@ public class MapPrinterServlet extends BaseMapServlet {
       value = "/{appId}" + STATUS_URL + "/{referenceId:\\S+}.json",
       method = RequestMethod.GET)
   public final void getStatusSpecificAppId(
-      @Nonnull @PathVariable("appId") final String appId,
-      @Nonnull @PathVariable("referenceId") final String referenceId,
+      @Nonnull @PathVariable final String appId,
+      @Nonnull @PathVariable final String referenceId,
       final HttpServletRequest statusRequest,
       final HttpServletResponse statusResponse) {
     withAppIdCounter.inc();
@@ -408,7 +408,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = STATUS_URL + "/{referenceId:\\S+}.json", method = RequestMethod.GET)
   public final void getStatusPath(
-      @Nonnull @PathVariable("referenceId") final String referenceId,
+      @Nonnull @PathVariable final String referenceId,
       final HttpServletRequest statusRequest,
       final HttpServletResponse statusResponse) {
     noAppIdCounter.inc();
@@ -478,8 +478,8 @@ public class MapPrinterServlet extends BaseMapServlet {
       value = "/{appId}" + CANCEL_URL + "/{referenceId:\\S+}",
       method = RequestMethod.DELETE)
   public final void cancelSpecificAppId(
-      @Nonnull @PathVariable("appId") final String appId,
-      @Nonnull @PathVariable("referenceId") final String referenceId,
+      @Nonnull @PathVariable final String appId,
+      @Nonnull @PathVariable final String referenceId,
       final HttpServletResponse statusResponse) {
     withAppIdCounter.inc();
     try (Timer.Context ignored = cancelTimer.time()) {
@@ -498,8 +498,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = CANCEL_URL + "/{referenceId:\\S+}", method = RequestMethod.DELETE)
   public final void cancelPath(
-      @Nonnull @PathVariable("referenceId") final String referenceId,
-      final HttpServletResponse statusResponse) {
+      @Nonnull @PathVariable final String referenceId, final HttpServletResponse statusResponse) {
     noAppIdCounter.inc();
     try (Timer.Context ignored = cancelTimer.time()) {
       cancel("default", referenceId, statusResponse);
@@ -542,8 +541,8 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = "/{appId}" + REPORT_URL + ".{format:\\w+}", method = RequestMethod.POST)
   public final void createReport(
-      @Nonnull @PathVariable("appId") final String appId,
-      @PathVariable("format") final String format,
+      @Nonnull @PathVariable final String appId,
+      @PathVariable final String format,
       @RequestBody final String requestData,
       final HttpServletRequest createReportRequest,
       final HttpServletResponse createReportResponse)
@@ -598,11 +597,11 @@ public class MapPrinterServlet extends BaseMapServlet {
       value = "/{appId}" + REPORT_URL + "/{referenceId:\\S+}",
       method = RequestMethod.GET)
   public final void getReportSpecificAppId(
-      @Nonnull @PathVariable("appId") final String appId,
-      @Nonnull @PathVariable("referenceId") final String referenceId,
+      @Nonnull @PathVariable final String appId,
+      @Nonnull @PathVariable final String referenceId,
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
       final HttpServletResponse getReportResponse)
-      throws IOException, ServletException {
+      throws IOException {
     withAppIdCounter.inc();
     try (Timer.Context ignored = getReportTimer.time()) {
       getReport(appId, referenceId, inline, getReportResponse);
@@ -618,10 +617,10 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = REPORT_URL + "/{referenceId:\\S+}", method = RequestMethod.GET)
   public final void getReportPath(
-      @Nonnull @PathVariable("referenceId") final String referenceId,
+      @Nonnull @PathVariable final String referenceId,
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
       final HttpServletResponse getReportResponse)
-      throws IOException, ServletException {
+      throws IOException {
     noAppIdCounter.inc();
     try (Timer.Context ignored = getReportTimer.time()) {
       getReport("default", referenceId, inline, getReportResponse);
@@ -641,7 +640,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       @Nonnull final String referenceId,
       final boolean inline,
       final HttpServletResponse getReportResponse)
-      throws IOException, ServletException {
+      throws IOException {
     MDC.put(Processor.MDC_APPLICATION_ID_KEY, applicationId);
     MDC.put(Processor.MDC_JOB_ID_KEY, referenceId);
     setNoCache(getReportResponse);
@@ -659,7 +658,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = REPORT_URL + ".{format:\\w+}", method = RequestMethod.POST)
   public final void createReport(
-      @PathVariable("format") final String format,
+      @PathVariable final String format,
       @RequestBody final String requestData,
       final HttpServletRequest createReportRequest,
       final HttpServletResponse createReportResponse)
@@ -704,8 +703,8 @@ public class MapPrinterServlet extends BaseMapServlet {
       value = "/{appId}" + CREATE_AND_GET_URL + ".{format:\\w+}",
       method = RequestMethod.POST)
   public final void createReportAndGet(
-      @Nonnull @PathVariable("appId") final String appId,
-      @PathVariable("format") final String format,
+      @Nonnull @PathVariable final String appId,
+      @PathVariable final String format,
       @RequestBody final String requestData,
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
       final HttpServletRequest createReportRequest,
@@ -726,7 +725,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       final boolean inline,
       final HttpServletRequest createReportRequest,
       final HttpServletResponse createReportResponse)
-      throws NoSuchAppException, InterruptedException, IOException, ServletException {
+      throws NoSuchAppException, InterruptedException, IOException {
     String ref =
         createAndSubmitPrintJob(
             appId, format, requestData, createReportRequest, createReportResponse);
@@ -758,7 +757,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = CREATE_AND_GET_URL + ".{format:\\w+}", method = RequestMethod.POST)
   public final void createReportAndGetNoAppId(
-      @PathVariable("format") final String format,
+      @PathVariable final String format,
       @RequestBody final String requestData,
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
       final HttpServletRequest createReportRequest,
@@ -831,7 +830,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = "/{appId}" + CAPABILITIES_URL, method = RequestMethod.GET)
   public final void getCapabilities(
-      @Nonnull @PathVariable("appId") final String appId,
+      @Nonnull @PathVariable final String appId,
       @RequestParam(value = "pretty", defaultValue = "false") final boolean pretty,
       final HttpServletRequest request,
       final HttpServletResponse capabilitiesResponse)
@@ -912,7 +911,7 @@ public class MapPrinterServlet extends BaseMapServlet {
    */
   @RequestMapping(value = "{appId}" + EXAMPLE_REQUEST_URL, method = RequestMethod.GET)
   public final void getExampleRequest(
-      @Nonnull @PathVariable("appId") final String appId,
+      @Nonnull @PathVariable final String appId,
       final HttpServletRequest request,
       final HttpServletResponse getExampleResponse)
       throws IOException {
