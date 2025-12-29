@@ -1,8 +1,6 @@
 package org.mapfish.print.map.tiled;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -16,10 +14,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.PrintException;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.processor.Processor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
@@ -88,9 +87,7 @@ public class SingleTileLoaderTaskTest {
 
   private ClientHttpResponse getMockResponse(int rawStatusCode) throws IOException {
     ClientHttpResponse response = mock(ClientHttpResponse.class);
-    when(response.getRawStatusCode()).thenReturn(rawStatusCode);
-    when(response.getStatusCode())
-        .thenThrow(new RuntimeException("Unsupported status code has no HttpStatus"));
+    when(response.getStatusCode()).thenReturn(HttpStatusCode.valueOf(rawStatusCode));
     when(response.getBody()).thenReturn(new ByteArrayInputStream(new byte[0]));
     when(response.getHeaders()).thenReturn(new org.springframework.http.HttpHeaders());
     return response;

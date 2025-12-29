@@ -2,6 +2,9 @@ package org.mapfish.print.processor.jasper;
 
 import static org.mapfish.print.attribute.DataSourceAttribute.DataSourceAttributeValue;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,9 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ForkJoinTask;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;

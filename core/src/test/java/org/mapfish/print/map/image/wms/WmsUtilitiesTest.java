@@ -1,9 +1,6 @@
 package org.mapfish.print.map.image.wms;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.common.collect.Multimap;
 import java.awt.Dimension;
@@ -12,7 +9,7 @@ import java.util.Collection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.map.image.wms.WmsLayerParam.ServerType;
 import org.mapfish.print.wrapper.json.PJsonObject;

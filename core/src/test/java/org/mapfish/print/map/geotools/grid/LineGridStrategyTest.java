@@ -1,7 +1,7 @@
 package org.mapfish.print.map.geotools.grid;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.awt.Dimension;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultEngineeringCRS;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import org.mapfish.print.TestHttpClientFactory;

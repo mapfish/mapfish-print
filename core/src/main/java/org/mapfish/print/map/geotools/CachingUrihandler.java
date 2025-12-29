@@ -1,5 +1,6 @@
 package org.mapfish.print.map.geotools;
 
+import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -7,7 +8,6 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.eclipse.emf.common.util.URI;
 import org.geotools.xml.resolver.SchemaCache;
 import org.geotools.xml.resolver.SchemaResolver;

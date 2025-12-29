@@ -1,17 +1,14 @@
 package org.mapfish.print.servlet.fileloader;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.IllegalFileAccessException;
 import org.mapfish.print.config.Configuration;
@@ -23,7 +20,7 @@ public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest
 
   @Autowired protected WorkingDirectories workingDirectories;
 
-  @After
+  @AfterEach
   public void tearDown() {
     final File[] children = this.workingDirectories.getWorking().listFiles();
     assertNotNull(children);
@@ -70,15 +67,15 @@ public abstract class AbstractConfigLoaderTest extends AbstractMapfishSpringTest
       testFile.getParentFile().mkdirs();
       new FileOutputStream(testFile).close();
       assertTrue(
-          testFile.getAbsolutePath() + " is not accessible",
-          getLoader().isAccessible(CONFIG_FILE.toURI(), testFile.getAbsolutePath()));
+          getLoader().isAccessible(CONFIG_FILE.toURI(), testFile.getAbsolutePath()),
+          testFile.getAbsolutePath() + " is not accessible");
       assertTrue(
-          testFile.getAbsoluteFile().toURI().toString() + " is not accessible",
           getLoader()
-              .isAccessible(CONFIG_FILE.toURI(), testFile.getAbsoluteFile().toURI().toString()));
+              .isAccessible(CONFIG_FILE.toURI(), testFile.getAbsoluteFile().toURI().toString()),
+          testFile.getAbsoluteFile().toURI().toString() + " is not accessible");
       assertTrue(
-          testFile.toURI().toString() + " is not accessible",
-          getLoader().isAccessible(CONFIG_FILE.toURI(), testFile.toURI().toString()));
+          getLoader().isAccessible(CONFIG_FILE.toURI(), testFile.toURI().toString()),
+          testFile.toURI().toString() + " is not accessible");
     } finally {
       testFile.delete();
     }

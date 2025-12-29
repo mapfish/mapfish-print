@@ -1,6 +1,6 @@
 package org.mapfish.print.config;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.mapfish.print.attribute.PrimitiveAttribute;
 

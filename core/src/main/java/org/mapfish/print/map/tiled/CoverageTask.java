@@ -2,6 +2,7 @@ package org.mapfish.print.map.tiled;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import jakarta.annotation.Nonnull;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -10,7 +11,6 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 import java.util.concurrent.RecursiveTask;
-import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.CoverageFactoryFinder;
@@ -251,7 +251,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
     private Tile handleSpecialStatuses(
         final ClientHttpResponse response, final String baseMetricName) throws IOException {
-      final int httpStatusCode = response.getRawStatusCode();
+      final int httpStatusCode = response.getStatusCode().value();
       if (httpStatusCode == HttpStatus.NO_CONTENT.value()
           || httpStatusCode == HttpStatus.NOT_FOUND.value()) {
         if (httpStatusCode == HttpStatus.NOT_FOUND.value()) {
@@ -291,7 +291,7 @@ public final class CoverageTask implements Callable<GridCoverage2D> {
 
     private Tile handleNonOkStatus(final ClientHttpResponse response, final String baseMetricName)
         throws IOException {
-      final int httpStatusCode = response.getRawStatusCode();
+      final int httpStatusCode = response.getStatusCode().value();
       String errorMessage =
           String.format(
               "Error making tile request: %s\n\tStatus: %d\n\tStatus message: %s",

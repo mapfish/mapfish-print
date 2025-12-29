@@ -1,6 +1,7 @@
 package org.mapfish.print.processor;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.PDFConfig;
 import org.mapfish.print.output.Values;
@@ -118,36 +119,46 @@ public class PdfConfigurationProcessorTest {
     assertEquals("6,7", in.pdfConfig.getKeywordsAsString());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testExec_WrongFieldName() {
-    Map<String, Object> attributeMap = new HashMap<>();
-    final String titleKey = "titleAtt";
-    final PdfConfigurationProcessor pdfConfigurationProcessor = new PdfConfigurationProcessor();
-    pdfConfigurationProcessor.setUpdates(attributeMap);
-    PdfConfigurationProcessor.In in = new PdfConfigurationProcessor.In();
-    in.values = new Values();
-    in.pdfConfig = new PDFConfig();
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          Map<String, Object> attributeMap = new HashMap<>();
+          final String titleKey = "titleAtt";
+          final PdfConfigurationProcessor pdfConfigurationProcessor =
+              new PdfConfigurationProcessor();
+          pdfConfigurationProcessor.setUpdates(attributeMap);
+          PdfConfigurationProcessor.In in = new PdfConfigurationProcessor.In();
+          in.values = new Values();
+          in.pdfConfig = new PDFConfig();
 
-    attributeMap.put("title", titleKey + ".xxx");
-    pdfConfigurationProcessor.setUpdates(attributeMap);
-    in.values.put(titleKey, new CustomTitleAtt());
-    pdfConfigurationProcessor.execute(in, null);
+          attributeMap.put("title", titleKey + ".xxx");
+          pdfConfigurationProcessor.setUpdates(attributeMap);
+          in.values.put(titleKey, new CustomTitleAtt());
+          pdfConfigurationProcessor.execute(in, null);
+        });
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testExec_NullValue() {
-    Map<String, Object> attributeMap = new HashMap<>();
-    final String titleKey = "titleAtt";
-    final PdfConfigurationProcessor pdfConfigurationProcessor = new PdfConfigurationProcessor();
-    pdfConfigurationProcessor.setUpdates(attributeMap);
-    PdfConfigurationProcessor.In in = new PdfConfigurationProcessor.In();
-    in.values = new Values();
-    in.pdfConfig = new PDFConfig();
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          Map<String, Object> attributeMap = new HashMap<>();
+          final String titleKey = "titleAtt";
+          final PdfConfigurationProcessor pdfConfigurationProcessor =
+              new PdfConfigurationProcessor();
+          pdfConfigurationProcessor.setUpdates(attributeMap);
+          PdfConfigurationProcessor.In in = new PdfConfigurationProcessor.In();
+          in.values = new Values();
+          in.pdfConfig = new PDFConfig();
 
-    attributeMap.put("title", titleKey + ".value");
-    pdfConfigurationProcessor.setUpdates(attributeMap);
-    in.values.put(titleKey, new CustomTitleAtt());
-    pdfConfigurationProcessor.execute(in, null);
+          attributeMap.put("title", titleKey + ".value");
+          pdfConfigurationProcessor.setUpdates(attributeMap);
+          in.values.put(titleKey, new CustomTitleAtt());
+          pdfConfigurationProcessor.execute(in, null);
+        });
   }
 
   private void assertNumErrors(Map<String, Object> attributeMap, int expectedNumErrors) {

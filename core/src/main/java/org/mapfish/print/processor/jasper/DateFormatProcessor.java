@@ -1,11 +1,11 @@
 package org.mapfish.print.processor.jasper;
 
+import jakarta.annotation.Nullable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import javax.annotation.Nullable;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationException;
 import org.mapfish.print.parser.HasDefaultValue;

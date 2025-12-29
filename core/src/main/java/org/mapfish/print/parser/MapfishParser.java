@@ -28,6 +28,7 @@ import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
 
 /**
  * This class parses json parameter objects into the parameter object taken by {@link
@@ -251,6 +252,8 @@ public final class MapfishParser {
       }
     } else if (type.isEnum()) {
       value = parseEnum(type, layer.getPath(fieldName), layer.getString(name));
+    } else if (type == HttpMethod.class) {
+      value = HttpMethod.valueOf(layer.getString(name).toUpperCase());
     } else {
       try {
         value = type.getDeclaredConstructor().newInstance();

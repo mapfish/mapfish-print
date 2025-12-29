@@ -1,6 +1,6 @@
 package org.mapfish.print.config;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.GraphicsEnvironment;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.apache.commons.lang3.ArrayUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.output.AbstractJasperReportOutputFormat;
 import org.mapfish.print.output.OutputFormat;

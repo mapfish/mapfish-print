@@ -1,20 +1,19 @@
 package org.mapfish.print.servlet.job;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.mapfish.print.servlet.MapPrinterServlet;
-import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
 import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,7 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
 
     assertRegistryValues(0, 0, true);
     TestPrintJob printJob = new TestPrintJob();
-    PrintJobEntryImpl entry = (PrintJobEntryImpl) printJob.getEntry();
+    PrintJobEntry entry = (PrintJobEntry) printJob.getEntry();
     entry.setStartTime(System.currentTimeMillis());
     jobManager.submit(printJob);
 
@@ -99,7 +98,7 @@ public class PostResultToRegistryTaskTest extends AbstractMapfishSpringTest {
     {
       try {
         initForTesting(context);
-        PrintJobEntryImpl entry = (PrintJobEntryImpl) getEntry();
+        PrintJobEntry entry = (PrintJobEntry) getEntry();
         entry.setRequestData(
             new PJsonObject(
                 new JSONObject(

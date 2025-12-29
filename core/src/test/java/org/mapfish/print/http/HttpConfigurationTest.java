@@ -1,10 +1,10 @@
 package org.mapfish.print.http;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;

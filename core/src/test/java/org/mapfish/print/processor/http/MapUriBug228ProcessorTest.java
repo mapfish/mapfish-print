@@ -1,14 +1,14 @@
 package org.mapfish.print.processor.http;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mapfish.print.output.Values.MDC_CONTEXT_KEY;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.attribute.NorthArrowAttribute;
 import org.mapfish.print.attribute.map.MapAttribute;
@@ -30,7 +30,7 @@ import org.springframework.test.context.ContextConfiguration;
           + "-context.xml"
     })
 public class MapUriBug228ProcessorTest extends AbstractMapfishSpringTest {
-  @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir public File temporaryFolder;
   @Autowired ConfigurationFactory configurationFactory;
   @Autowired MfClientHttpRequestFactoryImpl httpClientFactory;
   @Autowired ForkJoinPool forkJoinPool;
@@ -63,7 +63,7 @@ public class MapUriBug228ProcessorTest extends AbstractMapfishSpringTest {
     values.put(
         Values.CLIENT_HTTP_REQUEST_FACTORY_KEY,
         new MfClientHttpRequestFactoryProvider(requestFactory));
-    values.put(Values.TASK_DIRECTORY_KEY, temporaryFolder.getRoot());
+    values.put(Values.TASK_DIRECTORY_KEY, temporaryFolder);
     values.put(Values.VALUES_KEY, values);
     values.put(Values.TEMPLATE_KEY, template);
     values.put(MDC_CONTEXT_KEY, new HashMap<>());

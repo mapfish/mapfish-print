@@ -1,16 +1,12 @@
 package org.mapfish.print.servlet.job;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.ExecutionStats;
@@ -20,26 +16,22 @@ import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Entity for the print_accountings table. */
 @Entity
 @Table(name = "print_accountings")
-@TypeDef(name = "jsonb-node", typeClass = JsonBinaryType.class, defaultForType = ObjectNode.class)
 public class HibernateAccountingEntry {
   private static final Logger LOGGER = LoggerFactory.getLogger(HibernateAccountingEntry.class);
 
   @Id
   @Column(name = "reference_id")
-  @Type(type = "org.hibernate.type.TextType")
   private String referenceId;
 
   @Column(nullable = false, name = "app_id")
-  @Type(type = "org.hibernate.type.TextType")
   private String appId;
 
-  @Column
-  @Type(type = "org.hibernate.type.TextType")
-  private String referrer;
+  @Column private String referrer;
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
@@ -55,11 +47,9 @@ public class HibernateAccountingEntry {
   private long totalTimeMS;
 
   @Column(nullable = false, name = "output_format")
-  @Type(type = "org.hibernate.type.TextType")
   private String outputFormat;
 
   @Column(nullable = false)
-  @Type(type = "org.hibernate.type.TextType")
   private String layout;
 
   @Column(name = "file_size")

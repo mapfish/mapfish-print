@@ -1,7 +1,7 @@
 package org.mapfish.print.attribute.map;
 
 import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mapfish.print.Constants.PDF_DPI;
 import static org.mapfish.print.attribute.map.CenterScaleMapBoundsTest.CH1903;
 
@@ -10,7 +10,7 @@ import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BBoxMapBoundsTest {
   public static final CoordinateReferenceSystem SPHERICAL_MERCATOR;

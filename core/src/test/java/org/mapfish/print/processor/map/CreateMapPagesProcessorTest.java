@@ -1,6 +1,6 @@
 package org.mapfish.print.processor.map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -11,8 +11,8 @@ import net.sf.jasperreports.engine.JasperPrint;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
@@ -41,7 +41,7 @@ public class CreateMapPagesProcessorTest extends AbstractMapfishSpringTest {
         CreateMapPagesProcessorTest.class, BASE_DIR + "requestData.json");
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
     final String host = "paging_processor_test";
     requestFactory.registerHandler(

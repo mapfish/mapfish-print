@@ -1,7 +1,7 @@
 package org.mapfish.print.attribute.map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.awt.Rectangle;
 import org.geotools.api.referencing.FactoryException;
@@ -9,7 +9,7 @@ import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Test bounds implementation. */
 public class CenterScaleMapBoundsTest {

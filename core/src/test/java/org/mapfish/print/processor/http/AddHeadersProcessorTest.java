@@ -1,10 +1,10 @@
 package org.mapfish.print.processor.http;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import jakarta.annotation.Nullable;
 import java.net.URI;
-import javax.annotation.Nullable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.test.context.ContextConfiguration;

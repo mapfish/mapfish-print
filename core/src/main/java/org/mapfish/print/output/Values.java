@@ -2,6 +2,8 @@ package org.mapfish.print.output;
 
 import static org.mapfish.print.servlet.MapPrinterServlet.JSON_REQUEST_HEADERS;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,8 +14,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.ExtraPropertyException;
 import org.mapfish.print.attribute.Attribute;

@@ -3,6 +3,7 @@ package org.mapfish.print.processor.jasper;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.annotation.Resource;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -20,7 +21,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
-import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
@@ -386,7 +386,7 @@ public final class LegendProcessor
               this.clientHttpRequestFactory.createRequest(uri, HttpMethod.GET);
           try (Timer.Context ignored = metricRegistry.timer(metricName).time()) {
             try (ClientHttpResponse httpResponse = request.execute()) {
-              if (httpResponse.getRawStatusCode() == HttpStatus.OK.value()) {
+              if (httpResponse.getStatusCode().value() == HttpStatus.OK.value()) {
                 image = ImageIO.read(httpResponse.getBody());
                 if (image == null) {
                   LOGGER.warn("There is no image in this response body {}", httpResponse.getBody());
@@ -419,7 +419,7 @@ public final class LegendProcessor
           \t{}\
           """,
           this.icon,
-          httpResponse.getRawStatusCode(),
+          httpResponse.getStatusCode().value(),
           httpResponse.getStatusText(),
           String.join("\n\t", Utils.getPrintableHeadersList(httpResponse.getHeaders())));
     }
