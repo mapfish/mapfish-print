@@ -47,22 +47,25 @@ public class StringAttributeTest extends AbstractMapfishSpringTest {
 
   @Test
   public void testParsableByValuesError() throws Exception {
-    assertThrows(IllegalArgumentException.class, () -> {
-      final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
-      PJsonObject requestData = loadJsonRequestDataError();
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          final Configuration config =
+              configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+          PJsonObject requestData = loadJsonRequestDataError();
 
-      Template template = config.getTemplate("main");
-      new Values(
-          new HashMap<>(),
-          requestData,
-          template,
-          config.getDirectory(),
-          httpClientFactory,
-          config.getDirectory(),
-          HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-          HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
-          new AtomicBoolean(false));
-    });
+          Template template = config.getTemplate("main");
+          new Values(
+              new HashMap<>(),
+              requestData,
+              template,
+              config.getDirectory(),
+              httpClientFactory,
+              config.getDirectory(),
+              HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+              HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+              new AtomicBoolean(false));
+        });
   }
 
   private PJsonObject loadJsonRequestData() throws IOException {

@@ -54,14 +54,15 @@ public class FileConfigFileLoaderTest extends AbstractConfigLoaderTest {
 
   @Test
   public void testLoadFileMissingFile() throws Exception {
-    assertThrows(NoSuchElementException.class, () ->
-      this.loader.loadFile(new URI("file:/c:/doesnotexist")));
+    assertThrows(
+        NoSuchElementException.class, () -> this.loader.loadFile(new URI("file:/c:/doesnotexist")));
   }
 
   @Test
   public void testLastModifiedMissingFile() throws Exception {
-    assertThrows(NoSuchElementException.class, () ->
-      this.loader.lastModified(new URI("file:/c:/doesnotexist")));
+    assertThrows(
+        NoSuchElementException.class,
+        () -> this.loader.lastModified(new URI("file:/c:/doesnotexist")));
   }
 
   @Test
@@ -113,22 +114,28 @@ public class FileConfigFileLoaderTest extends AbstractConfigLoaderTest {
 
   @Test
   public void testLoadFileChildResource_NotInConfigDir() throws Exception {
-    assertThrows(IllegalFileAccessException.class, () -> {
-      final URI configFileUri = CONFIG_FILE.toURI();
+    assertThrows(
+        IllegalFileAccessException.class,
+        () -> {
+          final URI configFileUri = CONFIG_FILE.toURI();
 
-      this.loader.loadFile(
-          configFileUri,
-          getFile(FileConfigFileLoader.class, "/test-http-request-factory-application-context.xml")
-              .getAbsolutePath());
-    });
+          this.loader.loadFile(
+              configFileUri,
+              getFile(
+                      FileConfigFileLoader.class,
+                      "/test-http-request-factory-application-context.xml")
+                  .getAbsolutePath());
+        });
   }
 
   @Test
   public void testLoadFileChildResource_DoesNotExist() throws Exception {
-    assertThrows(NoSuchElementException.class, () -> {
-      final URI configFileUri = CONFIG_FILE.toURI();
+    assertThrows(
+        NoSuchElementException.class,
+        () -> {
+          final URI configFileUri = CONFIG_FILE.toURI();
 
-      this.loader.loadFile(configFileUri, "doesNotExist");
-    });
+          this.loader.loadFile(configFileUri, "doesNotExist");
+        });
   }
 }

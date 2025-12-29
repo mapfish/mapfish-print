@@ -1,5 +1,6 @@
 package org.mapfish.print.servlet;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
@@ -8,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import jakarta.servlet.http.HttpServletResponse;
 import org.mapfish.print.servlet.job.PrintJobStatus;
 import org.mapfish.print.servlet.job.loader.ReportLoader;
 import org.slf4j.Logger;

@@ -111,32 +111,40 @@ public class ServletConfigFileLoaderTest extends AbstractConfigLoaderTest {
 
   @Test
   public void testLoadFileChildResource_NotInConfigDir() throws Exception {
-    assertThrows(IllegalFileAccessException.class, () -> {
-      final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
+    assertThrows(
+        IllegalFileAccessException.class,
+        () -> {
+          final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
 
-      this.loader.loadFile(
-          configFileUri,
-          getFile(FileConfigFileLoader.class, "/test-http-request-factory-application-context.xml")
-              .getAbsolutePath());
-    });
+          this.loader.loadFile(
+              configFileUri,
+              getFile(
+                      FileConfigFileLoader.class,
+                      "/test-http-request-factory-application-context.xml")
+                  .getAbsolutePath());
+        });
   }
 
   @Test
   public void testLoadFileChildResource_NotInConfigDir_ServletURI() throws Exception {
-    assertThrows(IllegalFileAccessException.class, () -> {
-      final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
+    assertThrows(
+        IllegalFileAccessException.class,
+        () -> {
+          final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
 
-      this.loader.loadFile(
-          configFileUri, "servlet:///test-http-request-factory-application-context.xml");
-    });
+          this.loader.loadFile(
+              configFileUri, "servlet:///test-http-request-factory-application-context.xml");
+        });
   }
 
   @Test
   public void testLoadFileChildResource_DoesNotExist() throws Exception {
-    assertThrows(NoSuchElementException.class, () -> {
-      final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
+    assertThrows(
+        NoSuchElementException.class,
+        () -> {
+          final URI configFileUri = new URI(CONFIG_FILE_URI_STRING);
 
-      this.loader.loadFile(configFileUri, "doesNotExist");
-    });
+          this.loader.loadFile(configFileUri, "doesNotExist");
+        });
   }
 }

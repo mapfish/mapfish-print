@@ -51,8 +51,8 @@ public class JobQueueHealthCheckTest extends AbstractMapfishSpringTest {
         assertThrowsExactly(
             RuntimeException.class,
             () ->
-              // WHEN
-              jobQueueHealthCheck.check());
+                // WHEN
+                jobQueueHealthCheck.check());
 
     assertEquals(
         "None of the print job queued was processed by this server, in the last (seconds): 300",
