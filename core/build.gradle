@@ -176,14 +176,14 @@ dependencies {
             'org.slf4j:slf4j-api:2.0.17',
             'org.slf4j:jcl-over-slf4j:2.0.17',
             'org.slf4j:jul-to-slf4j:2.0.17',
-            'ch.qos.logback:logback-classic:1.5.21',
-            'ch.qos.logback:logback-access:1.5.21',
+            'ch.qos.logback:logback-classic:1.5.23',
+            'ch.qos.logback:logback-access:1.5.23',
             'org.json:json:20250517',
             'org.yaml:snakeyaml:2.5',
             'com.github.spullara.cli-parser:cli-parser:1.1.6',
             'com.sun.mail:javax.mail:1.6.2',
-            'com.amazonaws:aws-java-sdk-s3:1.12.794',
-            'io.sentry:sentry-logback:8.27.1',
+            'com.amazonaws:aws-java-sdk-s3:1.12.797',
+            'io.sentry:sentry-logback:8.29.0',
             // For JSON logs
             'net.logstash.logback:logstash-logback-encoder:9.0',
             // For PDF/A
@@ -191,10 +191,10 @@ dependencies {
             // For JasperReports
             'joda-time:joda-time:2.14.0',
             'org.jfree:jcommon:1.0.24',
-            'org.apache.groovy:groovy-all:5.0.2',
+            'org.apache.groovy:groovy-all:5.0.3',
             'xalan:serializer:2.7.3',
             // For WebP images
-            'com.twelvemonkeys.imageio:imageio-webp:3.12.0',
+            'com.twelvemonkeys.imageio:imageio-webp:3.13.0',
     )
 
     implementation(

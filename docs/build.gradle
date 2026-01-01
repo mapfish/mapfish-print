@@ -18,8 +18,8 @@ repositories {
 dependencies {
     implementation project(':core')
     implementation (
-            'org.apache.groovy:groovy-xml:5.0.2',
-            'org.apache.groovy:groovy-json:5.0.2',
+            'org.apache.groovy:groovy-xml:5.0.3',
+            'org.apache.groovy:groovy-json:5.0.3',
             "org.springframework:spring-test:5.3.39",
             'org.ccil.cowan.tagsoup:tagsoup:1.2.1',
             'com.samskivert:jmustache:1.16',
