@@ -1,6 +1,6 @@
 package org.mapfish.print.map.geotools;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.geotools.api.data.FeatureSource;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.MfClientHttpRequestFactory;

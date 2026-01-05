@@ -1,5 +1,6 @@
 package org.mapfish.print.parser;
 
+import jakarta.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -8,7 +9,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import javax.annotation.Nullable;
 
 /** Utility method for getting and setting parameters on Processor Input and Output objects. */
 public final class ParserUtils {

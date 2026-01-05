@@ -2,6 +2,7 @@ package org.mapfish.print.servlet.fileloader;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -12,7 +13,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /** Processes all {@link ConfigFileLoaderPlugin}s and loads the files. */

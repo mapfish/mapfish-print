@@ -1,6 +1,6 @@
 package org.mapfish.print.processor.jasper;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Collections2;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
@@ -39,9 +39,9 @@ public class MergeDataSourceProcessorIntegrationTest extends AbstractMapfishSpri
     final List<ProcessorGraphNode<?, ?>> roots = processorGraph.getRoots();
     assertEquals(0, Collections2.filter(roots, FIND_MERGE_PROCESSOR::test).size());
     assertEquals(
-        processorGraph.toString(),
         3,
-        count(processorGraph.toString(), " -> \"MergeDataSourceProcessor"));
+        count(processorGraph.toString(), " -> \"MergeDataSourceProcessor"),
+        processorGraph.toString());
 
     MergeDataSourceProcessor mergeDataSourceProcessor = null;
     List<ProcessorGraphNode<?, ?>> allNodes = new ArrayList<>();

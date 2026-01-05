@@ -1,15 +1,13 @@
 package org.mapfish.print.servlet;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mapfish.print.servlet.ServletMapPrinterFactory.DEFAULT_CONFIGURATION_FILE_KEY;
 
 import de.saly.javamail.mock2.MailboxFolder;
 import de.saly.javamail.mock2.MockMailbox;
+import jakarta.annotation.Nullable;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -19,20 +17,19 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import javax.annotation.Nullable;
 import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.Multipart;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMultipart;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.Constants;
 import org.mapfish.print.SetsUtils;
@@ -120,7 +117,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     assertEquals(HttpStatus.FORBIDDEN.value(), getExampleResponseImplicit.getStatus());
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReport_Success_NoAppId() throws Exception {
     doCreateAndPollAndGetReport(
         (@Nullable MockHttpServletRequest servletCreateRequest) -> {
@@ -135,7 +133,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         });
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReport_Success_EncodedSpec() throws Exception {
     doCreateAndPollAndGetReport(
         (@Nullable MockHttpServletRequest servletCreateRequest) -> {
@@ -151,7 +150,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         });
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReport_Success_FormPostEncodedSpec() throws Exception {
     doCreateAndPollAndGetReport(
         (@Nullable MockHttpServletRequest servletCreateRequest) -> {
@@ -167,7 +167,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         });
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReport_Success_explicitAppId() throws Exception {
     doCreateAndPollAndGetReport(
         (@Nullable MockHttpServletRequest servletCreateRequest) -> {
@@ -187,7 +188,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         });
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReport_FormPosting() throws Exception {
     doCreateAndPollAndGetReport(
         (@Nullable MockHttpServletRequest servletCreateRequest) -> {
@@ -202,7 +204,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         });
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReport_2Requests_Success_NoAppId() throws Exception {
     doCreateAndPollAndGetReport(
         (@Nullable MockHttpServletRequest servletCreateRequest) -> {
@@ -222,7 +225,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         });
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   @DirtiesContext
   public void testCreateReport_ForwardHttpRequests() throws Exception {
     final String geotiffURL = "http://server.com/sampleGeoTiff.tif";
@@ -277,7 +281,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         new Object[] {"default"}, request.getHeaders().get("X-Application-ID").toArray());
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReport_Email() throws Exception {
     setUpConfigFiles();
     MockMailbox.resetAll();
@@ -322,7 +327,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
         .assertSimilarity(IOUtils.toByteArray(content), 0);
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReport_Email_S3() throws Exception {
     setUpConfigFiles();
     MockMailbox.resetAll();
@@ -409,7 +415,7 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
       String contentAsString = servletStatusResponse.getContentAsString();
 
       final PJsonObject statusJson = parseJSONObjectFromString(contentAsString);
-      assertTrue(statusJson.toString(), statusJson.has(MapPrinterServlet.JSON_DONE));
+      assertTrue(statusJson.has(MapPrinterServlet.JSON_DONE), statusJson.toString());
 
       downloadURL = createResponseJson.getString(MapPrinterServlet.JSON_DOWNLOAD_LINK);
       assertEquals("/print/report/" + ref, downloadURL);
@@ -421,13 +427,13 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
 
       timeElapsed = statusJson.getInt(MapPrinterServlet.JSON_ELAPSED_TIME);
       assertTrue(
+          lastTimeElapsed
+              <= timeElapsed
+                  + allowDeltaBetweenCompletedJobStatusRegisteredStatsAndInstantaneousElapsedTime,
           "lastTimeElapsed: "
               + lastTimeElapsed
               + " is not less or equal to timeElapsed: "
-              + timeElapsed,
-          lastTimeElapsed
-              <= timeElapsed
-                  + allowDeltaBetweenCompletedJobStatusRegisteredStatsAndInstantaneousElapsedTime);
+              + timeElapsed);
 
       lastTimeElapsed = timeElapsed;
 
@@ -451,7 +457,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     servletStatusRequest.addHeader("Referrer", "http://localhost:8080/print/");
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReport_Failure() throws Exception {
     setUpConfigFiles();
 
@@ -476,7 +483,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     waitForFailure(ref);
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReport_FailureInvalidUrl() throws Exception {
     setUpConfigFiles();
 
@@ -530,7 +538,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     }
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCancel() throws Exception {
     setUpConfigFiles();
 
@@ -561,7 +570,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     assertEquals("canceled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCancel_Sleep() throws Exception {
     setUpConfigFiles();
 
@@ -595,7 +605,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     assertEquals("canceled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCancel_FinishedJob() throws Exception {
     // start a job and wait until it is finished
     String ref =
@@ -628,7 +639,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     assertEquals("canceled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCancel_WrongRef() throws Exception {
     setUpConfigFiles();
 
@@ -637,7 +649,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     assertEquals(HttpStatus.NOT_FOUND.value(), servletCancelResponse.getStatus());
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCancelSpecificAppId() throws Exception {
     setUpConfigFiles();
 
@@ -668,7 +681,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     assertEquals("canceled", statusJson.getString(MapPrinterServlet.JSON_STATUS));
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   @DirtiesContext
   public void testCreateReport_Timeout() throws Exception {
     jobManager.setTimeout(1);
@@ -698,7 +712,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     testCreateReport_Success_explicitAppId();
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   @DirtiesContext
   public void testCreateReport_AbandonedTimeout() throws Exception {
     jobManager.setAbandonedTimeout(1);
@@ -735,7 +750,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
    * Check that a job is not canceled, when status requests are made. Test case for:
    * https://github.com/mapfish/mapfish-print/issues/404
    */
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   @DirtiesContext
   public void testCreateReport_NotAbandonedTimeout() throws Exception {
     jobManager.setAbandonedTimeout(1);
@@ -806,7 +822,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     }
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReport_Failure_InvalidFormat() throws Exception {
     setUpConfigFiles();
 
@@ -828,7 +845,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     waitForFailure(ref);
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReportAndGet_Success() throws Exception {
     setUpConfigFiles();
 
@@ -844,7 +862,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     assertCorrectResponse(servletCreateResponse);
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReportAndGet_OutputName() throws Exception {
     setUpConfigFiles();
 
@@ -882,7 +901,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     return "spec=" + URLEncoder.encode(loadRequestDataAsString(), Constants.DEFAULT_ENCODING);
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   @DirtiesContext
   public void testCreateReportAndGet_Timeout() throws Exception {
     jobManager.setTimeout(1);
@@ -898,7 +918,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), servletCreateResponse.getStatus());
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReportAndGet_Failure() throws Exception {
     setUpConfigFiles();
 
@@ -915,7 +936,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), servletCreateResponse.getStatus());
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReportAndGet_FormPost() throws Exception {
     setUpConfigFiles();
 
@@ -941,7 +963,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     throw new AssertionError(format + " does is not one of the elements in: " + formats);
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testGetStatus_InvalidRef() throws Exception {
     setUpConfigFiles();
 
@@ -954,7 +977,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     assertEquals(HttpStatus.NOT_FOUND.value(), servletStatusResponse.getStatus());
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testGetReport_InvalidRef() throws Exception {
     setUpConfigFiles();
 
@@ -1092,7 +1116,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     assertTrue(expected.contains(appIdsJson.getString(1)));
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   @DirtiesContext
   public void testCreateReport_ExceedsMaxNumberOfWaitingJobs() throws Exception {
     jobManager.setMaxNumberOfWaitingJobs(2);
@@ -1117,7 +1142,8 @@ public class MapPrinterServletTest extends AbstractMapfishSpringTest {
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), servletCreateResponse.getStatus());
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   @DirtiesContext
   public void testGetStatus_WaitingRunning() throws Exception {
     jobManager.setMaxNumberOfRunningPrintJobs(1);

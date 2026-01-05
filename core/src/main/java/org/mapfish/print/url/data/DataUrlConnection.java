@@ -8,7 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
-import org.apache.http.entity.ContentType;
+import org.apache.hc.core5.http.ContentType;
 
 /** Decodes the base64 data and provides an appropriate InputStream. */
 public class DataUrlConnection extends URLConnection {

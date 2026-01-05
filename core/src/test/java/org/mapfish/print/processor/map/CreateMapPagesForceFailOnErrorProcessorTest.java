@@ -8,8 +8,8 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.PrintException;
@@ -105,25 +105,25 @@ public class CreateMapPagesForceFailOnErrorProcessorTest extends AbstractMapfish
       format.getJasperPrint(
           new HashMap<>(), requestData, config, config.getDirectory(), getTaskDirectory());
       if (shouldFail) {
-        Assert.fail("Generation was not canceled");
+        Assertions.fail("Generation was not canceled");
       }
     } catch (Exception e) {
       if (!shouldFail) {
-        Assert.fail("Generation was canceled");
+        Assertions.fail("Generation was canceled");
       }
       // WMS interrupt cause is CancellationException or RuntimeException
       // WMTS interrupt cause is PrintException
-      Assert.assertTrue(
-          String.format(
-              "Exception cause should be CancellationException or PrintException with message that"
-                  + " contains 'Failed to compute Coverage Task' or RuntimeException with message"
-                  + " that contains 'Request Timeout' but was %s, exception : %s",
-              e.getCause(), e),
+      Assertions.assertTrue(
           e.getCause() instanceof CancellationException
               || (e.getCause() instanceof PrintException
                   && e.getMessage().contains("Failed to compute Coverage Task"))
               || (e.getCause() instanceof RuntimeException
-                  && e.getMessage().contains("Request Timeout")));
+                  && e.getMessage().contains("Request Timeout")),
+          String.format(
+              "Exception cause should be CancellationException or PrintException with message that"
+                  + " contains 'Failed to compute Coverage Task' or RuntimeException with message"
+                  + " that contains 'Request Timeout' but was %s, exception : %s",
+              e.getCause(), e));
     }
   }
 }

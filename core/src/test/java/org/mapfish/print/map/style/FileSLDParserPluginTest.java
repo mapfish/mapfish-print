@@ -1,15 +1,13 @@
 package org.mapfish.print.map.style;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
 import org.geotools.api.style.Style;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.AssertionFailedException;
 import org.mapfish.print.AbstractMapfishSpringTest;

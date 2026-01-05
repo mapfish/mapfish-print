@@ -1,13 +1,12 @@
 package org.mapfish.print.http;
 
+import jakarta.annotation.Nullable;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
-import javax.annotation.Nullable;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationObject;
 import org.mapfish.print.processor.http.matcher.MatchInfo;
@@ -94,7 +93,7 @@ public class HttpCredential implements ConfigurationObject {
    * @param authscope the scope to test against.
    */
   @Nullable
-  public final Credentials toCredentials(final AuthScope authscope) {
+  public final UsernamePasswordCredentials toCredentials(final AuthScope authscope) {
     try {
 
       if (!matches(MatchInfo.fromAuthScope(authscope))) {
@@ -106,13 +105,6 @@ public class HttpCredential implements ConfigurationObject {
     if (this.username == null) {
       return null;
     }
-
-    final String passwordString;
-    if (this.password != null) {
-      passwordString = new String(this.password);
-    } else {
-      passwordString = null;
-    }
-    return new UsernamePasswordCredentials(this.username, passwordString);
+    return new UsernamePasswordCredentials(this.username, this.password);
   }
 }

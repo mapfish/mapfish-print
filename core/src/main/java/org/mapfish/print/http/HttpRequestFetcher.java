@@ -2,6 +2,8 @@ package org.mapfish.print.http;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -9,11 +11,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Files;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.apache.commons.io.IOUtils;
 import org.mapfish.print.StatsUtils;
 import org.mapfish.print.processor.Processor;
@@ -21,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.AbstractClientHttpResponse;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
@@ -75,17 +76,17 @@ public final class HttpRequestFetcher {
     return add(new CachedClientHttpRequest(originalRequest, this.context));
   }
 
-  private final class CachedClientHttpResponse extends AbstractClientHttpResponse {
+  private final class CachedClientHttpResponse implements ClientHttpResponse {
 
     private final File cachedFile;
     private final HttpHeaders headers;
-    private final int status;
+    private final HttpStatusCode status;
     private final String statusText;
     private InputStream body;
 
     private CachedClientHttpResponse(final ClientHttpResponse originalResponse) throws IOException {
       this.headers = originalResponse.getHeaders();
-      this.status = originalResponse.getRawStatusCode();
+      this.status = originalResponse.getStatusCode();
       this.statusText = originalResponse.getStatusText();
       this.cachedFile = createCachedFile(originalResponse.getBody());
     }
@@ -122,7 +123,7 @@ public final class HttpRequestFetcher {
     }
 
     @Override
-    public int getRawStatusCode() {
+    public HttpStatusCode getStatusCode() throws IOException {
       return this.status;
     }
 
@@ -165,15 +166,13 @@ public final class HttpRequestFetcher {
 
     @Override
     @Nonnull
-    public String getMethodValue() {
-      final HttpMethod method = getMethod();
-      return method != null ? method.name() : "";
+    public URI getURI() {
+      return this.originalRequest.getURI();
     }
 
     @Override
-    @Nonnull
-    public URI getURI() {
-      return this.originalRequest.getURI();
+    public Map<String, Object> getAttributes() {
+      return this.originalRequest.getAttributes();
     }
 
     @Override

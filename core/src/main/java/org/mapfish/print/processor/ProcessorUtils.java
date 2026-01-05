@@ -3,14 +3,14 @@ package org.mapfish.print.processor;
 import static org.mapfish.print.parser.ParserUtils.getAllAttributes;
 
 import com.google.common.collect.BiMap;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.mapfish.print.PrintException;
 import org.mapfish.print.output.Values;

@@ -1,8 +1,6 @@
 package org.mapfish.print.attribute.map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mapfish.print.attribute.ReflectiveAttribute.JSON_ATTRIBUTE_DEFAULT;
 import static org.mapfish.print.attribute.ReflectiveAttribute.JSON_ATTRIBUTE_EMBEDDED_TYPE;
 import static org.mapfish.print.attribute.ReflectiveAttribute.JSON_ATTRIBUTE_IS_ARRAY;
@@ -16,7 +14,7 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.attribute.ReflectiveAttribute;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.parser.MapfishParser;
@@ -46,10 +44,10 @@ public class GenericMapAttributeTest {
 
     assertEquals(mapAttName, json.getString(ReflectiveAttribute.JSON_NAME));
     assertTrue(json.has(JSON_CLIENT_PARAMS));
-    assertTrue(json.toString(2), json.has(JSON_CLIENT_INFO));
+    assertTrue(json.has(JSON_CLIENT_INFO), json.toString(2));
 
     final JSONObject required = json.getJSONObject(JSON_CLIENT_PARAMS);
-    assertEquals(required.toString(2), 16, required.length());
+    assertEquals(16, required.length(), required.toString(2));
 
     assertElem(required, "requiredElem", "int", null, false);
     assertElem(required, "pArray", "array", null, false);
@@ -121,9 +119,9 @@ public class GenericMapAttributeTest {
     final JSONObject elem = required.getJSONObject(elemName);
     assertEquals(type, elem.getString(JSON_ATTRIBUTE_TYPE));
     if (defaultVal != null) {
-      assertEquals(required.toString(2), defaultVal, elem.get(JSON_ATTRIBUTE_DEFAULT).toString());
+      assertEquals(defaultVal, elem.get(JSON_ATTRIBUTE_DEFAULT).toString(), required.toString(2));
     } else {
-      assertFalse(required.toString(2), elem.has(JSON_ATTRIBUTE_DEFAULT));
+      assertFalse(elem.has(JSON_ATTRIBUTE_DEFAULT), required.toString(2));
     }
     if (isArray) {
       assertTrue(elem.getBoolean(JSON_ATTRIBUTE_IS_ARRAY));
@@ -146,7 +144,7 @@ public class GenericMapAttributeTest {
         embedded.get(JSON_ATTRIBUTE_TYPE));
     final JSONObject typeDescriptor = embedded.getJSONObject(JSON_ATTRIBUTE_EMBEDDED_TYPE);
     assertTrue(typeDescriptor.has("embeddedElem"));
-    assertEquals(typeDescriptor.toString(2), 1, typeDescriptor.length());
+    assertEquals(1, typeDescriptor.length(), typeDescriptor.toString(2));
     assertElem(typeDescriptor, "embeddedElem", "boolean", null, false);
   }
 }

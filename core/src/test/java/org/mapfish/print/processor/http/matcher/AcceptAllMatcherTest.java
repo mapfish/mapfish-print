@@ -3,7 +3,7 @@ package org.mapfish.print.processor.http.matcher;
 import static org.mapfish.print.processor.http.matcher.MatcherTestUtils.assertMatch;
 
 import java.net.URI;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 
 public class AcceptAllMatcherTest {

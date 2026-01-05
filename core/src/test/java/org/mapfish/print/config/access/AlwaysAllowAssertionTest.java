@@ -1,6 +1,6 @@
 package org.mapfish.print.config.access;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AlwaysAllowAssertionTest {
 

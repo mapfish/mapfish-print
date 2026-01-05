@@ -1,8 +1,6 @@
 package org.mapfish.print.wrapper.yaml;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.wrapper.json.PJsonArray;
 
 public class PYamlArrayTest {

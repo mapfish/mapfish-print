@@ -1,14 +1,14 @@
 package org.mapfish.print.http;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 
@@ -16,14 +16,14 @@ public class MfClientHttpRequestFactoryImplTest {
   private static final int TARGET_PORT = 33212;
   private static HttpServer targetServer;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() throws Exception {
     targetServer =
         HttpServer.create(new InetSocketAddress(HttpProxyTest.LOCALHOST, TARGET_PORT), 0);
     targetServer.start();
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDown() {
     targetServer.stop(0);
   }

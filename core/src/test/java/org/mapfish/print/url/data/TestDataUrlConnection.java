@@ -1,12 +1,12 @@
 package org.mapfish.print.url.data;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestDataUrlConnection {
   @Test

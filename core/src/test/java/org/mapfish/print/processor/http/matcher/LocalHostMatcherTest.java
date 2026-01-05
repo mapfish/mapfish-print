@@ -1,6 +1,6 @@
 package org.mapfish.print.processor.http.matcher;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mapfish.print.processor.http.matcher.MatcherTestUtils.assertMatch;
 
 import java.net.InetAddress;
@@ -9,8 +9,8 @@ import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import org.apache.http.auth.AuthScope;
-import org.junit.Test;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 
 public class LocalHostMatcherTest {
@@ -47,15 +47,26 @@ public class LocalHostMatcherTest {
     assertTrue(
         localHostMatcher.matches(
             MatchInfo.fromAuthScope(
-                new AuthScope(AuthScope.ANY_HOST, 80, AuthScope.ANY_REALM, "http"))));
+                new AuthScope(
+                    MatchInfo.ANY_SCHEME, MatchInfo.ANY_HOST, 80, MatchInfo.ANY_REALM, "http"))));
     assertTrue(
         localHostMatcher.matches(
             MatchInfo.fromAuthScope(
-                new AuthScope("127.0.0.1", AuthScope.ANY_PORT, AuthScope.ANY_REALM, "http"))));
+                new AuthScope(
+                    MatchInfo.ANY_SCHEME,
+                    "127.0.0.1",
+                    MatchInfo.ANY_PORT,
+                    MatchInfo.ANY_REALM,
+                    "http"))));
     assertTrue(
         localHostMatcher.matches(
             MatchInfo.fromAuthScope(
-                new AuthScope("127.0.0.1", 80, AuthScope.ANY_REALM, AuthScope.ANY_SCHEME))));
+                new AuthScope(
+                    MatchInfo.ANY_SCHEME,
+                    "127.0.0.1",
+                    80,
+                    MatchInfo.ANY_REALM,
+                    MatchInfo.ANY_SCHEME))));
 
     assertMatch(localHostMatcher, false, new URI("http://www.camptocamp.com/"), HttpMethod.GET);
 

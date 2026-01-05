@@ -5,22 +5,30 @@
              xmlns="http://www.springframework.org/schema/security"
              xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-7.0.xsd">
 
     <!-- needed to allow double slashes in the URLs -->
     <beans:bean id="httpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall">
         <beans:property name="allowUrlEncodedSlash" value="true"/>
     </beans:bean>
 
+    <beans:bean id="httpsRedirectFilter" class="org.springframework.security.web.transport.HttpsRedirectFilter">
+        <beans:property name="requestMatcher">
+            <beans:bean factory-method="pathPattern" class="org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher">
+                <beans:constructor-arg value="/sec/print/**"/>
+            </beans:bean>
+        </beans:property>
+    </beans:bean>
+
     <http-firewall ref="httpFirewall"/>
 
     <http use-expressions="true">
-        <!-- in order to get a challenge (for capabilities for example) you need to use the print/sec/* urls -->
         <csrf disabled="true"/>
-        <intercept-url pattern="/sec/print/**" requires-channel="https" access="isAuthenticated()"/>
+        <intercept-url pattern="/sec/print/**" access="isAuthenticated()"/>
         <intercept-url pattern="/**" access="permitAll()"/>
         <http-basic/>
         <anonymous/>
+        <custom-filter ref="httpsRedirectFilter" after="FIRST"/>
     </http>
 
     <!--

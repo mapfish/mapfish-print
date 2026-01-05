@@ -1,8 +1,6 @@
 package org.mapfish.print.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.util.concurrent.Callable;
@@ -10,8 +8,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.attribute.Attribute;
 import org.mapfish.print.processor.Processor;
@@ -27,7 +25,7 @@ public class ConfigurationFactoryTest extends AbstractMapfishSpringTest {
       "classpath:org/mapfish/print/config/config-test-application-context.xml";
   @Autowired private ConfigurationFactory configurationFactory;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     this.configurationFactory.setDoValidation(false);
   }
@@ -51,7 +49,7 @@ public class ConfigurationFactoryTest extends AbstractMapfishSpringTest {
     assertEquals(1, template.getProcessorGraph().getAllProcessors().size());
     assertEquals(1, template.getProcessorGraph().getRoots().size());
     Processor<?, ?> processor = template.getProcessorGraph().getRoots().getFirst().getProcessor();
-    assertTrue(processor.toString(), processor instanceof ProcessorWithSpringInjection);
+    assertTrue(processor instanceof ProcessorWithSpringInjection, processor.toString());
     ((ProcessorWithSpringInjection) processor).assertInjected();
   }
 
@@ -91,8 +89,8 @@ public class ConfigurationFactoryTest extends AbstractMapfishSpringTest {
     boolean thread1Result = thread1Futur.get();
     boolean thread2Result = thread2Futur.get();
 
-    assertTrue("thread 1 configuration loading was not OK", thread1Result);
-    assertTrue("thread 2 configuration loading was not OK", thread2Result);
+    assertTrue(thread1Result, "thread 1 configuration loading was not OK");
+    assertTrue(thread2Result, "thread 2 configuration loading was not OK");
 
     executor.shutdown();
   }
@@ -120,17 +118,27 @@ public class ConfigurationFactoryTest extends AbstractMapfishSpringTest {
     ((ProcessorWithConfigurationInjection) processor).assertInjected();
   }
 
-  @Test(expected = ConstructorException.class)
+  @Test
   public void testConfigurationAttributeMustImplementAttribute() throws Exception {
-    File configFile =
-        getFile(ConfigurationFactoryTest.class, "configWithProcessorAsAttribute_bad_config.yaml");
-    configurationFactory.getConfig(configFile);
+    assertThrows(
+        ConstructorException.class,
+        () -> {
+          File configFile =
+              getFile(
+                  ConfigurationFactoryTest.class, "configWithProcessorAsAttribute_bad_config.yaml");
+          configurationFactory.getConfig(configFile);
+        });
   }
 
-  @Test(expected = ConstructorException.class)
+  @Test
   public void testConfigurationProcessorMustImplementProcessor() throws Exception {
-    File configFile =
-        getFile(ConfigurationFactoryTest.class, "configWithAttributeAsProcessor_bad_config.yaml");
-    configurationFactory.getConfig(configFile);
+    assertThrows(
+        ConstructorException.class,
+        () -> {
+          File configFile =
+              getFile(
+                  ConfigurationFactoryTest.class, "configWithAttributeAsProcessor_bad_config.yaml");
+          configurationFactory.getConfig(configFile);
+        });
   }
 }

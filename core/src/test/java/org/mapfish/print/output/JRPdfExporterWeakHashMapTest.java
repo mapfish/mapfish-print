@@ -4,8 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.ConfigurationFactory;
@@ -46,10 +46,10 @@ public class JRPdfExporterWeakHashMapTest extends AbstractMapfishSpringTest {
     int imageSizeInThePdfByte = oneImagePdfSizeByte - noImagePdfSizeByte;
     // If multiImagesPdfSizeByte is smaller that oneImagePdfSizeByte + imageSizeInThePdf whereas it
     // contains the images 8 times, it means the image is stored by reference in this PDF.
-    Assert.assertTrue(
+    Assertions.assertTrue(
+        oneImagePdfSizeByte + imageSizeInThePdfByte > multiImagesPdfSizeByte,
         "multiImagesPdfSizeByte should not be higher than pdf oneImagePdfSizeByte +"
-            + " imageSizeInThePdf ",
-        oneImagePdfSizeByte + imageSizeInThePdfByte > multiImagesPdfSizeByte);
+            + " imageSizeInThePdf ");
   }
 
   public int generatedPdfAndGetSize(final String configName) throws Exception {

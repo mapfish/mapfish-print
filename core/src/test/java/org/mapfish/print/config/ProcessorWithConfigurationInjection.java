@@ -1,9 +1,9 @@
 package org.mapfish.print.config;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import jakarta.annotation.Nullable;
 import java.util.List;
-import javax.annotation.Nullable;
 import org.mapfish.print.processor.AbstractProcessor;
 
 /** Processor that needs the configuration object injected. */

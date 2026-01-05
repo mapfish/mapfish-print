@@ -2,12 +2,12 @@ package org.mapfish.print.servlet.job.impl.hibernate;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import org.mapfish.print.metrics.UnhealthyCountersHealthCheck;
 import org.mapfish.print.servlet.job.JobQueue;
 import org.mapfish.print.servlet.job.NoSuchReferenceException;

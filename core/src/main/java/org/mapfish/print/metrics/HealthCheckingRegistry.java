@@ -1,7 +1,7 @@
 package org.mapfish.print.metrics;
 
 import com.codahale.metrics.health.jvm.ThreadDeadlockHealthCheck;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class HealthCheckingRegistry extends com.codahale.metrics.health.HealthCheckRegistry {

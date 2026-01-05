@@ -1,15 +1,14 @@
 package org.mapfish.print.processor;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.map.MapAttribute;
@@ -26,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
   public static final String BASE_DIR = "setstyle/";
 
-  @Rule public TemporaryFolder folder = new TemporaryFolder();
+  @TempDir public File folder;
   @Autowired private ConfigurationFactory configurationFactory;
   @Autowired private ForkJoinPool forkJoinPool;
   @Autowired private TestHttpClientFactory httpClientFactory;
@@ -44,7 +43,7 @@ public class SetStyleProcessorTest extends AbstractMapfishSpringTest {
             new HashMap<>(),
             requestData,
             template,
-            this.folder.getRoot(),
+            this.folder,
             this.httpClientFactory,
             new File("."),
             HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,

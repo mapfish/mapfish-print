@@ -9,14 +9,19 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
 public abstract class AbstractApiTest {
 
   protected static final String PRINT_SERVER = "http://print:8080/";
@@ -26,7 +31,9 @@ public abstract class AbstractApiTest {
 
   protected ClientHttpRequest getRequest(String path, HttpMethod method)
       throws IOException, URISyntaxException {
-    return httpRequestFactory.createRequest(new URI(PRINT_SERVER + path), method);
+    var actualUrl =
+        Stream.of(path.split("/")).filter(s -> !s.isEmpty()).collect(Collectors.joining("/"));
+    return httpRequestFactory.createRequest(new URI(PRINT_SERVER + actualUrl), method);
   }
 
   protected String getBodyAsText(ClientHttpResponse response) throws IOException {

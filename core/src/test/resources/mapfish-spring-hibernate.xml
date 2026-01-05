@@ -6,17 +6,14 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
-    <bean id="mfSessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+    <bean id="mfSessionFactory" class="org.springframework.orm.jpa.hibernate.LocalSessionFactoryBean">
         <property name="dataSource" ref="mfDataSource"/>
-        <property name="annotatedClasses">
-            <list>
-                <value>org.mapfish.print.servlet.job.impl.PrintJobEntryImpl</value>
-                <value>org.mapfish.print.servlet.job.impl.PrintJobStatusImpl</value>
-                <value>org.mapfish.print.servlet.job.impl.PrintJobResultImpl</value>
-                <value>org.mapfish.print.servlet.job.impl.hibernate.PrintJobStatusExtImpl</value>
-                <value>org.mapfish.print.servlet.job.impl.hibernate.PrintJobResultExtImpl</value>
-                <value>org.mapfish.print.servlet.job.HibernateAccountingEntry</value>
-            </list>
+        <property name="packagesToScan">
+            <array>
+                <value>org.mapfish.print.servlet.job</value>
+                <value>org.mapfish.print.servlet.job.impl</value>
+                <value>org.mapfish.print.servlet.job.impl.hibernate</value>
+            </array>
         </property>
         <property name="hibernateProperties">
             <value>
@@ -28,7 +25,7 @@
         </property>
     </bean>
 
-    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+    <bean id="transactionManager" class="org.springframework.orm.jpa.hibernate.HibernateTransactionManager">
         <property name="sessionFactory" ref="mfSessionFactory"/>
     </bean>
     <tx:annotation-driven transaction-manager="transactionManager"/>

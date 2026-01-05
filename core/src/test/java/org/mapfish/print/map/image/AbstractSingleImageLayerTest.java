@@ -1,12 +1,12 @@
 package org.mapfish.print.map.image;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.codahale.metrics.MetricRegistry;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.Constants;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
@@ -30,7 +30,7 @@ public class AbstractSingleImageLayerTest {
 
     try {
       layer.fetchImage(mockClientHttpRequest, mapContext);
-      Assert.fail("Did not throw exception with unsupported status code");
+      Assertions.fail("Did not throw exception with unsupported status code");
     } catch (RuntimeException e) {
       assertTrue(e.getMessage().contains(String.valueOf(unsupportedStatusCode)));
     }

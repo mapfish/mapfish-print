@@ -1,8 +1,6 @@
 package org.mapfish.print;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedListMultimap;
@@ -10,7 +8,7 @@ import com.google.common.collect.Multimap;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class URIUtilsTest {
 

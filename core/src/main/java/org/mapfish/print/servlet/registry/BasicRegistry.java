@@ -2,9 +2,9 @@ package org.mapfish.print.servlet.registry;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import jakarta.annotation.PostConstruct;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.PostConstruct;
 import org.json.JSONObject;
 
 /**
