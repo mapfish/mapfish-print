@@ -1,6 +1,6 @@
 package org.mapfish.print.attribute;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mapfish.print.attribute.ReflectiveAttribute.JSON_ATTRIBUTE_TYPE;
 import static org.mapfish.print.attribute.ReflectiveAttribute.JSON_NAME;
 
@@ -10,7 +10,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mockito.Mockito;
@@ -34,10 +34,10 @@ public abstract class AbstractAttributeTest {
     Template template = Mockito.mock(Template.class);
     JSONObject capabilities = getClientConfig(attribute, template);
     assertTrue(
-        "Missing " + JSON_NAME + " in: \n" + capabilities.toString(2), capabilities.has(JSON_NAME));
+        capabilities.has(JSON_NAME), "Missing " + JSON_NAME + " in: \n" + capabilities.toString(2));
     assertTrue(
-        "Missing " + JSON_ATTRIBUTE_TYPE + " in: \n" + capabilities.toString(2),
-        capabilities.has(JSON_ATTRIBUTE_TYPE));
+        capabilities.has(JSON_ATTRIBUTE_TYPE),
+        "Missing " + JSON_ATTRIBUTE_TYPE + " in: \n" + capabilities.toString(2));
   }
 
   @Test
@@ -46,7 +46,7 @@ public abstract class AbstractAttributeTest {
     Configuration configuration = new Configuration();
     createAttribute().validate(errors, configuration);
 
-    assertTrue(errors.toString(), errors.isEmpty());
+    assertTrue(errors.isEmpty(), errors.toString());
   }
 
   protected abstract Attribute createAttribute();

@@ -1,10 +1,10 @@
 package org.mapfish.print.config;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.codahale.metrics.MetricRegistry;
+import jakarta.annotation.Nullable;
 import java.util.List;
-import javax.annotation.Nullable;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 

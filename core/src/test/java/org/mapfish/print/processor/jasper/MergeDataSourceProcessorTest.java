@@ -1,8 +1,6 @@
 package org.mapfish.print.processor.jasper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mapfish.print.processor.jasper.MergeDataSourceProcessor.In;
 import static org.mapfish.print.processor.jasper.MergeDataSourceProcessor.Out;
 import static org.mapfish.print.processor.jasper.MergeDataSourceProcessor.Source;
@@ -17,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.output.Values;
 
 public class MergeDataSourceProcessorTest {
@@ -54,7 +52,7 @@ public class MergeDataSourceProcessorTest {
     List<Throwable> errors = new ArrayList<>();
     processor.validate(errors, null);
 
-    assertEquals(errors.toString(), 0, errors.size());
+    assertEquals(0, errors.size(), errors.toString());
 
     In in = new In();
     in.values = values;

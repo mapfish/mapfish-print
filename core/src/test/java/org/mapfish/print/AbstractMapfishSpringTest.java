@@ -14,7 +14,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.referencing.CRS;
-import org.junit.runner.RunWith;
+// JUnit imports
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.WorkingDirectories;
@@ -25,13 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Class that loads the normal spring application context from the spring config file. Subclasses
  * can use Autowired to get dependencies from the application context.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(
     locations = {
       AbstractMapfishSpringTest.DEFAULT_SPRING_XML,

@@ -1,10 +1,10 @@
 package org.mapfish.print.http;
 
+import jakarta.annotation.Nonnull;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import javax.annotation.Nonnull;
 import org.mapfish.print.config.Configuration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;

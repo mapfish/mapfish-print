@@ -1,13 +1,13 @@
 package org.mapfish.print;
 
+import jakarta.annotation.Nonnull;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
-import javax.annotation.Nonnull;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.ConfigurableRequest;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
@@ -85,7 +85,7 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
       implements ConfigurableRequest {
 
     @Override
-    public HttpRequestBase getUnderlyingRequest() {
+    public HttpUriRequestBase getUnderlyingRequest() {
       throw new UnsupportedOperationException("Not supported");
     }
 
@@ -113,15 +113,13 @@ public class TestHttpClientFactory extends MfClientHttpRequestFactoryImpl
 
     @Nonnull
     @Override
-    public String getMethodValue() {
-      final HttpMethod method = httpRequest.getMethod();
-      return method.name();
-    }
-
-    @Nonnull
-    @Override
     public URI getURI() {
       return httpRequest.getURI();
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+      return Map.of();
     }
 
     @Nonnull

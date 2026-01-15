@@ -1,6 +1,6 @@
 package org.mapfish.print.http;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mapfish.print.AbstractMapfishSpringTest.HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS;
 import static org.mapfish.print.AbstractMapfishSpringTest.HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY;
 
@@ -12,6 +12,7 @@ import com.sun.net.httpserver.HttpsServer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.security.KeyManagementException;
@@ -29,10 +30,10 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManagerFactory;
 import org.apache.commons.io.IOUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
@@ -45,9 +46,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(
     locations = {
       AbstractMapfishSpringTest.DEFAULT_SPRING_XML,
@@ -66,7 +67,7 @@ public class HttpProxyTest {
   @Autowired ConfigurationFactory configurationFactory;
   @Autowired private MfClientHttpRequestFactoryImpl requestFactory;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() throws Exception {
     proxyServer = HttpServer.create(new InetSocketAddress(LOCALHOST, PROXY_PORT), 0);
     proxyServer.start();
@@ -77,7 +78,7 @@ public class HttpProxyTest {
     httpsServer = createHttpsServer(HTTPS_PROXY_PORT);
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDown() {
     proxyServer.stop(0);
     targetServer.stop(0);
@@ -121,7 +122,7 @@ public class HttpProxyTest {
     final ClientHttpResponse response = request.execute();
 
     final String message = IOUtils.toString(response.getBody(), Constants.DEFAULT_ENCODING);
-    assertEquals(message, HttpStatus.OK, response.getStatusCode());
+    assertEquals(HttpStatus.OK, response.getStatusCode(), message);
 
     assertEquals(expected, message);
   }
@@ -160,7 +161,9 @@ public class HttpProxyTest {
       throws IOException {
     final byte[] bytes = errorMessage.getBytes(Constants.DEFAULT_CHARSET);
     httpExchange.sendResponseHeaders(responseCode, bytes.length);
-    httpExchange.getResponseBody().write(bytes);
+    try (OutputStream os = httpExchange.getResponseBody()) {
+      os.write(bytes);
+    }
     httpExchange.close();
   }
 
@@ -230,7 +233,7 @@ public class HttpProxyTest {
             httpExchange.sendResponseHeaders(401, 0);
             httpExchange.close();
           } else {
-            final String expectedAuth = "Basic dXNlcm5hbWU6bnVsbA==";
+            final String expectedAuth = "Basic dXNlcm5hbWU6";
             if (authorization.equals(expectedAuth)) {
               respond(httpExchange, MESSAGE_FROM_PROXY, 200);
             } else {

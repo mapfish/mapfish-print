@@ -1,11 +1,6 @@
 package org.mapfish.print.attribute.map;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.BASE_DIR;
 import static org.mapfish.print.processor.map.CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.loadJsonRequestData;
 
@@ -17,8 +12,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.ReflectiveAttribute;
@@ -37,30 +32,36 @@ public class MapAttributeTest extends AbstractMapfishSpringTest {
   @Autowired private ConfigurationFactory configurationFactory;
   @Autowired private TestHttpClientFactory httpRequestFactory;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     this.configurationFactory.setDoValidation(false);
   }
 
   @SuppressWarnings("unchecked")
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testMaxDpi() throws Exception {
-    final File configFile =
-        getFile(CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "config.yaml");
-    final Configuration config = configurationFactory.getConfig(configFile);
-    final Template template = config.getTemplate("main");
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          final File configFile =
+              getFile(
+                  CreateMapProcessorFlexibleScaleBBoxGeoJsonTest.class, BASE_DIR + "config.yaml");
+          final Configuration config = configurationFactory.getConfig(configFile);
+          final Template template = config.getTemplate("main");
 
-    final PJsonObject pJsonObject = loadJsonRequestData();
-    final PJsonObject attributesJson = pJsonObject.getJSONObject("attributes");
-    final JSONObject map = attributesJson.getJSONObject("map").getInternalObj();
-    map.remove("dpi");
-    map.accumulate("dpi", 1000);
+          final PJsonObject pJsonObject = loadJsonRequestData();
+          final PJsonObject attributesJson = pJsonObject.getJSONObject("attributes");
+          final JSONObject map = attributesJson.getJSONObject("map").getInternalObj();
+          map.remove("dpi");
+          map.accumulate("dpi", 1000);
 
-    final ReflectiveAttribute<MapAttribute.MapAttributeValues> mapAttribute =
-        (ReflectiveAttribute<MapAttribute.MapAttributeValues>) template.getAttributes().get("map");
+          final ReflectiveAttribute<MapAttribute.MapAttributeValues> mapAttribute =
+              (ReflectiveAttribute<MapAttribute.MapAttributeValues>)
+                  template.getAttributes().get("map");
 
-    final MapAttribute.MapAttributeValues value = mapAttribute.createValue(template);
-    MapfishParser.parse(true, attributesJson.getJSONObject("map"), value);
+          final MapAttribute.MapAttributeValues value = mapAttribute.createValue(template);
+          MapfishParser.parse(true, attributesJson.getJSONObject("map"), value);
+        });
   }
 
   @Test

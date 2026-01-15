@@ -14,8 +14,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.net.URIBuilder;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.ows.wms.request.GetMapRequest;
@@ -73,7 +73,7 @@ public final class WmsUtilities {
 
     Multimap<String, String> extraParams = HashMultimap.create();
     if (commonURI.getQuery() != null) {
-      for (NameValuePair pair : URLEncodedUtils.parse(commonURI, StandardCharsets.UTF_8)) {
+      for (NameValuePair pair : new URIBuilder(commonURI).getQueryParams()) {
         extraParams.put(pair.getName(), pair.getValue());
       }
     }
@@ -193,34 +193,34 @@ public final class WmsUtilities {
   public static ClientHttpRequest createWmsRequest(
       final MfClientHttpRequestFactory httpRequestFactory, final URI uri, final HttpMethod method)
       throws IOException {
-    switch (method) {
-      case GET:
-        return httpRequestFactory.createRequest(uri, method);
-      case POST:
-        final String params = uri.getQuery();
-        final URI paramlessUri;
-        try {
-          paramlessUri =
-              new URI(
-                  uri.getScheme(),
-                  uri.getUserInfo(),
-                  uri.getHost(),
-                  uri.getPort(),
-                  uri.getPath(),
-                  null,
-                  null);
-        } catch (URISyntaxException e) {
-          throw new RuntimeException(e);
-        }
-        final ClientHttpRequest request = httpRequestFactory.createRequest(paramlessUri, method);
-        final byte[] encodedParams = params.getBytes(StandardCharsets.UTF_8);
-        request.getHeaders().set("Content-Type", "application/x-www-form-urlencoded");
-        request.getHeaders().set("Charset", "utf-8");
-        request.getHeaders().set("Content-Length", Integer.toString(encodedParams.length));
-        request.getBody().write(encodedParams);
-        return request;
-      default:
-        throw new RuntimeException("Unsupported WMS request method: " + method);
+    if (HttpMethod.GET.equals(method)) {
+      return httpRequestFactory.createRequest(uri, method);
+    }
+    if (HttpMethod.POST.equals(method)) {
+      final String params = uri.getQuery();
+      final URI paramlessUri;
+      try {
+        paramlessUri =
+            new URI(
+                uri.getScheme(),
+                uri.getUserInfo(),
+                uri.getHost(),
+                uri.getPort(),
+                uri.getPath(),
+                null,
+                null);
+      } catch (URISyntaxException e) {
+        throw new RuntimeException(e);
+      }
+      final ClientHttpRequest request = httpRequestFactory.createRequest(paramlessUri, method);
+      final byte[] encodedParams = params.getBytes(StandardCharsets.UTF_8);
+      request.getHeaders().set("Content-Type", "application/x-www-form-urlencoded");
+      request.getHeaders().set("Charset", "utf-8");
+      request.getHeaders().set("Content-Length", Integer.toString(encodedParams.length));
+      request.getBody().write(encodedParams);
+      return request;
+    } else {
+      throw new RuntimeException("Unsupported WMS request method: " + method);
     }
   }
 }

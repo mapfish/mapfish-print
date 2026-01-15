@@ -1,5 +1,6 @@
 package org.mapfish.print.http;
 
+import jakarta.annotation.Nonnull;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +15,6 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import org.locationtech.jts.util.Assert;
 import org.mapfish.print.PrintException;
 import org.mapfish.print.config.Configuration;
@@ -171,7 +171,7 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
     LOGGER.debug(
         "Fetching {}, using headers:\n{}",
         this.getURI(),
-        headers.entrySet().stream()
+        headers.headerSet().stream()
             .map(entry -> entry.getKey() + "=" + String.join(", ", entry.getValue()))
             .collect(Collectors.joining("\n")));
   }
@@ -184,7 +184,7 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
     final int minStatusCodeError = HttpStatus.INTERNAL_SERVER_ERROR.value();
     int rawStatusCode = minStatusCodeError;
     try {
-      rawStatusCode = response.getRawStatusCode();
+      rawStatusCode = response.getStatusCode().value();
       if (rawStatusCode < minStatusCodeError) {
         LOGGER.debug("Successfully fetched {}, with status code {}", getURI(), rawStatusCode);
         return response;
@@ -248,12 +248,6 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
 
   @Override
   @Nonnull
-  public String getMethodValue() {
-    return this.httpMethod.name();
-  }
-
-  @Override
-  @Nonnull
   public URI getURI() {
     return this.uri;
   }
@@ -265,11 +259,6 @@ final class ConfigFileResolvingRequest extends AbstractClientHttpRequest {
     @Nonnull
     public HttpStatus getStatusCode() {
       return HttpStatus.OK;
-    }
-
-    @Override
-    public int getRawStatusCode() {
-      return getStatusCode().value();
     }
 
     @Override

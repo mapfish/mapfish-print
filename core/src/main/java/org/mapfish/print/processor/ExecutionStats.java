@@ -1,8 +1,5 @@
 package org.mapfish.print.processor;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +7,9 @@ import javax.mail.internet.InternetAddress;
 import net.sf.jasperreports.engine.PrintPageFormat;
 import org.mapfish.print.attribute.map.MapAttribute;
 import org.mapfish.print.attribute.map.MapfishMapContext;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Statisctics about the execution of a print job. */
 public class ExecutionStats {

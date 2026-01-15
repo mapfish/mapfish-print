@@ -7,6 +7,10 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import io.sentry.Sentry;
+import jakarta.annotation.Nonnull;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -24,15 +28,12 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.fonts.FontFamily;
 import net.sf.jasperreports.extensions.ExtensionsEnvironment;
 import org.apache.commons.io.FilenameUtils;
@@ -52,8 +53,8 @@ import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.http.matcher.UriMatchers;
 import org.mapfish.print.servlet.job.JobManager;
 import org.mapfish.print.servlet.job.NoSuchReferenceException;
+import org.mapfish.print.servlet.job.PrintJobEntry;
 import org.mapfish.print.servlet.job.PrintJobStatus;
-import org.mapfish.print.servlet.job.impl.PrintJobEntryImpl;
 import org.mapfish.print.servlet.job.impl.ThreadPoolJobManager;
 import org.mapfish.print.servlet.job.loader.ReportLoader;
 import org.mapfish.print.url.data.Handler;
@@ -118,8 +119,8 @@ public class MapPrinterServlet extends BaseMapServlet {
   /**
    * If the job is done (value is true) or not (value is false).
    *
-   * <p>Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest,
-   * javax.servlet.http.HttpServletResponse)} response.
+   * <p>Part of the {@link #getStatus(String, String,jakarta.servlet.http.HttpServletRequest,
+   * jakarta.servlet.http.HttpServletResponse)} response.
    */
   public static final String JSON_DONE = "done";
 
@@ -134,8 +135,8 @@ public class MapPrinterServlet extends BaseMapServlet {
    *   <li>error
    * </ul>
    *
-   * Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest,
-   * javax.servlet.http.HttpServletResponse)} response
+   * Part of the {@link #getStatus(String, String,jakarta.servlet.http.HttpServletRequest,
+   * jakarta.servlet.http.HttpServletResponse)} response
    */
   public static final String JSON_STATUS = STATUS;
 
@@ -143,8 +144,8 @@ public class MapPrinterServlet extends BaseMapServlet {
    * The elapsed time in ms from the point the job started. If the job is finished, this is the
    * duration it took to process the job.
    *
-   * <p>Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest,
-   * javax.servlet.http.HttpServletResponse)} response.
+   * <p>Part of the {@link #getStatus(String, String,jakarta.servlet.http.HttpServletRequest,
+   * jakarta.servlet.http.HttpServletResponse)} response.
    */
   public static final String JSON_ELAPSED_TIME = "elapsedTime";
 
@@ -152,8 +153,8 @@ public class MapPrinterServlet extends BaseMapServlet {
    * A rough estimate for the time in ms the job still has to wait in the queue until it starts
    * processing.
    *
-   * <p>Part of the {@link #getStatus(String, String, javax.servlet.http.HttpServletRequest,
-   * javax.servlet.http.HttpServletResponse)} response.
+   * <p>Part of the {@link #getStatus(String, String,jakarta.servlet.http.HttpServletRequest,
+   * jakarta.servlet.http.HttpServletResponse)} response.
    */
   public static final String JSON_WAITING_TIME = "waitingTime";
 
@@ -600,7 +601,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       @Nonnull @PathVariable final String referenceId,
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
       final HttpServletResponse getReportResponse)
-      throws IOException, ServletException {
+      throws IOException {
     withAppIdCounter.inc();
     try (Timer.Context ignored = getReportTimer.time()) {
       getReport(appId, referenceId, inline, getReportResponse);
@@ -619,7 +620,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       @Nonnull @PathVariable final String referenceId,
       @RequestParam(value = "inline", defaultValue = "false") final boolean inline,
       final HttpServletResponse getReportResponse)
-      throws IOException, ServletException {
+      throws IOException {
     noAppIdCounter.inc();
     try (Timer.Context ignored = getReportTimer.time()) {
       getReport("default", referenceId, inline, getReportResponse);
@@ -639,7 +640,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       @Nonnull final String referenceId,
       final boolean inline,
       final HttpServletResponse getReportResponse)
-      throws IOException, ServletException {
+      throws IOException {
     MDC.put(Processor.MDC_APPLICATION_ID_KEY, applicationId);
     MDC.put(Processor.MDC_JOB_ID_KEY, referenceId);
     setNoCache(getReportResponse);
@@ -724,7 +725,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       final boolean inline,
       final HttpServletRequest createReportRequest,
       final HttpServletResponse createReportResponse)
-      throws NoSuchAppException, InterruptedException, IOException, ServletException {
+      throws NoSuchAppException, InterruptedException, IOException {
     String ref =
         createAndSubmitPrintJob(
             appId, format, requestData, createReportRequest, createReportResponse);
@@ -1150,7 +1151,7 @@ public class MapPrinterServlet extends BaseMapServlet {
       return null;
     }
 
-    PrintJobEntryImpl jobEntry = new PrintJobEntryImpl(ref, specJson, System.currentTimeMillis());
+    PrintJobEntry jobEntry = new PrintJobEntry(ref, specJson, System.currentTimeMillis());
     jobEntry.configureAccess(template, this.context);
 
     try {
@@ -1173,7 +1174,8 @@ public class MapPrinterServlet extends BaseMapServlet {
       referrer = "http://localhost/";
     }
     try {
-      return allowedReferers.matches(new URI(referrer), HttpMethod.resolve(request.getMethod()));
+      return allowedReferers.matches(
+          new URI(referrer), HttpMethod.valueOf(request.getMethod().toUpperCase(Locale.ROOT)));
     } catch (SocketException
         | UnknownHostException
         | URISyntaxException

@@ -1,7 +1,6 @@
 package org.mapfish.print.attribute;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.awt.Dimension;
 import java.io.File;
@@ -9,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.attribute.ScalebarAttribute.ScalebarAttributeValues;
@@ -42,35 +41,51 @@ public class ScalebarAttributeTest extends AbstractMapfishSpringTest {
     assertEquals(new Dimension(300, 120), values.getSize());
   }
 
-  @Test(expected = Test.None.class /* no exception expected */)
+  @Test
   public void testPostConstruct() {
-    ScalebarAttributeValues values = getValues();
-    values.postConstruct();
+    assertDoesNotThrow(
+        () -> {
+          ScalebarAttributeValues values = getValues();
+          values.postConstruct();
+          // passes.. ok
+        });
     // passes.. ok
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testPostConstructInvalidColor() {
-    ScalebarAttributeValues values = getValues();
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          ScalebarAttributeValues values = getValues();
 
-    values.backgroundColor = "sun-yellow";
-    values.postConstruct();
+          values.backgroundColor = "sun-yellow";
+          values.postConstruct();
+        });
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testPostConstructInvalidUnit() {
-    ScalebarAttributeValues values = getValues();
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          ScalebarAttributeValues values = getValues();
 
-    values.unit = "light-years";
-    values.postConstruct();
+          values.unit = "light-years";
+          values.postConstruct();
+        });
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testPostConstructInvalidIntervals() {
-    ScalebarAttributeValues values = getValues();
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          ScalebarAttributeValues values = getValues();
 
-    values.intervals = 0;
-    values.postConstruct();
+          values.intervals = 0;
+          values.postConstruct();
+        });
   }
 
   @Test

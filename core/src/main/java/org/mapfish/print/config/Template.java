@@ -3,6 +3,7 @@ package org.mapfish.print.config;
 import static org.mapfish.print.OptionalUtils.or;
 
 import com.google.common.collect.Sets;
+import jakarta.annotation.Nonnull;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import javax.annotation.Nonnull;
 import org.geotools.api.style.Style;
 import org.json.JSONException;
 import org.json.JSONWriter;

@@ -1,9 +1,6 @@
 package org.mapfish.print.processor;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mapfish.print.output.Values.MDC_CONTEXT_KEY;
 
 import java.util.ArrayList;
@@ -14,9 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.output.Values;
@@ -130,12 +127,12 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
   @Autowired private ProcessorDependencyGraphFactory processorDependencyGraphFactory;
   private ForkJoinPool forkJoinPool;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     forkJoinPool = new ForkJoinPool(1);
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     forkJoinPool.shutdownNow();
   }
@@ -153,7 +150,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     values.put(MDC_CONTEXT_KEY, new HashMap<>());
     forkJoinPool.invoke(graph.createTask(values));
 
-    assertEquals(execution.testOrderExecution.toString(), 5, execution.testOrderExecution.size());
+    assertEquals(5, execution.testOrderExecution.size(), execution.testOrderExecution.toString());
     assertHasOrdering(execution, RootMapOut, NeedsMap);
     assertHasOrdering(execution, RootTableAndWidthOut, NeedsTable);
   }
@@ -173,7 +170,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     values.put(MDC_CONTEXT_KEY, new HashMap<>());
     forkJoinPool.invoke(graph.createTask(values));
 
-    assertEquals(execution.testOrderExecution.toString(), 5, execution.testOrderExecution.size());
+    assertEquals(5, execution.testOrderExecution.size(), execution.testOrderExecution.toString());
     assertHasOrdering(execution, RootMapOut, NeedsMap);
     assertHasOrdering(execution, RootTableAndWidthOut, NeedsTable);
     assertHasOrdering(execution, RootNoOutput, RootMapOut);
@@ -195,7 +192,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     values.put(MDC_CONTEXT_KEY, new HashMap<>());
     forkJoinPool.invoke(graph.createTask(values));
 
-    assertEquals(execution.testOrderExecution.toString(), 6, execution.testOrderExecution.size());
+    assertEquals(6, execution.testOrderExecution.size(), execution.testOrderExecution.toString());
     assertHasOrdering(execution, RootMapOut, StyleNeedsMap, NeedsMap);
     assertHasOrdering(execution, RootTableAndWidthOut, NeedsTable);
   }
@@ -239,7 +236,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     values.put("map2", "ov-map");
     forkJoinPool.invoke(graph.createTask(values));
 
-    assertEquals(execution.testOrderExecution.toString(), 9, execution.testOrderExecution.size());
+    assertEquals(9, execution.testOrderExecution.size(), execution.testOrderExecution.toString());
     assertHasOrdering(execution, RootMapOut, NeedsMap);
     assertHasOrdering(execution, RootTableAndWidthOut, NeedsTable);
     assertHasOrdering(execution, StyleNeedsMap, NeedsMap);
@@ -291,7 +288,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
     values.put("map2", "the 2nd map definition");
     forkJoinPool.invoke(graph.createTask(values));
 
-    assertEquals(execution.testOrderExecution.toString(), 9, execution.testOrderExecution.size());
+    assertEquals(9, execution.testOrderExecution.size(), execution.testOrderExecution.toString());
     assertHasOrdering(execution, RootMapOut, NeedsMap);
     assertHasOrdering(execution, RootTableAndWidthOut, NeedsTable);
     assertHasOrdering(execution, StyleNeedsMap, NeedsMap);
@@ -330,7 +327,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         values.getObject(EXECUTION_TRACKER, TestOrderExecution.class);
 
     assertEquals(
-        correctTracker.testOrderExecution.toString(), 5, correctTracker.testOrderExecution.size());
+        5, correctTracker.testOrderExecution.size(), correctTracker.testOrderExecution.toString());
 
     assertHasOrdering(correctTracker, RootMapOut, NeedsMap);
     assertHasOrdering(correctTracker, RootTableAndWidthOut, NeedsTable);
@@ -358,7 +355,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         values.getObject(EXECUTION_TRACKER, TestOrderExecution.class);
 
     assertEquals(
-        correctTracker.testOrderExecution.toString(), 2, correctTracker.testOrderExecution.size());
+        2, correctTracker.testOrderExecution.size(), correctTracker.testOrderExecution.toString());
 
     assertHasOrdering(correctTracker, RootTableAndWidthOut, needsValuesAndMap);
   }
@@ -388,7 +385,7 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
         values.getObject(EXECUTION_TRACKER, TestOrderExecution.class);
 
     assertEquals(
-        correctTracker.testOrderExecution.toString(), 2, correctTracker.testOrderExecution.size());
+        2, correctTracker.testOrderExecution.size(), correctTracker.testOrderExecution.toString());
 
     assertHasOrdering(correctTracker, outMapProcessor, needsValuesAndMap);
   }
@@ -397,12 +394,16 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
    * This test checks that when there are 2 or more processors that produce the same output there is
    * an exception thrown
    */
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testBuildDependencyAttachesToLastElementProducingTheValue() {
-    final List<TestProcessor<MapInput, Void>> processors =
-        Arrays.asList(NeedsMap, RootMapOut, NeedsMapAndWidthOutputsMap, RootTableAndWidthOut);
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          final List<TestProcessor<MapInput, Void>> processors =
+              Arrays.asList(NeedsMap, RootMapOut, NeedsMapAndWidthOutputsMap, RootTableAndWidthOut);
 
-    this.processorDependencyGraphFactory.build(processors, Collections.emptyMap());
+          this.processorDependencyGraphFactory.build(processors, Collections.emptyMap());
+        });
   }
 
   /**
@@ -423,11 +424,15 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
    * Check that an exception is thrown when one processor provides an output value and another
    * processor expects an input value of the same name, but with a different type.
    */
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testBuildValuesWithSameNameAndDifferentType() {
-    final List processors = Arrays.asList(NeedsMap, RootMapOut, NeedsMapList);
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          final List processors = Arrays.asList(NeedsMap, RootMapOut, NeedsMapList);
 
-    this.processorDependencyGraphFactory.build(processors, Collections.emptyMap());
+          this.processorDependencyGraphFactory.build(processors, Collections.emptyMap());
+        });
   }
 
   /**
@@ -449,14 +454,18 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
    * This test checks that all the outputMapper mappings have an associated property in the output
    * object.
    */
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testExtraOutputMapperMapping() {
-    final List<TestProcessor<MapInput, Void>> processors =
-        Arrays.asList(NeedsMap, RootMapOut, NeedsMapAndWidthOutputsMap, RootTableAndWidthOut);
+    assertThrows(
+        RuntimeException.class,
+        () -> {
+          final List<TestProcessor<MapInput, Void>> processors =
+              Arrays.asList(NeedsMap, RootMapOut, NeedsMapAndWidthOutputsMap, RootTableAndWidthOut);
 
-    ProcessorDependencyGraph graph =
-        this.processorDependencyGraphFactory.build(processors, Collections.emptyMap());
-    assertContainsProcessors(graph.getRoots(), RootMapOut, RootTableAndWidthOut);
+          ProcessorDependencyGraph graph =
+              this.processorDependencyGraphFactory.build(processors, Collections.emptyMap());
+          assertContainsProcessors(graph.getRoots(), RootMapOut, RootTableAndWidthOut);
+        });
   }
 
   private void assertHasOrdering(TestOrderExecution execution, Processor... processors) {
@@ -478,8 +487,8 @@ public class ProcessorDependencyGraphFactoryTest extends AbstractMapfishSpringTe
 
     final String comparison = actualProcessorsList + " expected " + Arrays.asList(processors);
 
-    assertEquals(comparison, processors.length, nodes.size());
-    assertTrue(comparison, actualProcessorsList.containsAll(Arrays.asList(processors)));
+    assertEquals(processors.length, nodes.size(), comparison);
+    assertTrue(actualProcessorsList.containsAll(Arrays.asList(processors)), comparison);
   }
 
   private ProcessorGraphNode<?, ?> getNodeForProcessor(

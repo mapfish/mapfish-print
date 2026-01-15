@@ -1,12 +1,12 @@
 package org.mapfish.print.processor.http.matcher;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mapfish.print.processor.http.matcher.MatcherTestUtils.assertMatch;
 
 import java.net.URI;
-import org.apache.http.auth.AuthScope;
-import org.junit.Test;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 
 /** Test for {@link HostnameMatcher} */
@@ -39,15 +39,26 @@ public class HostnameMatcherTest {
     assertTrue(
         hostnameHostMatcher.matches(
             MatchInfo.fromAuthScope(
-                new AuthScope(AuthScope.ANY_HOST, 80, AuthScope.ANY_REALM, "http"))));
+                new AuthScope(
+                    MatchInfo.ANY_SCHEME, MatchInfo.ANY_HOST, 80, MatchInfo.ANY_REALM, "http"))));
     assertTrue(
         hostnameHostMatcher.matches(
             MatchInfo.fromAuthScope(
-                new AuthScope("localhost", AuthScope.ANY_PORT, AuthScope.ANY_REALM, "http"))));
+                new AuthScope(
+                    MatchInfo.ANY_SCHEME,
+                    "localhost",
+                    MatchInfo.ANY_PORT,
+                    MatchInfo.ANY_REALM,
+                    "http"))));
     assertFalse(
         hostnameHostMatcher.matches(
             MatchInfo.fromAuthScope(
-                new AuthScope("127.0.0.1", 80, AuthScope.ANY_REALM, AuthScope.ANY_SCHEME))));
+                new AuthScope(
+                    MatchInfo.ANY_SCHEME,
+                    "127.0.0.1",
+                    80,
+                    MatchInfo.ANY_REALM,
+                    MatchInfo.ANY_SCHEME))));
 
     hostnameHostMatcher.setPort(8080);
 

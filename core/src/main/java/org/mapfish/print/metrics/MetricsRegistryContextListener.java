@@ -3,9 +3,9 @@ package org.mapfish.print.metrics;
 import static org.springframework.web.context.support.WebApplicationContextUtils.getWebApplicationContext;
 
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.servlets.MetricsServlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
+import io.dropwizard.metrics.servlets.MetricsServlet;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -17,6 +17,7 @@ public class MetricsRegistryContextListener extends MetricsServlet.ContextListen
 
   @Override
   public final void contextInitialized(final ServletContextEvent event) {
+
     this.servletContext = event.getServletContext();
     super.contextInitialized(event);
   }

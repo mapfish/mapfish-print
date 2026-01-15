@@ -1,13 +1,13 @@
 package org.mapfish.print.attribute.map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mapfish.print.Constants.PDF_DPI;
 import static org.mapfish.print.attribute.map.ZoomLevelSnapStrategy.CLOSEST_HIGHER_SCALE_ON_TIE;
 import static org.mapfish.print.attribute.map.ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE;
 import static org.mapfish.print.attribute.map.ZoomLevelSnapStrategy.HIGHER_SCALE;
 import static org.mapfish.print.attribute.map.ZoomLevelSnapStrategy.LOWER_SCALE;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.map.DistanceUnit;
 import org.mapfish.print.map.Scale;
 

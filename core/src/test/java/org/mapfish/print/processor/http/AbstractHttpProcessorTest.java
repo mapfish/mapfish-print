@@ -1,16 +1,16 @@
 package org.mapfish.print.processor.http;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mapfish.print.output.Values.MDC_CONTEXT_KEY;
 
+import jakarta.annotation.Nullable;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
-import javax.annotation.Nullable;
 import org.json.JSONException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;

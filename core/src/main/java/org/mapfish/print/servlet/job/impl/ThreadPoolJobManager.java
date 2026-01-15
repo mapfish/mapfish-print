@@ -2,6 +2,8 @@ package org.mapfish.print.servlet.job.impl;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -21,8 +23,6 @@ import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.PrintException;
 import org.mapfish.print.config.WorkingDirectories;
@@ -638,7 +638,7 @@ public class ThreadPoolJobManager implements JobManager {
             }
           }
         }
-      } catch (javax.persistence.PessimisticLockException e) {
+      } catch (jakarta.persistence.PessimisticLockException e) {
         // Ignore error on pessimistic locking
         unhealthyCountersHealthCheck.recordUnhealthyProblem(
             getClass().getSimpleName(), "ignoredPessimisticLockIssue");

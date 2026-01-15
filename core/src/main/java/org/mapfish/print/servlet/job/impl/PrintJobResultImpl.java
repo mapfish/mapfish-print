@@ -1,17 +1,16 @@
 package org.mapfish.print.servlet.job.impl;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import java.net.URI;
 import java.net.URISyntaxException;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.annotations.Type;
 import org.mapfish.print.PrintException;
 import org.mapfish.print.servlet.job.PrintJobResult;
 import org.mapfish.print.servlet.job.PrintJobStatus;
@@ -21,21 +20,13 @@ import org.mapfish.print.servlet.job.PrintJobStatus;
 @Table(name = "print_job_results")
 public class PrintJobResultImpl implements PrintJobResult {
 
-  @Id
-  @Type(type = "org.hibernate.type.TextType")
-  private final String reportURI;
+  @Id private String reportURI;
 
-  @Column
-  @Type(type = "org.hibernate.type.TextType")
-  private final String mimeType;
+  @Column private String mimeType;
 
-  @Column
-  @Type(type = "org.hibernate.type.TextType")
-  private final String fileExtension;
+  @Column private String fileExtension;
 
-  @Column
-  @Type(type = "org.hibernate.type.TextType")
-  private final String fileName;
+  @Column private String fileName;
 
   @OneToOne(targetEntity = PrintJobStatusImpl.class, fetch = FetchType.LAZY)
   @OnDelete(action = OnDeleteAction.CASCADE)
@@ -43,7 +34,6 @@ public class PrintJobResultImpl implements PrintJobResult {
   private PrintJobStatus status = null;
 
   @Column(insertable = true, updatable = true)
-  @Type(type = "org.hibernate.type.TextType")
   private String referenceId;
 
   /** Default Constructor. */

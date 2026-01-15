@@ -1,18 +1,16 @@
 package org.mapfish.print.servlet.job.impl;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import java.util.Date;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import org.hibernate.annotations.Target;
-import org.hibernate.annotations.Type;
 import org.mapfish.print.config.access.AccessAssertion;
 import org.mapfish.print.servlet.job.PrintJobEntry;
 import org.mapfish.print.servlet.job.PrintJobResult;
@@ -22,13 +20,10 @@ import org.mapfish.print.servlet.job.PrintJobStatus;
 @Entity
 @Table(name = "print_job_statuses")
 public class PrintJobStatusImpl implements PrintJobStatus {
-  @Embedded
-  @Target(PrintJobEntryImpl.class)
-  private final PrintJobEntry entry;
 
-  @Id
-  @Type(type = "org.hibernate.type.TextType")
-  private String referenceId;
+  @Embedded private PrintJobEntry entry;
+
+  @Id private String referenceId;
 
   @Column
   @Enumerated(EnumType.STRING)
@@ -38,7 +33,7 @@ public class PrintJobStatusImpl implements PrintJobStatus {
 
   @Column private long requestCount;
 
-  @Type(type = "org.hibernate.type.TextType")
+  @Column(length = 4096)
   private String error;
 
   @OneToOne(targetEntity = PrintJobResultImpl.class, cascade = CascadeType.ALL, mappedBy = "status")

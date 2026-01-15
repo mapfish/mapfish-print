@@ -1,7 +1,8 @@
 package org.mapfish.print;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -29,12 +30,14 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.internal.TextListener;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.RunWith;
-import org.junit.runner.notification.RunListener;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.launcher.Launcher;
+import org.junit.platform.launcher.LauncherDiscoveryRequest;
+import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
+import org.junit.platform.launcher.core.LauncherFactory;
+import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.AssertionFailedException;
 import org.mapfish.print.servlet.MapPrinterServlet;
@@ -45,7 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.verapdf.core.EncryptedPdfException;
 import org.verapdf.core.ModelParsingException;
 import org.verapdf.core.ValidationException;
@@ -64,7 +67,7 @@ import org.verapdf.pdfa.validation.validators.ValidatorFactory;
  *
  * <p>./gradlew examples:geoserver
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {ExamplesTest.DEFAULT_SPRING_XML, ExamplesTest.TEST_SPRING_XML})
 public class ExamplesTest {
   public static final String DEFAULT_SPRING_XML =
@@ -109,7 +112,7 @@ public class ExamplesTest {
 
   @Autowired MapPrinter mapPrinter;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() {
     final LoggerContext loggerContext = getLoggerContext();
     statusPrinter2.printInCaseOfErrorsOrWarnings(loggerContext);
@@ -159,7 +162,6 @@ public class ExamplesTest {
   }
 
   public static void main(String[] args) {
-    JUnitCore junit = new JUnitCore();
     if (args.length < 1) {
       System.err.println(
           "This main is expected to have at least one parameter, it is a regular "
@@ -178,9 +180,23 @@ public class ExamplesTest {
       filter += "/" + args[1];
     }
     System.setProperty(FILTER_PROPERTY, filter);
-    RunListener textListener = new TextListener(System.out);
-    junit.addListener(textListener);
-    junit.run(ExamplesTest.class);
+
+    LauncherDiscoveryRequest request =
+        LauncherDiscoveryRequestBuilder.request()
+            .selectors(selectClass(ExamplesTest.class))
+            .build();
+
+    Launcher launcher = LauncherFactory.create();
+    SummaryGeneratingListener listener = new SummaryGeneratingListener();
+    launcher.registerTestExecutionListeners(listener);
+
+    launcher.execute(request);
+
+    listener.getSummary().printTo(new PrintWriter(System.out, true, StandardCharsets.UTF_8));
+
+    if (listener.getSummary().getTestsFailedCount() > 0) {
+      System.exit(1);
+    }
   }
 
   @Test
@@ -195,12 +211,12 @@ public class ExamplesTest {
     }
 
     assertEquals(
+        0,
+        errors.length(),
         String.format(
             "All example directory names must match the pattern: '%s'.  "
                 + "The following fail that test: %s",
-            namePattern, errors),
-        0,
-        errors.length());
+            namePattern, errors));
   }
 
   @Test

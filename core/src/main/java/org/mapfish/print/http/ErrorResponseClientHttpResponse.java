@@ -1,16 +1,18 @@
 package org.mapfish.print.http;
 
+import jakarta.annotation.Nonnull;
+import java.io.IOException;
 import java.io.InputStream;
-import javax.annotation.Nonnull;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.client.AbstractClientHttpResponse;
-import org.springframework.util.StreamUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.client.ClientHttpResponse;
 
-public class ErrorResponseClientHttpResponse extends AbstractClientHttpResponse {
+public class ErrorResponseClientHttpResponse implements ClientHttpResponse {
   private final Exception exception;
 
   /** HTTP code use in response for non HTTP errors, (Not Acceptable). */
-  private static final int FAKE_HTTP_ERROR_CODE = 406;
+  private static final HttpStatusCode FAKE_HTTP_ERROR_CODE = HttpStatus.NOT_ACCEPTABLE;
 
   public ErrorResponseClientHttpResponse(final Exception e) {
     assert e != null;
@@ -26,11 +28,12 @@ public class ErrorResponseClientHttpResponse extends AbstractClientHttpResponse 
   @Override
   @Nonnull
   public InputStream getBody() {
-    return StreamUtils.emptyInput();
+    return InputStream.nullInputStream();
   }
 
   @Override
-  public int getRawStatusCode() {
+  @Nonnull
+  public HttpStatusCode getStatusCode() throws IOException {
     return FAKE_HTTP_ERROR_CODE;
   }
 

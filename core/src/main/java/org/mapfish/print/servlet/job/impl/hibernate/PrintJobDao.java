@@ -1,19 +1,19 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
+import jakarta.annotation.Nullable;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.PessimisticLockException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
 import org.hibernate.LockMode;
-import org.hibernate.PessimisticLockException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -25,7 +25,6 @@ public class PrintJobDao {
 
   @Autowired private SessionFactory sf;
 
-  /** Initialize db manager. */
   @PostConstruct
   public final void init() {
     this.sf.openSession();
@@ -81,7 +80,7 @@ public class PrintJobDao {
     if (lock) {
       // LOCK means SELECT FOR UPDATE which prevents these records to be pulled by different
       // instances
-      query.setLockMode("pj", LockMode.PESSIMISTIC_READ);
+      query.setLockMode("pj", LockMode.UPGRADE_NOWAIT);
     } else {
       query.setReadOnly(true); // make sure the object is not updated if there is no lock
     }
@@ -171,7 +170,7 @@ public class PrintJobDao {
                     builder.lessThan(root.get("lastCheckTime"), checkTimeThreshold)))));
     update.set(root.get("status"), PrintJobStatus.Status.CANCELED);
     update.set(root.get("error"), message);
-    getSession().createQuery(update).executeUpdate();
+    getSession().createMutationQuery(update).executeUpdate();
   }
 
   /**
@@ -187,7 +186,7 @@ public class PrintJobDao {
     final Root<PrintJobStatusExtImpl> root = update.from(PrintJobStatusExtImpl.class);
     update.where(builder.equal(root.get("referenceId"), id));
     update.set(root.get("lastCheckTime"), lastCheckTime);
-    getSession().createQuery(update).executeUpdate();
+    getSession().createMutationQuery(update).executeUpdate();
   }
 
   /**
@@ -205,7 +204,7 @@ public class PrintJobDao {
         builder.and(
             builder.isNotNull(root.get("lastCheckTime")),
             builder.lessThan(root.get("lastCheckTime"), checkTimeThreshold)));
-    return getSession().createQuery(delete).executeUpdate();
+    return getSession().createMutationQuery(delete).executeUpdate();
   }
 
   /**
@@ -226,7 +225,8 @@ public class PrintJobDao {
     query.setMaxResults(size);
     // LOCK but don't wait for release (since this is run continuously
     // anyway, no wait prevents deadlock)
-    query.setLockMode("pj", LockMode.UPGRADE_NOWAIT);
+    query.setLockMode("pj", LockMode.PESSIMISTIC_WRITE);
+    query.setHint("jakarta.persistence.lock.timeout", 0);
     try {
       return query.getResultList();
     } catch (PessimisticLockException ex) {
@@ -261,6 +261,6 @@ public class PrintJobDao {
         builder.createCriteriaDelete(PrintJobStatusExtImpl.class);
     final Root<PrintJobStatusExtImpl> root = delete.from(PrintJobStatusExtImpl.class);
     delete.where(builder.equal(root.get("referenceId"), referenceId));
-    getSession().createQuery(delete).executeUpdate();
+    getSession().createMutationQuery(delete).executeUpdate();
   }
 }

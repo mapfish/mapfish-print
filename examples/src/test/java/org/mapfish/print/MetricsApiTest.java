@@ -1,19 +1,18 @@
 package org.mapfish.print;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /*
  * Test the servlet metrics API.
@@ -23,6 +22,7 @@ import org.springframework.http.client.ClientHttpResponse;
  *      docker compose up -d
  *      docker compose exec tests gradle :examples:test
  */
+@ExtendWith(SpringExtension.class)
 public class MetricsApiTest extends AbstractApiTest {
 
   @Test

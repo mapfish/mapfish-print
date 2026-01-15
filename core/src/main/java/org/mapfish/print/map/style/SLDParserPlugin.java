@@ -1,5 +1,7 @@
 package org.mapfish.print.map.style;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -9,8 +11,6 @@ import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;

@@ -1,7 +1,7 @@
 package org.mapfish.print.http;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -9,10 +9,11 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.PrintException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
 
 public class ConfigFileResolvingRequestTest {
@@ -46,7 +47,7 @@ public class ConfigFileResolvingRequestTest {
     var resp = req.executeInternal(new HttpHeaders());
 
     // Then
-    assertEquals(200, resp.getRawStatusCode());
+    assertEquals(200, resp.getStatusCode().value());
     resp.close();
   }
 
@@ -67,7 +68,7 @@ public class ConfigFileResolvingRequestTest {
     var resp = req.executeInternal(new HttpHeaders());
 
     // Then
-    assertEquals(200, resp.getRawStatusCode());
+    assertEquals(200, resp.getStatusCode().value());
     resp.close();
   }
 
@@ -108,7 +109,7 @@ public class ConfigFileResolvingRequestTest {
 
   private ClientHttpResponse createResponse(final int statusCode) throws IOException {
     var clientHttpResponse = mock(ClientHttpResponse.class);
-    when(clientHttpResponse.getRawStatusCode()).thenReturn(statusCode);
+    when(clientHttpResponse.getStatusCode()).thenReturn(HttpStatusCode.valueOf(statusCode));
     return clientHttpResponse;
   }
 }

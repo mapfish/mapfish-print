@@ -1,11 +1,12 @@
 package org.mapfish.print.attribute;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
@@ -44,22 +45,27 @@ public class StringAttributeTest extends AbstractMapfishSpringTest {
     assertEquals("a short text", values.getString("field2"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testParsableByValuesError() throws Exception {
-    final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
-    PJsonObject requestData = loadJsonRequestDataError();
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          final Configuration config =
+              configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+          PJsonObject requestData = loadJsonRequestDataError();
 
-    Template template = config.getTemplate("main");
-    new Values(
-        new HashMap<>(),
-        requestData,
-        template,
-        config.getDirectory(),
-        httpClientFactory,
-        config.getDirectory(),
-        HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-        HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
-        new AtomicBoolean(false));
+          Template template = config.getTemplate("main");
+          new Values(
+              new HashMap<>(),
+              requestData,
+              template,
+              config.getDirectory(),
+              httpClientFactory,
+              config.getDirectory(),
+              HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+              HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+              new AtomicBoolean(false));
+        });
   }
 
   private PJsonObject loadJsonRequestData() throws IOException {

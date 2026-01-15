@@ -1,9 +1,6 @@
 package org.mapfish.print;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -11,17 +8,21 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Test the servlet print API.
@@ -34,6 +35,7 @@ import org.springframework.http.client.ClientHttpResponse;
  *
  * <p>./gradlew examples:geoserver
  */
+@ExtendWith(SpringExtension.class)
 public class PrintApiTest extends AbstractApiTest {
 
   @Test
@@ -206,13 +208,15 @@ public class PrintApiTest extends AbstractApiTest {
     }
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReport_Success_App() throws Exception {
     final String printSpec = getPrintSpec("examples/geoext/requestData.json");
     testCreateReport("geoext" + MapPrinterServlet.REPORT_URL + ".pdf", printSpec);
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReport_Success_NoApp() throws Exception {
     final String printSpec = getDefaultAppDefaultRequestSample();
     testCreateReport(MapPrinterServlet.REPORT_URL + ".pdf", printSpec);
@@ -308,7 +312,8 @@ public class PrintApiTest extends AbstractApiTest {
     }
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReport_InvalidFormat() throws Exception {
     ClientHttpRequest request =
         getPrintRequest("geoext" + MapPrinterServlet.REPORT_URL + ".docx", HttpMethod.POST);
@@ -338,7 +343,8 @@ public class PrintApiTest extends AbstractApiTest {
     }
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateReport_Success_App_PNG() throws Exception {
     ClientHttpRequest request =
         getPrintRequest("geoext" + MapPrinterServlet.REPORT_URL + ".png", HttpMethod.POST);
@@ -364,7 +370,8 @@ public class PrintApiTest extends AbstractApiTest {
     }
   }
 
-  @Test(timeout = 60000)
+  @Test
+  @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS)
   public void testCreateAndGetReport_Success_App() throws Exception {
     ClientHttpRequest request =
         getPrintRequest("geoext" + MapPrinterServlet.CREATE_AND_GET_URL + ".pdf", HttpMethod.POST);
@@ -500,7 +507,7 @@ public class PrintApiTest extends AbstractApiTest {
     ClientHttpRequest request = getPrintRequest(MapPrinterServlet.LIST_APPS_URL, HttpMethod.GET);
     try (ClientHttpResponse response = request.execute()) {
       assertEquals(HttpStatus.OK, response.getStatusCode());
-      assertFalse(response.getHeaders().containsKey("Access-Control-Allow-Origin"));
+      assertFalse(response.getHeaders().containsHeader("Access-Control-Allow-Origin"));
     }
 
     request = getPrintRequest(MapPrinterServlet.LIST_APPS_URL, HttpMethod.GET);
@@ -514,11 +521,12 @@ public class PrintApiTest extends AbstractApiTest {
     request.getHeaders().set("Origin", "http://example.com/");
     request.getHeaders().set("Access-Control-Request-Method", "POST");
     request.getHeaders().set("Access-Control-Request-Headers", "X-Toto");
+    request.getHeaders().set("Content-Type", "application/json");
     try (ClientHttpResponse response = request.execute()) {
       assertEquals(HttpStatus.OK, response.getStatusCode());
       assertEquals("*", response.getHeaders().getFirst("Access-Control-Allow-Origin"));
-      assertTrue(response.getHeaders().containsKey("Access-Control-Max-Age"));
-      assertTrue(response.getHeaders().containsKey("Access-Control-Allow-Methods"));
+      assertTrue(response.getHeaders().containsHeader("Access-Control-Max-Age"));
+      assertTrue(response.getHeaders().containsHeader("Access-Control-Allow-Methods"));
       assertEquals("X-Toto", response.getHeaders().getFirst("Access-Control-Allow-Headers"));
     }
   }
@@ -536,7 +544,7 @@ public class PrintApiTest extends AbstractApiTest {
       String responseAsText = getBodyAsText(response);
       JSONObject infoResult = new JSONObject(responseAsText);
       final JSONArray layouts = infoResult.getJSONArray("layouts");
-      assertEquals("In " + responseAsText, expectedNumberOfLayouts, layouts.length());
+      assertEquals(expectedNumberOfLayouts, layouts.length(), "In " + responseAsText);
       return layouts;
     }
   }
@@ -550,7 +558,7 @@ public class PrintApiTest extends AbstractApiTest {
     setPrintSpec(printSpec, request);
     addAuthHeader(request, credentials);
     try (ClientHttpResponse response = request.execute()) {
-      assertEquals(response.getStatusText(), expectedStatus, response.getStatusCode());
+      assertEquals(expectedStatus, response.getStatusCode(), response.getStatusText());
     }
   }
 

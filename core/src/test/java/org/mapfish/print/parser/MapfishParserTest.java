@@ -1,11 +1,6 @@
 package org.mapfish.print.parser;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mapfish.print.AbstractMapfishSpringTest.parseJSONObjectFromFile;
 
 import java.io.IOException;
@@ -14,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.util.AssertionFailedException;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.ExtraPropertyException;
@@ -94,28 +89,41 @@ public class MapfishParserTest {
     assertEquals(2, p.choiceC, 0.0000000001);
   }
 
-  @Test(expected = AssertionFailedException.class)
+  @Test
   public void testBothOneOfChoices() {
-    TestChoiceClass p = new TestChoiceClass();
-    PJsonObject json =
-        AbstractMapfishSpringTest.parseJSONObjectFromString("{\"choiceA\":1,\"choiceB\":2.0}");
-    MapfishParser.parse(true, json, p);
+    assertThrows(
+        AssertionFailedException.class,
+        () -> {
+          TestChoiceClass p = new TestChoiceClass();
+          PJsonObject json =
+              AbstractMapfishSpringTest.parseJSONObjectFromString(
+                  "{\"choiceA\":1,\"choiceB\":2.0}");
+          MapfishParser.parse(true, json, p);
+        });
   }
 
-  @Test(expected = AssertionFailedException.class)
+  @Test
   public void testBothOneOfChoicesAndCanSatisfyOneOf() {
-    TestChoiceClass p = new TestChoiceClass();
-    PJsonObject json =
-        AbstractMapfishSpringTest.parseJSONObjectFromString(
-            "{\"choiceA\":1,\"choiceB\":2.0,\"choiceC\":3.0}");
-    MapfishParser.parse(true, json, p);
+    assertThrows(
+        AssertionFailedException.class,
+        () -> {
+          TestChoiceClass p = new TestChoiceClass();
+          PJsonObject json =
+              AbstractMapfishSpringTest.parseJSONObjectFromString(
+                  "{\"choiceA\":1,\"choiceB\":2.0,\"choiceC\":3.0}");
+          MapfishParser.parse(true, json, p);
+        });
   }
 
-  @Test(expected = AssertionFailedException.class)
+  @Test
   public void testMissingOneOfChoices() {
-    TestChoiceClass p = new TestChoiceClass();
-    PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{}");
-    MapfishParser.parse(true, json, p);
+    assertThrows(
+        AssertionFailedException.class,
+        () -> {
+          TestChoiceClass p = new TestChoiceClass();
+          PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{}");
+          MapfishParser.parse(true, json, p);
+        });
   }
 
   @Test
@@ -149,18 +157,27 @@ public class MapfishParserTest {
     assertNull(p.c);
   }
 
-  @Test(expected = AssertionFailedException.class)
+  @Test
   public void testMissingBothRequirements() {
-    TestRequireClass p = new TestRequireClass();
-    PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"i\":1}");
-    MapfishParser.parse(true, json, p);
+    assertThrows(
+        AssertionFailedException.class,
+        () -> {
+          TestRequireClass p = new TestRequireClass();
+          PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"i\":1}");
+          MapfishParser.parse(true, json, p);
+        });
   }
 
-  @Test(expected = AssertionFailedException.class)
+  @Test
   public void testMissingOneOfTwoRequirements() {
-    TestRequireClass p = new TestRequireClass();
-    PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"i\":1, \"b\":true}");
-    MapfishParser.parse(true, json, p);
+    assertThrows(
+        AssertionFailedException.class,
+        () -> {
+          TestRequireClass p = new TestRequireClass();
+          PJsonObject json =
+              AbstractMapfishSpringTest.parseJSONObjectFromString("{\"i\":1, \"b\":true}");
+          MapfishParser.parse(true, json, p);
+        });
   }
 
   @Test
@@ -171,22 +188,30 @@ public class MapfishParserTest {
     assertEquals(100, p.i.intValue());
   }
 
-  @Test(expected = ExtraPropertyException.class)
+  @Test
   public void testFinalFieldMustNotBeInJson() {
-    TestFinalClass p = new TestFinalClass();
-    PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"i\":1}");
-    MapfishParser.parse(true, json, p);
+    assertThrows(
+        ExtraPropertyException.class,
+        () -> {
+          TestFinalClass p = new TestFinalClass();
+          PJsonObject json = AbstractMapfishSpringTest.parseJSONObjectFromString("{\"i\":1}");
+          MapfishParser.parse(true, json, p);
+        });
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEnumIllegalVal() {
-    TestEnumParam p = new TestEnumParam();
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          TestEnumParam p = new TestEnumParam();
 
-    final PJsonObject json =
-        AbstractMapfishSpringTest.parseJSONObjectFromString(
-            "{\"e1\":\"foo\", \"e2\": [2, \"VAL2\"]}");
+          final PJsonObject json =
+              AbstractMapfishSpringTest.parseJSONObjectFromString(
+                  "{\"e1\":\"foo\", \"e2\": [2, \"VAL2\"]}");
 
-    MapfishParser.parse(true, json, p, "toIgnore");
+          MapfishParser.parse(true, json, p, "toIgnore");
+        });
   }
 
   @Test
@@ -289,23 +314,27 @@ public class MapfishParserTest {
     }
   }
 
-  @Test(expected = ExtraPropertyException.class)
+  @Test
   public void testDoesntMap() {
-    String legendAtts =
-        """
-        {
-            "extra": "",
-            "classes": [{
-                "name": "osm",
-                "icons":\
-         ["http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic\
-        &VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states"]
-            }]
-        }
-        """;
-    PObject requestData = new PJsonObject(new JSONObject(legendAtts), "legend");
-    LegendAttribute.LegendAttributeValue param = new LegendAttribute.LegendAttributeValue();
-    MapfishParser.parse(true, requestData, param);
+    assertThrows(
+        ExtraPropertyException.class,
+        () -> {
+          String legendAtts =
+              """
+              {
+                  "extra": "",
+                  "classes": [{
+                      "name": "osm",
+                      "icons":\
+               ["http://localhost:9876/e2egeoserver/wms?REQUEST=GetLegendGraphic\
+              &VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states"]
+                  }]
+              }
+              """;
+          PObject requestData = new PJsonObject(new JSONObject(legendAtts), "legend");
+          LegendAttribute.LegendAttributeValue param = new LegendAttribute.LegendAttributeValue();
+          MapfishParser.parse(true, requestData, param);
+        });
   }
 
   enum TestEnum {
