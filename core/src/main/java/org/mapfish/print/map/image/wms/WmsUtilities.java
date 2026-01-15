@@ -193,10 +193,10 @@ public final class WmsUtilities {
   public static ClientHttpRequest createWmsRequest(
       final MfClientHttpRequestFactory httpRequestFactory, final URI uri, final HttpMethod method)
       throws IOException {
-    if (method.equals(HttpMethod.GET)) {
+    if (HttpMethod.GET.equals(method)) {
       return httpRequestFactory.createRequest(uri, method);
     }
-    if (method.equals(HttpMethod.POST)) {
+    if (HttpMethod.POST.equals(method)) {
       final String params = uri.getQuery();
       final URI paramlessUri;
       try {
@@ -219,7 +219,8 @@ public final class WmsUtilities {
       request.getHeaders().set("Content-Length", Integer.toString(encodedParams.length));
       request.getBody().write(encodedParams);
       return request;
+    } else {
+      throw new RuntimeException("Unsupported WMS request method: " + method);
     }
-    throw new RuntimeException("Unsupported WMS request method: " + method);
   }
 }

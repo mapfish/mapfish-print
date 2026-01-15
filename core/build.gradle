@@ -209,7 +209,6 @@ dependencies {
         'org.apache.xmlgraphics:batik-svg-dom:1.19'
     )
 
-    //providedCompile('jakarta.servlet:jakarta.servlet-api:6.1.0')
     compileOnly 'com.github.spotbugs:spotbugs-annotations:4.9.8'
 
     testImplementation (

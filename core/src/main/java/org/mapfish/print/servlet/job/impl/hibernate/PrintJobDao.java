@@ -1,6 +1,7 @@
 package org.mapfish.print.servlet.job.impl.hibernate;
 
 import jakarta.annotation.Nullable;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.PessimisticLockException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
@@ -23,6 +24,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class PrintJobDao {
 
   @Autowired private SessionFactory sf;
+
+  @PostConstruct
+  public final void init() {
+    this.sf.openSession();
+  }
 
   private Session getSession() {
     return this.sf.getCurrentSession();
@@ -74,7 +80,7 @@ public class PrintJobDao {
     if (lock) {
       // LOCK means SELECT FOR UPDATE which prevents these records to be pulled by different
       // instances
-      query.setLockMode("pj", LockMode.PESSIMISTIC_READ);
+      query.setLockMode("pj", LockMode.UPGRADE_NOWAIT);
     } else {
       query.setReadOnly(true); // make sure the object is not updated if there is no lock
     }

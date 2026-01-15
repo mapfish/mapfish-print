@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.referencing.CRS;
-// JUnit 5 Imports
+// JUnit imports
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapfish.print.attribute.map.CenterScaleMapBounds;
 import org.mapfish.print.attribute.map.MapfishMapContext;

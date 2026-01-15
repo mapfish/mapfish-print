@@ -228,9 +228,9 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
 
       for (Map.Entry<String, List<String>> entry : headers.headerSet()) {
         String headerName = entry.getKey();
-        if (!headerName.equalsIgnoreCase(org.apache.hc.core5.http.HttpHeaders.CONTENT_LENGTH)
-            && !headerName.equalsIgnoreCase(
-                org.apache.hc.core5.http.HttpHeaders.TRANSFER_ENCODING)) {
+        if (!org.apache.hc.core5.http.HttpHeaders.CONTENT_LENGTH.equalsIgnoreCase(headerName)
+            && !org.apache.hc.core5.http.HttpHeaders.TRANSFER_ENCODING.equalsIgnoreCase(
+                headerName)) {
           for (String headerValue : entry.getValue()) {
             this.request.addHeader(headerName, headerValue);
           }
@@ -249,7 +249,6 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     }
   }
 
-  // TODO: Do we need this class after all?
   public static class Response implements ClientHttpResponse {
     private static final Logger LOGGER = LoggerFactory.getLogger(Response.class);
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();

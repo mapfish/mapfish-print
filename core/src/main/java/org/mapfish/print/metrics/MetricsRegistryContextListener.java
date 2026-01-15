@@ -24,7 +24,6 @@ public class MetricsRegistryContextListener extends MetricsServlet.ContextListen
 
   @Override
   protected final MetricRegistry getMetricRegistry() {
-    // In Spring 6+, getWebApplicationContext accepts jakarta.servlet.ServletContext
     final WebApplicationContext webApplicationContext =
         getWebApplicationContext(this.servletContext);
     return webApplicationContext.getBean(MetricRegistry.class);

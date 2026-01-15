@@ -83,7 +83,7 @@ public final class HttpImageResolver implements TableColumnConverter<BufferedIma
 
   private BufferedImage getImageFromResponse(final ClientHttpResponse response, final URI url)
       throws IOException {
-    if (response.getStatusCode().value() == HttpStatus.OK.value()) {
+    if (HttpStatus.OK.equals(response.getStatusCode())) {
       try {
         final BufferedImage image = ImageIO.read(response.getBody());
         if (image == null) {
