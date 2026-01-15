@@ -42,7 +42,7 @@
       matchUpdateTypes: ['major', 'minor'],
       groupName: 'geoserver',
       automerge: true,
-      matchDepNames: ['camptocamp/geoserver'],
+      matchDepNames: ['georchestra/geoserver'],
     },
     {
       matchUpdateTypes: ['major'],
