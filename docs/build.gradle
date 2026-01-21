@@ -20,14 +20,14 @@ dependencies {
     implementation (
             'org.apache.groovy:groovy-xml:5.0.3',
             'org.apache.groovy:groovy-json:5.0.3',
-            "org.springframework:spring-test:7.0.1",
+            "org.springframework:spring-test:7.0.3",
             'org.ccil.cowan.tagsoup:tagsoup:1.2.1',
             'com.samskivert:jmustache:1.16',
             'com.google.guava:guava:33.5.0-jre',
             'commons-io:commons-io:2.21.0',
-            "org.springframework:spring-beans:7.0.1",
-            "org.springframework:spring-web:7.0.1",
-            "org.springframework:spring-context:7.0.1",
+            "org.springframework:spring-beans:7.0.3",
+            "org.springframework:spring-web:7.0.3",
+            "org.springframework:spring-context:7.0.3",
     )
 }
 
