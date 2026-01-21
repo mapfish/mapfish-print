@@ -5,6 +5,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import jakarta.annotation.Nonnull;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -139,6 +140,24 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
   }
 
   /**
+   * Create a transparent image.
+   *
+   * @param area The size of the image
+   */
+  protected BufferedImage createTransparentImage(final Rectangle area) {
+    final BufferedImage bufferedImage =
+        new BufferedImage(area.width, area.height, TYPE_INT_ARGB_PRE);
+    final Graphics2D graphics = bufferedImage.createGraphics();
+    try {
+      graphics.setBackground(new Color(0, 0, 0, 0));
+      graphics.clearRect(0, 0, area.width, area.height);
+      return bufferedImage;
+    } finally {
+      graphics.dispose();
+    }
+  }
+
+  /**
    * Fetch the given image from the web.
    *
    * @param request The request
@@ -152,6 +171,14 @@ public abstract class AbstractSingleImageLayer extends AbstractGeotoolsLayer {
     try (Timer.Context ignored = this.registry.timer(baseMetricName).time()) {
       try (ClientHttpResponse httpResponse = request.execute()) {
         final List<String> contentType = httpResponse.getHeaders().get("Content-Type");
+
+        if (httpResponse.getStatusCode() == HttpStatus.NO_CONTENT) {
+          LOGGER.info(
+              "The request {} returns a no content status code, we consider it as an empty tile.",
+              request.getURI());
+          return createTransparentImage(transformer.getPaintArea());
+        }
+
         final String invalidRespBody = getInvalidResponseBody(request, contentType, httpResponse);
 
         if (!isResponseStatusCodeValid(request, httpResponse, invalidRespBody, baseMetricName)) {
