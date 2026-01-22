@@ -25,6 +25,17 @@
 <p>The docker image can be tuned with several environment variables:</p>
 <ul>
   <li><code>CATALINA_OPTS</code>: Java startup parameters.</li>
+  <li>
+    <code>CONTEXT_PATH</code>: Optional external URL prefix (sub path) when the service is exposed behind a
+    reverse proxy under a sub path (for example <code>/print</code> or <code>/foo/bar</code>). When set, the
+    container entrypoint will:
+    <ul>
+      <li>Prefix the servlet mappings (for example <code>/metrics</code> becomes <code>/print/metrics</code>).</li>
+      <li>Copy the UI assets (index + icons) under the sub path (for example <code>/print/index.html</code>).</li>
+      <li>Inject a <code>&lt;base href=&quot;/print/&quot;&gt;</code> tag into the copied UI page so relative links work.</li>
+    </ul>
+    This mode is intended for proxies/ingresses that forward the prefixed path as-is (no path rewrite).
+  </li>
   <li><code>DEFAULT_LOG_LEVEL</code>: Set the default log level (defaults to <code>INFO</code>)</li>
   <li><code>TOMCAT_LOG_LEVEL</code>: Set the tomcat log level (defaults to <code>INFO</code>)</li>
   <li><code>LOG_LEVEL</code>: Set the mapfish print log level (defaults to <code>INFO</code>)</li>
@@ -76,6 +87,34 @@
       see also</a
     >
     (defaults to <code>50</code>).
+  </li>
+</ul>
+
+<h4 id="docker_filesystem">
+  Filesystem writes
+  <a class="headerlink" href="#docker_filesystem" title="Permalink to this headline">¶</a>
+</h4>
+
+<p>
+  The container expects to be able to write to some paths at runtime. If you run with a read-only root
+  filesystem, ensure those locations are writable (for example by mounting an <code>emptyDir</code> or other
+  volume), or use an init container to copy the webapp content to a writable volume.
+</p>
+
+<ul>
+  <li>
+    <code>/usr/local/tomcat/webapps/ROOT/print-apps</code>: created at startup (print apps directory).
+  </li>
+  <li>
+    <code>/usr/local/tomcat/temp/mapfish-print/ROOT</code>: used by the graceful shutdown mechanism
+    (<code>docker-pre-stop-print</code> creates <code>stop</code>/<code>stopped</code> files here).
+  </li>
+  <li>
+    If <code>CONTEXT_PATH</code> is set:
+    <ul>
+      <li><code>/usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml</code>: rewritten at startup to prefix URL mappings.</li>
+      <li><code>/usr/local/tomcat/webapps/ROOT&lt;CONTEXT_PATH&gt;</code>: created and populated with UI assets (for example <code>/usr/local/tomcat/webapps/ROOT/print</code>).</li>
+    </ul>
   </li>
 </ul>
 
