@@ -1,7 +1,82 @@
 #!/bin/bash -e
+
 export JAVA_OPTS="--add-opens=java.desktop/sun.awt.image=ALL-UNNAMED ${JAVA_OPTS}"
 
+normalize_context_path() {
+    local raw="${1:-}"
+    if [[ -z "${raw}" || "${raw}" == "/" ]]; then
+        echo ""
+        return 0
+    fi
+
+    if [[ "${raw}" != /* ]]; then
+        raw="/${raw}"
+    fi
+
+    # Remove trailing slashes (keep the leading slash)
+    while [[ "${raw}" != "/" && "${raw}" == */ ]]; do
+        raw="${raw%/}"
+    done
+
+    # Conservative validation: allow common URL path chars
+    if [[ ! "${raw}" =~ ^/[A-Za-z0-9._/-]+$ ]]; then
+        echo "ERROR: Invalid CONTEXT_PATH: '${1}'. Expected like '/print' or '/foo/bar'." >&2
+        exit 2
+    fi
+
+    echo "${raw}"
+}
+
+apply_context_path() {
+    local context_path="${1}"
+    if [[ -z "${context_path}" ]]; then
+        return 0
+    fi
+
+    echo "Configuring CONTEXT_PATH='${context_path}'"
+
+    local web_xml="WEB-INF/web.xml"
+    if [[ ! -w "${web_xml}" ]]; then
+        echo "ERROR: CONTEXT_PATH is set but '${web_xml}' is not writable." >&2
+        echo "       If you run with a read-only root filesystem, mount a writable volume over" >&2
+        echo "       /usr/local/tomcat/webapps/ROOT (or at least WEB-INF and the context-path folder)." >&2
+        exit 1
+    fi
+
+    # Prefix servlet url-patterns. This makes deployments behind a reverse proxy under a sub path
+    # (where the proxy does NOT strip the prefix) work out of the box.
+    # Idempotent: only rewrites the original patterns.
+    sed -i \
+        -e "s|<url-pattern>/metrics</url-pattern>|<url-pattern>${context_path}/metrics</url-pattern>|g" \
+        -e "s|<url-pattern>/metrics/\*</url-pattern>|<url-pattern>${context_path}/metrics/*</url-pattern>|g" \
+        -e "s|<url-pattern>/print/\*</url-pattern>|<url-pattern>${context_path}/print/*</url-pattern>|g" \
+        -e "s|<url-pattern>/sec/print/\*</url-pattern>|<url-pattern>${context_path}/sec/print/*</url-pattern>|g" \
+        "${web_xml}"
+
+    # Make the UI reachable under the context path by copying the static files.
+    # Example: CONTEXT_PATH=/print -> /usr/local/tomcat/webapps/ROOT/print/index.html
+    local ui_dir=".${context_path}"
+    mkdir -p "${ui_dir}"
+    for f in index.html favicon.ico mapfish_transparent.png; do
+        if [[ -f "${f}" ]]; then
+            cp -f "${f}" "${ui_dir}/"
+        fi
+    done
+
+    if [[ -w "${ui_dir}/index.html" ]]; then
+        # Ensure exactly one <base> tag, so relative links resolve via the external prefix.
+        sed -i '/<base[[:space:]]\+href=/d' "${ui_dir}/index.html"
+        sed -i "/<\/head>/i\\    <base href=\"${context_path}/\" />" "${ui_dir}/index.html"
+    else
+        echo "WARNING: Unable to update '${ui_dir}/index.html' to set <base href>." >&2
+    fi
+}
+
 cd /usr/local/tomcat/webapps/ROOT
+
+CONTEXT_PATH_NORMALIZED="$(normalize_context_path "${CONTEXT_PATH:-}")"
+apply_context_path "${CONTEXT_PATH_NORMALIZED}"
+
 PG_LIB=$(find WEB-INF/lib -name "postgresql-*")
 
 # Checks if Database is present (DB is compulsory in cluster mode)
