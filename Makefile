@@ -1,6 +1,9 @@
 GIT_HEAD_ARG = --build-arg=GIT_HEAD=$(shell git rev-parse HEAD)
 export DOCKER_BUILDKIT = 1
 
+# Set it to `--file=docker-compose-cluster.yaml` to run the acceptance tests in cluster mode
+DOCKER_COMPOSE_ARGS ?=
+
 .PHONY: clean
 clean:
 	rm -rf .env examples/geoserver-data/logs/
@@ -50,11 +53,11 @@ tests: build-builder
 acceptance-tests-up: build .env
 	# Required to avoid root ownership of reports folder
 	mkdir -p examples/build/reports/ || true
-	docker compose up --detach
+	docker compose $(DOCKER_COMPOSE_ARGS) up --detach
 
 .PHONY: acceptance-tests-run
 acceptance-tests-run: .env
-	docker compose exec -T tests gradle \
+	docker compose $(DOCKER_COMPOSE_ARGS) exec -T tests gradle \
 		--exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain \
 		--exclude-task=:core:spotbugsTest --exclude-task=:core:checkstyleTest --exclude-task=:core:testCLI \
 		:examples:integrationTest
@@ -63,7 +66,7 @@ acceptance-tests-run: .env
 
 .PHONY: acceptance-tests-down
 acceptance-tests-down: .env
-	docker compose down || true
+	docker compose $(DOCKER_COMPOSE_ARGS) down || true
 
 .PHONY: dist
 dist: build-builder
