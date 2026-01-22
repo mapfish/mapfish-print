@@ -8,11 +8,11 @@
         </encoder>
     </appender>
 
-    <logger name="org.mapfish" level="DEBUG" />
-    <logger name="com.codahale" level="DEBUG" />
-    <logger name="org.springframework" level="DEBUG" />
-    <logger name="org.apache" level="DEBUG" />
-    <logger name="org.hibernate" level="DEBUG" />
+    <logger name="org.mapfish" level="WARN" />
+    <logger name="com.codahale" level="WARN" />
+    <logger name="org.springframework" level="WARN" />
+    <logger name="org.apache" level="WARN" />
+    <logger name="org.hibernate" level="WARN" />
 
     <root level="INFO">
         <appender-ref ref="standardOut" />
