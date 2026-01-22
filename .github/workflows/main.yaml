@@ -133,11 +133,29 @@ jobs:
           if-no-files-found: ignore
         if: always()
 
-      - run: make acceptance-tests-up
-      - run: make acceptance-tests-run
-      - run: make acceptance-tests-down
+      - name: Start the acceptance tests composition
+        run: make acceptance-tests-up
+      - name: Run the acceptance tests
+        run: make acceptance-tests-run
       - run: c2cciutils-docker-logs || true
         if: always()
+      - name: Stop the acceptance tests composition
+        run: make acceptance-tests-down
+
+      - name: Start the acceptance tests composition (cluster)
+        run: make acceptance-tests-up
+        env:
+          DOCKER_COMPOSE_ARGS: --file=docker-compose-cluster.yaml
+      - name: Run the acceptance tests (cluster)
+        run: make acceptance-tests-run
+        env:
+          DOCKER_COMPOSE_ARGS: --file=docker-compose-cluster.yaml
+      - run: c2cciutils-docker-logs || true
+        if: always()
+      - name: Stop the acceptance tests composition (cluster)
+        run: make acceptance-tests-down
+        env:
+          DOCKER_COMPOSE_ARGS: --file=docker-compose-cluster.yaml
 
       - uses: actions/upload-artifact@v6
         with:
