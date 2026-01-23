@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="accessLog" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [access] %h %l %u %t "%r" %s %b</pattern>
+        </encoder>
+    </appender>
+
+    <appender-ref ref="accessLog" />
+</configuration>
