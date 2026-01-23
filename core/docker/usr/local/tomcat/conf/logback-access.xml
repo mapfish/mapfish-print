@@ -1,7 +1,7 @@
 <configuration>
     <appender name="classic" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%h %l %u %user %date "%r" %s %b</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [access] %h %l %u %user %date "%r" %s %b</pattern>
         </encoder>
     </appender>
 
