@@ -24,7 +24,6 @@ COPY docker /
 
 RUN mkdir -p "${CATALINA_HOME}/extlib/classes/org/mapfish/print" \
   && cp -r "${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes/org/mapfish/print/url" "${CATALINA_HOME}/extlib/classes/org/mapfish/print/" \
-  && perl -0777 -i -pe 's/<Valve className="ch.qos.logback.access.tomcat.LogbackValve" quiet="true"\/>//s' "${CATALINA_HOME}/conf/server.xml" \
   && chmod g+r -R /usr/local/tomcat/conf/ \
   && chmod g+rw /usr/local/tomcat/temp/ /usr/local/tomcat/webapps/ROOT/WEB-INF/lib \
   && chmod g+rw /usr/local/tomcat/webapps/ROOT/WEB-INF/classes /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/*.xml \
