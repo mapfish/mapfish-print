@@ -22,7 +22,7 @@ public class PrintJobEntry {
   @Column(insertable = false, updatable = false)
   private String referenceId;
 
-  @Column()
+  @Column(columnDefinition = "text")
   @Type(PJsonObjectUserType.class)
   private PJsonObject requestData;
 
