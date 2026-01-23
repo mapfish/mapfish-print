@@ -7,6 +7,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.Date;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.ExecutionStats;
@@ -16,7 +18,6 @@ import org.mapfish.print.wrapper.PObject;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.jackson.databind.node.ObjectNode;
 
 /** Entity for the print_accountings table. */
 @Entity
@@ -56,7 +57,8 @@ public class HibernateAccountingEntry {
   private Long fileSize = null;
 
   @Column(columnDefinition = "jsonb")
-  private ObjectNode stats = null;
+  @JdbcTypeCode(SqlTypes.JSON)
+  private String stats = null;
 
   @Column(nullable = false)
   private boolean mapExport;
@@ -157,12 +159,12 @@ public class HibernateAccountingEntry {
     this.fileSize = fileSize;
   }
 
-  public ObjectNode getStats() {
+  public String getStats() {
     return this.stats;
   }
 
   public void setStats(final ExecutionStats stats) {
-    this.stats = stats.toJson();
+    this.stats = stats.toJson().toString();
   }
 
   public boolean getMapExport() {
