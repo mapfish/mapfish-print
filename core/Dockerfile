@@ -5,7 +5,8 @@ LABEL maintainer="Camptocamp <info@camptocamp.com>"
 
 RUN --mount=type=cache,target=/var/cache,sharing=locked \
     --mount=type=cache,target=/root/.cache \
-  echo "tomcat.util.scan.StandardJarScanFilter.jarsToSkip=*" >> "${CATALINA_HOME}/conf/catalina.properties" \
+  perl -0777 -i -pe 's/(<Valve className="org.apache.catalina.valves.AccessLogValve"[^>]*>)/<Valve className="ch.qos.logback.access.tomcat.LogbackValve" quiet="true"\/>/s' "${CATALINA_HOME}/conf/server.xml" \
+  && echo "tomcat.util.scan.StandardJarScanFilter.jarsToSkip=*" >> "${CATALINA_HOME}/conf/catalina.properties" \
   && echo "org.apache.catalina.startup.TldConfig.jarsToSkip=*" >> "${CATALINA_HOME}/conf/catalina.properties" \
   && echo "tomcat.util.scan.DefaultJarScanner.jarsToSkip=*" >> "${CATALINA_HOME}/conf/catalina.properties" \
   && perl -0777 -i -pe 's/<\/Context>/<Resources cachingAllowed="true" cacheMaxSize="102400"\/><\/Context>/' "${CATALINA_HOME}/conf/context.xml" \
