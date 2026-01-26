@@ -56,7 +56,10 @@ public final class RoleAccessAssertion implements AccessAssertion {
   public void assertAccess(final String resourceDescription, final Object protectedResource) {
     final SecurityContext context = SecurityContextHolder.getContext();
 
-    if (context == null || context.getAuthentication() == null) {
+    if (context == null) {
+      throw new AuthenticationCredentialsNotFoundException("Unable to get the security context");
+    }
+    if (context.getAuthentication() == null) {
       throw new AuthenticationCredentialsNotFoundException(
           resourceDescription + " requires an authenticated user");
     } else if (this.requiredRoles.isEmpty()) {
