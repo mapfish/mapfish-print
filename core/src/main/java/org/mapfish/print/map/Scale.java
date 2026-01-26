@@ -201,7 +201,7 @@ public final class Scale implements Comparable<Scale> {
       double width = 1;
       double geoWidthInches = getResolutionInInches() * width;
       double geoWidth = DistanceUnit.IN.convertTo(geoWidthInches, this.unit);
-      double minGeoX = position.y - (geoWidth / 2.0);
+      double minGeoX = position.x - (geoWidth / 2.0);
       double maxGeoX = minGeoX + geoWidth;
 
       final GeodeticCalculator calculator = new GeodeticCalculator(projection);
