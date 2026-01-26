@@ -4,6 +4,9 @@ services:
     volumes:
       - ./examples/geoserver-data/:/mnt/geoserver_datadir
       - ./core/src/test/resources/map-data/:/mnt/geoserver_datadir/www/map-data
+    environment:
+      CATALINA_OPTS: >
+        -Djava.util.logging.ConsoleHandler.level=WARN
 
   print:
     image: mapfish_print_tester
