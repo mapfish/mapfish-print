@@ -44,3 +44,18 @@ We can optionally have a mask image that will be used to mask the tested image.
 This mask image will be loaded from the `src/test/resources/examples/<tested_application>/expected_output/mask-requestData<postfix>.png` file.
 This image should be grayscale with only full black and full white pixel values.
 If we create the mask image with Gimp, we can't create indexed image with tow colors because in the Java code we get the values 1 instead of 0 for the black pixel.
+
+## Acceptance tests run by CI
+
+To run the acceptance tests, in the CI run:
+
+- `make acceptance-tests-up` to start the test server.
+- `make acceptance-tests-run` to run the tests.
+- `make acceptance-tests-down` to stop the test server.
+
+The CI does also the tests in cluster mode with a single instance but with a PostgreSQL database used to stor the state.
+To do so, in the CI use the `DOCKER_COMPOSE_ARGS` environment variable to specify the docker-compose file to use::
+
+- `DOCKER_COMPOSE_ARGS=--file=docker-compose-cluster.yaml make acceptance-tests-up`
+- `DOCKER_COMPOSE_ARGS=--file=docker-compose-cluster.yaml make acceptance-tests-run`
+- `DOCKER_COMPOSE_ARGS=--file=docker-compose-cluster.yaml make acceptance-tests-down`
