@@ -10,6 +10,7 @@
         <property name="dataSource" ref="mfDataSource"/>
         <property name="packagesToScan">
             <array>
+                <value>org.mapfish.print.servlet.job</value>
                 <value>org.mapfish.print.servlet.job.impl</value>
                 <value>org.mapfish.print.servlet.job</value>
                 <value>org.mapfish.print.servlet.job.impl.hibernate</value>

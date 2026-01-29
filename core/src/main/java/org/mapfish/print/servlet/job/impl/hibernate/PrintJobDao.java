@@ -2,7 +2,6 @@ package org.mapfish.print.servlet.job.impl.hibernate;
 
 import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
-import jakarta.persistence.PessimisticLockException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -11,7 +10,6 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
 import java.net.URI;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
@@ -223,16 +221,10 @@ public class PrintJobDao {
     criteria.orderBy(builder.asc(root.get("entry").get("startTime")));
     final Query<PrintJobStatusExtImpl> query = getSession().createQuery(criteria);
     query.setMaxResults(size);
-    // LOCK but don't wait for release (since this is run continuously
-    // anyway, no wait prevents deadlock)
-    query.setLockMode("pj", LockMode.PESSIMISTIC_WRITE);
-    query.setHint("jakarta.persistence.lock.timeout", 0);
-    try {
-      return query.getResultList();
-    } catch (PessimisticLockException ex) {
-      // Another process was polling at the same time. We can ignore this error
-      return Collections.emptyList();
-    }
+    // If the row is locked, it means that some other worker is already working on it and
+    // the current worker doesn't need it anyway.
+    query.setLockMode("pj", LockMode.UPGRADE_SKIPLOCKED);
+    return query.getResultList();
   }
 
   /**
