@@ -1,12 +1,16 @@
 services:
+  db:
+    image: postgres:15.15
+    environment:
+      POSTGRES_DB: print
+      POSTGRES_USER: print
+      POSTGRES_PASSWORD: print
+
   geoserver:
     image: camptocamp/geoserver:16
     volumes:
       - ./examples/geoserver-data/:/mnt/geoserver_datadir
       - ./core/src/test/resources/map-data/:/mnt/geoserver_datadir/www/map-data
-    environment:
-      CATALINA_OPTS: >
-        -Djava.util.logging.ConsoleHandler.level=WARN
 
   print:
     image: mapfish_print_tester
@@ -19,6 +23,7 @@ services:
       PRINT_YAML_MAX_ALIASES: '200'
       LOG_LEVEL: DEBUG
       JASPER_LOG_LEVEL: DEBUG
+      CATALINA_OPTS: '-Ddb.host=db -Ddb.username=print -Ddb.password=print -Ddb.name=print'
       JAVA_OPTS: '-Dmapfish.image.plugins=true'
 
   tests:
