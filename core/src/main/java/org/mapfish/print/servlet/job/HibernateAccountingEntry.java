@@ -7,6 +7,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.Date;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.processor.ExecutionStats;
@@ -56,6 +58,7 @@ public class HibernateAccountingEntry {
   private Long fileSize = null;
 
   @Column(columnDefinition = "jsonb")
+  @JdbcTypeCode(SqlTypes.JSON)
   private ObjectNode stats = null;
 
   @Column(nullable = false)
