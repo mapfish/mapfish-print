@@ -221,9 +221,10 @@ public class PrintJobDao {
     criteria.orderBy(builder.asc(root.get("entry").get("startTime")));
     final Query<PrintJobStatusExtImpl> query = getSession().createQuery(criteria);
     query.setMaxResults(size);
-    // If the row is locked, it means that some other worker is already working on it and
-    // the current worker doesn't need it anyway.
+    // If the row is locked, it means that the row is already taken by some other worker.
+    // So, this row must not be returned as it's not in a WAITING state.
     query.setLockMode("pj", LockMode.UPGRADE_SKIPLOCKED);
+    query.setHint("jakarta.persistence.lock.timeout", 0);
     return query.getResultList();
   }
 
