@@ -20,20 +20,25 @@ import org.mapfish.print.servlet.job.PrintJobStatus;
 @Table(name = "print_job_results")
 public class PrintJobResultImpl implements PrintJobResult {
 
-  @Id private String reportURI;
+  @Id
+  @Column(columnDefinition = "TEXT")
+  private String reportURI;
 
-  @Column private String mimeType;
+  @Column(columnDefinition = "TEXT")
+  private String mimeType;
 
-  @Column private String fileExtension;
+  @Column(columnDefinition = "TEXT")
+  private String fileExtension;
 
-  @Column private String fileName;
+  @Column(columnDefinition = "TEXT")
+  private String fileName;
 
   @OneToOne(targetEntity = PrintJobStatusImpl.class, fetch = FetchType.LAZY)
   @OnDelete(action = OnDeleteAction.CASCADE)
   @JoinColumn(name = "referenceId", insertable = false, updatable = false)
   private PrintJobStatus status = null;
 
-  @Column(insertable = true, updatable = true)
+  @Column(insertable = true, updatable = true, columnDefinition = "TEXT")
   private String referenceId;
 
   /** Default Constructor. */
