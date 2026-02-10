@@ -150,6 +150,7 @@ jobs:
         run: make acceptance-tests-run
         env:
           DOCKER_COMPOSE_ARGS: --file=docker-compose-cluster.yaml
+          MAPFISH_PRINT_TESTS_CLUSTER_MODE: 'true'
       - run: c2cciutils-docker-logs || true
         if: always()
       - name: Stop the acceptance tests composition (cluster)
