@@ -137,6 +137,7 @@ jobs:
         run: make acceptance-tests-up
       - name: Run the acceptance tests
         run: make acceptance-tests-run
+        timeout-minutes: 6 # Add a timeout to catch performance regressions
       - run: c2cciutils-docker-logs || true
         if: always()
       - name: Stop the acceptance tests composition
@@ -148,6 +149,7 @@ jobs:
           DOCKER_COMPOSE_ARGS: --file=docker-compose-cluster.yaml
       - name: Run the acceptance tests (cluster)
         run: make acceptance-tests-run
+        timeout-minutes: 6 # Add a timeout to catch performance regressions
         env:
           DOCKER_COMPOSE_ARGS: --file=docker-compose-cluster.yaml
           MAPFISH_PRINT_TESTS_CLUSTER_MODE: 'true'
