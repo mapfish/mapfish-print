@@ -221,8 +221,9 @@ public class PrintJobDao {
     criteria.orderBy(builder.asc(root.get("entry").get("startTime")));
     final Query<PrintJobStatusExtImpl> query = getSession().createQuery(criteria);
     query.setMaxResults(size);
-    // If the row is locked, it means that the row is already taken by some other worker.
-    // So, this row must not be returned as it's not in a WAITING state.
+    // Use SKIP LOCKED so that rows currently locked by other transactions (for example,
+    // because another worker is in the process of taking them) are simply skipped and
+    // not returned to this worker, even if their status is still WAITING in the database.
     query.setLockMode("pj", LockMode.UPGRADE_SKIPLOCKED);
     query.setHint("jakarta.persistence.lock.timeout", 0);
     return query.getResultList();
