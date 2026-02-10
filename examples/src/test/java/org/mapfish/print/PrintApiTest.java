@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.springframework.http.HttpMethod;
@@ -486,6 +487,7 @@ public class PrintApiTest extends AbstractApiTest {
   }
 
   @Test
+  @EnabledIfEnvironmentVariable(named = "MAPFISH_PRINT_TESTS_CLUSTER_MODE", matches = "true")
   public void testSecuredTemplate_CreateMap() throws Exception {
     ClientHttpRequest request =
         getPrintRequest(
