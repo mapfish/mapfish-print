@@ -19,10 +19,10 @@ import org.springframework.context.ApplicationContext;
 @Embeddable
 public class PrintJobEntry {
 
-  @Column(insertable = false, updatable = false)
+  @Column(insertable = false, updatable = false, columnDefinition = "TEXT")
   private String referenceId;
 
-  @Column()
+  @Column(columnDefinition = "TEXT")
   @Type(PJsonObjectUserType.class)
   private PJsonObject requestData;
 

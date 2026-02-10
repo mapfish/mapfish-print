@@ -23,7 +23,9 @@ public class PrintJobStatusImpl implements PrintJobStatus {
 
   @Embedded private PrintJobEntry entry;
 
-  @Id private String referenceId;
+  @Id
+  @Column(columnDefinition = "TEXT")
+  private String referenceId;
 
   @Column
   @Enumerated(EnumType.STRING)
@@ -33,7 +35,7 @@ public class PrintJobStatusImpl implements PrintJobStatus {
 
   @Column private long requestCount;
 
-  @Column(length = 4096)
+  @Column(columnDefinition = "TEXT")
   private String error;
 
   @OneToOne(targetEntity = PrintJobResultImpl.class, cascade = CascadeType.ALL, mappedBy = "status")
