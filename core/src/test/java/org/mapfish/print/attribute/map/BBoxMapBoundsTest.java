@@ -210,9 +210,11 @@ public class BBoxMapBoundsTest {
     final ReferencedEnvelope originalBBox = mapBounds.toReferencedEnvelope(screen);
 
     assertEquals(-207733d, originalBBox.getMinX(), 1d);
-    assertEquals(4721167d, originalBBox.getMinY(), 1d);
+    // Updated expected values after fixing computeGeodeticBBoxInPseudoMercator to use
+    // getDestinationPosition() which gives more accurate Y coordinates for Pseudo-Mercator
+    assertEquals(4721131d, originalBBox.getMinY(), 1d);
     assertEquals(-207288d, originalBBox.getMaxX(), 1d);
-    assertEquals(4721421d, originalBBox.getMaxY(), 1d);
+    assertEquals(4721458d, originalBBox.getMaxY(), 1d);
 
     BBoxMapBounds linear =
         new BBoxMapBounds(

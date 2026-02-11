@@ -47,7 +47,8 @@ public class GenericMapAttributeTest {
     assertTrue(json.has(JSON_CLIENT_INFO), json.toString(2));
 
     final JSONObject required = json.getJSONObject(JSON_CLIENT_PARAMS);
-    assertEquals(16, required.length(), required.toString(2));
+    // Updated to 17 after adding useGeodeticCalculations field
+    assertEquals(17, required.length(), required.toString(2));
 
     assertElem(required, "requiredElem", "int", null, false);
     assertElem(required, "pArray", "array", null, false);
@@ -61,6 +62,7 @@ public class GenericMapAttributeTest {
     assertElem(required, "longitudeFirst", "boolean", "null", false);
     assertElem(required, "dpiSensitiveStyle", "boolean", "true", false);
     assertElem(required, "pdfA", "boolean", "null", false);
+    assertElem(required, "useGeodeticCalculations", "boolean", "false", false);
     assertEmbedded(required, false, "embedded");
     assertEmbedded(required, true, "optionalEmbedded");
 
