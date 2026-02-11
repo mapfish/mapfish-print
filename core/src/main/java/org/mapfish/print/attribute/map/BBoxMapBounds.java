@@ -203,7 +203,7 @@ public final class BBoxMapBounds extends MapBounds {
       if (this.useGeodeticCalculations() && PseudoMercatorUtils.isPseudoMercator(crs)) {
         // Reproject to a geographic CRS (EPSG:4326) for accurate geodetic calculations
         final CoordinateReferenceSystem geographicCrs =
-                GenericMapAttribute.parseProjection("EPSG:4326", true);
+            GenericMapAttribute.parseProjection("EPSG:4326", true);
         final MathTransform transform = CRS.findMathTransform(crs, geographicCrs);
         start = JTS.transform(start, null, transform);
         end = JTS.transform(end, null, transform);

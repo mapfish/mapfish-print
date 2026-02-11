@@ -135,7 +135,8 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
         double centerX = center.getOrdinate(0);
         double centerY = center.getOrdinate(1);
         final MathTransform transform = CRS.findMathTransform(crs, geoCrs);
-        final Coordinate centerGeo = JTS.transform(new Coordinate(centerX, centerY), null, transform);
+        final Coordinate centerGeo =
+            JTS.transform(new Coordinate(centerX, centerY), null, transform);
         calculator.setStartingGeographicPoint(0, centerGeo.y);
         calculator.setDestinationGeographicPoint(1, centerGeo.y);
         double latitud1DegreeDistance = calculator.getOrthodromicDistance();

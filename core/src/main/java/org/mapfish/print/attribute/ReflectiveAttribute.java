@@ -448,8 +448,7 @@ public abstract class ReflectiveAttribute<VALUE> implements Attribute {
       // by either throwing MissingPropertyException for required attributes or
       // skipping optional attributes.
       if (pValue != null && !pValue.keys().hasNext()) {
-        throw new ObjectMissingException(
-            requestJsonAttributes, attributeName);
+        throw new ObjectMissingException(requestJsonAttributes, attributeName);
       }
     }
     MapfishParser.parse(errorOnExtraParameters, pValue, value);
