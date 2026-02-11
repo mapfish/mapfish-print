@@ -18,13 +18,25 @@ public final class PseudoMercatorUtils {
    * @return {@code true} if the CRS is Pseudo-Mercator, {@code false} otherwise.
    */
   public static boolean isPseudoMercator(final CoordinateReferenceSystem crs) {
-    String crsNameCode = crs.getName().getCode();
-    String crsId = crs.getIdentifiers().iterator().next().toString().toLowerCase();
-    return (crsNameCode.contains("wgs 84")
+    // Check CRS name (case-insensitive)
+    String crsNameCode = crs.getName().getCode().toLowerCase();
+    boolean nameMatch =
+        crsNameCode.contains("wgs 84")
             && (crsNameCode.contains("pseudo-mercator")
                 || crsNameCode.contains("pseudo mercator")
                 || crsNameCode.contains("web-mercator")
-                || crsNameCode.contains("web mercator")))
-        || "EPSG:3857".equalsIgnoreCase(crsId);
+                || crsNameCode.contains("web mercator"));
+
+    // Check identifiers (safely handle missing identifiers)
+    if (nameMatch) {
+      return true;
+    }
+
+    if (crs.getIdentifiers() != null && crs.getIdentifiers().iterator().hasNext()) {
+      String crsId = crs.getIdentifiers().iterator().next().toString();
+      return "EPSG:3857".equalsIgnoreCase(crsId);
+    }
+
+    return false;
   }
 }

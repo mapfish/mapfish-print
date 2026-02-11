@@ -104,7 +104,7 @@ public class CenterScaleMapBoundsTest {
   }
 
   @Test
-  public void testToReferencedEnvelopeSphericalMercatorProjectionWidthoutGeodeticCalculation() {
+  public void testToReferencedEnvelopeSphericalMercatorProjectionWithoutGeodeticCalculation() {
     final double startScaleDenominator = 1692.7491482896;
     final CenterScaleMapBounds bounds =
         new CenterScaleMapBounds(

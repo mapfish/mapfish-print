@@ -124,17 +124,20 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
         if (!(bounds.useGeodeticCalculations() && PseudoMercatorUtils.isPseudoMercator(crs))) {
           return 1;
         }
-        GeodeticCalculator calculator = new GeodeticCalculator(crs);
+        // Perform geodetic calculations in a geographic CRS (WGS84) using lon/lat degrees.
+        CoordinateReferenceSystem geoCrs = GenericMapAttribute.parseProjection("EPSG:4326", true);
+        GeodeticCalculator calculator = new GeodeticCalculator(geoCrs);
         calculator.setStartingGeographicPoint(0, 0);
         calculator.setDestinationGeographicPoint(1, 0);
         double equador1DegreeDistance = calculator.getOrthodromicDistance();
 
-        double centerY = bounds.getCenter().getOrdinate(1);
-        final MathTransform transform =
-            CRS.findMathTransform(crs, GenericMapAttribute.parseProjection("EPSG:4326", true));
-        final Coordinate start = JTS.transform(new Coordinate(0, centerY), null, transform);
-        calculator.setStartingGeographicPoint(0, start.y);
-        calculator.setDestinationGeographicPoint(1, start.y);
+        Coordinate center = bounds.getCenter();
+        double centerX = center.getOrdinate(0);
+        double centerY = center.getOrdinate(1);
+        final MathTransform transform = CRS.findMathTransform(crs, geoCrs);
+        final Coordinate centerGeo = JTS.transform(new Coordinate(centerX, centerY), null, transform);
+        calculator.setStartingGeographicPoint(0, centerGeo.y);
+        calculator.setDestinationGeographicPoint(1, centerGeo.y);
         double latitud1DegreeDistance = calculator.getOrthodromicDistance();
 
         double factor = equador1DegreeDistance / latitud1DegreeDistance;
