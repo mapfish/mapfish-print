@@ -461,7 +461,9 @@ public abstract class ReflectiveAttribute<VALUE> implements Attribute {
    * @return true if the class has OneOf constraints
    */
   private boolean hasOneOfConstraints(final Class<?> clazz) {
-    Collection<Field> fields = ParserUtils.getAttributes(clazz, field -> !java.lang.reflect.Modifier.isFinal(field.getModifiers()));
+    Collection<Field> fields =
+        ParserUtils.getAttributes(
+            clazz, field -> !java.lang.reflect.Modifier.isFinal(field.getModifiers()));
     for (Field field : fields) {
       if (field.getAnnotation(OneOf.class) != null) {
         return true;
