@@ -25,6 +25,7 @@ import org.mapfish.print.parser.HasDefaultValue;
 import org.mapfish.print.parser.MapfishParser;
 import org.mapfish.print.parser.OneOf;
 import org.mapfish.print.parser.ParserUtils;
+import org.mapfish.print.wrapper.ObjectMissingException;
 import org.mapfish.print.wrapper.PArray;
 import org.mapfish.print.wrapper.PElement;
 import org.mapfish.print.wrapper.PObject;
@@ -440,6 +441,12 @@ public abstract class ReflectiveAttribute<VALUE> implements Attribute {
         throw new IllegalArgumentException(message);
       }
       pValue = this.getDefaultValue();
+      // If the attribute is missing from the request and has no meaningful default,
+      // throw ObjectMissingException to let the framework handle it properly
+      if (pValue != null && !pValue.keys().hasNext()) {
+        throw new ObjectMissingException(
+            requestJsonAttributes, attributeName);
+      }
     }
     MapfishParser.parse(errorOnExtraParameters, pValue, value);
     return value;
