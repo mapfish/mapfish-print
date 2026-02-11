@@ -98,8 +98,10 @@ public class CenterScaleMapBoundsTest {
 
     assertEquals(-207733d, envelope.getMinX(), 1);
     assertEquals(-207288d, envelope.getMaxX(), 1);
-    assertEquals(4721167d, envelope.getMinY(), 1);
-    assertEquals(4721421d, envelope.getMaxY(), 1);
+    // Updated expected values after fixing computeGeodeticBBoxInPseudoMercator to use
+    // getDestinationPosition() which gives more accurate Y coordinates for Pseudo-Mercator
+    assertEquals(4721131d, envelope.getMinY(), 1);
+    assertEquals(4721458d, envelope.getMaxY(), 1);
     assertEquals(SPHERICAL_MERCATOR, envelope.getCoordinateReferenceSystem());
   }
 

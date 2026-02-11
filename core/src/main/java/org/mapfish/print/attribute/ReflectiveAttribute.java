@@ -442,16 +442,31 @@ public abstract class ReflectiveAttribute<VALUE> implements Attribute {
       }
       pValue = this.getDefaultValue();
       // If the attribute is missing from the request and has no meaningful default
-      // (i.e., the default value is an empty object), throw ObjectMissingException.
-      // This prevents attempting to parse an empty object which would trigger
-      // OneOf validation errors for required fields. The framework will handle this
-      // by either throwing MissingPropertyException for required attributes or
-      // skipping optional attributes.
-      if (pValue != null && !pValue.keys().hasNext()) {
+      // (i.e., the default value is an empty object), check if the value class has
+      // OneOf constraints that would fail validation. Only throw ObjectMissingException
+      // for such cases to prevent OneOf validation errors on empty objects.
+      // For attributes without OneOf constraints, allow parsing with empty defaults.
+      if (pValue != null && !pValue.keys().hasNext() && hasOneOfConstraints(value.getClass())) {
         throw new ObjectMissingException((PElement) requestJsonAttributes, attributeName);
       }
     }
     MapfishParser.parse(errorOnExtraParameters, pValue, value);
     return value;
+  }
+
+  /**
+   * Check if a class has any fields with @OneOf annotations.
+   *
+   * @param clazz the class to check
+   * @return true if the class has OneOf constraints
+   */
+  private boolean hasOneOfConstraints(final Class<?> clazz) {
+    Collection<Field> fields = ParserUtils.getAttributes(clazz, field -> !java.lang.reflect.Modifier.isFinal(field.getModifiers()));
+    for (Field field : fields) {
+      if (field.getAnnotation(OneOf.class) != null) {
+        return true;
+      }
+    }
+    return false;
   }
 }
