@@ -1,7 +1,6 @@
 package org.mapfish.print.map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mapfish.print.Constants.PDF_DPI;
 
 import org.geotools.api.referencing.FactoryException;
@@ -13,6 +12,7 @@ import org.locationtech.jts.geom.Coordinate;
 public class ScaleTest {
   public static final CoordinateReferenceSystem SPHERICAL_MERCATOR;
   public static final CoordinateReferenceSystem CH1903;
+  public static final CoordinateReferenceSystem CH2056;
   private static final double DELTA = 0.00001;
   private static final double SCALE = 108335.72891406555;
   private static final double RESOLUTION = 38.21843770023979;
@@ -21,6 +21,7 @@ public class ScaleTest {
     try {
       SPHERICAL_MERCATOR = CRS.decode("EPSG:3857");
       CH1903 = CRS.decode("EPSG:21781");
+      CH2056 = CRS.decode("EPSG:2056");
     } catch (FactoryException e) {
       throw new RuntimeException(e);
     }
@@ -50,31 +51,22 @@ public class ScaleTest {
   }
 
   @Test
-  public void geodeticCH1903XPositionDependence() {
+  public void geodeticCH2056XPositionDependence() {
     // This test verifies that the geodetic scale calculation correctly uses position.x
-    // for the horizontal coordinate. In projections like CH1903 (Swiss Oblique Mercator)
+    // for the horizontal coordinate. In projections like CH2056 (Swiss Oblique Mercator)
     // or UTM, shifting a point in X direction while keeping Y constant affects the
     // geodetic distance, unlike EPSG:3857 where distortion is primarily latitude-dependent.
-    final Scale scale = new Scale(25000.0, CH1903, PDF_DPI);
+    final Scale scale = new Scale(25000.0, CH2056, PDF_DPI);
 
     // Calculate geodetic scale at two positions with same Y but different X
-    // Using coordinates in CH1903 CRS (EPSG:21781) for Switzerland
-    final Coordinate position1 = new Coordinate(600000.0, 200000.0);
-    final Coordinate position2 = new Coordinate(700000.0, 200000.0);
+    // Using coordinates in CH2056 CRS (EPSG:2056)
+    final Coordinate position1 = new Coordinate(2600000.0, 1200000.0);
+    final Coordinate position2 = new Coordinate(2650000.0, 1299970.0);
 
-    final double geodeticScale1 = scale.getGeodeticDenominator(CH1903, PDF_DPI, position1);
-    final double geodeticScale2 = scale.getGeodeticDenominator(CH1903, PDF_DPI, position2);
+    final double geodeticScale1 = scale.getGeodeticDenominator(CH2056, PDF_DPI, position1);
+    final double geodeticScale2 = scale.getGeodeticDenominator(CH2056, PDF_DPI, position2);
 
-    // The geodetic scales should be different when X position changes
-    // If position.y was incorrectly used for both coordinates, they would be the same
-    // Allow a tolerance, but the difference should be noticeable
-    final double difference = Math.abs(geodeticScale1 - geodeticScale2);
-    // Expecting at least 100 units difference in scale denominator for this shift
-    final String message =
-        String.format(
-            "Expected significant difference in geodetic scale when X changes "
-                + "(got %.2f vs %.2f, difference %.2f)",
-            geodeticScale1, geodeticScale2, difference);
-    assertTrue(message, difference > 100.0);
+    assertEquals(geodeticScale1, 24997.0, 1.0);
+    assertEquals(geodeticScale2, 24993.0, 1.0);
   }
 }
