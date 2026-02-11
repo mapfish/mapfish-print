@@ -47,4 +47,22 @@ public class ScaleTest {
         10019.0,
         1.0);
   }
+
+  @Test
+  public void testStaticGetGeodeticDenominator() {
+    final double scaleDenominator = 15432.0;
+    final Coordinate position = new Coordinate(682433.0, 6379270.0);
+    final double dpi = 254;
+
+    // Test the static method
+    final double result =
+        Scale.getGeodeticDenominator(scaleDenominator, SPHERICAL_MERCATOR, dpi, position);
+
+    // Verify the result is the same as calling the instance method
+    final Scale scale = new Scale(scaleDenominator, SPHERICAL_MERCATOR, dpi);
+    final double expected = scale.getGeodeticDenominator(SPHERICAL_MERCATOR, dpi, position);
+
+    assertEquals(expected, result, 1.0);
+    assertEquals(10019.0, result, 1.0);
+  }
 }
