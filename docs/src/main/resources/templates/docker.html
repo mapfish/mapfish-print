@@ -27,21 +27,32 @@
   <li><code>CATALINA_OPTS</code>: Java startup parameters.</li>
   <li>
     <code>CONTEXT_PATH</code>: Optional external URL prefix (sub path) when the service is exposed behind a
-    reverse proxy under a sub path (for example <code>/print</code> or <code>/foo/bar</code>). When set, the
-    container entrypoint will:
+    reverse proxy under a sub path (for example <code>/printservice</code>). When set, the container
+    entrypoint will:
     <ul>
       <li>
-        Prefix the servlet mappings (for example <code>/metrics</code> becomes <code>/print/metrics</code>).
+        Prefix <strong>all</strong> servlet mappings:
+        <ul>
+          <li><code>/metrics</code> becomes <code>/printservice/metrics</code></li>
+          <li><code>/print/*</code> becomes <code>/printservice/print/*</code></li>
+          <li><code>/sec/print/*</code> becomes <code>/printservice/sec/print/*</code></li>
+        </ul>
       </li>
       <li>
-        Copy the UI assets (index + icons) under the sub path (for example <code>/print/index.html</code>).
+        Copy the UI assets (index + icons) under the sub path (for example
+        <code>/printservice/index.html</code>).
       </li>
       <li>
-        Inject a <code>&lt;base href=&quot;/print/&quot;&gt;</code> tag into the copied UI page so relative
-        links work.
+        Inject a <code>&lt;base href=&quot;/printservice/&quot;&gt;</code> tag into the copied UI page so
+        relative links work.
       </li>
     </ul>
-    This mode is intended for proxies/ingresses that forward the prefixed path as-is (no path rewrite).
+    This mode is intended for proxies/ingresses that forward the prefixed path as-is (no path rewrite).<br />
+    The value must start with <code>/</code> and may contain only alphanumeric characters, dots
+    (<code>.</code>), underscores (<code>_</code>), hyphens (<code>-</code>) and slashes (<code>/</code>) (for
+    example <code>/printservice</code> or <code>/api/v1/print</code>). Invalid
+    <code>CONTEXT_PATH</code> values will cause the container to exit with error code <code>2</code> during
+    startup.
   </li>
   <li><code>DEFAULT_LOG_LEVEL</code>: Set the default log level (defaults to <code>INFO</code>)</li>
   <li><code>TOMCAT_LOG_LEVEL</code>: Set the tomcat log level (defaults to <code>INFO</code>)</li>
@@ -125,7 +136,7 @@
       </li>
       <li>
         <code>/usr/local/tomcat/webapps/ROOT&lt;CONTEXT_PATH&gt;</code>: created and populated with UI assets
-        (for example <code>/usr/local/tomcat/webapps/ROOT/print</code>).
+        (for example <code>/usr/local/tomcat/webapps/ROOT/printservice</code>).
       </li>
     </ul>
   </li>
