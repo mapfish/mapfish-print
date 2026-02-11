@@ -104,7 +104,7 @@ public class GenericMapAttributeTest {
     JSONObject json = new JSONObject(stringWriter.toString());
 
     final JSONObject required = json.getJSONObject(JSON_CLIENT_PARAMS);
-    assertEquals(16, required.length());
+    assertEquals(17, required.length());
 
     assertElem(required, "rotation", "double", "1", false);
     JSONObject embeddedDefault =
