@@ -57,6 +57,10 @@ acceptance-tests-up: build .env
 
 .PHONY: acceptance-tests-run
 acceptance-tests-run: .env
+	# Wait for GeoServer to be ready (up to 2 minutes)
+	docker compose $(DOCKER_COMPOSE_ARGS) exec -T print sh -c 'for i in $(shell seq 1 24); do curl --fail http://geoserver:8080/geoserver/www/map-data/test-data/simple-squares-geojson.json && exit 0; sleep 5; done; exit 1'
+	docker compose $(DOCKER_COMPOSE_ARGS) exec -T print curl --fail http://geoserver:8080/geoserver/www/map-data/test-data/simple-squares-geojson.json
+
 	docker compose $(DOCKER_COMPOSE_ARGS) exec -T tests gradle \
 		--exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain \
 		--exclude-task=:core:spotbugsTest --exclude-task=:core:checkstyleTest --exclude-task=:core:testCLI \
