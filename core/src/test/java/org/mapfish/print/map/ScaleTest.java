@@ -1,6 +1,7 @@
 package org.mapfish.print.map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mapfish.print.Constants.PDF_DPI;
 
 import org.geotools.api.referencing.FactoryException;
@@ -69,10 +70,11 @@ public class ScaleTest {
     // Allow a tolerance, but the difference should be noticeable
     final double difference = Math.abs(geodeticScale1 - geodeticScale2);
     // Expecting at least 100 units difference in scale denominator for this shift
-    assert difference > 100.0
-        : String.format(
+    final String message =
+        String.format(
             "Expected significant difference in geodetic scale when X changes "
                 + "(got %.2f vs %.2f, difference %.2f)",
             geodeticScale1, geodeticScale2, difference);
+    assertTrue(message, difference > 100.0);
   }
 }
