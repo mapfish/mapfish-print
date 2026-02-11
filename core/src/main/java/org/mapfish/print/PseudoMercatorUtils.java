@@ -9,25 +9,22 @@ import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
  */
 public final class PseudoMercatorUtils {
 
-    private PseudoMercatorUtils() {
+  private PseudoMercatorUtils() {}
 
-    }
-
-    /**
-     * Checks if a given CoordinateReferenceSystem is WGS 84 with Pseudo-Mercator projection.
-     *
-     * @param crs The CoordinateReferenceSystem to check.
-     * @return {@code true} if the CRS is Pseudo-Mercator, {@code false} otherwise.
-     */
-    public static boolean isPseudoMercator(final CoordinateReferenceSystem crs) {
-        String crsNameCode = crs.getName().getCode();
-        String crsId = crs.getIdentifiers().iterator().next().toString().toLowerCase();
-        return (crsNameCode.contains("wgs 84") && (
-                crsNameCode.contains("pseudo-mercator") ||
-                crsNameCode.contains("pseudo mercator") ||
-                crsNameCode.contains("web-mercator") ||
-                crsNameCode.contains("web mercator")
-            )) || "EPSG:3857".equalsIgnoreCase(crsId);
-    }
-
+  /**
+   * Checks if a given CoordinateReferenceSystem is WGS 84 with Pseudo-Mercator projection.
+   *
+   * @param crs The CoordinateReferenceSystem to check.
+   * @return {@code true} if the CRS is Pseudo-Mercator, {@code false} otherwise.
+   */
+  public static boolean isPseudoMercator(final CoordinateReferenceSystem crs) {
+    String crsNameCode = crs.getName().getCode();
+    String crsId = crs.getIdentifiers().iterator().next().toString().toLowerCase();
+    return (crsNameCode.contains("wgs 84")
+            && (crsNameCode.contains("pseudo-mercator")
+                || crsNameCode.contains("pseudo mercator")
+                || crsNameCode.contains("web-mercator")
+                || crsNameCode.contains("web mercator")))
+        || "EPSG:3857".equalsIgnoreCase(crsId);
+  }
 }

@@ -174,7 +174,9 @@ public final class MapAttribute extends GenericMapAttribute {
         double centerX = this.center[0];
         double centerY = this.center[1];
 
-        bounds = new CenterScaleMapBounds(crs, centerX, centerY, this.scale, this.useGeodeticCalculations);
+        bounds =
+            new CenterScaleMapBounds(
+                crs, centerX, centerY, this.scale, this.useGeodeticCalculations);
       } else if (this.bbox != null) {
         final int maxYIndex = 3;
         double minX = this.bbox[0];

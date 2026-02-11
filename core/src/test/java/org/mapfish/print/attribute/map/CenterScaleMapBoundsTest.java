@@ -91,7 +91,8 @@ public class CenterScaleMapBoundsTest {
   public void testToReferencedEnvelopeSphericalMercatorProjectionWidthGeodeticCalculation() {
     final double startScaleDenominator = 1692.7491482896;
     final CenterScaleMapBounds bounds =
-        new CenterScaleMapBounds(SPHERICAL_MERCATOR, -207511.294398448, 4721294.60441192, startScaleDenominator, true);
+        new CenterScaleMapBounds(
+            SPHERICAL_MERCATOR, -207511.294398448, 4721294.60441192, startScaleDenominator, true);
     final Rectangle paintArea = new Rectangle(580, 425);
     final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea);
 
@@ -106,7 +107,8 @@ public class CenterScaleMapBoundsTest {
   public void testToReferencedEnvelopeSphericalMercatorProjectionWidthoutGeodeticCalculation() {
     final double startScaleDenominator = 1692.7491482896;
     final CenterScaleMapBounds bounds =
-        new CenterScaleMapBounds(SPHERICAL_MERCATOR, -207511.294398448, 4721294.60441192, startScaleDenominator, false);
+        new CenterScaleMapBounds(
+            SPHERICAL_MERCATOR, -207511.294398448, 4721294.60441192, startScaleDenominator, false);
     final Rectangle paintArea = new Rectangle(580, 425);
     final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea);
 
@@ -117,7 +119,6 @@ public class CenterScaleMapBoundsTest {
     assertEquals(SPHERICAL_MERCATOR, envelope.getCoordinateReferenceSystem());
   }
 
-  
   @Test
   public void testZoomOut() {
     final double Denominator = 2500.0;

@@ -197,11 +197,16 @@ public class BBoxMapBoundsTest {
     double dpi = 96;
     boolean useGeodeticCalculations = true;
     Rectangle screen = new Rectangle(580, 425);
-    ZoomLevels zoomLevels = new ZoomLevels(50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 500000);
+    ZoomLevels zoomLevels =
+        new ZoomLevels(50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 500000);
 
-    
     final CenterScaleMapBounds mapBounds =
-        new CenterScaleMapBounds(SPHERICAL_MERCATOR, -207511.294398448, 4721294.60441192, scaleDenominator, useGeodeticCalculations);
+        new CenterScaleMapBounds(
+            SPHERICAL_MERCATOR,
+            -207511.294398448,
+            4721294.60441192,
+            scaleDenominator,
+            useGeodeticCalculations);
     final ReferencedEnvelope originalBBox = mapBounds.toReferencedEnvelope(screen);
 
     assertEquals(-207733d, originalBBox.getMinX(), 1d);
@@ -209,7 +214,6 @@ public class BBoxMapBoundsTest {
     assertEquals(-207288d, originalBBox.getMaxX(), 1d);
     assertEquals(4721421d, originalBBox.getMaxY(), 1d);
 
-    
     BBoxMapBounds linear =
         new BBoxMapBounds(
             SPHERICAL_MERCATOR,
@@ -221,7 +225,12 @@ public class BBoxMapBoundsTest {
 
     final MapBounds newMapBounds =
         linear.adjustBoundsToNearestScale(
-            zoomLevels, 0.005, ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE, false, screen, dpi);
+            zoomLevels,
+            0.005,
+            ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE,
+            false,
+            screen,
+            dpi);
     ReferencedEnvelope newBBox = newMapBounds.toReferencedEnvelope(screen);
 
     final double delta = 0.00001;
@@ -232,7 +241,7 @@ public class BBoxMapBoundsTest {
         1000,
         newMapBounds
             .getScale(screen, PDF_DPI)
-                .getDenominator(false, SPHERICAL_MERCATOR, PDF_DPI, newBBox.centre()),
+            .getDenominator(false, SPHERICAL_MERCATOR, PDF_DPI, newBBox.centre()),
         1);
     assertEquals(1000d, newMapBounds.getScale(screen, PDF_DPI).getDenominator(PDF_DPI), 1d);
     assertEquals(-207642d, newBBox.getMinX(), 1d);
