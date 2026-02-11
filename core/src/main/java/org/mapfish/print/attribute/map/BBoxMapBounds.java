@@ -177,13 +177,13 @@ public final class BBoxMapBounds extends MapBounds {
 
     double geoWidthInInches;
 
-    // If it is geodetic/degress OR it is a special case requiring geodetic calculation
+    // If it is geodetic/degrees OR it is a special case requiring geodetic calculation
     // (PseudoMercator)
     if (projUnit == DistanceUnit.DEGREES
         || (this.useGeodeticCalculations() && PseudoMercatorUtils.isPseudoMercator(crs))) {
       geoWidthInInches = this.computeGeodeticWidthInInches(bboxAdjustedToScreen);
     } else {
-      // (scale * width ) / dpi = geowidith
+      // (scale * width ) / dpi = geoWidth
       geoWidthInInches = projUnit.convertTo(bboxAdjustedToScreen.getWidth(), DistanceUnit.IN);
     }
 
@@ -194,20 +194,24 @@ public final class BBoxMapBounds extends MapBounds {
   private double computeGeodeticWidthInInches(final ReferencedEnvelope bbox) {
     try {
       CoordinateReferenceSystem crs = bbox.getCoordinateReferenceSystem();
-      GeodeticCalculator calculator =
-          new GeodeticCalculator(crs); // Use the original CRS for the ellipsoid
+      CoordinateReferenceSystem calcCrs = crs;
 
       double centerY = bbox.centre().y;
       Coordinate start = new Coordinate(bbox.getMinX(), centerY);
       Coordinate end = new Coordinate(bbox.getMaxX(), centerY);
 
       if (this.useGeodeticCalculations() && PseudoMercatorUtils.isPseudoMercator(crs)) {
-        // Needs reprojection
-        final MathTransform transform =
-            CRS.findMathTransform(crs, GenericMapAttribute.parseProjection("EPSG:4326", true));
+        // Reproject to a geographic CRS (EPSG:4326) for accurate geodetic calculations
+        final CoordinateReferenceSystem geographicCrs =
+                GenericMapAttribute.parseProjection("EPSG:4326", true);
+        final MathTransform transform = CRS.findMathTransform(crs, geographicCrs);
         start = JTS.transform(start, null, transform);
         end = JTS.transform(end, null, transform);
+        calcCrs = geographicCrs;
       }
+
+      // Construct the calculator with the CRS that matches the coordinates
+      GeodeticCalculator calculator = new GeodeticCalculator(calcCrs);
 
       // --- Common Logic ---
       calculator.setStartingGeographicPoint(start.x, start.y);
@@ -298,7 +302,8 @@ public final class BBoxMapBounds extends MapBounds {
   @Override
   public MapBounds zoomToScale(final Scale scale) {
     Coordinate center = this.bbox.centre();
-    return new CenterScaleMapBounds(getProjection(), center.x, center.y, scale);
+    return new CenterScaleMapBounds(
+        getProjection(), center.x, center.y, scale, this.useGeodeticCalculations());
   }
 
   @Override

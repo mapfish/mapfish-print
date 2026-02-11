@@ -243,15 +243,11 @@ public final class CenterScaleMapBounds extends MapBounds {
 
       final int south = 180;
       calc.setDirection(south, geoHeight / 2.0);
-      double southHeight = calc.getOrthodromicDistance();
+      double minGeoY = calc.getDestinationPosition().getOrdinate(1);
 
       final int north = 0;
       calc.setDirection(north, geoHeight / 2.0);
-      double northHeight = calc.getOrthodromicDistance();
-
-      double halfHeight = (southHeight + northHeight) / 2;
-      double minGeoY = calc.getStartingPosition().getOrdinate(1) - halfHeight;
-      double maxGeoY = calc.getStartingPosition().getOrdinate(1) + halfHeight;
+      double maxGeoY = calc.getDestinationPosition().getOrdinate(1);
 
       return new ReferencedEnvelope(minGeoX, maxGeoX, minGeoY, maxGeoY, crs);
     } catch (TransformException e) {
