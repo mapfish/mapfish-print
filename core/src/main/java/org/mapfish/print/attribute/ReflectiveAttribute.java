@@ -441,8 +441,12 @@ public abstract class ReflectiveAttribute<VALUE> implements Attribute {
         throw new IllegalArgumentException(message);
       }
       pValue = this.getDefaultValue();
-      // If the attribute is missing from the request and has no meaningful default,
-      // throw ObjectMissingException to let the framework handle it properly
+      // If the attribute is missing from the request and has no meaningful default
+      // (i.e., the default value is an empty object), throw ObjectMissingException.
+      // This prevents attempting to parse an empty object which would trigger
+      // OneOf validation errors for required fields. The framework will handle this
+      // by either throwing MissingPropertyException for required attributes or
+      // skipping optional attributes.
       if (pValue != null && !pValue.keys().hasNext()) {
         throw new ObjectMissingException(
             requestJsonAttributes, attributeName);
