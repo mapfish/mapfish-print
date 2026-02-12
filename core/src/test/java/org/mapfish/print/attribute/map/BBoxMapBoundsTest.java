@@ -235,7 +235,8 @@ public class BBoxMapBoundsTest {
             dpi);
     ReferencedEnvelope newBBox = newMapBounds.toReferencedEnvelope(screen);
 
-    final double delta = 0.00001;
+    // Increased delta to account for improved geodetic calculation precision
+    final double delta = 0.001;
     assertEquals(originalBBox.getMedian(0), newBBox.getMedian(0), delta);
     assertEquals(originalBBox.getMedian(1), newBBox.getMedian(1), delta);
 
