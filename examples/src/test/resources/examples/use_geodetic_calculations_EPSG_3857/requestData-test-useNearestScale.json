@@ -7,7 +7,7 @@
       "projection": "EPSG:3857",
       "useGeodeticCalculations": true,
       "dpi": 96,
-      "rotation": "0",
+      "rotation": 0,
       "center": [-207511.294398448, 4721294.60441192],
       "scale": 1692.7491482896,
       "useNearestScale": true,
