@@ -47,7 +47,6 @@ public class GenericMapAttributeTest {
     assertTrue(json.has(JSON_CLIENT_INFO), json.toString(2));
 
     final JSONObject required = json.getJSONObject(JSON_CLIENT_PARAMS);
-    // Updated to 17 after adding useGeodeticCalculations field
     assertEquals(17, required.length(), required.toString(2));
 
     assertElem(required, "requiredElem", "int", null, false);
