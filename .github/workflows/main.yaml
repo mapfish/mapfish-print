@@ -160,6 +160,22 @@ jobs:
         env:
           DOCKER_COMPOSE_ARGS: --file=docker-compose-cluster.yaml
 
+      - name: Start the acceptance tests composition (context path)
+        run: make acceptance-tests-up
+        env:
+          DOCKER_COMPOSE_ARGS: --file=docker-compose-context-path.yaml
+      - name: Run the acceptance tests (context path)
+        run: make acceptance-tests-run-context-path
+        timeout-minutes: 6 # Add a timeout to catch performance regressions
+        env:
+          DOCKER_COMPOSE_ARGS: --file=docker-compose-context-path.yaml
+      - run: c2cciutils-docker-logs || true
+        if: always()
+      - name: Stop the acceptance tests composition (context path)
+        run: make acceptance-tests-down
+        env:
+          DOCKER_COMPOSE_ARGS: --file=docker-compose-context-path.yaml
+
       - uses: actions/upload-artifact@v6
         with:
           name: Acceptance tests (Examples)

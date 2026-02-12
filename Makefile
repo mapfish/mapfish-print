@@ -57,12 +57,19 @@ acceptance-tests-up: build .env
 
 .PHONY: acceptance-tests-run
 acceptance-tests-run: .env
-	docker compose $(DOCKER_COMPOSE_ARGS) exec -T tests gradle \
+	docker compose $(DOCKER_COMPOSE_ARGS) exec -T --env=MAPFISH_PRINT_TESTS_CONTEXT_PATH_MODE=false tests gradle \
 		--exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain \
 		--exclude-task=:core:spotbugsTest --exclude-task=:core:checkstyleTest --exclude-task=:core:testCLI \
 		:examples:integrationTest
 	ci/check-fonts
 	ci/validate-container
+
+.PHONY: acceptance-tests-context-path
+acceptance-tests-run-context-path: .env
+	docker compose $(DOCKER_COMPOSE_ARGS) exec -T --env=MAPFISH_PRINT_TESTS_CONTEXT_PATH_MODE=true tests gradle \
+		--exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain \
+		--exclude-task=:core:spotbugsTest --exclude-task=:core:checkstyleTest --exclude-task=:core:testCLI \
+		:examples:integrationTest --tests "org.mapfish.print.ContextPathTest"
 
 .PHONY: acceptance-tests-down
 acceptance-tests-down: .env
