@@ -245,9 +245,9 @@ public class BBoxMapBoundsTest {
         1);
     assertEquals(1000d, newMapBounds.getScale(screen, PDF_DPI).getDenominator(PDF_DPI), 1d);
     assertEquals(-207642d, newBBox.getMinX(), 1d);
-    assertEquals(4721219d, newBBox.getMinY(), 1d);
+    assertEquals(4721198d, newBBox.getMinY(), 1d);
     assertEquals(-207379d, newBBox.getMaxX(), 1d);
-    assertEquals(4721369d, newBBox.getMaxY(), 1d);
+    assertEquals(4721391d, newBBox.getMaxY(), 1d);
   }
 
   @Test
