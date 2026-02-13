@@ -6,6 +6,8 @@ import org.json.JSONArray;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mapfish.print.servlet.MapPrinterServlet;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -27,20 +29,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 public class ContextPathTest extends AbstractApiTest {
 
-  @Test
+  @ParameterizedTest
   @EnabledIfEnvironmentVariable(named = "MAPFISH_PRINT_TESTS_CONTEXT_PATH_MODE", matches = "true")
-  public void testIndexRedirect() throws Exception {
-    ClientHttpRequest request = getRequest("print", HttpMethod.GET);
-    try (ClientHttpResponse response = request.execute()) {
-      assertEquals(HttpStatus.FOUND, response.getStatusCode());
-      assertEquals("/print/", response.getHeaders().getLocation().toString());
-    }
-  }
-
-  @Test
-  @EnabledIfEnvironmentVariable(named = "MAPFISH_PRINT_TESTS_CONTEXT_PATH_MODE", matches = "true")
-  public void testIndex() throws Exception {
-    ClientHttpRequest request = getRequest("print/", HttpMethod.GET);
+  @ValueSource(strings = {"print", "print/"})
+  public void testIndexPaths(String path) throws Exception {
+    ClientHttpRequest request = getRequest(path, HttpMethod.GET);
     try (ClientHttpResponse response = request.execute()) {
       assertEquals(HttpStatus.OK, response.getStatusCode());
       assertEquals("text/html", response.getHeaders().getContentType().toString());
@@ -51,7 +44,7 @@ public class ContextPathTest extends AbstractApiTest {
   @EnabledIfEnvironmentVariable(named = "MAPFISH_PRINT_TESTS_CONTEXT_PATH_MODE", matches = "true")
   public void testListApps() throws Exception {
     ClientHttpRequest request =
-        getRequest("print" + MapPrinterServlet.LIST_APPS_URL, HttpMethod.GET);
+        getRequest("print/print" + MapPrinterServlet.LIST_APPS_URL, HttpMethod.GET);
     try (ClientHttpResponse response = request.execute()) {
       assertEquals(HttpStatus.OK, response.getStatusCode());
       assertEquals(getJsonMediaType(), response.getHeaders().getContentType());
