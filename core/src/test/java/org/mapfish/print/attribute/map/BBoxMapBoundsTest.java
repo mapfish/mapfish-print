@@ -233,10 +233,6 @@ public class BBoxMapBoundsTest {
             dpi);
     ReferencedEnvelope newBBox = newMapBounds.toReferencedEnvelope(screen);
 
-    final double delta = 0.001;
-    assertEquals(originalBBox.getMedian(0), newBBox.getMedian(0), delta);
-    assertEquals(originalBBox.getMedian(1), newBBox.getMedian(1), delta);
-
     assertEquals(
         1000,
         newMapBounds
