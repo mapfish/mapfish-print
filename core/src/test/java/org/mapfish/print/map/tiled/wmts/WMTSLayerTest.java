@@ -76,4 +76,46 @@ public class WMTSLayerTest {
         "http://test_server/literal/style/tilematrixset/mapproxy_4_v3/wmts/wmts_layer/default/matrix_set/the_matrix_id/5/4.png",
         restURI);
   }
+
+  @Test
+  public void testComputeExtraScalingFactorPseudoMercatorGeodetic() throws Exception {
+    // Setup WMTSLayer with EPSG:3857 (Pseudo-Mercator)
+    WMTSLayerParam params = new WMTSLayerParam();
+    Matrix matrix1 = new Matrix();
+    matrix1.matrixSize = new long[] {2, 2};
+    matrix1.tileSize = new int[] {256, 256};
+    matrix1.topLeftCorner = new double[] {-20037508.3427892, 20037508.3427892};
+    matrix1.scaleDenominator = 559082264.028;
+    Matrix matrix2 = new Matrix();
+    matrix2.matrixSize = new long[] {4, 4};
+    matrix2.tileSize = new int[] {256, 256};
+    matrix2.topLeftCorner = new double[] {-20037508.3427892, 20037508.3427892};
+    matrix2.scaleDenominator = 279541132.014;
+    params.matrices = new Matrix[] {matrix1, matrix2};
+
+    WMTSLayer wmtsLayer = new WMTSLayer(null, null, params, null, new Configuration());
+
+    // Center at non-equatorial latitude (e.g., Lausanne, Switzerland)
+    double centerX = 732000.0;
+    double centerY = 5860000.0;
+    MapBounds bounds =
+        new CenterScaleMapBounds(
+            CRS.decode("EPSG:3857"), centerX, centerY, 10000.0, true // useGeodeticCalculations
+            );
+
+    // Access computeExtraScalingFactor via reflection (since it's private)
+    java.lang.reflect.Method method =
+        WMTSLayer.class.getDeclaredMethod("computeExtraScalingFactor", MapBounds.class);
+    method.setAccessible(true);
+    double scalingFactor = (double) method.invoke(wmtsLayer, bounds);
+
+    // The scaling factor should not be 1 at non-equatorial latitude
+    assertTrue(
+        scalingFactor != 1.0, "Scaling factor should differ from 1 for non-equatorial latitude");
+    // Should be > 1 at higher latitudes (distance per degree decreases)
+    assertTrue(scalingFactor > 1.0, "Scaling factor should be > 1 at higher latitudes");
+    // Should be finite and positive
+    assertTrue(Double.isFinite(scalingFactor), "Scaling factor should be finite");
+    assertTrue(scalingFactor > 0, "Scaling factor should be positive");
+  }
 }
