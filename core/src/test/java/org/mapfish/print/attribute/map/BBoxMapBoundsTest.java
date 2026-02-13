@@ -209,10 +209,10 @@ public class BBoxMapBoundsTest {
             useGeodeticCalculations);
     final ReferencedEnvelope originalBBox = mapBounds.toReferencedEnvelope(screen);
 
-    assertEquals(-207733d, originalBBox.getMinX(), 1d);
-    assertEquals(4721131d, originalBBox.getMinY(), 1d);
-    assertEquals(-207288d, originalBBox.getMaxX(), 1d);
-    assertEquals(4721458d, originalBBox.getMaxY(), 1d);
+    assertEquals(-207733.82854451129, originalBBox.getMinX());
+    assertEquals(4721130.878126721, originalBBox.getMinY());
+    assertEquals(-207288.76025238473, originalBBox.getMaxX());
+    assertEquals(4721458.333309775, originalBBox.getMaxY());
 
     BBoxMapBounds linear =
         new BBoxMapBounds(
@@ -221,7 +221,7 @@ public class BBoxMapBoundsTest {
             originalBBox.getMinY(),
             originalBBox.getMaxX(),
             originalBBox.getMaxY(),
-            mapBounds.useGeodeticCalculations());
+            useGeodeticCalculations);
 
     final MapBounds newMapBounds =
         linear.adjustBoundsToNearestScale(
@@ -233,6 +233,10 @@ public class BBoxMapBoundsTest {
             dpi);
     ReferencedEnvelope newBBox = newMapBounds.toReferencedEnvelope(screen);
 
+    final double delta = 0.001; // one millimeter delta
+    assertEquals(originalBBox.getMedian(0), newBBox.getMedian(0), delta);
+    assertEquals(originalBBox.getMedian(1), newBBox.getMedian(1), delta);
+
     assertEquals(
         1000,
         newMapBounds
@@ -240,10 +244,10 @@ public class BBoxMapBoundsTest {
             .getDenominator(false, SPHERICAL_MERCATOR, PDF_DPI, newBBox.centre()),
         1);
     assertEquals(1000d, newMapBounds.getScale(screen, PDF_DPI).getDenominator(PDF_DPI), 1d);
-    assertEquals(-207642d, newBBox.getMinX(), 1d);
-    assertEquals(4721198d, newBBox.getMinY(), 1d);
-    assertEquals(-207379d, newBBox.getMaxX(), 1d);
-    assertEquals(4721391d, newBBox.getMaxY(), 1d);
+    assertEquals(-207642.75755489978, newBBox.getMinX());
+    assertEquals(4721197.883283044, newBBox.getMinY());
+    assertEquals(-207379.83124199632, newBBox.getMaxX());
+    assertEquals(4721391.329065245, newBBox.getMaxY());
   }
 
   @Test
