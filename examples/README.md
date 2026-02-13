@@ -59,3 +59,9 @@ To do so, in the CI use the `DOCKER_COMPOSE_ARGS` environment variable to specif
 - `DOCKER_COMPOSE_ARGS=--file=docker-compose-cluster.yaml make acceptance-tests-up`
 - `DOCKER_COMPOSE_ARGS=--file=docker-compose-cluster.yaml make acceptance-tests-run`
 - `DOCKER_COMPOSE_ARGS=--file=docker-compose-cluster.yaml make acceptance-tests-down`
+
+To run context path related tests, one must use:
+
+- `DOCKER_COMPOSE_ARGS=--file=docker-compose-context-path.yaml make acceptance-tests-up`
+- `DOCKER_COMPOSE_ARGS=--file=docker-compose-context-path.yaml make acceptance-tests-run-context-path`
+- `DOCKER_COMPOSE_ARGS=--file=docker-compose-context-path.yaml make acceptance-tests-down`
