@@ -130,7 +130,7 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
         GeodeticCalculator calculator = new GeodeticCalculator(geoCrs);
         calculator.setStartingGeographicPoint(0, 0);
         calculator.setDestinationGeographicPoint(1, 0);
-        double equador1DegreeDistance = calculator.getOrthodromicDistance();
+        double equator1DegreeDistance = calculator.getOrthodromicDistance();
 
         Coordinate center = bounds.getCenter();
         double centerX = center.getOrdinate(0);
@@ -140,9 +140,9 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
             JTS.transform(new Coordinate(centerX, centerY), null, transform);
         calculator.setStartingGeographicPoint(0, centerGeo.y);
         calculator.setDestinationGeographicPoint(1, centerGeo.y);
-        double latitud1DegreeDistance = calculator.getOrthodromicDistance();
+        double latitude1DegreeDistance = calculator.getOrthodromicDistance();
 
-        double factor = equador1DegreeDistance / latitud1DegreeDistance;
+        double factor = equator1DegreeDistance / latitude1DegreeDistance;
 
         return factor;
       } catch (Exception e) {
