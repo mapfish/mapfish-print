@@ -192,6 +192,65 @@ public class BBoxMapBoundsTest {
   }
 
   @Test
+  public void testAdjustToScaleInSphericalMercatorProjectionWidthGeodeticCalculations() {
+    double scaleDenominator = 1692.7491482896;
+    double dpi = 96;
+    boolean useGeodeticCalculations = true;
+    Rectangle screen = new Rectangle(580, 425);
+    ZoomLevels zoomLevels =
+        new ZoomLevels(50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 500000);
+
+    final CenterScaleMapBounds mapBounds =
+        new CenterScaleMapBounds(
+            SPHERICAL_MERCATOR,
+            -207511.294398448,
+            4721294.60441192,
+            scaleDenominator,
+            useGeodeticCalculations);
+    final ReferencedEnvelope originalBBox = mapBounds.toReferencedEnvelope(screen);
+
+    assertEquals(-207733.82854451129, originalBBox.getMinX());
+    assertEquals(4721130.878126721, originalBBox.getMinY());
+    assertEquals(-207288.76025238473, originalBBox.getMaxX());
+    assertEquals(4721458.333309775, originalBBox.getMaxY());
+
+    BBoxMapBounds linear =
+        new BBoxMapBounds(
+            SPHERICAL_MERCATOR,
+            originalBBox.getMinX(),
+            originalBBox.getMinY(),
+            originalBBox.getMaxX(),
+            originalBBox.getMaxY(),
+            useGeodeticCalculations);
+
+    final MapBounds newMapBounds =
+        linear.adjustBoundsToNearestScale(
+            zoomLevels,
+            0.005,
+            ZoomLevelSnapStrategy.CLOSEST_LOWER_SCALE_ON_TIE,
+            false,
+            screen,
+            dpi);
+    ReferencedEnvelope newBBox = newMapBounds.toReferencedEnvelope(screen);
+
+    final double delta = 0.001; // one millimeter delta
+    assertEquals(originalBBox.getMedian(0), newBBox.getMedian(0), delta);
+    assertEquals(originalBBox.getMedian(1), newBBox.getMedian(1), delta);
+
+    assertEquals(
+        1000,
+        newMapBounds
+            .getScale(screen, PDF_DPI)
+            .getDenominator(false, SPHERICAL_MERCATOR, PDF_DPI, newBBox.centre()),
+        1);
+    assertEquals(1000d, newMapBounds.getScale(screen, PDF_DPI).getDenominator(PDF_DPI), 1d);
+    assertEquals(-207642.75755489978, newBBox.getMinX());
+    assertEquals(4721197.883283044, newBBox.getMinY());
+    assertEquals(-207379.83124199632, newBBox.getMaxX());
+    assertEquals(4721391.329065245, newBBox.getMaxY());
+  }
+
+  @Test
   public void testExpandHorizontalFeatureInVerticalMap() {
     final BBoxMapBounds bounds = new BBoxMapBounds(CH1903, 300000, 500000, 300200, 500100);
 

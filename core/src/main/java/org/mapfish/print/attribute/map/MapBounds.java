@@ -16,6 +16,19 @@ import org.slf4j.LoggerFactory;
 public abstract class MapBounds {
   private static final Logger LOGGER = LoggerFactory.getLogger(MapBounds.class);
   private final CoordinateReferenceSystem projection;
+  private final boolean useGeodeticCalculations;
+
+  /**
+   * Constructor.
+   *
+   * @param projection the projection these bounds are defined in.
+   * @param useGeodeticCalculations force to use geodetic calculations in PseudoMercator projection
+   */
+  protected MapBounds(
+      final CoordinateReferenceSystem projection, final boolean useGeodeticCalculations) {
+    this.projection = projection;
+    this.useGeodeticCalculations = useGeodeticCalculations;
+  }
 
   /**
    * Constructor.
@@ -23,7 +36,7 @@ public abstract class MapBounds {
    * @param projection the projection these bounds are defined in.
    */
   protected MapBounds(final CoordinateReferenceSystem projection) {
-    this.projection = projection;
+    this(projection, false);
   }
 
   /**
@@ -89,7 +102,7 @@ public abstract class MapBounds {
     final Scale scale = getScale(paintArea, dpi);
     final Scale correctedScale;
     final double scaleRatio;
-    if (geodetic) {
+    if (geodetic && !this.useGeodeticCalculations()) {
       final double currentScaleDenominator =
           scale.getGeodeticDenominator(getProjection(), dpi, getCenter());
       scaleRatio = scale.getDenominator(dpi) / currentScaleDenominator;
@@ -104,7 +117,7 @@ public abstract class MapBounds {
         zoomLevelSnapStrategy.search(correctedScale, tolerance, zoomLevels);
     final Scale newScale;
 
-    if (geodetic) {
+    if (geodetic && !this.useGeodeticCalculations()) {
       newScale =
           new Scale(result.getScale(unit).getDenominator(dpi) * scaleRatio, getProjection(), dpi);
     } else {
@@ -154,6 +167,16 @@ public abstract class MapBounds {
    */
   public abstract Coordinate getCenter();
 
+  /**
+   * Should use geodetic calculations to manage Pseudo-mercator projection?
+   *
+   * @return true if the use of geodetic calculations is forced in the PseudoMercator projection;
+   *     otherwise, it returns false.
+   */
+  public boolean useGeodeticCalculations() {
+    return this.useGeodeticCalculations;
+  }
+
   @Override
   public boolean equals(final Object o) {
     if (this == o) {
@@ -165,11 +188,14 @@ public abstract class MapBounds {
 
     MapBounds mapBounds = (MapBounds) o;
 
-    return projection.equals(mapBounds.projection);
+    return projection.equals(mapBounds.projection)
+        && useGeodeticCalculations == mapBounds.useGeodeticCalculations;
   }
 
   @Override
   public int hashCode() {
-    return projection.hashCode();
+    int result = projection.hashCode();
+    result = 31 * result + (useGeodeticCalculations ? 1 : 0);
+    return result;
   }
 }

@@ -444,4 +444,22 @@ public abstract class ReflectiveAttribute<VALUE> implements Attribute {
     MapfishParser.parse(errorOnExtraParameters, pValue, value);
     return value;
   }
+
+  /**
+   * Check if a class has any fields with @OneOf annotations.
+   *
+   * @param clazz the class to check
+   * @return true if the class has OneOf constraints
+   */
+  private boolean hasOneOfConstraints(final Class<?> clazz) {
+    Collection<Field> fields =
+        ParserUtils.getAttributes(
+            clazz, field -> !java.lang.reflect.Modifier.isFinal(field.getModifiers()));
+    for (Field field : fields) {
+      if (field.getAnnotation(OneOf.class) != null) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

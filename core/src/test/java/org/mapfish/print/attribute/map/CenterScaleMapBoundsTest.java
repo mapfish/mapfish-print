@@ -88,6 +88,38 @@ public class CenterScaleMapBoundsTest {
   }
 
   @Test
+  public void testToReferencedEnvelopeSphericalMercatorProjectionWidthGeodeticCalculation() {
+    final double startScaleDenominator = 1692.7491482896;
+    final CenterScaleMapBounds bounds =
+        new CenterScaleMapBounds(
+            SPHERICAL_MERCATOR, -207511.294398448, 4721294.60441192, startScaleDenominator, true);
+    final Rectangle paintArea = new Rectangle(580, 425);
+    final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea);
+
+    assertEquals(-207733d, envelope.getMinX(), 1);
+    assertEquals(-207288d, envelope.getMaxX(), 1);
+    assertEquals(4721131d, envelope.getMinY(), 1);
+    assertEquals(4721458d, envelope.getMaxY(), 1);
+    assertEquals(SPHERICAL_MERCATOR, envelope.getCoordinateReferenceSystem());
+  }
+
+  @Test
+  public void testToReferencedEnvelopeSphericalMercatorProjectionWithoutGeodeticCalculation() {
+    final double startScaleDenominator = 1692.7491482896;
+    final CenterScaleMapBounds bounds =
+        new CenterScaleMapBounds(
+            SPHERICAL_MERCATOR, -207511.294398448, 4721294.60441192, startScaleDenominator, false);
+    final Rectangle paintArea = new Rectangle(580, 425);
+    final ReferencedEnvelope envelope = bounds.toReferencedEnvelope(paintArea);
+
+    assertEquals(-207684d, envelope.getMinX(), 1);
+    assertEquals(-207338d, envelope.getMaxX(), 1);
+    assertEquals(4721167d, envelope.getMinY(), 1);
+    assertEquals(4721421d, envelope.getMaxY(), 1);
+    assertEquals(SPHERICAL_MERCATOR, envelope.getCoordinateReferenceSystem());
+  }
+
+  @Test
   public void testZoomOut() {
     final double Denominator = 2500.0;
     final CenterScaleMapBounds bounds =

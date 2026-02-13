@@ -174,19 +174,21 @@ public final class MapAttribute extends GenericMapAttribute {
         double centerX = this.center[0];
         double centerY = this.center[1];
 
-        bounds = new CenterScaleMapBounds(crs, centerX, centerY, this.scale);
+        bounds =
+            new CenterScaleMapBounds(
+                crs, centerX, centerY, this.scale, this.useGeodeticCalculations);
       } else if (this.bbox != null) {
         final int maxYIndex = 3;
         double minX = this.bbox[0];
         double minY = this.bbox[1];
         double maxX = this.bbox[2];
         double maxY = this.bbox[maxYIndex];
-        bounds = new BBoxMapBounds(crs, minX, minY, maxX, maxY);
+        bounds = new BBoxMapBounds(crs, minX, minY, maxX, maxY, this.useGeodeticCalculations);
       } else if (this.areaOfInterest != null) {
         Envelope area = this.areaOfInterest.getArea().getEnvelopeInternal();
-        bounds = new BBoxMapBounds(crs, area);
+        bounds = new BBoxMapBounds(crs, area, this.useGeodeticCalculations);
       } else if (this.zoomToFeatures != null) {
-        bounds = new BBoxMapBounds(crs, 0, 0, 10, 10);
+        bounds = new BBoxMapBounds(crs, 0, 0, 10, 10, this.useGeodeticCalculations);
       } else {
         throw new IllegalArgumentException(
             "Expected either: center and scale, bbox, or an "

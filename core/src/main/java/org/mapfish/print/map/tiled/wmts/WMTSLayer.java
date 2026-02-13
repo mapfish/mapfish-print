@@ -12,8 +12,17 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ForkJoinPool;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.GeodeticCalculator;
+import org.locationtech.jts.geom.Coordinate;
+import org.mapfish.print.PrintException;
+import org.mapfish.print.PseudoMercatorUtils;
+import org.mapfish.print.attribute.map.GenericMapAttribute;
 import org.mapfish.print.attribute.map.MapBounds;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
@@ -72,17 +81,22 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
         final WMTSLayer layer) {
       super(bounds, paintArea, dpi, layer.param);
       double diff = Double.POSITIVE_INFINITY;
-      final double targetResolution = bounds.getScale(paintArea, dpi).getResolution();
+      double scalingFactor = computeExtraScalingFactor(bounds);
+      // Apply scalingFactor to targetResolution for both matrix selection and ibf calculation
+      final double targetResolution =
+          bounds.getScale(paintArea, dpi).getResolution() * scalingFactor;
       double ibf = DEFAULT_SCALING;
       LOGGER.debug(
-          "Computing imageBufferScaling of layer {} at target resolution {}",
+          "Computing imageBufferScaling of layer {} at target resolution {} (scalingFactor={})",
           layer.getName(),
-          targetResolution);
-
+          targetResolution,
+          scalingFactor);
       for (Matrix m : getParams().matrices) {
-        final double resolution = m.getResolution(this.bounds.getProjection());
+        double resolution = m.getResolution(this.bounds.getProjection());
         LOGGER.debug(
-            "Checking tile resolution {} ({} scaling)", resolution, targetResolution / resolution);
+            "Checking tile resolution {} ({} scaling)",
+            resolution,
+            (targetResolution / resolution));
         final double delta = Math.abs(resolution - targetResolution);
         if (delta < diff) {
           diff = delta;
@@ -96,6 +110,43 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
       if (this.matrix == null) {
         throw new IllegalArgumentException(
             "Unable to find a matrix for the resolution: " + targetResolution);
+      }
+    }
+
+    /**
+     * The scalingFactor is used to correct for the distortion of the Web Mercator projection. This
+     * projection distorts distances and areas as one moves away from the equator. This factor
+     * ensures that the final printed map's scale is accurate at the map's center.
+     */
+    @SuppressWarnings("UseSpecificCatch")
+    private double computeExtraScalingFactor(final MapBounds bounds) {
+      try {
+        CoordinateReferenceSystem crs = this.bounds.getProjection();
+        if (!(bounds.useGeodeticCalculations() && PseudoMercatorUtils.isPseudoMercator(crs))) {
+          return 1;
+        }
+        // Perform geodetic calculations in a geographic CRS (WGS84) using lon/lat degrees.
+        CoordinateReferenceSystem geoCrs = GenericMapAttribute.parseProjection("EPSG:4326", true);
+        GeodeticCalculator calculator = new GeodeticCalculator(geoCrs);
+        calculator.setStartingGeographicPoint(0, 0);
+        calculator.setDestinationGeographicPoint(1, 0);
+        double equator1DegreeDistance = calculator.getOrthodromicDistance();
+
+        Coordinate center = bounds.getCenter();
+        double centerX = center.getOrdinate(0);
+        double centerY = center.getOrdinate(1);
+        final MathTransform transform = CRS.findMathTransform(crs, geoCrs);
+        final Coordinate centerGeo =
+            JTS.transform(new Coordinate(centerX, centerY), null, transform);
+        calculator.setStartingGeographicPoint(0, centerGeo.y);
+        calculator.setDestinationGeographicPoint(1, centerGeo.y);
+        double latitude1DegreeDistance = calculator.getOrthodromicDistance();
+
+        double factor = equator1DegreeDistance / latitude1DegreeDistance;
+
+        return factor;
+      } catch (Exception e) {
+        throw new PrintException("Can't compute scaling factor correction for PseudoMercator", e);
       }
     }
 
