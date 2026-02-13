@@ -188,11 +188,14 @@ public abstract class MapBounds {
 
     MapBounds mapBounds = (MapBounds) o;
 
-    return projection.equals(mapBounds.projection);
+    return projection.equals(mapBounds.projection)
+        && useGeodeticCalculations == mapBounds.useGeodeticCalculations;
   }
 
   @Override
   public int hashCode() {
-    return projection.hashCode();
+    int result = projection.hashCode();
+    result = 31 * result + (useGeodeticCalculations ? 1 : 0);
+    return result;
   }
 }
