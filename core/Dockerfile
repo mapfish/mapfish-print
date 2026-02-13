@@ -51,7 +51,9 @@ FROM runner AS tester
 
 COPY extraConfigFor/acceptanceTests/mapfish-spring-application-context-override.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/
 COPY extraConfigFor/acceptanceTests/mapfish-spring-application-context-override-db.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/
-RUN chmod go+rw /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/mapfish-spring-application-context-override*.xml
+RUN chmod go+rw /usr/local/tomcat/webapps/ROOT/ \
+    /usr/local/tomcat/webapps/ROOT/WEB-INF/ \
+    /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/mapfish-spring-application-context-override*.xml
 
 FROM runner AS watcher
 

@@ -8,6 +8,10 @@ services:
     extends:
       file: docker-compose-lib.yaml
       service: print
+    ports:
+      - 8081:8080
+    environment:
+      CONTEXT_PATH: /print
 
   tests:
     extends:
