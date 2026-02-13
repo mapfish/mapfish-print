@@ -103,11 +103,16 @@ public class WMTSLayerTest {
             CRS.decode("EPSG:3857"), centerX, centerY, 10000.0, true // useGeodeticCalculations
             );
 
+    Rectangle paintArea = new Rectangle(0, 0, 256, 256);
+    WMTSLayer.WMTSTileInfo tileInformation =
+        (WMTSLayer.WMTSTileInfo) wmtsLayer.createTileInformation(bounds, paintArea, 256);
+
     // Access computeExtraScalingFactor via reflection (since it's private)
     java.lang.reflect.Method method =
-        WMTSLayer.class.getDeclaredMethod("computeExtraScalingFactor", MapBounds.class);
+        WMTSLayer.class.getDeclaredClasses()[0].getDeclaredMethod(
+            "computeExtraScalingFactor", MapBounds.class);
     method.setAccessible(true);
-    double scalingFactor = (double) method.invoke(wmtsLayer, bounds);
+    double scalingFactor = (double) method.invoke(tileInformation, bounds);
 
     // The scaling factor should not be 1 at non-equatorial latitude
     assertTrue(
