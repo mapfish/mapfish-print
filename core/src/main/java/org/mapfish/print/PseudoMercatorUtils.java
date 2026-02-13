@@ -18,6 +18,11 @@ public final class PseudoMercatorUtils {
    * @return {@code true} if the CRS is Pseudo-Mercator, {@code false} otherwise.
    */
   public static boolean isPseudoMercator(final CoordinateReferenceSystem crs) {
+    // Possible improvement : Some CRS implementations use URNs (e.g. urn:ogc:def:crs:EPSG::3857) or
+    // provide multiple identifiers. Consider iterating all identifiers and/or using GeoTools
+    // utilities like CRS.lookupEpsgCode(...) / IdentifiedObjects.lookupIdentifier(...) to reliably
+    // detect EPSG:3857 (also guard against crs/crs.getName() being null).
+
     // Check CRS name (case-insensitive)
     String crsNameCode = crs.getName().getCode().toLowerCase();
     boolean nameMatch =
