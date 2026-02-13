@@ -64,7 +64,7 @@ acceptance-tests-run: .env
 	ci/check-fonts
 	ci/validate-container
 
-.PHONY: acceptance-tests-context-path
+.PHONY: acceptance-tests-run-context-path
 acceptance-tests-run-context-path: .env
 	docker compose $(DOCKER_COMPOSE_ARGS) exec -T --env=MAPFISH_PRINT_TESTS_CONTEXT_PATH_MODE=true tests gradle \
 		--exclude-task=:core:spotbugsMain --exclude-task=:core:checkstyleMain \
