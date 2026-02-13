@@ -81,26 +81,27 @@ public class WMTSLayer extends AbstractTiledLayer<WMTSLayerParam> {
         final WMTSLayer layer) {
       super(bounds, paintArea, dpi, layer.param);
       double diff = Double.POSITIVE_INFINITY;
-      final double targetResolution = bounds.getScale(paintArea, dpi).getResolution();
+      double scalingFactor = computeExtraScalingFactor(bounds);
+      // Apply scalingFactor to targetResolution for both matrix selection and ibf calculation
+      final double targetResolution =
+          bounds.getScale(paintArea, dpi).getResolution() * scalingFactor;
       double ibf = DEFAULT_SCALING;
       LOGGER.debug(
-          "Computing imageBufferScaling of layer {} at target resolution {}",
+          "Computing imageBufferScaling of layer {} at target resolution {} (scalingFactor={})",
           layer.getName(),
-          targetResolution);
-      double scalingFactor = computeExtraScalingFactor(bounds);
-
+          targetResolution,
+          scalingFactor);
       for (Matrix m : getParams().matrices) {
         double resolution = m.getResolution(this.bounds.getProjection());
         LOGGER.debug(
             "Checking tile resolution {} ({} scaling)",
             resolution,
-            (targetResolution / resolution) * scalingFactor);
+            (targetResolution / resolution));
         final double delta = Math.abs(resolution - targetResolution);
         if (delta < diff) {
           diff = delta;
           this.matrix = m;
-          // Apply the scaling factor to compensate for Mercator projection distortion.
-          ibf = (targetResolution / resolution) * scalingFactor;
+          ibf = targetResolution / resolution;
         }
       }
       imageBufferScaling = ibf;
