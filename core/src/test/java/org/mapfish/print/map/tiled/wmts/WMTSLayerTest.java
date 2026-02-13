@@ -93,8 +93,6 @@ public class WMTSLayerTest {
     matrix2.scaleDenominator = 279541132.014;
     params.matrices = new Matrix[] {matrix1, matrix2};
 
-    WMTSLayer wmtsLayer = new WMTSLayer(null, null, params, null, new Configuration());
-
     // Center at non-equatorial latitude (e.g., Lausanne, Switzerland)
     double centerX = 732000.0;
     double centerY = 5860000.0;
@@ -103,13 +101,14 @@ public class WMTSLayerTest {
             CRS.decode("EPSG:3857"), centerX, centerY, 10000.0, true // useGeodeticCalculations
             );
 
+    WMTSLayer wmtsLayer = new WMTSLayer(null, null, params, null, new Configuration());
     Rectangle paintArea = new Rectangle(0, 0, 256, 256);
     WMTSLayer.WMTSTileInfo tileInformation =
         (WMTSLayer.WMTSTileInfo) wmtsLayer.createTileInformation(bounds, paintArea, 256);
 
     // Access computeExtraScalingFactor via reflection (since it's private)
     java.lang.reflect.Method method =
-        WMTSLayer.class.getDeclaredClasses()[0].getDeclaredMethod(
+        WMTSLayer.WMTSTileInfo.class.getDeclaredMethod(
             "computeExtraScalingFactor", MapBounds.class);
     method.setAccessible(true);
     double scalingFactor = (double) method.invoke(tileInformation, bounds);
@@ -119,8 +118,6 @@ public class WMTSLayerTest {
         scalingFactor != 1.0, "Scaling factor should differ from 1 for non-equatorial latitude");
     // Should be > 1 at higher latitudes (distance per degree decreases)
     assertTrue(scalingFactor > 1.0, "Scaling factor should be > 1 at higher latitudes");
-    // Should be finite and positive
     assertTrue(Double.isFinite(scalingFactor), "Scaling factor should be finite");
-    assertTrue(scalingFactor > 0, "Scaling factor should be positive");
   }
 }
