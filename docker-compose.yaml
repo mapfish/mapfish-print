@@ -1,32 +1,15 @@
 services:
   geoserver:
-    image: camptocamp/geoserver:16
-    volumes:
-      - ./examples/geoserver-data/:/mnt/geoserver_datadir
-      - ./core/src/test/resources/map-data/:/mnt/geoserver_datadir/www/map-data
+    extends:
+      file: docker-compose-lib.yaml
+      service: geoserver
 
   print:
-    image: mapfish_print_tester
-    user: ${USER_ID}
-    volumes:
-      - ./examples/src/test/resources/examples:/usr/local/tomcat/webapps/ROOT/print-apps:ro
-    ports:
-      - 8080:8080
-    environment:
-      PRINT_YAML_MAX_ALIASES: '200'
-      LOG_LEVEL: DEBUG
-      JASPER_LOG_LEVEL: DEBUG
-      JAVA_OPTS: '-Dmapfish.image.plugins=true'
+    extends:
+      file: docker-compose-lib.yaml
+      service: print
 
   tests:
-    image: mapfish_print_builder
-    user: ${USER_ID}
-    command: tail --follow /dev/null
-    volumes:
-      - ./examples/src:/src/examples/src:ro
-      - ./examples/src/test/resources/examples:/src/examples/src/test/resources/examples
-      - ./examples/build/reports:/src/examples/build/reports
-      - ./examples/build/resources:/src/examples/build/resources
-    environment:
-      PRINT_YAML_MAX_ALIASES: '200'
-      GRADLE_USER_HOME: /home/gradle/.gradle
+    extends:
+      file: docker-compose-lib.yaml
+      service: tests
