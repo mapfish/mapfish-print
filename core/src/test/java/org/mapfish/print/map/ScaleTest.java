@@ -71,7 +71,7 @@ public class ScaleTest {
     final double geodeticScaleRef = scale.getGeodeticDenominator(CH2056, PDF_DPI, positionRef);
     final double geodeticScaleLeft = scale.getGeodeticDenominator(CH2056, PDF_DPI, positionLeft);
 
-    assertEquals(24996.77190700038, geodeticScaleRef, 0.00001);
-    assertEquals(24996.76743516703, geodeticScaleLeft, 0.00001);
+    assertEquals(24996.77190700038, geodeticScaleRef, 0.0);
+    assertEquals(24996.76743516703, geodeticScaleLeft, 0.0);
   }
 }
