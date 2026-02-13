@@ -1,0 +1,20 @@
+Backport of #3979 to 3.29
+
+Error on cherry-picking: 8d40689f579921a1e8cc217fb96dff216924408e
+
+To continue do:
+```bash
+git fetch && \
+  git checkout ghci/backport/3979-to-3.29 && \
+  git reset --hard HEAD^ && \
+  git cherry-pick 8d40689f579921a1e8cc217fb96dff216924408e
+```
+Resolve the conflict, then:
+```bash
+git add <file> && \
+  git cherry-pick --continue
+```
+When all the conflicts are resolved, push the branch:
+```bash
+git push origin ghci/backport/3979-to-3.29 --force
+```
