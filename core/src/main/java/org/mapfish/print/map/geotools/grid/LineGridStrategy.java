@@ -125,21 +125,11 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
       Geometry intersectionsTB =
           GridUtils.computeTopBorderIntersections(rotatedBounds, geometryFactory, x);
       GridUtils.topBorderLabel(
-          labels,
-          unit,
-          worldToScreenTransform,
-          labelTransform,
-          layerData.getGridLabelFormat(),
-          intersectionsTB);
+          labels, unit, worldToScreenTransform, layerData, mapCrs, intersectionsTB);
       Geometry intersectionsBB =
           GridUtils.computeBottomBorderIntersections(rotatedBounds, geometryFactory, x);
       GridUtils.bottomBorderLabel(
-          labels,
-          unit,
-          worldToScreenTransform,
-          labelTransform,
-          layerData.getGridLabelFormat(),
-          intersectionsBB);
+          labels, unit, worldToScreenTransform, layerData, mapCrs, intersectionsBB);
     }
 
     pointSpacing = bounds.getSpan(0) / layerData.pointsInLine;
@@ -156,21 +146,11 @@ final class LineGridStrategy implements GridType.GridTypeStrategy {
       Geometry intersectionsRB =
           GridUtils.computeRightBorderIntersections(rotatedBounds, geometryFactory, y);
       GridUtils.rightBorderLabel(
-          labels,
-          unit,
-          worldToScreenTransform,
-          labelTransform,
-          layerData.getGridLabelFormat(),
-          intersectionsRB);
+          labels, unit, worldToScreenTransform, layerData, mapCrs, intersectionsRB);
       Geometry intersectionsLB =
           GridUtils.computeLeftBorderIntersections(rotatedBounds, geometryFactory, y);
       GridUtils.leftBorderLabel(
-          labels,
-          unit,
-          worldToScreenTransform,
-          labelTransform,
-          layerData.getGridLabelFormat(),
-          intersectionsLB);
+          labels, unit, worldToScreenTransform, layerData, mapCrs, intersectionsLB);
     }
 
     return features;
