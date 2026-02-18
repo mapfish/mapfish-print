@@ -1,0 +1,35 @@
+{
+  "layout": "A4 landscape",
+  "outputFormat": "png",
+  "attributes": {
+    "map": {
+      "projection": "EPSG:3857",
+      "dpi": 254,
+      "rotation": 0,
+      "center": [-8233518.5005945, 4980320.4059228],
+      "scale": 250000,
+      "layers": [
+        {
+          "type": "grid",
+          "gridType": "points",
+          "numberOfLines": [5, 5],
+          "renderAsSvg": true,
+          "labelProjection": "EPSG:4326",
+          "valueFormat": "###,###.00",
+          "unitFormat": " %s",
+          "formatGroupingSeparator": "'",
+          "font": {
+            "name": ["Arial", "Helvetica", "Nimbus Sans L", "Liberation Sans", "FreeSans", "Sans-serif"]
+          }
+        },
+        {
+          "baseURL": "http://geoserver:8080/geoserver/wms",
+          "opacity": 1,
+          "type": "WMS",
+          "layers": ["tiger-ny"],
+          "imageFormat": "image/png"
+        }
+      ]
+    }
+  }
+}

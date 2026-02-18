@@ -266,6 +266,10 @@ public final class GridParam extends AbstractLayerParams {
     return labelTransform;
   }
 
+  public CoordinateReferenceSystem getLabelCRS() {
+    return this.labelCRS;
+  }
+
   public GridLabelFormat getGridLabelFormat() {
     return this.gridLabelFormat;
   }
