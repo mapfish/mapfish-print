@@ -284,6 +284,9 @@ final class GridUtils {
 
       // Get axis directions from the target CRS
       CoordinateReferenceSystem labelCrs = layerData.getLabelCRS();
+      if (labelCrs == null) {
+        labelCrs = mapCrs;
+      }
       if (labelCrs != null) {
         CoordinateSystem cs = labelCrs.getCoordinateSystem();
         AxisDirection dir0 = cs.getAxis(0).getDirection();
