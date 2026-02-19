@@ -158,7 +158,7 @@ public final class GridParam extends AbstractLayerParams {
    * projections. However the requester can override this by explicitly declaring that longitude
    * axis is first.
    */
-  @HasDefaultValue public Boolean longitudeFirst = null;
+  @HasDefaultValue private Boolean longitudeFirst = null;
 
   /**
    * If true (the default), the labels will be rotated to follow the lines they belong to. Otherwise

@@ -40,7 +40,7 @@ public final class FeaturesAttribute
      * projections. However the requester can override this by explicitly declaring that longitude
      * axis is first.
      */
-    @HasDefaultValue public Boolean longitudeFirst = null;
+    @HasDefaultValue private Boolean longitudeFirst = null;
 
     private SimpleFeatureCollection featuresCollection;
 
