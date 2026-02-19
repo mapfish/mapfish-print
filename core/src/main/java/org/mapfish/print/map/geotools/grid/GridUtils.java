@@ -9,8 +9,7 @@ import jakarta.annotation.Nonnull;
 import java.awt.geom.AffineTransform;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
-import org.geotools.api.referencing.cs.AxisDirection;
-import org.geotools.api.referencing.cs.CoordinateSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -145,8 +144,8 @@ final class GridUtils {
       final LabelPositionCollector labels,
       final String unit,
       final AffineTransform worldToScreenTransform,
-      final GridParam layerData,
-      final CoordinateReferenceSystem mapCrs,
+      final MathTransform toLabelProjection,
+      final GridLabelFormat labelFormat,
       final Geometry intersections) {
 
     if (intersections.getNumPoints() > 0) {
@@ -155,10 +154,10 @@ final class GridUtils {
       worldToScreenTransform.transform(
           new double[] {borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
 
-      double[] labelProj = transformToLabelProjection(layerData, mapCrs, borderIntersection);
+      double[] labelProj = transformToLabelProjection(toLabelProjection, borderIntersection);
       labels.add(
           new GridLabel(
-              createLabel(labelProj[0], unit, layerData.getGridLabelFormat()),
+              createLabel(labelProj[0], unit, labelFormat),
               (int) screenPoints[0],
               (int) screenPoints[1],
               TOP));
@@ -177,17 +176,17 @@ final class GridUtils {
       final LabelPositionCollector labels,
       final String unit,
       final AffineTransform worldToScreenTransform,
-      final GridParam layerData,
-      final CoordinateReferenceSystem mapCrs,
+      final MathTransform toLabelProjection,
+      final GridLabelFormat labelFormat,
       final Geometry intersections) {
 
     if (intersections.getNumPoints() > 0) {
       double[] screenPoints = new double[2];
       double[] labelProj =
-          getLabelProj(worldToScreenTransform, layerData, mapCrs, intersections, screenPoints);
+          getLabelProj(worldToScreenTransform, toLabelProjection, intersections, screenPoints);
       labels.add(
           new GridLabel(
-              createLabel(labelProj[0], unit, layerData.getGridLabelFormat()),
+              createLabel(labelProj[0], unit, labelFormat),
               (int) screenPoints[0],
               (int) screenPoints[1],
               BOTTOM));
@@ -207,17 +206,17 @@ final class GridUtils {
       final LabelPositionCollector labels,
       final String unit,
       final AffineTransform worldToScreenTransform,
-      final GridParam layerData,
-      final CoordinateReferenceSystem mapCrs,
+      final MathTransform toLabelProjection,
+      final GridLabelFormat labelFormat,
       final Geometry intersections) {
 
     if (intersections.getNumPoints() > 0) {
       double[] screenPoints = new double[2];
       double[] labelProj =
-          getLabelProj(worldToScreenTransform, layerData, mapCrs, intersections, screenPoints);
+          getLabelProj(worldToScreenTransform, toLabelProjection, intersections, screenPoints);
       labels.add(
           new GridLabel(
-              createLabel(labelProj[1], unit, layerData.getGridLabelFormat()),
+              createLabel(labelProj[1], unit, labelFormat),
               (int) screenPoints[0],
               (int) screenPoints[1],
               RIGHT));
@@ -226,8 +225,7 @@ final class GridUtils {
 
   private static double[] getLabelProj(
       final AffineTransform worldToScreenTransform,
-      final GridParam layerData,
-      final CoordinateReferenceSystem mapCrs,
+      final MathTransform toLabelProjection,
       final Geometry intersections,
       final double[] screenPoints) {
     int idx = intersections instanceof LineString ? 1 : 0;
@@ -235,7 +233,7 @@ final class GridUtils {
     worldToScreenTransform.transform(
         new double[] {borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
 
-    return transformToLabelProjection(layerData, mapCrs, borderIntersection);
+    return transformToLabelProjection(toLabelProjection, borderIntersection);
   }
 
   /**
@@ -250,8 +248,8 @@ final class GridUtils {
       final LabelPositionCollector labels,
       final String unit,
       final AffineTransform worldToScreenTransform,
-      final GridParam layerData,
-      final CoordinateReferenceSystem mapCrs,
+      final MathTransform toLabelProjection,
+      final GridLabelFormat labelFormat,
       final Geometry intersections) {
 
     if (intersections.getNumPoints() > 0) {
@@ -260,39 +258,23 @@ final class GridUtils {
       worldToScreenTransform.transform(
           new double[] {borderIntersection.x, borderIntersection.y}, 0, screenPoints, 0, 1);
 
-      double[] labelProj = transformToLabelProjection(layerData, mapCrs, borderIntersection);
+      double[] labelProj = transformToLabelProjection(toLabelProjection, borderIntersection);
 
       labels.add(
           new GridLabel(
-              createLabel(labelProj[1], unit, layerData.getGridLabelFormat()),
+              createLabel(labelProj[1], unit, labelFormat),
               (int) screenPoints[0],
               (int) screenPoints[1],
               LEFT));
     }
   }
 
-  /** Get the horizontal and vertical coordinates on the map. */
   private static double[] transformToLabelProjection(
-      final GridParam layerData,
-      final CoordinateReferenceSystem mapCrs,
-      final Coordinate borderIntersection) {
+      final MathTransform toLabelProjection, final Coordinate borderIntersection) {
     try {
       double[] labelProj = new double[2];
-      layerData
-          .calculateLabelTransform(mapCrs)
-          .transform(new double[] {borderIntersection.x, borderIntersection.y}, 0, labelProj, 0, 1);
-
-      // Get axis directions from the target CRS
-      CoordinateReferenceSystem labelCrs = layerData.getLabelCRS();
-      if (labelCrs != null) {
-        CoordinateSystem cs = labelCrs.getCoordinateSystem();
-        AxisDirection dir0 = cs.getAxis(0).getDirection();
-        AxisDirection dir1 = cs.getAxis(1).getDirection();
-        // If first axis is NORTH or SOUTH, swap axes
-        if (dir0 == AxisDirection.NORTH || dir0 == AxisDirection.SOUTH) {
-          return new double[] {labelProj[1], labelProj[0]};
-        }
-      }
+      toLabelProjection.transform(
+          new double[] {borderIntersection.x, borderIntersection.y}, 0, labelProj, 0, 1);
       return labelProj;
     } catch (TransformException e) {
       throw new RuntimeException(e);
