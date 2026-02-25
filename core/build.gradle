@@ -178,7 +178,7 @@ dependencies {
             'com.adobe.xmp:xmpcore:6.1.11',
             'io.sentry:sentry-logback:6.25.2',
             'net.logstash.logback:logstash-logback-encoder:7.2',
-            'io.airlift:aircompressor:0.27',
+            'io.airlift:aircompressor:2.0.3',
             'org.testng:testng:7.5.1',
     )
 
