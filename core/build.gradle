@@ -201,7 +201,7 @@ dependencies {
             'org.apache.groovy:groovy-all:5.0.4',
         'xalan:serializer:2.7.3',
         // For WebP images
-            'com.twelvemonkeys.imageio:imageio-webp:3.13.0',
+            'com.twelvemonkeys.imageio:imageio-webp:3.13.1',
     )
 
     implementation(
