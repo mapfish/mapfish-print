@@ -127,21 +127,21 @@ configurations {
 
 dependencies {
     implementation(
-        'org.springframework:spring-context:7.0.3',
-        'org.springframework:spring-core:7.0.3',
-        'org.springframework:spring-web:7.0.3',
-        'org.springframework:spring-webmvc:7.0.3',
-        'org.springframework:spring-aspects:7.0.3',
-        'org.springframework:spring-orm:7.0.3',
-        'org.springframework:spring-jdbc:7.0.3',
-        'org.springframework:spring-tx:7.0.3',
-        'org.springframework:spring-test:7.0.3',
-        'org.springframework.security:spring-security-config:7.0.2',
-        'org.springframework.security:spring-security-web:7.0.2',
+        'org.springframework:spring-context:7.0.5',
+        'org.springframework:spring-core:7.0.5',
+        'org.springframework:spring-web:7.0.5',
+        'org.springframework:spring-webmvc:7.0.5',
+        'org.springframework:spring-aspects:7.0.5',
+        'org.springframework:spring-orm:7.0.5',
+        'org.springframework:spring-jdbc:7.0.5',
+        'org.springframework:spring-tx:7.0.5',
+        'org.springframework:spring-test:7.0.5',
+        'org.springframework.security:spring-security-config:7.0.3',
+        'org.springframework.security:spring-security-web:7.0.3',
         'com.thetransactioncompany:cors-filter:3.1',
-        'org.hibernate:hibernate-core:6.6.42.Final',
-        'org.postgresql:postgresql:42.7.9',
-        'io.hypersistence:hypersistence-utils-hibernate-63:3.15.1',
+        'org.hibernate:hibernate-core:6.6.44.Final',
+        'org.postgresql:postgresql:42.7.10',
+        'io.hypersistence:hypersistence-utils-hibernate-63:3.15.2',
         'com.mchange:c3p0:0.12.0',
         'javax.media:jai-core:1.1.3',
         'jakarta.annotation:jakarta.annotation-api:3.0.0',
@@ -183,14 +183,14 @@ dependencies {
         'org.slf4j:slf4j-api:2.0.17',
         'org.slf4j:jcl-over-slf4j:2.0.17',
         'org.slf4j:jul-to-slf4j:2.0.17',
-            'ch.qos.logback:logback-classic:1.5.27',
-            'ch.qos.logback:logback-access:1.5.27',
+            'ch.qos.logback:logback-classic:1.5.32',
+            'ch.qos.logback:logback-access:1.5.32',
         'org.json:json:20250517',
-        'org.yaml:snakeyaml:2.5',
+        'org.yaml:snakeyaml:2.6',
         'com.github.spullara.cli-parser:cli-parser:1.1.6',
         'com.sun.mail:javax.mail:1.6.2',
             'com.amazonaws:aws-java-sdk-s3:1.12.797',
-            'io.sentry:sentry-logback:8.31.0',
+            'io.sentry:sentry-logback:8.33.0',
         // For JSON logs
         'net.logstash.logback:logstash-logback-encoder:9.0',
         // For PDF/A
@@ -201,7 +201,7 @@ dependencies {
             'org.apache.groovy:groovy-all:5.0.4',
         'xalan:serializer:2.7.3',
         // For WebP images
-            'com.twelvemonkeys.imageio:imageio-webp:3.13.0',
+            'com.twelvemonkeys.imageio:imageio-webp:3.13.1',
     )
 
     implementation(
@@ -214,8 +214,8 @@ dependencies {
     testImplementation (
         'de.saly:javamail-mock2-fullmock:0.5-beta4',
         'com.h2database:h2:2.4.240',
-        'org.junit.jupiter:junit-jupiter:6.0.2',
-        'org.junit.jupiter:junit-jupiter-api:6.0.2',
+        'org.junit.jupiter:junit-jupiter:6.0.3',
+        'org.junit.jupiter:junit-jupiter-api:6.0.3',
     )
 }
 
