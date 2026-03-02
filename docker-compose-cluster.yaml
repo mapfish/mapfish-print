@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:15.17
+    image: postgres:18.3
     environment:
       POSTGRES_DB: print
       POSTGRES_USER: print
