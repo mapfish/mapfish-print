@@ -171,7 +171,7 @@ dependencies {
     jasper(
         'ar.com.fdvs:DynamicJasper:5.3.9',
         'com.itextpdf:itextpdf:5.5.13.5',
-        'net.sf.jasperreports:jasperreports:7.0.3',
+        'net.sf.jasperreports:jasperreports:7.0.4',
         'net.sf.jasperreports:jasperreports-excel-poi:7.0.3',
         'net.sf.jasperreports:jasperreports-fonts:7.0.3',
         'net.sf.jasperreports:jasperreports-functions:7.0.3',
