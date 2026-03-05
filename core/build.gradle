@@ -155,7 +155,7 @@ dependencies {
             "org.geotools:gt-cql:28.3"
     )
     jasper(
-            "net.sf.jasperreports:jasperreports:6.20.6",
+            "net.sf.jasperreports:jasperreports:7.0.4",
             "org.codehaus.groovy:groovy-all:3.0.25",
             'ar.com.fdvs:DynamicJasper:5.3.9',
             "net.sf.jasperreports:jasperreports-fonts:6.20.6",
