@@ -15,7 +15,7 @@ services:
     environment:
       PRINT_YAML_MAX_ALIASES: '200'
       LOG_LEVEL: DEBUG
-      JASPER_LOG_LEVEL: DEBUG
+      JASPER_LOG_LEVEL: INFO
       JAVA_OPTS: '-Dmapfish.image.plugins=true'
 
   tests:
