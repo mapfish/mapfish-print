@@ -172,12 +172,12 @@ dependencies {
         'ar.com.fdvs:DynamicJasper:5.3.9',
         'com.itextpdf:itextpdf:5.5.13.5',
         'net.sf.jasperreports:jasperreports:7.0.4',
-        'net.sf.jasperreports:jasperreports-excel-poi:7.0.3',
-        'net.sf.jasperreports:jasperreports-fonts:7.0.3',
-        'net.sf.jasperreports:jasperreports-functions:7.0.3',
-        'net.sf.jasperreports:jasperreports-json:7.0.3',
-        'net.sf.jasperreports:jasperreports-jdt:7.0.3',
-        'net.sf.jasperreports:jasperreports-pdf:7.0.3',
+        'net.sf.jasperreports:jasperreports-excel-poi:7.0.4',
+        'net.sf.jasperreports:jasperreports-fonts:7.0.4',
+        'net.sf.jasperreports:jasperreports-functions:7.0.4',
+        'net.sf.jasperreports:jasperreports-json:7.0.4',
+        'net.sf.jasperreports:jasperreports-jdt:7.0.4',
+        'net.sf.jasperreports:jasperreports-pdf:7.0.4',
     )
     implementation(
         'org.slf4j:slf4j-api:2.0.17',
