@@ -78,7 +78,7 @@ public class CreateMapProcessorGridFixedNumlinesPointRotatedTest extends Abstrac
       assertEquals(2, layerGraphics.size());
 
       String imageName = getExpectedImageName("_" + rotation, BASE_DIR);
-      new ImageSimilarity(getFile(BASE_DIR + imageName))
+      new ImageSimilarity(new File(getFile(BASE_DIR), imageName))
           .assertSimilarity(layerGraphics, 780, 330, 0);
     }
   }

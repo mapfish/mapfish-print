@@ -17,10 +17,12 @@ enum RotationQuadrant {
     @Override
     void updateTransform(
         final AffineTransform baseTransform,
+        final double rotation,
         final int indent,
         final GridLabel.Side side,
         final int halfCharHeight,
         final Rectangle2D textBounds) {
+      baseTransform.rotate(rotation);
       switch (side) {
         case TOP:
           baseTransform.rotate(Constants.MINUS_NINETY_RADIANS);
@@ -43,10 +45,12 @@ enum RotationQuadrant {
     @Override
     void updateTransform(
         final AffineTransform baseTransform,
+        final double rotation,
         final int indent,
         final GridLabel.Side side,
         final int halfCharHeight,
         final Rectangle2D textBounds) {
+      baseTransform.rotate(rotation);
       switch (side) {
         case TOP:
           baseTransform.rotate(Constants.MINUS_NINETY_RADIANS);
@@ -71,10 +75,12 @@ enum RotationQuadrant {
     @Override
     void updateTransform(
         final AffineTransform baseTransform,
+        final double rotation,
         final int indent,
         final GridLabel.Side side,
         final int halfCharHeight,
         final Rectangle2D textBounds) {
+      baseTransform.rotate(rotation);
       switch (side) {
         case TOP:
           baseTransform.rotate(Constants.NINETY_RADIANS);
@@ -99,10 +105,12 @@ enum RotationQuadrant {
     @Override
     void updateTransform(
         final AffineTransform baseTransform,
+        final double rotation,
         final int indent,
         final GridLabel.Side side,
         final int halfCharHeight,
         final Rectangle2D textBounds) {
+      baseTransform.rotate(rotation);
       switch (side) {
         case TOP:
           baseTransform.rotate(Constants.NINETY_RADIANS);
@@ -125,6 +133,7 @@ enum RotationQuadrant {
     @Override
     void updateTransform(
         final AffineTransform baseTransform,
+        final double rotation,
         final int indent,
         final GridLabel.Side side,
         final int halfCharHeight,
@@ -175,6 +184,7 @@ enum RotationQuadrant {
 
   abstract void updateTransform(
       AffineTransform baseTransform,
+      double rotation,
       int indent,
       GridLabel.Side side,
       int halfCharHeight,

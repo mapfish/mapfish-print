@@ -113,7 +113,12 @@ public final class GridLayer implements MapLayer {
 
         RotationQuadrant.getQuadrant(transformer.getRotation(), this.params.rotateLabels)
             .updateTransform(
-                transform, this.params.indent, label.side(), halfCharHeight, textBounds);
+                transform,
+                transformer.getRotation(),
+                this.params.indent,
+                label.side(),
+                halfCharHeight,
+                textBounds);
         graphics2D.setTransform(transform);
 
         if (haloRadius > 0.0f) {
