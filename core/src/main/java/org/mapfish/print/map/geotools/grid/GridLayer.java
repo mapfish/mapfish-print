@@ -109,11 +109,11 @@ public final class GridLayer implements MapLayer {
         AffineTransform transform = new AffineTransform(baseTransform);
         transform.translate(label.x(), label.y());
 
+        applyOffset(transform, label.side());
+
         if (this.params.rotateLabels) {
           transform.rotate(transformer.getRotation());
         }
-
-        applyOffset(transform, label.side());
 
         RotationQuadrant.getQuadrant(transformer.getRotation(), this.params.rotateLabels)
             .updateTransform(
