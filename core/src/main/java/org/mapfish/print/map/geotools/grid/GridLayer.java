@@ -116,8 +116,9 @@ public final class GridLayer implements MapLayer {
         transform.translate(label.x(), label.y());
 
         // 3. Apply Indent (in Screen Coordinates, perpendicular to the border)
-        // We use the map rotation to determine the border normal vector
-        double borderRotation = transformer.getRotation();
+        // We use 0.0 for rotation because the border "Side" refers to the Map Frame (Paper) edges,
+        // which are axis-aligned and do not rotate with the map content.
+        double borderRotation = 0.0;
         GridUtils.applyIndent(transform, label.side(), this.params.indent, borderRotation);
 
         // 4. Rotate to Text Orientation
