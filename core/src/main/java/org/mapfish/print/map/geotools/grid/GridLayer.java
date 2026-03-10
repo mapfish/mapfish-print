@@ -106,14 +106,17 @@ public final class GridLayer implements MapLayer {
                 .getOutline();
 
         Rectangle2D textBounds = textShape.getBounds2D();
+
+        // 2. Apply Transform (Anchor + Indent + Rotation + Offsets + Alignment)
+        AffineTransform transform = new AffineTransform(baseTransform);
+        transform.rotate(transformer.getRotation());
+        transform.translate(label.x(), label.y());
+        transform.rotate(-transformer.getRotation());
+
         // 1. Calculate Text Rotation (Readability)
         double textRotation =
             GridUtils.calculateTextRotation(
                 transformer.getRotation(), label.side(), this.params.rotateLabels);
-
-        // 2. Apply Transform (Anchor + Indent + Rotation + Offsets + Alignment)
-        AffineTransform transform = new AffineTransform(baseTransform);
-        transform.translate(label.x(), label.y());
 
         // 3. Apply Indent (in Screen Coordinates, perpendicular to the border)
         // We use 0.0 for rotation because the border "Side" refers to the Map Frame (Paper) edges,
