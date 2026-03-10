@@ -328,4 +328,194 @@ final class GridUtils {
             });
     return lineString.intersection(rotatedBounds.getExteriorRing());
   }
+
+  /**
+   * Calculate the rotation of the text for the given side and map rotation.
+   *
+   * @param mapRotation The rotation of the map (radians).
+   * @param side The side of the grid/map where the label is placed.
+   * @param rotateLabels Whether to rotate labels with the map lines.
+   * @return The text rotation in radians (relative to screen X axis).
+   */
+  public static double calculateTextRotation(
+      final double mapRotation, final GridLabel.Side side, final boolean rotateLabels) {
+    if (!rotateLabels) {
+      return 0.0;
+    }
+
+    double baseAngle;
+    switch (side) {
+      case BOTTOM:
+      case TOP:
+        // Vertical lines (North-South). Base vector (0, 1) or (0, -1).
+        // Angle PI/2 or -PI/2.
+        baseAngle = -Math.PI / 2; // Up/Down. Let's start with -90 (Up).
+        break;
+      default:
+        // Horizontal lines (East-West). Base vector (1, 0) or (-1, 0).
+        // Angle 0 or PI.
+        baseAngle = 0.0;
+    }
+
+    // Rotate the base vector by mapRotation
+    double angle = baseAngle + mapRotation;
+
+    // Normalize angle to [-PI, PI]
+    while (angle <= -Math.PI) {
+      angle += 2 * Math.PI;
+    }
+    while (angle > Math.PI) {
+      angle -= 2 * Math.PI;
+    }
+
+    // Adjust for readability: keep angle in (-PI/2, PI/2]
+    // i.e. text reads Left-to-Right or Bottom-to-Top
+    if (angle > Math.PI / 2) {
+      angle -= Math.PI;
+    } else if (angle <= -Math.PI / 2) {
+      angle += Math.PI;
+    }
+
+    return angle;
+  }
+
+  /**
+   * Apply indentation translation to the transform. The indentation is applied perpendicular to the
+   * map border corresponding to the label side.
+   *
+   * @param transform The transform to update.
+   * @param side The side of the map.
+   * @param indent The indentation in pixels.
+   * @param mapRotation The rotation of the map.
+   */
+  public static void applyIndent(
+      final AffineTransform transform,
+      final GridLabel.Side side,
+      final int indent,
+      final double mapRotation) {
+    // Determine the "Outward" normal vector for the border in Screen Coordinates.
+    // Base normals (for unrotated map):
+    // BOTTOM (South): Down (Screen +Y)? No.
+    // Map Coords: MinY is South. Screen: MaxY is Bottom.
+    // Screen Base Normal: (0, 1) (Down).
+    // WAIT. Previous analysis said (0, -1) Up was Inside?
+    // If I want to indent OUTSIDE.
+    // From Bottom Border (Screen MaxY), go Down (+Y).
+    // From Top Border (Screen MinY), go Up (-Y).
+    // From Left Border (Screen MinX), go Left (-X).
+    // From Right Border (Screen MaxX), go Right (+X).
+
+    double nx = 0;
+    double ny = 0;
+
+    switch (side) {
+      case BOTTOM:
+        nx = 0;
+        ny = 1; // Down
+        break;
+      case TOP:
+        nx = 0;
+        ny = -1; // Up
+        break;
+      case LEFT:
+        nx = -1; // Left
+        ny = 0;
+        break;
+      case RIGHT:
+        nx = 1; // Right
+        ny = 0;
+        break;
+      default:
+        break;
+    }
+
+    // Rotate the normal vector by mapRotation
+    // transform.rotate() rotates axes. Vector coordinates rotate inversely?
+    // No, we want the vector in Screen Coordinates.
+    // The "Bottom" side of the map rotates with the map.
+    // So the Normal rotates with the map.
+    // Rotation is +angle (CW in Java2D).
+    double cos = Math.cos(mapRotation);
+    double sin = Math.sin(mapRotation);
+
+    double rnx = nx * cos - ny * sin;
+    double rny = nx * sin + ny * cos;
+
+    // Apply translation
+    transform.translate(indent * rnx, indent * rny);
+  }
+
+  /**
+   * Align the text (Start/End/Center) based on the relationship between the text orientation and
+   * the border orientation.
+   */
+  public static void alignText(
+      final AffineTransform transform,
+      final GridLabel.Side side,
+      final double mapRotation,
+      final double textRotation,
+      final java.awt.geom.Rectangle2D textBounds,
+      final int halfCharHeight) {
+
+    // Calculate Indent Direction (Outward Normal)
+    // Same logic as applyIndent, re-calculated or could be passed.
+    double nx = 0;
+    double ny = 0;
+    switch (side) {
+      case BOTTOM:
+        nx = 0;
+        ny = 1;
+        break;
+      case TOP:
+        nx = 0;
+        ny = -1;
+        break;
+      case LEFT:
+        nx = -1;
+        ny = 0;
+        break;
+      case RIGHT:
+        nx = 1;
+        ny = 0;
+        break;
+      default:
+        break;
+    }
+    double cosMap = Math.cos(mapRotation);
+    double sinMap = Math.sin(mapRotation);
+    double rnx = nx * cosMap - ny * sinMap;
+    double rny = nx * sinMap + ny * cosMap;
+
+    // Calculate Text Direction vector
+    double cosText = Math.cos(textRotation);
+    double sinText = Math.sin(textRotation);
+
+    // Dot product
+    double dot = rnx * cosText + rny * sinText;
+
+    // Align based on dot product
+    // If dot > 0 (Text runs Outward): Align Start (Shift 0).
+    // If dot < 0 (Text runs Inward): Align End (Shift -Width).
+    // If dot ~ 0 (Text runs Parallel to Border): Center (Shift -Width/2).
+
+    double width = textBounds.getWidth();
+    double xShift = 0;
+
+    final double threshold = 0.1; // Tolerance for perpendicular
+    if (Math.abs(dot) < threshold) {
+      xShift = -width / 2.0;
+    } else if (dot < 0) {
+      xShift = -width;
+    }
+
+    // Vertical Centering (Perpendicular to Text)
+    // Usually we want to center the text vertically on the grid line/anchor.
+    // halfCharHeight shifts baseline down to center.
+    // But RotationQuadrant used complicated logic.
+    // Let's assume standard centering.
+    double yShift = halfCharHeight;
+
+    // Apply translation (in Text Coordinates)
+    transform.translate(xShift, yShift);
+  }
 }
