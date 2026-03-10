@@ -1,4 +1,4 @@
-c2cciutils==1.1.63
+c2cciutils==1.1.65
 pip>=21.1 # not directly required, pinned by Snyk to avoid a vulnerability
 urllib3>=1.26.5 # not directly required, pinned by Snyk to avoid a vulnerability
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
@@ -10,3 +10,4 @@ protobuf>=5.29.6 # not directly required, pinned by Snyk to avoid a vulnerabilit
 filelock>=3.20.3 # not directly required, pinned by Snyk to avoid a vulnerability
 pyasn1>=0.6.2 # not directly required, pinned by Snyk to avoid a vulnerability
 virtualenv>=20.36.1 # not directly required, pinned by Snyk to avoid a vulnerability
+markdown>=3.8.1 # not directly required, pinned by Snyk to avoid a vulnerability
