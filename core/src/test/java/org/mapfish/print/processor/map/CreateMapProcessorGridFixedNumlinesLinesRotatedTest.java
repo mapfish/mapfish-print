@@ -27,8 +27,8 @@ import org.springframework.test.annotation.DirtiesContext;
  *
  * <p>Created by Jesse on 3/26/14.
  */
-public class CreateMapProcessorGridFixedNumlinesPointRotatedTest extends AbstractMapfishSpringTest {
-  public static final String BASE_DIR = "grid_numlines_points_fixedscale_rotated/";
+public class CreateMapProcessorGridFixedNumlinesLinesRotatedTest extends AbstractMapfishSpringTest {
+  public static final String BASE_DIR = "grid_numlines_lines_fixedscale_rotated/";
 
   @Autowired private ConfigurationFactory configurationFactory;
   @Autowired private TestHttpClientFactory requestFactory;
@@ -36,7 +36,7 @@ public class CreateMapProcessorGridFixedNumlinesPointRotatedTest extends Abstrac
 
   private static PJsonObject loadJsonRequestData() throws IOException {
     return parseJSONObjectFromFile(
-        CreateMapProcessorGridFixedNumlinesPointRotatedTest.class, BASE_DIR + "requestData.json");
+        CreateMapProcessorGridFixedNumlinesLinesRotatedTest.class, BASE_DIR + "requestData.json");
   }
 
   @Test

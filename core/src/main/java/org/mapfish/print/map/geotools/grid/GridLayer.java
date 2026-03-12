@@ -106,14 +106,34 @@ public final class GridLayer implements MapLayer {
                 .getOutline();
 
         Rectangle2D textBounds = textShape.getBounds2D();
-        AffineTransform transform = new AffineTransform(baseTransform);
-        transform.translate(label.x(), label.y());
 
+        // 2. Apply Transform (Anchor + Indent + Rotation + Offsets + Alignment)
+        AffineTransform transform = new AffineTransform(baseTransform);
+        transform.rotate(transformer.getRotation());
+        transform.translate(label.x(), label.y());
+        transform.rotate(-transformer.getRotation());
+
+        // 1. Calculate Text Rotation (Readability)
+        double textRotation =
+            GridUtils.calculateTextRotation(
+                transformer.getRotation(), label.side(), this.params.rotateLabels);
+
+        // 3. Apply Indent (in Screen Coordinates, perpendicular to the border)
+        // We use 0.0 for rotation because the border "Side" refers to the Map Frame (Paper) edges,
+        // which are axis-aligned and do not rotate with the map content.
+        double borderRotation = 0.0;
+        GridUtils.applyIndent(transform, label.side(), this.params.indent, borderRotation);
+
+        // 4. Rotate to Text Orientation
+        transform.rotate(textRotation);
+
+        // 5. Apply Offsets (in Text Coordinates)
         applyOffset(transform, label.side());
 
-        RotationQuadrant.getQuadrant(transformer.getRotation(), this.params.rotateLabels)
-            .updateTransform(
-                transform, this.params.indent, label.side(), halfCharHeight, textBounds);
+        // 6. Align Text (Start/End/Center) based on relation between Text Vector and Indent Vector
+        GridUtils.alignText(
+            transform, label.side(), borderRotation, textRotation, textBounds, halfCharHeight);
+
         graphics2D.setTransform(transform);
 
         if (haloRadius > 0.0f) {
