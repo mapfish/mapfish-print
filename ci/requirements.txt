@@ -11,3 +11,4 @@ filelock>=3.20.3 # not directly required, pinned by Snyk to avoid a vulnerabilit
 pyasn1>=0.6.2 # not directly required, pinned by Snyk to avoid a vulnerability
 virtualenv>=20.36.1 # not directly required, pinned by Snyk to avoid a vulnerability
 markdown>=3.8.1 # not directly required, pinned by Snyk to avoid a vulnerability
+black>=26.3.1 # not directly required, pinned by Snyk to avoid a vulnerability
