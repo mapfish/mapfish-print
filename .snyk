@@ -30,8 +30,4 @@ ignore:
     - '*':
         reason: Used in check style
         created: 2024-09-24T07:53:50.293Z
-  SNYK-PYTHON-BLACK-15518063:
-    - '*':
-        reason: Fix not compatible with used Python version
-        created: 2026-03-16T14:06:22.424Z
 patch: {}
