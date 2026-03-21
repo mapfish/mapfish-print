@@ -137,7 +137,7 @@ dependencies {
         'org.springframework:spring-tx:7.0.5',
         'org.springframework:spring-test:7.0.5',
         'org.springframework.security:spring-security-config:7.0.3',
-        'org.springframework.security:spring-security-web:7.0.3',
+        'org.springframework.security:spring-security-web:7.0.4',
         'com.thetransactioncompany:cors-filter:3.1',
         'org.hibernate:hibernate-core:6.6.44.Final',
         'org.postgresql:postgresql:42.7.10',
