@@ -2,8 +2,8 @@ services:
   geoserver:
     image: camptocamp/geoserver:17
     volumes:
-      - ./examples/geoserver-data/:/mnt/geoserver_datadir
-      - ./core/src/test/resources/map-data/:/mnt/geoserver_datadir/www/map-data
+      - ./examples/geoserver-data/:/mnt/geoserver_datadir:rw
+      - ./core/src/test/resources/map-data/:/mnt/geoserver_datadir/www/map-data:ro
 
   print:
     image: mapfish_print_tester
