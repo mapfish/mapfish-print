@@ -51,9 +51,17 @@ tests: build-builder
 
 .PHONY: acceptance-tests-up
 acceptance-tests-up: build .env
+	# Required to be writable by GeoServer
+	chmod go+w examples/geoserver-data examples/geoserver-data/security/filter/anonymous/ examples/geoserver-data/security/filter/anonymous/config.xml examples/geoserver-data/workspaces/
 	# Required to avoid root ownership of reports folder
 	mkdir -p examples/build/reports/ || true
 	docker compose $(DOCKER_COMPOSE_ARGS) up --detach
+	echo "Waiting for GeoServer to be ready..."
+	timeout=60; elapsed=0; \
+	until docker compose $(DOCKER_COMPOSE_ARGS) exec geoserver curl --silent --output /dev/null --write-out "%{http_code}" http://localhost:8080/geoserver/www/map-data/legends/stationement.png | grep --quiet "200"; do \
+		sleep 2; elapsed=$$((elapsed + 2)); \
+		if [ $$elapsed -ge $$timeout ]; then echo "Timeout waiting for GeoServer"; exit 1; fi; \
+	done
 
 .PHONY: acceptance-tests-run
 acceptance-tests-run: .env
