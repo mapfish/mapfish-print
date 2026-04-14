@@ -38,13 +38,6 @@
       matchDepNames: ['gradle'],
     },
     {
-      matchDatasources: ['docker'],
-      matchUpdateTypes: ['major', 'minor'],
-      groupName: 'geoserver',
-      automerge: true,
-      matchDepNames: ['camptocamp/geoserver'],
-    },
-    {
       matchUpdateTypes: ['major'],
       groupName: 'spring',
       automerge: true,

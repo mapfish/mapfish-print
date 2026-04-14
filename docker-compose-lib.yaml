@@ -1,6 +1,6 @@
 services:
   geoserver:
-    image: camptocamp/geoserver:17
+    image: georchestra/geoserver:25.0.2
     volumes:
       - ./examples/geoserver-data/:/mnt/geoserver_datadir:rw
       - ./core/src/test/resources/map-data/:/mnt/geoserver_datadir/www/map-data:ro
