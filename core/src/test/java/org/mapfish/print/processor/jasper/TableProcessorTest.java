@@ -2,6 +2,8 @@ package org.mapfish.print.processor.jasper;
 
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+import net.sf.jasperreports.engine.design.JRDesignField;
+import net.sf.jasperreports.engine.design.JRDesignField;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
@@ -12,6 +14,8 @@ import org.mapfish.print.output.AbstractJasperReportOutputFormat;
 import org.mapfish.print.output.OutputFormat;
 import org.mapfish.print.output.Values;
 import org.mapfish.print.test.util.ImageSimilarity;
+import org.mapfish.print.wrapper.json.PJsonArray;
+import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -22,6 +26,8 @@ import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class TableProcessorTest extends AbstractMapfishSpringTest {
@@ -181,5 +187,62 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         // otherwise small differences are not detected!
         new ImageSimilarity(getFile(baseDir + "expectedImage.png"))
                 .assertSimilarity(print, 0, 10);
+    }
+
+    @Test
+    public void testDynamicTableUsesGeneratedFieldNames() throws Exception {
+        final String baseDir = DYNAMIC_BASE_DIR;
+        final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
+        final Template template = config.getTemplate("main");
+        PJsonObject requestData = loadJsonRequestData(baseDir);
+
+        final PJsonObject table = requestData.getJSONObject("attributes").getJSONObject("table");
+        final PJsonArray columns = table.getJSONArray("columns");
+        final String customColumnName = "id \"value\" {v2}";
+        columns.getInternalArray().put(1, customColumnName);
+
+        Values values =
+                new Values(
+                        new HashMap<>(),
+                        requestData,
+                        template,
+                        getTaskDirectory(),
+                        this.httpRequestFactory,
+                        new File("."),
+                        HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+                        HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+                        new AtomicBoolean(false));
+        forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
+
+        final JRMapCollectionDataSource tableDataSource =
+                values.getObject("tableDataSource", JRMapCollectionDataSource.class);
+        assertTrue(tableDataSource.next());
+
+        final JRDesignField safeField = new JRDesignField();
+        safeField.setName("col_1");
+        assertEquals(1, tableDataSource.getFieldValue(safeField));
+
+        final JRDesignField injectedField = new JRDesignField();
+        injectedField.setName(customColumnName);
+        assertNull(tableDataSource.getFieldValue(injectedField));
+    }
+
+    @Test
+    public void testDefaultDynamicTablePrintWithQuotedHeader() throws Exception {
+        final String baseDir = DEFAULT_DYNAMIC_BASE_DIR;
+        final Configuration config = configurationFactory.getConfig(getFile(baseDir + "config.yaml"));
+        PJsonObject requestData =
+                parseJSONObjectFromFile(TableProcessorTest.class, baseDir + "requestData-quoted.json");
+
+        final AbstractJasperReportOutputFormat format =
+                (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
+        final File file = getFile(TableProcessorTest.class, baseDir);
+        JasperPrint print =
+                format
+                        .getJasperPrint(new HashMap<>(), requestData, config, file, getTaskDirectory())
+                        .print();
+
+        new ImageSimilarity(getFile(baseDir + "expectedImage-quoted.png"))
+                .assertSimilarity(print, 0, 0);
     }
 }
