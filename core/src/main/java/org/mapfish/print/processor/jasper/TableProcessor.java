@@ -18,6 +18,7 @@ import net.sf.jasperreports.engine.type.HorizontalImageAlignEnum;
 import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.type.StretchTypeEnum;
+import net.sf.jasperreports.engine.util.JRStringUtil;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 import org.apache.commons.io.IOUtils;
@@ -258,15 +259,18 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
         final Collection<Map<String, ?>> table = new ArrayList<>();
 
         final String[] columnNames = jsonTable.columns;
+        final String[] fieldNames = toFieldNames(columnNames);
 
         // this map needs to be linked so it keeps order
         Map<String, Class<?>> columns = new LinkedHashMap<>();
+        Map<String, String> columnLabels = new LinkedHashMap<>();
         final PArray[] jsonData = jsonTable.data;
         for (final PArray jsonRow: jsonData) {
             context.stopIfCanceled();
             final Map<String, Object> row = new HashMap<>();
             for (int j = 0; j < jsonRow.size(); j++) {
                 final String columnName = columnNames[j];
+                final String fieldName = fieldNames[j];
                 Object rowValue = jsonRow.get(j);
                 if (rowValue == JSONObject.NULL) {
                     rowValue = null;
@@ -279,23 +283,24 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                     rowValue = tryConvert(values.clientHttpRequestFactoryProvider.get(), rowValue);
                 }
                 if (columns.size() < this.maxColumns && !this.excludeColumns.contains(columnName)) {
-                    Class<?> columnDef = columns.get(columnName);
+                    Class<?> columnDef = columns.get(fieldName);
                     if (columnDef == null) {
                         Class<?> rowValueClass = null;
                         if (rowValue != null) {
                             rowValueClass = rowValue.getClass();
                         }
-                        columns.put(columnName, rowValueClass);
+                        columns.put(fieldName, rowValueClass);
+                        columnLabels.put(fieldName, columnName);
                     }
                 }
-                row.put(columnName, rowValue);
+                row.put(fieldName, rowValue);
             }
             table.add(row);
         }
 
         String subreport = null;
         if (this.dynamic) {
-            subreport = generateSubReport(values, columns);
+            subreport = generateSubReport(values, columns, columnLabels);
         }
         final JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource(table);
         return new Output(dataSource, table.size(), subreport);
@@ -325,6 +330,14 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
     private String generateSubReport(
             final Input input,
             final Map<String, Class<?>> columns) throws JRException, IOException {
+        return generateSubReport(input, columns, new HashMap<>());
+    }
+
+    private String generateSubReport(
+        final Input input,
+        final Map<String, Class<?>> columns,
+        final Map<String, String> columnLabels)
+        throws JRException, IOException {
         byte[] bytes = loadJasperTemplate(input.template.getConfiguration());
         final JasperDesign templateDesign = JRXmlLoader.load(new ByteArrayInputStream(bytes));
 
@@ -378,6 +391,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
                 columnHeaderStyle = templateDesign.getStylesMap().get(this.headerStyle);
             }
             String columnName = entry.getKey();
+            String columnLabel = columnLabels.getOrDefault(columnName, columnName);
             Class<?> valueClass = String.class;
             if (entry.getValue() != null) {
                 valueClass = entry.getValue();
@@ -406,7 +420,7 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             colHeaderField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
 
             JRDesignExpression headerExpression = new JRDesignExpression();
-            headerExpression.setText('"' + columnName + '"');
+            headerExpression.setText('"' + JRStringUtil.escapeJavaStringLiteral(columnLabel) + '"');
             colHeaderField.setExpression(headerExpression);
             headerBand.addElement(colHeaderField);
 
@@ -463,6 +477,18 @@ public final class TableProcessor extends AbstractProcessor<TableProcessor.Input
             throw new PrintException("Unable to delete the build file: " + buildFile);
         }
         return this.jasperReportBuilder.compileJasperReport(buildFile, jrxmlFile).getAbsolutePath();
+    }
+
+    private String[] toFieldNames(final String[] columnNames) {
+        if (!this.dynamic) {
+            return columnNames;
+        }
+
+    final String[] result = new String[columnNames.length];
+        for (int i = 0; i < columnNames.length; i++) {
+            result[i] = "col_" + i;
+        }
+        return result;
     }
 
     private JRDesignTextField createTextField(final String columnName) {
