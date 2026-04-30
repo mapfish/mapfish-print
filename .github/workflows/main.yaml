@@ -213,7 +213,7 @@ jobs:
       - run: make dist
 
       - name: Create Release
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |-
             const fs = require('fs');
@@ -276,7 +276,7 @@ jobs:
         if: github.ref == 'refs/heads/master' && env.HAS_SECRETS == 'HAS_SECRETS'
 
       - name: Trigger changelog workflow
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |-
             if (process.env.GITHUB_REF_TYPE == 'tag') {
