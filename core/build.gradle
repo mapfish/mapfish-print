@@ -127,22 +127,22 @@ configurations {
 
 dependencies {
     implementation(
-        'org.springframework:spring-context:7.0.6',
-        'org.springframework:spring-core:7.0.6',
-        'org.springframework:spring-web:7.0.6',
-        'org.springframework:spring-webmvc:7.0.6',
-        'org.springframework:spring-aspects:7.0.6',
-        'org.springframework:spring-orm:7.0.6',
-        'org.springframework:spring-jdbc:7.0.6',
-        'org.springframework:spring-tx:7.0.6',
-        'org.springframework:spring-test:7.0.6',
-        'org.springframework.security:spring-security-config:7.0.4',
-        'org.springframework.security:spring-security-web:7.0.4',
+        'org.springframework:spring-context:7.0.7',
+        'org.springframework:spring-core:7.0.7',
+        'org.springframework:spring-web:7.0.7',
+        'org.springframework:spring-webmvc:7.0.7',
+        'org.springframework:spring-aspects:7.0.7',
+        'org.springframework:spring-orm:7.0.7',
+        'org.springframework:spring-jdbc:7.0.7',
+        'org.springframework:spring-tx:7.0.7',
+        'org.springframework:spring-test:7.0.7',
+        'org.springframework.security:spring-security-config:7.0.5',
+        'org.springframework.security:spring-security-web:7.0.5',
         'com.thetransactioncompany:cors-filter:3.1',
-        'org.hibernate:hibernate-core:6.6.45.Final',
+        'org.hibernate:hibernate-core:6.6.49.Final',
         'org.postgresql:postgresql:42.7.10',
         'io.hypersistence:hypersistence-utils-hibernate-63:3.15.2',
-        'com.mchange:c3p0:0.12.0',
+        'com.mchange:c3p0:0.13.0',
         'javax.media:jai-core:1.1.3',
         'jakarta.annotation:jakarta.annotation-api:3.0.0',
         'jakarta.persistence:jakarta.persistence-api:3.2.0',
@@ -167,7 +167,7 @@ dependencies {
         'org.geotools:gt-svg:34.3',
         'org.geotools:gt-cql:34.3',
     )
-    implementation "org.apache.httpcomponents.client5:httpclient5:5.6"
+    implementation "org.apache.httpcomponents.client5:httpclient5:5.6.1"
     jasper(
         'ar.com.fdvs:DynamicJasper:5.3.9',
         'com.itextpdf:itextpdf:5.5.13.5',
@@ -190,7 +190,7 @@ dependencies {
         'com.github.spullara.cli-parser:cli-parser:1.1.6',
         'com.sun.mail:javax.mail:1.6.2',
             'com.amazonaws:aws-java-sdk-s3:1.12.797',
-            'io.sentry:sentry-logback:8.37.0',
+            'io.sentry:sentry-logback:8.40.0',
         // For JSON logs
         'net.logstash.logback:logstash-logback-encoder:9.0',
         // For PDF/A
@@ -198,7 +198,7 @@ dependencies {
         // For JasperReports
         'joda-time:joda-time:2.14.1',
         'org.jfree:jcommon:1.0.24',
-            'org.apache.groovy:groovy-all:5.0.4',
+            'org.apache.groovy:groovy-all:5.0.5',
         'xalan:serializer:2.7.3',
         // For WebP images
             'com.twelvemonkeys.imageio:imageio-webp:3.13.1',
