@@ -21,15 +21,15 @@ repos:
             |\.github/ghci\.yaml
           )$
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 43.91.3
+    rev: 43.140.0
     hooks:
       - id: renovate-config-validator
   - repo: https://github.com/sbrunner/hooks
-    rev: 1.6.1
+    rev: 1.7.0
     hooks:
       - id: canonicalize
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.7
+    rev: v0.15.11
     hooks:
       - id: ruff-format
   - repo: https://github.com/sbrunner/python-versions-hook
