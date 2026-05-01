@@ -127,19 +127,19 @@ configurations {
 
 dependencies {
     implementation(
-        'org.springframework:spring-context:7.0.6',
-        'org.springframework:spring-core:7.0.6',
-        'org.springframework:spring-web:7.0.6',
-        'org.springframework:spring-webmvc:7.0.6',
-        'org.springframework:spring-aspects:7.0.6',
-        'org.springframework:spring-orm:7.0.6',
-        'org.springframework:spring-jdbc:7.0.6',
-        'org.springframework:spring-tx:7.0.6',
-        'org.springframework:spring-test:7.0.6',
-        'org.springframework.security:spring-security-config:7.0.4',
-        'org.springframework.security:spring-security-web:7.0.4',
+        'org.springframework:spring-context:7.0.7',
+        'org.springframework:spring-core:7.0.7',
+        'org.springframework:spring-web:7.0.7',
+        'org.springframework:spring-webmvc:7.0.7',
+        'org.springframework:spring-aspects:7.0.7',
+        'org.springframework:spring-orm:7.0.7',
+        'org.springframework:spring-jdbc:7.0.7',
+        'org.springframework:spring-tx:7.0.7',
+        'org.springframework:spring-test:7.0.7',
+        'org.springframework.security:spring-security-config:7.0.5',
+        'org.springframework.security:spring-security-web:7.0.5',
         'com.thetransactioncompany:cors-filter:3.1',
-        'org.hibernate:hibernate-core:6.6.45.Final',
+        'org.hibernate:hibernate-core:6.6.49.Final',
         'org.postgresql:postgresql:42.7.10',
         'io.hypersistence:hypersistence-utils-hibernate-63:3.15.2',
         'com.mchange:c3p0:0.12.0',
@@ -167,7 +167,7 @@ dependencies {
         'org.geotools:gt-svg:34.2',
         'org.geotools:gt-cql:34.2',
     )
-    implementation "org.apache.httpcomponents.client5:httpclient5:5.6"
+    implementation "org.apache.httpcomponents.client5:httpclient5:5.6.1"
     jasper(
         'ar.com.fdvs:DynamicJasper:5.3.9',
         'com.itextpdf:itextpdf:5.5.13.5',
@@ -198,7 +198,7 @@ dependencies {
         // For JasperReports
         'joda-time:joda-time:2.14.1',
         'org.jfree:jcommon:1.0.24',
-            'org.apache.groovy:groovy-all:5.0.4',
+            'org.apache.groovy:groovy-all:5.0.5',
         'xalan:serializer:2.7.3',
         // For WebP images
             'com.twelvemonkeys.imageio:imageio-webp:3.13.1',
