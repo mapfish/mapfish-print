@@ -203,15 +203,12 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
 
         Values values =
                 new Values(
-                        new HashMap<>(),
+                        "test",
                         requestData,
                         template,
                         getTaskDirectory(),
                         this.httpRequestFactory,
-                        new File("."),
-                        HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-                        HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
-                        new AtomicBoolean(false));
+                        new File("."));
         forkJoinPool.invoke(template.getProcessorGraph().createTask(values));
 
         final JRMapCollectionDataSource tableDataSource =
@@ -240,7 +237,7 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
         JasperPrint print =
                 format
                         .getJasperPrint(new HashMap<>(), requestData, config, file, getTaskDirectory())
-                        .print();
+                        .print;
 
         new ImageSimilarity(getFile(baseDir + "expectedImage-quoted.png"))
                 .assertSimilarity(print, 0, 0);
