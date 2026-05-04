@@ -252,7 +252,7 @@ public class TableProcessorTest extends AbstractMapfishSpringTest {
     JasperPrint print =
         format
             .getJasperPrint(new HashMap<>(), requestData, config, file, getTaskDirectory())
-            .print();
+            .print;
 
     new ImageSimilarity(getFile(baseDir + "expectedImage-quoted.png"))
         .assertSimilarity(print, 0, 0);
