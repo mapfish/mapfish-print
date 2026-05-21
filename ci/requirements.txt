@@ -12,3 +12,4 @@ pyasn1>=0.6.3 # not directly required, pinned by Snyk to avoid a vulnerability
 virtualenv>=20.36.1 # not directly required, pinned by Snyk to avoid a vulnerability
 markdown>=3.8.1 # not directly required, pinned by Snyk to avoid a vulnerability
 idna>=3.15 # not directly required, pinned by Snyk to avoid a vulnerability
+id>=1.6.1 # required by c2cciutils publish command import
