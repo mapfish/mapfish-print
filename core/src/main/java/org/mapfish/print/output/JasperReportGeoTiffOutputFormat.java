@@ -9,10 +9,10 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Stroke;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import net.sf.jasperreports.engine.*;
 import org.geotools.api.coverage.grid.GridCoverageWriter;
@@ -135,6 +135,10 @@ public final class JasperReportGeoTiffOutputFormat extends AbstractJasperReportO
     String srs = mapValues.getProjection();
     LOGGER.info("Map SRS: {}", srs);
 
+    GridCoverageWriter writer = null;
+    Path dir = null;
+    Path tmp = null;
+
     try {
 
       bbox.setCoordinateReferenceSystem(CRS.decode(srs));
@@ -142,10 +146,11 @@ public final class JasperReportGeoTiffOutputFormat extends AbstractJasperReportO
       GridCoverageFactory factory = new GridCoverageFactory();
       GridCoverage2D coverage = factory.create("coverage", image, bbox);
 
-      final int tileWidth = 512; // fixeded value
-      final int tileHeight = 512; // fixeded value
+      final int tileWidth = 512; // fixed value
+      final int tileHeight = 512; // fixed value
 
-      File tmp = File.createTempFile("cog-", ".tif");
+      dir = Files.createTempDirectory("cog-print");
+      tmp = Files.createTempFile(dir, "cog-", ".tif");
 
       // getting a format
       final GeoTiffFormat format = new GeoTiffFormat();
@@ -166,19 +171,19 @@ public final class JasperReportGeoTiffOutputFormat extends AbstractJasperReportO
       final ParameterValueGroup params = format.getWriteParameters();
       params.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(wp);
 
-      GridCoverageWriter writer = null;
-
-      writer = format.getWriter(tmp);
+      writer = format.getWriter(tmp.toFile());
       writer.write(
           coverage,
           (GeneralParameterValue[]) params.values().toArray(new GeneralParameterValue[1]));
 
-      Files.copy(tmp.toPath(), outputStream);
-      writer.dispose();
-      tmp.delete();
+      Files.copy(tmp, outputStream);
+      LOGGER.info("GeoTIFF written successfully");
     } catch (Exception e) {
       LOGGER.error("Error writing GeoTIFF: ", e);
+    } finally {
+      writer.dispose();
+      Files.delete(tmp);
     }
-    LOGGER.info("GeoTIFF written successfully");
+    LOGGER.info("GeoTIFF writing process completed");
   }
 }

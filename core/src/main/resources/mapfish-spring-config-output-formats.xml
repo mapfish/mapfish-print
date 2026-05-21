@@ -36,7 +36,7 @@
     <bean id="tiffMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
         p:fileSuffix="tiff" p:contentType="image/tiff"/>
     <bean id="cogMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
-        p:fileSuffix="cog" p:contentType="image/cog"/>
+        p:fileSuffix="cog" p:contentType="image/tiff"/>
     <bean id="gifMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
         p:fileSuffix="gif" p:contentType="image/gif" />
     <bean id="bmpMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
