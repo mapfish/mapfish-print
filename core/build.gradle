@@ -139,7 +139,7 @@ dependencies {
         'org.springframework.security:spring-security-config:7.0.5',
         'org.springframework.security:spring-security-web:7.0.5',
         'com.thetransactioncompany:cors-filter:3.1',
-        'org.hibernate:hibernate-core:6.6.49.Final',
+        'org.hibernate:hibernate-core:6.6.51.Final',
         'org.postgresql:postgresql:42.7.11',
         'io.hypersistence:hypersistence-utils-hibernate-63:3.15.2',
         'com.mchange:c3p0:0.13.0',
@@ -180,9 +180,9 @@ dependencies {
         'net.sf.jasperreports:jasperreports-pdf:7.0.6',
     )
     implementation(
-        'org.slf4j:slf4j-api:2.0.17',
-        'org.slf4j:jcl-over-slf4j:2.0.17',
-        'org.slf4j:jul-to-slf4j:2.0.17',
+        'org.slf4j:slf4j-api:2.0.18',
+        'org.slf4j:jcl-over-slf4j:2.0.18',
+        'org.slf4j:jul-to-slf4j:2.0.18',
             'ch.qos.logback:logback-classic:1.5.32',
             'ch.qos.logback:logback-access:1.5.32',
         'org.json:json:20250517',
@@ -190,15 +190,15 @@ dependencies {
         'com.github.spullara.cli-parser:cli-parser:1.1.6',
         'com.sun.mail:javax.mail:1.6.2',
             'com.amazonaws:aws-java-sdk-s3:1.12.797',
-            'io.sentry:sentry-logback:8.40.0',
+            'io.sentry:sentry-logback:8.42.0',
         // For JSON logs
         'net.logstash.logback:logstash-logback-encoder:9.0',
         // For PDF/A
         'com.adobe.xmp:xmpcore:6.1.11',
         // For JasperReports
-        'joda-time:joda-time:2.14.1',
+        'joda-time:joda-time:2.14.2',
         'org.jfree:jcommon:1.0.24',
-            'org.apache.groovy:groovy-all:5.0.5',
+            'org.apache.groovy:groovy-all:5.0.6',
         'xalan:serializer:2.7.3',
         // For WebP images
             'com.twelvemonkeys.imageio:imageio-webp:3.13.1',
@@ -214,8 +214,8 @@ dependencies {
     testImplementation (
         'de.saly:javamail-mock2-fullmock:0.5-beta4',
         'com.h2database:h2:2.4.240',
-        'org.junit.jupiter:junit-jupiter:6.0.3',
-        'org.junit.jupiter:junit-jupiter-api:6.0.3',
+        'org.junit.jupiter:junit-jupiter:6.1.0',
+        'org.junit.jupiter:junit-jupiter-api:6.1.0',
     )
 }
 
