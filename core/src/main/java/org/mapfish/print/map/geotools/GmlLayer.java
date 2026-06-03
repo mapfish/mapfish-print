@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
+import java.util.regex.Pattern;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.emf.ecore.resource.URIHandler;
@@ -25,7 +26,9 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.EntityResolver2;
 
 /** Parses GML from the request data. */
 public final class GmlLayer extends AbstractFeatureSourceLayer {
@@ -70,6 +73,31 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         new org.geotools.gml3.GMLConfiguration();
     private static final org.geotools.gml3.v3_2.GMLConfiguration GML_32_PARSER =
         new org.geotools.gml3.v3_2.GMLConfiguration(true);
+    private static final Pattern DOCTYPE_PATTERN =
+        Pattern.compile("<\\s*!\\s*DOCTYPE\\b", Pattern.CASE_INSENSITIVE);
+    private static final EntityResolver2 BLOCK_EXTERNAL_ENTITIES =
+        new EntityResolver2() {
+          @Override
+          public InputSource getExternalSubset(final String name, final String baseURI) {
+            return null;
+          }
+
+          @Override
+          public InputSource resolveEntity(
+              final String name,
+              final String publicId,
+              final String baseURI,
+              final String systemId)
+              throws SAXException {
+            throw new SAXException("External XML entities are not allowed in GML layers");
+          }
+
+          @Override
+          public InputSource resolveEntity(final String publicId, final String systemId)
+              throws SAXException {
+            throw new SAXException("External XML entities are not allowed in GML layers");
+          }
+        };
 
     @Autowired private URIHandler cachingUrihandler;
 
@@ -120,8 +148,9 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         FileUtils.testForLegalFileUrl(template.getConfiguration(), url);
         try {
           final String gmlData = URIUtils.toString(httpRequestFactory, url.toURI());
+          validateXmlSafety(gmlData);
           final int endIndex = 200;
-          String startOfData = gmlData.substring(0, endIndex);
+          String startOfData = gmlData.substring(0, Math.min(endIndex, gmlData.length()));
           if (startOfData.contains("\"http://www.opengis.net/gml/3.2\"")) {
             return parseGml32(gmlData);
           } else {
@@ -132,6 +161,12 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         }
       } catch (MalformedURLException | URISyntaxException e) {
         return null;
+      }
+    }
+
+    private void validateXmlSafety(final String gmlData) {
+      if (DOCTYPE_PATTERN.matcher(gmlData).find()) {
+        throw new PrintException("DOCTYPE declarations are not allowed in GML layers");
       }
     }
 
@@ -178,16 +213,17 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         if (featureCollection instanceof SimpleFeatureCollection) {
           return (SimpleFeatureCollection) featureCollection;
         } else {
-          throw new RuntimeException("unable to parse gml: \n\n" + gmlData);
+          throw new PrintException("Unable to parse GML 3.2 feature collection");
         }
 
       } catch (SAXException | ParserConfigurationException e) {
-        throw new PrintException("Failed to parse Gml32 " + gmlData, e);
+        throw new PrintException("Failed to parse GML 3.2 feature collection", e);
       }
     }
 
     private Parser createParser(final Configuration configuration) {
       final Parser parser = new Parser(configuration);
+      parser.setEntityResolver(BLOCK_EXTERNAL_ENTITIES);
       parser.getURIHandlers().addFirst(this.cachingUrihandler);
       return parser;
     }

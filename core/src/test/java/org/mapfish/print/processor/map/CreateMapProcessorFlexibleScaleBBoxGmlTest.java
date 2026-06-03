@@ -1,6 +1,9 @@
 package org.mapfish.print.processor.map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -87,5 +91,48 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
       new ImageSimilarity(getFile(String.format("%sexpected%s.png", BASE_DIR, gmlDataName)))
           .assertSimilarity(new File(layerGraphics.getFirst()), 0);
     }
+  }
+
+  @Test
+  @DirtiesContext
+  public void testRejectsGmlWithDoctype() throws Exception {
+    final String host = "center_gml_flexible_scale.com";
+    requestFactory.registerHandler(
+        input -> (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host),
+        createFileHandler(uri -> "/map-data" + uri.getPath()));
+    final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+    final Template template = config.getTemplate("main");
+
+    PJsonObject requestData = loadJsonRequestData();
+    final JSONObject jsonLayer =
+        requestData
+            .getJSONObject("attributes")
+            .getJSONObject("map")
+            .getJSONArray("layers")
+            .getJSONObject(0)
+            .getInternalObj();
+    jsonLayer.remove("url");
+    jsonLayer.accumulate("url", "http://" + host + ":23432/gml/xxe.gml");
+
+    Values values =
+        new Values(
+            new HashMap<>(),
+            requestData,
+            template,
+            getTaskDirectory(),
+            this.requestFactory,
+            new File("."),
+            HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+            HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+            new AtomicBoolean(false));
+
+    final ForkJoinTask<Values> taskFuture =
+        this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
+    final ExecutionException exception = assertThrows(ExecutionException.class, taskFuture::get);
+    final String exceptionText = exception.toString() + exception.getCause();
+
+    assertTrue(exceptionText.contains("DOCTYPE declarations are not allowed in GML layers"));
+    assertFalse(exceptionText.contains("XXE_REGRESSION_SENTINEL"));
+    assertFalse(exceptionText.contains("mapfish-print-xxe-regression-secret"));
   }
 }
