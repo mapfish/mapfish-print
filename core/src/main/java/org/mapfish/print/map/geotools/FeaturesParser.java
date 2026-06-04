@@ -267,7 +267,7 @@ public class FeaturesParser {
         return null;
       }
     } catch (JSONException e) {
-      throw new PrintException("Invalid geoJSON: \n" + geojsonData + ": " + e.getMessage(), e);
+      throw new PrintException("Invalid GeoJSON data", e);
     }
   }
 
