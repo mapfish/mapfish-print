@@ -130,6 +130,310 @@ public class FeaturesParser {
         return crs;
     }
 
+  private static String getProperty(final JSONObject crsJson, final String nameCode)
+      throws JSONException {
+    if (crsJson.has("properties")) {
+      final JSONObject propertiesJson = crsJson.getJSONObject("properties");
+      if (propertiesJson.has(nameCode)) {
+        return propertiesJson.getString(nameCode);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get the features collection from a GeoJson inline string or URL.
+   *
+   * @param template the template
+   * @param features what to parse
+   * @return the feature collection
+   */
+  public final SimpleFeatureCollection autoTreat(final Template template, final String features)
+      throws IOException {
+    SimpleFeatureCollection featuresCollection = treatStringAsURL(template, features);
+    if (featuresCollection == null) {
+      featuresCollection = treatStringAsGeoJson(features);
+    }
+    return featuresCollection;
+  }
+
+  /**
+   * Get the features collection from a GeoJson URL.
+   *
+   * @param template the template
+   * @param geoJsonUrl what to parse
+   * @return the feature collection
+   */
+  public final SimpleFeatureCollection treatStringAsURL(
+      final Template template, final String geoJsonUrl) throws IOException {
+    URL url;
+    try {
+      URI uri = new URI(geoJsonUrl);
+      url = FileUtils.testForLegalFileUrl(template.getConfiguration(), uri.toURL());
+    } catch (MalformedURLException | URISyntaxException e) {
+      return null;
+    }
+
+    final String geojsonString;
+    if (url.getProtocol().equalsIgnoreCase("file")) {
+      geojsonString = IOUtils.toString(url, Constants.DEFAULT_CHARSET);
+    } else {
+      geojsonString = URIUtils.toString(this.httpRequestFactory, url);
+    }
+
+    return treatStringAsGeoJson(geojsonString);
+  }
+
+  /**
+   * Get the features collection from a GeoJson inline string.
+   *
+   * @param geoJsonString what to parse
+   * @return the feature collection
+   */
+  public final SimpleFeatureCollection treatStringAsGeoJson(final String geoJsonString)
+      throws IOException {
+    return readFeatureCollection(geoJsonString);
+  }
+
+  private SimpleFeatureCollection readFeatureCollection(final String geojsonData)
+      throws IOException {
+    String convertedGeojsonObject = convertToGeoJsonCollection(geojsonData);
+
+    FeatureJSON geoJsonReader = new FeatureJSON();
+    final SimpleFeatureType featureType = createFeatureType(convertedGeojsonObject);
+    if (featureType != null) {
+      geoJsonReader.setFeatureType(featureType);
+    }
+    ByteArrayInputStream input =
+        new ByteArrayInputStream(convertedGeojsonObject.getBytes(Constants.DEFAULT_CHARSET));
+
+    return (SimpleFeatureCollection) geoJsonReader.readFeatureCollection(input);
+  }
+
+  private String convertToGeoJsonCollection(final String geojsonData) {
+    String convertedGeojsonObject = geojsonData.trim();
+    if (convertedGeojsonObject.startsWith("[")) {
+      convertedGeojsonObject =
+          "{\"type\": \"FeatureCollection\", \"features\": " + convertedGeojsonObject + "}";
+    }
+    return convertedGeojsonObject;
+  }
+
+  private SimpleFeatureType createFeatureType(@Nonnull final String geojsonData) {
+    try {
+      JSONObject geojson = new JSONObject(geojsonData);
+      if (geojson.has("type") && geojson.getString("type").equalsIgnoreCase("FeatureCollection")) {
+        CoordinateReferenceSystem crs =
+            parseCoordinateReferenceSystem(
+                this.httpRequestFactory, geojson, this.forceLongitudeFirst);
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("GeosjonFeatureType");
+        final JSONArray features = geojson.getJSONArray("features");
+
+        if (features.isEmpty()) {
+          // do not try to build the feature type if there are no features
+          return null;
+        }
+
+        Set<String> allAttributes = new HashSet<>();
+        Class<Geometry> geomType = null;
+        for (int i = 0; i < features.length(); i++) {
+          final JSONObject feature = features.getJSONObject(i);
+          final JSONObject properties = feature.getJSONObject("properties");
+          final Iterator<String> keys = properties.keys();
+          while (keys.hasNext()) {
+            String nextKey = (String) keys.next();
+            if (!allAttributes.contains(nextKey)) {
+              allAttributes.add(nextKey);
+              builder.add(nextKey, Object.class);
+=======
+      }
+    } catch (JSONException | IOException | URISyntaxException e) {
+      LOGGER.warn(
+          "Error reading the required elements to parse crs of the geojson: \n{}", geojson, e);
+    }
+    try {
+      if (!code.isEmpty()) {
+        crs = CRS.decode(code.toString(), forceLongitudeFirst);
+      }
+    } catch (NoSuchAuthorityCodeException e) {
+      LOGGER.warn("No CRS with code: {}.\nRead from geojson: \n{}", code, geojson);
+    } catch (FactoryException e) {
+      LOGGER.warn("Error loading CRS with code: {}.\nRead from geojson: \n{}", code, geojson);
+    }
+    return crs;
+  }
+
+  @VisibleForTesting
+  static CoordinateReferenceSystem parseCoordinateReferenceSystem(
+      final JSONObject geojson, final boolean forceLongitudeFirst) {
+    CoordinateReferenceSystem crs = DefaultEngineeringCRS.GENERIC_2D;
+    StringBuilder code = new StringBuilder();
+    try {
+      if (geojson.has("crs")) {
+        JSONObject crsJson = geojson.getJSONObject("crs");
+        String type = crsJson.optString("type", "");
+
+        if (type.equalsIgnoreCase("EPSG") || type.equalsIgnoreCase("CRS")) {
+          code.append(type);
+          String propCode = getProperty(crsJson, "code");
+          if (propCode != null) {
+            code.append(":").append(propCode);
+          }
+        } else if (type.equalsIgnoreCase("name")) {
+          String propCode = getProperty(crsJson, "name");
+          if (propCode != null) {
+            code.append(propCode);
+          }
+        } else if (!type.equals("link")) {
+          String propCode = getProperty(crsJson, "code");
+          if (propCode != null) {
+            code.append(propCode);
+          }
+        }
+      }
+    } catch (JSONException e) {
+      LOGGER.warn(
+          "Error reading the required elements to parse crs of the geojson: \n{}", geojson, e);
+    }
+    try {
+      if (!code.isEmpty()) {
+        crs = CRS.decode(code.toString(), forceLongitudeFirst);
+      }
+    } catch (NoSuchAuthorityCodeException e) {
+      LOGGER.warn("No CRS with code: {}.\nRead from geojson: \n{}", code, geojson);
+    } catch (FactoryException e) {
+      LOGGER.warn("Error loading CRS with code: {}.\nRead from geojson: \n{}", code, geojson);
+    }
+    return crs;
+  }
+
+  private static String getProperty(final JSONObject crsJson, final String nameCode)
+      throws JSONException {
+    if (crsJson.has("properties")) {
+      final JSONObject propertiesJson = crsJson.getJSONObject("properties");
+      if (propertiesJson.has(nameCode)) {
+        return propertiesJson.getString(nameCode);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get the features collection from a GeoJson inline string or URL.
+   *
+   * @param template the template
+   * @param features what to parse
+   * @return the feature collection
+   */
+  public final SimpleFeatureCollection autoTreat(final Template template, final String features)
+      throws IOException {
+    SimpleFeatureCollection featuresCollection = treatStringAsURL(template, features);
+    if (featuresCollection == null) {
+      featuresCollection = treatStringAsGeoJson(features);
+    }
+    return featuresCollection;
+  }
+
+  /**
+   * Get the features collection from a GeoJson URL.
+   *
+   * @param template the template
+   * @param geoJsonUrl what to parse
+   * @return the feature collection
+   */
+  public final SimpleFeatureCollection treatStringAsURL(
+      final Template template, final String geoJsonUrl) throws IOException {
+    URL url;
+    try {
+      URI uri = new URI(geoJsonUrl);
+      url = FileUtils.testForLegalFileUrl(template.getConfiguration(), uri.toURL());
+    } catch (MalformedURLException | URISyntaxException e) {
+      return null;
+    }
+
+    final String geojsonString;
+    if (url.getProtocol().equalsIgnoreCase("file")) {
+      geojsonString = IOUtils.toString(url, Constants.DEFAULT_CHARSET);
+    } else {
+      geojsonString = URIUtils.toString(this.httpRequestFactory, url);
+    }
+
+    return treatStringAsGeoJson(geojsonString);
+  }
+
+  /**
+   * Get the features collection from a GeoJson inline string.
+   *
+   * @param geoJsonString what to parse
+   * @return the feature collection
+   */
+  public final SimpleFeatureCollection treatStringAsGeoJson(final String geoJsonString)
+      throws IOException {
+    return readFeatureCollection(geoJsonString);
+  }
+
+  private SimpleFeatureCollection readFeatureCollection(final String geojsonData)
+      throws IOException {
+    String convertedGeojsonObject = convertToGeoJsonCollection(geojsonData);
+
+    FeatureJSON geoJsonReader = new FeatureJSON();
+    final SimpleFeatureType featureType = createFeatureType(convertedGeojsonObject);
+    if (featureType != null) {
+      geoJsonReader.setFeatureType(featureType);
+    }
+    ByteArrayInputStream input =
+        new ByteArrayInputStream(convertedGeojsonObject.getBytes(Constants.DEFAULT_CHARSET));
+
+    return (SimpleFeatureCollection) geoJsonReader.readFeatureCollection(input);
+  }
+
+  private String convertToGeoJsonCollection(final String geojsonData) {
+    String convertedGeojsonObject = geojsonData.trim();
+    if (convertedGeojsonObject.startsWith("[")) {
+      convertedGeojsonObject =
+          "{\"type\": \"FeatureCollection\", \"features\": " + convertedGeojsonObject + "}";
+    }
+    return convertedGeojsonObject;
+  }
+
+  private SimpleFeatureType createFeatureType(@Nonnull final String geojsonData) {
+    try {
+      JSONObject geojson = new JSONObject(geojsonData);
+      if (geojson.has("type") && geojson.getString("type").equalsIgnoreCase("FeatureCollection")) {
+        CoordinateReferenceSystem crs =
+            parseCoordinateReferenceSystem(
+                this.httpRequestFactory, geojson, this.forceLongitudeFirst);
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("GeosjonFeatureType");
+        final JSONArray features = geojson.getJSONArray("features");
+
+        if (features.isEmpty()) {
+          // do not try to build the feature type if there are no features
+          return null;
+        }
+
+        Set<String> allAttributes = new HashSet<>();
+        Class<Geometry> geomType = null;
+        for (int i = 0; i < features.length(); i++) {
+          final JSONObject feature = features.getJSONObject(i);
+          final JSONObject properties = feature.getJSONObject("properties");
+          final Iterator<String> keys = properties.keys();
+          while (keys.hasNext()) {
+            String nextKey = (String) keys.next();
+            if (!allAttributes.contains(nextKey)) {
+              allAttributes.add(nextKey);
+              builder.add(nextKey, Object.class);
+>>>>>>> 2737527a5 (Restore test compatibility for CRS parser signature)
+            }
+        } catch (NoSuchAuthorityCodeException e) {
+            LOGGER.warn("No CRS with code: {}.\nRead from geojson: \n{}", code, geojson);
+        } catch (FactoryException e) {
+            LOGGER.warn("Error loading CRS with code: {}.\nRead from geojson: \n{}", code, geojson);
+        }
+        return crs;
+    }
+
     private static String getProperty(final JSONObject crsJson, final String nameCode) throws JSONException {
         if (crsJson.has("properties")) {
             final JSONObject propertiesJson = crsJson.getJSONObject("properties");
