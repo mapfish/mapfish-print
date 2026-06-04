@@ -1,14 +1,18 @@
 package org.mapfish.print.map.geotools;
 
 import jakarta.annotation.Nonnull;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.emf.ecore.resource.URIHandler;
 import org.geotools.api.data.FeatureSource;
@@ -25,7 +29,9 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.EntityResolver2;
 
 /** Parses GML from the request data. */
 public final class GmlLayer extends AbstractFeatureSourceLayer {
@@ -120,6 +126,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         FileUtils.testForLegalFileUrl(template.getConfiguration(), url);
         try {
           final String gmlData = URIUtils.toString(httpRequestFactory, url.toURI());
+          validateXmlInput(gmlData);
           final int endIndex = 200;
           String startOfData = gmlData.substring(0, endIndex);
           if (startOfData.contains("\"http://www.opengis.net/gml/3.2\"")) {
@@ -178,17 +185,60 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
         if (featureCollection instanceof SimpleFeatureCollection) {
           return (SimpleFeatureCollection) featureCollection;
         } else {
-          throw new RuntimeException("unable to parse gml: \n\n" + gmlData);
+          throw new RuntimeException("unable to parse GML data");
         }
 
       } catch (SAXException | ParserConfigurationException e) {
-        throw new PrintException("Failed to parse Gml32 " + gmlData, e);
+        throw new PrintException("Failed to parse GML data", e);
+      }
+    }
+
+    private void validateXmlInput(final String gmlData) {
+      try {
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        factory.setXIncludeAware(false);
+        factory.setExpandEntityReferences(false);
+
+        factory
+            .newDocumentBuilder()
+            .parse(new ByteArrayInputStream(gmlData.getBytes(StandardCharsets.UTF_8)));
+      } catch (ParserConfigurationException | SAXException | IOException e) {
+        throw new PrintException("Failed to parse GML data", e);
       }
     }
 
     private Parser createParser(final Configuration configuration) {
       final Parser parser = new Parser(configuration);
       parser.getURIHandlers().addFirst(this.cachingUrihandler);
+      parser.setEntityResolver(
+          new EntityResolver2() {
+            @Override
+            public InputSource getExternalSubset(final String name, final String baseURI) {
+              return new InputSource(new StringReader(""));
+            }
+
+            @Override
+            public InputSource resolveEntity(
+                final String name,
+                final String publicId,
+                final String baseURI,
+                final String systemId) {
+              return new InputSource(new StringReader(""));
+            }
+
+            @Override
+            public InputSource resolveEntity(final String publicId, final String systemId) {
+              return new InputSource(new StringReader(""));
+            }
+          });
       return parser;
     }
   }
