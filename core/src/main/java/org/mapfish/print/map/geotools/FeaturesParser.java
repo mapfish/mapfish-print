@@ -131,6 +131,50 @@ public class FeaturesParser {
     return crs;
   }
 
+  @VisibleForTesting
+  static CoordinateReferenceSystem parseCoordinateReferenceSystem(
+      final JSONObject geojson, final boolean forceLongitudeFirst) {
+    CoordinateReferenceSystem crs = DefaultEngineeringCRS.GENERIC_2D;
+    StringBuilder code = new StringBuilder();
+    try {
+      if (geojson.has("crs")) {
+        JSONObject crsJson = geojson.getJSONObject("crs");
+        String type = crsJson.optString("type", "");
+
+        if (type.equalsIgnoreCase("EPSG") || type.equalsIgnoreCase("CRS")) {
+          code.append(type);
+          String propCode = getProperty(crsJson, "code");
+          if (propCode != null) {
+            code.append(":").append(propCode);
+          }
+        } else if (type.equalsIgnoreCase("name")) {
+          String propCode = getProperty(crsJson, "name");
+          if (propCode != null) {
+            code.append(propCode);
+          }
+        } else if (!type.equals("link")) {
+          String propCode = getProperty(crsJson, "code");
+          if (propCode != null) {
+            code.append(propCode);
+          }
+        }
+      }
+    } catch (JSONException e) {
+      LOGGER.warn(
+          "Error reading the required elements to parse crs of the geojson: \n{}", geojson, e);
+    }
+    try {
+      if (!code.isEmpty()) {
+        crs = CRS.decode(code.toString(), forceLongitudeFirst);
+      }
+    } catch (NoSuchAuthorityCodeException e) {
+      LOGGER.warn("No CRS with code: {}.\nRead from geojson: \n{}", code, geojson);
+    } catch (FactoryException e) {
+      LOGGER.warn("Error loading CRS with code: {}.\nRead from geojson: \n{}", code, geojson);
+    }
+    return crs;
+  }
+
   private static String getProperty(final JSONObject crsJson, final String nameCode)
       throws JSONException {
     if (crsJson.has("properties")) {
