@@ -57,6 +57,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -337,6 +338,15 @@ public abstract class AbstractJasperReportOutputFormat implements OutputFormat {
     private Document parseXML(final Configuration configuration, final String reportTemplate)
             throws ParserConfigurationException, IOException, SAXException {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        factory.setXIncludeAware(false);
+        factory.setExpandEntityReferences(false);
         factory.setValidating(false);
         final DocumentBuilder documentBuilder = factory.newDocumentBuilder();
         final byte[] bytes = configuration.loadFile(reportTemplate);
