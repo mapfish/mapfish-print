@@ -1,0 +1,20 @@
+Backport of #4212 to 3.30
+
+Error on cherry-picking: 23a96e7baa15077bdb0e5fc5a72b18da23af9121, 18924aa1099427bf6547386720f6351f57989b78, 4b5f65dcbf2c4aa6fb46cd488218caab748b917a, 6f7a92f8cc35f0598f59e1579410bc3d5760051e, 2737527a561957f4040da6daa70833eb7c9e5dc4
+
+To continue do:
+```bash
+git fetch && \
+  git checkout ghci/backport/4212-to-3.30 && \
+  git reset --hard HEAD^ && \
+  git cherry-pick 23a96e7baa15077bdb0e5fc5a72b18da23af9121 18924aa1099427bf6547386720f6351f57989b78 4b5f65dcbf2c4aa6fb46cd488218caab748b917a 6f7a92f8cc35f0598f59e1579410bc3d5760051e 2737527a561957f4040da6daa70833eb7c9e5dc4
+```
+Resolve the conflict, then:
+```bash
+git add <file> && \
+  git cherry-pick --continue
+```
+When all the conflicts are resolved, push the branch:
+```bash
+git push origin ghci/backport/4212-to-3.30 --force
+```
