@@ -138,6 +138,9 @@ public class FeaturesParser {
             }
         }
         return null;
+      }
+    } catch (JSONException e) {
+      throw new PrintException("Invalid GeoJSON data", e);
     }
 
     /**
