@@ -1,5 +1,6 @@
 package org.mapfish.print.processor.map;
 
+import java.util.concurrent.ExecutionException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;

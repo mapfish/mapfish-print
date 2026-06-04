@@ -1,5 +1,9 @@
 package org.mapfish.print.map.geotools;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.eclipse.emf.ecore.resource.URIHandler;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.collection.CollectionFeatureSource;
@@ -15,7 +19,9 @@ import org.mapfish.print.config.Template;
 import org.mapfish.print.http.MfClientHttpRequestFactory;
 import org.mapfish.print.map.AbstractLayerParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.EntityResolver2;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -181,7 +187,7 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
                 if (featureCollection != null && featureCollection instanceof SimpleFeatureCollection) {
                     return (SimpleFeatureCollection) featureCollection;
                 } else {
-                    throw new RuntimeException("unable to parse gml: \n\n" + gmlData);
+                    throw new RuntimeException("unable to parse GML data");
                 }
 
             } catch (SAXException | ParserConfigurationException e) {
@@ -189,9 +195,52 @@ public final class GmlLayer extends AbstractFeatureSourceLayer {
             }
         }
 
+        private void validateXmlInput(final String gmlData) {
+            try {
+                final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                factory.setNamespaceAware(true);
+                factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+                factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+                factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+                factory.setXIncludeAware(false);
+                factory.setExpandEntityReferences(false);
+
+                factory
+                    .newDocumentBuilder()
+                    .parse(new ByteArrayInputStream(gmlData.getBytes(StandardCharsets.UTF_8)));
+            } catch (ParserConfigurationException | SAXException | IOException e) {
+                throw new PrintException("Failed to parse GML data", e);
+            }
+        }
+
         private Parser createParser(final Configuration configuration) {
             final Parser parser = new Parser(configuration);
             parser.getURIHandlers().add(0, this.cachingUrihandler);
+            parser.setEntityResolver(
+                new EntityResolver2() {
+                    @Override
+                    public InputSource getExternalSubset(final String name, final String baseURI) {
+                        return new InputSource(new StringReader(""));
+                    }
+
+                    @Override
+                    public InputSource resolveEntity(
+                        final String name,
+                        final String publicId,
+                        final String baseURI,
+                        final String systemId) {
+                        return new InputSource(new StringReader(""));
+                    }
+
+                    @Override
+                    public InputSource resolveEntity(final String publicId, final String systemId) {
+                        return new InputSource(new StringReader(""));
+                    }
+                });
             return parser;
         }
     }
