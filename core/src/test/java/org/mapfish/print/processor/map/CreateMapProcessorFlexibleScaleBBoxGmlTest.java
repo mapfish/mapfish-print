@@ -1,7 +1,21 @@
 package org.mapfish.print.processor.map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.TestHttpClientFactory;
 import org.mapfish.print.config.Configuration;
@@ -13,68 +27,111 @@ import org.mapfish.print.wrapper.json.PJsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-
-import static org.junit.Assert.assertEquals;
-
-/**
- * Basic test of the Map processor.
- *
- * Created by Jesse on 3/26/14.
- */
+/** Basic test of the Map processor. */
 public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishSpringTest {
-    public static final String BASE_DIR = "center_gml_flexible_scale/";
+  public static final String BASE_DIR = "center_gml_flexible_scale/";
 
-    @Autowired
-    private ConfigurationFactory configurationFactory;
-    @Autowired
-    private TestHttpClientFactory requestFactory;
-    @Autowired
-    private ForkJoinPool forkJoinPool;
+  @Autowired private ConfigurationFactory configurationFactory;
+  @Autowired private TestHttpClientFactory requestFactory;
+  @Autowired private ForkJoinPool forkJoinPool;
 
-    private static PJsonObject loadJsonRequestData() throws IOException {
-        return parseJSONObjectFromFile(CreateMapProcessorFlexibleScaleBBoxGmlTest.class,
-                                       BASE_DIR + "requestData.json");
+  private static PJsonObject loadJsonRequestData() throws IOException {
+    return parseJSONObjectFromFile(
+        CreateMapProcessorFlexibleScaleBBoxGmlTest.class, BASE_DIR + "requestData.json");
+  }
+
+  @Test
+  @DirtiesContext
+  public void testExecute() throws Exception {
+    final String host = "center_gml_flexible_scale.com";
+    requestFactory.registerHandler(
+        input -> ("" + input.getHost()).contains(host) || input.getAuthority().contains(host),
+        createFileHandler(uri -> "/map-data" + uri.getPath()));
+    final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+    final Template template = config.getTemplate("main");
+
+    PJsonObject requestData = loadJsonRequestData();
+    final JSONObject jsonLayer =
+        requestData
+            .getJSONObject("attributes")
+            .getJSONObject("map")
+            .getJSONArray("layers")
+            .getJSONObject(0)
+            .getInternalObj();
+
+    for (String gmlDataName : new String[] {"spearfish-streams-v2.gml", "spearfish-streams-v311.gml"}) {
+      jsonLayer.remove("url");
+      jsonLayer.accumulate("url", "http://" + host + ":23432" + "/gml/" + gmlDataName);
+
+      Values values = createValues(requestData, template);
+
+      final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
+      taskFuture.get();
+
+      @SuppressWarnings("unchecked")
+      List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
+      assertEquals(1, layerGraphics.size());
+
+      new ImageSimilarity(getFile(String.format("%sexpected%s.png", BASE_DIR, gmlDataName)))
+          .assertSimilarity(new File(layerGraphics.getFirst()), 0);
     }
+  }
 
-    @Test
-    @DirtiesContext
-    public void testExecute() throws Exception {
-        final String host = "center_gml_flexible_scale.com";
-        requestFactory.registerHandler(
-                input -> (("" + input.getHost()).contains(host)) || input.getAuthority().contains(host),
-                createFileHandler(uri -> "/map-data" + uri.getPath())
-        );
-        final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
-        final Template template = config.getTemplate("main");
+  @Test
+  @DirtiesContext
+  public void testRejectsXxePayload() throws Exception {
+    final String host = "center_gml_flexible_scale.com";
+    requestFactory.registerHandler(
+        input -> ("" + input.getHost()).contains(host) || input.getAuthority().contains(host),
+        createFileHandler(uri -> "/map-data" + uri.getPath()));
+    final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+    final Template template = config.getTemplate("main");
 
-        PJsonObject requestData = loadJsonRequestData();
-        final JSONObject jsonLayer = requestData.getJSONObject("attributes").getJSONObject("map")
-                .getJSONArray("layers").getJSONObject(0).getInternalObj();
+    PJsonObject requestData = loadJsonRequestData();
+    final JSONObject jsonLayer =
+        requestData
+            .getJSONObject("attributes")
+            .getJSONObject("map")
+            .getJSONArray("layers")
+            .getJSONObject(0)
+            .getInternalObj();
+    jsonLayer.remove("url");
+    jsonLayer.accumulate("url", "http://" + host + ":23432/gml/malicious-doctype.gml");
 
-        for (String gmlDataName: new String[]{"spearfish-streams-v2.gml", "spearfish-streams-v311.gml"}) {
-            jsonLayer.remove("url");
-            jsonLayer.accumulate("url", "http://" + host + ":23432" + "/gml/" + gmlDataName);
+    Values values = createValues(requestData, template);
+    final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(template.getProcessorGraph().createTask(values));
 
-            Values values = new Values("test", requestData, template, getTaskDirectory(),
-                                       this.requestFactory, new File("."));
+    ExecutionException exception = assertThrows(ExecutionException.class, taskFuture::get);
+    String message = collectMessages(exception);
+    assertTrue(message.contains("Failed to parse GML data"));
+    assertFalse(message.contains("<!DOCTYPE"));
+  }
 
-            final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(
-                    template.getProcessorGraph().createTask(values));
-            taskFuture.get();
+  private Values createValues(final PJsonObject requestData, final Template template) {
+    return new Values(
+        new HashMap<>(),
+        requestData,
+        template,
+        getTaskDirectory(),
+        this.requestFactory,
+        new File("."),
+        HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
+        HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
+        new AtomicBoolean(false));
+  }
 
-            @SuppressWarnings("unchecked")
-            List<URI> layerGraphics = (List<URI>) values.getObject("layerGraphics", List.class);
-            assertEquals(1, layerGraphics.size());
-
-            new ImageSimilarity(getFile(String.format("%sexpected%s.png", BASE_DIR, gmlDataName)))
-                    .assertSimilarity(new File(layerGraphics.get(0)), 20);
-        }
-
+  private String collectMessages(final Throwable throwable) {
+    StringBuilder sb = new StringBuilder();
+    Throwable current = throwable;
+    while (current != null) {
+      if (current.getMessage() != null) {
+        sb.append(current.getMessage());
+      }
+      current = current.getCause();
+      if (current != null) {
+        sb.append('\n');
+      }
     }
+    return sb.toString();
+  }
 }
