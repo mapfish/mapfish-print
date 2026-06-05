@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
@@ -123,8 +122,7 @@ public class CreateMapProcessorFlexibleScaleBBoxGmlTest extends AbstractMapfishS
         this.requestFactory,
         new File("."),
         HTTP_REQUEST_MAX_NUMBER_FETCH_RETRY,
-        HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS,
-        new AtomicBoolean(false));
+        HTTP_REQUEST_FETCH_RETRY_INTERVAL_MILLIS);
   }
 
   private String collectMessages(final Throwable throwable) {
