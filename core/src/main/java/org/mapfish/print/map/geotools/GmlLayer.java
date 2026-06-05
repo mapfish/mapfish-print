@@ -13,6 +13,7 @@ import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
 import org.mapfish.print.ExceptionUtils;
 import org.mapfish.print.FileUtils;
+import org.mapfish.print.PrintException;
 import org.mapfish.print.URIUtils;
 import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Template;
