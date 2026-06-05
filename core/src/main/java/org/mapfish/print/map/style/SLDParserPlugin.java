@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -94,8 +95,15 @@ public class SLDParserPlugin implements StyleParserPlugin {
             // by setting a custom error handler.
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
+            dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            DocumentBuilder db = dbf.newDocumentBuilder();
+            dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+            dbf.setXIncludeAware(false);
+            dbf.setExpandEntityReferences(false);            DocumentBuilder db = dbf.newDocumentBuilder();
             db.setErrorHandler(new ErrorHandler());
             db.parse(new ByteArrayInputStream(bytes));
 
