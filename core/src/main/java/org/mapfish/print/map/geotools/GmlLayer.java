@@ -1,6 +1,5 @@
 package org.mapfish.print.map.geotools;
 
-import jakarta.annotation.Nonnull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
