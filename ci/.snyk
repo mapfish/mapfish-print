@@ -2,6 +2,14 @@
 version: v1.25.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
+  SNYK-PYTHON-BLEACH-17356103:
+    - '*':
+        reason: Fix not compatible with used Python version
+        created: 2026-06-19T08:20:00.000Z
+  SNYK-PYTHON-BLEACH-17356111:
+    - '*':
+        reason: Fix not compatible with used Python version
+        created: 2026-06-19T08:20:00.000Z
   SNYK-PYTHON-BLACK-15518063:
     - '*':
         reason: Fix not compatible with used Python version
