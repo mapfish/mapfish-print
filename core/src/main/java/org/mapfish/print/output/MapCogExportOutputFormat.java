@@ -8,7 +8,6 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -88,9 +87,8 @@ public class MapCogExportOutputFormat implements OutputFormat {
 
   private String getMapSubReportVariable(final Template template) {
     for (Processor<?, ?> processor : template.getProcessors()) {
-      if (processor instanceof CreateMapProcessor) {
-        String mapSubReport =
-            ((CreateMapProcessor) processor).getOutputMapperBiMap().get(MAP_SUBREPORT);
+      if (processor instanceof CreateMapProcessor createMapProcessor) {
+        String mapSubReport = createMapProcessor.getOutputMapperBiMap().get(MAP_SUBREPORT);
         return Objects.requireNonNullElse(mapSubReport, MAP_SUBREPORT);
       }
     }
@@ -142,8 +140,6 @@ public class MapCogExportOutputFormat implements OutputFormat {
     String mapSubReport = values.getString(getMapSubReportVariable(template));
 
     GridCoverageWriter writer = null;
-    Path dir = null;
-    Path tmp = null;
 
     try {
 
@@ -212,15 +208,10 @@ public class MapCogExportOutputFormat implements OutputFormat {
       }
 
       // write the coverage to the GeoTIFF file using the specified parameters
-      // writer = format.getWriter(tmp.toFile());
       writer.write(
           coverage,
           (GeneralParameterValue[]) params.values().toArray(new GeneralParameterValue[0]));
 
-      writer.dispose();
-
-      // copy the temporary file to the output stream
-      Files.copy(tmp, outputStream);
     } catch (Exception e) {
       throw new IOException("Error writing cog file", e);
     } finally {
