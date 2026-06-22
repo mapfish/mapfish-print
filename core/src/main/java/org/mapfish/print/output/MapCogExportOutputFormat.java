@@ -11,9 +11,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.imageio.ImageIO;
@@ -33,69 +31,19 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.mapfish.print.Constants;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
-import org.mapfish.print.http.MfClientHttpRequestFactoryImpl;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
-import org.mapfish.print.processor.map.CreateMapProcessor;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 /**
  * The MapCogExportOutputFormat class.
  *
  * @author Frank and Manuel
  */
-public class MapCogExportOutputFormat implements OutputFormat {
+public class MapCogExportOutputFormat extends MapExportOutputFormat {
 
   private static final double METERS_PER_INCH = Constants.INCH_TO_MM / 1000.0;
-
-  private static final String MAP_SUBREPORT = "mapSubReport";
-
-  @Autowired private ForkJoinPool forkJoinPool;
-
-  @Autowired private MfClientHttpRequestFactoryImpl httpRequestFactory;
-
-  private String fileSuffix;
-
-  private String contentType;
-
-  @Value("${httpRequest.fetchRetry.maxNumber}")
-  private int httpRequestMaxNumberFetchRetry;
-
-  @Value("${httpRequest.fetchRetry.intervalMillis}")
-  private int httpRequestFetchRetryIntervalMillis;
-
-  @Override
-  public final String getContentType() {
-    return this.contentType;
-  }
-
-  public final void setContentType(final String contentType) {
-    this.contentType = contentType;
-  }
-
-  @Override
-  public final String getFileSuffix() {
-    return this.fileSuffix;
-  }
-
-  public final void setFileSuffix(final String fileSuffix) {
-    this.fileSuffix = fileSuffix;
-  }
-
-  private String getMapSubReportVariable(final Template template) {
-    for (Processor<?, ?> processor : template.getProcessors()) {
-      if (processor instanceof CreateMapProcessor createMapProcessor) {
-        String mapSubReport = createMapProcessor.getOutputMapperBiMap().get(MAP_SUBREPORT);
-        return Objects.requireNonNullElse(mapSubReport, MAP_SUBREPORT);
-      }
-    }
-    // validation has already confirmed there is exactly one createmap processor
-    // so this cannot happen
-    return null;
-  }
 
   @Override
   public final Processor.ExecutionContext print(
