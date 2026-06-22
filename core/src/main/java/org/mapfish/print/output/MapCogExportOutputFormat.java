@@ -4,6 +4,7 @@ import jakarta.annotation.Nonnull;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
@@ -200,8 +201,21 @@ public class MapCogExportOutputFormat implements OutputFormat {
       params.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(wp);
       params.parameter(GeoTiffFormat.RETAIN_AXES_ORDER.getName().toString()).setValue(true);
 
+      final OutputStream nonClosingOutputStream =
+          new FilterOutputStream(outputStream) {
+            @Override
+            public void close() throws IOException {
+              flush();
+            }
+          };
+
+      writer = format.getWriter(nonClosingOutputStream);
+      if (writer == null) {
+        throw new IOException("Could not create GeoTIFF writer");
+      }
+
       // write the coverage to the GeoTIFF file using the specified parameters
-      writer = format.getWriter(tmp.toFile());
+      // writer = format.getWriter(tmp.toFile());
       writer.write(
           coverage,
           (GeneralParameterValue[]) params.values().toArray(new GeneralParameterValue[0]));
@@ -219,13 +233,6 @@ public class MapCogExportOutputFormat implements OutputFormat {
           writer.dispose();
         } catch (Exception e) {
           /* ignore */ }
-      }
-      if (tmp != null) {
-        Files.deleteIfExists(
-            tmp); // will only succeed if the file is not locked by the writer anymore
-      }
-      if (dir != null) {
-        Files.deleteIfExists(dir); // will only succeed if the tmp file has already been deleted
       }
     }
     return task.getExecutionContext();
