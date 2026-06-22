@@ -182,9 +182,6 @@ public class MapCogExportOutputFormat implements OutputFormat {
       final int tileWidth = 512;
       final int tileHeight = 512;
 
-      dir = Files.createTempDirectory("cog-print");
-      tmp = Files.createTempFile(dir, "cog-", ".tif");
-
       // write the GridCoverage2D to a GeoTIFF file with LZW compression and tiling
       // using GeoTools
       final GeoTiffFormat format = new GeoTiffFormat();
