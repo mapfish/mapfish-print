@@ -3,3 +3,4 @@ pre-commit==4.5.1
 tag-publish==1.1.1
 virtualenv>=20.36.1 # not directly required, pinned by Snyk to avoid a vulnerability
 urllib3>=2.7.0 # not directly required, pinned by Snyk to avoid a vulnerability
+cryptography>=48.0.1 # not directly required, pinned by Snyk to avoid a vulnerability
