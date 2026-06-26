@@ -5,12 +5,12 @@ repos:
       - id: pretty-format-java
         args:
           - --autofix
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.1.0
-    hooks:
-      - id: prettier
-        additional_dependencies:
-          - prettier@2.8.4
+#  - repo: https://github.com/pre-commit/mirrors-prettier
+#    rev: v3.1.0
+#    hooks:
+#      - id: prettier
+#        additional_dependencies:
+#          - prettier@2.8.4
   - repo: https://github.com/sbrunner/jsonschema-validator
     rev: 1.0.0
     hooks:
@@ -20,10 +20,10 @@ repos:
             \.github/publish\.yaml
             |\.github/ghci\.yaml
           )$
-  - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 43.150.0
-    hooks:
-      - id: renovate-config-validator
+#  - repo: https://github.com/renovatebot/pre-commit-hooks
+#    rev: 43.150.0
+#    hooks:
+#      - id: renovate-config-validator
   - repo: https://github.com/sbrunner/hooks
     rev: 1.7.0
     hooks:

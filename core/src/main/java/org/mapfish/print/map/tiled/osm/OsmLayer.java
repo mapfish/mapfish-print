@@ -2,6 +2,7 @@ package org.mapfish.print.map.tiled.osm;
 
 import com.codahale.metrics.MetricRegistry;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.IOException;
@@ -34,10 +35,10 @@ public final class OsmLayer extends AbstractTiledLayer<OsmLayerParam> {
    * @param configuration the configuration.
    */
   public OsmLayer(
-      @Nonnull final ForkJoinPool forkJoinPool,
-      @Nonnull final StyleSupplier<GridCoverage2D> styleSupplier,
+      @Nullable final ForkJoinPool forkJoinPool,
+      @Nullable final StyleSupplier<GridCoverage2D> styleSupplier,
       @Nonnull final OsmLayerParam param,
-      @Nonnull final MetricRegistry registry,
+      @Nullable final MetricRegistry registry,
       @Nonnull final Configuration configuration) {
     super(forkJoinPool, styleSupplier, param, registry, configuration);
     this.param = param;
