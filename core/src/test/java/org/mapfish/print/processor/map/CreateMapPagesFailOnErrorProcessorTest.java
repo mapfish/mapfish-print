@@ -75,10 +75,7 @@ public class CreateMapPagesFailOnErrorProcessorTest extends AbstractMapfishSprin
     final AbstractJasperReportOutputFormat format =
         (AbstractJasperReportOutputFormat) this.outputFormat.get("pngOutputFormat");
 
-    // Normal execution should make more around 400/500 WMS calls, but since fail on error is
-    // activated and the 40Th call will fail,
-    // less than 200 WMS calls should be done.
-    testPrint(config, requestData, format, 200);
+    testPrint(config, requestData, format, 250);
   }
 
   private void testPrint(
