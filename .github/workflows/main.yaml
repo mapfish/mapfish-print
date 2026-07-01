@@ -31,12 +31,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.14'
       - run: python3 -m pip install --requirement=ci/requirements.txt
@@ -49,7 +49,7 @@ jobs:
       - run: pre-commit run --all-files --color=always
       - run: git diff --exit-code --patch > /tmp/pre-commit.patch; git diff --color; git reset --hard || true
         if: failure()
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: Apply pre-commit fix.patch
           path: /tmp/pre-commit.patch
@@ -61,7 +61,7 @@ jobs:
 
       - name: Get tag
         id: tag2
-        uses: frabert/replace-string-action@v2.5
+        uses: frabert/replace-string-action@b6828c5a4cb6371753ff873b0d1c4c4fbd9a63cb # v2.5
         with:
           pattern: refs/tags/(.*)
           string: '{{ github.ref }}'
@@ -69,7 +69,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
       - run: echo --${{ steps.tag2.outputs.replaced }}--
 
-      - uses: camptocamp/initialise-gopass-summon-action@v2
+      - uses: camptocamp/initialise-gopass-summon-action@17703c87720ba3766abc90da60b437783b530d93 # v2.0.1
         with:
           ci-gpg-private-key: ${{secrets.CI_GPG_PRIVATE_KEY}}
           github-gopass-ci-token: ${{secrets.GOPASS_CI_GITHUB_TOKEN}}
@@ -110,7 +110,7 @@ jobs:
       - run: make build
 
       - run: make checks
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: Checkstyle and SpotBugs reports
           path: reports
@@ -120,13 +120,13 @@ jobs:
       - timeout-minutes: 10
         run: make tests
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: Unit test results
           path: core/build/resources/test/org/mapfish/print/
           if-no-files-found: ignore
         if: failure()
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: Unit test report
           path: core/build/reports/tests/test/
@@ -176,7 +176,7 @@ jobs:
         env:
           DOCKER_COMPOSE_ARGS: --file=docker-compose-context-path.yaml
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: Acceptance tests (Examples)
           path: examples/build/resources/test/examples/
@@ -192,7 +192,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: git diff --exit-code --patch > /tmp/dpkg-versions.patch; git diff --color; git reset --hard || true
         if: failure()
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: Update dpkg versions list.patch
           path: /tmp/dpkg-versions.patch
@@ -213,7 +213,7 @@ jobs:
       - run: make dist
 
       - name: Create Release
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |-
             const fs = require('fs');
@@ -276,7 +276,7 @@ jobs:
         if: github.ref == 'refs/heads/master' && env.HAS_SECRETS == 'HAS_SECRETS'
 
       - name: Trigger changelog workflow
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |-
             if (process.env.GITHUB_REF_TYPE == 'tag') {
