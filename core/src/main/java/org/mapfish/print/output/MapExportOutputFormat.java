@@ -33,19 +33,19 @@ public class MapExportOutputFormat implements OutputFormat {
 
   private static final String MAP_SUBREPORT = "mapSubReport";
 
-  @Autowired private ForkJoinPool forkJoinPool;
+  @Autowired protected ForkJoinPool forkJoinPool;
 
-  @Autowired private MfClientHttpRequestFactoryImpl httpRequestFactory;
+  @Autowired protected MfClientHttpRequestFactoryImpl httpRequestFactory;
 
   private String fileSuffix;
 
   private String contentType;
 
   @Value("${httpRequest.fetchRetry.maxNumber}")
-  private int httpRequestMaxNumberFetchRetry;
+  protected int httpRequestMaxNumberFetchRetry;
 
   @Value("${httpRequest.fetchRetry.intervalMillis}")
-  private int httpRequestFetchRetryIntervalMillis;
+  protected int httpRequestFetchRetryIntervalMillis;
 
   @Override
   public final String getContentType() {
@@ -65,7 +65,7 @@ public class MapExportOutputFormat implements OutputFormat {
     this.fileSuffix = fileSuffix;
   }
 
-  private String getMapSubReportVariable(final Template template) {
+  protected String getMapSubReportVariable(final Template template) {
     for (Processor<?, ?> processor : template.getProcessors()) {
       if (processor instanceof CreateMapProcessor) {
         String mapSubReport =
@@ -79,7 +79,7 @@ public class MapExportOutputFormat implements OutputFormat {
   }
 
   @Override
-  public final Processor.ExecutionContext print(
+  public Processor.ExecutionContext print(
       @Nonnull final Map<String, String> mdcContext,
       final PJsonObject spec,
       final Configuration config,

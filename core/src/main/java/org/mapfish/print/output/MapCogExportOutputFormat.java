@@ -1,0 +1,176 @@
+package org.mapfish.print.output;
+
+import jakarta.annotation.Nonnull;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.imageio.ImageIO;
+import org.geotools.api.coverage.grid.GridCoverageWriter;
+import org.geotools.api.parameter.GeneralParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridCoverageFactory;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
+import org.geotools.gce.geotiff.GeoTiffFormat;
+import org.geotools.gce.geotiff.GeoTiffWriteParams;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.mapfish.print.Constants;
+import org.mapfish.print.config.Configuration;
+import org.mapfish.print.config.Template;
+import org.mapfish.print.processor.Processor;
+import org.mapfish.print.processor.ProcessorDependencyGraph;
+import org.mapfish.print.wrapper.json.PJsonArray;
+import org.mapfish.print.wrapper.json.PJsonObject;
+
+/**
+ * The MapCogExportOutputFormat class.
+ *
+ * @author Frank and Manuel
+ */
+public class MapCogExportOutputFormat extends MapExportOutputFormat {
+
+  private static final double METERS_PER_INCH = Constants.INCH_TO_MM / 1000.0;
+
+  @Override
+  public final Processor.ExecutionContext print(
+      @Nonnull final Map<String, String> mdcContext,
+      final PJsonObject spec,
+      final Configuration config,
+      final File configDir,
+      final File taskDirectory,
+      final OutputStream outputStream)
+      throws Exception {
+    final String templateName = spec.getString(Constants.JSON_LAYOUT_KEY);
+
+    final Template template = config.getTemplate(templateName);
+
+    final Values values =
+        new Values(
+            mdcContext,
+            spec,
+            template,
+            taskDirectory,
+            this.httpRequestFactory,
+            null,
+            "tif",
+            httpRequestMaxNumberFetchRetry,
+            httpRequestFetchRetryIntervalMillis,
+            new AtomicBoolean(false));
+
+    final ProcessorDependencyGraph.ProcessorGraphForkJoinTask task =
+        template.getProcessorGraph().createTask(values);
+    final ForkJoinTask<Values> taskFuture = this.forkJoinPool.submit(task);
+
+    try {
+      taskFuture.get();
+    } catch (InterruptedException exc) {
+      // if cancel() is called on the current thread, this exception will be thrown.
+      // in this case, also properly cancel the task future.
+      taskFuture.cancel(true);
+      Thread.currentThread().interrupt();
+      throw new CancellationException();
+    }
+
+    String mapSubReport = values.getString(getMapSubReportVariable(template));
+
+    GridCoverageWriter writer = null;
+
+    try {
+
+      final PJsonObject mapJson = spec.getJSONObject("attributes").getJSONObject("map");
+      Path path =
+          mapSubReport.startsWith("file:")
+              ? Paths.get(new URI(mapSubReport))
+              : Path.of(mapSubReport);
+
+      BufferedImage image = ImageIO.read(path.toFile());
+      PJsonArray center = mapJson.getJSONArray("center");
+
+      double centerX = center.getDouble(0);
+      double centerY = center.getDouble(1);
+      double cx = image.getWidth() / 2.0;
+      double cy = image.getHeight() / 2.0;
+
+      double scale = mapJson.getDouble("scale");
+      double dpi = mapJson.getDouble("dpi");
+      double metersPerPixel = scale * METERS_PER_INCH / dpi;
+      String srs = mapJson.getString("projection");
+      double rotation = mapJson.getDouble("rotation");
+
+      AffineTransform gridToCRS = new AffineTransform();
+      gridToCRS.translate(centerX, centerY);
+      gridToCRS.rotate(Math.toRadians(rotation));
+      gridToCRS.scale(metersPerPixel, -metersPerPixel);
+      gridToCRS.translate(-cx, -cy);
+
+      CoordinateReferenceSystem crs = CRS.decode(srs);
+      MathTransform mathTransform = new AffineTransform2D(gridToCRS);
+      GridCoverageFactory factory = new GridCoverageFactory();
+      GridCoverage2D coverage =
+          factory.create("coverage", image, crs, mathTransform, null, null, null);
+
+      final int tileWidth = 512;
+      final int tileHeight = 512;
+
+      // write the GridCoverage2D to a GeoTIFF file with LZW compression and tiling
+      // using GeoTools
+      final GeoTiffFormat format = new GeoTiffFormat();
+      final GeoTiffWriteParams wp = new GeoTiffWriteParams();
+
+      wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
+      wp.setCompressionType("LZW");
+      wp.setCompressionQuality(0.75F);
+
+      wp.setTilingMode(GeoToolsWriteParams.MODE_EXPLICIT);
+      wp.setTiling(tileWidth, tileHeight);
+
+      final ParameterValueGroup params = format.getWriteParameters();
+      params.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(wp);
+      params.parameter(GeoTiffFormat.RETAIN_AXES_ORDER.getName().toString()).setValue(true);
+
+      final OutputStream nonClosingOutputStream =
+          new FilterOutputStream(outputStream) {
+            @Override
+            public void close() throws IOException {
+              flush();
+            }
+          };
+
+      writer = format.getWriter(nonClosingOutputStream);
+      if (writer == null) {
+        throw new IOException("Could not create GeoTIFF writer");
+      }
+
+      // write the coverage to the GeoTIFF file using the specified parameters
+      writer.write(
+          coverage,
+          (GeneralParameterValue[]) params.values().toArray(new GeneralParameterValue[0]));
+
+    } catch (Exception e) {
+      throw new IOException("Error writing cog file", e);
+    } finally {
+
+      if (writer != null) {
+        try {
+          writer.dispose();
+        } catch (Exception e) {
+          /* ignore */ }
+      }
+    }
+    return task.getExecutionContext();
+  }
+}
