@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:18.4
+    image: postgres:19beta1-bookworm
     environment:
       POSTGRES_DB: print
       POSTGRES_USER: print
