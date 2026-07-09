@@ -175,7 +175,6 @@ dependencies {
             'org.slf4j:jcl-over-slf4j:2.0.18',
             'org.slf4j:jul-to-slf4j:2.0.18',
             'ch.qos.logback:logback-classic:1.5.37',
-            'ch.qos.logback:logback-access:1.5.37',
             'org.json:json:20240303',
             'org.yaml:snakeyaml:2.3',
             'com.github.spullara.cli-parser:cli-parser:1.1.6',
