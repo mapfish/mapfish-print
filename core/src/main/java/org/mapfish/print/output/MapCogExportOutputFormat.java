@@ -163,12 +163,12 @@ public class MapCogExportOutputFormat extends MapExportOutputFormat {
     } catch (Exception e) {
       throw new IOException("Error writing cog file", e);
     } finally {
-
       if (writer != null) {
         try {
           writer.dispose();
         } catch (Exception e) {
-          /* ignore */ }
+          /* ignore */
+        }
       }
     }
     return task.getExecutionContext();

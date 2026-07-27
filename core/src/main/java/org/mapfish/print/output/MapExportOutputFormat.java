@@ -33,17 +33,21 @@ public class MapExportOutputFormat implements OutputFormat {
 
   private static final String MAP_SUBREPORT = "mapSubReport";
 
+  /** Fork-join pool used to execute print tasks. */
   @Autowired protected ForkJoinPool forkJoinPool;
 
+  /** HTTP request factory used while processing print jobs. */
   @Autowired protected MfClientHttpRequestFactoryImpl httpRequestFactory;
 
   private String fileSuffix;
 
   private String contentType;
 
+  /** Maximum number of retries for HTTP requests. */
   @Value("${httpRequest.fetchRetry.maxNumber}")
   protected int httpRequestMaxNumberFetchRetry;
 
+  /** Interval in milliseconds between HTTP request retries. */
   @Value("${httpRequest.fetchRetry.intervalMillis}")
   protected int httpRequestFetchRetryIntervalMillis;
 
