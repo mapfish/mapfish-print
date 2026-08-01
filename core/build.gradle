@@ -210,7 +210,7 @@ dependencies {
         'org.apache.xmlgraphics:batik-svg-dom:1.19'
     )
 
-    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.10.2'
+    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.10.3'
 
     testImplementation (
         'de.saly:javamail-mock2-fullmock:0.5-beta4',
