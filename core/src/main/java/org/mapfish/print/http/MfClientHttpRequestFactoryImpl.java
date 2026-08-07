@@ -1,5 +1,6 @@
 package org.mapfish.print.http;
 
+import com.codahale.metrics.MetricRegistry;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import java.io.ByteArrayInputStream;
@@ -25,6 +26,7 @@ import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.ClassicHttpResponse;
@@ -68,13 +70,38 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
       final int connectionRequestTimeout,
       final int connectTimeout,
       final int socketTimeout) {
+    this(maxConnTotal, maxConnPerRoute, connectionRequestTimeout, connectTimeout, socketTimeout,
+        null);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param maxConnTotal Maximum total connections.
+   * @param maxConnPerRoute Maximum connections per route.
+   * @param connectionRequestTimeout Number of milliseconds used when requesting a connection from
+   *     the connection manager.
+   * @param connectTimeout Number of milliseconds until a connection is established.
+   * @param socketTimeout Maximum number of milliseconds during which a socket remains inactive
+   *     between two consecutive data packets.
+   * @param metricRegistry Registry to publish connection pool usage gauges to. May be {@code
+   *     null} to skip metrics registration (e.g. in tests).
+   */
+  public MfClientHttpRequestFactoryImpl(
+      final int maxConnTotal,
+      final int maxConnPerRoute,
+      final int connectionRequestTimeout,
+      final int connectTimeout,
+      final int socketTimeout,
+      @Nullable final MetricRegistry metricRegistry) {
     super(
         createHttpClient(
             maxConnTotal,
             maxConnPerRoute,
             connectionRequestTimeout,
             connectTimeout,
-            socketTimeout));
+            socketTimeout,
+            metricRegistry));
     setHttpContextFactory(
         ((httpMethod, uri) -> {
           var context = HttpClientContext.create();
@@ -94,27 +121,31 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
       final int maxConnPerRoute,
       final int connectionRequestTimeout,
       final int connectTimeout,
-      final int socketTimeout) {
+      final int socketTimeout,
+      @Nullable final MetricRegistry metricRegistry) {
     final RequestConfig requestConfig =
         RequestConfig.custom()
             .setConnectionRequestTimeout(connectionRequestTimeout, TimeUnit.MILLISECONDS)
             .setResponseTimeout(socketTimeout, TimeUnit.MILLISECONDS)
             .build();
 
+    final PoolingHttpClientConnectionManager connectionManager =
+        PoolingHttpClientConnectionManagerBuilder.create()
+            .setDefaultConnectionConfig(
+                ConnectionConfig.custom()
+                    .setConnectTimeout(connectTimeout, TimeUnit.MILLISECONDS)
+                    .build())
+            .setTlsSocketStrategy(new MfTLSSocketStrategy())
+            .setDnsResolver(new RandomizingDnsResolver())
+            .setMaxConnTotal(maxConnTotal)
+            .setMaxConnPerRoute(maxConnPerRoute)
+            .build();
+    registerConnectionPoolMetrics(connectionManager, metricRegistry);
+
     final HttpClientBuilder httpClientBuilder =
         HttpClients.custom()
             .disableCookieManagement()
-            .setConnectionManager(
-                PoolingHttpClientConnectionManagerBuilder.create()
-                    .setDefaultConnectionConfig(
-                        ConnectionConfig.custom()
-                            .setConnectTimeout(connectTimeout, TimeUnit.MILLISECONDS)
-                            .build())
-                    .setTlsSocketStrategy(new MfTLSSocketStrategy())
-                    .setDnsResolver(new RandomizingDnsResolver())
-                    .setMaxConnPerRoute(maxConnTotal)
-                    .setMaxConnPerRoute(maxConnPerRoute)
-                    .build())
+            .setConnectionManager(connectionManager)
             .setRoutePlanner(new MfRoutePlanner())
             .setDefaultCredentialsProvider(new MfCredentialsProvider())
             .setDefaultRequestConfig(requestConfig)
@@ -127,6 +158,36 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
         connectTimeout,
         socketTimeout);
     return closeableHttpClient;
+  }
+
+  /**
+   * Publishes the connection pool's usage stats (leased, pending, available, max) as gauges, so
+   * pool exhaustion (e.g. from a connection leak) shows up in the existing metrics reporters
+   * (JMX, logging, metrics servlet) instead of only surfacing indirectly as {@code
+   * ConnectionRequestTimeoutException}s.
+   */
+  private static void registerConnectionPoolMetrics(
+      final PoolingHttpClientConnectionManager connectionManager,
+      @Nullable final MetricRegistry metricRegistry) {
+    if (metricRegistry == null) {
+      return;
+    }
+    final String base = MetricRegistry.name(MfClientHttpRequestFactoryImpl.class, "connectionPool");
+    metricRegistry.register(
+        MetricRegistry.name(base, "leased"),
+        (com.codahale.metrics.Gauge<Integer>)
+            () -> connectionManager.getTotalStats().getLeased());
+    metricRegistry.register(
+        MetricRegistry.name(base, "pending"),
+        (com.codahale.metrics.Gauge<Integer>)
+            () -> connectionManager.getTotalStats().getPending());
+    metricRegistry.register(
+        MetricRegistry.name(base, "available"),
+        (com.codahale.metrics.Gauge<Integer>)
+            () -> connectionManager.getTotalStats().getAvailable());
+    metricRegistry.register(
+        MetricRegistry.name(base, "max"),
+        (com.codahale.metrics.Gauge<Integer>) () -> connectionManager.getTotalStats().getMax());
   }
 
   // allow extension only for testing
