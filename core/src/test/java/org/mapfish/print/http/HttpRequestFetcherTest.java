@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import com.codahale.metrics.MetricRegistry;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.concurrent.ForkJoinPool;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapfish.print.processor.AbstractProcessor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
@@ -41,10 +39,10 @@ public class HttpRequestFetcherTest {
 
   /**
    * Regression test: if caching the response to a temp file fails (e.g. the temp directory is
-   * unusable), the underlying original response must still be closed so its pooled HTTP
-   * connection is released. Before the fix, the exception from {@code createCachedFile} would
-   * propagate out of the {@code CachedClientHttpResponse} constructor without the original
-   * response ever being closed, leaking the connection.
+   * unusable), the underlying original response must still be closed so its pooled HTTP connection
+   * is released. Before the fix, the exception from {@code createCachedFile} would propagate out of
+   * the {@code CachedClientHttpResponse} constructor without the original response ever being
+   * closed, leaking the connection.
    */
   @Test
   public void registeredRequestClosesOriginalResponseWhenCachingFails() throws Exception {

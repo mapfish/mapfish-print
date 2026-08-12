@@ -70,7 +70,12 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
       final int connectionRequestTimeout,
       final int connectTimeout,
       final int socketTimeout) {
-    this(maxConnTotal, maxConnPerRoute, connectionRequestTimeout, connectTimeout, socketTimeout,
+    this(
+        maxConnTotal,
+        maxConnPerRoute,
+        connectionRequestTimeout,
+        connectTimeout,
+        socketTimeout,
         null);
   }
 
@@ -84,8 +89,8 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
    * @param connectTimeout Number of milliseconds until a connection is established.
    * @param socketTimeout Maximum number of milliseconds during which a socket remains inactive
    *     between two consecutive data packets.
-   * @param metricRegistry Registry to publish connection pool usage gauges to. May be {@code
-   *     null} to skip metrics registration (e.g. in tests).
+   * @param metricRegistry Registry to publish connection pool usage gauges to. May be {@code null}
+   *     to skip metrics registration (e.g. in tests).
    */
   public MfClientHttpRequestFactoryImpl(
       final int maxConnTotal,
@@ -162,8 +167,8 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
 
   /**
    * Publishes the connection pool's usage stats (leased, pending, available, max) as gauges, so
-   * pool exhaustion (e.g. from a connection leak) shows up in the existing metrics reporters
-   * (JMX, logging, metrics servlet) instead of only surfacing indirectly as {@code
+   * pool exhaustion (e.g. from a connection leak) shows up in the existing metrics reporters (JMX,
+   * logging, metrics servlet) instead of only surfacing indirectly as {@code
    * ConnectionRequestTimeoutException}s.
    */
   private static void registerConnectionPoolMetrics(
@@ -175,12 +180,10 @@ public class MfClientHttpRequestFactoryImpl extends HttpComponentsClientHttpRequ
     final String base = MetricRegistry.name(MfClientHttpRequestFactoryImpl.class, "connectionPool");
     metricRegistry.register(
         MetricRegistry.name(base, "leased"),
-        (com.codahale.metrics.Gauge<Integer>)
-            () -> connectionManager.getTotalStats().getLeased());
+        (com.codahale.metrics.Gauge<Integer>) () -> connectionManager.getTotalStats().getLeased());
     metricRegistry.register(
         MetricRegistry.name(base, "pending"),
-        (com.codahale.metrics.Gauge<Integer>)
-            () -> connectionManager.getTotalStats().getPending());
+        (com.codahale.metrics.Gauge<Integer>) () -> connectionManager.getTotalStats().getPending());
     metricRegistry.register(
         MetricRegistry.name(base, "available"),
         (com.codahale.metrics.Gauge<Integer>)
