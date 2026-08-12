@@ -1,11 +1,15 @@
 package org.mapfish.print.http;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.util.SortedMap;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -50,5 +54,26 @@ public class MfClientHttpRequestFactoryImplTest {
       assertEquals(
           "application/json; charset=utf8", response.getHeaders().getFirst("Content-Type"));
     }
+  }
+
+  /**
+   * Regression test for the connection pool metrics: when a {@link MetricRegistry} is supplied, the
+   * pool's usage stats (leased/pending/available/max) must be published as gauges, and the
+   * configured {@code maxConnTotal} must actually be applied to the pool (it was previously
+   * dropped, see the setMaxConnPerRoute/setMaxConnPerRoute double-call bug).
+   */
+  @Test
+  public void testConnectionPoolMetricsAreRegistered() {
+    MetricRegistry metricRegistry = new MetricRegistry();
+    new MfClientHttpRequestFactoryImpl(20, 10, 1000, 1000, 1000, metricRegistry);
+
+    SortedMap<String, Gauge> gauges = metricRegistry.getGauges();
+    String base = MetricRegistry.name(MfClientHttpRequestFactoryImpl.class, "connectionPool");
+    assertTrue(gauges.containsKey(MetricRegistry.name(base, "leased")));
+    assertTrue(gauges.containsKey(MetricRegistry.name(base, "pending")));
+    assertTrue(gauges.containsKey(MetricRegistry.name(base, "available")));
+    assertTrue(gauges.containsKey(MetricRegistry.name(base, "max")));
+    assertEquals(0, gauges.get(MetricRegistry.name(base, "leased")).getValue());
+    assertEquals(20, gauges.get(MetricRegistry.name(base, "max")).getValue());
   }
 }

@@ -85,10 +85,18 @@ public final class HttpRequestFetcher {
     private InputStream body;
 
     private CachedClientHttpResponse(final ClientHttpResponse originalResponse) throws IOException {
-      this.headers = originalResponse.getHeaders();
-      this.status = originalResponse.getStatusCode();
-      this.statusText = originalResponse.getStatusText();
-      this.cachedFile = createCachedFile(originalResponse.getBody());
+      try {
+        this.headers = originalResponse.getHeaders();
+        this.status = originalResponse.getStatusCode();
+        this.statusText = originalResponse.getStatusText();
+        this.cachedFile = createCachedFile(originalResponse.getBody());
+      } catch (IOException | RuntimeException e) {
+        // Release the underlying connection back to the pool. Without this, a failure here
+        // (e.g. the temp file cannot be created) leaks the pooled connection forever, since
+        // nothing else keeps a reference to originalResponse after this constructor throws.
+        originalResponse.close();
+        throw e;
+      }
     }
 
     private File createCachedFile(final InputStream originalBody) throws IOException {
