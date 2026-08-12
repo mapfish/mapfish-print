@@ -57,8 +57,8 @@ public class MfClientHttpRequestFactoryImplTest {
   }
 
   /**
-   * Regression test for the connection pool metrics: when a {@link MetricRegistry} is supplied,
-   * the pool's usage stats (leased/pending/available/max) must be published as gauges, and the
+   * Regression test for the connection pool metrics: when a {@link MetricRegistry} is supplied, the
+   * pool's usage stats (leased/pending/available/max) must be published as gauges, and the
    * configured {@code maxConnTotal} must actually be applied to the pool (it was previously
    * dropped, see the setMaxConnPerRoute/setMaxConnPerRoute double-call bug).
    */
@@ -68,8 +68,7 @@ public class MfClientHttpRequestFactoryImplTest {
     new MfClientHttpRequestFactoryImpl(20, 10, 1000, 1000, 1000, metricRegistry);
 
     SortedMap<String, Gauge> gauges = metricRegistry.getGauges();
-    String base =
-        MetricRegistry.name(MfClientHttpRequestFactoryImpl.class, "connectionPool");
+    String base = MetricRegistry.name(MfClientHttpRequestFactoryImpl.class, "connectionPool");
     assertTrue(gauges.containsKey(MetricRegistry.name(base, "leased")));
     assertTrue(gauges.containsKey(MetricRegistry.name(base, "pending")));
     assertTrue(gauges.containsKey(MetricRegistry.name(base, "available")));
