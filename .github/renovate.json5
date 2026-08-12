@@ -30,6 +30,12 @@
       versioning: 'regex:^(?<major>\\d+)\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?(-(?<compatibility>.*))$',
       matchDepNames: ['gradle', 'tomcat'],
     },
+    {
+      matchDatasources: ['docker'],
+      matchDepNames: ['georchestra/geoserver'],
+      allowedVersions: '/[0-9]+\.[0-9]+\.[0-9]+-georchestra-[0-9]+$/',
+      versioning: 'regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-(?<compatibility>.*))?$',
+    },
     /** Define the groups */
     {
       matchUpdateTypes: ['major'],
@@ -107,7 +113,7 @@
       matchPackageNames: ['com.puppycrawl.tools:checkstyle', 'checkstyle'],
       enabled: false,
     },
-    /** Ungoup geotools minor and multiple */
+    /** Ungroup geotools minor and multiple */
     {
       automerge: true,
       groupName: 'geotools',
