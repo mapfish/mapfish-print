@@ -5,6 +5,9 @@ on:
     # The 10th at every month
     - cron: '0 0 10 * *'
 
+permissions:
+  contents: write
+
 jobs:
   audit:
     name: Monthly release
