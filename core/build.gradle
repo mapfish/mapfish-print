@@ -169,7 +169,7 @@ dependencies {
         'org.geotools:gt-svg:35.0',
         'org.geotools:gt-cql:35.0',
     )
-    implementation "org.apache.httpcomponents.client5:httpclient5:5.6.2"
+    implementation "org.apache.httpcomponents.client5:httpclient5:5.6.3"
     jasper(
         'ar.com.fdvs:DynamicJasper:5.3.9',
         'com.itextpdf:itextpdf:5.5.13.5',
