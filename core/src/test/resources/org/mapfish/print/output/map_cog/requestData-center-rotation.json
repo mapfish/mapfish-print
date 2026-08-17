@@ -1,0 +1,14 @@
+{
+  "layout": "main",
+  "outputFormat": "cog",
+  "attributes": {
+    "map": {
+      "center": [637395.386, 5788326.345],
+      "scale": 3600,
+      "projection": "EPSG:25832",
+      "dpi": 72,
+      "rotation": 45,
+      "layers": []
+    }
+  }
+}
