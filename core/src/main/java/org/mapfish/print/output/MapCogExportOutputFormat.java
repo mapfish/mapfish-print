@@ -26,6 +26,7 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.mapfish.print.Constants;
@@ -98,30 +99,50 @@ public class MapCogExportOutputFormat extends MapExportOutputFormat {
               : Path.of(mapSubReport);
 
       BufferedImage image = ImageIO.read(path.toFile());
-      PJsonArray center = mapJson.getJSONArray("center");
 
-      double centerX = center.getDouble(0);
-      double centerY = center.getDouble(1);
-      double cx = image.getWidth() / 2.0;
-      double cy = image.getHeight() / 2.0;
-
-      double scale = mapJson.getDouble("scale");
-      double dpi = mapJson.getDouble("dpi");
-      double metersPerPixel = scale * METERS_PER_INCH / dpi;
       String srs = mapJson.getString("projection");
-      double rotation = mapJson.getDouble("rotation");
-
-      AffineTransform gridToCRS = new AffineTransform();
-      gridToCRS.translate(centerX, centerY);
-      gridToCRS.rotate(Math.toRadians(rotation));
-      gridToCRS.scale(metersPerPixel, -metersPerPixel);
-      gridToCRS.translate(-cx, -cy);
-
       CoordinateReferenceSystem crs = CRS.decode(srs);
-      MathTransform mathTransform = new AffineTransform2D(gridToCRS);
       GridCoverageFactory factory = new GridCoverageFactory();
-      GridCoverage2D coverage =
-          factory.create("coverage", image, crs, mathTransform, null, null, null);
+      GridCoverage2D coverage;
+
+      if (mapJson.has("center")) {
+        PJsonArray center = mapJson.getJSONArray("center");
+
+        double centerX = center.getDouble(0);
+        double centerY = center.getDouble(1);
+        double cx = image.getWidth() / 2.0;
+        double cy = image.getHeight() / 2.0;
+
+        double scale = mapJson.getDouble("scale");
+        double dpi = mapJson.getDouble("dpi");
+        double metersPerPixel = scale * METERS_PER_INCH / dpi;
+
+        double rotation = mapJson.has("rotation") ? mapJson.getDouble("rotation") : 0.0;
+
+        AffineTransform gridToCRS = new AffineTransform();
+        gridToCRS.translate(centerX, centerY);
+        gridToCRS.rotate(Math.toRadians(rotation));
+        gridToCRS.scale(metersPerPixel, -metersPerPixel);
+        gridToCRS.translate(-cx, -cy);
+
+        MathTransform mathTransform = new AffineTransform2D(gridToCRS);
+
+        coverage = factory.create("coverage", image, crs, mathTransform, null, null, null);
+      } else if (mapJson.has("bbox")) {
+        PJsonArray bbox = mapJson.getJSONArray("bbox");
+
+        double minX = bbox.getDouble(0);
+        double minY = bbox.getDouble(1);
+        double maxX = bbox.getDouble(2);
+        double maxY = bbox.getDouble(3);
+
+        ReferencedEnvelope envelope = new ReferencedEnvelope(minX, maxX, minY, maxY, crs);
+
+        coverage = factory.create("coverage", image, envelope);
+
+      } else {
+        throw new IOException("COG export requires either center + scale or bbox");
+      }
 
       final int tileWidth = 512;
       final int tileHeight = 512;
