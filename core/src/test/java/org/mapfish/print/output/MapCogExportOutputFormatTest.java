@@ -6,8 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.stream.ImageInputStream;
 import org.geotools.api.coverage.grid.GridCoverageReader;
 import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -49,6 +56,78 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     final byte[] result = outputStream.toByteArray();
 
     assertTrue(result.length > 0);
+
+    final File tempFile = File.createTempFile("mapfish-cog-", ".tif");
+    tempFile.deleteOnExit();
+
+    Files.write(tempFile.toPath(), result);
+
+    try (ImageInputStream imageInputStream = ImageIO.createImageInputStream(tempFile)) {
+      final Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("TIFF");
+
+      assertTrue(readers.hasNext());
+
+      final ImageReader imageReader = readers.next();
+
+      try {
+        imageReader.setInput(imageInputStream);
+
+        assertTrue(imageReader.isImageTiled(0));
+        assertEquals(512, imageReader.getTileWidth(0));
+        assertEquals(512, imageReader.getTileHeight(0));
+
+        final IIOMetadata metadata = imageReader.getImageMetadata(0);
+        assertNotNull(metadata);
+
+        final String nativeFormatName = metadata.getNativeMetadataFormatName();
+        assertNotNull(nativeFormatName);
+
+        final var root = metadata.getAsTree(nativeFormatName);
+
+        final var fields = ((org.w3c.dom.Node) root).getChildNodes();
+
+        boolean lzwFound = false;
+
+        for (int i = 0; i < fields.getLength(); i++) {
+          final org.w3c.dom.Node node = fields.item(i);
+
+          if ("TIFFIFD".equals(node.getNodeName())) {
+            final var children = node.getChildNodes();
+
+            for (int j = 0; j < children.getLength(); j++) {
+              final org.w3c.dom.Node field = children.item(j);
+
+              if ("TIFFField".equals(field.getNodeName())
+                  && field.getAttributes() != null
+                  && field.getAttributes().getNamedItem("number") != null
+                  && "259".equals(field.getAttributes().getNamedItem("number").getNodeValue())) {
+
+                final var compressionValues = field.getChildNodes();
+
+                for (int k = 0; k < compressionValues.getLength(); k++) {
+                  final org.w3c.dom.Node valueContainer = compressionValues.item(k);
+                  final var values = valueContainer.getChildNodes();
+
+                  for (int l = 0; l < values.getLength(); l++) {
+                    final org.w3c.dom.Node value = values.item(l);
+
+                    if (value.getAttributes() != null
+                        && value.getAttributes().getNamedItem("value") != null
+                        && "5".equals(value.getAttributes().getNamedItem("value").getNodeValue())) {
+                      lzwFound = true;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        assertTrue(lzwFound);
+      } finally {
+        imageReader.dispose();
+      }
+    }
 
     final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
     final GridCoverageReader reader = geoTiffFormat.getReader(new ByteArrayInputStream(result));
