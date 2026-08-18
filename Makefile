@@ -6,7 +6,7 @@ DOCKER_COMPOSE_ARGS ?=
 
 .PHONY: clean
 clean:
-	rm -rf .env examples/geoserver-data/logs/
+	rm -rf .env examples/geoserver-data/logs/ examples/geoserver-data/csw/ examples/geoserver-data/download.properties examples/geoserver-data/gwc/ examples/geoserver-data/monitoring/ examples/geoserver-data/security/csp.xml examples/geoserver-data/security/csp_default.xml examples/geoserver-data/wmts.xml examples/geoserver-data/wps.xml
 
 .PHONY: build
 build: build-builder
