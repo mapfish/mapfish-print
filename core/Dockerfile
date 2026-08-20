@@ -1,6 +1,6 @@
 FROM mapfish_print_builder AS builder
 
-FROM tomcat:11.0.23-jre21-temurin-jammy AS runner
+FROM tomcat:11.0.23-jre21-temurin-noble AS runner
 LABEL maintainer="Camptocamp <info@camptocamp.com>"
 
 RUN --mount=type=cache,target=/var/cache,sharing=locked \
@@ -61,6 +61,6 @@ RUN --mount=type=cache,target=/var/cache,sharing=locked \
     --mount=type=cache,target=/root/.cache \
   apt-get update \
   && apt-get install --yes --no-install-recommends python3-pip rsync python3-setuptools \
-  && python3 -m pip --disable-pip-version-check --no-cache-dir install inotify
+  && python3 -m pip --disable-pip-version-check --no-cache-dir install --break-system-packages inotify
 
 FROM runner AS final
