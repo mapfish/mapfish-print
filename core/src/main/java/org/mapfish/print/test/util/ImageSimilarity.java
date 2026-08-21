@@ -41,7 +41,7 @@ import javax.media.jai.iterator.RandomIterFactory;
 public final class ImageSimilarity {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageSimilarity.class);
 
-    private static final boolean GENERATE_IN_SOURCE = true;
+    private static final boolean REGENERATE_EXPECTED_IMAGES = false;
 
     private final BufferedImage expectedImage;
     private final BufferedImage maskImage;
@@ -53,9 +53,14 @@ public final class ImageSimilarity {
      */
     public ImageSimilarity(final File expectedFile) throws IOException {
         this.expectedImage = expectedFile.exists() ? ImageIO.read(expectedFile) : null;
-        if (GENERATE_IN_SOURCE) {
-            this.expectedPath = new File(expectedFile.toString().replace(
-                    "/out/", "/src/").replace("/build/classes/test/", "/src/test/resources/"));
+        if (REGENERATE_EXPECTED_IMAGES || !expectedFile.exists()) {
+            this.expectedPath =
+                new File(
+                    expectedFile
+                        .toString()
+                        .replace("/out/", "/src/")
+                        .replace("/build/classes/test/", "/src/test/resources/")
+                        .replace("/build/resources/test/", "/src/test/resources/"));
         } else {
             this.expectedPath = expectedFile;
         }
