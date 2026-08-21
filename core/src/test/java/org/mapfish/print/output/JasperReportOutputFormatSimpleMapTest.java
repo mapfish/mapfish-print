@@ -61,7 +61,8 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
           for (OutputFormat format : this.outputFormat.values()) {
             if ("bmp".equals(format.getFileSuffix())
                 || "jpeg".equals(format.getFileSuffix())
-                || "jpg".equals(format.getFileSuffix())) {
+                || "jpg".equals(format.getFileSuffix())
+                || format instanceof MapCogExportOutputFormat) {
               // BMP and JPEG do not support transparency
               continue;
             }
