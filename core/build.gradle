@@ -300,7 +300,7 @@ startScripts {
     applicationName = 'print'
     mainClass = 'org.mapfish.print.cli.Main'
     classpath = files(jar.archiveFile)
-    outputDir = new File(project.buildDir, 'scripts')
+    outputDir = layout.buildDirectory.dir('scripts').get().asFile
 
     doLast {
         fileTree(startScripts.outputDir).each { file ->
@@ -314,18 +314,30 @@ startScripts {
 }
 
 tasks.register('explodedWar', Sync) {
-    into "${buildDir}/webapp"
+    into layout.buildDirectory.dir('webapp')
     with war
 }
 
 tasks.withType(Test).configureEach { t ->
-    afterSuite { desc, result ->
-        if (desc.parent != null) return // only print once, for the outermost suite
-        println ""
-        println "Core test ${t.path} summary: ${result.resultType} " +
-            "(${result.testCount} tests, " +
-            "${result.successfulTestCount} passed, " +
-            "${result.failedTestCount} failed, " +
-            "${result.skippedTestCount} skipped)"
-    }
+    addTestListener(new TestListener() {
+        @Override
+        void beforeSuite(TestDescriptor suite) {}
+
+        @Override
+        void beforeTest(TestDescriptor testDescriptor) {}
+
+        @Override
+        void afterTest(TestDescriptor testDescriptor, TestResult result) {}
+
+        @Override
+        void afterSuite(TestDescriptor desc, TestResult result) {
+            if (desc.parent != null) return // only print once, for the outermost suite
+            println ""
+            println "Core test ${t.path} summary: ${result.resultType} " +
+                "(${result.testCount} tests, " +
+                "${result.successfulTestCount} passed, " +
+                "${result.failedTestCount} failed, " +
+                "${result.skippedTestCount} skipped)"
+        }
+    })
 }
