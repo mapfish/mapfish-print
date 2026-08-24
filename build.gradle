@@ -1,3 +1,6 @@
+import com.github.spotbugs.snom.Confidence
+import com.github.spotbugs.snom.Effort
+
 buildscript {
     repositories {
         mavenCentral()
@@ -42,14 +45,14 @@ configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
         // https://github.com/gradle/gradle/blob/v6.7.1/subprojects/code-quality/src/main/groovy/org/gradle/api/plugins/quality/CheckstylePlugin.java#L37
         configFile = file("$rootProject.rootDir/checkstyle_checks.xml")
         configProperties = ['basedir': project.rootDir.path]
-        reportsDir = file("$project.buildDir/reports/CheckstyleReports")
+        reportsDir = layout.buildDirectory.dir("reports/CheckstyleReports").get().asFile
     }
 
     spotbugs {
         toolVersion = "4.10.3" // com.github.spotbugs:spotbugs-annotations
-        reportsDir = file("$project.buildDir/reports/SpotBugsReports")
-        effort = com.github.spotbugs.snom.Effort.MAX
-        reportLevel = com.github.spotbugs.snom.Confidence.valueOf("HIGH")
+        reportsDir = layout.buildDirectory.dir("reports/SpotBugsReports").get().asFile
+        effort = Effort.MAX
+        reportLevel = Confidence.valueOf("HIGH")
     }
 
     java {
