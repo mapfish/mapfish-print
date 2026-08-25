@@ -11,9 +11,10 @@ repositories {
 }
 
 dependencies {
+    testImplementation('ch.qos.logback:logback-classic:1.6.3')
+
     testImplementation(
         project(':core'),
-        'ch.qos.logback:logback-classic:1.6.3',
         'org.springframework:spring-core:7.0.8',
         'org.springframework:spring-tx:7.0.8',
         'org.springframework:spring-test:7.0.8',
