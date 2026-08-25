@@ -5,7 +5,7 @@
              xmlns="http://www.springframework.org/schema/security"
              xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-7.0.xsd">
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
     <!-- needed to allow double slashes in the URLs -->
     <beans:bean id="httpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall">
