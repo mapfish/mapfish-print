@@ -64,6 +64,7 @@ public class JasperReportOutputFormatSimpleMapTest extends AbstractMapfishSpring
                 || "jpg".equals(format.getFileSuffix())
                 || format instanceof MapCogExportOutputFormat) {
               // BMP and JPEG do not support transparency
+              // COG is excluded because Jasper cannot handle GeoTIFF output in this test
               continue;
             }
             final OutputStream outputStream = new ByteArrayOutputStream();
