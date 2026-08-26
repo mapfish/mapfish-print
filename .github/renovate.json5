@@ -33,7 +33,7 @@
     {
       matchDatasources: ['docker'],
       matchDepNames: ['georchestra/geoserver'],
-      allowedVersions: '/[0-9]+.[0-9]+.[0-9]+-georchestra-[0-9]+$/',
+      allowedVersions: '/[0-9]+\\.[0-9]+\\.[0-9]+-georchestra-[0-9]+$/',
       versioning: 'regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-(?<compatibility>.*))?$',
     },
     /** Define the groups */
