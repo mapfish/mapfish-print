@@ -141,7 +141,7 @@ public class MapCogExportOutputFormat extends MapExportOutputFormat {
         coverage = factory.create("coverage", image, envelope);
 
       } else {
-        throw new IOException("COG export requires either center + scale or bbox");
+        throw new IllegalArgumentException("COG export requires either center + scale or bbox");
       }
 
       final int tileWidth = 512;
