@@ -36,6 +36,8 @@ import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
 import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The MapCogExportOutputFormat class.
@@ -43,6 +45,8 @@ import org.mapfish.print.wrapper.json.PJsonObject;
  * @author Frank and Manuel
  */
 public class MapCogExportOutputFormat extends MapExportOutputFormat {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(MapCogExportOutputFormat.class);
 
   private static final double METERS_PER_INCH = Constants.INCH_TO_MM / 1000.0;
 
@@ -188,7 +192,7 @@ public class MapCogExportOutputFormat extends MapExportOutputFormat {
         try {
           writer.dispose();
         } catch (Exception e) {
-          /* ignore */
+          LOGGER.warn("Could not dispose GeoTIFF writer", e);
         }
       }
     }
