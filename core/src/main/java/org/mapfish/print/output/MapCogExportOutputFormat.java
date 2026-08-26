@@ -167,6 +167,9 @@ public class MapCogExportOutputFormat extends MapExportOutputFormat {
       params.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(wp);
       params.parameter(GeoTiffFormat.RETAIN_AXES_ORDER.getName().toString()).setValue(true);
 
+      // The outputStream lifecycle is managed by MapFish Print, not by the GeoTIFF writer.
+      // Since GeoTools may close its output stream during disposal, use a non-closing wrapper
+      // to prevent the underlying stream from being closed prematurely.
       final OutputStream nonClosingOutputStream =
           new FilterOutputStream(outputStream) {
             @Override
