@@ -36,15 +36,16 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
 
   @Test
   public void testCogExport() throws Exception {
+    // GIVEN
     final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
 
     final PJsonObject requestData =
         parseJSONObjectFromFile(MapCogExportOutputFormatTest.class, BASE_DIR + "requestData.json");
 
     final OutputFormat format = this.outputFormat.get("cogMapOutputFormat");
-
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
+    // WHEN
     format.print(
         new HashMap<>(),
         requestData,
@@ -55,8 +56,13 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
 
     final byte[] result = outputStream.toByteArray();
 
+    // THEN
     assertTrue(result.length > 0);
+    assertTiffProperties(result);
+    assertGeoreferencing(result);
+  }
 
+  private void assertTiffProperties(final byte[] result) throws Exception {
     final File tempFile = File.createTempFile("mapfish-cog-", ".tif");
     tempFile.deleteOnExit();
 
@@ -83,7 +89,6 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
         assertNotNull(nativeFormatName);
 
         final var root = metadata.getAsTree(nativeFormatName);
-
         final var fields = ((org.w3c.dom.Node) root).getChildNodes();
 
         boolean lzwFound = false;
@@ -128,7 +133,9 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
         imageReader.dispose();
       }
     }
+  }
 
+  private void assertGeoreferencing(final byte[] result) throws Exception {
     final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
     final GridCoverageReader reader = geoTiffFormat.getReader(new ByteArrayInputStream(result));
 
@@ -146,7 +153,6 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
       assertEquals(-0.5, envelope.getMinY(), 0.000001);
       assertEquals(107.5, envelope.getMaxX(), 0.000001);
       assertEquals(1.5, envelope.getMaxY(), 0.000001);
-
     } finally {
       reader.dispose();
     }
@@ -154,6 +160,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
 
   @Test
   public void testCogExportWithCenterAndScale() throws Exception {
+    // GIVEN
     final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
 
     final PJsonObject requestData =
@@ -161,9 +168,9 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
             MapCogExportOutputFormatTest.class, BASE_DIR + "requestData-center.json");
 
     final OutputFormat format = this.outputFormat.get("cogMapOutputFormat");
-
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
+    // WHEN
     format.print(
         new HashMap<>(),
         requestData,
@@ -172,6 +179,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
         getTaskDirectory(),
         outputStream);
 
+    // THEN
     final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
     final GridCoverageReader reader =
         geoTiffFormat.getReader(new ByteArrayInputStream(outputStream.toByteArray()));
@@ -180,13 +188,10 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
 
     try {
       final GridCoverage2D coverage = (GridCoverage2D) reader.read(null);
-
       final MathTransform gridToCRS = coverage.getGridGeometry().getGridToCRS();
-
       final double[] gridCenter = {
         coverage.getRenderedImage().getWidth() / 2.0, coverage.getRenderedImage().getHeight() / 2.0
       };
-
       final double[] worldCenter = new double[2];
 
       gridToCRS.transform(gridCenter, 0, worldCenter, 0, 1);
@@ -201,6 +206,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
 
   @Test
   public void testCogExportWithRotation() throws Exception {
+    // GIVEN
     final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
 
     final PJsonObject requestData =
@@ -208,9 +214,9 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
             MapCogExportOutputFormatTest.class, BASE_DIR + "requestData-center-rotation.json");
 
     final OutputFormat format = this.outputFormat.get("cogMapOutputFormat");
-
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
+    // WHEN
     format.print(
         new HashMap<>(),
         requestData,
@@ -219,6 +225,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
         getTaskDirectory(),
         outputStream);
 
+    // THEN
     final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
     final GridCoverageReader reader =
         geoTiffFormat.getReader(new ByteArrayInputStream(outputStream.toByteArray()));
@@ -227,13 +234,10 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
 
     try {
       final GridCoverage2D coverage = (GridCoverage2D) reader.read(null);
-
       final MathTransform gridToCRS = coverage.getGridGeometry().getGridToCRS();
-
       final double[] gridCenter = {
         coverage.getRenderedImage().getWidth() / 2.0, coverage.getRenderedImage().getHeight() / 2.0
       };
-
       final double[] worldCenter = new double[2];
 
       gridToCRS.transform(gridCenter, 0, worldCenter, 0, 1);
@@ -242,17 +246,14 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
       assertEquals(5788326.345, worldCenter[1], 0.000001);
 
       final double[] gridRight = {gridCenter[0] + 100.0, gridCenter[1]};
-
       final double[] worldRight = new double[2];
 
       gridToCRS.transform(gridRight, 0, worldRight, 0, 1);
 
       final double expectedDistance = 100.0 * 3600.0 * 0.0254 / 72.0;
-
       final double expectedOffset = expectedDistance / Math.sqrt(2.0);
 
       assertEquals(expectedOffset, worldRight[0] - worldCenter[0], 0.000001);
-
       assertEquals(expectedOffset, worldRight[1] - worldCenter[1], 0.000001);
 
     } finally {
