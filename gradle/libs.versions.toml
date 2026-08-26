@@ -1,0 +1,140 @@
+[versions]
+adobe-xmpcore = "6.1.11"
+aws-sdk = "1.12.797"
+batik = "1.19"
+c3p0 = "0.14.1"
+checker-qual = "4.2.2"
+cli-parser = "1.1.6"
+commons-io = "2.22.0"
+commons-lang3 = "3.20.0"
+cors-filter = "3.1"
+dynamicjasper = "5.3.9"
+geotools = "35.0"
+groovy = "5.1.0"
+guava = "33.6.0-jre"
+h2 = "2.4.240"
+hibernate = "6.6.55.Final"
+httpclient5 = "5.6.4"
+hypersistence-utils = "3.15.4"
+icu4j = "78.3"
+imageio-webp = "3.14.0"
+itextpdf = "5.5.13.6"
+jai-core = "1.1.3"
+jakarta-annotation = "3.0.0"
+jakarta-persistence = "3.2.0"
+jakarta-servlet = "6.1.0"
+jasperreports = "7.0.7"
+javamail = "1.6.2"
+javamail-mock2 = "0.5-beta4"
+jcommon = "1.0.24"
+jmustache = "1.16"
+joda-time = "2.14.3"
+json = "20250517"
+jts = "1.18.2"
+junit = "6.1.3"
+junit-platform = "6.0.1"
+logback = "1.6.3"
+logstash-logback = "9.0"
+metrics = "4.2.39"
+mockito = "5.23.0"
+postgresql = "42.7.13"
+sentry = "8.53.0"
+slf4j = "2.0.18"
+snakeyaml = "2.6"
+spotbugs = "4.10.3"
+spotbugs-plugin = "6.5.11"
+spring = "7.0.8"
+spring-security = "7.1.0"
+tagsoup = "1.2.1"
+verapdf = "1.30.2"
+xalan = "2.7.3"
+xml-apis = "2.0.2"
+
+[libraries]
+adobe-xmpcore = { module = "com.adobe.xmp:xmpcore", version.ref = "adobe-xmpcore" }
+aws-java-sdk-s3 = { module = "com.amazonaws:aws-java-sdk-s3", version.ref = "aws-sdk" }
+batik-codec = { module = "org.apache.xmlgraphics:batik-codec", version.ref = "batik" }
+batik-svg-dom = { module = "org.apache.xmlgraphics:batik-svg-dom", version.ref = "batik" }
+c3p0 = { module = "com.mchange:c3p0", version.ref = "c3p0" }
+checker-qual = { module = "org.checkerframework:checker-qual", version.ref = "checker-qual" }
+cli-parser = { module = "com.github.spullara.cli-parser:cli-parser", version.ref = "cli-parser" }
+commons-io = { module = "commons-io:commons-io", version.ref = "commons-io" }
+commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
+cors-filter = { module = "com.thetransactioncompany:cors-filter", version.ref = "cors-filter" }
+dynamicjasper = { module = "ar.com.fdvs:DynamicJasper", version.ref = "dynamicjasper" }
+geotools-gt-cql = { module = "org.geotools:gt-cql", version.ref = "geotools" }
+geotools-gt-epsg-hsql = { module = "org.geotools:gt-epsg-hsql", version.ref = "geotools" }
+geotools-gt-geojson = { module = "org.geotools:gt-geojson", version.ref = "geotools" }
+geotools-gt-geotiff = { module = "org.geotools:gt-geotiff", version.ref = "geotools" }
+geotools-gt-render = { module = "org.geotools:gt-render", version.ref = "geotools" }
+geotools-gt-svg = { module = "org.geotools:gt-svg", version.ref = "geotools" }
+geotools-gt-wms = { module = "org.geotools:gt-wms", version.ref = "geotools" }
+geotools-gt-xsd-gml3 = { module = "org.geotools.xsd:gt-xsd-gml3", version.ref = "geotools" }
+groovy-all = { module = "org.apache.groovy:groovy-all", version.ref = "groovy" }
+groovy-json = { module = "org.apache.groovy:groovy-json", version.ref = "groovy" }
+groovy-xml = { module = "org.apache.groovy:groovy-xml", version.ref = "groovy" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+h2 = { module = "com.h2database:h2", version.ref = "h2" }
+hibernate-core = { module = "org.hibernate:hibernate-core", version.ref = "hibernate" }
+httpclient5 = { module = "org.apache.httpcomponents.client5:httpclient5", version.ref = "httpclient5" }
+hypersistence-utils-hibernate63 = { module = "io.hypersistence:hypersistence-utils-hibernate-63", version.ref = "hypersistence-utils" }
+icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4j" }
+imageio-webp = { module = "com.twelvemonkeys.imageio:imageio-webp", version.ref = "imageio-webp" }
+itextpdf = { module = "com.itextpdf:itextpdf", version.ref = "itextpdf" }
+jai-core = { module = "javax.media:jai-core", version.ref = "jai-core" }
+jakarta-annotation-api = { module = "jakarta.annotation:jakarta.annotation-api", version.ref = "jakarta-annotation" }
+jakarta-persistence-api = { module = "jakarta.persistence:jakarta.persistence-api", version.ref = "jakarta-persistence" }
+jakarta-servlet-api = { module = "jakarta.servlet:jakarta.servlet-api", version.ref = "jakarta-servlet" }
+jasperreports = { module = "net.sf.jasperreports:jasperreports", version.ref = "jasperreports" }
+jasperreports-excel-poi = { module = "net.sf.jasperreports:jasperreports-excel-poi", version.ref = "jasperreports" }
+jasperreports-fonts = { module = "net.sf.jasperreports:jasperreports-fonts", version.ref = "jasperreports" }
+jasperreports-functions = { module = "net.sf.jasperreports:jasperreports-functions", version.ref = "jasperreports" }
+jasperreports-jdt = { module = "net.sf.jasperreports:jasperreports-jdt", version.ref = "jasperreports" }
+jasperreports-json = { module = "net.sf.jasperreports:jasperreports-json", version.ref = "jasperreports" }
+jasperreports-pdf = { module = "net.sf.jasperreports:jasperreports-pdf", version.ref = "jasperreports" }
+javax-mail = { module = "com.sun.mail:javax.mail", version.ref = "javamail" }
+javamail-mock2-fullmock = { module = "de.saly:javamail-mock2-fullmock", version.ref = "javamail-mock2" }
+jcommon = { module = "org.jfree:jcommon", version.ref = "jcommon" }
+jmustache = { module = "com.samskivert:jmustache", version.ref = "jmustache" }
+joda-time = { module = "joda-time:joda-time", version.ref = "joda-time" }
+json = { module = "org.json:json", version.ref = "json" }
+jts-core = { module = "org.locationtech.jts:jts-core", version.ref = "jts" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstash-logback" }
+metrics-core = { module = "io.dropwizard.metrics:metrics-core", version.ref = "metrics" }
+metrics-httpclient = { module = "io.dropwizard.metrics:metrics-httpclient", version.ref = "metrics" }
+metrics-jakarta-servlet = { module = "io.dropwizard.metrics:metrics-jakarta-servlet", version.ref = "metrics" }
+metrics-jakarta-servlets = { module = "io.dropwizard.metrics:metrics-jakarta-servlets", version.ref = "metrics" }
+metrics-jmx = { module = "io.dropwizard.metrics:metrics-jmx", version.ref = "metrics" }
+metrics-jvm = { module = "io.dropwizard.metrics:metrics-jvm", version.ref = "metrics" }
+metrics-logback = { module = "io.dropwizard.metrics:metrics-logback", version.ref = "metrics" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+sentry-logback = { module = "io.sentry:sentry-logback", version.ref = "sentry" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+slf4j-jcl-over-slf4j = { module = "org.slf4j:jcl-over-slf4j", version.ref = "slf4j" }
+slf4j-jul-to-slf4j = { module = "org.slf4j:jul-to-slf4j", version.ref = "slf4j" }
+snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
+spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugs" }
+spring-aspects = { module = "org.springframework:spring-aspects", version.ref = "spring" }
+spring-beans = { module = "org.springframework:spring-beans", version.ref = "spring" }
+spring-context = { module = "org.springframework:spring-context", version.ref = "spring" }
+spring-core = { module = "org.springframework:spring-core", version.ref = "spring" }
+spring-jdbc = { module = "org.springframework:spring-jdbc", version.ref = "spring" }
+spring-orm = { module = "org.springframework:spring-orm", version.ref = "spring" }
+spring-security-config = { module = "org.springframework.security:spring-security-config", version.ref = "spring-security" }
+spring-security-web = { module = "org.springframework.security:spring-security-web", version.ref = "spring-security" }
+spring-test = { module = "org.springframework:spring-test", version.ref = "spring" }
+spring-tx = { module = "org.springframework:spring-tx", version.ref = "spring" }
+spring-web = { module = "org.springframework:spring-web", version.ref = "spring" }
+spring-webmvc = { module = "org.springframework:spring-webmvc", version.ref = "spring" }
+tagsoup = { module = "org.ccil.cowan.tagsoup:tagsoup", version.ref = "tagsoup" }
+verapdf-validation-model = { module = "org.verapdf:validation-model", version.ref = "verapdf" }
+xalan-serializer = { module = "xalan:serializer", version.ref = "xalan" }
+xml-apis = { module = "xml-apis:xml-apis", version.ref = "xml-apis" }
+
+[plugins]
+spotbugs = { id = "com.github.spotbugs", version.ref = "spotbugs-plugin" }
