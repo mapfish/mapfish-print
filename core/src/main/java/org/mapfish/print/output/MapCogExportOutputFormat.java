@@ -173,7 +173,7 @@ public class MapCogExportOutputFormat extends MapExportOutputFormat {
 
       writer = format.getWriter(nonClosingOutputStream);
       if (writer == null) {
-        throw new IOException("Could not create GeoTIFF writer");
+        throw new IllegalStateException("Could not create GeoTIFF writer");
       }
 
       // write the coverage to the GeoTIFF file using the specified parameters
