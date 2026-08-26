@@ -12,7 +12,8 @@ Install then activate pre-commit hooks in your repository:
 (The 'pre-commit install' must be run once per repository)
 
 ```bash
-sudo apt install pre-commit
+# to run pip you might need to create a default venv
+pip install pre-commit
 pre-commit install --allow-missing-config
 ```
 
