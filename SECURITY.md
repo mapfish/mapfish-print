@@ -4,13 +4,11 @@
 
 | Version | Supported Until |
 | ------- | --------------- |
-| <= 3.26 | Unsupported     |
-| 3.28    | 23/06/2026      |
-| 3.29    | Unsupported     |
-| 3.30    | Best effort     |
-| 3.31    | Best effort     |
+| >= 3.29 | Unsupported     |
+| 3.30    | 27/06/2027      |
+| 3.31    | 30/04/2029      |
 | 3.32    | Unsupported     |
-| 3.33    | 31/08/2026      |
+| 3.33    | Unsupported     |
 | 4.0     | Best effort     |
 
 ## Reporting a Vulnerability
