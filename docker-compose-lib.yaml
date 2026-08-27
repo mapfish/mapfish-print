@@ -1,6 +1,6 @@
 services:
   geoserver:
-    image: georchestra/geoserver:2.28.4-georchestra-00
+    image: georchestra/geoserver:2.28.5-georchestra-00
     volumes:
       - ./examples/geoserver-data/:/mnt/geoserver_datadir:rw
       - ./core/src/test/resources/map-data/:/mnt/geoserver_datadir/www/map-data:ro
