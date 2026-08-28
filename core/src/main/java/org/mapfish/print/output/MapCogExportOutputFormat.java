@@ -8,16 +8,19 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.imageio.ImageIO;
 import org.geotools.api.coverage.grid.GridCoverageWriter;
 import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -50,19 +53,23 @@ public class MapCogExportOutputFormat extends MapExportOutputFormat {
 
   private static final double METERS_PER_INCH = Constants.INCH_TO_MM / 1000.0;
 
-  @Override
-  public final Processor.ExecutionContext print(
-      @Nonnull final Map<String, String> mdcContext,
-      final PJsonObject spec,
-      final Configuration config,
-      final File configDir,
-      final File taskDirectory,
-      final OutputStream outputStream)
-      throws Exception {
-    final String templateName = spec.getString(Constants.JSON_LAYOUT_KEY);
+  private Template prepareTemplate(final PJsonObject spec, final Configuration config) {
 
+    final String templateName = spec.getString(Constants.JSON_LAYOUT_KEY);
     final Template template = config.getTemplate(templateName);
 
+    if (template == null) {
+      throw new IllegalArgumentException(
+          "Template with name '" + templateName + "' does not exist");
+    }
+    return template;
+  }
+
+  private Values getValues(
+      @Nonnull final Template template,
+      final PJsonObject spec,
+      @Nonnull final Map<String, String> mdcContext,
+      final File taskDirectory) {
     final Values values =
         new Values(
             mdcContext,
@@ -75,6 +82,11 @@ public class MapCogExportOutputFormat extends MapExportOutputFormat {
             httpRequestMaxNumberFetchRetry,
             httpRequestFetchRetryIntervalMillis,
             new AtomicBoolean(false));
+    return values;
+  }
+
+  private ProcessorDependencyGraph.ProcessorGraphForkJoinTask executeProcessors(
+      @Nonnull final Template template, @Nonnull final Values values) throws ExecutionException {
 
     final ProcessorDependencyGraph.ProcessorGraphForkJoinTask task =
         template.getProcessorGraph().createTask(values);
@@ -89,84 +101,99 @@ public class MapCogExportOutputFormat extends MapExportOutputFormat {
       Thread.currentThread().interrupt();
       throw new CancellationException();
     }
+    return task;
+  }
 
-    String mapSubReport = values.getString(getMapSubReportVariable(template));
+  private GridCoverage2D getGridCoverage(
+      @Nonnull final Template template, @Nonnull final Values values, final PJsonObject spec)
+      throws URISyntaxException, IOException, FactoryException {
 
+    final String mapSubReport = values.getString(getMapSubReportVariable(template));
+
+    final PJsonObject mapJson = spec.getJSONObject("attributes").getJSONObject("map");
+    final Path path =
+        mapSubReport.startsWith("file:") ? Paths.get(new URI(mapSubReport)) : Path.of(mapSubReport);
+
+    final BufferedImage image = ImageIO.read(path.toFile());
+
+    final String srs = mapJson.getString("projection");
+    final CoordinateReferenceSystem crs = CRS.decode(srs);
+    final GridCoverageFactory factory = new GridCoverageFactory();
+    final GridCoverage2D coverage;
+
+    if (mapJson.has("center")) {
+      final PJsonArray center = mapJson.getJSONArray("center");
+
+      final double centerX = center.getDouble(0);
+      final double centerY = center.getDouble(1);
+      final double cx = (image.getWidth() - 1) / 2.0;
+      final double cy = (image.getHeight() - 1) / 2.0;
+
+      final double scale = mapJson.getDouble("scale");
+      final double dpi = mapJson.getDouble("dpi");
+      final double metersPerPixel = scale * METERS_PER_INCH / dpi;
+
+      final double rotation = mapJson.has("rotation") ? mapJson.getDouble("rotation") : 0.0;
+
+      final AffineTransform gridToCRS = new AffineTransform();
+      gridToCRS.translate(centerX, centerY);
+      gridToCRS.rotate(Math.toRadians(rotation));
+      gridToCRS.scale(metersPerPixel, -metersPerPixel);
+      gridToCRS.translate(-cx, -cy);
+
+      final MathTransform mathTransform = new AffineTransform2D(gridToCRS);
+
+      coverage = factory.create("coverage", image, crs, mathTransform, null, null, null);
+
+    } else if (mapJson.has("bbox")) {
+
+      final PJsonArray bbox = mapJson.getJSONArray("bbox");
+
+      final double minX = bbox.getDouble(0);
+      final double minY = bbox.getDouble(1);
+      final double maxX = bbox.getDouble(2);
+      final double maxY = bbox.getDouble(3);
+
+      final ReferencedEnvelope envelope = new ReferencedEnvelope(minX, maxX, minY, maxY, crs);
+
+      coverage = factory.create("coverage", image, envelope);
+
+    } else {
+      throw new IllegalArgumentException("COG export requires either center + scale or bbox");
+    }
+    return coverage;
+  }
+
+  private ParameterValueGroup createGeoTiffParams(@Nonnull final GeoTiffFormat format) {
+    final int tileWidth = 512;
+    final int tileHeight = 512;
+
+    // write the GridCoverage2D to a GeoTIFF file with LZW compression and tiling
+    // using GeoTools
+    final GeoTiffWriteParams wp = new GeoTiffWriteParams();
+
+    wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
+    wp.setCompressionType("LZW");
+    wp.setCompressionQuality(0.75F);
+
+    wp.setTilingMode(GeoToolsWriteParams.MODE_EXPLICIT);
+    wp.setTiling(tileWidth, tileHeight);
+
+    final ParameterValueGroup params = format.getWriteParameters();
+    params.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(wp);
+    params.parameter(GeoTiffFormat.RETAIN_AXES_ORDER.getName().toString()).setValue(true);
+
+    return params;
+  }
+
+  private void writeGeoTiff(
+      @Nonnull final GeoTiffFormat format,
+      @Nonnull final GridCoverage2D coverage,
+      @Nonnull final ParameterValueGroup params,
+      @Nonnull final OutputStream outputStream)
+      throws IOException {
     GridCoverageWriter writer = null;
-
     try {
-
-      final PJsonObject mapJson = spec.getJSONObject("attributes").getJSONObject("map");
-      Path path =
-          mapSubReport.startsWith("file:")
-              ? Paths.get(new URI(mapSubReport))
-              : Path.of(mapSubReport);
-
-      BufferedImage image = ImageIO.read(path.toFile());
-
-      String srs = mapJson.getString("projection");
-      CoordinateReferenceSystem crs = CRS.decode(srs);
-      GridCoverageFactory factory = new GridCoverageFactory();
-      GridCoverage2D coverage;
-
-      if (mapJson.has("center")) {
-        PJsonArray center = mapJson.getJSONArray("center");
-
-        double centerX = center.getDouble(0);
-        double centerY = center.getDouble(1);
-        double cx = image.getWidth() / 2.0;
-        double cy = image.getHeight() / 2.0;
-
-        double scale = mapJson.getDouble("scale");
-        double dpi = mapJson.getDouble("dpi");
-        double metersPerPixel = scale * METERS_PER_INCH / dpi;
-
-        double rotation = mapJson.has("rotation") ? mapJson.getDouble("rotation") : 0.0;
-
-        AffineTransform gridToCRS = new AffineTransform();
-        gridToCRS.translate(centerX, centerY);
-        gridToCRS.rotate(Math.toRadians(rotation));
-        gridToCRS.scale(metersPerPixel, -metersPerPixel);
-        gridToCRS.translate(-cx, -cy);
-
-        MathTransform mathTransform = new AffineTransform2D(gridToCRS);
-
-        coverage = factory.create("coverage", image, crs, mathTransform, null, null, null);
-      } else if (mapJson.has("bbox")) {
-        PJsonArray bbox = mapJson.getJSONArray("bbox");
-
-        double minX = bbox.getDouble(0);
-        double minY = bbox.getDouble(1);
-        double maxX = bbox.getDouble(2);
-        double maxY = bbox.getDouble(3);
-
-        ReferencedEnvelope envelope = new ReferencedEnvelope(minX, maxX, minY, maxY, crs);
-
-        coverage = factory.create("coverage", image, envelope);
-
-      } else {
-        throw new IllegalArgumentException("COG export requires either center + scale or bbox");
-      }
-
-      final int tileWidth = 512;
-      final int tileHeight = 512;
-
-      // write the GridCoverage2D to a GeoTIFF file with LZW compression and tiling
-      // using GeoTools
-      final GeoTiffFormat format = new GeoTiffFormat();
-      final GeoTiffWriteParams wp = new GeoTiffWriteParams();
-
-      wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
-      wp.setCompressionType("LZW");
-      wp.setCompressionQuality(0.75F);
-
-      wp.setTilingMode(GeoToolsWriteParams.MODE_EXPLICIT);
-      wp.setTiling(tileWidth, tileHeight);
-
-      final ParameterValueGroup params = format.getWriteParameters();
-      params.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(wp);
-      params.parameter(GeoTiffFormat.RETAIN_AXES_ORDER.getName().toString()).setValue(true);
-
       // The outputStream lifecycle is managed by MapFish Print, not by the GeoTIFF writer.
       // Since GeoTools may close its output stream during disposal, use a non-closing wrapper
       // to prevent the underlying stream from being closed prematurely.
@@ -199,6 +226,29 @@ public class MapCogExportOutputFormat extends MapExportOutputFormat {
         }
       }
     }
+  }
+
+  @Override
+  public final Processor.ExecutionContext print(
+      @Nonnull final Map<String, String> mdcContext,
+      final PJsonObject spec,
+      final Configuration config,
+      final File configDir,
+      final File taskDirectory,
+      final OutputStream outputStream)
+      throws Exception {
+
+    final Template template = prepareTemplate(spec, config);
+    final Values values = getValues(template, spec, mdcContext, taskDirectory);
+    final ProcessorDependencyGraph.ProcessorGraphForkJoinTask task =
+        executeProcessors(template, values);
+
+    final GeoTiffFormat format = new GeoTiffFormat();
+    final GridCoverage2D coverage = getGridCoverage(template, values, spec);
+    final ParameterValueGroup params = createGeoTiffParams(format);
+
+    writeGeoTiff(format, coverage, params, outputStream);
+
     return task.getExecutionContext();
   }
 }
