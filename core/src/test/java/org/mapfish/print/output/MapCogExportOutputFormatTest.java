@@ -190,7 +190,8 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
       final GridCoverage2D coverage = (GridCoverage2D) reader.read(null);
       final MathTransform gridToCRS = coverage.getGridGeometry().getGridToCRS();
       final double[] gridCenter = {
-        coverage.getRenderedImage().getWidth() / 2.0, coverage.getRenderedImage().getHeight() / 2.0
+        (coverage.getRenderedImage().getWidth() - 1) / 2.0,
+        (coverage.getRenderedImage().getHeight() - 1) / 2.0
       };
       final double[] worldCenter = new double[2];
 
@@ -236,7 +237,8 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
       final GridCoverage2D coverage = (GridCoverage2D) reader.read(null);
       final MathTransform gridToCRS = coverage.getGridGeometry().getGridToCRS();
       final double[] gridCenter = {
-        coverage.getRenderedImage().getWidth() / 2.0, coverage.getRenderedImage().getHeight() / 2.0
+        (coverage.getRenderedImage().getWidth() - 1) / 2.0,
+        (coverage.getRenderedImage().getHeight() - 1) / 2.0
       };
       final double[] worldCenter = new double[2];
 
