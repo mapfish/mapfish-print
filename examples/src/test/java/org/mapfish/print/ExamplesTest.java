@@ -363,8 +363,12 @@ public class ExamplesTest {
       HttpURLConnection http,
       String exampleName,
       String requestFileName) {
-    PDFAFlavour flavour =
-        requestFileName.contains("a1b") ? PDFAFlavour.PDFA_1_B : PDFAFlavour.PDFA_1_A;
+    PDFAFlavour flavour = PDFAFlavour.PDFA_2_A;
+    if (requestFileName.contains("a1a")) {
+      flavour = PDFAFlavour.PDFA_1_A;
+    } else if (requestFileName.contains("a1b")) {
+      flavour = PDFAFlavour.PDFA_1_B;
+    }
     try (PDFAValidator validator = ValidatorFactory.createValidator(flavour, false)) {
       GFModelParser parser = GFModelParser.createModelWithFlavour(http.getInputStream(), flavour);
       ValidationResult result = validator.validate(parser);
