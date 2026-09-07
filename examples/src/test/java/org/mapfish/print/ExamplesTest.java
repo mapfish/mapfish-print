@@ -363,11 +363,13 @@ public class ExamplesTest {
       HttpURLConnection http,
       String exampleName,
       String requestFileName) {
-    PDFAFlavour flavour = PDFAFlavour.PDFA_1_A;
+    PDFAFlavour flavour =
+        requestFileName.contains("a1b") ? PDFAFlavour.PDFA_1_B : PDFAFlavour.PDFA_1_A;
     try (PDFAValidator validator = ValidatorFactory.createValidator(flavour, false)) {
       GFModelParser parser = GFModelParser.createModelWithFlavour(http.getInputStream(), flavour);
       ValidationResult result = validator.validate(parser);
-      LOGGER.warn("Example {} is PDF/A conform: {}", exampleName, result.isCompliant());
+      String res = result.isCompliant() ? "" : "NOT ";
+      LOGGER.warn("Example {} - {} is {}{} conform.", exampleName, requestFileName, res, flavour);
       Assert.isTrue(result.isCompliant());
     } catch (EncryptedPdfException
         | ModelParsingException
