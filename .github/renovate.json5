@@ -131,5 +131,11 @@
       groupName: 'gradle',
       separateMultipleMinor: true,
     },
+    /** Ungroup jasperreport updates, separate minor versions */
+    {
+      matchDepNames: ['net.sf.jasperreports:jasperreport*'],
+      groupName: 'jasperreports',
+      separateMultipleMinor: true,
+    },
   ],
 }
