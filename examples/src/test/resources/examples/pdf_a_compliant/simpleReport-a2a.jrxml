@@ -2,7 +2,7 @@
 	<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
 	<property name="net.sf.jasperreports.export.pdfa.conformance" value="pdfa2a"/>
 	<property name="net.sf.jasperreports.export.pdf.tagged" value="true"/>
-	<property name="net.sf.jasperreports.export.pdfa.icc.profile.path" value="AdobeRGB1998.icc"/>
+	<property name="net.sf.jasperreports.export.pdfa.icc.profile.path" value="AdobeCompat-v4.icc"/>
 	<style name="Default" default="true" fontName="DejaVu Sans"/>
 	<parameter name="mapSubReport" class="java.lang.String"/>
 	<parameter name="scalebarGraphic" class="java.lang.String"/>
