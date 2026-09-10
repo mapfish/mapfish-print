@@ -11,8 +11,6 @@
         p:fileSuffix="jpg"/>
     <bean id="jpegOutputFormat" class="org.mapfish.print.output.JasperReportImageOutputFormat" scope="prototype"
         p:fileSuffix="jpeg"/>
-    <bean id="tifOutputFormat" class="org.mapfish.print.output.JasperReportImageOutputFormat" scope="prototype"
-        p:fileSuffix="tif"/>
     <bean id="tiffOutputFormat" class="org.mapfish.print.output.JasperReportImageOutputFormat" scope="prototype"
         p:fileSuffix="tiff"/>
     <bean id="gifOutputFormat" class="org.mapfish.print.output.JasperReportImageOutputFormat" scope="prototype"
@@ -33,6 +31,8 @@
         p:fileSuffix="tif" p:contentType="image/tiff" />
     <bean id="tiffMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
         p:fileSuffix="tiff" p:contentType="image/tiff"/>
+    <bean id="cogMapOutputFormat" class="org.mapfish.print.output.MapCogExportOutputFormat" scope="prototype"
+        p:fileSuffix="cog" p:contentType="image/tiff"/>
     <bean id="gifMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
         p:fileSuffix="gif" p:contentType="image/gif" />
     <bean id="bmpMapOutputFormat" class="org.mapfish.print.output.MapExportOutputFormat" scope="prototype"
