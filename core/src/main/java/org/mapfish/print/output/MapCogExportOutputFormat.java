@@ -4,7 +4,6 @@ import jakarta.annotation.Nonnull;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
@@ -194,18 +193,9 @@ public class MapCogExportOutputFormat extends MapExportOutputFormat {
       throws IOException {
     GridCoverageWriter writer = null;
     try {
-      // The outputStream lifecycle is managed by MapFish Print, not by the GeoTIFF writer.
-      // Since GeoTools may close its output stream during disposal, use a non-closing wrapper
-      // to prevent the underlying stream from being closed prematurely.
-      final OutputStream nonClosingOutputStream =
-          new FilterOutputStream(outputStream) {
-            @Override
-            public void close() throws IOException {
-              flush();
-            }
-          };
+      // MapFish Print owns the output stream; GeoTools must not close it.
+      writer = format.getWriter(outputStream);
 
-      writer = format.getWriter(nonClosingOutputStream);
       if (writer == null) {
         throw new IllegalStateException("Could not create GeoTIFF writer");
       }

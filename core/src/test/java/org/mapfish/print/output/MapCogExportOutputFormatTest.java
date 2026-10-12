@@ -1,12 +1,14 @@
 package org.mapfish.print.output;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,12 +30,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
 
+  /**
+   * Tracks whether the output stream is closed during export. The stream is managed by MapFish
+   * Print and must remain open after the export has completed.
+   */
+  private static class TrackingOutputStream extends ByteArrayOutputStream {
+
+    private boolean closed;
+
+    @Override
+    public void close() throws IOException {
+      closed = true;
+      super.close();
+    }
+
+    boolean wasClosed() {
+      return closed;
+    }
+  }
+
   private static final String BASE_DIR = "map_cog/";
 
   @Autowired private ConfigurationFactory configurationFactory;
 
   @Autowired private Map<String, OutputFormat> outputFormat;
 
+  /**
+   * Verifies that the COG export produces a valid GeoTIFF with the expected properties while
+   * leaving the MapFish-managed output stream open.
+   */
   @Test
   public void testCogExport() throws Exception {
     // GIVEN
@@ -43,7 +68,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
         parseJSONObjectFromFile(MapCogExportOutputFormatTest.class, BASE_DIR + "requestData.json");
 
     final OutputFormat format = this.outputFormat.get("cogMapOutputFormat");
-    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    final TrackingOutputStream outputStream = new TrackingOutputStream();
 
     // WHEN
     format.print(
@@ -54,9 +79,14 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
         getTaskDirectory(),
         outputStream);
 
+    // THEN
+
+    // The output stream belongs to MapFish Print and must not be closed by the exporter.
+    assertFalse(
+        outputStream.wasClosed(), "COG export must not close the MapFish-managed OutputStream");
+
     final byte[] result = outputStream.toByteArray();
 
-    // THEN
     assertTrue(result.length > 0);
     assertTiffProperties(result);
     assertGeoreferencing(result);
