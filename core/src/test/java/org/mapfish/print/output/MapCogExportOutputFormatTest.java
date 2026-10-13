@@ -87,19 +87,19 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
         outputStream);
 
     // THEN
-
-    // The output stream belongs to MapFish Print and must not be closed by the
-    // exporter.
+    // The output stream belongs to MapFish Print and must remain open for its caller.
     assertFalse(
         outputStream.wasClosed(), "COG export must not close the MapFish-managed OutputStream");
 
     final byte[] result = outputStream.toByteArray();
 
+    // The export must be nonempty, tiled, LZW-compressed, and correctly georeferenced.
     assertTrue(result.length > 0);
     assertTiffProperties(result);
     assertGeoreferencing(result);
   }
 
+  /** Checks the exported TIFF's 512-pixel tiles and LZW compression. */
   private void assertTiffProperties(final byte[] result) throws Exception {
     final File tempFile = File.createTempFile("mapfish-cog-", ".tif");
     tempFile.deleteOnExit();
@@ -129,6 +129,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
         final var root = metadata.getAsTree(nativeFormatName);
         final var fields = ((org.w3c.dom.Node) root).getChildNodes();
 
+        // TIFF tag 259 identifies the compression algorithm; value 5 means LZW.
         boolean lzwFound = false;
 
         for (int i = 0; i < fields.getLength(); i++) {
@@ -173,6 +174,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     }
   }
 
+  /** Checks the geographic bounds requested by the unrotated bbox fixture. */
   private void assertGeoreferencing(final byte[] result) throws Exception {
     final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
     final GridCoverageReader reader = geoTiffFormat.getReader(new ByteArrayInputStream(result));
@@ -196,6 +198,10 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     }
   }
 
+  /**
+   * Verifies that the center-and-scale request places the raster midpoint at the requested world
+   * coordinates.
+   */
   @Test
   public void testCogExportWithCenterAndScale() throws Exception {
     // GIVEN
@@ -233,6 +239,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
       };
       final double[] worldCenter = new double[2];
 
+      // For CELL_CENTER coordinates, the raster midpoint is (size - 1) / 2.
       gridToCRS.transform(gridCenter, 0, worldCenter, 0, 1);
 
       assertEquals(637395.386, worldCenter[0], 0.000001);
@@ -243,6 +250,9 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     }
   }
 
+  /**
+   * Verifies that rotating a center-and-scale map preserves its center and rotates the pixel axes.
+   */
   @Test
   public void testCogExportWithRotation() throws Exception {
     // GIVEN
@@ -282,9 +292,11 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
 
       gridToCRS.transform(gridCenter, 0, worldCenter, 0, 1);
 
+      // Rotation must not move the geographic center of the map.
       assertEquals(637395.386, worldCenter[0], 0.000001);
       assertEquals(5788326.345, worldCenter[1], 0.000001);
 
+      // At 45 degrees, moving right by 100 pixels yields equal positive X/Y offsets.
       final double[] gridRight = {gridCenter[0] + 100.0, gridCenter[1]};
       final double[] worldRight = new double[2];
 
@@ -301,8 +313,14 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     }
   }
 
+  /**
+   * Verifies the half-pixel offset between GeoTools CELL_CENTER and CELL_CORNER coordinates for
+   * even and odd raster sizes.
+   */
   @Test
   public void testGridToCrsPixelConvention() throws Exception {
+    // GIVEN
+    // Use even and odd rasters to verify the coordinate convention is size-independent.
     for (int size : new int[] {4, 5}) {
       final BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
 
@@ -322,6 +340,8 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
                   null,
                   null);
 
+      // WHEN
+      // Interpret grid (0, 0) as both a pixel center and an outer pixel corner.
       final MathTransform centerTransform =
           coverage.getGridGeometry().getGridToCRS(PixelInCell.CELL_CENTER);
 
@@ -335,6 +355,8 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
 
       cornerTransform.transform(new double[] {0.0, 0.0}, 0, corner, 0, 1);
 
+      // THEN
+      // CELL_CORNER is shifted half a pixel left and up from CELL_CENTER.
       assertEquals(100.0, center[0], 1e-9);
       assertEquals(200.0, center[1], 1e-9);
 
@@ -343,8 +365,14 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     }
   }
 
+  /**
+   * Verifies that the geographic extent remains centered for all combinations of even and odd
+   * raster dimensions.
+   */
   @Test
   public void testGeoreferencingForEvenAndOddDimensions() throws Exception {
+    // GIVEN
+    // Cover every width/height parity combination, including mixed dimensions.
     final int[][] dimensions = {
       {4, 4},
       {5, 5},
@@ -362,6 +390,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
       final double centerY = 200.0;
       final double metersPerPixel = 1.0;
 
+      // Pixel centers range from 0 to size - 1, so the midpoint is (size - 1) / 2.
       final double cx = (width - 1) / 2.0;
       final double cy = (height - 1) / 2.0;
 
@@ -370,6 +399,8 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
       transform.scale(metersPerPixel, -metersPerPixel);
       transform.translate(-cx, -cy);
 
+      // WHEN
+      // Build a coverage using the pixel-center affine transformation.
       final GridCoverage2D coverage =
           new GridCoverageFactory()
               .create(
@@ -381,6 +412,9 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
                   null,
                   null);
 
+      // THEN
+      // The outer bounds are half the full raster width/height from the center,
+      // regardless of whether a dimension is even or odd.
       final var envelope = coverage.getEnvelope2D();
 
       final String message = width + "x" + height;
@@ -395,8 +429,14 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     }
   }
 
+  /**
+   * Verifies that GeoTIFF writing and reading preserve the full geographic extent for even and odd
+   * dimensions.
+   */
   @Test
   public void testGeoTiffRoundTripGeoreferencing() throws Exception {
+    // GIVEN
+    // Test square and rectangular rasters with both pixel-dimension parities.
     final GeoTiffFormat format = new GeoTiffFormat();
 
     final int[][] dimensions = {
@@ -435,6 +475,8 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
       final File file = File.createTempFile("georeference-", ".tif");
 
       try {
+        // WHEN
+        // Serialize the coverage to GeoTIFF and read it back.
         final GridCoverageWriter writer = format.getWriter(file);
         try {
           writer.write(coverage);
@@ -447,6 +489,9 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
         try {
           final GridCoverage2D readCoverage = (GridCoverage2D) reader.read();
 
+          // THEN
+          // GeoTIFF serialization must preserve the geographic extent without
+          // introducing a half-pixel shift in either dimension.
           final var envelope = readCoverage.getEnvelope2D();
           final String message = width + "x" + height;
 
@@ -468,8 +513,14 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     }
   }
 
+  /**
+   * Verifies that DPI rounding changes raster dimensions without changing the intended geographic
+   * extent.
+   */
   @Test
   public void testCogExportGeoreferencingWithDpiRounding() throws Exception {
+    // GIVEN
+    // Render a 500x100 layout at 96 DPI instead of the base 72 DPI.
     final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
 
     final PJsonObject requestData =
@@ -480,6 +531,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
 
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
+    // WHEN
     format.print(
         new HashMap<>(),
         requestData,
@@ -488,6 +540,8 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
         getTaskDirectory(),
         outputStream);
 
+    // THEN
+    // The raster dimensions may round, but the geographic footprint must remain fixed.
     final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
     final GridCoverageReader reader =
         geoTiffFormat.getReader(new ByteArrayInputStream(outputStream.toByteArray()));
@@ -517,8 +571,14 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     }
   }
 
+  /**
+   * Verifies that exported georeferencing uses the effective, snapped map scale instead of the
+   * requested scale.
+   */
   @Test
   public void testCogExportWithNearestScale() throws Exception {
+    // GIVEN
+    // A requested scale of 1:3600 is snapped to the configured 1:50000 level.
     final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
 
     final PJsonObject requestData =
@@ -528,6 +588,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     final OutputFormat format = this.outputFormat.get("cogMapOutputFormat");
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
+    // WHEN
     format.print(
         new HashMap<>(),
         requestData,
@@ -536,6 +597,8 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
         getTaskDirectory(),
         outputStream);
 
+    // THEN
+    // The exported extent must use the snapped scale rather than the requested scale.
     final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
     final GridCoverageReader reader =
         geoTiffFormat.getReader(new ByteArrayInputStream(outputStream.toByteArray()));
@@ -562,8 +625,14 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     }
   }
 
+  /**
+   * Verifies that DPI rounding and nearest-scale snapping are applied consistently to the exported
+   * raster.
+   */
   @Test
   public void testCogExportWithDpiRoundingAndNearestScale() throws Exception {
+    // GIVEN
+    // Combine 96 DPI raster rounding with snapping from 1:3600 to 1:50000.
     final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
 
     final PJsonObject requestData =
@@ -573,6 +642,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     final OutputFormat format = this.outputFormat.get("cogMapOutputFormat");
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
+    // WHEN
     format.print(
         new HashMap<>(),
         requestData,
@@ -581,6 +651,8 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
         getTaskDirectory(),
         outputStream);
 
+    // THEN
+    // Check both rounded raster dimensions and the footprint at the snapped scale.
     final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
     final GridCoverageReader reader =
         geoTiffFormat.getReader(new ByteArrayInputStream(outputStream.toByteArray()));
@@ -608,8 +680,11 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     }
   }
 
+  /** Verifies all four geographic corner coordinates of a rotated center-and-scale export. */
   @Test
   public void testCogExportRotatedCorners() throws Exception {
+    // GIVEN
+    // Export a center-and-scale map rotated 45 degrees around its center.
     final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
 
     final PJsonObject requestData =
@@ -619,6 +694,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     final OutputFormat format = this.outputFormat.get("cogMapOutputFormat");
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
+    // WHEN
     format.print(
         new HashMap<>(),
         requestData,
@@ -627,6 +703,8 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
         getTaskDirectory(),
         outputStream);
 
+    // THEN
+    // Check the outer corners; an axis-aligned envelope would not prove rotation.
     final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
     final GridCoverageReader reader =
         geoTiffFormat.getReader(new ByteArrayInputStream(outputStream.toByteArray()));
@@ -642,7 +720,8 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
       assertEquals(500, width);
       assertEquals(100, height);
 
-      // Transform the outer pixel corners, not their centers.
+      // The expected envelope is not enough to prove rotation: check the
+      // four outer pixel corners with CELL_CORNER coordinates.
       final MathTransform gridToCRS =
           coverage.getGridGeometry().getGridToCRS(PixelInCell.CELL_CORNER);
 
@@ -678,8 +757,11 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     }
   }
 
+  /** Verifies that bbox aspect-ratio adjustment is reflected in the exported geographic bounds. */
   @Test
   public void testCogExportWithAdjustedBoundingBox() throws Exception {
+    // GIVEN
+    // Expand a requested 10x3 bbox to match the 500x100 raster aspect ratio.
     final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
 
     final PJsonObject requestData =
@@ -691,6 +773,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
     // WHEN
+    // Export using MapFish's aspect-ratio-adjusted map context.
     format.print(
         new HashMap<>(),
         requestData,
@@ -699,6 +782,8 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
         getTaskDirectory(),
         outputStream);
 
+    // THEN
+    // The exported extent must reflect the adjusted, not the requested, bbox.
     final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
     final GridCoverageReader reader =
         geoTiffFormat.getReader(new ByteArrayInputStream(outputStream.toByteArray()));
@@ -726,8 +811,11 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     }
   }
 
+  /** Verifies all four geographic corner coordinates of a rotated bbox-based export. */
   @Test
   public void testCogExportWithRotatedBoundingBox() throws Exception {
+    // GIVEN
+    // Export the original 10x2 bbox with a 45-degree rotation.
     final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
 
     final PJsonObject requestData =
@@ -737,6 +825,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     final OutputFormat format = this.outputFormat.get("cogMapOutputFormat");
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
+    // WHEN
     format.print(
         new HashMap<>(),
         requestData,
@@ -745,6 +834,8 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
         getTaskDirectory(),
         outputStream);
 
+    // THEN
+    // The raster corners must retain the affine rotation for a bbox request.
     final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
     final GridCoverageReader reader =
         geoTiffFormat.getReader(new ByteArrayInputStream(outputStream.toByteArray()));
@@ -757,6 +848,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
       assertEquals(500, coverage.getRenderedImage().getWidth());
       assertEquals(100, coverage.getRenderedImage().getHeight());
 
+      // Check outer pixel corners; an axis-aligned envelope would miss rotation.
       final MathTransform gridToCRS =
           coverage.getGridGeometry().getGridToCRS(PixelInCell.CELL_CORNER);
 
