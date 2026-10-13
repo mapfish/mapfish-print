@@ -4,6 +4,7 @@
   "attributes": {
     "map": {
       "bbox": [97.5, -0.5, 107.5, 1.5],
+      "useNearestScale": false,
       "projection": "CRS:84",
       "dpi": 72,
       "layers": [

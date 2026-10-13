@@ -180,7 +180,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     assertNotNull(reader);
 
     try {
-      final GridCoverage2D coverage = (GridCoverage2D) reader.read(null);
+      final GridCoverage2D coverage = (GridCoverage2D) reader.read();
 
       assertNotNull(coverage);
       assertNotNull(coverage.getCoordinateReferenceSystem());
@@ -225,7 +225,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     assertNotNull(reader);
 
     try {
-      final GridCoverage2D coverage = (GridCoverage2D) reader.read(null);
+      final GridCoverage2D coverage = (GridCoverage2D) reader.read();
       final MathTransform gridToCRS = coverage.getGridGeometry().getGridToCRS();
       final double[] gridCenter = {
         (coverage.getRenderedImage().getWidth() - 1) / 2.0,
@@ -272,7 +272,7 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
     assertNotNull(reader);
 
     try {
-      final GridCoverage2D coverage = (GridCoverage2D) reader.read(null);
+      final GridCoverage2D coverage = (GridCoverage2D) reader.read();
       final MathTransform gridToCRS = coverage.getGridGeometry().getGridToCRS();
       final double[] gridCenter = {
         (coverage.getRenderedImage().getWidth() - 1) / 2.0,
@@ -673,6 +673,118 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
         assertEquals(expectedCorners[i][1], actual[1], 1e-6, "Corner " + i + " Y");
       }
 
+    } finally {
+      reader.dispose();
+    }
+  }
+
+  @Test
+  public void testCogExportWithAdjustedBoundingBox() throws Exception {
+    final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+
+    final PJsonObject requestData =
+        parseJSONObjectFromFile(
+            MapCogExportOutputFormatTest.class, BASE_DIR + "requestData-bbox-adjusted.json");
+
+    final OutputFormat format = this.outputFormat.get("cogMapOutputFormat");
+
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+    // WHEN
+    format.print(
+        new HashMap<>(),
+        requestData,
+        config,
+        getFile(MapCogExportOutputFormatTest.class, BASE_DIR),
+        getTaskDirectory(),
+        outputStream);
+
+    final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
+    final GridCoverageReader reader =
+        geoTiffFormat.getReader(new ByteArrayInputStream(outputStream.toByteArray()));
+
+    assertNotNull(reader);
+
+    try {
+      final GridCoverage2D coverage = (GridCoverage2D) reader.read();
+
+      assertEquals(500, coverage.getRenderedImage().getWidth());
+      assertEquals(100, coverage.getRenderedImage().getHeight());
+
+      // MapFish adjusts the original 10x3 bounding box
+      // to the 5:1 aspect ratio of the rendered map.
+      // The geographic center remains unchanged.
+      final var envelope = coverage.getEnvelope2D();
+
+      assertEquals(95.0, envelope.getMinX(), 1e-6);
+      assertEquals(110.0, envelope.getMaxX(), 1e-6);
+      assertEquals(-0.5, envelope.getMinY(), 1e-6);
+      assertEquals(2.5, envelope.getMaxY(), 1e-6);
+
+    } finally {
+      reader.dispose();
+    }
+  }
+
+  @Test
+  public void testCogExportWithRotatedBoundingBox() throws Exception {
+    final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+
+    final PJsonObject requestData =
+        parseJSONObjectFromFile(
+            MapCogExportOutputFormatTest.class, BASE_DIR + "requestData-bbox-rotation.json");
+
+    final OutputFormat format = this.outputFormat.get("cogMapOutputFormat");
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+    format.print(
+        new HashMap<>(),
+        requestData,
+        config,
+        getFile(MapCogExportOutputFormatTest.class, BASE_DIR),
+        getTaskDirectory(),
+        outputStream);
+
+    final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
+    final GridCoverageReader reader =
+        geoTiffFormat.getReader(new ByteArrayInputStream(outputStream.toByteArray()));
+
+    assertNotNull(reader);
+
+    try {
+      final GridCoverage2D coverage = (GridCoverage2D) reader.read();
+
+      assertEquals(500, coverage.getRenderedImage().getWidth());
+      assertEquals(100, coverage.getRenderedImage().getHeight());
+
+      final MathTransform gridToCRS =
+          coverage.getGridGeometry().getGridToCRS(PixelInCell.CELL_CORNER);
+
+      final double[][] gridCorners = {
+        {0, 0},
+        {500, 0},
+        {500, 100},
+        {0, 100}
+      };
+
+      // Independent expected coordinates for a 45-degree rotation
+      // around (102.5, 0.5), with pixel resolution 0.02.
+      final double[][] expectedCorners = {
+        {98.257359313, -2.328427125},
+        {105.328427125, 4.742640687},
+        {106.742640687, 3.328427125},
+        {99.671572875, -3.742640687}
+      };
+
+      for (int i = 0; i < gridCorners.length; i++) {
+        final double[] actual = new double[2];
+
+        gridToCRS.transform(gridCorners[i], 0, actual, 0, 1);
+
+        assertEquals(expectedCorners[i][0], actual[0], 1e-6, "Corner " + i + " X");
+
+        assertEquals(expectedCorners[i][1], actual[1], 1e-6, "Corner " + i + " Y");
+      }
     } finally {
       reader.dispose();
     }

@@ -38,7 +38,6 @@ import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.Processor;
 import org.mapfish.print.processor.ProcessorDependencyGraph;
-import org.mapfish.print.wrapper.json.PJsonArray;
 import org.mapfish.print.wrapper.json.PJsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,47 +136,32 @@ public class MapCogExportOutputFormat extends MapExportOutputFormat {
     final String srs = mapJson.getString("projection");
     final CoordinateReferenceSystem crs = CRS.decode(srs);
     final GridCoverageFactory factory = new GridCoverageFactory();
-    final GridCoverage2D coverage;
 
-    if (mapJson.has("center")) {
-      final ReferencedEnvelope mapEnvelope = mapContext.toReferencedEnvelope();
-
-      // Use the actual geographic extent and raster dimensions.
-      // This accounts for pixel rounding during DPI scaling.
-      final double pixelWidth = mapEnvelope.getWidth() / image.getWidth();
-      final double pixelHeight = mapEnvelope.getHeight() / image.getHeight();
-
-      // GeoTools uses pixel-center coordinates (CELL_CENTER).
-      final double centerPixelX = pixelCenterCoordinate(image.getWidth());
-      final double centerPixelY = pixelCenterCoordinate(image.getHeight());
-
-      final AffineTransform gridToCRS = new AffineTransform();
-      gridToCRS.translate(mapEnvelope.getMedian(0), mapEnvelope.getMedian(1));
-      gridToCRS.rotate(mapContext.getRotation());
-      gridToCRS.scale(pixelWidth, -pixelHeight);
-      gridToCRS.translate(-centerPixelX, -centerPixelY);
-
-      final MathTransform mathTransform = new AffineTransform2D(gridToCRS);
-
-      coverage = factory.create("coverage", image, crs, mathTransform, null, null, null);
-
-    } else if (mapJson.has("bbox")) {
-
-      final PJsonArray bbox = mapJson.getJSONArray("bbox");
-
-      final double minX = bbox.getDouble(0);
-      final double minY = bbox.getDouble(1);
-      final double maxX = bbox.getDouble(2);
-      final double maxY = bbox.getDouble(3);
-
-      final ReferencedEnvelope envelope = new ReferencedEnvelope(minX, maxX, minY, maxY, crs);
-
-      coverage = factory.create("coverage", image, envelope);
-
-    } else {
+    if (!mapJson.has("center") && !mapJson.has("bbox")) {
       throw new IllegalArgumentException("COG export requires either center + scale or bbox");
     }
-    return coverage;
+
+    // Use the actual map bounds after MapFish has applied
+    // scale snapping, aspect ratio adjustments and DPI scaling.
+    final ReferencedEnvelope mapEnvelope = mapContext.toReferencedEnvelope();
+
+    final double pixelWidth = mapEnvelope.getWidth() / image.getWidth();
+    final double pixelHeight = mapEnvelope.getHeight() / image.getHeight();
+
+    // GeoTools uses CELL_CENTER coordinates for gridToCRS.
+    // The image center is therefore at (dimension - 1) / 2.
+    final double centerPixelX = pixelCenterCoordinate(image.getWidth());
+    final double centerPixelY = pixelCenterCoordinate(image.getHeight());
+
+    final AffineTransform gridToCRS = new AffineTransform();
+    gridToCRS.translate(mapEnvelope.getMedian(0), mapEnvelope.getMedian(1));
+    gridToCRS.rotate(mapContext.getRotation());
+    gridToCRS.scale(pixelWidth, -pixelHeight);
+    gridToCRS.translate(-centerPixelX, -centerPixelY);
+
+    final MathTransform mathTransform = new AffineTransform2D(gridToCRS);
+
+    return factory.create("coverage", image, crs, mathTransform, null, null, null);
   }
 
   private ParameterValueGroup createGeoTiffParams(@Nonnull final GeoTiffFormat format) {
