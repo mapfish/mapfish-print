@@ -69,18 +69,6 @@ public class MapExportOutputFormat implements OutputFormat {
     this.fileSuffix = fileSuffix;
   }
 
-  // protected String getMapSubReportVariable(final Template template) {
-  //   for (Processor<?, ?> processor : template.getProcessors()) {
-  //     if (processor instanceof CreateMapProcessor) {
-  //       String mapSubReport =
-  //           ((CreateMapProcessor) processor).getOutputMapperBiMap().get(MAP_SUBREPORT);
-  //       return Objects.requireNonNullElse(mapSubReport, MAP_SUBREPORT);
-  //     }
-  //   }
-  //   // validation has already confirmed there is exactly one createmap processor
-  //   // so this cannot happen
-  //   return null;
-  // }
   protected String getMapSubReportVariable(final Template template) {
     return getMapOutputVariable(template, MAP_SUBREPORT);
   }

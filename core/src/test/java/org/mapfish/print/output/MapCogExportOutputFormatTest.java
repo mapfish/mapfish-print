@@ -607,4 +607,74 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
       reader.dispose();
     }
   }
+
+  @Test
+  public void testCogExportRotatedCorners() throws Exception {
+    final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+
+    final PJsonObject requestData =
+        parseJSONObjectFromFile(
+            MapCogExportOutputFormatTest.class, BASE_DIR + "requestData-center-rotation.json");
+
+    final OutputFormat format = this.outputFormat.get("cogMapOutputFormat");
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+    format.print(
+        new HashMap<>(),
+        requestData,
+        config,
+        getFile(MapCogExportOutputFormatTest.class, BASE_DIR),
+        getTaskDirectory(),
+        outputStream);
+
+    final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
+    final GridCoverageReader reader =
+        geoTiffFormat.getReader(new ByteArrayInputStream(outputStream.toByteArray()));
+
+    assertNotNull(reader);
+
+    try {
+      final GridCoverage2D coverage = (GridCoverage2D) reader.read();
+
+      final int width = coverage.getRenderedImage().getWidth();
+      final int height = coverage.getRenderedImage().getHeight();
+
+      assertEquals(500, width);
+      assertEquals(100, height);
+
+      // Transform the outer pixel corners, not their centers.
+      final MathTransform gridToCRS =
+          coverage.getGridGeometry().getGridToCRS(PixelInCell.CELL_CORNER);
+
+      final double[][] gridCorners = {
+        {0, 0},
+        {width, 0},
+        {width, height},
+        {0, height}
+      };
+
+      // Independently calculated for a 500x100 raster,
+      // 1.27 m per pixel, 45 degree rotation,
+      // centered at (637395.386, 5788326.345).
+      final double[][] expectedCorners = {
+        {637125.978316368, 5788146.739877579},
+        {637574.991122422, 5788595.752683632},
+        {637664.793683632, 5788505.950122421},
+        {637215.780877579, 5788056.937316367}
+      };
+
+      for (int i = 0; i < gridCorners.length; i++) {
+        final double[] actual = new double[2];
+
+        gridToCRS.transform(gridCorners[i], 0, actual, 0, 1);
+
+        assertEquals(expectedCorners[i][0], actual[0], 1e-6, "Corner " + i + " X");
+
+        assertEquals(expectedCorners[i][1], actual[1], 1e-6, "Corner " + i + " Y");
+      }
+
+    } finally {
+      reader.dispose();
+    }
+  }
 }
