@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinTask;
@@ -32,6 +33,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.mapfish.print.Constants;
+import org.mapfish.print.attribute.map.MapfishMapContext;
 import org.mapfish.print.config.Configuration;
 import org.mapfish.print.config.Template;
 import org.mapfish.print.processor.Processor;
@@ -50,7 +52,20 @@ public class MapCogExportOutputFormat extends MapExportOutputFormat {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MapCogExportOutputFormat.class);
 
-  private static final double METERS_PER_INCH = Constants.INCH_TO_MM / 1000.0;
+  /**
+   * Returns the raster midpoint in pixel-center coordinates.
+   *
+   * <p>GeoTools uses CELL_CENTER coordinates for the supplied gridToCRS transform. Pixel centers
+   * are indexed from 0 to pixelCount - 1. Therefore, the raster midpoint is (pixelCount - 1) / 2.0.
+   *
+   * <p>For odd dimensions, the midpoint lies on a pixel center. For even dimensions, it lies
+   * halfway between two pixel centers. This is a coordinate convention, not a rounding correction.
+   *
+   * @see org.geotools.api.referencing.datum.PixelInCell#CELL_CENTER
+   */
+  private static double pixelCenterCoordinate(final int pixelCount) {
+    return (pixelCount - 1) / 2.0;
+  }
 
   private Template prepareTemplate(final PJsonObject spec, final Configuration config) {
 
@@ -108,6 +123,10 @@ public class MapCogExportOutputFormat extends MapExportOutputFormat {
       throws URISyntaxException, IOException, FactoryException {
 
     final String mapSubReport = values.getString(getMapSubReportVariable(template));
+    final MapfishMapContext mapContext =
+        Objects.requireNonNull(
+            values.getObject(getMapOutputVariable(template, "mapContext"), MapfishMapContext.class),
+            "Map context is required for COG export");
 
     final PJsonObject mapJson = spec.getJSONObject("attributes").getJSONObject("map");
     final Path path =
@@ -121,24 +140,22 @@ public class MapCogExportOutputFormat extends MapExportOutputFormat {
     final GridCoverage2D coverage;
 
     if (mapJson.has("center")) {
-      final PJsonArray center = mapJson.getJSONArray("center");
+      final ReferencedEnvelope mapEnvelope = mapContext.toReferencedEnvelope();
 
-      final double centerX = center.getDouble(0);
-      final double centerY = center.getDouble(1);
-      final double cx = (image.getWidth() - 1) / 2.0;
-      final double cy = (image.getHeight() - 1) / 2.0;
+      // Use the actual geographic extent and raster dimensions.
+      // This accounts for pixel rounding during DPI scaling.
+      final double pixelWidth = mapEnvelope.getWidth() / image.getWidth();
+      final double pixelHeight = mapEnvelope.getHeight() / image.getHeight();
 
-      final double scale = mapJson.getDouble("scale");
-      final double dpi = mapJson.getDouble("dpi");
-      final double metersPerPixel = scale * METERS_PER_INCH / dpi;
-
-      final double rotation = mapJson.has("rotation") ? mapJson.getDouble("rotation") : 0.0;
+      // GeoTools uses pixel-center coordinates (CELL_CENTER).
+      final double centerPixelX = pixelCenterCoordinate(image.getWidth());
+      final double centerPixelY = pixelCenterCoordinate(image.getHeight());
 
       final AffineTransform gridToCRS = new AffineTransform();
-      gridToCRS.translate(centerX, centerY);
-      gridToCRS.rotate(Math.toRadians(rotation));
-      gridToCRS.scale(metersPerPixel, -metersPerPixel);
-      gridToCRS.translate(-cx, -cy);
+      gridToCRS.translate(mapEnvelope.getMedian(0), mapEnvelope.getMedian(1));
+      gridToCRS.rotate(mapContext.getRotation());
+      gridToCRS.scale(pixelWidth, -pixelHeight);
+      gridToCRS.translate(-centerPixelX, -centerPixelY);
 
       final MathTransform mathTransform = new AffineTransform2D(gridToCRS);
 

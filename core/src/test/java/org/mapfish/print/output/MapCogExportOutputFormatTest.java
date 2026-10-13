@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -18,9 +20,14 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 import org.geotools.api.coverage.grid.GridCoverageReader;
+import org.geotools.api.coverage.grid.GridCoverageWriter;
+import org.geotools.api.referencing.datum.PixelInCell;
 import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.gce.geotiff.GeoTiffFormat;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.junit.jupiter.api.Test;
 import org.mapfish.print.AbstractMapfishSpringTest;
 import org.mapfish.print.config.Configuration;
@@ -81,7 +88,8 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
 
     // THEN
 
-    // The output stream belongs to MapFish Print and must not be closed by the exporter.
+    // The output stream belongs to MapFish Print and must not be closed by the
+    // exporter.
     assertFalse(
         outputStream.wasClosed(), "COG export must not close the MapFish-managed OutputStream");
 
@@ -287,6 +295,313 @@ public class MapCogExportOutputFormatTest extends AbstractMapfishSpringTest {
 
       assertEquals(expectedOffset, worldRight[0] - worldCenter[0], 0.000001);
       assertEquals(expectedOffset, worldRight[1] - worldCenter[1], 0.000001);
+
+    } finally {
+      reader.dispose();
+    }
+  }
+
+  @Test
+  public void testGridToCrsPixelConvention() throws Exception {
+    for (int size : new int[] {4, 5}) {
+      final BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+
+      // One world unit per pixel, with the first pixel center at (100, 200).
+      final AffineTransform transform = new AffineTransform();
+      transform.translate(100.0, 200.0);
+      transform.scale(1.0, -1.0);
+
+      final GridCoverage2D coverage =
+          new GridCoverageFactory()
+              .create(
+                  "test",
+                  image,
+                  CRS.decode("EPSG:3857"),
+                  new AffineTransform2D(transform),
+                  null,
+                  null,
+                  null);
+
+      final MathTransform centerTransform =
+          coverage.getGridGeometry().getGridToCRS(PixelInCell.CELL_CENTER);
+
+      final MathTransform cornerTransform =
+          coverage.getGridGeometry().getGridToCRS(PixelInCell.CELL_CORNER);
+
+      final double[] center = new double[2];
+      final double[] corner = new double[2];
+
+      centerTransform.transform(new double[] {0.0, 0.0}, 0, center, 0, 1);
+
+      cornerTransform.transform(new double[] {0.0, 0.0}, 0, corner, 0, 1);
+
+      assertEquals(100.0, center[0], 1e-9);
+      assertEquals(200.0, center[1], 1e-9);
+
+      assertEquals(99.5, corner[0], 1e-9);
+      assertEquals(200.5, corner[1], 1e-9);
+    }
+  }
+
+  @Test
+  public void testGeoreferencingForEvenAndOddDimensions() throws Exception {
+    final int[][] dimensions = {
+      {4, 4},
+      {5, 5},
+      {4, 5},
+      {5, 4}
+    };
+
+    for (final int[] dimension : dimensions) {
+      final int width = dimension[0];
+      final int height = dimension[1];
+
+      final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+      final double centerX = 100.0;
+      final double centerY = 200.0;
+      final double metersPerPixel = 1.0;
+
+      final double cx = (width - 1) / 2.0;
+      final double cy = (height - 1) / 2.0;
+
+      final AffineTransform transform = new AffineTransform();
+      transform.translate(centerX, centerY);
+      transform.scale(metersPerPixel, -metersPerPixel);
+      transform.translate(-cx, -cy);
+
+      final GridCoverage2D coverage =
+          new GridCoverageFactory()
+              .create(
+                  "test",
+                  image,
+                  CRS.decode("EPSG:3857"),
+                  new AffineTransform2D(transform),
+                  null,
+                  null,
+                  null);
+
+      final var envelope = coverage.getEnvelope2D();
+
+      final String message = width + "x" + height;
+
+      assertEquals(centerX - width / 2.0, envelope.getMinX(), 1e-9, message + " minX");
+
+      assertEquals(centerX + width / 2.0, envelope.getMaxX(), 1e-9, message + " maxX");
+
+      assertEquals(centerY - height / 2.0, envelope.getMinY(), 1e-9, message + " minY");
+
+      assertEquals(centerY + height / 2.0, envelope.getMaxY(), 1e-9, message + " maxY");
+    }
+  }
+
+  @Test
+  public void testGeoTiffRoundTripGeoreferencing() throws Exception {
+    final GeoTiffFormat format = new GeoTiffFormat();
+
+    final int[][] dimensions = {
+      {4, 4},
+      {5, 5},
+      {4, 5},
+      {5, 4}
+    };
+
+    for (final int[] dimension : dimensions) {
+      final int width = dimension[0];
+      final int height = dimension[1];
+
+      final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+      final double centerX = 100.0;
+      final double centerY = 200.0;
+      final double metersPerPixel = 1.0;
+
+      final AffineTransform transform = new AffineTransform();
+      transform.translate(centerX, centerY);
+      transform.scale(metersPerPixel, -metersPerPixel);
+      transform.translate(-(width - 1) / 2.0, -(height - 1) / 2.0);
+
+      final GridCoverage2D coverage =
+          new GridCoverageFactory()
+              .create(
+                  "test",
+                  image,
+                  CRS.decode("EPSG:3857"),
+                  new AffineTransform2D(transform),
+                  null,
+                  null,
+                  null);
+
+      final File file = File.createTempFile("georeference-", ".tif");
+
+      try {
+        final GridCoverageWriter writer = format.getWriter(file);
+        try {
+          writer.write(coverage);
+        } finally {
+          writer.dispose();
+        }
+
+        final GridCoverageReader reader = format.getReader(file);
+
+        try {
+          final GridCoverage2D readCoverage = (GridCoverage2D) reader.read();
+
+          final var envelope = readCoverage.getEnvelope2D();
+          final String message = width + "x" + height;
+
+          assertEquals(centerX - width / 2.0, envelope.getMinX(), 1e-7, message + " minX");
+
+          assertEquals(centerX + width / 2.0, envelope.getMaxX(), 1e-7, message + " maxX");
+
+          assertEquals(centerY - height / 2.0, envelope.getMinY(), 1e-7, message + " minY");
+
+          assertEquals(centerY + height / 2.0, envelope.getMaxY(), 1e-7, message + " maxY");
+
+        } finally {
+          reader.dispose();
+        }
+      } finally {
+        coverage.dispose(true);
+        Files.deleteIfExists(file.toPath());
+      }
+    }
+  }
+
+  @Test
+  public void testCogExportGeoreferencingWithDpiRounding() throws Exception {
+    final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+
+    final PJsonObject requestData =
+        parseJSONObjectFromFile(
+            MapCogExportOutputFormatTest.class, BASE_DIR + "requestData-center-dpi96.json");
+
+    final OutputFormat format = this.outputFormat.get("cogMapOutputFormat");
+
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+    format.print(
+        new HashMap<>(),
+        requestData,
+        config,
+        getFile(MapCogExportOutputFormatTest.class, BASE_DIR),
+        getTaskDirectory(),
+        outputStream);
+
+    final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
+    final GridCoverageReader reader =
+        geoTiffFormat.getReader(new ByteArrayInputStream(outputStream.toByteArray()));
+
+    assertNotNull(reader);
+
+    try {
+      final GridCoverage2D coverage = (GridCoverage2D) reader.read();
+
+      // Raster dimensions after DPI scaling and rounding.
+      assertEquals(667, coverage.getRenderedImage().getWidth());
+      assertEquals(134, coverage.getRenderedImage().getHeight());
+
+      // Expected bounds from the original 500x100 map at
+      // scale 1:3600 and PDF_DPI 72 (1.27 m per original pixel).
+      // Width = 635 m, height = 127 m.
+      final var envelope = coverage.getEnvelope2D();
+
+      assertEquals(637077.886, envelope.getMinX(), 1e-6);
+      assertEquals(637712.886, envelope.getMaxX(), 1e-6);
+
+      assertEquals(5788262.845, envelope.getMinY(), 1e-6);
+      assertEquals(5788389.845, envelope.getMaxY(), 1e-6);
+
+    } finally {
+      reader.dispose();
+    }
+  }
+
+  @Test
+  public void testCogExportWithNearestScale() throws Exception {
+    final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+
+    final PJsonObject requestData =
+        parseJSONObjectFromFile(
+            MapCogExportOutputFormatTest.class, BASE_DIR + "requestData-center.json");
+
+    final OutputFormat format = this.outputFormat.get("cogMapOutputFormat");
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+    format.print(
+        new HashMap<>(),
+        requestData,
+        config,
+        getFile(MapCogExportOutputFormatTest.class, BASE_DIR),
+        getTaskDirectory(),
+        outputStream);
+
+    final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
+    final GridCoverageReader reader =
+        geoTiffFormat.getReader(new ByteArrayInputStream(outputStream.toByteArray()));
+
+    assertNotNull(reader);
+
+    try {
+      final GridCoverage2D coverage = (GridCoverage2D) reader.read();
+
+      assertEquals(500, coverage.getRenderedImage().getWidth());
+      assertEquals(100, coverage.getRenderedImage().getHeight());
+
+      // Requested scale: 1:3600.
+      // Effective scale after snapping: 1:50000.
+      final var envelope = coverage.getEnvelope2D();
+
+      assertEquals(632985.6637777778, envelope.getMinX(), 1e-6);
+      assertEquals(641805.1082222223, envelope.getMaxX(), 1e-6);
+      assertEquals(5787444.400555556, envelope.getMinY(), 1e-6);
+      assertEquals(5789208.289444444, envelope.getMaxY(), 1e-6);
+
+    } finally {
+      reader.dispose();
+    }
+  }
+
+  @Test
+  public void testCogExportWithDpiRoundingAndNearestScale() throws Exception {
+    final Configuration config = configurationFactory.getConfig(getFile(BASE_DIR + "config.yaml"));
+
+    final PJsonObject requestData =
+        parseJSONObjectFromFile(
+            MapCogExportOutputFormatTest.class, BASE_DIR + "requestData-center-dpi96-nearest.json");
+
+    final OutputFormat format = this.outputFormat.get("cogMapOutputFormat");
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+    format.print(
+        new HashMap<>(),
+        requestData,
+        config,
+        getFile(MapCogExportOutputFormatTest.class, BASE_DIR),
+        getTaskDirectory(),
+        outputStream);
+
+    final GeoTiffFormat geoTiffFormat = new GeoTiffFormat();
+    final GridCoverageReader reader =
+        geoTiffFormat.getReader(new ByteArrayInputStream(outputStream.toByteArray()));
+
+    assertNotNull(reader);
+
+    try {
+      final GridCoverage2D coverage = (GridCoverage2D) reader.read();
+
+      // Actual raster dimensions after scaling from 72 to 96 DPI.
+      assertEquals(667, coverage.getRenderedImage().getWidth());
+      assertEquals(134, coverage.getRenderedImage().getHeight());
+
+      // Geographic extent at the effective scale 1:50000,
+      // calculated from the original 500x100 map at 72 DPI.
+      final var envelope = coverage.getEnvelope2D();
+
+      assertEquals(632985.6637777778, envelope.getMinX(), 1e-6);
+      assertEquals(641805.1082222223, envelope.getMaxX(), 1e-6);
+      assertEquals(5787444.400555556, envelope.getMinY(), 1e-6);
+      assertEquals(5789208.289444444, envelope.getMaxY(), 1e-6);
 
     } finally {
       reader.dispose();
