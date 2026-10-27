@@ -132,7 +132,7 @@ dependencies {
             "org.springframework:spring-tx:5.3.39",
             "org.springframework:spring-test:5.3.39",
             'net.logstash.logback:logstash-logback-encoder:7.3',
-            'com.google.guava:guava:32.0.1-jre',
+            'com.google.guava:guava:33.7.2-android',
             'commons-io:commons-io:2.14.0',
     )
     metrics(
