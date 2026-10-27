@@ -20,7 +20,7 @@ dependencies {
             "org.springframework:spring-test:5.3.39",
             'org.ccil.cowan.tagsoup:tagsoup:1.2.1',
             'com.samskivert:jmustache:1.16',
-            'com.google.guava:guava:33.3.1-jre',
+            'com.google.guava:guava:33.7.2-android',
             'commons-io:commons-io:2.17.0',
             "org.springframework:spring-beans:5.3.39",
             "org.springframework:spring-web:5.3.39",
