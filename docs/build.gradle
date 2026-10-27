@@ -17,7 +17,7 @@ dependencies {
         "org.springframework:spring-test:5.3.39",
         'org.ccil.cowan.tagsoup:tagsoup:1.2.1',
         'com.samskivert:jmustache:1.15',
-        'com.google.guava:guava:32.0.1-jre'
+        'com.google.guava:guava:33.7.2-android'
     )
 }
 
