@@ -169,43 +169,23 @@ jobs:
         run: echo "version=$(grep version gradle.properties|sed "s/version=\(.*\)/\1/g")" > $GITHUB_OUTPUT
       - run: echo "${{ steps.version.outputs.version }}"
 
-      - name: Create Release
-        uses: actions/github-script@v7
-        with:
-          script: |-
-            const fs = require('fs');
-
-            const release = await github.request('POST /repos/{owner}/{repo}/releases', {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: context.ref,
-              name: '${{ steps.tag.outputs.tag }}',
-              draft: false,
-              prerelease: false,
-              generate_release_notes: false,
-              headers: {
-                'X-GitHub-Api-Version': '2022-11-28'
-              }
-            });
-            for (const archive of [
-              {prefix: 'print-servlet-', suffix: '.war', filePrefix: './core/build/libs/print-servlet-', 'mime-type': 'application/java-archive'},
-              {prefix: 'print-cli-', suffix: '.zip', filePrefix: './core/build/distributions/core-', 'mime-type': 'application/zip'},
-              {prefix: 'print-lib-', suffix: '.jar', filePrefix: './core/build/libs/print-lib-', 'mime-type': 'application/java-archive'},
-              {prefix: 'print-lib-', suffix: '-sources.jar', filePrefix: './core/build/libs/print-lib-', 'mime-type': 'application/java-archive'},
-              {prefix: 'print-lib-', suffix: '-javadoc.jar', filePrefix: './core/build/libs/print-lib-', 'mime-type': 'application/java-archive'},
-            ]) {
-              await github.rest.repos.uploadReleaseAsset({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                release_id: release.data.id,
-                name: archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix,
-                data: fs.readFileSync(archive.filePrefix + '${{ steps.version.outputs.version }}' + archive.suffix),
-                headers: {
-                  'X-GitHub-Api-Version': '2022-11-28',
-                  'content-type': archive['mime-type']
-                },
-              });
-            }
+      - name: Create the release with its assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ steps.tag.outputs.tag }}
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |-
+          set -eu
+          mkdir --parents /tmp/release
+          cp "./core/build/libs/print-servlet-${RELEASE_VERSION}.war" /tmp/release/
+          cp "./core/build/distributions/core-${RELEASE_VERSION}.zip" "/tmp/release/print-cli-${RELEASE_VERSION}.zip"
+          cp "./core/build/libs/print-lib-${RELEASE_VERSION}.jar" /tmp/release/
+          cp "./core/build/libs/print-lib-${RELEASE_VERSION}-sources.jar" /tmp/release/
+          cp "./core/build/libs/print-lib-${RELEASE_VERSION}-javadoc.jar" /tmp/release/
+          # `gh release create` creates the release as a draft, uploads the assets and only then publishes
+          # it, and deletes the draft if an upload fails. This is what release immutability requires: the
+          # assets of a published release cannot be added, replaced nor removed anymore.
+          gh release create "${RELEASE_TAG}" --name "${RELEASE_TAG}" /tmp/release/*
         if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
 
         # Update the documentation
