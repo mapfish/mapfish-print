@@ -2,6 +2,7 @@
 
 checks:
   codespell: false
+  snyk: false
 
 publish:
   pypi:
