@@ -40,13 +40,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
       - run: echo --${{ steps.tag2.outputs.replaced }}--
 
-      - uses: camptocamp/initialise-gopass-summon-action@17703c87720ba3766abc90da60b437783b530d93 # v2.0.1
-        with:
-          ci-gpg-private-key: ${{secrets.CI_GPG_PRIVATE_KEY}}
-          github-gopass-ci-token: ${{secrets.GOPASS_CI_GITHUB_TOKEN}}
-          patterns: docker
-        if: env.HAS_SECRETS == 'HAS_SECRETS'
-      - run: gpg --export-secret-keys --armor D121AF2DFA8E140688BD968930C9B913FD42EF13 > CI.asc
+      - run: echo "${{ secrets.CI_GPG_PRIVATE_KEY }}" > CI.asc
         if: env.HAS_SECRETS == 'HAS_SECRETS'
 
       - id: tag
@@ -148,6 +142,11 @@ jobs:
 
       - run: git stash
         if: always()
+      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+        if: env.HAS_SECRETS == 'HAS_SECRETS'
       - name: Publish
         run: tag-publish
         if: env.HAS_SECRETS == 'HAS_SECRETS'
