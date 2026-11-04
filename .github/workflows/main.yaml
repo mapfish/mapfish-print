@@ -154,7 +154,7 @@ jobs:
           tag-publish
         if: env.HAS_SECRETS == 'HAS_SECRETS'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CAMPTOCAMP_PUBLISH_GITHUB_TOKEN }}
       - name: Publish to Docker Hub
         run: |
           cp .github/publish.yaml /tmp/publish.yaml.bak
