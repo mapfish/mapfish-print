@@ -2,11 +2,4 @@
 
 checks:
   codespell: false
-
-publish:
-  pypi:
-    packages: []
-  docker:
-    dispatch: {}
-    images:
-      - name: camptocamp/mapfish_print
+  snyk: false
