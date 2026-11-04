@@ -147,8 +147,19 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
         if: env.HAS_SECRETS == 'HAS_SECRETS'
-      - name: Publish
-        run: tag-publish
+      - name: Publish to the GitHub registry
+        run: |
+          docker tag camptocamp/mapfish_print:latest mapfish/mapfish_print:latest
+          tag-publish
+        if: env.HAS_SECRETS == 'HAS_SECRETS'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish to Docker Hub
+        run: |
+          cp .github/publish.yaml /tmp/publish.yaml.bak
+          cp .github/publish-dockerhub.yaml .github/publish.yaml
+          tag-publish
+          cp /tmp/publish.yaml.bak .github/publish.yaml
         if: env.HAS_SECRETS == 'HAS_SECRETS'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

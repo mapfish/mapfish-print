@@ -2,7 +2,7 @@
 
 docker:
   images:
-    - name: camptocamp/mapfish_print
+    - name: mapfish/mapfish_print
   repository:
     github:
       host: ghcr.io
@@ -11,9 +11,3 @@ docker:
         - default_branch
         - stabilization_branch
         - pull_request
-    dockerhub:
-      host: docker.io
-      versions_type:
-        - tag
-        - default_branch
-        - stabilization_branch
