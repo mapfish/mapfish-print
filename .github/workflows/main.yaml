@@ -69,7 +69,19 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
       - run: echo --${{ steps.tag2.outputs.replaced }}--
 
-      - run: echo "${{ secrets.CI_GPG_PRIVATE_KEY }}" > CI.asc
+      - name: Write the signing key
+        run: |
+          echo "${CI_GPG_PRIVATE_KEY}" | gpg --batch --import
+          gpg --batch --yes --export-secret-keys --armor D121AF2DFA8E140688BD968930C9B913FD42EF13 > CI.asc
+          test -s CI.asc || { echo "::error::The exported PGP secret key is empty"; exit 1; }
+          # The re-armored key differs from the secret value, it is not masked automatically
+          while IFS= read -r line; do
+            if [ "${#line}" -gt 3 ]; then
+              echo "::add-mask::${line}"
+            fi
+          done < CI.asc
+        env:
+          CI_GPG_PRIVATE_KEY: ${{ secrets.CI_GPG_PRIVATE_KEY }}
         if: env.HAS_SECRETS == 'HAS_SECRETS'
 
       - id: tag
@@ -234,7 +246,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: mapfish/mapfish-print-doc
-          token: ${{ secrets.GOPASS_CI_GITHUB_TOKEN }}
+          token: ${{ secrets.DOC_GITHUB_TOKEN }}
           path: mapfish-print-doc
         if: github.ref == 'refs/heads/master' && env.HAS_SECRETS == 'HAS_SECRETS'
       - name: Extract the documentation
