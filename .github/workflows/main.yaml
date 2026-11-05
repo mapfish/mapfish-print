@@ -234,7 +234,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: mapfish/mapfish-print-doc
-          token: ${{ secrets.GOPASS_CI_GITHUB_TOKEN }}
+          token: ${{ secrets.DOC_GITHUB_TOKEN }}
           path: mapfish-print-doc
         if: github.ref == 'refs/heads/master' && env.HAS_SECRETS == 'HAS_SECRETS'
       - name: Extract the documentation
