@@ -184,7 +184,7 @@ jobs:
           # `gh release create` creates the release as a draft, uploads the assets and only then publishes
           # it, and deletes the draft if an upload fails. This is what release immutability requires: the
           # assets of a published release cannot be added, replaced nor removed anymore.
-          gh release create "${RELEASE_TAG}" --name "${RELEASE_TAG}" /tmp/release/*
+          gh release create "${RELEASE_TAG}" --title="${RELEASE_TAG}" /tmp/release/*
         if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
 
         # Update the documentation
