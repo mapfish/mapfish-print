@@ -30,12 +30,6 @@ allprojects {
     }
 }
 
-configurations.all {
-    resolutionStrategy {
-        force 'xml-apis:xml-apis:2.0.2'
-    }
-}
-
 configure(subprojects.findAll { ['core', 'examples'].contains(it.name) }) {
     apply plugin: 'java'
     apply plugin: 'com.github.spotbugs'
