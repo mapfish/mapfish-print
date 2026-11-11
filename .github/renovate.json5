@@ -136,6 +136,8 @@
       matchDepNames: ['net.sf.jasperreports:jasperreport*'],
       groupName: 'jasperreports',
       separateMultipleMinor: true,
+      /** Pin jasperreports: since 7.0.8 no longer supports tagged PDF export (PDF/A-1a, PDF/A-2a) */
+      allowedVersions: '<=7.0.7',
     },
   ],
 }
