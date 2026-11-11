@@ -20,11 +20,13 @@ wrapper {
 allprojects {
     group = group
     version = version
-}
 
-configurations.all {
-    resolutionStrategy {
-        force 'xml-apis:xml-apis:2.0.2'
+    // Gradle < 7 doesn't know the 'org.gradle.jvm.environment' attribute used by Guava >= 32.1
+    // to distinguish its 'jre' and 'android' variants, so we have to request it explicitly.
+    configurations.all {
+        attributes {
+            attribute(Attribute.of('org.gradle.jvm.environment', String), 'standard-jvm')
+        }
     }
 }
 
