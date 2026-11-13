@@ -33,19 +33,23 @@ public class MapExportOutputFormat implements OutputFormat {
 
   private static final String MAP_SUBREPORT = "mapSubReport";
 
-  @Autowired private ForkJoinPool forkJoinPool;
+  /** Fork-join pool used to execute print tasks. */
+  @Autowired protected ForkJoinPool forkJoinPool;
 
-  @Autowired private MfClientHttpRequestFactoryImpl httpRequestFactory;
+  /** HTTP request factory used while processing print jobs. */
+  @Autowired protected MfClientHttpRequestFactoryImpl httpRequestFactory;
 
   private String fileSuffix;
 
   private String contentType;
 
+  /** Maximum number of retries for HTTP requests. */
   @Value("${httpRequest.fetchRetry.maxNumber}")
-  private int httpRequestMaxNumberFetchRetry;
+  protected int httpRequestMaxNumberFetchRetry;
 
+  /** Interval in milliseconds between HTTP request retries. */
   @Value("${httpRequest.fetchRetry.intervalMillis}")
-  private int httpRequestFetchRetryIntervalMillis;
+  protected int httpRequestFetchRetryIntervalMillis;
 
   @Override
   public final String getContentType() {
@@ -65,21 +69,25 @@ public class MapExportOutputFormat implements OutputFormat {
     this.fileSuffix = fileSuffix;
   }
 
-  private String getMapSubReportVariable(final Template template) {
+  protected String getMapSubReportVariable(final Template template) {
+    return getMapOutputVariable(template, MAP_SUBREPORT);
+  }
+
+  protected String getMapOutputVariable(final Template template, final String outputName) {
     for (Processor<?, ?> processor : template.getProcessors()) {
       if (processor instanceof CreateMapProcessor) {
-        String mapSubReport =
-            ((CreateMapProcessor) processor).getOutputMapperBiMap().get(MAP_SUBREPORT);
-        return Objects.requireNonNullElse(mapSubReport, MAP_SUBREPORT);
+        final String mappedName =
+            ((CreateMapProcessor) processor).getOutputMapperBiMap().get(outputName);
+
+        return Objects.requireNonNullElse(mappedName, outputName);
       }
     }
-    // validation has already confirmed there is exactly one createmap processor
-    // so this cannot happen
-    return null;
+
+    throw new IllegalStateException("No CreateMapProcessor found");
   }
 
   @Override
-  public final Processor.ExecutionContext print(
+  public Processor.ExecutionContext print(
       @Nonnull final Map<String, String> mdcContext,
       final PJsonObject spec,
       final Configuration config,
