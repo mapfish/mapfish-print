@@ -61,6 +61,7 @@ FROM runner AS watcher
 RUN --mount=type=cache,target=/var/cache,sharing=locked \
     --mount=type=cache,target=/root/.cache \
   apt-get update \
+  && apt-get upgrade --yes \
   && apt-get install --yes --no-install-recommends python3-pip rsync python3-setuptools \
   && python3 -m pip --disable-pip-version-check --no-cache-dir install inotify
 
