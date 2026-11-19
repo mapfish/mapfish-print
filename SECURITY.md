@@ -8,7 +8,7 @@
 | 3.30    | 27/06/2027      |
 | 3.31    | 30/04/2029      |
 | 3.32    | Unsupported     |
-| 3.33    | Unsupported     |
+| 3.33    | Best effort     |
 | 4.0     | Best effort     |
 
 ## Reporting a Vulnerability
