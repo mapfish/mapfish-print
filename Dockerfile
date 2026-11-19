@@ -3,6 +3,7 @@ FROM gradle:8.10.2-jdk17 AS builder
 RUN --mount=type=cache,target=/var/cache,sharing=locked \
     --mount=type=cache,target=/root/.cache \
   apt-get update && \
+  apt-get upgrade --yes && \
   apt-get install --yes --no-install-recommends fonts-liberation gettext curl
 
 WORKDIR /src
