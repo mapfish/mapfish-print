@@ -43,6 +43,7 @@ ENV LOG_LEVEL=INFO \
   TOMCAT_LOG_TYPE=classic \
   EXTRA_JARS= \
   PRINT_YAML_MAX_ALIASES=50 \
+  JAVA_OPTS=-XX:-UseBASE64Intrinsics \
   SENTRY_DSN=
 
 CMD ["/usr/local/tomcat/bin/docker-start-print"]
