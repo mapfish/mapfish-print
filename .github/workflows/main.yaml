@@ -27,16 +27,16 @@ jobs:
 
     steps:
       - run: docker system prune --all --force
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
       - run: python3 -m pip install --requirement=ci/requirements.txt
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.cache/pre-commit
           key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
@@ -44,7 +44,7 @@ jobs:
       - run: pre-commit run --all-files --color=always
       - run: git diff --exit-code --patch > /tmp/pre-commit.patch; git diff --color; git reset --hard || true
         if: failure()
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: Apply pre-commit fix.patch
           path: /tmp/pre-commit.patch
@@ -64,14 +64,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
       - run: echo --${{ steps.tag2.outputs.replaced }}--
 
-      - uses: camptocamp/initialise-gopass-summon-action@17703c87720ba3766abc90da60b437783b530d93 # v2.0.1
-        with:
-          ci-gpg-private-key: ${{secrets.CI_GPG_PRIVATE_KEY}}
-          github-gopass-ci-token: ${{secrets.GOPASS_CI_GITHUB_TOKEN}}
-          patterns: docker
-        if: env.HAS_SECRETS == 'HAS_SECRETS'
-
-      - run: gpg --export-secret-keys --armor D121AF2DFA8E140688BD968930C9B913FD42EF13 > CI.asc
+      - run: echo "${{ secrets.CI_GPG_PRIVATE_KEY }}" > CI.asc
         if: env.HAS_SECRETS == 'HAS_SECRETS'
 
       - id: tag
@@ -105,7 +98,7 @@ jobs:
       - run: make build
 
       - run: make checks
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: Checkstyle and SpotBugs reports
           path: reports
@@ -115,13 +108,13 @@ jobs:
       - timeout-minutes: 10
         run: make tests
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: Unit test results
           path: core/build/resources/test/org/mapfish/print/
           if-no-files-found: ignore
         if: failure()
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: Unit test report
           path: core/build/reports/tests/test/
@@ -134,7 +127,7 @@ jobs:
       - run: c2cciutils-docker-logs || true
         if: always()
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: Acceptance tests (Examples)
           path: examples/build/resources/test/examples/
@@ -143,14 +136,20 @@ jobs:
 
       - run: git stash
         if: always()
+      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+        if: env.HAS_SECRETS == 'HAS_SECRETS'
       - name: Publish
         run: tag-publish
         if: env.HAS_SECRETS == 'HAS_SECRETS'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CAMPTOCAMP_PUBLISH_GITHUB_TOKEN }}
       - run: git diff --exit-code --patch > /tmp/dpkg-versions.patch; git diff --color; git reset --hard || true
         if: failure()
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: Update dpkg versions list.patch
           path: /tmp/dpkg-versions.patch
@@ -170,50 +169,30 @@ jobs:
       - run: echo "${{ steps.version.outputs.version }}"
       - run: make dist
 
-      - name: Create Release
-        uses: actions/github-script@v7
-        with:
-          script: |-
-            const fs = require('fs');
-
-            const release = await github.request('POST /repos/{owner}/{repo}/releases', {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: context.ref,
-              name: '${{ steps.tag.outputs.tag }}',
-              draft: false,
-              prerelease: false,
-              generate_release_notes: false,
-              headers: {
-                'X-GitHub-Api-Version': '2022-11-28'
-              }
-            });
-            for (const archive of [
-              {prefix: 'print-servlet-', suffix: '.war', filePrefix: './core/build/libs/print-servlet-', 'mime-type': 'application/java-archive'},
-              {prefix: 'print-cli-', suffix: '.zip', filePrefix: './core/build/distributions/core-', 'mime-type': 'application/zip'},
-              {prefix: 'print-lib-', suffix: '.jar', filePrefix: './core/build/libs/print-lib-', 'mime-type': 'application/java-archive'},
-              {prefix: 'print-lib-', suffix: '-sources.jar', filePrefix: './core/build/libs/print-lib-', 'mime-type': 'application/java-archive'},
-              {prefix: 'print-lib-', suffix: '-javadoc.jar', filePrefix: './core/build/libs/print-lib-', 'mime-type': 'application/java-archive'},
-            ]) {
-              await github.rest.repos.uploadReleaseAsset({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                release_id: release.data.id,
-                name: archive.prefix + '${{ steps.version.outputs.version }}' + archive.suffix,
-                data: fs.readFileSync(archive.filePrefix + '${{ steps.version.outputs.version }}' + archive.suffix),
-                headers: {
-                  'X-GitHub-Api-Version': '2022-11-28',
-                  'content-type': archive['mime-type']
-                },
-              });
-            }
+      - name: Create the release with its assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ steps.tag.outputs.tag }}
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |-
+          set -eu
+          mkdir --parents /tmp/release
+          cp "./core/build/libs/print-servlet-${RELEASE_VERSION}.war" /tmp/release/
+          cp "./core/build/distributions/core-${RELEASE_VERSION}.zip" "/tmp/release/print-cli-${RELEASE_VERSION}.zip"
+          cp "./core/build/libs/print-lib-${RELEASE_VERSION}.jar" /tmp/release/
+          cp "./core/build/libs/print-lib-${RELEASE_VERSION}-sources.jar" /tmp/release/
+          cp "./core/build/libs/print-lib-${RELEASE_VERSION}-javadoc.jar" /tmp/release/
+          # `gh release create` creates the release as a draft, uploads the assets and only then publishes
+          # it, and deletes the draft if an upload fails. This is what release immutability requires: the
+          # assets of a published release cannot be added, replaced nor removed anymore.
+          gh release create "${RELEASE_TAG}" --title="${RELEASE_TAG}" /tmp/release/*
         if: startsWith(github.ref, 'refs/tags/') && env.HAS_SECRETS == 'HAS_SECRETS'
 
         # Update the documentation
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: mapfish/mapfish-print-doc
-          token: ${{ secrets.GOPASS_CI_GITHUB_TOKEN }}
+          token: ${{ secrets.DOC_GITHUB_TOKEN }}
           path: mapfish-print-doc
         if: github.ref == 'refs/heads/master' && env.HAS_SECRETS == 'HAS_SECRETS'
       - name: Extract the documentation
@@ -234,7 +213,7 @@ jobs:
         if: github.ref == 'refs/heads/master' && env.HAS_SECRETS == 'HAS_SECRETS'
 
       - name: Trigger changelog workflow
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |-
             if (process.env.GITHUB_REF_TYPE == 'tag') {
