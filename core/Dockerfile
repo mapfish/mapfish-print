@@ -1,6 +1,6 @@
 FROM mapfish_print_builder AS builder
 
-FROM tomcat:11.0.27-jre21-temurin-jammy AS runner
+FROM tomcat:11.0.29-jre21-temurin-jammy AS runner
 LABEL maintainer="Camptocamp <info@camptocamp.com>"
 
 RUN --mount=type=cache,target=/var/cache,sharing=locked \
@@ -43,7 +43,6 @@ ENV LOG_LEVEL=INFO \
   TOMCAT_LOG_TYPE=classic \
   EXTRA_JARS= \
   PRINT_YAML_MAX_ALIASES=50 \
-  JAVA_OPTS=-XX:-UseBASE64Intrinsics \
   SENTRY_DSN=
 
 CMD ["/usr/local/tomcat/bin/docker-start-print"]
@@ -61,7 +60,6 @@ FROM runner AS watcher
 RUN --mount=type=cache,target=/var/cache,sharing=locked \
     --mount=type=cache,target=/root/.cache \
   apt-get update \
-  && apt-get upgrade --yes \
   && apt-get install --yes --no-install-recommends python3-pip rsync python3-setuptools \
   && python3 -m pip --disable-pip-version-check --no-cache-dir install inotify
 
