@@ -183,6 +183,8 @@ dependencies {
             'io.sentry:sentry-logback:8.1.0',
             // For JSON logs
             'net.logstash.logback:logstash-logback-encoder:8.0',
+            // Pinned to fix CVE-2026-54512, CVE-2026-54513 and CVE-2026-110879
+            'com.fasterxml.jackson.core:jackson-databind:2.22.4',
             // For PDF/A
             'com.adobe.xmp:xmpcore:6.1.11',
             // For WebP images
