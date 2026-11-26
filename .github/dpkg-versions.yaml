@@ -61,7 +61,7 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/libcurl4: 7.81.0-1ubuntu1.30
   ubuntu_22_04/libdb5.3: 5.3.28+dfsg1-0.8ubuntu3
   ubuntu_22_04/libdebconfclient0: 0.261ubuntu1
-  ubuntu_22_04/libexpat1: 2.4.7-1ubuntu0.9
+  ubuntu_22_04/libexpat1: 2.4.7-1ubuntu0.10
   ubuntu_22_04/libext2fs2: 1.46.5-2ubuntu1.1
   ubuntu_22_04/libffi8: 3.4.2-4
   ubuntu_22_04/libfontconfig1: 2.13.1-4.2ubuntu5
@@ -71,13 +71,13 @@ camptocamp/mapfish_print:latest:
   ubuntu_22_04/libgmp10: 2:6.2.1+dfsg-3ubuntu1
   ubuntu_22_04/libgnutls30: 3.7.3-4ubuntu1.9
   ubuntu_22_04/libgpg-error0: 1.43-3
-  ubuntu_22_04/libgssapi-krb5-2: 1.19.2-2ubuntu0.8
+  ubuntu_22_04/libgssapi-krb5-2: 1.19.2-2ubuntu0.12
   ubuntu_22_04/libhogweed6: 3.7.3-1build2
   ubuntu_22_04/libidn2-0: 2.3.2-2build1
-  ubuntu_22_04/libk5crypto3: 1.19.2-2ubuntu0.8
+  ubuntu_22_04/libk5crypto3: 1.19.2-2ubuntu0.12
   ubuntu_22_04/libkeyutils1: 1.6.1-2ubuntu3
-  ubuntu_22_04/libkrb5-3: 1.19.2-2ubuntu0.8
-  ubuntu_22_04/libkrb5support0: 1.19.2-2ubuntu0.8
+  ubuntu_22_04/libkrb5-3: 1.19.2-2ubuntu0.12
+  ubuntu_22_04/libkrb5support0: 1.19.2-2ubuntu0.12
   ubuntu_22_04/libksba8: 1.6.0-2ubuntu0.2
   ubuntu_22_04/libldap-2.5-0: 2.5.16+dfsg-0ubuntu0.22.04.2
   ubuntu_22_04/liblz4-1: 1.9.3-2build2
